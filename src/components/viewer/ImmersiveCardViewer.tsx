@@ -454,13 +454,13 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           />
         )}
 
-        {/* Info Panel - Enhanced visibility */}
+        {/* Info Panel - Enhanced visibility with updated instruction */}
         {showStats && !isFlipped && !showCustomizePanel && (
           <div className="absolute bottom-4 left-4 right-4 max-w-2xl mx-auto z-10" style={{ marginRight: hasMultipleCards ? '180px' : '100px' }}>
             <div className="bg-black bg-opacity-80 backdrop-blur-lg rounded-lg p-4 border border-white/10">
               <div className="flex items-center justify-between text-white">
                 <div className="flex space-x-4 text-sm">
-                  <span>Click card to flip</span>
+                  <span>Double-click card to flip</span>
                   <span>•</span>
                   <span>Drag to rotate manually</span>
                   <span>•</span>

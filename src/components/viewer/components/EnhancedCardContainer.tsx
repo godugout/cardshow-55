@@ -5,6 +5,7 @@ import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
 
 interface EnhancedCardContainerProps {
   card: CardData;
@@ -47,6 +48,12 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   onMouseLeave,
   onClick
 }) => {
+  // Use double-click/tap detection for card flip
+  const handleDoubleClick = useDoubleClick({
+    onDoubleClick: onClick,
+    delay: 300
+  });
+
   return (
     <div 
       className={`relative z-20 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
@@ -66,7 +73,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         isDragging={isDragging}
         interactiveLighting={interactiveLighting}
         isHovering={isHovering}
-        onClick={onClick}
+        onClick={handleDoubleClick}
       >
         {/* Front of Card */}
         <CardFrontContainer
@@ -80,7 +87,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={enhancedEffectStyles}
           SurfaceTexture={SurfaceTexture}
           interactiveLighting={interactiveLighting}
-          onClick={onClick}
+          onClick={handleDoubleClick}
         />
 
         {/* Back of Card */}

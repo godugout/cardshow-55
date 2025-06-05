@@ -1,9 +1,9 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { EnhancedCardContainer } from './EnhancedCardContainer';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
 
 interface EnhancedCardCanvasProps {
   card: CardData;
@@ -46,11 +46,14 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
 
   console.log('EnhancedCardCanvas rendering, isFlipped:', isFlipped);
 
-  // Handle card flip on click
-  const handleCardClick = () => {
-    setIsFlipped(!isFlipped);
-    console.log('Card flipped to:', !isFlipped);
-  };
+  // Handle card flip on double-click/tap
+  const handleDoubleClick = useDoubleClick({
+    onDoubleClick: () => {
+      setIsFlipped(!isFlipped);
+      console.log('Card flipped to:', !isFlipped);
+    },
+    delay: 300
+  });
 
   // Mock frame styles for the container
   const frameStyles: React.CSSProperties = {
@@ -86,7 +89,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      onClick={handleCardClick}
+      onClick={handleDoubleClick}
     >
       {/* CRD Logo Branding - Upper Right */}
       <div className="absolute top-4 right-4 z-50">
@@ -141,7 +144,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
               setIsDragging(false);
               onMouseLeave();
             }}
-            onClick={handleCardClick}
+            onClick={handleDoubleClick}
           />
         </div>
 
@@ -204,9 +207,9 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         </div>
       </div>
 
-      {/* Click instruction */}
+      {/* Click instruction updated */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white/60 text-sm">
-        Click to flip card
+        Double-click to flip card
       </div>
     </div>
   );
