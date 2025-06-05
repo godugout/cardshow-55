@@ -52,8 +52,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   // State
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [isFlipped, setIsFlipped] = useState(false);
   const [autoRotate, setAutoRotate] = useState(false);
