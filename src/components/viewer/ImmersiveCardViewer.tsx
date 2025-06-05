@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -189,151 +190,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     }
   }, [onShare, card]);
 
-  // Style generation hook
-  const { getFrameStyles, getEnhancedEffectStyles, getEnvironmentStyle, SurfaceTexture } = useCardEffects({
-    card,
-    effectValues,
-    mousePosition,
-    showEffects,
-    overallBrightness,
-    interactiveLighting,
-    selectedScene,
-    selectedLighting,
-    materialSettings,
-    zoom,
-    rotation,
-    isHovering
-  });
-
-  // Auto-rotation effect
-  useEffect(() => {
-    if (autoRotate && !isDragging) {
-      const animate = () => {
-        setRotation(prev => ({
-          x: Math.sin(Date.now() * 0.0005) * 10,
-          y: prev.y + 0.5
-        }));
-        animationRef.current = requestAnimationFrame(animate);
-      };
-      animationRef.current = requestAnimationFrame(animate);
-    } else {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    }
-    
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [autoRotate, isDragging]);
-
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
-      setZoom(prev => Math.max(0.5, Math.min(3, prev + zoomDelta)));
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: false });
-      return () => container.removeEventListener('wheel', handleWheel);
-    }
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isMobile && !isDragging && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-      setMousePosition({ x, y });
-      
-      const isInControlsArea = e.clientX - rect.left < 300 && e.clientY - rect.top > rect.height - 100;
-      setIsHoveringControls(isInControlsArea);
-      
-      if (allowRotation && !autoRotate) {
-        setRotation({
-          x: (y - 0.5) * 20,
-          y: (x - 0.5) * -20
-        });
-      }
-    }
-  }, [isDragging, allowRotation, autoRotate, isMobile]);
-
-  const handleDragStart = useCallback((e: React.MouseEvent) => {
-    if (allowRotation) {
-      setIsDragging(true);
-      setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
-      setAutoRotate(false);
-    }
-  }, [rotation, allowRotation]);
-
-  const handleDrag = useCallback((e: React.MouseEvent) => {
-    if (isDragging && allowRotation) {
-      setRotation({
-        x: e.clientY - dragStart.y,
-        y: e.clientX - dragStart.x
-      });
-    }
-  }, [isDragging, dragStart, allowRotation]);
-
-  const handleDragEnd = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  const handleReset = useCallback(() => {
-    setRotation({ x: 0, y: 0 });
-    setZoom(1);
-    setIsFlipped(false);
-    setAutoRotate(false);
-  }, []);
-
-  const handleZoom = useCallback((delta: number) => {
-    setZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
-  }, []);
-
-  const toggleFullscreen = useCallback(() => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-  }, []);
-
-  // Add state for preset selection tracking
-  const [selectedPresetId, setSelectedPresetId] = useState<string>();
-
-  // Enhanced combo application with atomic updates
-  const handleComboApplication = useCallback((combo: any) => {
-    console.log('🚀 Applying combo with atomic updates:', combo.id);
-    
-    // Apply preset atomically with all related state
-    applyPreset(combo.effects, combo.id);
-    
-    // Update preset selection
-    setSelectedPresetId(combo.id);
-    
-    // Apply any scene/lighting changes if specified
-    if (combo.scene) {
-      setSelectedScene(combo.scene);
-    }
-    if (combo.lighting) {
-      setSelectedLighting(combo.lighting);
-    }
-  }, [applyPreset]);
-
-  // Clear preset selection when manual effect changes are made
-  const handleManualEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
-    if (!isApplyingPreset) {
-      setSelectedPresetId(undefined);
-    }
-    handleEffectChange(effectId, parameterId, value);
-  }, [handleEffectChange, isApplyingPreset]);
-
   // Enhanced mobile gesture handlers
   const handleEnhancedPinchZoom = useCallback((scale: number, center: { x: number; y: number }) => {
     setZoom(prev => Math.max(0.5, Math.min(3, prev * scale)));
@@ -406,6 +262,97 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     onThreeFingerTap: handleEnhancedThreeFingerTap,
   });
 
+  // Style generation hook
+  const { getFrameStyles, getEnhancedEffectStyles, getEnvironmentStyle, SurfaceTexture } = useCardEffects({
+    card,
+    effectValues,
+    mousePosition,
+    showEffects,
+    overallBrightness,
+    interactiveLighting,
+    selectedScene,
+    selectedLighting,
+    materialSettings,
+    zoom,
+    rotation,
+    isHovering
+  });
+
+  // Auto-rotation effect
+  useEffect(() => {
+    if (autoRotate && !isActive) {
+      const animate = () => {
+        setRotation(prev => ({
+          x: Math.sin(Date.now() * 0.0005) * 10,
+          y: prev.y + 0.5
+        }));
+        animationRef.current = requestAnimationFrame(animate);
+      };
+      animationRef.current = requestAnimationFrame(animate);
+    } else {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    }
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [autoRotate, isActive]);
+
+  const handleReset = useCallback(() => {
+    setRotation({ x: 0, y: 0 });
+    setZoom(1);
+    setIsFlipped(false);
+    setAutoRotate(false);
+  }, []);
+
+  const handleZoom = useCallback((delta: number) => {
+    setZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  }, []);
+
+  // Add state for preset selection tracking
+  const [selectedPresetId, setSelectedPresetId] = useState<string>();
+
+  // Enhanced combo application with atomic updates
+  const handleComboApplication = useCallback((combo: any) => {
+    console.log('🚀 Applying combo with atomic updates:', combo.id);
+    
+    // Apply preset atomically with all related state
+    applyPreset(combo.effects, combo.id);
+    
+    // Update preset selection
+    setSelectedPresetId(combo.id);
+    
+    // Apply any scene/lighting changes if specified
+    if (combo.scene) {
+      setSelectedScene(combo.scene);
+    }
+    if (combo.lighting) {
+      setSelectedLighting(combo.lighting);
+    }
+  }, [applyPreset]);
+
+  // Clear preset selection when manual effect changes are made
+  const handleManualEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
+    if (!isApplyingPreset) {
+      setSelectedPresetId(undefined);
+    }
+    handleEffectChange(effectId, parameterId, value);
+  }, [handleEffectChange, isApplyingPreset]);
+
   if (!isOpen) return null;
 
   // Mobile Layout - Using new mobile components
@@ -451,7 +398,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
             className="relative z-20 cursor-grab active:cursor-grabbing"
             style={{
               transform: `scale(${zoom})`,
-              transition: isDragging || isActive ? 'none' : 'transform 0.3s ease',
+              transition: isActive ? 'none' : 'transform 0.3s ease',
               filter: `brightness(${interactiveLighting && (isHovering || isActive) ? 1.3 : 1.2}) contrast(1.1)`,
               ...(isActive ? {
                 filter: `brightness(1.3) contrast(1.1) drop-shadow(0 0 20px rgba(16, 185, 129, 0.3))`
@@ -468,7 +415,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
               mousePosition={mousePosition}
               rotation={rotation}
               zoom={zoom}
-              isDragging={isDragging || isActive}
+              isDragging={isActive}
               frameStyles={getFrameStyles()}
               enhancedEffectStyles={getEnhancedEffectStyles()}
               SurfaceTexture={SurfaceTexture}
@@ -532,9 +479,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         style={{
           ...getEnvironmentStyle(),
         }}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleDragEnd}
-        onMouseLeave={handleDragEnd}
+        {...gestureHandlers}
       >
         {/* Enhanced Dark Overlay */}
         <div className="absolute inset-0 bg-black/60" />
@@ -651,13 +596,12 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           className="relative z-20 cursor-grab active:cursor-grabbing"
           style={{
             transform: `scale(${zoom})`,
-            transition: isDragging || isActive ? 'none' : 'transform 0.3s ease',
+            transition: isActive ? 'none' : 'transform 0.3s ease',
             filter: `brightness(${interactiveLighting && (isHovering || isActive) ? 1.3 : 1.2}) contrast(1.1)`,
             ...(isActive ? {
               filter: `brightness(1.3) contrast(1.1) drop-shadow(0 0 20px rgba(16, 185, 129, 0.3))`
             } : {})
           }}
-          {...gestureHandlers}
         >
           <EnhancedCardContainer
             card={card}
@@ -668,13 +612,13 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
             mousePosition={mousePosition}
             rotation={rotation}
             zoom={zoom}
-            isDragging={isDragging || isActive}
+            isDragging={isActive}
             frameStyles={getFrameStyles()}
             enhancedEffectStyles={getEnhancedEffectStyles()}
             SurfaceTexture={SurfaceTexture}
             interactiveLighting={interactiveLighting}
-            onMouseDown={handleDragStart}
-            onMouseMove={handleDrag}
+            onMouseDown={() => {}}
+            onMouseMove={() => {}}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
             onClick={() => setIsFlipped(!isFlipped)}
