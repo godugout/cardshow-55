@@ -394,8 +394,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     }
   }, [handleMobileReset]);
 
-  // Use the enhanced gesture hook for mobile
-  const { touchHandlers, isActive } = isMobile ? useEnhancedMobileGestures({
+  // Always call the enhanced gesture hook, but conditionally use the result
+  const enhancedGestureResult = useEnhancedMobileGestures({
     onPinchZoom: handleEnhancedPinchZoom,
     onPan: handleEnhancedPan,
     onRotate: handleEnhancedRotate,
@@ -405,7 +405,10 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     onSwipeLeft: handleEnhancedSwipeLeft,
     onSwipeRight: handleEnhancedSwipeRight,
     onThreeFingerTap: handleEnhancedThreeFingerTap,
-  }) : { touchHandlers: {}, isActive: false };
+  });
+
+  // Use the gesture result only on mobile
+  const { touchHandlers, isActive } = isMobile ? enhancedGestureResult : { touchHandlers: {}, isActive: false };
 
   if (!isOpen) return null;
 
