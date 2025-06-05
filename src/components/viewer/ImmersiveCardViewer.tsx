@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,7 @@ import {
 import { useCardEffects } from './hooks/useCardEffects';
 import { useDynamicCardBackMaterials } from './hooks/useDynamicCardBackMaterials';
 import { useEnhancedMobileGestures } from './hooks/gestures/useEnhancedMobileGestures';
+import { useHybridGestures } from './hooks/gestures/useHybridGestures';
 import { ViewerControls } from './components/ViewerControls';
 import { MobileViewerControls } from './components/MobileViewerControls';
 import { ProgressiveCustomizePanel } from './components/ProgressiveCustomizePanel';
@@ -21,6 +21,7 @@ import { EnhancedCardContainer } from './components/EnhancedCardContainer';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
 import { ConfigurationDetailsPanel } from './components/ConfigurationDetailsPanel';
 import { GestureHelpOverlay } from './components/GestureHelpOverlay';
+import { GestureTestingHelper } from './components/GestureTestingHelper';
 import { MobileCardLayout } from './components/MobileCardLayout';
 import { MobileBottomControlBar } from './components/MobileBottomControlBar';
 import { MobileInfoPanel } from './components/MobileInfoPanel';
@@ -335,7 +336,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     handleEffectChange(effectId, parameterId, value);
   }, [handleEffectChange, isApplyingPreset]);
 
-  // Enhanced mobile gesture handlers using the new hook
+  // Enhanced mobile gesture handlers
   const handleEnhancedPinchZoom = useCallback((scale: number, center: { x: number; y: number }) => {
     setZoom(prev => Math.max(0.5, Math.min(3, prev * scale)));
   }, []);
@@ -394,8 +395,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     }
   }, [handleMobileReset]);
 
-  // Always call the enhanced gesture hook, but conditionally use the result
-  const enhancedGestureResult = useEnhancedMobileGestures({
+  // Use the hybrid gesture system for both mobile and desktop testing
+  const { gestureHandlers, isActive } = useHybridGestures({
     onPinchZoom: handleEnhancedPinchZoom,
     onPan: handleEnhancedPan,
     onRotate: handleEnhancedRotate,
@@ -406,9 +407,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     onSwipeRight: handleEnhancedSwipeRight,
     onThreeFingerTap: handleEnhancedThreeFingerTap,
   });
-
-  // Use the gesture result only on mobile
-  const { touchHandlers, isActive } = isMobile ? enhancedGestureResult : { touchHandlers: {}, isActive: false };
 
   if (!isOpen) return null;
 
@@ -461,7 +459,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
                 filter: `brightness(1.3) contrast(1.1) drop-shadow(0 0 20px rgba(16, 185, 129, 0.3))`
               } : {})
             }}
-            {...touchHandlers}
+            {...gestureHandlers}
           >
             <EnhancedCardContainer
               card={card}
@@ -525,7 +523,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     );
   }
 
-  // Desktop Layout (unchanged)
+  // Desktop Layout
   return (
     <>
       <div 
@@ -649,18 +647,30 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           />
         )}
 
-        {/* Enhanced Card Container - Add mobile gesture support */}
-        <div ref={cardContainerRef}>
+        {/* Enhanced Card Container - Add hybrid gesture support */}
+        <div 
+          ref={cardContainerRef}
+          className="relative z-20 cursor-grab active:cursor-grabbing"
+          style={{
+            transform: `scale(${zoom})`,
+            transition: isDragging || isActive ? 'none' : 'transform 0.3s ease',
+            filter: `brightness(${interactiveLighting && (isHovering || isActive) ? 1.3 : 1.2}) contrast(1.1)`,
+            ...(isActive ? {
+              filter: `brightness(1.3) contrast(1.1) drop-shadow(0 0 20px rgba(16, 185, 129, 0.3))`
+            } : {})
+          }}
+          {...gestureHandlers}
+        >
           <EnhancedCardContainer
             card={card}
             isFlipped={isFlipped}
-            isHovering={isHovering}
+            isHovering={isHovering || isActive}
             showEffects={showEffects}
             effectValues={effectValues}
             mousePosition={mousePosition}
             rotation={rotation}
             zoom={zoom}
-            isDragging={isDragging}
+            isDragging={isDragging || isActive}
             frameStyles={getFrameStyles()}
             enhancedEffectStyles={getEnhancedEffectStyles()}
             SurfaceTexture={SurfaceTexture}
@@ -737,6 +747,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         isVisible={showGestureHelp}
         onClose={() => setShowGestureHelp(false)}
       />
+
+      {/* Desktop Gesture Testing Helper */}
+      <GestureTestingHelper />
     </>
   );
 };
