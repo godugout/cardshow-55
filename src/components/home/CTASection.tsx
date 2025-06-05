@@ -2,10 +2,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
-import { useCustomAuth } from "@/features/auth/hooks/useCustomAuth";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 
 export const CTASection: React.FC = () => {
-  const { user } = useCustomAuth();
+  const { user } = useAuth();
 
   return (
     <div className="bg-crd-darkest flex justify-center items-center py-32 px-5">
