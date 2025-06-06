@@ -1,9 +1,11 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { EnhancedCardContainer } from './EnhancedCardContainer';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
+import { useThrottledMousePosition } from '../hooks/useThrottledMousePosition';
 
 interface EnhancedCardCanvasProps {
   card: CardData;
@@ -23,7 +25,7 @@ interface EnhancedCardCanvasProps {
   height?: number;
 }
 
-export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
+export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = React.memo(({
   card,
   effectValues,
   mousePosition,
@@ -44,6 +46,9 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
   const [isFlipped, setIsFlipped] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Use throttled mouse position for smoother performance
+  const { mousePosition: throttledMousePosition, updateMousePosition } = useThrottledMousePosition(16);
+
   console.log('EnhancedCardCanvas rendering, isFlipped:', isFlipped);
 
   // Handle card flip on double-click/tap
@@ -55,19 +60,34 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
     delay: 300
   });
 
-  // Mock frame styles for the container
-  const frameStyles: React.CSSProperties = {
+  // Handle mouse move with throttling
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    onMouseMove(event);
+    
+    if (canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width;
+      const y = (event.clientY - rect.top) / rect.height;
+      updateMousePosition(x, y);
+    }
+  };
+
+  // Use the provided mouse position for immediate updates, throttled for internal calculations
+  const effectiveMousePosition = interactiveLighting ? throttledMousePosition : mousePosition;
+
+  // Cached frame styles
+  const frameStyles: React.CSSProperties = React.useMemo(() => ({
     background: `linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)`,
     border: '1px solid rgba(255,255,255,0.1)'
-  };
+  }), []);
 
-  // Mock enhanced effect styles
-  const enhancedEffectStyles: React.CSSProperties = {
+  // Cached enhanced effect styles
+  const enhancedEffectStyles: React.CSSProperties = React.useMemo(() => ({
     filter: `brightness(${overallBrightness / 100}) contrast(1.1)`
-  };
+  }), [overallBrightness]);
 
-  // Simple surface texture component
-  const SurfaceTexture = (
+  // Cached surface texture component
+  const SurfaceTexture = React.useMemo(() => (
     <div 
       className="absolute inset-0 opacity-20"
       style={{
@@ -75,7 +95,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         backgroundSize: '20px 20px'
       }}
     />
-  );
+  ), []);
 
   return (
     <div
@@ -86,7 +106,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         height: `${height}px`,
         perspective: '1000px'
       }}
-      onMouseMove={onMouseMove}
+      onMouseMove={handleMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={handleDoubleClick}
@@ -112,7 +132,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         isHovering={isHovering}
         showEffects={true}
         effectValues={effectValues}
-        mousePosition={mousePosition}
+        mousePosition={effectiveMousePosition}
         rotation={rotation}
         zoom={1}
         isDragging={isDragging}
@@ -126,7 +146,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         overallBrightness={[overallBrightness]}
         showBackgroundInfo={true}
         onMouseDown={() => setIsDragging(true)}
-        onMouseMove={onMouseMove}
+        onMouseMove={handleMouseMove}
         onMouseEnter={onMouseEnter}
         onMouseLeave={() => {
           setIsDragging(false);
@@ -141,4 +161,16 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
       </div>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Optimized comparison for canvas re-rendering
+  return prevProps.card.id === nextProps.card.id &&
+         JSON.stringify(prevProps.effectValues) === JSON.stringify(nextProps.effectValues) &&
+         prevProps.selectedScene.id === nextProps.selectedScene.id &&
+         prevProps.selectedLighting.id === nextProps.selectedLighting.id &&
+         prevProps.overallBrightness === nextProps.overallBrightness &&
+         prevProps.interactiveLighting === nextProps.interactiveLighting &&
+         JSON.stringify(prevProps.materialSettings) === JSON.stringify(nextProps.materialSettings) &&
+         prevProps.isHovering === nextProps.isHovering;
+});
+
+EnhancedCardCanvas.displayName = 'EnhancedCardCanvas';

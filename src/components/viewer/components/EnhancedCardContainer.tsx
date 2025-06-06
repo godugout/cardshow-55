@@ -8,6 +8,7 @@ import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
 import { CanvasBackgroundInfo } from './CanvasBackgroundInfo';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
+import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface EnhancedCardContainerProps {
   card: CardData;
@@ -23,7 +24,6 @@ interface EnhancedCardContainerProps {
   enhancedEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
-  // New props for background info
   selectedScene?: EnvironmentScene;
   selectedLighting?: LightingPreset;
   materialSettings?: MaterialSettings;
@@ -36,7 +36,7 @@ interface EnhancedCardContainerProps {
   onClick: () => void;
 }
 
-export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
+export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = React.memo(({
   card,
   isFlipped,
   isHovering,
@@ -61,6 +61,22 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   onMouseLeave,
   onClick
 }) => {
+  // Use cached effects for better performance
+  const cachedEffects = useCachedCardEffects({
+    card,
+    effectValues,
+    mousePosition,
+    showEffects,
+    overallBrightness,
+    interactiveLighting,
+    selectedScene: selectedScene!,
+    selectedLighting: selectedLighting!,
+    materialSettings: materialSettings!,
+    zoom,
+    rotation,
+    isHovering
+  });
+
   // Use double-click/tap detection for card flip
   const handleDoubleClick = useDoubleClick({
     onDoubleClick: onClick,
@@ -110,9 +126,9 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           showEffects={showEffects}
           effectValues={effectValues}
           mousePosition={mousePosition}
-          frameStyles={frameStyles}
-          enhancedEffectStyles={enhancedEffectStyles}
-          SurfaceTexture={SurfaceTexture}
+          frameStyles={cachedEffects.getFrameStyles()}
+          enhancedEffectStyles={cachedEffects.getEnhancedEffectStyles()}
+          SurfaceTexture={cachedEffects.SurfaceTexture}
           interactiveLighting={interactiveLighting}
           onClick={handleDoubleClick}
         />
@@ -124,12 +140,32 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           showEffects={showEffects}
           effectValues={effectValues}
           mousePosition={mousePosition}
-          frameStyles={frameStyles}
-          enhancedEffectStyles={enhancedEffectStyles}
-          SurfaceTexture={SurfaceTexture}
+          frameStyles={cachedEffects.getFrameStyles()}
+          enhancedEffectStyles={cachedEffects.getEnhancedEffectStyles()}
+          SurfaceTexture={cachedEffects.SurfaceTexture}
           interactiveLighting={interactiveLighting}
         />
       </Card3DTransform>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function for optimal performance
+  const effectsChanged = JSON.stringify(prevProps.effectValues) !== JSON.stringify(nextProps.effectValues);
+  const mouseChanged = Math.abs(prevProps.mousePosition.x - nextProps.mousePosition.x) > 0.01 || 
+                      Math.abs(prevProps.mousePosition.y - nextProps.mousePosition.y) > 0.01;
+  const rotationChanged = Math.abs(prevProps.rotation.x - nextProps.rotation.x) > 0.01 || 
+                         Math.abs(prevProps.rotation.y - nextProps.rotation.y) > 0.01;
+
+  // Only re-render if significant changes occurred
+  return !effectsChanged && 
+         !mouseChanged && 
+         !rotationChanged &&
+         prevProps.isFlipped === nextProps.isFlipped &&
+         prevProps.isHovering === nextProps.isHovering &&
+         prevProps.showEffects === nextProps.showEffects &&
+         prevProps.zoom === nextProps.zoom &&
+         prevProps.isDragging === nextProps.isDragging &&
+         prevProps.interactiveLighting === nextProps.interactiveLighting;
+});
+
+EnhancedCardContainer.displayName = 'EnhancedCardContainer';

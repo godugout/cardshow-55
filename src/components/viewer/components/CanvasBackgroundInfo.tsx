@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -16,7 +16,7 @@ interface CanvasBackgroundInfoProps {
   isHovering: boolean;
 }
 
-export const CanvasBackgroundInfo: React.FC<CanvasBackgroundInfoProps> = ({
+export const CanvasBackgroundInfo: React.FC<CanvasBackgroundInfoProps> = React.memo(({
   effectValues,
   selectedScene,
   selectedLighting,
@@ -28,26 +28,41 @@ export const CanvasBackgroundInfo: React.FC<CanvasBackgroundInfoProps> = ({
 }) => {
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
 
-  // Get active effects with their intensities
-  const activeEffects = Object.entries(effectValues || {})
-    .filter(([_, params]) => params && typeof params.intensity === 'number' && params.intensity > 0)
-    .map(([effectId, params]) => ({
-      id: effectId,
-      name: effectId.charAt(0).toUpperCase() + effectId.slice(1),
-      intensity: params.intensity as number
-    }))
-    .sort((a, b) => b.intensity - a.intensity)
-    .slice(0, 4); // Show top 4 effects
+  // Cache active effects calculation
+  const activeEffects = useMemo(() => {
+    return Object.entries(effectValues || {})
+      .filter(([_, params]) => params && typeof params.intensity === 'number' && params.intensity > 0)
+      .map(([effectId, params]) => ({
+        id: effectId,
+        name: effectId.charAt(0).toUpperCase() + effectId.slice(1),
+        intensity: params.intensity as number
+      }))
+      .sort((a, b) => b.intensity - a.intensity)
+      .slice(0, 4);
+  }, [effectValues]);
 
-  // Calculate parallax offset based on mouse position
-  const parallaxX = (mousePosition.x - 0.5) * 20;
-  const parallaxY = (mousePosition.y - 0.5) * 10;
+  // Cache parallax calculations
+  const parallaxOffset = useMemo(() => ({
+    x: (mousePosition.x - 0.5) * 20,
+    y: (mousePosition.y - 0.5) * 10
+  }), [mousePosition.x, mousePosition.y]);
+
+  // Cache material display values
+  const materialDisplayValues = useMemo(() => ({
+    roughness: Math.round(materialSettings.roughness * 100),
+    metalness: Math.round(materialSettings.metalness * 100),
+    clearcoat: Math.round(materialSettings.clearcoat * 100),
+    reflectivity: Math.round(materialSettings.reflectivity * 100)
+  }), [materialSettings]);
+
+  // Cache selected material display
+  const materialOpacity = useMemo(() => Math.round(selectedMaterial.opacity * 100), [selectedMaterial.opacity]);
 
   return (
     <div 
       className="absolute inset-0 pointer-events-none"
       style={{
-        transform: `perspective(1000px) translateZ(-200px) translateX(${parallaxX}px) translateY(${parallaxY}px)`,
+        transform: `perspective(1000px) translateZ(-200px) translateX(${parallaxOffset.x}px) translateY(${parallaxOffset.y}px)`,
         opacity: isHovering ? 0.9 : 0.7,
         transition: 'opacity 0.3s ease, transform 0.1s ease'
       }}
@@ -131,19 +146,19 @@ export const CanvasBackgroundInfo: React.FC<CanvasBackgroundInfoProps> = ({
           <div className="space-y-1 text-xs">
             <div className="flex justify-between">
               <span className="text-white/70">Roughness:</span>
-              <span className="text-white/60">{Math.round(materialSettings.roughness * 100)}%</span>
+              <span className="text-white/60">{materialDisplayValues.roughness}%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-white/70">Metalness:</span>
-              <span className="text-white/60">{Math.round(materialSettings.metalness * 100)}%</span>
+              <span className="text-white/60">{materialDisplayValues.metalness}%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-white/70">Clearcoat:</span>
-              <span className="text-white/60">{Math.round(materialSettings.clearcoat * 100)}%</span>
+              <span className="text-white/60">{materialDisplayValues.clearcoat}%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-white/70">Reflectivity:</span>
-              <span className="text-white/60">{Math.round(materialSettings.reflectivity * 100)}%</span>
+              <span className="text-white/60">{materialDisplayValues.reflectivity}%</span>
             </div>
           </div>
         </div>
@@ -163,7 +178,7 @@ export const CanvasBackgroundInfo: React.FC<CanvasBackgroundInfoProps> = ({
             <div className="text-purple-300 font-medium">{selectedMaterial.name}</div>
             <div className="flex justify-center space-x-4">
               <div className="text-white/60">
-                Opacity: {Math.round(selectedMaterial.opacity * 100)}%
+                Opacity: {materialOpacity}%
               </div>
               {selectedMaterial.blur && (
                 <div className="text-white/60">
@@ -219,4 +234,19 @@ export const CanvasBackgroundInfo: React.FC<CanvasBackgroundInfoProps> = ({
       />
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function for better performance
+  return (
+    prevProps.selectedScene.id === nextProps.selectedScene.id &&
+    prevProps.selectedLighting.id === nextProps.selectedLighting.id &&
+    prevProps.overallBrightness[0] === nextProps.overallBrightness[0] &&
+    prevProps.interactiveLighting === nextProps.interactiveLighting &&
+    prevProps.isHovering === nextProps.isHovering &&
+    Math.abs(prevProps.mousePosition.x - nextProps.mousePosition.x) < 0.01 &&
+    Math.abs(prevProps.mousePosition.y - nextProps.mousePosition.y) < 0.01 &&
+    JSON.stringify(prevProps.effectValues) === JSON.stringify(nextProps.effectValues) &&
+    JSON.stringify(prevProps.materialSettings) === JSON.stringify(nextProps.materialSettings)
+  );
+});
+
+CanvasBackgroundInfo.displayName = 'CanvasBackgroundInfo';
