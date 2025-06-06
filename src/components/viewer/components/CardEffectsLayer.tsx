@@ -5,6 +5,7 @@ import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { useEnhancedInteractiveLighting } from '../hooks/useEnhancedInteractiveLighting';
 import { EnhancedInteractiveLightingLayer } from './EnhancedInteractiveLightingLayer';
 import { GoldEffect } from './effects/GoldEffect';
+import { AuroraEffect } from './effects/AuroraEffect';
 import { CrystalEffect } from './effects/CrystalEffect';
 import { VintageEffect } from './effects/VintageEffect';
 import { MetallicEffects } from './effects/MetallicEffects';
@@ -57,6 +58,7 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
   const prizemIntensity = getEffectParam('prizm', 'intensity', 0);
   const foilsprayIntensity = getEffectParam('foilspray', 'intensity', 0);
   const goldIntensity = getEffectParam('gold', 'intensity', 0);
+  const auroraIntensity = getEffectParam('aurora', 'intensity', 0);
   
   return (
     <>
@@ -71,6 +73,12 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
 
       {/* Gold Effect */}
       <GoldEffect
+        effectValues={effectValues}
+        mousePosition={mousePosition}
+      />
+
+      {/* Aurora Effect - New standalone effect */}
+      <AuroraEffect
         effectValues={effectValues}
         mousePosition={mousePosition}
       />
@@ -122,7 +130,7 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
       {(() => {
         const totalIntensity = holographicIntensity + chromeIntensity + brushedmetalIntensity + 
                               crystalIntensity + vintageIntensity + interferenceIntensity + 
-                              prizemIntensity + foilsprayIntensity + goldIntensity;
+                              prizemIntensity + foilsprayIntensity + goldIntensity + auroraIntensity;
         const normalizedIntensity = Math.min(totalIntensity / 100, 1);
         
         return totalIntensity > 0 ? (

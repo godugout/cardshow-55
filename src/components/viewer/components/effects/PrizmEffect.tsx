@@ -22,98 +22,101 @@ export const PrizmEffect: React.FC<PrizmEffectProps> = ({
 
   if (prizmIntensity <= 0) return null;
 
-  // More pronounced rainbow with reduced opacity
-  const baseOpacity = Math.min(0.35, (prizmIntensity / 100) * 0.3);
-  const secondaryOpacity = Math.min(0.25, (prizmIntensity / 100) * 0.2);
+  // Much more subtle opacity for glass refraction look
+  const baseOpacity = Math.min(0.15, (prizmIntensity / 100) * 0.12);
+  const secondaryOpacity = Math.min(0.08, (prizmIntensity / 100) * 0.06);
 
-  // Vibrant rainbow spectrum colors - more saturated, less purple
-  const rainbowColors = [
-    `rgba(255, 60, 60, ${baseOpacity})`,     // Bright red
-    `rgba(255, 120, 40, ${baseOpacity})`,    // Orange
-    `rgba(255, 200, 40, ${baseOpacity})`,    // Yellow
-    `rgba(120, 255, 60, ${baseOpacity})`,    // Green
-    `rgba(40, 200, 255, ${baseOpacity})`,    // Cyan
-    `rgba(60, 120, 255, ${baseOpacity})`,    // Blue
-    `rgba(140, 80, 255, ${baseOpacity * 0.7})`,    // Reduced purple
-    `rgba(255, 80, 180, ${baseOpacity * 0.8})`     // Pink
+  // Subtle refraction colors - like light passing through glass
+  const refractionColors = [
+    `rgba(255, 220, 220, ${baseOpacity * 0.8})`,    // Soft red
+    `rgba(255, 240, 200, ${baseOpacity})`,          // Warm yellow
+    `rgba(220, 255, 220, ${baseOpacity})`,          // Soft green
+    `rgba(200, 240, 255, ${baseOpacity})`,          // Light blue
+    `rgba(230, 220, 255, ${baseOpacity * 0.7})`     // Gentle violet
   ];
 
-  // Subtle mouse influence
-  const mouseInfluence = (mousePosition.x + mousePosition.y) * 60;
-  
-  // Smoother transitions
-  const blendFactor = Math.max(2, 8 - complexity);
+  // Mouse influence for subtle directional refraction
+  const lightAngle = Math.atan2(mousePosition.y - 0.5, mousePosition.x - 0.5) * (180 / Math.PI);
+  const dispersal = (complexity / 10) * 30; // Spread based on complexity
 
   return (
     <>
-      {/* Primary Rainbow Spectrum Layer - No lines, smooth gradients */}
+      {/* Primary Refraction Layer - Soft spectrum dispersal */}
       <div
         className="absolute inset-0 z-20"
         style={{
-          background: `conic-gradient(
-            from ${mouseInfluence}deg at 50% 50%,
-            ${rainbowColors[0]} 0deg,
-            ${rainbowColors[1]} ${45 * blendFactor}deg,
-            ${rainbowColors[2]} ${90 * blendFactor}deg,
-            ${rainbowColors[3]} ${135 * blendFactor}deg,
-            ${rainbowColors[4]} ${180 * blendFactor}deg,
-            ${rainbowColors[5]} ${225 * blendFactor}deg,
-            ${rainbowColors[6]} ${270 * blendFactor}deg,
-            ${rainbowColors[7]} ${315 * blendFactor}deg,
-            ${rainbowColors[0]} 360deg
-          )`,
-          maskImage: `radial-gradient(
-            ellipse at ${50 + mousePosition.x * 20}% ${50 + mousePosition.y * 20}%,
-            rgba(255, 255, 255, 1) 0%,
-            rgba(255, 255, 255, 0.95) 30%,
-            rgba(255, 255, 255, 0.8) 60%,
-            rgba(255, 255, 255, 0.5) 80%,
-            transparent 100%
-          )`,
-          WebkitMaskImage: `radial-gradient(
-            ellipse at ${50 + mousePosition.x * 20}% ${50 + mousePosition.y * 20}%,
-            rgba(255, 255, 255, 1) 0%,
-            rgba(255, 255, 255, 0.95) 30%,
-            rgba(255, 255, 255, 0.8) 60%,
-            rgba(255, 255, 255, 0.5) 80%,
-            transparent 100%
-          )`,
-          mixBlendMode: 'overlay'
+          background: `
+            radial-gradient(
+              ellipse 80% 60% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+              ${refractionColors[0]} 0%,
+              ${refractionColors[1]} 25%,
+              ${refractionColors[2]} 50%,
+              ${refractionColors[3]} 75%,
+              transparent 100%
+            )
+          `,
+          mixBlendMode: 'overlay',
+          filter: 'blur(0.5px)'
         }}
       />
 
-      {/* Secondary Rainbow Layer for Depth */}
+      {/* Secondary Dispersal Layer - Color separation effect */}
       <div
         className="absolute inset-0 z-21"
         style={{
-          background: `radial-gradient(
-            circle at ${50 + mousePosition.x * 25}% ${50 + mousePosition.y * 25}%,
-            ${rainbowColors[2]} 0%,
-            ${rainbowColors[4]} 30%,
-            ${rainbowColors[1]} 60%,
-            ${rainbowColors[5]} 90%,
-            transparent 100%
-          )`,
-          opacity: secondaryOpacity * (0.8 + (colorSeparation / 100) * 0.4),
-          mixBlendMode: 'color-dodge'
+          background: `
+            linear-gradient(
+              ${lightAngle + dispersal}deg,
+              transparent 30%,
+              ${refractionColors[1]} 45%,
+              ${refractionColors[2]} 50%,
+              ${refractionColors[3]} 55%,
+              transparent 70%
+            )
+          `,
+          opacity: secondaryOpacity * (colorSeparation / 100),
+          mixBlendMode: 'soft-light'
         }}
       />
 
-      {/* Soft Rainbow Highlight */}
+      {/* Tertiary Layer - Gentle color bleeding */}
       <div
         className="absolute inset-0 z-22"
         style={{
-          background: `linear-gradient(
-            ${mousePosition.x * 180 + 45}deg,
-            ${rainbowColors[0]} 0%,
-            ${rainbowColors[2]} 25%,
-            ${rainbowColors[4]} 50%,
-            ${rainbowColors[6]} 75%,
-            ${rainbowColors[0]} 100%
-          )`,
+          background: `
+            radial-gradient(
+              circle at ${30 + mousePosition.x * 40}% ${30 + mousePosition.y * 40}%,
+              ${refractionColors[2]} 0%,
+              transparent 40%
+            ),
+            radial-gradient(
+              circle at ${70 + mousePosition.x * 20}% ${70 + mousePosition.y * 20}%,
+              ${refractionColors[3]} 0%,
+              transparent 35%
+            )
+          `,
+          opacity: baseOpacity * 0.6,
+          mixBlendMode: 'color-dodge',
+          filter: `blur(${Math.max(0.5, (10 - complexity) * 0.3)}px)`
+        }}
+      />
+
+      {/* Subtle Edge Refraction - Like light bending at glass edges */}
+      <div
+        className="absolute inset-0 z-23"
+        style={{
+          background: `
+            linear-gradient(
+              ${lightAngle - dispersal * 0.5}deg,
+              transparent 0%,
+              ${refractionColors[0]} 20%,
+              transparent 25%,
+              ${refractionColors[4]} 75%,
+              transparent 80%
+            )
+          `,
           opacity: secondaryOpacity * 0.8,
-          mixBlendMode: 'soft-light',
-          filter: `blur(${Math.max(0.5, (8 - complexity) * 0.8)}px)`
+          mixBlendMode: 'multiply'
         }}
       />
     </>

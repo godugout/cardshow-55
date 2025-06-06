@@ -1,3 +1,4 @@
+
 import type { VisualEffectConfig } from './types';
 
 // Define all visual effects with their unique parameters
@@ -107,12 +108,22 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
           { value: 'rich', label: 'Rich Gold' },
           { value: 'rose', label: 'Rose Gold' },
           { value: 'white', label: 'White Gold' },
-          { value: 'antique', label: 'Antique Gold' },
-          { value: 'aurora', label: 'Aurora' }
+          { value: 'antique', label: 'Antique Gold' }
         ]
       },
       { id: 'reflectivity', name: 'Reflectivity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 85 },
       { id: 'colorEnhancement', name: 'Yellow Enhancement', type: 'toggle', defaultValue: true }
+    ]
+  },
+  {
+    id: 'aurora',
+    name: 'Aurora',
+    description: 'Natural aurora borealis with dancing lights',
+    category: 'prismatic',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'waveSpeed', name: 'Wave Speed', type: 'slider', min: 0, max: 200, step: 5, defaultValue: 80 },
+      { id: 'colorShift', name: 'Color Shift', type: 'slider', min: 0, max: 360, step: 15, defaultValue: 120 }
     ]
   },
   {
