@@ -179,18 +179,20 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
         />
       )}
 
-      {/* Add a style tag for animations */}
-      <style jsx>{`
-        @keyframes aurora {
-          0% { background-position: 0% 0% }
-          50% { background-position: 100% 100% }
-          100% { background-position: 0% 0% }
-        }
-        @keyframes pulse {
-          0% { opacity: 0.3 }
-          100% { opacity: 0.6 }
-        }
-      `}</style>
+      {/* Fix for the style tag - use a standard style tag without jsx prop */}
+      <style>
+        {`
+          @keyframes aurora {
+            0% { background-position: 0% 0% }
+            50% { background-position: 100% 100% }
+            100% { background-position: 0% 0% }
+          }
+          @keyframes pulse {
+            0% { opacity: 0.3 }
+            100% { opacity: 0.6 }
+          }
+        `}
+      </style>
     </>
   );
 };
