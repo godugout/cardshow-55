@@ -1,12 +1,12 @@
 
-import React, { useCallback } from 'react';
-import { Sparkles, X } from 'lucide-react';
+import React, { useCallback, useState, useMemo } from 'react';
+import { Sparkles, X, Download, Share2, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { QuickComboPresets } from './QuickComboPresets';
-import { EffectsSection } from './EffectsSection';
+import { CollapsibleSection } from '@/components/ui/design-system';
+import { EnhancedQuickComboPresets } from './EnhancedQuickComboPresets';
+import { EnhancedEffectsList } from './EnhancedEffectsList';
 import { EnvironmentSection } from './EnvironmentSection';
 import { MaterialPropertiesSection } from './MaterialPropertiesSection';
-import { ExportSection } from './ExportSection';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 
@@ -61,6 +61,40 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
   onApplyCombo,
   isApplyingPreset = false
 }) => {
+  // Section state management with smart defaults
+  const [sectionStates, setSectionStates] = useState(() => {
+    const stored = localStorage.getItem('studio-panel-sections');
+    const defaults = {
+      quickStyles: true, // Always open by default
+      effects: false,
+      environment: false,
+      materials: false
+    };
+    return stored ? { ...defaults, ...JSON.parse(stored) } : defaults;
+  });
+
+  // Calculate active effects count
+  const activeEffectsCount = useMemo(() => {
+    return Object.values(effectValues).filter(effect => {
+      const intensity = effect.intensity;
+      return typeof intensity === 'number' && intensity > 0;
+    }).length;
+  }, [effectValues]);
+
+  // Auto-expand effects section when user has active effects
+  React.useEffect(() => {
+    if (activeEffectsCount > 0 && !sectionStates.effects) {
+      setSectionStates(prev => ({ ...prev, effects: true }));
+    }
+  }, [activeEffectsCount, sectionStates.effects]);
+
+  // Handle section toggle with persistence
+  const handleSectionToggle = useCallback((section: string, isOpen: boolean) => {
+    const newStates = { ...sectionStates, [section]: isOpen };
+    setSectionStates(newStates);
+    localStorage.setItem('studio-panel-sections', JSON.stringify(newStates));
+  }, [sectionStates]);
+
   const handleBrightnessChange = useCallback(
     (value: number[]) => {
       onBrightnessChange(value);
@@ -69,9 +103,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
   );
 
   return (
-    <div className={`fixed top-0 right-0 h-full w-80 bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 overflow-hidden ${
-      isFullscreen ? 'z-60' : 'z-50'
-    }`}>
+    <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-white/10">
         <h2 className="text-lg font-semibold text-white">Enhanced Studio</h2>
@@ -80,73 +112,110 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
         </Button>
       </div>
 
-      {/* Content */}
+      {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-4 space-y-6">
-          {/* Quick Styles Section - 2 columns */}
-          <div>
-            <h3 className="text-white font-medium mb-3 flex items-center">
-              <Sparkles className="w-4 h-4 text-crd-green mr-2" />
-              Quick Styles
-              {isApplyingPreset && (
-                <div className="ml-2 w-2 h-2 bg-crd-green rounded-full animate-pulse" />
-              )}
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              <QuickComboPresets
-                onApplyCombo={onApplyCombo}
-                currentEffects={effectValues}
-                selectedPresetId={selectedPresetId}
-                onPresetSelect={onPresetSelect}
-                isApplyingPreset={isApplyingPreset}
-              />
-            </div>
-          </div>
+        <div className="p-4 space-y-4">
+          {/* Quick Styles Section - Always Open */}
+          <CollapsibleSection
+            title="Quick Styles"
+            emoji="🎨"
+            statusText={isApplyingPreset ? "Applying..." : undefined}
+            alwaysOpen={true}
+          >
+            <EnhancedQuickComboPresets
+              onApplyCombo={onApplyCombo}
+              currentEffects={effectValues}
+              selectedPresetId={selectedPresetId}
+              onPresetSelect={onPresetSelect}
+              isApplyingPreset={isApplyingPreset}
+            />
+          </CollapsibleSection>
 
-          {/* Separator */}
-          <div className="border-b border-white/20" />
+          {/* Effects Section - Collapsible */}
+          <CollapsibleSection
+            title="Effects"
+            emoji="✨"
+            statusCount={activeEffectsCount}
+            isOpen={sectionStates.effects}
+            onToggle={(isOpen) => handleSectionToggle('effects', isOpen)}
+          >
+            <EnhancedEffectsList
+              effectValues={effectValues}
+              onEffectChange={onEffectChange}
+              selectedPresetId={selectedPresetId}
+            />
+          </CollapsibleSection>
 
-          {/* Enhanced Effects Section */}
-          <EffectsSection
-            effectValues={effectValues}
-            onEffectChange={onEffectChange}
-            onResetAllEffects={onResetAllEffects}
-          />
+          {/* Environment Section - Collapsible */}
+          <CollapsibleSection
+            title="Environment"
+            emoji="🌍"
+            statusText={`${selectedScene.name} • ${selectedLighting.name}`}
+            isOpen={sectionStates.environment}
+            onToggle={(isOpen) => handleSectionToggle('environment', isOpen)}
+          >
+            <EnvironmentSection
+              selectedScene={selectedScene}
+              selectedLighting={selectedLighting}
+              overallBrightness={overallBrightness}
+              interactiveLighting={interactiveLighting}
+              onSceneChange={onSceneChange}
+              onLightingChange={onLightingChange}
+              onBrightnessChange={handleBrightnessChange}
+              onInteractiveLightingToggle={onInteractiveLightingToggle}
+            />
+          </CollapsibleSection>
 
-          {/* Separator */}
-          <div className="border-b border-white/20" />
+          {/* Material Properties Section - Collapsible */}
+          <CollapsibleSection
+            title="Materials"
+            emoji="💎"
+            statusText="Custom Settings"
+            isOpen={sectionStates.materials}
+            onToggle={(isOpen) => handleSectionToggle('materials', isOpen)}
+          >
+            <MaterialPropertiesSection
+              materialSettings={materialSettings}
+              onMaterialSettingsChange={onMaterialSettingsChange}
+            />
+          </CollapsibleSection>
+        </div>
+      </div>
 
-          {/* Environment Settings Section */}
-          <EnvironmentSection
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            overallBrightness={overallBrightness}
-            interactiveLighting={interactiveLighting}
-            onSceneChange={onSceneChange}
-            onLightingChange={onLightingChange}
-            onBrightnessChange={handleBrightnessChange}
-            onInteractiveLightingToggle={onInteractiveLightingToggle}
-          />
-
-          {/* Separator */}
-          <div className="border-b border-white/20" />
-
-          {/* Material Properties Section */}
-          <MaterialPropertiesSection
-            materialSettings={materialSettings}
-            onMaterialSettingsChange={onMaterialSettingsChange}
-          />
-
-          {/* Separator */}
-          <div className="border-b border-white/20" />
-
-          {/* Export Options Section */}
-          <ExportSection
-            isFullscreen={isFullscreen}
-            onToggleFullscreen={onToggleFullscreen}
-            onDownload={onDownload}
-            onShare={onShare}
-          />
+      {/* Fixed Export Section at Bottom */}
+      <div className="border-t border-white/10 p-4 bg-black/50">
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onToggleFullscreen}
+            className="flex-1 border-white/20 text-white hover:bg-white/10"
+          >
+            {isFullscreen ? <Minimize2 className="w-4 h-4 mr-2" /> : <Maximize2 className="w-4 h-4 mr-2" />}
+            {isFullscreen ? 'Exit' : 'Fullscreen'}
+          </Button>
+          
+          {onShare && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onShare}
+              className="flex-1 border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Share
+            </Button>
+          )}
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onDownload}
+            className="flex-1 border-crd-green/50 text-crd-green hover:bg-crd-green/10"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </Button>
         </div>
       </div>
     </div>

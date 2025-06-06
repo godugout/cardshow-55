@@ -3,7 +3,6 @@ import React from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { PresetCard, FilterButton } from '@/components/ui/design-system';
 import { ENHANCED_COMBO_PRESETS } from './presets/enhancedComboPresets';
-import { Sparkles } from 'lucide-react';
 import type { QuickComboPresetsProps } from './presets/types';
 
 interface EnhancedQuickComboPresetsProps extends QuickComboPresetsProps {
@@ -39,31 +38,21 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
 
   return (
     <TooltipProvider>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center space-x-3">
-          <Sparkles className="w-5 h-5 text-crd-green" />
-          <div>
-            <h4 className="text-white font-semibold text-base">Quick Styles</h4>
-            <p className="text-crd-lightGray text-xs mt-0.5">
-              Professional presets for instant results
-            </p>
-          </div>
-        </div>
-
-        {/* Category Filters */}
+      <div className="space-y-4">
+        {/* Category Filters - More Compact */}
         {onCategoryChange && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             <h5 className="text-crd-lightGray text-xs font-medium uppercase tracking-wide">
               Categories
             </h5>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {categories.map((category) => (
                 <FilterButton
                   key={category}
                   onClick={() => onCategoryChange(category)}
                   isActive={selectedCategory === category}
                   count={getCategoryCount(category)}
+                  className="text-xs h-7 px-2"
                 >
                   {category}
                 </FilterButton>
@@ -72,8 +61,8 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
           </div>
         )}
 
-        {/* Preset Grid */}
-        <div className="space-y-3">
+        {/* Preset Grid - More Compact */}
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h5 className="text-crd-lightGray text-xs font-medium uppercase tracking-wide">
               Styles ({filteredPresets.length})
@@ -83,7 +72,7 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
             )}
           </div>
           
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             {filteredPresets.map((preset) => {
               const isSelected = selectedPresetId === preset.id;
               const isLoading = isApplyingPreset && isSelected;
@@ -101,6 +90,8 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
                   isDisabled={isApplyingPreset && !isSelected}
                   badge={preset.tags?.[0]}
                   onSelect={() => handlePresetClick(preset)}
+                  size="sm"
+                  className="h-auto"
                   tooltipContent={
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">

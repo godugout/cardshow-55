@@ -7,5 +7,6 @@ export { Typography, Heading, AccentText } from './Typography';
 export { PresetCard } from './PresetCard';
 export { FilterButton } from './FilterButton';
 export { EffectCard } from './EffectCard';
+export { CollapsibleSection } from './CollapsibleSection';
 export { colors } from './colors';
 export type { BrandColor, NeutralColor, ColorKey } from './colors';
