@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { PresetCard, FilterButton } from '@/components/ui/design-system';
 import { ENHANCED_COMBO_PRESETS } from './presets/enhancedComboPresets';
-import { Check, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import type { QuickComboPresetsProps } from './presets/types';
 
 interface EnhancedQuickComboPresetsProps extends QuickComboPresetsProps {
@@ -27,127 +26,108 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
     ? ENHANCED_COMBO_PRESETS 
     : ENHANCED_COMBO_PRESETS.filter(preset => preset.category === selectedCategory);
 
+  const getCategoryCount = (category: string) => {
+    if (category === 'All') return ENHANCED_COMBO_PRESETS.length;
+    return ENHANCED_COMBO_PRESETS.filter(preset => preset.category === category).length;
+  };
+
   const handlePresetClick = (preset: any) => {
     if (isApplyingPreset) return;
-    
     onPresetSelect(preset.id);
     onApplyCombo(preset);
   };
 
   return (
     <TooltipProvider>
-      <div className="space-y-4">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Sparkles className="w-4 h-4 text-crd-green" />
-            <h4 className="text-white font-medium text-sm">Quick Styles</h4>
+        <div className="flex items-center space-x-3">
+          <Sparkles className="w-5 h-5 text-crd-green" />
+          <div>
+            <h4 className="text-white font-semibold text-base">Quick Styles</h4>
+            <p className="text-crd-lightGray text-xs mt-0.5">
+              Professional presets for instant results
+            </p>
           </div>
         </div>
 
-        {/* Category Filter */}
+        {/* Category Filters */}
         {onCategoryChange && (
-          <div className="flex flex-wrap gap-1">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                onClick={() => onCategoryChange(category)}
-                variant="ghost"
-                size="sm"
-                className={`h-6 px-2 text-xs ${
-                  selectedCategory === category
-                    ? 'bg-crd-green text-black'
-                    : 'text-gray-400 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                {category}
-              </Button>
-            ))}
+          <div className="space-y-3">
+            <h5 className="text-crd-lightGray text-xs font-medium uppercase tracking-wide">
+              Categories
+            </h5>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <FilterButton
+                  key={category}
+                  onClick={() => onCategoryChange(category)}
+                  isActive={selectedCategory === category}
+                  count={getCategoryCount(category)}
+                >
+                  {category}
+                </FilterButton>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Preset Grid */}
-        <div className="grid grid-cols-2 gap-2">
-          {filteredPresets.map((preset) => {
-            const isSelected = selectedPresetId === preset.id;
-            const IconComponent = preset.icon;
-            
-            return (
-              <Tooltip key={preset.id}>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={() => handlePresetClick(preset)}
-                    disabled={isApplyingPreset && !isSelected}
-                    variant="ghost"
-                    className={`h-auto p-3 flex flex-col items-center space-y-2 border-2 transition-all relative ${
-                      isSelected 
-                        ? 'border-crd-green bg-crd-green/20 shadow-lg' 
-                        : 'border-editor-border hover:border-crd-green/50 hover:bg-white/5'
-                    } ${isApplyingPreset && !isSelected ? 'opacity-30' : ''}`}
-                  >
-                    {/* Emoji & Icon */}
-                    <div className="flex items-center space-x-1">
-                      <span className="text-lg">{preset.emoji}</span>
-                      <IconComponent className={`w-3 h-3 ${
-                        isSelected ? 'text-crd-green' : 'text-gray-400'
-                      }`} />
-                    </div>
-                    
-                    {/* Name */}
-                    <span className={`text-xs font-medium text-center leading-tight ${
-                      isSelected ? 'text-white' : 'text-gray-300'
-                    }`}>
-                      {preset.name}
-                    </span>
-                    
-                    {/* Category Badge */}
-                    <Badge 
-                      variant="outline" 
-                      className="text-xs px-1 py-0 h-4 border-gray-600 text-gray-400"
-                    >
-                      {preset.category}
-                    </Badge>
-                    
-                    {/* Selection Indicator */}
-                    {isSelected && (
-                      <div className="absolute top-1 right-1 w-4 h-4 bg-crd-green rounded-full flex items-center justify-center">
-                        <Check className="w-2.5 h-2.5 text-black" />
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h5 className="text-crd-lightGray text-xs font-medium uppercase tracking-wide">
+              Styles ({filteredPresets.length})
+            </h5>
+            {isApplyingPreset && (
+              <div className="text-xs text-crd-green">Applying...</div>
+            )}
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            {filteredPresets.map((preset) => {
+              const isSelected = selectedPresetId === preset.id;
+              const isLoading = isApplyingPreset && isSelected;
+              
+              return (
+                <PresetCard
+                  key={preset.id}
+                  title={preset.name}
+                  description={preset.description}
+                  category={preset.category}
+                  emoji={preset.emoji}
+                  icon={preset.icon}
+                  isSelected={isSelected}
+                  isLoading={isLoading}
+                  isDisabled={isApplyingPreset && !isSelected}
+                  badge={preset.tags?.[0]}
+                  onSelect={() => handlePresetClick(preset)}
+                  tooltipContent={
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-base">{preset.emoji}</span>
+                        <span className="font-medium">{preset.name}</span>
                       </div>
-                    )}
-                    
-                    {/* Applying Indicator */}
-                    {isApplyingPreset && isSelected && (
-                      <div className="absolute top-1 left-1 w-2 h-2 bg-crd-green rounded-full animate-pulse" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                
-                <TooltipContent side="right" className="bg-black border-gray-700 text-white max-w-64">
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-base">{preset.emoji}</span>
-                      <span className="font-medium">{preset.name}</span>
+                      <p className="text-sm text-gray-300">{preset.description}</p>
+                      {preset.materialHint && (
+                        <p className="text-xs text-crd-green italic">
+                          Surface: {preset.materialHint}
+                        </p>
+                      )}
+                      {preset.tags && (
+                        <div className="flex flex-wrap gap-1">
+                          {preset.tags.map((tag) => (
+                            <span key={tag} className="text-xs px-2 py-1 bg-crd-mediumGray rounded text-crd-lightGray">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm text-gray-300">{preset.description}</p>
-                    {preset.materialHint && (
-                      <p className="text-xs text-crd-green italic">
-                        Surface: {preset.materialHint}
-                      </p>
-                    )}
-                    {preset.tags && (
-                      <div className="flex flex-wrap gap-1">
-                        {preset.tags.map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
+                  }
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </TooltipProvider>
