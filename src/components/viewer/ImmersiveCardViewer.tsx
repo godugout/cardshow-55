@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -511,7 +510,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           </div>
         )}
 
-        {/* Enhanced Card Container - Add ref */}
+        {/* Enhanced Card Container - Now with background info */}
         <div ref={cardContainerRef}>
           <EnhancedCardContainer
             card={card}
@@ -526,6 +525,12 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
             frameStyles={getFrameStyles()}
             enhancedEffectStyles={getEnhancedEffectStyles()}
             SurfaceTexture={SurfaceTexture}
+            interactiveLighting={interactiveLighting}
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            materialSettings={materialSettings}
+            overallBrightness={overallBrightness}
+            showBackgroundInfo={!shouldShowPanel && !isPanelMinimized}
             onMouseDown={handleDragStart}
             onMouseMove={handleDrag}
             onMouseEnter={() => setIsHovering(true)}
@@ -569,7 +574,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
                 <div className="flex items-center space-x-2">
                   <Sparkles className="w-4 h-4" />
                   <span className="text-sm">
-                    Enhanced Studio | Material: {selectedMaterial?.name || 'Default'}
+                    Enhanced Studio | 3D Configuration Display
                   </span>
                 </div>
               </div>

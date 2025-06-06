@@ -2,9 +2,11 @@
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
+import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
+import { CanvasBackgroundInfo } from './CanvasBackgroundInfo';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 
 interface EnhancedCardContainerProps {
@@ -21,6 +23,12 @@ interface EnhancedCardContainerProps {
   enhancedEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
+  // New props for background info
+  selectedScene?: EnvironmentScene;
+  selectedLighting?: LightingPreset;
+  materialSettings?: MaterialSettings;
+  overallBrightness?: number[];
+  showBackgroundInfo?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
@@ -42,6 +50,11 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting = false,
+  selectedScene,
+  selectedLighting,
+  materialSettings,
+  overallBrightness = [100],
+  showBackgroundInfo = true,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
@@ -67,6 +80,20 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
+      {/* 3D Background Configuration Info */}
+      {showBackgroundInfo && selectedScene && selectedLighting && materialSettings && (
+        <CanvasBackgroundInfo
+          effectValues={effectValues}
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
+          overallBrightness={overallBrightness}
+          interactiveLighting={interactiveLighting}
+          mousePosition={mousePosition}
+          isHovering={isHovering}
+        />
+      )}
+
       <Card3DTransform
         rotation={rotation}
         mousePosition={mousePosition}

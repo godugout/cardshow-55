@@ -105,107 +105,35 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         />
       </div>
 
-      {/* 3D Card Container */}
-      <div
-        className="relative cursor-pointer transition-transform duration-700 preserve-3d"
-        style={{
-          width: '300px',
-          height: '420px',
-          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) ${isFlipped ? 'rotateY(180deg)' : ''}`,
-          transformStyle: 'preserve-3d'
+      {/* Enhanced Card Container with 3D Background Info */}
+      <EnhancedCardContainer
+        card={card}
+        isFlipped={isFlipped}
+        isHovering={isHovering}
+        showEffects={true}
+        effectValues={effectValues}
+        mousePosition={mousePosition}
+        rotation={rotation}
+        zoom={1}
+        isDragging={isDragging}
+        frameStyles={frameStyles}
+        enhancedEffectStyles={enhancedEffectStyles}
+        SurfaceTexture={SurfaceTexture}
+        interactiveLighting={interactiveLighting}
+        selectedScene={selectedScene}
+        selectedLighting={selectedLighting}
+        materialSettings={materialSettings}
+        overallBrightness={[overallBrightness]}
+        showBackgroundInfo={true}
+        onMouseDown={() => setIsDragging(true)}
+        onMouseMove={onMouseMove}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={() => {
+          setIsDragging(false);
+          onMouseLeave();
         }}
-      >
-        {/* Card Front */}
-        <div
-          className="absolute inset-0 rounded-xl overflow-hidden shadow-2xl backface-hidden"
-          style={{
-            backfaceVisibility: 'hidden',
-            transform: 'rotateY(0deg)'
-          }}
-        >
-          <EnhancedCardContainer
-            card={card}
-            isFlipped={false}
-            isHovering={isHovering}
-            showEffects={true}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={1}
-            isDragging={isDragging}
-            frameStyles={frameStyles}
-            enhancedEffectStyles={enhancedEffectStyles}
-            SurfaceTexture={SurfaceTexture}
-            interactiveLighting={interactiveLighting}
-            onMouseDown={() => setIsDragging(true)}
-            onMouseMove={onMouseMove}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={() => {
-              setIsDragging(false);
-              onMouseLeave();
-            }}
-            onClick={handleDoubleClick}
-          />
-        </div>
-
-        {/* Card Back - NEW DESIGN */}
-        <div
-          className="absolute inset-0 rounded-xl overflow-hidden shadow-2xl backface-hidden"
-          style={{
-            backfaceVisibility: 'hidden',
-            transform: 'rotateY(180deg)'
-          }}
-        >
-          {/* Dark Pattern Background Base */}
-          <div 
-            className="absolute inset-0"
-            style={{
-              background: `
-                linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)
-              `,
-              backgroundColor: '#0a0a0a'
-            }}
-          />
-          
-          {/* Centered CRD Logo Only */}
-          <div className="relative h-full flex items-center justify-center z-30">
-            <div className="flex items-center justify-center">
-              <img 
-                src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
-                alt="CRD Logo" 
-                className="w-48 h-auto opacity-90"
-                style={{
-                  filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
-                }}
-                onLoad={() => console.log('Enhanced Canvas CRD logo loaded successfully')}
-                onError={() => console.log('Error loading Enhanced Canvas CRD logo')}
-              />
-            </div>
-          </div>
-
-          {/* Apply same effects as front for consistency */}
-          <div className="absolute inset-0 pointer-events-none z-40">
-            {/* Lighting effects overlay */}
-            {interactiveLighting && isHovering && (
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: `
-                    radial-gradient(
-                      ellipse 180% 140% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-                      rgba(255, 255, 255, 0.02) 0%,
-                      rgba(255, 255, 255, 0.01) 50%,
-                      transparent 85%
-                    )
-                  `,
-                  mixBlendMode: 'overlay',
-                  transition: 'opacity 0.2s ease'
-                }}
-              />
-            )}
-          </div>
-        </div>
-      </div>
+        onClick={handleDoubleClick}
+      />
 
       {/* Click instruction updated */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white/60 text-sm">
