@@ -51,66 +51,44 @@ export const useCachedCardEffects = (params: UseCachedCardEffectsParams) => {
   );
 
   // Cached frame styles
-  const getFrameStyles = useMemo(() => {
-    const cacheKey = `frame-${overallBrightness[0]}`;
-    
-    if (!styleCache.current.has(cacheKey)) {
-      styleCache.current.set(cacheKey, {
-        filter: `brightness(${overallBrightness[0]}%)`,
-        transition: 'all 0.3s ease'
-      });
-    }
-    
-    return () => styleCache.current.get(cacheKey)!;
-  }, [overallBrightness]);
+  const frameStyles = useMemo(() => ({
+    filter: `brightness(${overallBrightness[0]}%)`,
+    transition: 'all 0.3s ease'
+  }), [overallBrightness]);
 
   // Cached enhanced effect styles
-  const getEnhancedEffectStyles = useMemo(() => {
-    const cacheKey = `enhanced-${effectHash}-${showEffects}-${interactiveLighting}-${isHovering}-${mousePosition.x.toFixed(2)}-${mousePosition.y.toFixed(2)}`;
+  const enhancedEffectStyles = useMemo(() => {
+    const styles: React.CSSProperties = {};
     
-    if (!styleCache.current.has(cacheKey)) {
-      const styles: React.CSSProperties = {};
+    if (showEffects) {
+      const activeEffects = Object.entries(effectValues).filter(([_, effect]) => 
+        effect.intensity && typeof effect.intensity === 'number' && effect.intensity > 0
+      );
       
-      if (showEffects) {
-        const activeEffects = Object.entries(effectValues).filter(([_, effect]) => 
-          effect.intensity && typeof effect.intensity === 'number' && effect.intensity > 0
-        );
+      if (activeEffects.length > 0) {
+        const avgIntensity = activeEffects.reduce((sum, [_, effect]) => 
+          sum + (effect.intensity as number), 0) / activeEffects.length;
         
-        if (activeEffects.length > 0) {
-          const avgIntensity = activeEffects.reduce((sum, [_, effect]) => 
-            sum + (effect.intensity as number), 0) / activeEffects.length;
-          
-          const enhancementFactor = Math.min(avgIntensity / 100 * 0.3, 0.3);
-          styles.filter = `contrast(${1 + enhancementFactor * 0.1}) saturate(${1 + enhancementFactor * 0.2})`;
-          styles.transition = 'all 0.3s ease';
-          
-          if (interactiveLighting && isHovering) {
-            const lightBoost = (mousePosition.x * 0.1 + mousePosition.y * 0.1) * enhancementFactor;
-            styles.filter += ` brightness(${1 + lightBoost})`;
-          }
+        const enhancementFactor = Math.min(avgIntensity / 100 * 0.3, 0.3);
+        styles.filter = `contrast(${1 + enhancementFactor * 0.1}) saturate(${1 + enhancementFactor * 0.2})`;
+        styles.transition = 'all 0.3s ease';
+        
+        if (interactiveLighting && isHovering) {
+          const lightBoost = (mousePosition.x * 0.1 + mousePosition.y * 0.1) * enhancementFactor;
+          styles.filter += ` brightness(${1 + lightBoost})`;
         }
       }
-      
-      styleCache.current.set(cacheKey, styles);
     }
     
-    return () => styleCache.current.get(cacheKey)!;
+    return styles;
   }, [effectHash, showEffects, interactiveLighting, isHovering, mousePosition]);
 
   // Cached environment style
-  const getEnvironmentStyle = useMemo(() => {
-    const cacheKey = `env-${environmentKey}`;
-    
-    if (!styleCache.current.has(cacheKey)) {
-      styleCache.current.set(cacheKey, {
-        background: selectedScene.backgroundImage || selectedScene.gradient,
-        filter: `brightness(${selectedLighting.brightness}%)`,
-        transition: 'all 0.5s ease'
-      });
-    }
-    
-    return () => styleCache.current.get(cacheKey)!;
-  }, [environmentKey, selectedScene, selectedLighting]);
+  const environmentStyle = useMemo(() => ({
+    background: selectedScene.backgroundImage || selectedScene.gradient,
+    filter: `brightness(${selectedLighting.brightness}%)`,
+    transition: 'all 0.5s ease'
+  }), [environmentKey, selectedScene, selectedLighting]);
 
   // Cached surface texture - return as React element
   const SurfaceTexture = useMemo(() => {
@@ -152,9 +130,9 @@ export const useCachedCardEffects = (params: UseCachedCardEffectsParams) => {
   };
 
   return {
-    getFrameStyles,
-    getEnhancedEffectStyles,
-    getEnvironmentStyle,
+    frameStyles,
+    enhancedEffectStyles,
+    environmentStyle,
     getEffectBlendMode,
     SurfaceTexture,
     clearCache

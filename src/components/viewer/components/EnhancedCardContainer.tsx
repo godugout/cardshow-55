@@ -36,7 +36,7 @@ interface EnhancedCardContainerProps {
   onClick: () => void;
 }
 
-export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = React.memo(({
+export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   card,
   isFlipped,
   isHovering,
@@ -61,27 +61,32 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = React
   onMouseLeave,
   onClick
 }) => {
-  // Use cached effects for better performance
-  const cachedEffects = useCachedCardEffects({
+  // Use cached effects for better performance only when all required props are available
+  const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
     card,
     effectValues,
     mousePosition,
     showEffects,
     overallBrightness,
     interactiveLighting,
-    selectedScene: selectedScene!,
-    selectedLighting: selectedLighting!,
-    materialSettings: materialSettings!,
+    selectedScene,
+    selectedLighting,
+    materialSettings,
     zoom,
     rotation,
     isHovering
-  });
+  }) : null;
 
   // Use double-click/tap detection for card flip
   const handleDoubleClick = useDoubleClick({
     onDoubleClick: onClick,
     delay: 300
   });
+
+  // Use cached styles if available, otherwise fall back to provided styles
+  const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
+  const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
+  const effectiveSurfaceTexture = cachedEffects?.SurfaceTexture || SurfaceTexture;
 
   return (
     <div 
@@ -126,9 +131,9 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = React
           showEffects={showEffects}
           effectValues={effectValues}
           mousePosition={mousePosition}
-          frameStyles={cachedEffects.getFrameStyles()}
-          enhancedEffectStyles={cachedEffects.getEnhancedEffectStyles()}
-          SurfaceTexture={cachedEffects.SurfaceTexture}
+          frameStyles={effectiveFrameStyles}
+          enhancedEffectStyles={effectiveEnhancedEffectStyles}
+          SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
           onClick={handleDoubleClick}
         />
@@ -140,32 +145,14 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = React
           showEffects={showEffects}
           effectValues={effectValues}
           mousePosition={mousePosition}
-          frameStyles={cachedEffects.getFrameStyles()}
-          enhancedEffectStyles={cachedEffects.getEnhancedEffectStyles()}
-          SurfaceTexture={cachedEffects.SurfaceTexture}
+          frameStyles={effectiveFrameStyles}
+          enhancedEffectStyles={effectiveEnhancedEffectStyles}
+          SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
         />
       </Card3DTransform>
     </div>
   );
-}, (prevProps, nextProps) => {
-  // Custom comparison function for optimal performance
-  const effectsChanged = JSON.stringify(prevProps.effectValues) !== JSON.stringify(nextProps.effectValues);
-  const mouseChanged = Math.abs(prevProps.mousePosition.x - nextProps.mousePosition.x) > 0.01 || 
-                      Math.abs(prevProps.mousePosition.y - nextProps.mousePosition.y) > 0.01;
-  const rotationChanged = Math.abs(prevProps.rotation.x - nextProps.rotation.x) > 0.01 || 
-                         Math.abs(prevProps.rotation.y - nextProps.rotation.y) > 0.01;
-
-  // Only re-render if significant changes occurred
-  return !effectsChanged && 
-         !mouseChanged && 
-         !rotationChanged &&
-         prevProps.isFlipped === nextProps.isFlipped &&
-         prevProps.isHovering === nextProps.isHovering &&
-         prevProps.showEffects === nextProps.showEffects &&
-         prevProps.zoom === nextProps.zoom &&
-         prevProps.isDragging === nextProps.isDragging &&
-         prevProps.interactiveLighting === nextProps.interactiveLighting;
-});
+};
 
 EnhancedCardContainer.displayName = 'EnhancedCardContainer';

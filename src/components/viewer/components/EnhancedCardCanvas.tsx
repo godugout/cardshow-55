@@ -25,7 +25,7 @@ interface EnhancedCardCanvasProps {
   height?: number;
 }
 
-export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = React.memo(({
+export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
   card,
   effectValues,
   mousePosition,
@@ -161,16 +161,6 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = React.memo(
       </div>
     </div>
   );
-}, (prevProps, nextProps) => {
-  // Optimized comparison for canvas re-rendering
-  return prevProps.card.id === nextProps.card.id &&
-         JSON.stringify(prevProps.effectValues) === JSON.stringify(nextProps.effectValues) &&
-         prevProps.selectedScene.id === nextProps.selectedScene.id &&
-         prevProps.selectedLighting.id === nextProps.selectedLighting.id &&
-         prevProps.overallBrightness === nextProps.overallBrightness &&
-         prevProps.interactiveLighting === nextProps.interactiveLighting &&
-         JSON.stringify(prevProps.materialSettings) === JSON.stringify(nextProps.materialSettings) &&
-         prevProps.isHovering === nextProps.isHovering;
-});
+};
 
 EnhancedCardCanvas.displayName = 'EnhancedCardCanvas';
