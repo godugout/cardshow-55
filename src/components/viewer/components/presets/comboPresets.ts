@@ -1,4 +1,3 @@
-
 import { Sparkles, Zap, Gem, Clock, Flame, Snowflake, Sun, Moon, Star, Zap as ChromeIcon } from 'lucide-react';
 import type { ComboPreset } from './types';
 
@@ -73,11 +72,13 @@ export const COMBO_PRESETS: ComboPreset[] = [
     id: 'aurora-flare',
     name: 'Aurora',
     icon: Sun,
-    description: 'Aurora-like effect with natural flares',
-    materialHint: 'Shimmering aurora with vibrant blue-green waves',
+    description: 'Natural aurora with enhanced wave motion and prismatic layers',
+    materialHint: 'Shimmering aurora with dynamic blue-green waves',
     effects: {
-      aurora: { intensity: 70, waveSpeed: 120, colorShift: 180 },
-      interference: { intensity: 35, frequency: 8, thickness: 2 }
+      holographic: { intensity: 60, shiftSpeed: 180, rainbowSpread: 240, animated: true },
+      interference: { intensity: 45, frequency: 12, thickness: 3 },
+      waves: { intensity: 85, frequency: 8, amplitude: 40, speed: 140, interference: true },
+      prizm: { intensity: 30, complexity: 6, colorSeparation: 70 }
     }
   },
   {

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Sparkles, Zap, Sun, Palette, Eye, Waves, Moon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -21,7 +20,6 @@ const getEffectIcon = (effectId: string) => {
     crystal: Sparkles,
     vintage: Palette,
     gold: Sun,
-    aurora: Sparkles,
     waves: Waves
   };
   return iconMap[effectId] || Sparkles;

@@ -1,6 +1,13 @@
 
 import React, { useEffect, useState } from 'react';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
+import { 
+  createWaveGradient, 
+  getWaveInfluencedOpacity, 
+  createRandomizedWaveData,
+  calculateInterferencePattern,
+  multiOctaveNoise
+} from './waves/waveUtils';
 
 interface WavesEffectProps {
   effectValues: EffectValues;
@@ -24,11 +31,11 @@ export const WavesEffect: React.FC<WavesEffectProps> = ({
 
   const [time, setTime] = useState(0);
 
-  // Animate waves over time
+  // Animate waves over time with variable speed
   useEffect(() => {
     if (wavesIntensity <= 0) return;
     
-    const animationSpeed = (speed / 100) * 0.02;
+    const animationSpeed = (speed / 100) * 0.015; // Slightly slower base speed
     const interval = setInterval(() => {
       setTime(prevTime => prevTime + animationSpeed);
     }, 16); // ~60fps
@@ -38,87 +45,125 @@ export const WavesEffect: React.FC<WavesEffectProps> = ({
 
   if (wavesIntensity <= 0) return null;
 
-  // Calculate wave patterns
+  // Calculate enhanced wave patterns
   const waveIntensity = wavesIntensity / 100;
   const mouseInfluence = Math.sqrt(
     Math.pow(mousePosition.x - 0.5, 2) + Math.pow(mousePosition.y - 0.5, 2)
   );
 
+  // Create multiple randomized wave data sets for natural variation
+  const primaryWave = createRandomizedWaveData(time, frequency * 0.01, amplitude, 1);
+  const secondaryWave = createRandomizedWaveData(time, frequency * 0.007, amplitude * 0.6, 2);
+  const tertiaryWave = createRandomizedWaveData(time, frequency * 0.013, amplitude * 0.8, 3);
+
   return (
     <>
-      {/* Primary Wave Layer */}
+      {/* Primary Wave Layer - Enhanced with noise */}
       <div
         className="absolute inset-0 z-15"
         style={{
-          background: `
-            radial-gradient(
-              ellipse at ${50 + Math.sin(time) * amplitude}% ${50 + Math.cos(time * 0.7) * amplitude}%,
-              rgba(255, 255, 255, ${waveIntensity * 0.1}) 0%,
-              rgba(255, 255, 255, ${waveIntensity * 0.05}) 40%,
-              transparent 70%
-            )
-          `,
+          background: createWaveGradient(
+            primaryWave,
+            mousePosition,
+            [
+              'rgba(255, 255, 255, 0)',
+              `rgba(255, 255, 255, ${waveIntensity * 0.08})`,
+              'rgba(255, 255, 255, 0)',
+              `rgba(255, 255, 255, ${waveIntensity * 0.05})`,
+              'rgba(255, 255, 255, 0)'
+            ],
+            0.4
+          ),
           mixBlendMode: 'overlay',
-          opacity: 0.6 + mouseInfluence * 0.4
+          opacity: getWaveInfluencedOpacity(0.5, primaryWave, mousePosition, 0.6)
         }}
       />
 
-      {/* Secondary Wave Layer */}
+      {/* Secondary Wave Layer - Organic motion */}
       <div
         className="absolute inset-0 z-16"
         style={{
-          background: `
-            linear-gradient(
-              ${time * 90 + mousePosition.x * 180}deg,
-              transparent 0%,
-              rgba(255, 255, 255, ${waveIntensity * 0.08}) ${20 + Math.sin(time * frequency) * 10}%,
-              transparent ${40 + Math.cos(time * frequency) * 15}%,
-              rgba(255, 255, 255, ${waveIntensity * 0.06}) ${60 + Math.sin(time * frequency * 1.3) * 12}%,
-              transparent 100%
-            )
-          `,
+          background: createWaveGradient(
+            secondaryWave,
+            mousePosition,
+            [
+              'rgba(255, 255, 255, 0)',
+              `rgba(255, 255, 255, ${waveIntensity * 0.06})`,
+              'rgba(255, 255, 255, 0)',
+              `rgba(255, 255, 255, ${waveIntensity * 0.04})`,
+              'rgba(255, 255, 255, 0)'
+            ],
+            0.6
+          ),
           mixBlendMode: 'soft-light',
-          opacity: 0.7
+          opacity: getWaveInfluencedOpacity(0.6, secondaryWave, mousePosition, 0.8),
+          transform: `translateX(${Math.sin(time * 0.8) * 2}px) translateY(${Math.cos(time * 0.6) * 1.5}px)`
         }}
       />
 
-      {/* Interference Pattern */}
+      {/* Tertiary Wave Layer - Subtle complexity */}
+      <div
+        className="absolute inset-0 z-17"
+        style={{
+          background: createWaveGradient(
+            tertiaryWave,
+            mousePosition,
+            [
+              'rgba(255, 255, 255, 0)',
+              `rgba(255, 255, 255, ${waveIntensity * 0.04})`,
+              'rgba(255, 255, 255, 0)'
+            ],
+            0.3
+          ),
+          mixBlendMode: 'screen',
+          opacity: getWaveInfluencedOpacity(0.4, tertiaryWave, mousePosition, 0.4)
+        }}
+      />
+
+      {/* Enhanced Interference Pattern */}
       {interference && (
         <div
-          className="absolute inset-0 z-17"
+          className="absolute inset-0 z-18"
           style={{
             background: `
+              radial-gradient(
+                ellipse at ${50 + Math.sin(time * 0.9) * 15}% ${50 + Math.cos(time * 0.7) * 12}%,
+                rgba(255, 255, 255, ${waveIntensity * 0.03}) 0%,
+                rgba(255, 255, 255, 0) 45%
+              ),
               conic-gradient(
-                from ${time * 180}deg at ${50 + mousePosition.x * 20}% ${50 + mousePosition.y * 20}%,
+                from ${time * 120 + mousePosition.x * 60}deg at ${50 + mousePosition.x * 10}% ${50 + mousePosition.y * 10}%,
                 transparent 0deg,
-                rgba(255, 255, 255, ${waveIntensity * 0.04}) ${45 + Math.sin(time * frequency) * 20}deg,
-                transparent ${90 + Math.cos(time * frequency) * 25}deg,
-                rgba(255, 255, 255, ${waveIntensity * 0.03}) ${180 + Math.sin(time * frequency * 0.8) * 30}deg,
-                transparent ${270 + Math.cos(time * frequency * 1.2) * 20}deg,
-                rgba(255, 255, 255, ${waveIntensity * 0.05}) 360deg
+                rgba(255, 255, 255, ${waveIntensity * 0.025}) ${30 + Math.sin(time * 0.8) * 15}deg,
+                transparent ${120 + Math.cos(time * 0.6) * 20}deg,
+                rgba(255, 255, 255, ${waveIntensity * 0.02}) ${210 + Math.sin(time * 1.1) * 25}deg,
+                transparent 360deg
               )
             `,
             mixBlendMode: 'overlay',
-            opacity: 0.5
+            opacity: 0.7,
+            filter: `blur(${0.5 + Math.sin(time * 0.5) * 0.3}px)`
           }}
         />
       )}
 
-      {/* Wave Distortion Effect */}
+      {/* Subtle Distortion Layer - Barely perceptible but adds life */}
       <div
-        className="absolute inset-0 z-18"
+        className="absolute inset-0 z-19"
         style={{
           background: `
-            repeating-linear-gradient(
-              ${time * 45 + mousePosition.y * 90}deg,
-              transparent 0px,
-              rgba(255, 255, 255, ${waveIntensity * 0.02}) ${2 + Math.sin(time * frequency) * 2}px,
-              transparent ${8 + Math.cos(time * frequency) * 4}px
+            linear-gradient(
+              ${time * 25 + mousePosition.y * 45}deg,
+              transparent 0%,
+              rgba(255, 255, 255, ${waveIntensity * 0.015}) 40%,
+              transparent 60%,
+              rgba(255, 255, 255, ${waveIntensity * 0.01}) 80%,
+              transparent 100%
             )
           `,
-          mixBlendMode: 'screen',
-          opacity: 0.4,
-          filter: `blur(${1 + Math.sin(time) * 0.5}px)`
+          mixBlendMode: 'soft-light',
+          opacity: 0.3,
+          transform: `scale(${1 + Math.sin(time * 0.4) * 0.002})`
         }}
       />
     </>
