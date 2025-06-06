@@ -21,8 +21,8 @@ const simpleNoise = (x: number, y: number = 0): number => {
   return (n - Math.floor(n)) * 2 - 1; // Return value between -1 and 1
 };
 
-// Multi-octave noise for more complex patterns
-const multiOctaveNoise = (x: number, y: number, octaves: number, persistence: number): number => {
+// Multi-octave noise for more complex patterns - NOW EXPORTED
+export const multiOctaveNoise = (x: number, y: number, octaves: number, persistence: number): number => {
   let total = 0;
   let frequency = 1;
   let amplitude = 1;
