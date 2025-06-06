@@ -1,8 +1,18 @@
-
-import { Sparkles, Zap, Gem, Clock, Flame, Snowflake, Sun, Moon, Star, Waves, Chrome, Diamond } from 'lucide-react';
+import { Sparkles, Zap, Gem, Clock, Flame, Snowflake, Sun, Moon, Star, Waves, Chrome, Diamond, Palette } from 'lucide-react';
 import type { ComboPreset } from './types';
 
 export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
+  {
+    id: 'custom-style',
+    name: 'Custom',
+    icon: Palette,
+    emoji: '🎨',
+    category: 'Personal',
+    description: 'Create your own unique style with simplified controls',
+    materialHint: 'Customizable surface with your personal touch',
+    tags: ['Personal', 'Creative', 'Custom'],
+    effects: {} // Will be handled specially
+  },
   {
     id: 'holographic-burst',
     name: 'Holographic',

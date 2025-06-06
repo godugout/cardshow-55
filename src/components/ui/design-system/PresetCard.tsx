@@ -16,7 +16,7 @@ const presetCardVariants = cva(
         loading: "border-crd-green/50 bg-crd-green/5",
       },
       size: {
-        sm: "p-2",
+        sm: "p-3",
         default: "p-3",
         lg: "p-4",
       }
@@ -75,7 +75,7 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
         variant="ghost"
         className={cn(
           presetCardVariants({ variant: cardVariant, size }),
-          "w-full h-auto flex items-center justify-center space-x-2 text-left p-0 min-h-[60px]",
+          "w-full h-auto text-left p-0 min-h-[70px]",
           isDisabled && "opacity-50 cursor-not-allowed",
           className
         )}
@@ -84,30 +84,42 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
       >
         {/* Status Indicators */}
         {isSelected && (
-          <div className="absolute top-1 right-1 w-4 h-4 bg-crd-green rounded-full flex items-center justify-center">
+          <div className="absolute top-2 right-2 w-4 h-4 bg-crd-green rounded-full flex items-center justify-center">
             <Check className="w-2.5 h-2.5 text-black" />
           </div>
         )}
         
         {isLoading && (
-          <div className="absolute top-1 left-1">
+          <div className="absolute top-2 left-2">
             <Loader2 className="w-3 h-3 text-crd-green animate-spin" />
           </div>
         )}
 
-        {/* Simple Content: Just emoji and name */}
-        <div className="flex items-center space-x-2">
-          {emoji && (
-            <span className="text-lg" role="img" aria-label={title}>
-              {emoji}
+        {/* Improved Layout: Icon and Label in separate areas, both left-aligned */}
+        <div className="w-full">
+          {/* Icon Section - Left Aligned */}
+          <div className="flex justify-start mb-2">
+            {emoji && (
+              <span className="text-xl" role="img" aria-label={title}>
+                {emoji}
+              </span>
+            )}
+          </div>
+          
+          {/* Label Section - Left Aligned */}
+          <div className="text-left">
+            <span className={cn(
+              "font-medium text-sm block",
+              isSelected ? "text-white" : "text-crd-lightGray"
+            )}>
+              {title}
             </span>
-          )}
-          <span className={cn(
-            "font-medium text-sm",
-            isSelected ? "text-white" : "text-crd-lightGray"
-          )}>
-            {title}
-          </span>
+            {badge && (
+              <span className="text-xs text-crd-green mt-1 block">
+                {badge}
+              </span>
+            )}
+          </div>
         </div>
       </Button>
     );
