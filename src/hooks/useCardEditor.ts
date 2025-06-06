@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
