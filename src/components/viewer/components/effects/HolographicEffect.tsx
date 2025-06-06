@@ -140,20 +140,20 @@ export const HolographicEffect: React.FC<HolographicEffectProps> = ({
         }}
       />
 
-      {/* Enhanced Angular Color Effects */}
+      {/* Enhanced Angular Color Effects - More Blue/Gray focused */}
       <div
         className="absolute inset-0 z-24"
         style={{
           background: `
             conic-gradient(
               from ${mousePosition.x * 180}deg at ${50 + mousePosition.x * 15}% ${50 + mousePosition.y * 15}%,
-              rgba(255, 0, 255, ${(holographicIntensity / 100) * 0.25}) 0deg,
-              rgba(0, 255, 255, ${(holographicIntensity / 100) * 0.3}) 60deg,
-              rgba(255, 255, 0, ${(holographicIntensity / 100) * 0.25}) 120deg,
-              rgba(255, 0, 128, ${(holographicIntensity / 100) * 0.28}) 180deg,
-              rgba(128, 255, 0, ${(holographicIntensity / 100) * 0.25}) 240deg,
-              rgba(0, 128, 255, ${(holographicIntensity / 100) * 0.3}) 300deg,
-              rgba(255, 0, 255, ${(holographicIntensity / 100) * 0.25}) 360deg
+              rgba(100, 150, 255, ${(holographicIntensity / 100) * 0.28}) 0deg,
+              rgba(0, 200, 255, ${(holographicIntensity / 100) * 0.32}) 60deg,
+              rgba(150, 180, 255, ${(holographicIntensity / 100) * 0.25}) 120deg,
+              rgba(80, 120, 200, ${(holographicIntensity / 100) * 0.3}) 180deg,
+              rgba(120, 160, 255, ${(holographicIntensity / 100) * 0.26}) 240deg,
+              rgba(60, 140, 220, ${(holographicIntensity / 100) * 0.3}) 300deg,
+              rgba(100, 150, 255, ${(holographicIntensity / 100) * 0.28}) 360deg
             )
           `,
           maskImage: `
@@ -180,18 +180,18 @@ export const HolographicEffect: React.FC<HolographicEffectProps> = ({
         }}
       />
 
-      {/* 3D Depth Layer - Offset Colors */}
+      {/* 3D Depth Layer - Blue/Gray Offset Colors */}
       <div
         className="absolute inset-0 z-25"
         style={{
           background: `
             linear-gradient(
               ${45 + mousePosition.y * 90}deg,
-              rgba(255, 100, 200, ${(holographicIntensity / 100) * 0.2}) 0%,
-              rgba(100, 255, 200, ${(holographicIntensity / 100) * 0.25}) 25%,
-              rgba(200, 100, 255, ${(holographicIntensity / 100) * 0.2}) 50%,
-              rgba(255, 200, 100, ${(holographicIntensity / 100) * 0.22}) 75%,
-              rgba(100, 200, 255, ${(holographicIntensity / 100) * 0.2}) 100%
+              rgba(120, 160, 220, ${(holographicIntensity / 100) * 0.22}) 0%,
+              rgba(100, 180, 240, ${(holographicIntensity / 100) * 0.25}) 25%,
+              rgba(140, 140, 200, ${(holographicIntensity / 100) * 0.2}) 50%,
+              rgba(160, 180, 255, ${(holographicIntensity / 100) * 0.24}) 75%,
+              rgba(80, 140, 220, ${(holographicIntensity / 100) * 0.22}) 100%
             )
           `,
           maskImage: `
