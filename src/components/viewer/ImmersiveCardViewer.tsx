@@ -17,7 +17,6 @@ import { EnhancedCardContainer } from './components/EnhancedCardContainer';
 import { CompactCardDetails } from './components/CompactCardDetails';
 import { useCardExport } from './hooks/useCardExport';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
-import { ConfigurationDetailsPanel } from './components/ConfigurationDetailsPanel';
 import { PanelLayoutSelector } from './components/PanelLayoutSelector';
 import { MinimizedPanelButton } from './components/MinimizedPanelButton';
 
@@ -353,7 +352,15 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 
         {/* Compact Card Details - positioned above ViewerControls */}
         <div className="absolute bottom-20 left-4 z-20">
-          <CompactCardDetails card={card} />
+          <CompactCardDetails 
+            card={card}
+            effectValues={effectValues}
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            materialSettings={materialSettings}
+            overallBrightness={overallBrightness}
+            interactiveLighting={interactiveLighting}
+          />
         </div>
 
         {/* Settings Panel Toggle Button - Only show when panel is closed */}
@@ -544,18 +551,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
             onClick={() => setIsFlipped(!isFlipped)}
           />
         </div>
-
-        {/* Configuration Details Panel */}
-        {!shouldShowPanel && !isPanelMinimized && (
-          <ConfigurationDetailsPanel
-            effectValues={effectValues}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            interactiveLighting={interactiveLighting}
-          />
-        )}
 
         {/* Info Panel - Enhanced visibility with updated instruction */}
         {showStats && !isFlipped && !shouldShowPanel && !isPanelMinimized && (
