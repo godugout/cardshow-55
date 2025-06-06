@@ -117,12 +117,12 @@ export const COMBO_PRESETS: ComboPreset[] = [
     id: 'ocean-waves',
     name: 'Ocean',
     icon: Waves,
-    description: 'Dynamic wave patterns with prismatic interference',
-    materialHint: 'Flowing water surface with prismatic light refraction',
+    description: 'Gentle ocean waves with subtle prismatic light refraction',
+    materialHint: 'Calm ocean surface with natural wave movement',
     effects: {
-      waves: { intensity: 80, frequency: 15, amplitude: 60, direction: 90, complexity: 5, wobble: 70 },
-      interference: { intensity: 50, frequency: 10, thickness: 4 },
-      prizm: { intensity: 30, complexity: 3, colorSeparation: 40 }
+      waves: { intensity: 45, frequency: 6, amplitude: 35, direction: 0, complexity: 3, wobble: 25 },
+      interference: { intensity: 25, frequency: 8, thickness: 3 },
+      prizm: { intensity: 15, complexity: 2, colorSeparation: 30 }
     }
   }
 ];
