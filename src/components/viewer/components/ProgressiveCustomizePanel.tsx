@@ -106,7 +106,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
     <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-white/10">
-        <h2 className="text-lg font-semibold text-white">Enhanced Studio</h2>
+        <h2 className="text-lg font-semibold text-white">🎨 Studio</h2>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="h-5 w-5 text-white" />
         </Button>
@@ -117,7 +117,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
         <div className="p-4 space-y-4">
           {/* Quick Styles Section - Always Open */}
           <CollapsibleSection
-            title="Quick Styles"
+            title="Styles"
             emoji="🎨"
             statusText={isApplyingPreset ? "Applying..." : undefined}
             alwaysOpen={true}
@@ -148,7 +148,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
 
           {/* Environment Section - Collapsible */}
           <CollapsibleSection
-            title="Environment"
+            title="Scene"
             emoji="🌍"
             statusText={`${selectedScene.name} • ${selectedLighting.name}`}
             isOpen={sectionStates.environment}
@@ -168,7 +168,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
 
           {/* Material Properties Section - Collapsible */}
           <CollapsibleSection
-            title="Materials"
+            title="Surface"
             emoji="💎"
             statusText="Custom Settings"
             isOpen={sectionStates.materials}
@@ -192,7 +192,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
             className="flex-1 border-white/20 text-white hover:bg-white/10"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4 mr-2" /> : <Maximize2 className="w-4 h-4 mr-2" />}
-            {isFullscreen ? 'Exit' : 'Fullscreen'}
+            🔲 View
           </Button>
           
           {onShare && (
@@ -203,7 +203,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
               className="flex-1 border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
             >
               <Share2 className="w-4 h-4 mr-2" />
-              Share
+              📤 Share
             </Button>
           )}
           
@@ -214,7 +214,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
             className="flex-1 border-crd-green/50 text-crd-green hover:bg-crd-green/10"
           >
             <Download className="w-4 h-4 mr-2" />
-            Export
+            💾 Save
           </Button>
         </div>
       </div>

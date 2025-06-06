@@ -19,7 +19,14 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
   selectedCategory = 'All',
   onCategoryChange
 }) => {
-  const categories = ['All', 'Premium', 'Metallic', 'Atmospheric', 'Specialty', 'Classic'];
+  const categories = [
+    { key: 'All', label: 'All' },
+    { key: 'Premium', label: '✨ Pro' },
+    { key: 'Metallic', label: '🥉 Metal' },
+    { key: 'Atmospheric', label: '🌫️ Atmo' },
+    { key: 'Specialty', label: '🎯 Special' },
+    { key: 'Classic', label: '📼 Classic' }
+  ];
   
   const filteredPresets = selectedCategory === 'All' 
     ? ENHANCED_COMBO_PRESETS 
@@ -48,13 +55,13 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
             <div className="flex flex-wrap gap-1.5">
               {categories.map((category) => (
                 <FilterButton
-                  key={category}
-                  onClick={() => onCategoryChange(category)}
-                  isActive={selectedCategory === category}
-                  count={getCategoryCount(category)}
+                  key={category.key}
+                  onClick={() => onCategoryChange(category.key)}
+                  isActive={selectedCategory === category.key}
+                  count={getCategoryCount(category.key)}
                   className="text-xs h-7 px-2"
                 >
-                  {category}
+                  {category.label}
                 </FilterButton>
               ))}
             </div>
