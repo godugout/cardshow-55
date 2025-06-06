@@ -1,8 +1,9 @@
 
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { ENHANCED_VISUAL_EFFECTS } from './effects/effectConfigs';
-import { clampEffectValue, createDefaultEffectValues } from './effects/effectUtils';
 import { usePresetApplication } from './effects/usePresetApplication';
+import { useEffectStateManager } from './effects/useEffectStateManager';
+import { useEffectValidation } from './effects/useEffectValidation';
 import type { EffectValues, VisualEffectConfig, EffectParameter } from './effects/types';
 
 // Re-export types for backward compatibility
@@ -10,7 +11,16 @@ export type { EffectValues, VisualEffectConfig, EffectParameter };
 export { ENHANCED_VISUAL_EFFECTS };
 
 export const useEnhancedCardEffects = () => {
-  const [effectValues, setEffectValues] = useState<EffectValues>(createDefaultEffectValues);
+  // Use specialized hooks for different concerns
+  const {
+    effectValues,
+    setEffectValues,
+    handleEffectChange: handleEffectChangeBase,
+    resetEffect,
+    resetAllEffects: resetAllEffectsBase
+  } = useEffectStateManager();
+
+  const { validateEffectState } = useEffectValidation(effectValues);
 
   const { 
     presetState, 
@@ -20,12 +30,8 @@ export const useEnhancedCardEffects = () => {
     clearTimeouts 
   } = usePresetApplication();
 
+  // Enhanced handleEffectChange that also manages preset state
   const handleEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
-    console.log('🎛️ Effect Change:', { effectId, parameterId, value, presetState });
-    
-    // Apply clamping for smooth transitions
-    const clampedValue = clampEffectValue(effectId, parameterId, value);
-    
     // Clear preset state when manual changes are made (unless locked)
     if (!presetState.isApplying && !presetState.isLocked) {
       setPresetState(prev => ({ 
@@ -35,36 +41,19 @@ export const useEnhancedCardEffects = () => {
       }));
     }
     
-    setEffectValues(prev => ({
-      ...prev,
-      [effectId]: {
-        ...prev[effectId],
-        [parameterId]: clampedValue
-      }
-    }));
-  }, [presetState.isApplying, presetState.isLocked, setPresetState]);
+    // Call the base implementation
+    handleEffectChangeBase(effectId, parameterId, value);
+    
+  }, [presetState.isApplying, presetState.isLocked, setPresetState, handleEffectChangeBase]);
 
-  const resetEffect = useCallback((effectId: string) => {
-    console.log('🔄 Resetting effect:', effectId);
-    const effect = ENHANCED_VISUAL_EFFECTS.find(e => e.id === effectId);
-    if (effect) {
-      const resetValues: Record<string, any> = {};
-      effect.parameters.forEach(param => {
-        resetValues[param.id] = param.defaultValue;
-      });
-      setEffectValues(prev => ({
-        ...prev,
-        [effectId]: resetValues
-      }));
-    }
-  }, []);
-
+  // Enhanced resetAllEffects that also clears timeouts and preset state
   const resetAllEffects = useCallback(() => {
     console.log('🔄 Resetting all effects with cleanup');
     
     // Clear all timeouts
     clearTimeouts();
     
+    // Reset preset state
     setPresetState({ 
       isApplying: false, 
       appliedAt: Date.now(), 
@@ -72,19 +61,15 @@ export const useEnhancedCardEffects = () => {
       sequenceId: `reset-${Date.now()}`
     });
     
-    setEffectValues(createDefaultEffectValues());
-  }, [clearTimeouts, setPresetState]);
+    // Call the base implementation
+    resetAllEffectsBase();
+    
+  }, [clearTimeouts, setPresetState, resetAllEffectsBase]);
 
   // Wrapper for the applyPreset function with effectValues
   const applyPreset = useCallback((preset: EffectValues, presetId?: string) => {
     applyPresetBase(preset, setEffectValues, presetId);
-  }, [applyPresetBase]);
-
-  // Enhanced state validation
-  const validateEffectState = useCallback(() => {
-    console.log('🔍 Validating effect state consistency');
-    // Add any necessary state consistency checks here
-  }, []);
+  }, [applyPresetBase, setEffectValues]);
 
   return {
     effectValues,

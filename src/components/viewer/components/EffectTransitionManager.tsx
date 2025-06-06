@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef } from 'react';
-import type { EffectValues } from '../hooks/useEnhancedCardEffects';
+import type { EffectValues } from '../hooks/effects/types';
 
 interface EffectTransitionManagerProps {
   effectValues: EffectValues;

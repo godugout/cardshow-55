@@ -3,7 +3,7 @@ import React from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { RotateCcw } from 'lucide-react';
-import type { EffectValues } from '../hooks/useEnhancedCardEffects';
+import type { EffectValues } from '../hooks/effects/types';
 
 interface EffectsComboSectionProps {
   effectValues: EffectValues;

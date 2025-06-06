@@ -23,7 +23,11 @@ export const usePresetApplication = () => {
   const defaultEffectValues = createDefaultEffectValues();
 
   // Enhanced atomic preset application with sequence tracking
-  const applyPreset = useCallback((preset: EffectValues, setEffectValues: (values: EffectValues) => void, presetId?: string) => {
+  const applyPreset = useCallback((
+    preset: EffectValues, 
+    setEffectValues: (values: EffectValues | ((prev: EffectValues) => EffectValues)) => void, 
+    presetId?: string
+  ) => {
     const sequenceId = `preset-${presetId}-${Date.now()}`;
     console.log('🎨 Applying preset with enhanced synchronization:', { presetId, preset, sequenceId });
     
@@ -34,9 +38,7 @@ export const usePresetApplication = () => {
     }
     
     // Clear any existing timeouts
-    [presetTimeoutRef, lockTimeoutRef, validationTimeoutRef].forEach(ref => {
-      if (ref.current) clearTimeout(ref.current);
-    });
+    clearTimeouts();
     
     // Set enhanced synchronization lock
     setPresetState({ 
@@ -93,15 +95,18 @@ export const usePresetApplication = () => {
     });
   }, [presetState.isLocked, defaultEffectValues]);
 
+  // Clear all timeouts for cleanup
+  const clearTimeouts = useCallback(() => {
+    if (presetTimeoutRef.current) clearTimeout(presetTimeoutRef.current);
+    if (lockTimeoutRef.current) clearTimeout(lockTimeoutRef.current);
+    if (validationTimeoutRef.current) clearTimeout(validationTimeoutRef.current);
+  }, []);
+
   return {
     presetState,
     applyPreset,
     setPresetState,
     isApplyingPreset: presetState.isApplying || presetState.isLocked,
-    clearTimeouts: () => {
-      [presetTimeoutRef, lockTimeoutRef, validationTimeoutRef].forEach(ref => {
-        if (ref.current) clearTimeout(ref.current);
-      });
-    }
+    clearTimeouts
   };
 };
