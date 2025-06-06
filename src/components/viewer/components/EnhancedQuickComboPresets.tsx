@@ -76,7 +76,15 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
         {ENHANCED_COMBO_PRESETS.map((preset) => {
           const isSelected = selectedPresetId === preset.id;
           const isLoading = isApplyingPreset && isSelected;
-          const styleColor = getStyleColor(preset.id);
+          
+          // Safe style color lookup with validation
+          let styleColor;
+          try {
+            styleColor = getStyleColor(preset.id);
+          } catch (error) {
+            console.warn(`Failed to get style color for preset ${preset.id}:`, error);
+            styleColor = null;
+          }
           
           return (
             <PresetCard
