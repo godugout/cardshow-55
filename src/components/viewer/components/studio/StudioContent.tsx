@@ -1,10 +1,12 @@
 
 import React, { useCallback } from 'react';
-import { CollapsibleSection } from '@/components/ui/design-system';
-import { EnhancedQuickComboPresets } from '../EnhancedQuickComboPresets';
-import { StableEffectsList } from '../StableEffectsList';
-import { EnvironmentSection } from '../EnvironmentSection';
-import { MaterialPropertiesSection } from '../MaterialPropertiesSection';
+import { useSectionManager } from './hooks/useSectionManager';
+import { 
+  StylesSection, 
+  EffectsSection, 
+  SceneSection, 
+  SurfaceSection 
+} from './sections';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
 
@@ -15,18 +17,12 @@ interface StudioContentProps {
   overallBrightness: number[];
   interactiveLighting: boolean;
   materialSettings: MaterialSettings;
-  sectionStates: {
-    effects: boolean;
-    environment: boolean;
-    materials: boolean;
-  };
   onSceneChange: (scene: EnvironmentScene) => void;
   onLightingChange: (lighting: LightingPreset) => void;
   onEffectChange: (effectId: string, parameterId: string, value: number | boolean | string) => void;
   onBrightnessChange: (value: number[]) => void;
   onInteractiveLightingToggle: () => void;
   onMaterialSettingsChange: (settings: MaterialSettings) => void;
-  onSectionToggle: (section: string, isOpen: boolean) => void;
   selectedPresetId?: string;
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
@@ -40,19 +36,19 @@ export const StudioContent: React.FC<StudioContentProps> = ({
   overallBrightness,
   interactiveLighting,
   materialSettings,
-  sectionStates,
   onSceneChange,
   onLightingChange,
   onEffectChange,
   onBrightnessChange,
   onInteractiveLightingToggle,
   onMaterialSettingsChange,
-  onSectionToggle,
   selectedPresetId,
   onPresetSelect,
   onApplyCombo,
   isApplyingPreset = false
 }) => {
+  const { sectionStates, setSectionState } = useSectionManager();
+
   const handleBrightnessChange = useCallback(
     (value: number[]) => {
       onBrightnessChange(value);
@@ -64,63 +60,44 @@ export const StudioContent: React.FC<StudioContentProps> = ({
     <div className="flex-1 overflow-y-auto">
       <div className="p-4 space-y-6">
         {/* Styles Section - Always Visible, No Header */}
-        <div>
-          <EnhancedQuickComboPresets
-            onApplyCombo={onApplyCombo}
-            currentEffects={effectValues}
-            selectedPresetId={selectedPresetId}
-            onPresetSelect={onPresetSelect}
-            isApplyingPreset={isApplyingPreset}
-          />
-        </div>
+        <StylesSection
+          effectValues={effectValues}
+          selectedPresetId={selectedPresetId}
+          onPresetSelect={onPresetSelect}
+          onApplyCombo={onApplyCombo}
+          isApplyingPreset={isApplyingPreset}
+        />
 
-        {/* Effects Section - Always visible with stable layout */}
-        <CollapsibleSection
-          title="Effects"
-          emoji="✨"
+        {/* Effects Section */}
+        <EffectsSection
+          effectValues={effectValues}
           isOpen={sectionStates.effects}
-          onToggle={(isOpen) => onSectionToggle('effects', isOpen)}
-        >
-          <StableEffectsList
-            effectValues={effectValues}
-            onEffectChange={onEffectChange}
-            selectedPresetId={selectedPresetId}
-          />
-        </CollapsibleSection>
+          onToggle={(isOpen) => setSectionState('effects', isOpen)}
+          onEffectChange={onEffectChange}
+          selectedPresetId={selectedPresetId}
+        />
 
         {/* Scene Section */}
-        <CollapsibleSection
-          title="Scene"
-          emoji="🌍"
-          statusText={`${selectedScene.name} • ${selectedLighting.name}`}
+        <SceneSection
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          overallBrightness={overallBrightness}
+          interactiveLighting={interactiveLighting}
           isOpen={sectionStates.environment}
-          onToggle={(isOpen) => onSectionToggle('environment', isOpen)}
-        >
-          <EnvironmentSection
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            overallBrightness={overallBrightness}
-            interactiveLighting={interactiveLighting}
-            onSceneChange={onSceneChange}
-            onLightingChange={onLightingChange}
-            onBrightnessChange={handleBrightnessChange}
-            onInteractiveLightingToggle={onInteractiveLightingToggle}
-          />
-        </CollapsibleSection>
+          onToggle={(isOpen) => setSectionState('environment', isOpen)}
+          onSceneChange={onSceneChange}
+          onLightingChange={onLightingChange}
+          onBrightnessChange={handleBrightnessChange}
+          onInteractiveLightingToggle={onInteractiveLightingToggle}
+        />
 
         {/* Surface Section */}
-        <CollapsibleSection
-          title="Surface"
-          emoji="💎"
-          statusText="Custom Settings"
+        <SurfaceSection
+          materialSettings={materialSettings}
           isOpen={sectionStates.materials}
-          onToggle={(isOpen) => onSectionToggle('materials', isOpen)}
-        >
-          <MaterialPropertiesSection
-            materialSettings={materialSettings}
-            onMaterialSettingsChange={onMaterialSettingsChange}
-          />
-        </CollapsibleSection>
+          onToggle={(isOpen) => setSectionState('materials', isOpen)}
+          onMaterialSettingsChange={onMaterialSettingsChange}
+        />
       </div>
     </div>
   );
