@@ -34,7 +34,7 @@ const mockCards: CardData[] = [
       marketplace_listing: true,
       crd_catalog_inclusion: true,
       print_available: true,
-      pricing: { currency: 'USD', amount: 25 },
+      pricing: { currency: 'USD', base_price: 25 },
       distribution: { limited_edition: true, edition_size: 100 }
     }
   },
@@ -87,7 +87,7 @@ const mockCards: CardData[] = [
       marketplace_listing: true,
       crd_catalog_inclusion: true,
       print_available: true,
-      pricing: { currency: 'USD', amount: 15 },
+      pricing: { currency: 'USD', base_price: 15 },
       distribution: { limited_edition: false }
     }
   }
