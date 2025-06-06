@@ -1,4 +1,3 @@
-
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset } from '../../types';
 
@@ -6,12 +5,13 @@ export interface ComboPreset {
   id: string;
   name: string;
   icon: React.ComponentType<any>;
+  emoji?: string;
+  category?: string;
   description: string;
+  materialHint: string;
+  tags?: string[];
   effects: EffectValues;
-  scene?: EnvironmentScene;
-  lighting?: LightingPreset;
   isCustom?: boolean;
-  materialHint?: string;
 }
 
 export interface PresetItemProps {

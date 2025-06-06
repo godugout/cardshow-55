@@ -2,11 +2,12 @@
 import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { QuickAdjustments } from './effects/QuickAdjustments';
-import { VisualEffectsList } from './effects/VisualEffectsList';
 import { EffectPresets } from './effects/EffectPresets';
 import { EffectsPreview } from './effects/EffectsPreview';
 import { AdvancedEffectsControls } from '../effects/AdvancedEffectsControls';
+import { EnhancedEffectsList } from '@/components/viewer/components/EnhancedEffectsList';
 import { useCardEditor } from '@/hooks/useCardEditor';
+import { useEnhancedCardEffects } from '@/components/viewer/hooks/useEnhancedCardEffects';
 
 interface EffectsTabProps {
   searchQuery?: string;
@@ -15,6 +16,8 @@ interface EffectsTabProps {
 }
 
 export const EffectsTab = ({ searchQuery = '', onEffectsComplete, cardEditor }: EffectsTabProps) => {
+  const { effectValues, handleEffectChange } = useEnhancedCardEffects();
+
   return (
     <ScrollArea className="h-full px-4">
       <div className="space-y-6">
@@ -29,7 +32,14 @@ export const EffectsTab = ({ searchQuery = '', onEffectsComplete, cardEditor }: 
         {cardEditor && <AdvancedEffectsControls cardEditor={cardEditor} />}
 
         <QuickAdjustments />
-        <VisualEffectsList searchQuery={searchQuery} />
+        
+        {/* Enhanced Effects List */}
+        <EnhancedEffectsList
+          effectValues={effectValues}
+          onEffectChange={handleEffectChange}
+          searchQuery={searchQuery}
+        />
+        
         <EffectPresets />
         <EffectsPreview />
       </div>
