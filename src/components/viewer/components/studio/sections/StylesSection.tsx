@@ -23,11 +23,15 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
   onApplyCombo,
   isApplyingPreset = false
 }) => {
+  const statusText = selectedPresetId ? 
+    selectedPresetId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : 
+    "Select Style";
+
   return (
     <CollapsibleSection
       title="Styles"
       emoji="🎨"
-      statusText={selectedPresetId ? "Custom Preset" : "Quick Presets"}
+      statusText={statusText}
       isOpen={isOpen}
       onToggle={onToggle}
     >

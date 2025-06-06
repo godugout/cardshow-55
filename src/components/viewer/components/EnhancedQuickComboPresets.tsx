@@ -4,6 +4,7 @@ import { PresetCard } from '@/components/ui/design-system';
 import { ENHANCED_COMBO_PRESETS } from './presets/enhancedComboPresets';
 import { CustomStyleEditor } from './CustomStyleEditor';
 import { Palette } from 'lucide-react';
+import { getStyleColor } from './presets/styleColors';
 import type { QuickComboPresetsProps } from './presets/types';
 
 interface EnhancedQuickComboPresetsProps extends QuickComboPresetsProps {
@@ -70,11 +71,12 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
 
   return (
     <div className="space-y-4">
-      {/* Simplified Preset Grid */}
+      {/* Preset Grid */}
       <div className="grid grid-cols-2 gap-3">
         {ENHANCED_COMBO_PRESETS.map((preset) => {
           const isSelected = selectedPresetId === preset.id;
           const isLoading = isApplyingPreset && isSelected;
+          const styleColor = getStyleColor(preset.id);
           
           return (
             <PresetCard
@@ -86,6 +88,7 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
               isDisabled={isApplyingPreset && !isSelected}
               onSelect={() => handlePresetClick(preset)}
               size="sm"
+              styleColor={styleColor}
               className="h-auto"
             />
           );
