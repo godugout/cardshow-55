@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { MaterialSettings } from '../types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -10,8 +11,6 @@ import { VintageEffect } from './effects/VintageEffect';
 import { MetallicEffects } from './effects/MetallicEffects';
 import { PrismaticEffects } from './effects/PrismaticEffects';
 import { FoilSprayEffect } from './effects/FoilSprayEffect';
-import { IceEffect } from './effects/IceEffect';
-import { LunarEffect } from './effects/LunarEffect';
 import { WavesEffect } from './effects/WavesEffect';
 
 interface CardEffectsLayerProps {
@@ -117,18 +116,6 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
 
       {/* Foil Spray Effect */}
       <FoilSprayEffect
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
-
-      {/* Ice Effect - Natural ice with scratches */}
-      <IceEffect
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
-
-      {/* Lunar Effect - Enhanced moon dust and atmospheric glow */}
-      <LunarEffect
         effectValues={effectValues}
         mousePosition={mousePosition}
       />

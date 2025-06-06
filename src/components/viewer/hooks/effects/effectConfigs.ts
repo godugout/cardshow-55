@@ -127,28 +127,6 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
     ]
   },
   {
-    id: 'ice',
-    name: 'Ice',
-    description: 'Natural ice surface with scratches and frost patterns',
-    category: 'surface',
-    parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 }
-    ]
-  },
-  {
-    id: 'lunar',
-    name: 'Lunar',
-    description: 'Deep space moon surface with atmospheric glow and dust',
-    category: 'vintage',
-    parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
-      { id: 'dustDensity', name: 'Dust Density', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 50 },
-      { id: 'atmosphere', name: 'Atmosphere', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 60 },
-      { id: 'blueTint', name: 'Blue Tint', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 30 },
-      { id: 'surfaceRoughness', name: 'Surface Roughness', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 70 }
-    ]
-  },
-  {
     id: 'waves',
     name: 'Waves',
     description: 'Dynamic wave patterns for enhanced motion effects',

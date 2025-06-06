@@ -22,8 +22,6 @@ const getEffectIcon = (effectId: string) => {
     vintage: Palette,
     gold: Sun,
     aurora: Sparkles,
-    ice: Sparkles,
-    lunar: Moon,
     waves: Waves
   };
   return iconMap[effectId] || Sparkles;

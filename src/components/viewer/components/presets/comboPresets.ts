@@ -1,3 +1,4 @@
+
 import { Sparkles, Zap, Gem, Clock, Flame, Snowflake, Sun, Moon, Star, Zap as ChromeIcon } from 'lucide-react';
 import type { ComboPreset } from './types';
 
@@ -61,11 +62,11 @@ export const COMBO_PRESETS: ComboPreset[] = [
     id: 'ice-crystal',
     name: 'Ice',
     icon: Snowflake,
-    description: 'Cool crystal with silver highlights',
-    materialHint: 'Frosted crystal surface with silver accents',
+    description: 'Frosted crystal with subtle scratches and minimal chrome',
+    materialHint: 'Frosted crystal surface with natural ice scratches',
     effects: {
-      crystal: { intensity: 70, facets: 8, dispersion: 70, clarity: 60, sparkle: true },
-      chrome: { intensity: 35, sharpness: 90, highlightSize: 40 }
+      crystal: { intensity: 55, facets: 6, dispersion: 45, clarity: 40, sparkle: false },
+      chrome: { intensity: 15, sharpness: 40, highlightSize: 25 }
     }
   },
   {
@@ -83,11 +84,11 @@ export const COMBO_PRESETS: ComboPreset[] = [
     id: 'lunar-shimmer',
     name: 'Lunar',
     icon: Moon,
-    description: 'Subtle interference with vintage charm',
-    materialHint: 'Soft silvery surface with gentle interference patterns',
+    description: 'Muted surface with subtle vintage patina and minimal interference',
+    materialHint: 'Dull gray surface with soft lunar texture',
     effects: {
-      interference: { intensity: 45, frequency: 12, thickness: 3 },
-      vintage: { intensity: 35, aging: 40, patina: '#c0c0c0' }
+      interference: { intensity: 20, frequency: 6, thickness: 2 },
+      vintage: { intensity: 45, aging: 60, patina: '#a0a0a0' }
     }
   },
   {
