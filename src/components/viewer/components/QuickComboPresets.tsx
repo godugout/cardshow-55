@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -145,94 +146,150 @@ export const QuickComboPresets: React.FC<QuickComboPresetsProps> = ({
   onPresetSelect,
   isApplyingPreset = false
 }) => {
-  // Check if current effects match any preset with improved precision
+  // Enhanced effect matching with progressive tolerance
   const effectsMatchPreset = (presetEffects: EffectValues, currentEffects: EffectValues): boolean => {
+    console.log('🔍 Checking preset match:', { presetEffects, currentEffects });
+    
     const presetKeys = Object.keys(presetEffects);
     const currentActiveKeys = Object.keys(currentEffects).filter(key => {
       const effect = currentEffects[key];
-      return effect && typeof effect.intensity === 'number' && effect.intensity > 0;
+      return effect && typeof effect.intensity === 'number' && effect.intensity > 5; // Increased threshold
     });
 
-    // If different number of active effects, no match
-    if (presetKeys.length !== currentActiveKeys.length) return false;
-
-    // Check each preset effect matches current values
-    return presetKeys.every(key => {
+    // Allow for flexible matching - don't require exact effect count
+    const hasMainPresetEffects = presetKeys.every(key => {
       const preset = presetEffects[key];
       const current = currentEffects[key];
       if (!current || !preset) return false;
       
-      // Check intensity first (most important)
       const presetIntensity = typeof preset.intensity === 'number' ? preset.intensity : 0;
       const currentIntensity = typeof current.intensity === 'number' ? current.intensity : 0;
       
-      if (Math.abs(currentIntensity - presetIntensity) > 3) return false;
+      // More tolerant intensity matching with progressive tolerance
+      const tolerance = Math.max(10, presetIntensity * 0.2); // 20% tolerance or minimum 10
+      const intensityMatch = Math.abs(currentIntensity - presetIntensity) <= tolerance;
       
-      // Check other parameters with more tolerance
-      return Object.keys(preset).every(paramKey => {
-        if (paramKey === 'intensity') return true; // Already checked
+      if (!intensityMatch) {
+        console.log(`❌ Intensity mismatch for ${key}:`, { preset: presetIntensity, current: currentIntensity, tolerance });
+        return false;
+      }
+      
+      // Check other parameters with increased tolerance
+      const paramsMatch = Object.keys(preset).every(paramKey => {
+        if (paramKey === 'intensity') return true;
         const presetVal = preset[paramKey];
         const currentVal = current[paramKey];
         
         if (typeof presetVal === 'number' && typeof currentVal === 'number') {
-          return Math.abs(currentVal - presetVal) <= 5;
+          const paramTolerance = Math.max(8, presetVal * 0.25); // 25% tolerance
+          return Math.abs(currentVal - presetVal) <= paramTolerance;
         }
         return presetVal === currentVal;
       });
+      
+      console.log(`${paramsMatch ? '✅' : '❌'} Parameters match for ${key}:`, paramsMatch);
+      return paramsMatch;
     });
+
+    console.log('📊 Final match result:', hasMainPresetEffects);
+    return hasMainPresetEffects;
   };
 
-  // Check if we have custom effects that don't match any preset
+  // Detect custom effects with improved logic
   const hasCustomEffects = (): boolean => {
     const hasActiveEffects = Object.values(currentEffects).some(effect => 
-      effect && typeof effect.intensity === 'number' && effect.intensity > 0
+      effect && typeof effect.intensity === 'number' && effect.intensity > 5
     );
     
     if (!hasActiveEffects) return false;
     
-    return !COMBO_PRESETS.some(preset => effectsMatchPreset(preset.effects, currentEffects));
+    // Check if current effects match any existing preset
+    const matchesExistingPreset = COMBO_PRESETS.some(preset => effectsMatchPreset(preset.effects, currentEffects));
+    
+    console.log('🎨 Custom effects check:', { hasActiveEffects, matchesExistingPreset });
+    return !matchesExistingPreset;
   };
 
-  // Create custom preset from current effects
-  const createCustomPreset = (): ComboPreset => ({
-    id: 'user-custom',
-    name: "Your Style",
-    icon: User,
-    description: 'Your custom effect combination',
-    effects: currentEffects,
-    isCustom: true
-  });
+  // Enhanced custom preset creation
+  const createCustomPreset = (): ComboPreset => {
+    const activeEffects = Object.keys(currentEffects).filter(key => {
+      const effect = currentEffects[key];
+      return effect && typeof effect.intensity === 'number' && effect.intensity > 5;
+    });
+    
+    const description = `Custom blend: ${activeEffects.join(', ')}`;
+    
+    return {
+      id: 'user-custom',
+      name: "Your Style",
+      icon: User,
+      description,
+      effects: currentEffects,
+      isCustom: true
+    };
+  };
 
   const allPresets = hasCustomEffects() ? [...COMBO_PRESETS, createCustomPreset()] : COMBO_PRESETS;
 
-  // Enhanced preset application with atomic updates
+  // Enhanced preset application with better state management
   const handlePresetClick = (preset: ComboPreset) => {
-    console.log('🎯 Quick Combo Preset Selected:', { presetId: preset.id, effects: preset.effects });
+    console.log('🎯 Enhanced Preset Selected:', { 
+      presetId: preset.id, 
+      effects: preset.effects,
+      isApplying: isApplyingPreset 
+    });
+    
+    // Prevent multiple simultaneous applications
+    if (isApplyingPreset) {
+      console.log('⚠️ Preset application blocked - already applying');
+      return;
+    }
     
     // Apply preset selection and combo atomically
     onPresetSelect(preset.id);
     onApplyCombo(preset);
   };
 
+  // Determine selection with improved logic
+  const getPresetSelection = (preset: ComboPreset) => {
+    // Priority 1: Explicit selection during application
+    if (isApplyingPreset && selectedPresetId === preset.id) {
+      return { isSelected: true, reason: 'applying' };
+    }
+    
+    // Priority 2: Stable selection from state
+    if (selectedPresetId === preset.id) {
+      return { isSelected: true, reason: 'selected' };
+    }
+    
+    // Priority 3: Auto-detection (only if no explicit selection)
+    if (!selectedPresetId && effectsMatchPreset(preset.effects, currentEffects)) {
+      return { isSelected: true, reason: 'auto-detected' };
+    }
+    
+    return { isSelected: false, reason: 'none' };
+  };
+
   return (
     <TooltipProvider>
       {allPresets.map((preset) => {
         const IconComponent = preset.icon;
-        const isSelected = selectedPresetId === preset.id || 
-          (!selectedPresetId && effectsMatchPreset(preset.effects, currentEffects));
+        const { isSelected, reason } = getPresetSelection(preset);
+        
+        console.log(`🎯 Preset ${preset.id}:`, { isSelected, reason, selectedPresetId });
         
         return (
           <Tooltip key={preset.id}>
             <TooltipTrigger asChild>
               <Button
                 onClick={() => handlePresetClick(preset)}
-                disabled={isApplyingPreset}
+                disabled={isApplyingPreset && selectedPresetId !== preset.id}
                 variant="ghost"
                 className={`w-full h-7 px-2 flex items-center justify-start space-x-2 border transition-colors ${
                   isSelected 
-                    ? 'bg-crd-green/30 border-crd-green text-white' 
+                    ? 'bg-crd-green/30 border-crd-green text-white shadow-md' 
                     : 'bg-editor-dark border-editor-border hover:border-crd-green hover:bg-crd-green/20'
-                } text-xs ${isApplyingPreset ? 'opacity-50' : ''}`}
+                } text-xs ${isApplyingPreset && selectedPresetId !== preset.id ? 'opacity-30' : ''}`}
               >
                 <IconComponent className={`w-3 h-3 flex-shrink-0 ${
                   isSelected ? 'text-crd-green' : 'text-crd-green'
@@ -245,6 +302,9 @@ export const QuickComboPresets: React.FC<QuickComboPresetsProps> = ({
                 {isApplyingPreset && isSelected && (
                   <div className="w-2 h-2 bg-crd-green rounded-full animate-pulse ml-auto" />
                 )}
+                {isSelected && reason === 'auto-detected' && (
+                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full ml-auto" />
+                )}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left" className="bg-black border-gray-700 text-white z-50">
@@ -254,6 +314,13 @@ export const QuickComboPresets: React.FC<QuickComboPresetsProps> = ({
                 {preset.materialHint && (
                   <div className="text-xs text-crd-green italic">
                     Surface: {preset.materialHint}
+                  </div>
+                )}
+                {isSelected && (
+                  <div className="text-xs text-blue-400 mt-1">
+                    {reason === 'applying' ? 'Applying...' : 
+                     reason === 'selected' ? 'Selected' : 
+                     'Auto-detected'}
                   </div>
                 )}
               </div>

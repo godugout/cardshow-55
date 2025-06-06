@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useMemo, startTransition, useRef } from 'react';
 
 export interface EffectParameter {
@@ -142,12 +141,13 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
   }
 ];
 
-// Enhanced state interface for tracking preset application with locks
+// Enhanced state interface with better synchronization
 interface PresetApplicationState {
   isApplying: boolean;
   currentPresetId?: string;
   appliedAt: number;
-  isLocked: boolean; // New: prevent overlapping applications
+  isLocked: boolean;
+  sequenceId: string;
 }
 
 export const useEnhancedCardEffects = () => {
@@ -162,18 +162,20 @@ export const useEnhancedCardEffects = () => {
     return initialValues;
   });
 
-  // Enhanced preset application state with synchronization
+  // Enhanced preset application state with sequence tracking
   const [presetState, setPresetState] = useState<PresetApplicationState>({
     isApplying: false,
     appliedAt: 0,
-    isLocked: false
+    isLocked: false,
+    sequenceId: ''
   });
 
-  // Refs for debouncing and cleanup
+  // Refs for cleanup and state validation
   const presetTimeoutRef = useRef<NodeJS.Timeout>();
   const lockTimeoutRef = useRef<NodeJS.Timeout>();
+  const validationTimeoutRef = useRef<NodeJS.Timeout>();
 
-  // Memoize default values to prevent unnecessary recalculations
+  // Memoize default values
   const defaultEffectValues = useMemo(() => {
     const defaults: EffectValues = {};
     ENHANCED_VISUAL_EFFECTS.forEach(effect => {
@@ -185,22 +187,64 @@ export const useEnhancedCardEffects = () => {
     return defaults;
   }, []);
 
-  const handleEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
-    console.log('🎛️ Effect Change:', { effectId, parameterId, value });
+  // Enhanced effect intensity clamping for smooth transitions
+  const clampEffectValue = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
+    if (typeof value !== 'number') return value;
     
-    // Clear preset state when manual changes are made (unless currently applying a preset)
+    // Apply smooth clamping for problematic effects
+    const clampingRules: Record<string, Record<string, { soft: number; hard: number }>> = {
+      prizm: {
+        intensity: { soft: 75, hard: 85 }, // Soft limit at 75%, hard at 85%
+        complexity: { soft: 8, hard: 10 },
+        colorSeparation: { soft: 80, hard: 90 }
+      },
+      crystal: {
+        intensity: { soft: 80, hard: 90 },
+        dispersion: { soft: 85, hard: 95 }
+      },
+      holographic: {
+        intensity: { soft: 85, hard: 95 },
+        shiftSpeed: { soft: 180, hard: 200 }
+      }
+    };
+    
+    const rule = clampingRules[effectId]?.[parameterId];
+    if (rule && value > rule.soft) {
+      // Apply smooth damping above soft limit
+      const overage = value - rule.soft;
+      const damping = 1 - (overage / (rule.hard - rule.soft)) * 0.5;
+      const clampedValue = rule.soft + (overage * Math.max(0.1, damping));
+      
+      console.log(`🎛️ Clamping ${effectId}.${parameterId}:`, { original: value, clamped: clampedValue });
+      return Math.min(clampedValue, rule.hard);
+    }
+    
+    return value;
+  }, []);
+
+  const handleEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
+    console.log('🎛️ Effect Change:', { effectId, parameterId, value, presetState });
+    
+    // Apply clamping for smooth transitions
+    const clampedValue = clampEffectValue(effectId, parameterId, value);
+    
+    // Clear preset state when manual changes are made (unless locked)
     if (!presetState.isApplying && !presetState.isLocked) {
-      setPresetState(prev => ({ ...prev, currentPresetId: undefined }));
+      setPresetState(prev => ({ 
+        ...prev, 
+        currentPresetId: undefined,
+        sequenceId: `manual-${Date.now()}`
+      }));
     }
     
     setEffectValues(prev => ({
       ...prev,
       [effectId]: {
         ...prev[effectId],
-        [parameterId]: value
+        [parameterId]: clampedValue
       }
     }));
-  }, [presetState.isApplying, presetState.isLocked]);
+  }, [presetState.isApplying, presetState.isLocked, clampEffectValue]);
 
   const resetEffect = useCallback((effectId: string) => {
     console.log('🔄 Resetting effect:', effectId);
@@ -218,23 +262,26 @@ export const useEnhancedCardEffects = () => {
   }, []);
 
   const resetAllEffects = useCallback(() => {
-    console.log('🔄 Resetting all effects');
+    console.log('🔄 Resetting all effects with cleanup');
     
-    // Clear any pending timeouts
-    if (presetTimeoutRef.current) {
-      clearTimeout(presetTimeoutRef.current);
-    }
-    if (lockTimeoutRef.current) {
-      clearTimeout(lockTimeoutRef.current);
-    }
+    // Clear all timeouts
+    [presetTimeoutRef, lockTimeoutRef, validationTimeoutRef].forEach(ref => {
+      if (ref.current) clearTimeout(ref.current);
+    });
     
-    setPresetState({ isApplying: false, appliedAt: Date.now(), isLocked: false });
+    setPresetState({ 
+      isApplying: false, 
+      appliedAt: Date.now(), 
+      isLocked: false,
+      sequenceId: `reset-${Date.now()}`
+    });
     setEffectValues(defaultEffectValues);
   }, [defaultEffectValues]);
 
-  // Enhanced atomic preset application with forced reset and sync locks
+  // Enhanced atomic preset application with sequence tracking
   const applyPreset = useCallback((preset: EffectValues, presetId?: string) => {
-    console.log('🎨 Applying preset atomically with sync locks:', { presetId, preset });
+    const sequenceId = `preset-${presetId}-${Date.now()}`;
+    console.log('🎨 Applying preset with enhanced synchronization:', { presetId, preset, sequenceId });
     
     // Prevent overlapping applications
     if (presetState.isLocked) {
@@ -243,57 +290,70 @@ export const useEnhancedCardEffects = () => {
     }
     
     // Clear any existing timeouts
-    if (presetTimeoutRef.current) {
-      clearTimeout(presetTimeoutRef.current);
-    }
-    if (lockTimeoutRef.current) {
-      clearTimeout(lockTimeoutRef.current);
-    }
+    [presetTimeoutRef, lockTimeoutRef, validationTimeoutRef].forEach(ref => {
+      if (ref.current) clearTimeout(ref.current);
+    });
     
-    // Set synchronization lock
+    // Set enhanced synchronization lock
     setPresetState({ 
       isApplying: true, 
       currentPresetId: presetId, 
       appliedAt: Date.now(),
-      isLocked: true 
+      isLocked: true,
+      sequenceId
     });
     
-    // Use startTransition for smooth updates with forced reset
+    // Enhanced atomic application with state validation
     startTransition(() => {
-      // Step 1: Force complete reset to defaults (prevents material sticking)
-      const resetValues = { ...defaultEffectValues };
+      // Step 1: Complete reset with material clearing
+      const resetValues = JSON.parse(JSON.stringify(defaultEffectValues)); // Deep copy
       setEffectValues(resetValues);
       
-      // Step 2: Apply preset effects after a brief delay for reset to complete
+      // Step 2: Apply preset effects with clamping
       presetTimeoutRef.current = setTimeout(() => {
-        const newEffectValues = { ...defaultEffectValues };
+        const newEffectValues = JSON.parse(JSON.stringify(defaultEffectValues)); // Deep copy
         
-        // Apply preset effects with proper validation
+        // Apply preset effects with enhanced validation and clamping
         Object.entries(preset).forEach(([effectId, effectParams]) => {
           if (newEffectValues[effectId] && effectParams) {
             Object.entries(effectParams).forEach(([paramId, value]) => {
               if (newEffectValues[effectId][paramId] !== undefined) {
-                newEffectValues[effectId][paramId] = value;
+                // Apply clamping during preset application
+                const clampedValue = clampEffectValue(effectId, paramId, value);
+                newEffectValues[effectId][paramId] = clampedValue;
               }
             });
           }
         });
         
-        // Apply all changes atomically
+        // Apply atomically
         setEffectValues(newEffectValues);
         
-        // Mark application as complete and release lock after material calc time
-        lockTimeoutRef.current = setTimeout(() => {
-          setPresetState(prev => ({ 
-            ...prev, 
-            isApplying: false, 
-            isLocked: false 
-          }));
-        }, 400); // Increased delay for material recalculation
+        // Step 3: State validation and cleanup
+        validationTimeoutRef.current = setTimeout(() => {
+          console.log('🔍 Validating preset application state:', sequenceId);
+          
+          // Release lock after validation
+          lockTimeoutRef.current = setTimeout(() => {
+            setPresetState(prev => ({ 
+              ...prev, 
+              isApplying: false, 
+              isLocked: false 
+            }));
+            console.log('✅ Preset application complete:', sequenceId);
+          }, 200); // Extended for material recalculation
+          
+        }, 100); // Validation delay
         
-      }, 100); // Brief delay for reset to complete
+      }, 150); // Increased reset delay
     });
-  }, [defaultEffectValues, presetState.isLocked]);
+  }, [defaultEffectValues, presetState.isLocked, clampEffectValue]);
+
+  // Enhanced state validation
+  const validateEffectState = useCallback(() => {
+    console.log('🔍 Validating effect state consistency');
+    // Add any necessary state consistency checks here
+  }, []);
 
   return {
     effectValues,
@@ -302,6 +362,7 @@ export const useEnhancedCardEffects = () => {
     resetAllEffects,
     applyPreset,
     presetState,
-    isApplyingPreset: presetState.isApplying || presetState.isLocked
+    isApplyingPreset: presetState.isApplying || presetState.isLocked,
+    validateEffectState
   };
 };

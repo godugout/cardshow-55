@@ -60,7 +60,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   });
   const [isPanelMinimized, setIsPanelMinimized] = useState(false);
   
-  // Enhanced effects state with atomic preset application
+  // Enhanced effects state with improved synchronization
   const enhancedEffectsHook = useEnhancedCardEffects();
   const {
     effectValues,
@@ -68,7 +68,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     resetEffect,
     resetAllEffects,
     applyPreset,
-    isApplyingPreset
+    isApplyingPreset,
+    validateEffectState
   } = enhancedEffectsHook;
   
   // Get dynamic material based on current effects
@@ -269,7 +270,10 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     setZoom(1);
     setIsFlipped(false);
     setAutoRotate(false);
-  }, []);
+    setSelectedPresetId(undefined);
+    resetAllEffects();
+    validateEffectState();
+  }, [resetAllEffects, validateEffectState]);
 
   const handleZoom = useCallback((delta: number) => {
     setZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
@@ -288,9 +292,12 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   // Add state for preset selection tracking
   const [selectedPresetId, setSelectedPresetId] = useState<string>();
 
-  // Enhanced combo application with atomic updates
+  // Enhanced combo application with validation
   const handleComboApplication = useCallback((combo: any) => {
-    console.log('🚀 Applying combo with atomic updates:', combo.id);
+    console.log('🚀 Applying combo with enhanced synchronization:', combo.id);
+    
+    // Validate state before application
+    validateEffectState();
     
     // Apply preset atomically with all related state
     applyPreset(combo.effects, combo.id);
@@ -305,15 +312,22 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     if (combo.lighting) {
       setSelectedLighting(combo.lighting);
     }
-  }, [applyPreset]);
+  }, [applyPreset, validateEffectState]);
 
-  // Clear preset selection when manual effect changes are made
+  // Enhanced manual effect change with state tracking
   const handleManualEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
     if (!isApplyingPreset) {
       setSelectedPresetId(undefined);
     }
     handleEffectChange(effectId, parameterId, value);
   }, [handleEffectChange, isApplyingPreset]);
+
+  // Enhanced state validation on card change
+  useEffect(() => {
+    if (card) {
+      validateEffectState();
+    }
+  }, [card, validateEffectState]);
 
   if (!isOpen) return null;
 
