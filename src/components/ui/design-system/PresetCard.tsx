@@ -95,31 +95,22 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
           </div>
         )}
 
-        {/* Improved Layout: Icon and Label in separate areas, both left-aligned */}
-        <div className="w-full">
-          {/* Icon Section - Left Aligned */}
-          <div className="flex justify-start mb-2">
-            {emoji && (
-              <span className="text-xl" role="img" aria-label={title}>
-                {emoji}
-              </span>
-            )}
-          </div>
-          
-          {/* Label Section - Left Aligned */}
-          <div className="text-left">
-            <span className={cn(
-              "font-medium text-sm block",
-              isSelected ? "text-white" : "text-crd-lightGray"
-            )}>
-              {title}
+        {/* Simplified Layout: Icon centered, title below */}
+        <div className="w-full flex flex-col items-center justify-center space-y-2">
+          {/* Icon Section - Centered */}
+          {emoji && (
+            <span className="text-2xl" role="img" aria-label={title}>
+              {emoji}
             </span>
-            {badge && (
-              <span className="text-xs text-crd-green mt-1 block">
-                {badge}
-              </span>
-            )}
-          </div>
+          )}
+          
+          {/* Title Section - Centered */}
+          <span className={cn(
+            "font-medium text-sm text-center",
+            isSelected ? "text-white" : "text-crd-lightGray"
+          )}>
+            {title}
+          </span>
         </div>
       </Button>
     );

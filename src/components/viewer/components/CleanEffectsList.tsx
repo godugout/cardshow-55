@@ -32,41 +32,17 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
     setOpenPopovers(newOpen);
   };
 
-  // Get all available effects from the current preset
-  const getRelevantEffects = () => {
-    if (!selectedPresetId) return [];
-    
-    const currentEffects = effectValues || {};
-    return Object.keys(currentEffects).filter(effectId => {
-      const effect = currentEffects[effectId];
-      return effect && typeof effect.intensity === 'number';
-    });
-  };
-
-  const relevantEffects = getRelevantEffects();
-
-  if (relevantEffects.length === 0) {
-    return (
-      <div className="text-center py-6">
-        <p className="text-crd-lightGray text-sm">Select a style to see effects</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-2">
-      {relevantEffects.map((effectId) => {
-        const effectConfig = ENHANCED_VISUAL_EFFECTS.find(e => e.id === effectId);
-        const effectData = effectValues[effectId] || { intensity: 0 };
+      {ENHANCED_VISUAL_EFFECTS.map((effectConfig) => {
+        const effectData = effectValues[effectConfig.id] || { intensity: 0 };
         const intensity = typeof effectData.intensity === 'number' ? effectData.intensity : 0;
         const isActive = intensity > 0;
-        const hasSecondaryParams = effectConfig?.parameters && effectConfig.parameters.length > 1;
-
-        if (!effectConfig) return null;
+        const hasSecondaryParams = effectConfig.parameters && effectConfig.parameters.length > 1;
 
         return (
           <div 
-            key={effectId} 
+            key={effectConfig.id} 
             className={cn(
               "border border-white/10 rounded-lg p-3 transition-all bg-white/5",
               isActive ? "border-white/20" : "opacity-70"
@@ -81,7 +57,7 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
                 <div className="flex-1">
                   <ColoredSlider
                     value={[intensity]}
-                    onValueChange={(value) => onEffectChange(effectId, 'intensity', value[0])}
+                    onValueChange={(value) => onEffectChange(effectConfig.id, 'intensity', value[0])}
                     min={0}
                     max={100}
                     step={1}
@@ -95,8 +71,8 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
               {/* Settings button for secondary controls */}
               {hasSecondaryParams && isActive && (
                 <Popover 
-                  open={openPopovers.has(effectId)}
-                  onOpenChange={() => togglePopover(effectId)}
+                  open={openPopovers.has(effectConfig.id)}
+                  onOpenChange={() => togglePopover(effectConfig.id)}
                 >
                   <PopoverTrigger asChild>
                     <Button
@@ -133,7 +109,7 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
                             </div>
                             <ColoredSlider
                               value={[Number(value)]}
-                              onValueChange={(newValue) => onEffectChange(effectId, param.id, newValue[0])}
+                              onValueChange={(newValue) => onEffectChange(effectConfig.id, param.id, newValue[0])}
                               min={param.min || 0}
                               max={param.max || 100}
                               step={param.step || 1}
