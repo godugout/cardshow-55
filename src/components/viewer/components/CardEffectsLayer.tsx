@@ -13,6 +13,7 @@ import { PrismaticEffects } from './effects/PrismaticEffects';
 import { FoilSprayEffect } from './effects/FoilSprayEffect';
 import { IceEffect } from './effects/IceEffect';
 import { LunarEffect } from './effects/LunarEffect';
+import { WavesEffect } from './effects/WavesEffect';
 
 interface CardEffectsLayerProps {
   showEffects: boolean;
@@ -59,6 +60,7 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
   const foilsprayIntensity = getEffectParam('foilspray', 'intensity', 0);
   const goldIntensity = getEffectParam('gold', 'intensity', 0);
   const auroraIntensity = getEffectParam('aurora', 'intensity', 0);
+  const wavesIntensity = getEffectParam('waves', 'intensity', 0);
   
   return (
     <>
@@ -71,13 +73,19 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
         />
       )}
 
+      {/* Waves Effect - Base layer for movement and wobble */}
+      <WavesEffect
+        effectValues={effectValues}
+        mousePosition={mousePosition}
+      />
+
       {/* Gold Effect */}
       <GoldEffect
         effectValues={effectValues}
         mousePosition={mousePosition}
       />
 
-      {/* Aurora Effect - New standalone effect */}
+      {/* Aurora Effect - Enhanced with wave movement */}
       <AuroraEffect
         effectValues={effectValues}
         mousePosition={mousePosition}
@@ -130,7 +138,7 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
       {(() => {
         const totalIntensity = holographicIntensity + chromeIntensity + brushedmetalIntensity + 
                               crystalIntensity + vintageIntensity + interferenceIntensity + 
-                              prizemIntensity + foilsprayIntensity + goldIntensity + auroraIntensity;
+                              prizemIntensity + foilsprayIntensity + goldIntensity + auroraIntensity + wavesIntensity;
         const normalizedIntensity = Math.min(totalIntensity / 100, 1);
         
         return totalIntensity > 0 ? (

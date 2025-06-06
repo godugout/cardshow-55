@@ -1,4 +1,4 @@
-import { Sparkles, Zap, Gem, Clock, Flame, Snowflake, Sun, Moon, Star, Zap as ChromeIcon } from 'lucide-react';
+import { Sparkles, Zap, Gem, Clock, Flame, Snowflake, Sun, Moon, Star, Zap as ChromeIcon, Waves } from 'lucide-react';
 import type { ComboPreset } from './types';
 
 export const COMBO_PRESETS: ComboPreset[] = [
@@ -72,11 +72,12 @@ export const COMBO_PRESETS: ComboPreset[] = [
     id: 'aurora-flare',
     name: 'Aurora',
     icon: Sun,
-    description: 'Aurora-like effect with natural flares',
-    materialHint: 'Shimmering aurora with vibrant blue-green waves',
+    description: 'Aurora-like effect with dynamic wave movement',
+    materialHint: 'Shimmering aurora with flowing blue-green waves',
     effects: {
       aurora: { intensity: 70, waveSpeed: 120, colorShift: 180 },
-      interference: { intensity: 35, frequency: 8, thickness: 2 }
+      waves: { intensity: 35, frequency: 8, amplitude: 25, direction: 135, complexity: 3, wobble: 30 },
+      interference: { intensity: 25, frequency: 6, thickness: 2 }
     }
   },
   {
@@ -110,6 +111,18 @@ export const COMBO_PRESETS: ComboPreset[] = [
     effects: {
       chrome: { intensity: 80, sharpness: 95, highlightSize: 70 },
       brushedmetal: { intensity: 40, direction: 90, grainDensity: 8 }
+    }
+  },
+  {
+    id: 'ocean-waves',
+    name: 'Ocean',
+    icon: Waves,
+    description: 'Dynamic wave patterns with prismatic interference',
+    materialHint: 'Flowing water surface with prismatic light refraction',
+    effects: {
+      waves: { intensity: 80, frequency: 15, amplitude: 60, direction: 90, complexity: 5, wobble: 70 },
+      interference: { intensity: 50, frequency: 10, thickness: 4 },
+      prizm: { intensity: 30, complexity: 3, colorSeparation: 40 }
     }
   }
 ];

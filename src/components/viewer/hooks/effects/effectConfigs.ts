@@ -1,4 +1,3 @@
-
 import type { VisualEffectConfig } from './types';
 
 // Define all visual effects with their unique parameters
@@ -124,6 +123,20 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
       { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
       { id: 'waveSpeed', name: 'Wave Speed', type: 'slider', min: 0, max: 200, step: 5, defaultValue: 80 },
       { id: 'colorShift', name: 'Color Shift', type: 'slider', min: 0, max: 360, step: 15, defaultValue: 120 }
+    ]
+  },
+  {
+    id: 'waves',
+    name: 'Waves',
+    description: 'Dynamic wave patterns with wobble and interference effects',
+    category: 'surface',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'frequency', name: 'Wave Frequency', type: 'slider', min: 1, max: 50, step: 1, defaultValue: 10 },
+      { id: 'amplitude', name: 'Wave Amplitude', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 30 },
+      { id: 'direction', name: 'Flow Direction', type: 'slider', min: 0, max: 360, step: 15, defaultValue: 45 },
+      { id: 'complexity', name: 'Wave Layers', type: 'slider', min: 1, max: 10, step: 1, defaultValue: 3 },
+      { id: 'wobble', name: 'Wobble Intensity', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 50 }
     ]
   },
   {
