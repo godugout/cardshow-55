@@ -70,13 +70,13 @@ export const COMBO_PRESETS: ComboPreset[] = [
     }
   },
   {
-    id: 'solar-flare',
-    name: 'Solar',
+    id: 'aurora-flare',
+    name: 'Aurora',
     icon: Sun,
-    description: 'Aurora-like effect with solar flares',
+    description: 'Aurora-like effect with natural flares',
     materialHint: 'Shimmering aurora with vibrant blue-green waves',
     effects: {
-      gold: { intensity: 70, shimmerSpeed: 120, goldTone: 'solar', reflectivity: 80, platingThickness: 3, colorEnhancement: true },
+      gold: { intensity: 70, shimmerSpeed: 120, goldTone: 'aurora', reflectivity: 80, platingThickness: 3, colorEnhancement: true },
       interference: { intensity: 35, frequency: 8, thickness: 2 }
     }
   },
@@ -95,8 +95,8 @@ export const COMBO_PRESETS: ComboPreset[] = [
     id: 'starlight-spray',
     name: 'Starlight',
     icon: Star,
-    description: 'Sparkling foil spray with prismatic edge',
-    materialHint: 'Metallic chrome surface with sparkling highlights',
+    description: 'Sparkling foil spray with atmospheric layers',
+    materialHint: 'Metallic chrome surface with starlight atmosphere',
     effects: {
       foilspray: { intensity: 65, density: 80, direction: 135 },
       prizm: { intensity: 35, complexity: 4, colorSeparation: 50 }

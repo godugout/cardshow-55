@@ -38,7 +38,10 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       return {
         filter: baseTreatment.filter,
         transform: baseTreatment.transform,
-        opacity: baseTreatment.opacity
+        opacity: baseTreatment.opacity,
+        userSelect: 'none' as const,
+        WebkitUserSelect: 'none' as const,
+        pointerEvents: 'none' as const
       };
     }
 
@@ -55,7 +58,10 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         contrast(${1.1 + intensity * 0.2})
       `,
       transform: `${baseTreatment.transform} scale(${1 + intensity * 0.05})`,
-      opacity: baseTreatment.opacity + intensity * 0.1
+      opacity: baseTreatment.opacity + intensity * 0.1,
+      userSelect: 'none' as const,
+      WebkitUserSelect: 'none' as const,
+      pointerEvents: 'none' as const
     };
   };
 
@@ -112,7 +118,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
             backgroundSize: '256px 256px',
-            animation: 'noise-shift 8s ease-in-out infinite alternate'
+            animation: 'noise-shift 8s ease-in-out infinite alternate',
+            pointerEvents: 'none'
           }}
         />
       )}
@@ -131,12 +138,20 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
             transparent 30%
           )`,
           mixBlendMode: 'overlay',
-          opacity: 0.6
+          opacity: 0.6,
+          pointerEvents: 'none'
         }}
       />
 
       {/* Enhanced CRD Logo with Dynamic Material Treatment */}
-      <div className="relative h-full flex items-center justify-center z-30">
+      <div 
+        className="relative h-full flex items-center justify-center z-30"
+        style={{
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          pointerEvents: 'none'
+        }}
+      >
         <img 
           src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
           alt="CRD Logo" 
@@ -149,6 +164,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
           }}
           onLoad={() => console.log('✅ Enhanced CRD logo loaded successfully')}
           onError={() => console.log('❌ Error loading enhanced CRD logo')}
+          draggable={false}
         />
       </div>
 

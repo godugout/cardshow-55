@@ -1,4 +1,3 @@
-
 import type { VisualEffectConfig } from './types';
 
 // Define all visual effects with their unique parameters
@@ -109,7 +108,7 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
           { value: 'rose', label: 'Rose Gold' },
           { value: 'white', label: 'White Gold' },
           { value: 'antique', label: 'Antique Gold' },
-          { value: 'solar', label: 'Aurora Solar' }
+          { value: 'aurora', label: 'Aurora' }
         ]
       },
       { id: 'reflectivity', name: 'Reflectivity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 85 },

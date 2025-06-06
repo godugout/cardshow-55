@@ -21,14 +21,14 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
   const shimmerSpeed = getEffectParam('gold', 'shimmerSpeed', 80);
   const colorEnhancement = getEffectParam('gold', 'colorEnhancement', true);
 
-  // For solar flare animation
+  // For aurora flare animation
   const [flarePosition, setFlarePosition] = useState({ x: Math.random(), y: Math.random() });
   const [flareActive, setFlareActive] = useState(false);
   const [flareOpacity, setFlareOpacity] = useState(0);
   
-  // Trigger solar flare randomly
+  // Trigger aurora flare randomly
   useEffect(() => {
-    if (goldIntensity <= 0 || goldTone !== 'solar') return;
+    if (goldIntensity <= 0 || goldTone !== 'aurora') return;
     
     // Random flare timer
     const flareTimer = setInterval(() => {
@@ -57,7 +57,7 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
   // New color and styling logic based on goldTone
   let mainColors, accentColors, blendMode;
   
-  if (goldTone === 'solar') {
+  if (goldTone === 'aurora') {
     // Aurora-like colors (blues, greens, purples with red/orange flashes)
     mainColors = {
       primary: `rgba(30, 150, 255, ${(goldIntensity / 100) * 0.3})`,      // Deep blue
@@ -93,7 +93,7 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
       <div
         className="absolute inset-0 z-20"
         style={{
-          background: goldTone === 'solar' ? 
+          background: goldTone === 'aurora' ? 
             // Aurora base effect - blues and greens
             `radial-gradient(
               ellipse at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
@@ -111,7 +111,7 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
               transparent 100%
             )`,
           mixBlendMode: blendMode,
-          opacity: goldTone === 'solar' ? 0.8 : 0.6
+          opacity: goldTone === 'aurora' ? 0.8 : 0.6
         }}
       />
       
@@ -124,19 +124,19 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
               ${45 + mousePosition.x * 90}deg,
               transparent 0%,
               ${mainColors.accent} 20%,
-              ${goldTone === 'solar' ? 'rgba(100, 220, 180, 0.4)' : 'rgba(255, 215, 0, 0.2)'} 50%,
+              ${goldTone === 'aurora' ? 'rgba(100, 220, 180, 0.4)' : 'rgba(255, 215, 0, 0.2)'} 50%,
               ${mainColors.accent} 80%,
               transparent 100%
             )
           `,
-          mixBlendMode: goldTone === 'solar' ? 'overlay' : 'overlay',
+          mixBlendMode: goldTone === 'aurora' ? 'overlay' : 'overlay',
           opacity: 0.5,
           animation: colorEnhancement ? `pulse ${animationDuration}ms infinite alternate` : 'none'
         }}
       />
 
-      {/* Aurora waves for solar mode - blues, greens, purples */}
-      {goldTone === 'solar' && (
+      {/* Aurora waves for aurora mode - blues, greens, purples */}
+      {goldTone === 'aurora' && (
         <div
           className="absolute inset-0 z-22"
           style={{
@@ -159,8 +159,8 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
         />
       )}
 
-      {/* Solar flare effect - red/orange flashes */}
-      {goldTone === 'solar' && (
+      {/* Aurora flare effect - red/orange flashes */}
+      {goldTone === 'aurora' && (
         <div
           className="absolute inset-0 z-23 transition-opacity duration-1000"
           style={{

@@ -59,8 +59,15 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         {SurfaceTexture}
       </div>
 
-      {/* Card Content */}
-      <div className="relative h-full p-6 flex flex-col z-15">
+      {/* Card Content - Prevent highlighting and selection */}
+      <div 
+        className="relative h-full p-6 flex flex-col z-15"
+        style={{
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          pointerEvents: 'none'
+        }}
+      >
         {/* Image Section */}
         {card.image_url && (
           <div className="flex-1 mb-6 relative overflow-hidden rounded-lg">
@@ -71,14 +78,24 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
               style={{
                 filter: isHovering ? 
                   `brightness(${interactiveLighting ? 1.2 : 1.1}) contrast(${interactiveLighting ? 1.1 : 1.05})` : 
-                  'brightness(1)'
+                  'brightness(1)',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                pointerEvents: 'none'
               }}
+              draggable={false}
             />
           </div>
         )}
         
         {/* Details Section */}
-        <div className="mt-auto p-4 rounded-lg bg-black bg-opacity-60 backdrop-blur-sm">
+        <div 
+          className="mt-auto p-4 rounded-lg bg-black bg-opacity-60 backdrop-blur-sm"
+          style={{
+            userSelect: 'none',
+            WebkitUserSelect: 'none'
+          }}
+        >
           <h3 className="text-white text-xl font-bold mb-2">{card.title}</h3>
           {card.description && (
             <p className="text-gray-300 text-sm mb-2">{card.description}</p>
