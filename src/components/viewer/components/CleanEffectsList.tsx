@@ -48,6 +48,8 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
   };
 
   const activeEffects = getActiveEffects();
+  
+  // Safe style color lookup with null check
   const styleColor = selectedPresetId ? getStyleColor(selectedPresetId) : null;
 
   return (
@@ -65,7 +67,7 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
             className={cn(
               "border rounded-lg p-3 transition-all",
               isActive && styleColor ? 
-                `border-[${styleColor.border}] bg-gradient-to-r from-transparent to-[${styleColor.bg}]` :
+                "" : // Will be styled with inline styles below
                 "border-white/10 bg-white/5",
               isDisabled && "opacity-60"
             )}
