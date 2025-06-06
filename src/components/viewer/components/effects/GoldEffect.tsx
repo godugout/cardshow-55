@@ -58,16 +58,16 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
   let mainColors, accentColors, blendMode;
   
   if (goldTone === 'solar') {
-    // Aurora-like colors (blues and greens with subtle purples)
+    // Aurora-like colors (blues, greens, purples with red/orange flashes)
     mainColors = {
-      primary: `rgba(40, 170, 255, ${(goldIntensity / 100) * 0.25})`,
-      secondary: `rgba(30, 210, 140, ${(goldIntensity / 100) * 0.3})`,
-      tertiary: `rgba(120, 140, 255, ${(goldIntensity / 100) * 0.2})`,
-      accent: `rgba(80, 200, 170, ${(goldIntensity / 100) * 0.25})`
+      primary: `rgba(30, 150, 255, ${(goldIntensity / 100) * 0.3})`,      // Deep blue
+      secondary: `rgba(20, 180, 120, ${(goldIntensity / 100) * 0.35})`,   // Green
+      tertiary: `rgba(80, 100, 200, ${(goldIntensity / 100) * 0.25})`,    // Purple-blue
+      accent: `rgba(60, 200, 150, ${(goldIntensity / 100) * 0.3})`        // Cyan-green
     };
     accentColors = {
-      flare1: `rgba(255, 100, 50, ${flareActive ? flareOpacity : 0})`,
-      flare2: `rgba(255, 180, 50, ${flareActive ? flareOpacity * 0.7 : 0})`
+      flare1: `rgba(255, 80, 40, ${flareActive ? flareOpacity : 0})`,      // Red-orange flash
+      flare2: `rgba(255, 140, 60, ${flareActive ? flareOpacity * 0.8 : 0})` // Orange flash
     };
     blendMode = 'screen';
   } else {
@@ -94,12 +94,12 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
         className="absolute inset-0 z-20"
         style={{
           background: goldTone === 'solar' ? 
-            // Aurora base effect
+            // Aurora base effect - blues and greens
             `radial-gradient(
               ellipse at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
               ${mainColors.primary} 0%,
-              ${mainColors.secondary} 50%,
-              ${mainColors.tertiary} 80%,
+              ${mainColors.secondary} 40%,
+              ${mainColors.tertiary} 70%,
               transparent 100%
             )` :
             // Gold base effect
@@ -111,7 +111,7 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
               transparent 100%
             )`,
           mixBlendMode: blendMode,
-          opacity: goldTone === 'solar' ? 0.75 : 0.6
+          opacity: goldTone === 'solar' ? 0.8 : 0.6
         }}
       />
       
@@ -124,18 +124,18 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
               ${45 + mousePosition.x * 90}deg,
               transparent 0%,
               ${mainColors.accent} 20%,
-              ${goldTone === 'solar' ? 'rgba(120, 255, 200, 0.35)' : 'rgba(255, 215, 0, 0.2)'} 50%,
+              ${goldTone === 'solar' ? 'rgba(100, 220, 180, 0.4)' : 'rgba(255, 215, 0, 0.2)'} 50%,
               ${mainColors.accent} 80%,
               transparent 100%
             )
           `,
           mixBlendMode: goldTone === 'solar' ? 'overlay' : 'overlay',
-          opacity: 0.4,
+          opacity: 0.5,
           animation: colorEnhancement ? `pulse ${animationDuration}ms infinite alternate` : 'none'
         }}
       />
 
-      {/* Aurora waves for solar mode */}
+      {/* Aurora waves for solar mode - blues, greens, purples */}
       {goldTone === 'solar' && (
         <div
           className="absolute inset-0 z-22"
@@ -144,22 +144,22 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
               linear-gradient(
                 ${180 + mousePosition.y * 40}deg,
                 transparent 0%,
-                rgba(20, 175, 240, ${(goldIntensity / 100) * 0.15}) 20%,
-                rgba(70, 230, 180, ${(goldIntensity / 100) * 0.2}) 40%, 
-                rgba(40, 130, 255, ${(goldIntensity / 100) * 0.15}) 60%,
-                rgba(100, 210, 160, ${(goldIntensity / 100) * 0.2}) 80%,
+                rgba(20, 150, 240, ${(goldIntensity / 100) * 0.2}) 15%,
+                rgba(60, 200, 140, ${(goldIntensity / 100) * 0.25}) 35%, 
+                rgba(80, 120, 200, ${(goldIntensity / 100) * 0.2}) 55%,
+                rgba(120, 80, 180, ${(goldIntensity / 100) * 0.18}) 75%,
                 transparent 100%
               )
             `,
             backgroundSize: '400% 400%',
             animation: `aurora ${animationDuration * 2}ms ease infinite`,
             mixBlendMode: 'screen',
-            opacity: 0.8
+            opacity: 0.9
           }}
         />
       )}
 
-      {/* Solar flare effect */}
+      {/* Solar flare effect - red/orange flashes */}
       {goldTone === 'solar' && (
         <div
           className="absolute inset-0 z-23 transition-opacity duration-1000"
@@ -179,7 +179,7 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
         />
       )}
 
-      {/* Fix for the style tag - use a standard style tag without jsx prop */}
+      {/* Style tag for animations */}
       <style>
         {`
           @keyframes aurora {
@@ -188,8 +188,8 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
             100% { background-position: 0% 0% }
           }
           @keyframes pulse {
-            0% { opacity: 0.3 }
-            100% { opacity: 0.6 }
+            0% { opacity: 0.4 }
+            100% { opacity: 0.7 }
           }
         `}
       </style>

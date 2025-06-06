@@ -29,7 +29,7 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
   {
     id: 'prizm',
     name: 'Prizm',
-    description: 'Geometric prismatic patterns with color separation',
+    description: 'Rainbow spectrum patterns with smooth gradients',
     category: 'prismatic',
     parameters: [
       { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
@@ -73,7 +73,7 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
   {
     id: 'crystal',
     name: 'Crystal',
-    description: 'Crystalline faceted surface with light dispersion',
+    description: 'Transparent crystal with diamond glitter facets',
     category: 'prismatic',
     parameters: [
       { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
@@ -114,6 +114,24 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
       },
       { id: 'reflectivity', name: 'Reflectivity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 85 },
       { id: 'colorEnhancement', name: 'Yellow Enhancement', type: 'toggle', defaultValue: true }
+    ]
+  },
+  {
+    id: 'ice',
+    name: 'Ice',
+    description: 'Natural ice surface with scratches and frost patterns',
+    category: 'surface',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 }
+    ]
+  },
+  {
+    id: 'lunar',
+    name: 'Lunar',
+    description: 'Retro space surface with moon dust and NASA gray aesthetic',
+    category: 'vintage',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 }
     ]
   }
 ];

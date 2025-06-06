@@ -35,14 +35,15 @@ export const CARD_BACK_MATERIALS: Record<string, CardBackMaterial> = {
   
   crystal: {
     id: 'crystal',
-    name: 'Crystal Surface',
-    background: 'linear-gradient(135deg, #e8f4f8 0%, #d1e7dd 25%, #b8dbd9 50%, #9ac9cd 75%, #7bb3bd 100%)',
-    borderColor: 'rgba(123, 179, 189, 0.8)',
-    opacity: 0.75,
-    blur: 2,
+    name: 'Crystal Glitter Surface',
+    background: 'linear-gradient(135deg, rgba(248, 250, 252, 0.3) 0%, rgba(241, 245, 249, 0.4) 25%, rgba(226, 232, 240, 0.5) 50%, rgba(203, 213, 225, 0.4) 75%, rgba(148, 163, 184, 0.3) 100%)',
+    borderColor: 'rgba(148, 163, 184, 0.6)',
+    opacity: 0.6, // More transparent
+    blur: 0.5,
+    texture: 'glitter',
     logoTreatment: {
-      filter: 'drop-shadow(0 8px 25px rgba(123, 179, 189, 0.8)) brightness(1.4) contrast(1.2)',
-      opacity: 0.8,
+      filter: 'drop-shadow(0 8px 25px rgba(148, 163, 184, 0.9)) brightness(1.6) contrast(1.3)',
+      opacity: 0.7, // More transparent
       transform: 'scale(1.08)'
     }
   },
@@ -89,26 +90,27 @@ export const CARD_BACK_MATERIALS: Record<string, CardBackMaterial> = {
   
   prizm: {
     id: 'prizm',
-    name: 'Prizm Surface',
-    background: 'linear-gradient(135deg, #1a237e 0%, #283593 25%, #3949ab 50%, #5e35b1 75%, #7b1fa2 100%)',
-    borderColor: 'rgba(123, 31, 162, 0.7)',
-    opacity: 0.82,
+    name: 'Rainbow Prizm Surface',
+    background: 'linear-gradient(135deg, #ff3c3c 0%, #ff7828 12%, #ffc828 25%, #78ff3c 37%, #28c8ff 50%, #3c78ff 62%, #8c50ff 75%, #ff50b4 87%, #ff3c3c 100%)',
+    borderColor: 'rgba(255, 120, 180, 0.7)',
+    opacity: 0.75,
     logoTreatment: {
-      filter: 'drop-shadow(0 7px 22px rgba(123, 31, 162, 0.8)) brightness(1.25) hue-rotate(15deg) saturate(1.4)',
-      opacity: 0.88,
+      filter: 'drop-shadow(0 7px 22px rgba(255, 120, 180, 0.8)) brightness(1.3) saturate(1.6)',
+      opacity: 0.9,
       transform: 'scale(1.07)'
     }
   },
   
   ice: {
     id: 'ice',
-    name: 'Ice Crystal Surface',
-    background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 25%, #90caf9 50%, #64b5f6 75%, #42a5f5 100%)',
-    borderColor: 'rgba(66, 165, 245, 0.7)',
-    opacity: 0.78,
-    blur: 1.5,
+    name: 'Natural Ice Surface',
+    background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 20%, #bae6fd 40%, #7dd3fc 60%, #38bdf8 80%, #0ea5e9 100%)',
+    borderColor: 'rgba(14, 165, 233, 0.6)',
+    opacity: 0.82,
+    blur: 1,
+    texture: 'ice-scratches',
     logoTreatment: {
-      filter: 'drop-shadow(0 6px 20px rgba(66, 165, 245, 0.8)) brightness(1.3) saturate(0.9)',
+      filter: 'drop-shadow(0 6px 20px rgba(14, 165, 233, 0.8)) brightness(1.2) contrast(1.1)',
       opacity: 0.85,
       transform: 'scale(1.04)'
     }
@@ -124,6 +126,35 @@ export const CARD_BACK_MATERIALS: Record<string, CardBackMaterial> = {
       filter: 'drop-shadow(0 8px 24px rgba(243, 156, 18, 0.9)) brightness(1.4) saturate(1.2)',
       opacity: 0.9,
       transform: 'scale(1.06)'
+    }
+  },
+
+  // New Solar material - blues, greens, purples
+  solar: {
+    id: 'solar',
+    name: 'Aurora Solar Surface',
+    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 20%, #1475cc 40%, #059669 60%, #7c3aed 80%, #8b5cf6 100%)',
+    borderColor: 'rgba(20, 184, 166, 0.8)',
+    opacity: 0.85,
+    logoTreatment: {
+      filter: 'drop-shadow(0 8px 25px rgba(20, 184, 166, 0.9)) brightness(1.4) hue-rotate(30deg) saturate(1.4)',
+      opacity: 0.9,
+      transform: 'scale(1.08)'
+    }
+  },
+
+  // New Lunar material - dull NASA gray with moon dust
+  lunar: {
+    id: 'lunar',
+    name: 'Lunar Dust Surface',
+    background: 'linear-gradient(135deg, #374151 0%, #4b5563 20%, #6b7280 40%, #9ca3af 60%, #d1d5db 80%, #e5e7eb 100%)',
+    borderColor: 'rgba(156, 163, 175, 0.5)',
+    opacity: 0.9,
+    texture: 'moon-dust',
+    logoTreatment: {
+      filter: 'drop-shadow(0 4px 16px rgba(75, 85, 99, 0.8)) brightness(0.85) contrast(1.2) sepia(0.1)',
+      opacity: 0.75,
+      transform: 'scale(0.98)'
     }
   },
   
@@ -172,7 +203,7 @@ export const useDynamicCardBackMaterials = (effectValues: EffectValues) => {
     
     console.log('🎨 Material Selection: Dominant effect:', dominantEffect);
     
-    // Enhanced mapping with specific materials for combo effects
+    // Enhanced mapping with specific materials
     const materialMapping: Record<string, string> = {
       holographic: 'holographic',
       crystal: 'crystal',
@@ -181,9 +212,19 @@ export const useDynamicCardBackMaterials = (effectValues: EffectValues) => {
       gold: 'gold',
       vintage: 'vintage',
       prizm: 'prizm',
-      interference: 'ice', // Map interference to ice material
-      foilspray: 'starlight' // Map foil spray to starlight material
+      interference: 'lunar', // Map interference to lunar material
+      foilspray: 'starlight', // Map foil spray to starlight material
     };
+
+    // Check for solar tone in gold effect
+    if (dominantEffect.effectId === 'gold') {
+      const goldTone = effectValues.gold?.goldTone;
+      if (goldTone === 'solar') {
+        const selectedMat = CARD_BACK_MATERIALS.solar;
+        console.log('🎨 Material Selection: Selected solar material:', selectedMat.name);
+        return selectedMat;
+      }
+    }
     
     const materialId = materialMapping[dominantEffect.effectId] || 'default';
     const selectedMat = CARD_BACK_MATERIALS[materialId];
@@ -203,7 +244,7 @@ export const useDynamicCardBackMaterials = (effectValues: EffectValues) => {
       gold: 'gold',
       vintage: 'vintage',
       prizm: 'prizm',
-      interference: 'ice',
+      interference: 'lunar',
       foilspray: 'starlight'
     };
     

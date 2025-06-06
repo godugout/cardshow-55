@@ -22,98 +22,98 @@ export const PrizmEffect: React.FC<PrizmEffectProps> = ({
 
   if (prizmIntensity <= 0) return null;
 
-  // Scale opacity more subtly - capping at 0.3 for maximum intensity
-  const baseOpacity = Math.min(0.3, (prizmIntensity / 100) * 0.25);
-  const secondaryOpacity = Math.min(0.2, (prizmIntensity / 100) * 0.15);
+  // More pronounced rainbow with reduced opacity
+  const baseOpacity = Math.min(0.35, (prizmIntensity / 100) * 0.3);
+  const secondaryOpacity = Math.min(0.25, (prizmIntensity / 100) * 0.2);
 
-  // Muted, balanced spectrum colors with lower opacity
-  const spectrumColors = [
-    `rgba(210, 70, 70, ${baseOpacity * 0.9})`,     // Muted red
-    `rgba(210, 130, 60, ${baseOpacity * 0.95})`,    // Muted orange
-    `rgba(190, 170, 60, ${baseOpacity})`,          // Muted yellow
-    `rgba(100, 170, 80, ${baseOpacity * 0.95})`,    // Muted green
-    `rgba(70, 150, 180, ${baseOpacity * 0.9})`,     // Muted cyan
-    `rgba(80, 100, 190, ${baseOpacity * 0.85})`,    // Muted blue
-    `rgba(130, 90, 170, ${baseOpacity * 0.8})`,     // Muted indigo
-    `rgba(160, 80, 150, ${baseOpacity * 0.85})`     // Muted violet
+  // Vibrant rainbow spectrum colors - more saturated, less purple
+  const rainbowColors = [
+    `rgba(255, 60, 60, ${baseOpacity})`,     // Bright red
+    `rgba(255, 120, 40, ${baseOpacity})`,    // Orange
+    `rgba(255, 200, 40, ${baseOpacity})`,    // Yellow
+    `rgba(120, 255, 60, ${baseOpacity})`,    // Green
+    `rgba(40, 200, 255, ${baseOpacity})`,    // Cyan
+    `rgba(60, 120, 255, ${baseOpacity})`,    // Blue
+    `rgba(140, 80, 255, ${baseOpacity * 0.7})`,    // Reduced purple
+    `rgba(255, 80, 180, ${baseOpacity * 0.8})`     // Pink
   ];
 
-  // Subtle mouse influence - reduced to be less distracting
-  const mouseInfluence = (mousePosition.x + mousePosition.y) * 45;
+  // Subtle mouse influence
+  const mouseInfluence = (mousePosition.x + mousePosition.y) * 60;
   
-  // Gentler transitions based on complexity
-  const blendFactor = Math.max(3, 11 - complexity);
+  // Smoother transitions
+  const blendFactor = Math.max(2, 8 - complexity);
 
   return (
     <>
-      {/* Primary Smooth Spectrum Layer */}
+      {/* Primary Rainbow Spectrum Layer - No lines, smooth gradients */}
       <div
         className="absolute inset-0 z-20"
         style={{
           background: `conic-gradient(
             from ${mouseInfluence}deg at 50% 50%,
-            ${spectrumColors[0]} 0deg,
-            ${spectrumColors[1]} ${45 * blendFactor}deg,
-            ${spectrumColors[2]} ${90 * blendFactor}deg,
-            ${spectrumColors[3]} ${135 * blendFactor}deg,
-            ${spectrumColors[4]} ${180 * blendFactor}deg,
-            ${spectrumColors[5]} ${225 * blendFactor}deg,
-            ${spectrumColors[6]} ${270 * blendFactor}deg,
-            ${spectrumColors[7]} ${315 * blendFactor}deg,
-            ${spectrumColors[0]} 360deg
+            ${rainbowColors[0]} 0deg,
+            ${rainbowColors[1]} ${45 * blendFactor}deg,
+            ${rainbowColors[2]} ${90 * blendFactor}deg,
+            ${rainbowColors[3]} ${135 * blendFactor}deg,
+            ${rainbowColors[4]} ${180 * blendFactor}deg,
+            ${rainbowColors[5]} ${225 * blendFactor}deg,
+            ${rainbowColors[6]} ${270 * blendFactor}deg,
+            ${rainbowColors[7]} ${315 * blendFactor}deg,
+            ${rainbowColors[0]} 360deg
           )`,
           maskImage: `radial-gradient(
-            ellipse at ${50 + mousePosition.x * 15}% ${50 + mousePosition.y * 15}%,
+            ellipse at ${50 + mousePosition.x * 20}% ${50 + mousePosition.y * 20}%,
             rgba(255, 255, 255, 1) 0%,
-            rgba(255, 255, 255, 0.9) 40%,
-            rgba(255, 255, 255, 0.7) 70%,
-            rgba(255, 255, 255, 0.4) 85%,
+            rgba(255, 255, 255, 0.95) 30%,
+            rgba(255, 255, 255, 0.8) 60%,
+            rgba(255, 255, 255, 0.5) 80%,
             transparent 100%
           )`,
           WebkitMaskImage: `radial-gradient(
-            ellipse at ${50 + mousePosition.x * 15}% ${50 + mousePosition.y * 15}%,
+            ellipse at ${50 + mousePosition.x * 20}% ${50 + mousePosition.y * 20}%,
             rgba(255, 255, 255, 1) 0%,
-            rgba(255, 255, 255, 0.9) 40%,
-            rgba(255, 255, 255, 0.7) 70%,
-            rgba(255, 255, 255, 0.4) 85%,
+            rgba(255, 255, 255, 0.95) 30%,
+            rgba(255, 255, 255, 0.8) 60%,
+            rgba(255, 255, 255, 0.5) 80%,
             transparent 100%
           )`,
-          mixBlendMode: 'soft-light'
+          mixBlendMode: 'overlay'
         }}
       />
 
-      {/* Subtle Secondary Accent Layer */}
+      {/* Secondary Rainbow Layer for Depth */}
       <div
         className="absolute inset-0 z-21"
         style={{
-          background: `linear-gradient(
-            ${45 + mousePosition.y * 30}deg,
-            ${spectrumColors[1]} 0%,
-            transparent 30%,
-            ${spectrumColors[3]} 50%,
-            transparent 70%,
-            ${spectrumColors[5]} 100%
+          background: `radial-gradient(
+            circle at ${50 + mousePosition.x * 25}% ${50 + mousePosition.y * 25}%,
+            ${rainbowColors[2]} 0%,
+            ${rainbowColors[4]} 30%,
+            ${rainbowColors[1]} 60%,
+            ${rainbowColors[5]} 90%,
+            transparent 100%
           )`,
-          opacity: secondaryOpacity * (0.7 + (colorSeparation / 100) * 0.3),
-          mixBlendMode: 'overlay',
-          filter: `blur(${Math.max(0, (10 - complexity) * 0.5)}px)`
+          opacity: secondaryOpacity * (0.8 + (colorSeparation / 100) * 0.4),
+          mixBlendMode: 'color-dodge'
         }}
       />
 
-      {/* Delicate Edge Highlight */}
+      {/* Soft Rainbow Highlight */}
       <div
         className="absolute inset-0 z-22"
         style={{
-          background: `radial-gradient(
-            circle at ${50 + mousePosition.x * 30}% ${50 + mousePosition.y * 30}%,
-            transparent 50%,
-            ${spectrumColors[2]} 80%,
-            ${spectrumColors[4]} 90%,
-            ${spectrumColors[6]} 100%
+          background: `linear-gradient(
+            ${mousePosition.x * 180 + 45}deg,
+            ${rainbowColors[0]} 0%,
+            ${rainbowColors[2]} 25%,
+            ${rainbowColors[4]} 50%,
+            ${rainbowColors[6]} 75%,
+            ${rainbowColors[0]} 100%
           )`,
-          opacity: secondaryOpacity * 0.6,
-          mixBlendMode: 'overlay',
-          filter: `blur(${0.5}px)`
+          opacity: secondaryOpacity * 0.8,
+          mixBlendMode: 'soft-light',
+          filter: `blur(${Math.max(0.5, (8 - complexity) * 0.8)}px)`
         }}
       />
     </>
