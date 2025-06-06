@@ -138,10 +138,27 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
   {
     id: 'lunar',
     name: 'Lunar',
-    description: 'Retro space surface with moon dust and NASA gray aesthetic',
+    description: 'Deep space moon surface with atmospheric glow and dust',
     category: 'vintage',
     parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 }
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'dustDensity', name: 'Dust Density', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 50 },
+      { id: 'atmosphere', name: 'Atmosphere', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 60 },
+      { id: 'blueTint', name: 'Blue Tint', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 30 },
+      { id: 'surfaceRoughness', name: 'Surface Roughness', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 70 }
+    ]
+  },
+  {
+    id: 'waves',
+    name: 'Waves',
+    description: 'Dynamic wave patterns for enhanced motion effects',
+    category: 'surface',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'frequency', name: 'Wave Frequency', type: 'slider', min: 1, max: 20, step: 1, defaultValue: 5 },
+      { id: 'amplitude', name: 'Wave Amplitude', type: 'slider', min: 10, max: 100, step: 5, defaultValue: 30 },
+      { id: 'speed', name: 'Wave Speed', type: 'slider', min: 0, max: 200, step: 5, defaultValue: 100 },
+      { id: 'interference', name: 'Interference Pattern', type: 'toggle', defaultValue: true }
     ]
   }
 ];
