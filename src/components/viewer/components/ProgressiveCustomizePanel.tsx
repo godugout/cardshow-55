@@ -3,7 +3,6 @@ import React from 'react';
 import { StudioHeader } from './studio/StudioHeader';
 import { StudioContent } from './studio/StudioContent';
 import { StudioFooter } from './studio/StudioFooter';
-import { useStudioSections } from './studio/useStudioSections';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 
@@ -56,8 +55,6 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
   onApplyCombo,
   isApplyingPreset = false
 }) => {
-  const { sectionStates, handleSectionToggle } = useStudioSections();
-
   return (
     <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col w-80 min-w-80 max-w-96">
       <StudioHeader onClose={onClose} />
@@ -69,14 +66,12 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
         overallBrightness={overallBrightness}
         interactiveLighting={interactiveLighting}
         materialSettings={materialSettings}
-        sectionStates={sectionStates}
         onSceneChange={onSceneChange}
         onLightingChange={onLightingChange}
         onEffectChange={onEffectChange}
         onBrightnessChange={onBrightnessChange}
         onInteractiveLightingToggle={onInteractiveLightingToggle}
         onMaterialSettingsChange={onMaterialSettingsChange}
-        onSectionToggle={handleSectionToggle}
         selectedPresetId={selectedPresetId}
         onPresetSelect={onPresetSelect}
         onApplyCombo={onApplyCombo}
