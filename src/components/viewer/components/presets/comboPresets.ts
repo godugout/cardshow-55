@@ -61,35 +61,33 @@ export const COMBO_PRESETS: ComboPreset[] = [
     id: 'ice-crystal',
     name: 'Ice',
     icon: Snowflake,
-    description: 'Frosted crystal with subtle scratches and minimal chrome',
-    materialHint: 'Frosted crystal surface with natural ice scratches',
+    description: 'Cool crystal with silver highlights',
+    materialHint: 'Frosted crystal surface with silver accents',
     effects: {
-      crystal: { intensity: 55, facets: 6, dispersion: 45, clarity: 40, sparkle: false },
-      chrome: { intensity: 15, sharpness: 40, highlightSize: 25 }
+      crystal: { intensity: 70, facets: 8, dispersion: 70, clarity: 60, sparkle: true },
+      chrome: { intensity: 35, sharpness: 90, highlightSize: 40 }
     }
   },
   {
     id: 'aurora-flare',
     name: 'Aurora',
     icon: Sun,
-    description: 'Natural aurora with enhanced wave motion and prismatic layers',
-    materialHint: 'Shimmering aurora with dynamic blue-green waves',
+    description: 'Aurora-like effect with natural flares',
+    materialHint: 'Shimmering aurora with vibrant blue-green waves',
     effects: {
-      holographic: { intensity: 60, shiftSpeed: 180, rainbowSpread: 240, animated: true },
-      interference: { intensity: 45, frequency: 12, thickness: 3 },
-      waves: { intensity: 85, frequency: 8, amplitude: 40, speed: 140, interference: true },
-      prizm: { intensity: 30, complexity: 6, colorSeparation: 70 }
+      aurora: { intensity: 70, waveSpeed: 120, colorShift: 180 },
+      interference: { intensity: 35, frequency: 8, thickness: 2 }
     }
   },
   {
     id: 'lunar-shimmer',
     name: 'Lunar',
     icon: Moon,
-    description: 'Muted surface with subtle vintage patina and minimal interference',
-    materialHint: 'Dull gray surface with soft lunar texture',
+    description: 'Subtle interference with vintage charm',
+    materialHint: 'Soft silvery surface with gentle interference patterns',
     effects: {
-      interference: { intensity: 20, frequency: 6, thickness: 2 },
-      vintage: { intensity: 45, aging: 60, patina: '#a0a0a0' }
+      interference: { intensity: 45, frequency: 12, thickness: 3 },
+      vintage: { intensity: 35, aging: 40, patina: '#c0c0c0' }
     }
   },
   {

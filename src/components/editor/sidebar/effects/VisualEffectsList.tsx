@@ -1,52 +1,53 @@
+
 import React, { useState } from 'react';
-import { Sparkles, Zap, Sun, Palette, Eye, Waves, Moon } from 'lucide-react';
+import { Sparkles, Zap, Sun, Palette, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { EffectItem } from './EffectItem';
-import { ENHANCED_VISUAL_EFFECTS } from '../../../viewer/hooks/useEnhancedCardEffects';
 
 interface VisualEffectsListProps {
   searchQuery: string;
 }
 
-// Icon mapping for effects
-const getEffectIcon = (effectId: string) => {
-  const iconMap = {
-    holographic: Sparkles,
-    foilspray: Zap,
-    prizm: Eye,
-    chrome: Sun,
-    interference: Sparkles,
-    brushedmetal: Palette,
-    crystal: Sparkles,
-    vintage: Palette,
-    gold: Sun,
-    waves: Waves
-  };
-  return iconMap[effectId] || Sparkles;
-};
-
-// Color mapping for effects
-const getEffectColor = (category: string) => {
-  const colorMap = {
-    prismatic: 'from-purple-500 to-cyan-500',
-    metallic: 'from-yellow-400 to-orange-500',
-    surface: 'from-blue-500 to-green-500',
-    vintage: 'from-amber-600 to-orange-600'
-  };
-  return colorMap[category] || 'from-gray-500 to-gray-600';
-};
-
 export const VisualEffectsList = ({ searchQuery }: VisualEffectsListProps) => {
   const [activeEffects, setActiveEffects] = useState<{[key: string]: boolean}>({});
 
-  // Use the dynamic effects from configuration
-  const effects = ENHANCED_VISUAL_EFFECTS.map(effect => ({
-    id: effect.id,
-    name: effect.name,
-    icon: getEffectIcon(effect.id),
-    color: getEffectColor(effect.category),
-    description: effect.description
-  }));
+  const effects = [
+    { 
+      id: 'holographic', 
+      name: 'Holographic', 
+      icon: Sparkles, 
+      color: 'from-purple-500 to-cyan-500',
+      description: 'Adds a shimmering holographic overlay'
+    },
+    { 
+      id: 'neonGlow', 
+      name: 'Neon Glow', 
+      icon: Zap, 
+      color: 'from-pink-500 to-purple-500',
+      description: 'Creates a glowing neon border effect'
+    },
+    { 
+      id: 'goldenHour', 
+      name: 'Golden Hour', 
+      icon: Sun, 
+      color: 'from-orange-400 to-yellow-500',
+      description: 'Warm golden lighting effect'
+    },
+    { 
+      id: 'vintage', 
+      name: 'Vintage Film', 
+      icon: Palette, 
+      color: 'from-amber-600 to-orange-600',
+      description: 'Classic film grain and color grading'
+    },
+    { 
+      id: 'chromatic', 
+      name: 'Chromatic', 
+      icon: Eye, 
+      color: 'from-red-500 via-green-500 to-blue-500',
+      description: 'RGB color separation effect'
+    }
+  ];
 
   const filteredEffects = effects.filter(effect => 
     effect.name.toLowerCase().includes(searchQuery.toLowerCase())

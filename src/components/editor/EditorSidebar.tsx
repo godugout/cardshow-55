@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -6,7 +7,6 @@ import { ElementsStep } from './sidebar/steps/ElementsStep';
 import { PreviewStep } from './sidebar/steps/PreviewStep';
 import { EffectsStep } from './sidebar/steps/EffectsStep';
 import { PhotoStep } from './sidebar/steps/PhotoStep';
-import { useCardEditor } from '@/hooks/useCardEditor';
 
 interface EditorSidebarProps {
   selectedTemplate: string;
@@ -23,9 +23,6 @@ export const EditorSidebar = ({
 }: EditorSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentStep, setCurrentStep] = useState<WorkflowStep>('frames');
-  
-  // Initialize card editor for effect system integration
-  const cardEditor = useCardEditor();
 
   const steps = [
     { key: 'frames' as const, label: '1', title: 'Frame', description: 'Choose template' },
@@ -125,7 +122,6 @@ export const EditorSidebar = ({
           <EffectsStep 
             searchQuery={searchQuery}
             onEffectsComplete={() => handleStepComplete('photo')}
-            cardEditor={cardEditor}
           />
         )}
         

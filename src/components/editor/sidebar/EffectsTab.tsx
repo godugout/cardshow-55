@@ -21,7 +21,7 @@ export const EffectsTab = ({ searchQuery = '', onEffectsComplete, cardEditor }: 
         <div className="text-center">
           <h3 className="text-white font-medium text-lg mb-2">Visual Effects</h3>
           <p className="text-crd-lightGray text-sm">
-            Add stunning visual effects to your card including Waves and Lunar
+            Add stunning visual effects to your card
           </p>
         </div>
 

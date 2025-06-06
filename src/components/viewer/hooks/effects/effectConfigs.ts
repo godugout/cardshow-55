@@ -1,3 +1,4 @@
+
 import type { VisualEffectConfig } from './types';
 
 // Define all visual effects with their unique parameters
@@ -115,16 +116,32 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
     ]
   },
   {
-    id: 'waves',
-    name: 'Waves',
-    description: 'Dynamic wave patterns for enhanced motion effects',
-    category: 'surface',
+    id: 'aurora',
+    name: 'Aurora',
+    description: 'Natural aurora borealis with dancing lights',
+    category: 'prismatic',
     parameters: [
       { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
-      { id: 'frequency', name: 'Wave Frequency', type: 'slider', min: 1, max: 20, step: 1, defaultValue: 5 },
-      { id: 'amplitude', name: 'Wave Amplitude', type: 'slider', min: 10, max: 100, step: 5, defaultValue: 30 },
-      { id: 'speed', name: 'Wave Speed', type: 'slider', min: 0, max: 200, step: 5, defaultValue: 100 },
-      { id: 'interference', name: 'Interference Pattern', type: 'toggle', defaultValue: true }
+      { id: 'waveSpeed', name: 'Wave Speed', type: 'slider', min: 0, max: 200, step: 5, defaultValue: 80 },
+      { id: 'colorShift', name: 'Color Shift', type: 'slider', min: 0, max: 360, step: 15, defaultValue: 120 }
+    ]
+  },
+  {
+    id: 'ice',
+    name: 'Ice',
+    description: 'Natural ice surface with scratches and frost patterns',
+    category: 'surface',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 }
+    ]
+  },
+  {
+    id: 'lunar',
+    name: 'Lunar',
+    description: 'Retro space surface with moon dust and NASA gray aesthetic',
+    category: 'vintage',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 }
     ]
   }
 ];

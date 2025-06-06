@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Sparkles, ChevronDown, ChevronRight } from 'lucide-react';
 import { ColoredSlider } from './ColoredSlider';
-import { ENHANCED_VISUAL_EFFECTS } from '../hooks/useEnhancedCardEffects';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 
 interface EffectsSectionProps {
@@ -13,34 +12,89 @@ interface EffectsSectionProps {
   onResetAllEffects: () => void;
 }
 
-// Dynamic effect configurations from the main config
-const getEffectConfig = (effectId: string) => {
-  const effect = ENHANCED_VISUAL_EFFECTS.find(e => e.id === effectId);
-  if (!effect) return null;
-  
-  // Map categories to colors
-  const categoryColors = {
-    prismatic: { color: 'text-purple-400', sliderColor: 'purple' },
-    metallic: { color: 'text-yellow-400', sliderColor: 'yellow' },
-    surface: { color: 'text-blue-400', sliderColor: 'blue' },
-    vintage: { color: 'text-amber-400', sliderColor: 'amber' }
-  };
-  
-  const categoryConfig = categoryColors[effect.category] || { color: 'text-gray-400', sliderColor: 'gray' };
-  
-  return {
-    name: effect.name,
-    ...categoryConfig,
-    parameters: effect.parameters.reduce((acc, param) => {
-      acc[param.id] = {
-        label: param.name,
-        min: param.min || 0,
-        max: param.max || 100,
-        step: param.step || 1
-      };
-      return acc;
-    }, {} as Record<string, any>)
-  };
+// Enhanced effect configurations with better organization
+const ENHANCED_EFFECTS_CONFIG = {
+  holographic: {
+    name: 'Holographic',
+    color: 'text-purple-400',
+    sliderColor: 'purple',
+    parameters: {
+      intensity: { label: 'Intensity', min: 0, max: 100, step: 1 },
+      shiftSpeed: { label: 'Shift Speed', min: 0, max: 300, step: 10 },
+      rainbowSpread: { label: 'Rainbow Spread', min: 0, max: 360, step: 10 },
+      prismaticDepth: { label: 'Prismatic Depth', min: 0, max: 100, step: 5 }
+    }
+  },
+  foilspray: {
+    name: 'Foil Spray',
+    color: 'text-yellow-400',
+    sliderColor: 'yellow',
+    parameters: {
+      intensity: { label: 'Intensity', min: 0, max: 100, step: 1 },
+      density: { label: 'Density', min: 0, max: 100, step: 5 },
+      size: { label: 'Size', min: 0, max: 100, step: 5 }
+    }
+  },
+  prizm: {
+    name: 'Prizm',
+    color: 'text-blue-400',
+    sliderColor: 'blue',
+    parameters: {
+      intensity: { label: 'Intensity', min: 0, max: 100, step: 1 },
+      refraction: { label: 'Refraction', min: 0, max: 100, step: 5 },
+      dispersion: { label: 'Dispersion', min: 0, max: 100, step: 5 }
+    }
+  },
+  chrome: {
+    name: 'Chrome',
+    color: 'text-gray-300',
+    sliderColor: 'gray',
+    parameters: {
+      intensity: { label: 'Intensity', min: 0, max: 100, step: 1 },
+      sharpness: { label: 'Sharpness', min: 0, max: 100, step: 5 },
+      reflectivity: { label: 'Reflectivity', min: 0, max: 100, step: 5 }
+    }
+  },
+  interference: {
+    name: 'Interference',
+    color: 'text-green-400',
+    sliderColor: 'green',
+    parameters: {
+      intensity: { label: 'Intensity', min: 0, max: 100, step: 1 },
+      frequency: { label: 'Frequency', min: 0, max: 100, step: 5 },
+      amplitude: { label: 'Amplitude', min: 0, max: 100, step: 5 }
+    }
+  },
+  brushedmetal: {
+    name: 'Brushed Metal',
+    color: 'text-orange-400',
+    sliderColor: 'orange',
+    parameters: {
+      intensity: { label: 'Intensity', min: 0, max: 100, step: 1 },
+      direction: { label: 'Direction', min: 0, max: 360, step: 15 },
+      roughness: { label: 'Roughness', min: 0, max: 100, step: 5 }
+    }
+  },
+  crystal: {
+    name: 'Crystal',
+    color: 'text-cyan-400',
+    sliderColor: 'cyan',
+    parameters: {
+      intensity: { label: 'Intensity', min: 0, max: 100, step: 1 },
+      facets: { label: 'Facets', min: 3, max: 20, step: 1 },
+      clarity: { label: 'Clarity', min: 0, max: 100, step: 5 }
+    }
+  },
+  vintage: {
+    name: 'Vintage',
+    color: 'text-amber-400',
+    sliderColor: 'amber',
+    parameters: {
+      intensity: { label: 'Intensity', min: 0, max: 100, step: 1 },
+      aging: { label: 'Aging', min: 0, max: 100, step: 5 },
+      wear: { label: 'Wear', min: 0, max: 100, step: 5 }
+    }
+  }
 };
 
 export const EffectsSection: React.FC<EffectsSectionProps> = ({
@@ -82,18 +136,15 @@ export const EffectsSection: React.FC<EffectsSectionProps> = ({
       </div>
       
       <div className="space-y-2">
-        {ENHANCED_VISUAL_EFFECTS.map((effect) => {
-          const config = getEffectConfig(effect.id);
-          if (!config) return null;
-          
-          const effectData = effectValues[effect.id] || { intensity: 0 };
+        {Object.entries(ENHANCED_EFFECTS_CONFIG).map(([effectId, config]) => {
+          const effectData = effectValues[effectId] || { intensity: 0 };
           const intensity = typeof effectData.intensity === 'number' ? effectData.intensity : 0;
-          const isExpanded = expandedEffects.has(effect.id);
+          const isExpanded = expandedEffects.has(effectId);
           const isActive = intensity > 0;
           const hasSecondaryParams = Object.keys(config.parameters).length > 1;
           
           return (
-            <div key={effect.id} className={`border border-white/10 rounded-lg p-3 ${isActive ? 'bg-white/5' : 'bg-transparent'}`}>
+            <div key={effectId} className={`border border-white/10 rounded-lg p-3 ${isActive ? 'bg-white/5' : 'bg-transparent'}`}>
               {/* Title and Intensity Slider on one line */}
               <div className="flex items-center space-x-3 mb-2">
                 <div className="flex items-center space-x-2 flex-1">
@@ -103,7 +154,7 @@ export const EffectsSection: React.FC<EffectsSectionProps> = ({
                   <div className="flex-1">
                     <ColoredSlider
                       value={[intensity]}
-                      onValueChange={(value) => onEffectChange(effect.id, 'intensity', value[0])}
+                      onValueChange={(value) => onEffectChange(effectId, 'intensity', value[0])}
                       min={0}
                       max={100}
                       step={1}
@@ -119,7 +170,7 @@ export const EffectsSection: React.FC<EffectsSectionProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => toggleEffectExpanded(effect.id)}
+                    onClick={() => toggleEffectExpanded(effectId)}
                     className="p-1 h-6 w-6 text-gray-400 hover:text-white"
                   >
                     {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
@@ -143,7 +194,7 @@ export const EffectsSection: React.FC<EffectsSectionProps> = ({
                         <div className="flex-1">
                           <ColoredSlider
                             value={[value]}
-                            onValueChange={(newValue) => onEffectChange(effect.id, paramId, newValue[0])}
+                            onValueChange={(newValue) => onEffectChange(effectId, paramId, newValue[0])}
                             min={paramConfig.min}
                             max={paramConfig.max}
                             step={paramConfig.step}
