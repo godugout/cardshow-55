@@ -29,7 +29,7 @@ const presetCardVariants = cva(
   }
 );
 
-export interface PresetCardProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof presetCardVariants> {
+export interface PresetCardProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof presetCardVariants> {
   title: string;
   description?: string;
   category?: string;
@@ -43,7 +43,7 @@ export interface PresetCardProps extends React.HTMLAttributes<HTMLDivElement>, V
   onSelect?: () => void;
 }
 
-export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
+export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
   ({ 
     className, 
     variant, 
@@ -59,13 +59,19 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
     badge,
     tooltipContent,
     onSelect,
+    onClick,
     ...props 
   }, ref) => {
     const cardVariant = isSelected ? 'selected' : isLoading ? 'loading' : 'default';
     
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (onSelect) onSelect();
+      if (onClick) onClick(e);
+    };
+    
     const CardContent = (
       <Button
-        onClick={onSelect}
+        onClick={handleClick}
         disabled={isDisabled || isLoading}
         variant="ghost"
         className={cn(
