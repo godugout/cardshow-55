@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -34,11 +33,11 @@ const COMBO_PRESETS: ComboPreset[] = [
     id: 'metallic-prizm',
     name: 'Prizm',
     icon: Gem,
-    description: 'Prismatic colors with brushed metal',
-    materialHint: 'Purple prizm surface with geometric patterns',
+    description: 'Balanced spectrum refraction with geometric patterns',
+    materialHint: 'Muted rainbow spectrum with angular light separation',
     effects: {
-      prizm: { intensity: 70, complexity: 7, colorSeparation: 80 },
-      brushedmetal: { intensity: 55, direction: 45, grainDensity: 12 }
+      prizm: { intensity: 55, complexity: 6, colorSeparation: 70 },
+      brushedmetal: { intensity: 35, direction: 45, grainDensity: 8 }
     }
   },
   {
@@ -115,7 +114,7 @@ const COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Metallic chrome surface with sparkling highlights',
     effects: {
       foilspray: { intensity: 65, density: 80, direction: 135 },
-      prizm: { intensity: 40, complexity: 5, colorSeparation: 60 }
+      prizm: { intensity: 35, complexity: 4, colorSeparation: 50 }
     }
   },
   {
