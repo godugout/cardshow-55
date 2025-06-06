@@ -1,5 +1,6 @@
 
 import React, { useCallback } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSectionManager } from './hooks/useSectionManager';
 import { 
   StylesSection, 
@@ -57,48 +58,52 @@ export const StudioContent: React.FC<StudioContentProps> = ({
   );
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className="p-4 space-y-6">
-        {/* Styles Section - Always Visible, No Header */}
-        <StylesSection
-          effectValues={effectValues}
-          selectedPresetId={selectedPresetId}
-          onPresetSelect={onPresetSelect}
-          onApplyCombo={onApplyCombo}
-          isApplyingPreset={isApplyingPreset}
-        />
+    <div className="flex-1 min-h-0">
+      <ScrollArea className="h-full">
+        <div className="p-4 space-y-6">
+          {/* Styles Section - With Header */}
+          <StylesSection
+            effectValues={effectValues}
+            isOpen={sectionStates.styles !== false}
+            onToggle={(isOpen) => setSectionState('styles', isOpen)}
+            selectedPresetId={selectedPresetId}
+            onPresetSelect={onPresetSelect}
+            onApplyCombo={onApplyCombo}
+            isApplyingPreset={isApplyingPreset}
+          />
 
-        {/* Effects Section */}
-        <EffectsSection
-          effectValues={effectValues}
-          isOpen={sectionStates.effects}
-          onToggle={(isOpen) => setSectionState('effects', isOpen)}
-          onEffectChange={onEffectChange}
-          selectedPresetId={selectedPresetId}
-        />
+          {/* Effects Section */}
+          <EffectsSection
+            effectValues={effectValues}
+            isOpen={sectionStates.effects}
+            onToggle={(isOpen) => setSectionState('effects', isOpen)}
+            onEffectChange={onEffectChange}
+            selectedPresetId={selectedPresetId}
+          />
 
-        {/* Scene Section */}
-        <SceneSection
-          selectedScene={selectedScene}
-          selectedLighting={selectedLighting}
-          overallBrightness={overallBrightness}
-          interactiveLighting={interactiveLighting}
-          isOpen={sectionStates.environment}
-          onToggle={(isOpen) => setSectionState('environment', isOpen)}
-          onSceneChange={onSceneChange}
-          onLightingChange={onLightingChange}
-          onBrightnessChange={handleBrightnessChange}
-          onInteractiveLightingToggle={onInteractiveLightingToggle}
-        />
+          {/* Scene Section */}
+          <SceneSection
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            overallBrightness={overallBrightness}
+            interactiveLighting={interactiveLighting}
+            isOpen={sectionStates.environment}
+            onToggle={(isOpen) => setSectionState('environment', isOpen)}
+            onSceneChange={onSceneChange}
+            onLightingChange={onLightingChange}
+            onBrightnessChange={handleBrightnessChange}
+            onInteractiveLightingToggle={onInteractiveLightingToggle}
+          />
 
-        {/* Surface Section */}
-        <SurfaceSection
-          materialSettings={materialSettings}
-          isOpen={sectionStates.materials}
-          onToggle={(isOpen) => setSectionState('materials', isOpen)}
-          onMaterialSettingsChange={onMaterialSettingsChange}
-        />
-      </div>
+          {/* Surface Section */}
+          <SurfaceSection
+            materialSettings={materialSettings}
+            isOpen={sectionStates.materials}
+            onToggle={(isOpen) => setSectionState('materials', isOpen)}
+            onMaterialSettingsChange={onMaterialSettingsChange}
+          />
+        </div>
+      </ScrollArea>
     </div>
   );
 };

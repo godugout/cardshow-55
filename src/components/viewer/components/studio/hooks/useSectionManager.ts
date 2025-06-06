@@ -2,6 +2,7 @@
 import { useState, useCallback } from 'react';
 
 interface SectionStates {
+  styles: boolean;
   effects: boolean;
   environment: boolean;
   materials: boolean;
@@ -17,7 +18,8 @@ export const useSectionManager = (): SectionManager => {
   const [sectionStates, setSectionStates] = useState<SectionStates>(() => {
     const stored = localStorage.getItem('studio-panel-sections');
     const defaults: SectionStates = {
-      effects: true,
+      styles: true,
+      effects: false,
       environment: false,
       materials: false
     };

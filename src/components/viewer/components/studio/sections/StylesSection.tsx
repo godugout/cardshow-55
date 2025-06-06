@@ -1,10 +1,13 @@
 
 import React from 'react';
+import { CollapsibleSection } from '@/components/ui/design-system';
 import { EnhancedQuickComboPresets } from '../../EnhancedQuickComboPresets';
 import type { EffectValues } from '../../../hooks/useEnhancedCardEffects';
 
 interface StylesSectionProps {
   effectValues: EffectValues;
+  isOpen: boolean;
+  onToggle: (isOpen: boolean) => void;
   selectedPresetId?: string;
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
@@ -13,13 +16,21 @@ interface StylesSectionProps {
 
 export const StylesSection: React.FC<StylesSectionProps> = ({
   effectValues,
+  isOpen,
+  onToggle,
   selectedPresetId,
   onPresetSelect,
   onApplyCombo,
   isApplyingPreset = false
 }) => {
   return (
-    <div>
+    <CollapsibleSection
+      title="Styles"
+      emoji="🎨"
+      statusText={selectedPresetId ? "Custom Preset" : "Quick Presets"}
+      isOpen={isOpen}
+      onToggle={onToggle}
+    >
       <EnhancedQuickComboPresets
         onApplyCombo={onApplyCombo}
         currentEffects={effectValues}
@@ -27,6 +38,6 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
         onPresetSelect={onPresetSelect}
         isApplyingPreset={isApplyingPreset}
       />
-    </div>
+    </CollapsibleSection>
   );
 };
