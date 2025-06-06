@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { PresetCard } from '@/components/ui/design-system';
 import { ENHANCED_COMBO_PRESETS } from './presets/enhancedComboPresets';
 import { CustomStyleEditor } from './CustomStyleEditor';
+import { Palette } from 'lucide-react';
 import type { QuickComboPresetsProps } from './presets/types';
 
 interface EnhancedQuickComboPresetsProps extends QuickComboPresetsProps {
@@ -36,6 +37,12 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
     const customPreset = {
       id: 'custom-style',
       name: 'Custom',
+      icon: Palette,
+      emoji: '🎨',
+      category: 'Personal',
+      description: 'Your custom style creation',
+      materialHint: 'Personalized surface with your creative touch',
+      tags: ['Personal', 'Custom'],
       effects
     };
     onApplyCombo(customPreset);
