@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useMemo, startTransition, useRef } from 'react';
 
 export interface EffectParameter {
@@ -132,7 +133,8 @@ export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
           { value: 'rich', label: 'Rich Gold' },
           { value: 'rose', label: 'Rose Gold' },
           { value: 'white', label: 'White Gold' },
-          { value: 'antique', label: 'Antique Gold' }
+          { value: 'antique', label: 'Antique Gold' },
+          { value: 'solar', label: 'Aurora Solar' }
         ]
       },
       { id: 'reflectivity', name: 'Reflectivity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 85 },

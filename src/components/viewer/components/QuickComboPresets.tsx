@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -88,11 +89,11 @@ const COMBO_PRESETS: ComboPreset[] = [
     id: 'solar-flare',
     name: 'Solar',
     icon: Sun,
-    description: 'Bright holographic with gold warmth',
-    materialHint: 'Radiant holographic surface with golden highlights',
+    description: 'Aurora-like effect with solar flares',
+    materialHint: 'Shimmering aurora with vibrant blue-green waves',
     effects: {
-      holographic: { intensity: 60, shiftSpeed: 180, rainbowSpread: 200, animated: true },
-      gold: { intensity: 45, shimmerSpeed: 100, goldTone: 'rich', reflectivity: 70, platingThickness: 5, colorEnhancement: true }
+      gold: { intensity: 70, shimmerSpeed: 120, goldTone: 'solar', reflectivity: 80, platingThickness: 3, colorEnhancement: true },
+      interference: { intensity: 35, frequency: 8, thickness: 2 }
     }
   },
   {
