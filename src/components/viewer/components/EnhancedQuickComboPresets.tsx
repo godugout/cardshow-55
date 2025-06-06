@@ -68,7 +68,7 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
           </div>
         )}
 
-        {/* Preset Grid - More Compact */}
+        {/* Preset Grid - Responsive Grid */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h5 className="text-crd-lightGray text-xs font-medium uppercase tracking-wide">
@@ -79,7 +79,7 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
             )}
           </div>
           
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3 gap-2">
             {filteredPresets.map((preset) => {
               const isSelected = selectedPresetId === preset.id;
               const isLoading = isApplyingPreset && isSelected;

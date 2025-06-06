@@ -103,7 +103,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
   );
 
   return (
-    <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col">
+    <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col w-80 sm:w-96 lg:w-[22rem] xl:w-[26rem] 2xl:w-[28rem] max-w-[20vw]">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-white/10">
         <h2 className="text-lg font-semibold text-white">🎨 Studio</h2>
