@@ -57,3 +57,29 @@ export const useAllCollections = (page = 1, limit = 8) => {
 
   return { collections, total, loading, error };
 };
+
+export const useCollections = () => {
+  const [collections, setCollections] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        setIsLoading(true);
+        const { collections: data } = await CollectionRepository.getAllCollections();
+        setCollections(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching collections:', err);
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCollections();
+  }, []);
+
+  return { collections, isLoading, error };
+};

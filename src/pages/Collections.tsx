@@ -8,6 +8,7 @@ import { CollectionCard } from '@/components/collections/CollectionCard';
 import { CreateCollectionModal } from '@/components/collections/CreateCollectionModal';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Collections = () => {
   const { collections, isLoading, error } = useCollections();
@@ -16,6 +17,26 @@ const Collections = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+  };
+
+  const handleEdit = (collection: any) => {
+    console.log('Edit collection:', collection);
+    toast.info('Edit functionality coming soon');
+  };
+
+  const handleDelete = (collectionId: string) => {
+    console.log('Delete collection:', collectionId);
+    toast.info('Delete functionality coming soon');
+  };
+
+  const handleView = (collection: any) => {
+    console.log('View collection:', collection);
+    toast.info('View functionality coming soon');
+  };
+
+  const handleCreate = async (collectionData: any) => {
+    console.log('Create collection:', collectionData);
+    toast.success('Collection created successfully!');
   };
 
   const filteredCollections = collections?.filter(collection =>
@@ -86,7 +107,13 @@ const Collections = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredCollections.map(collection => (
-                <CollectionCard key={collection.id} collection={collection} />
+                <CollectionCard 
+                  key={collection.id} 
+                  collection={collection}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onView={handleView}
+                />
               ))}
             </div>
           )}
@@ -95,6 +122,7 @@ const Collections = () => {
           <CreateCollectionModal
             isOpen={showCreateModal}
             onClose={() => setShowCreateModal(false)}
+            onCreate={handleCreate}
           />
         </div>
       </div>

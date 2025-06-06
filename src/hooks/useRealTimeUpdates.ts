@@ -59,7 +59,7 @@ export const useRealTimeUpdates = ({
           .subscribe((status) => {
             console.log(`[RealTime] ${table} subscription status:`, status);
             setIsConnected(status === 'SUBSCRIBED');
-            if (status === 'SUBSCRIPTION_ERROR') {
+            if (status === 'CHANNEL_ERROR') {
               setError('Failed to subscribe to real-time updates');
             } else {
               setError(null);
