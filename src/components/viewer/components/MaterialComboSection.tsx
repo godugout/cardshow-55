@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Slider } from '@/components/ui/slider';
-import { Gem, Droplets, Mirror, Shield } from 'lucide-react';
+import { Gem, Droplets, Chrome, Shield } from 'lucide-react';
 import type { MaterialSettings } from '../types';
 
 interface MaterialComboSectionProps {
@@ -18,7 +18,7 @@ export const MaterialComboSection: React.FC<MaterialComboSectionProps> = ({
       key: 'metalness', 
       label: 'Metalness', 
       description: 'How metallic the surface appears',
-      icon: Mirror,
+      icon: Chrome,
       color: 'text-gray-400',
       dotColor: 'bg-gray-500'
     },
