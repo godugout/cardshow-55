@@ -72,7 +72,8 @@ export const EnhancedEffectsList: React.FC<EnhancedEffectsListProps> = ({
   // Get active effects
   const activeEffects = useMemo(() => {
     return Object.entries(effectValues).filter(([_, params]) => 
-      params && typeof params === 'object' && 'intensity' in params && params.intensity > 0
+      params && typeof params === 'object' && 'intensity' in params && 
+      typeof params.intensity === 'number' && params.intensity > 0
     );
   }, [effectValues]);
 
@@ -88,7 +89,11 @@ export const EnhancedEffectsList: React.FC<EnhancedEffectsListProps> = ({
 
   const getEffectIntensity = (effectId: string): number => {
     const params = effectValues[effectId];
-    return params && typeof params === 'object' && 'intensity' in params ? params.intensity : 0;
+    if (params && typeof params === 'object' && 'intensity' in params) {
+      const intensity = params.intensity;
+      return typeof intensity === 'number' ? intensity : 0;
+    }
+    return 0;
   };
 
   const isEffectActive = (effectId: string): boolean => {

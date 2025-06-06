@@ -88,6 +88,7 @@ export const createCustomPreset = (currentEffects: EffectValues): ComboPreset =>
     name: "Your Style",
     icon: User,
     description,
+    materialHint: 'Custom user-defined material combination',
     effects: currentEffects,
     isCustom: true
   };

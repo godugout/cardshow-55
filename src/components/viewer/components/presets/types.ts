@@ -1,3 +1,4 @@
+
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset } from '../../types';
 
@@ -12,6 +13,8 @@ export interface ComboPreset {
   tags?: string[];
   effects: EffectValues;
   isCustom?: boolean;
+  scene?: EnvironmentScene;
+  lighting?: LightingPreset;
 }
 
 export interface PresetItemProps {
