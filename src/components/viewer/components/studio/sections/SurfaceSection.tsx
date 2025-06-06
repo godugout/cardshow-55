@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { CollapsibleSection } from '@/components/ui/design-system';
-import { MaterialPropertiesSection } from '../../MaterialPropertiesSection';
+import { MaterialComboSection } from '../../MaterialComboSection';
 import type { MaterialSettings } from '../../../types';
 
 interface SurfaceSectionProps {
@@ -21,11 +21,11 @@ export const SurfaceSection: React.FC<SurfaceSectionProps> = ({
     <CollapsibleSection
       title="Surface"
       emoji="💎"
-      statusText="Custom Settings"
+      statusText="Material Properties"
       isOpen={isOpen}
       onToggle={onToggle}
     >
-      <MaterialPropertiesSection
+      <MaterialComboSection
         materialSettings={materialSettings}
         onMaterialSettingsChange={onMaterialSettingsChange}
       />

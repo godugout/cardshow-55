@@ -15,24 +15,34 @@ export const EnvironmentComboSection: React.FC<EnvironmentComboSectionProps> = (
 }) => {
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         {ENVIRONMENT_SCENES.map((scene) => (
-          <Button
+          <div
             key={scene.id}
             onClick={() => onSceneChange(scene)}
-            variant={selectedScene.id === scene.id ? "default" : "outline"}
-            className={`h-auto p-3 flex flex-col items-center space-y-1 ${
+            className={`relative p-4 rounded-lg border cursor-pointer transition-all hover:scale-[1.02] ${
               selectedScene.id === scene.id
-                ? 'bg-crd-green text-black border-crd-green'
-                : 'border-editor-border hover:border-crd-green hover:bg-crd-green/10'
+                ? 'border-green-500 bg-green-500/10 shadow-lg shadow-green-500/20'
+                : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
             }`}
           >
-            <span className="text-lg">{scene.icon}</span>
-            <span className="text-xs font-medium">{scene.name}</span>
-            <span className="text-xs text-center leading-tight opacity-70">
-              {scene.description}
-            </span>
-          </Button>
+            <div className="flex flex-col items-center space-y-2">
+              <div className="text-2xl">{scene.icon}</div>
+              <div className="text-center">
+                <div className={`font-medium text-sm ${
+                  selectedScene.id === scene.id ? 'text-green-400' : 'text-white'
+                }`}>
+                  {scene.name}
+                </div>
+                <div className="text-xs text-gray-400 mt-1 leading-tight">
+                  {scene.description}
+                </div>
+              </div>
+            </div>
+            {selectedScene.id === scene.id && (
+              <div className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full"></div>
+            )}
+          </div>
         ))}
       </div>
     </div>

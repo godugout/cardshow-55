@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { CollapsibleSection } from '@/components/ui/design-system';
-import { EnvironmentSection } from '../../EnvironmentSection';
+import { EnvironmentComboSection } from '../../EnvironmentComboSection';
+import { LightingComboSection } from '../../LightingComboSection';
 import type { EnvironmentScene, LightingPreset } from '../../../types';
 
 interface SceneSectionProps {
@@ -37,16 +38,33 @@ export const SceneSection: React.FC<SceneSectionProps> = ({
       isOpen={isOpen}
       onToggle={onToggle}
     >
-      <EnvironmentSection
-        selectedScene={selectedScene}
-        selectedLighting={selectedLighting}
-        overallBrightness={overallBrightness}
-        interactiveLighting={interactiveLighting}
-        onSceneChange={onSceneChange}
-        onLightingChange={onLightingChange}
-        onBrightnessChange={onBrightnessChange}
-        onInteractiveLightingToggle={onInteractiveLightingToggle}
-      />
+      <div className="space-y-6">
+        {/* Environment Scenes */}
+        <div>
+          <h4 className="text-white text-sm font-medium mb-3 flex items-center">
+            Environment Scene
+          </h4>
+          <EnvironmentComboSection
+            selectedScene={selectedScene}
+            onSceneChange={onSceneChange}
+          />
+        </div>
+
+        {/* Lighting */}
+        <div>
+          <h4 className="text-white text-sm font-medium mb-3 flex items-center">
+            Lighting Style
+          </h4>
+          <LightingComboSection
+            selectedLighting={selectedLighting}
+            overallBrightness={overallBrightness}
+            interactiveLighting={interactiveLighting}
+            onLightingChange={onLightingChange}
+            onBrightnessChange={onBrightnessChange}
+            onInteractiveLightingToggle={onInteractiveLightingToggle}
+          />
+        </div>
+      </div>
     </CollapsibleSection>
   );
 };
