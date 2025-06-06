@@ -33,11 +33,11 @@ const COMBO_PRESETS: ComboPreset[] = [
     id: 'metallic-prizm',
     name: 'Prizm',
     icon: Gem,
-    description: 'Balanced spectrum refraction with geometric patterns',
-    materialHint: 'Muted rainbow spectrum with angular light separation',
+    description: 'Subtle spectrum film with balanced color',
+    materialHint: 'Delicate spectrum film over card surface',
     effects: {
-      prizm: { intensity: 55, complexity: 6, colorSeparation: 70 },
-      brushedmetal: { intensity: 35, direction: 45, grainDensity: 8 }
+      prizm: { intensity: 40, complexity: 4, colorSeparation: 60 },
+      brushedmetal: { intensity: 25, direction: 45, grainDensity: 8 }
     }
   },
   {

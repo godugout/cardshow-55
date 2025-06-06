@@ -16,147 +16,104 @@ export const PrizmEffect: React.FC<PrizmEffectProps> = ({
     return effectValues?.[effectId]?.[paramId] ?? defaultValue;
   };
 
-  const prizemIntensity = getEffectParam('prizm', 'intensity', 0);
+  const prizmIntensity = getEffectParam('prizm', 'intensity', 0);
   const complexity = getEffectParam('prizm', 'complexity', 5);
   const colorSeparation = getEffectParam('prizm', 'colorSeparation', 60);
 
-  if (prizemIntensity <= 0) return null;
+  if (prizmIntensity <= 0) return null;
 
-  // Calculate base opacity with better scaling for lower intensities
-  const baseOpacity = Math.min(0.6, (prizemIntensity / 100) * 0.8);
-  const geometricOpacity = Math.min(0.4, (prizemIntensity / 100) * 0.6);
+  // Scale opacity more subtly - capping at 0.3 for maximum intensity
+  const baseOpacity = Math.min(0.3, (prizmIntensity / 100) * 0.25);
+  const secondaryOpacity = Math.min(0.2, (prizmIntensity / 100) * 0.15);
 
-  // Muted spectrum colors - balanced and desaturated
+  // Muted, balanced spectrum colors with lower opacity
   const spectrumColors = [
-    `rgba(220, 60, 60, ${baseOpacity * 0.7})`,    // Muted red
-    `rgba(220, 120, 40, ${baseOpacity * 0.8})`,   // Muted orange
-    `rgba(200, 180, 40, ${baseOpacity * 0.9})`,   // Muted yellow
-    `rgba(80, 180, 60, ${baseOpacity * 0.8})`,    // Muted green
-    `rgba(40, 140, 180, ${baseOpacity * 0.8})`,   // Muted cyan
-    `rgba(60, 80, 200, ${baseOpacity * 0.7})`,    // Muted blue
-    `rgba(120, 60, 180, ${baseOpacity * 0.6})`,   // Muted indigo
-    `rgba(160, 60, 160, ${baseOpacity * 0.5})`    // Muted violet
+    `rgba(210, 70, 70, ${baseOpacity * 0.9})`,     // Muted red
+    `rgba(210, 130, 60, ${baseOpacity * 0.95})`,    // Muted orange
+    `rgba(190, 170, 60, ${baseOpacity})`,          // Muted yellow
+    `rgba(100, 170, 80, ${baseOpacity * 0.95})`,    // Muted green
+    `rgba(70, 150, 180, ${baseOpacity * 0.9})`,     // Muted cyan
+    `rgba(80, 100, 190, ${baseOpacity * 0.85})`,    // Muted blue
+    `rgba(130, 90, 170, ${baseOpacity * 0.8})`,     // Muted indigo
+    `rgba(160, 80, 150, ${baseOpacity * 0.85})`     // Muted violet
   ];
 
-  // Create geometric separation angles based on complexity
-  const separationAngle = 360 / Math.max(3, complexity);
-  const mouseInfluence = (mousePosition.x + mousePosition.y) * 90;
+  // Subtle mouse influence - reduced to be less distracting
+  const mouseInfluence = (mousePosition.x + mousePosition.y) * 45;
+  
+  // Gentler transitions based on complexity
+  const blendFactor = Math.max(3, 11 - complexity);
 
   return (
     <>
-      {/* Primary Spectrum Dispersion with Geometric Separation */}
+      {/* Primary Smooth Spectrum Layer */}
       <div
         className="absolute inset-0 z-20"
         style={{
           background: `conic-gradient(
             from ${mouseInfluence}deg at 50% 50%,
             ${spectrumColors[0]} 0deg,
-            ${spectrumColors[0]} ${separationAngle * 0.8}deg,
-            transparent ${separationAngle * 0.9}deg,
-            transparent ${separationAngle * 1.1}deg,
-            ${spectrumColors[1]} ${separationAngle * 1.2}deg,
-            ${spectrumColors[1]} ${separationAngle * 1.8}deg,
-            transparent ${separationAngle * 1.9}deg,
-            transparent ${separationAngle * 2.1}deg,
-            ${spectrumColors[2]} ${separationAngle * 2.2}deg,
-            ${spectrumColors[2]} ${separationAngle * 2.8}deg,
-            transparent ${separationAngle * 2.9}deg,
-            transparent ${separationAngle * 3.1}deg,
-            ${spectrumColors[3]} ${separationAngle * 3.2}deg,
-            ${spectrumColors[3]} ${separationAngle * 3.8}deg,
-            transparent ${separationAngle * 3.9}deg,
-            transparent ${separationAngle * 4.1}deg,
-            ${spectrumColors[4]} ${separationAngle * 4.2}deg,
-            ${spectrumColors[4]} ${separationAngle * 4.8}deg,
-            transparent ${separationAngle * 4.9}deg,
-            transparent ${separationAngle * 5.1}deg,
-            ${spectrumColors[5]} ${separationAngle * 5.2}deg,
-            ${spectrumColors[5]} ${separationAngle * 5.8}deg,
-            transparent ${separationAngle * 5.9}deg,
-            transparent ${separationAngle * 6.1}deg,
-            ${spectrumColors[6]} ${separationAngle * 6.2}deg,
-            ${spectrumColors[6]} ${separationAngle * 6.8}deg,
-            transparent ${separationAngle * 6.9}deg,
-            transparent ${separationAngle * 7.1}deg,
-            ${spectrumColors[7]} ${separationAngle * 7.2}deg,
+            ${spectrumColors[1]} ${45 * blendFactor}deg,
+            ${spectrumColors[2]} ${90 * blendFactor}deg,
+            ${spectrumColors[3]} ${135 * blendFactor}deg,
+            ${spectrumColors[4]} ${180 * blendFactor}deg,
+            ${spectrumColors[5]} ${225 * blendFactor}deg,
+            ${spectrumColors[6]} ${270 * blendFactor}deg,
+            ${spectrumColors[7]} ${315 * blendFactor}deg,
             ${spectrumColors[0]} 360deg
           )`,
           maskImage: `radial-gradient(
-            ellipse at ${50 + mousePosition.x * 20}% ${50 + mousePosition.y * 20}%,
+            ellipse at ${50 + mousePosition.x * 15}% ${50 + mousePosition.y * 15}%,
             rgba(255, 255, 255, 1) 0%,
-            rgba(255, 255, 255, 0.9) 30%,
-            rgba(255, 255, 255, 0.6) 60%,
-            rgba(255, 255, 255, 0.2) 85%,
+            rgba(255, 255, 255, 0.9) 40%,
+            rgba(255, 255, 255, 0.7) 70%,
+            rgba(255, 255, 255, 0.4) 85%,
             transparent 100%
           )`,
           WebkitMaskImage: `radial-gradient(
-            ellipse at ${50 + mousePosition.x * 20}% ${50 + mousePosition.y * 20}%,
+            ellipse at ${50 + mousePosition.x * 15}% ${50 + mousePosition.y * 15}%,
             rgba(255, 255, 255, 1) 0%,
-            rgba(255, 255, 255, 0.9) 30%,
-            rgba(255, 255, 255, 0.6) 60%,
-            rgba(255, 255, 255, 0.2) 85%,
+            rgba(255, 255, 255, 0.9) 40%,
+            rgba(255, 255, 255, 0.7) 70%,
+            rgba(255, 255, 255, 0.4) 85%,
             transparent 100%
           )`,
-          mixBlendMode: 'screen'
+          mixBlendMode: 'soft-light'
         }}
       />
 
-      {/* Secondary Geometric Pattern for Depth */}
+      {/* Subtle Secondary Accent Layer */}
       <div
         className="absolute inset-0 z-21"
         style={{
           background: `linear-gradient(
-            ${45 + mousePosition.y * 60}deg,
+            ${45 + mousePosition.y * 30}deg,
             ${spectrumColors[1]} 0%,
-            transparent 20%,
-            ${spectrumColors[3]} 40%,
-            transparent 60%,
-            ${spectrumColors[5]} 80%,
-            transparent 100%
+            transparent 30%,
+            ${spectrumColors[3]} 50%,
+            transparent 70%,
+            ${spectrumColors[5]} 100%
           )`,
-          maskImage: `repeating-linear-gradient(
-            ${mousePosition.x * 180}deg,
-            rgba(255, 255, 255, 1) 0px,
-            rgba(255, 255, 255, 1) ${colorSeparation / 10}px,
-            transparent ${colorSeparation / 8}px,
-            transparent ${colorSeparation / 5}px
-          )`,
-          WebkitMaskImage: `repeating-linear-gradient(
-            ${mousePosition.x * 180}deg,
-            rgba(255, 255, 255, 1) 0px,
-            rgba(255, 255, 255, 1) ${colorSeparation / 10}px,
-            transparent ${colorSeparation / 8}px,
-            transparent ${colorSeparation / 5}px
-          )`,
-          opacity: geometricOpacity,
-          mixBlendMode: 'color-dodge'
+          opacity: secondaryOpacity * (0.7 + (colorSeparation / 100) * 0.3),
+          mixBlendMode: 'overlay',
+          filter: `blur(${Math.max(0, (10 - complexity) * 0.5)}px)`
         }}
       />
 
-      {/* Angular Light Refraction Pattern */}
+      {/* Delicate Edge Highlight */}
       <div
         className="absolute inset-0 z-22"
         style={{
-          background: `conic-gradient(
-            from ${mousePosition.x * 120 + 180}deg at ${30 + mousePosition.x * 40}% ${30 + mousePosition.y * 40}%,
-            transparent 0deg,
-            ${spectrumColors[2]} ${separationAngle / 2}deg,
-            transparent ${separationAngle}deg,
-            ${spectrumColors[4]} ${separationAngle * 1.5}deg,
-            transparent ${separationAngle * 2}deg,
-            ${spectrumColors[6]} ${separationAngle * 2.5}deg,
-            transparent ${separationAngle * 3}deg,
-            ${spectrumColors[0]} ${separationAngle * 3.5}deg,
-            transparent 360deg
+          background: `radial-gradient(
+            circle at ${50 + mousePosition.x * 30}% ${50 + mousePosition.y * 30}%,
+            transparent 50%,
+            ${spectrumColors[2]} 80%,
+            ${spectrumColors[4]} 90%,
+            ${spectrumColors[6]} 100%
           )`,
-          opacity: geometricOpacity * 0.7,
+          opacity: secondaryOpacity * 0.6,
           mixBlendMode: 'overlay',
-          clipPath: `polygon(
-            ${20 + mousePosition.x * 10}% ${20 + mousePosition.y * 10}%,
-            ${80 - mousePosition.x * 10}% ${20 + mousePosition.y * 10}%,
-            ${70 - mousePosition.x * 5}% ${80 - mousePosition.y * 10}%,
-            ${30 + mousePosition.x * 5}% ${80 - mousePosition.y * 10}%
-          )`
+          filter: `blur(${0.5}px)`
         }}
       />
     </>
