@@ -112,7 +112,7 @@ export const useCachedCardEffects = (params: UseCachedCardEffectsParams) => {
     return () => styleCache.current.get(cacheKey)!;
   }, [environmentKey, selectedScene, selectedLighting]);
 
-  // Cached surface texture
+  // Cached surface texture - return as React element
   const SurfaceTexture = useMemo(() => {
     const textureOpacity = showEffects ? 0.05 : 0.1;
     return (
