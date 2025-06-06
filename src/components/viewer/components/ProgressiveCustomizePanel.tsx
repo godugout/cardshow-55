@@ -1,6 +1,6 @@
 
 import React, { useCallback, useState, useMemo } from 'react';
-import { Sparkles, X, Download, Share2, Maximize2, Minimize2 } from 'lucide-react';
+import { X, Download, Share2, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CollapsibleSection } from '@/components/ui/design-system';
 import { EnhancedQuickComboPresets } from './EnhancedQuickComboPresets';
@@ -61,11 +61,10 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
   onApplyCombo,
   isApplyingPreset = false
 }) => {
-  // Section state management with smart defaults
+  // Simplified section state - only track advanced sections
   const [sectionStates, setSectionStates] = useState(() => {
     const stored = localStorage.getItem('studio-panel-sections');
     const defaults = {
-      quickStyles: true, // Always open by default
       effects: false,
       environment: false,
       materials: false
@@ -80,13 +79,6 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
       return typeof intensity === 'number' && intensity > 0;
     }).length;
   }, [effectValues]);
-
-  // Auto-expand effects section when user has active effects
-  React.useEffect(() => {
-    if (activeEffectsCount > 0 && !sectionStates.effects) {
-      setSectionStates(prev => ({ ...prev, effects: true }));
-    }
-  }, [activeEffectsCount, sectionStates.effects]);
 
   // Handle section toggle with persistence
   const handleSectionToggle = useCallback((section: string, isOpen: boolean) => {
@@ -104,9 +96,9 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
 
   return (
     <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col w-80 sm:w-96 lg:w-[22rem] xl:w-[26rem] 2xl:w-[28rem] max-w-[20vw]">
-      {/* Header */}
+      {/* Simplified Header */}
       <div className="flex items-center justify-between p-4 border-b border-white/10">
-        <h2 className="text-lg font-semibold text-white">🎨 Studio</h2>
+        <h2 className="text-lg font-semibold text-white">Studio</h2>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="h-5 w-5 text-white" />
         </Button>
@@ -114,14 +106,9 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-4 space-y-4">
-          {/* Quick Styles Section - Always Open */}
-          <CollapsibleSection
-            title="Styles"
-            emoji="🎨"
-            statusText={isApplyingPreset ? "Applying..." : undefined}
-            alwaysOpen={true}
-          >
+        <div className="p-4 space-y-6">
+          {/* Styles Section - Always Visible, No Header */}
+          <div>
             <EnhancedQuickComboPresets
               onApplyCombo={onApplyCombo}
               currentEffects={effectValues}
@@ -129,24 +116,26 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
               onPresetSelect={onPresetSelect}
               isApplyingPreset={isApplyingPreset}
             />
-          </CollapsibleSection>
+          </div>
 
-          {/* Effects Section - Collapsible */}
-          <CollapsibleSection
-            title="Effects"
-            emoji="✨"
-            statusCount={activeEffectsCount}
-            isOpen={sectionStates.effects}
-            onToggle={(isOpen) => handleSectionToggle('effects', isOpen)}
-          >
-            <EnhancedEffectsList
-              effectValues={effectValues}
-              onEffectChange={onEffectChange}
-              selectedPresetId={selectedPresetId}
-            />
-          </CollapsibleSection>
+          {/* Advanced Effects Section */}
+          {activeEffectsCount > 0 && (
+            <CollapsibleSection
+              title="Effects"
+              emoji="✨"
+              statusCount={activeEffectsCount}
+              isOpen={sectionStates.effects}
+              onToggle={(isOpen) => handleSectionToggle('effects', isOpen)}
+            >
+              <EnhancedEffectsList
+                effectValues={effectValues}
+                onEffectChange={onEffectChange}
+                selectedPresetId={selectedPresetId}
+              />
+            </CollapsibleSection>
+          )}
 
-          {/* Environment Section - Collapsible */}
+          {/* Environment Section */}
           <CollapsibleSection
             title="Scene"
             emoji="🌍"
@@ -166,7 +155,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
             />
           </CollapsibleSection>
 
-          {/* Material Properties Section - Collapsible */}
+          {/* Material Properties Section */}
           <CollapsibleSection
             title="Surface"
             emoji="💎"
@@ -182,9 +171,9 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
         </div>
       </div>
 
-      {/* Fixed Export Section at Bottom */}
+      {/* Simplified Export Section */}
       <div className="border-t border-white/10 p-4 bg-black/50">
-        <div className="flex items-center space-x-2">
+        <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -192,7 +181,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
             className="flex-1 border-white/20 text-white hover:bg-white/10"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4 mr-2" /> : <Maximize2 className="w-4 h-4 mr-2" />}
-            🔲 View
+            View
           </Button>
           
           {onShare && (
@@ -203,7 +192,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
               className="flex-1 border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
             >
               <Share2 className="w-4 h-4 mr-2" />
-              📤 Share
+              Share
             </Button>
           )}
           
@@ -214,7 +203,7 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
             className="flex-1 border-crd-green/50 text-crd-green hover:bg-crd-green/10"
           >
             <Download className="w-4 h-4 mr-2" />
-            💾 Save
+            Save
           </Button>
         </div>
       </div>
