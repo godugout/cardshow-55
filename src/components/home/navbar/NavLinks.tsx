@@ -17,8 +17,14 @@ export const NavLinks = () => {
         Home
       </Link>
       <Link 
+        to="/studio" 
+        className={`nav-item ${location.pathname.startsWith('/studio') ? 'active' : ''}`}
+      >
+        Studio
+      </Link>
+      <Link 
         to="/cards" 
-        className={`nav-item ${isActive('/cards') ? 'active' : ''}`}
+        className={`nav-item ${location.pathname.startsWith('/cards') ? 'active' : ''}`}
       >
         Cards
       </Link>
