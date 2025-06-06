@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from '@/components/home/Navbar';
 import { Loader } from 'lucide-react';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { NotificationProvider } from '@/components/common/NotificationCenter';
 
 export const MainLayout = () => {
   const location = useLocation();
@@ -38,11 +40,15 @@ export const MainLayout = () => {
   }
 
   return (
-    <>
-      <Navbar />
-      <div className="outlet-container">
-        <Outlet />
-      </div>
-    </>
+    <NotificationProvider>
+      <ErrorBoundary>
+        <Navbar />
+        <ErrorBoundary>
+          <div className="outlet-container">
+            <Outlet />
+          </div>
+        </ErrorBoundary>
+      </ErrorBoundary>
+    </NotificationProvider>
   );
 };

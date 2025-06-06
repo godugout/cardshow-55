@@ -9,6 +9,7 @@ import AccountSettings from '@/pages/AccountSettings';
 import Creators from '@/pages/Creators';
 import DebugDetection from '@/pages/DebugDetection';
 import Editor from '@/pages/Editor';
+import Collections from '@/pages/Collections';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { CardCreationFlow } from '@/components/editor/CardCreationFlow';
 
@@ -23,6 +24,7 @@ function App() {
             <Route path="cards" element={<Navigate to="/cards/create" replace />} />
             <Route path="cards/create" element={<CardCreationFlow />} />
             <Route path="gallery" element={<Gallery />} />
+            <Route path="collections" element={<Collections />} />
             <Route path="auth" element={<AuthPage />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<AccountSettings />} />

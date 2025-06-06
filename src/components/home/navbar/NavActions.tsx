@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { CRDButton } from "@/components/ui/design-system";
 import { ProfileDropdown } from "./ProfileDropdown";
+import { NotificationCenter } from "@/components/common/NotificationCenter";
 
 export const NavActions = () => {
   const { user } = useAuth();
@@ -11,6 +12,7 @@ export const NavActions = () => {
   if (user) {
     return (
       <div className="flex items-center gap-4">
+        <NotificationCenter />
         <ProfileDropdown />
       </div>
     );
