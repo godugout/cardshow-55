@@ -2,25 +2,29 @@
 import React from 'react';
 import { CollapsibleSection } from '@/components/ui/design-system';
 import { EnhancedLightingSection } from '../../EnhancedLightingSection';
-import type { LightingPreset } from '../../../types';
+import type { LightingPreset, EnvironmentScene } from '../../../types';
 
 interface SceneSectionProps {
+  selectedScene: EnvironmentScene;
   isOpen: boolean;
   onToggle: (isOpen: boolean) => void;
   selectedLighting: LightingPreset;
   overallBrightness: number[];
   interactiveLighting: boolean;
+  onSceneChange: (scene: EnvironmentScene) => void;
   onLightingChange: (lighting: LightingPreset) => void;
   onBrightnessChange: (value: number[]) => void;
   onInteractiveLightingToggle: () => void;
 }
 
 export const SceneSection: React.FC<SceneSectionProps> = ({
+  selectedScene,
   isOpen,
   onToggle,
   selectedLighting,
   overallBrightness,
   interactiveLighting,
+  onSceneChange,
   onLightingChange,
   onBrightnessChange,
   onInteractiveLightingToggle

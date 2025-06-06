@@ -74,25 +74,27 @@ export const EnhancedColoredSlider: React.FC<EnhancedColoredSliderProps> = ({
         )}
       />
       
-      {/* Enhanced styling */}
-      <style jsx>{`
-        .enhanced-slider-active .enhanced-slider [data-orientation="horizontal"] {
-          background: var(--track-bg);
-          border: 1px solid var(--track-border);
-          box-shadow: var(--glow);
-        }
-        
-        .enhanced-slider-active .enhanced-slider [data-orientation="horizontal"] > span[data-orientation="horizontal"] {
-          background: var(--range-bg);
-        }
-        
-        .enhanced-slider-active .enhanced-slider [role="slider"] {
-          background: var(--thumb-bg);
-          border: 2px solid var(--thumb-border);
-          box-shadow: var(--glow), 0 2px 4px rgba(0,0,0,0.2);
-          transform: scale(1.1);
-        }
-      `}</style>
+      {/* Enhanced styling using CSS variables */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .enhanced-slider-active .enhanced-slider [data-orientation="horizontal"] {
+            background: var(--track-bg);
+            border: 1px solid var(--track-border);
+            box-shadow: var(--glow);
+          }
+          
+          .enhanced-slider-active .enhanced-slider [data-orientation="horizontal"] > span[data-orientation="horizontal"] {
+            background: var(--range-bg);
+          }
+          
+          .enhanced-slider-active .enhanced-slider [role="slider"] {
+            background: var(--thumb-bg);
+            border: 2px solid var(--thumb-border);
+            box-shadow: var(--glow), 0 2px 4px rgba(0,0,0,0.2);
+            transform: scale(1.1);
+          }
+        `
+      }} />
     </div>
   );
 };
