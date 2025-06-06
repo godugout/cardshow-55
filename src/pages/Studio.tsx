@@ -6,6 +6,7 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { StudioHeader } from './Studio/components/StudioHeader';
 import { NoCardSelected } from './Studio/components/NoCardSelected';
 import { useStudioState } from './Studio/hooks/useStudioState';
+import { useCardEditor } from '@/hooks/useCardEditor';
 
 const Studio = () => {
   const {
@@ -18,6 +19,9 @@ const Studio = () => {
     handleDownload,
     handleClose
   } = useStudioState();
+
+  // Initialize card editor for effect system integration
+  const cardEditor = useCardEditor();
 
   if (isLoading) {
     return <LoadingState message="Loading studio..." fullPage />;
@@ -33,7 +37,7 @@ const Studio = () => {
         {/* Studio Header */}
         <StudioHeader />
 
-        {/* Immersive Card Viewer */}
+        {/* Immersive Card Viewer with enhanced effects integration */}
         <ImmersiveCardViewer
           card={selectedCard}
           cards={mockCards}
