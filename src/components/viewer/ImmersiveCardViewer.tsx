@@ -14,6 +14,7 @@ import { ViewerControls } from './components/ViewerControls';
 import { ProgressiveCustomizePanel } from './components/ProgressiveCustomizePanel';
 import { ComboStudioPanel } from './components/ComboStudioPanel';
 import { EnhancedCardContainer } from './components/EnhancedCardContainer';
+import { CompactCardDetails } from './components/CompactCardDetails';
 import { useCardExport } from './hooks/useCardExport';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
 import { ConfigurationDetailsPanel } from './components/ConfigurationDetailsPanel';
@@ -350,6 +351,11 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           />
         )}
 
+        {/* Compact Card Details - positioned above ViewerControls */}
+        <div className="absolute bottom-20 left-4 z-20">
+          <CompactCardDetails card={card} />
+        </div>
+
         {/* Settings Panel Toggle Button - Only show when panel is closed */}
         {!showCustomizePanel && !isPanelMinimized && (
           <div className="absolute top-4 right-4 z-10">
@@ -553,7 +559,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 
         {/* Info Panel - Enhanced visibility with updated instruction */}
         {showStats && !isFlipped && !shouldShowPanel && !isPanelMinimized && (
-          <div className="absolute bottom-4 left-4 right-4 max-w-2xl mx-auto z-10" style={{ marginRight: hasMultipleCards ? '180px' : '100px' }}>
+          <div className="absolute bottom-4 left-4 right-4 max-w-2xl mx-auto z-10" style={{ marginRight: hasMultipleCards ? '180px' : '100px', marginLeft: '280px' }}>
             <div className="bg-black bg-opacity-80 backdrop-blur-lg rounded-lg p-4 border border-white/10">
               <div className="flex items-center justify-between text-white">
                 <div className="flex space-x-4 text-sm">

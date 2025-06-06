@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
@@ -210,18 +209,6 @@ const Studio = () => {
               <Plus className="w-4 h-4 mr-2" />
               Create New Card
             </Button>
-          </div>
-        </div>
-
-        {/* Card Title Overlay */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-40">
-          <div className="bg-black bg-opacity-80 backdrop-blur-lg rounded-lg px-6 py-3 border border-white/10">
-            <h1 className="text-xl font-bold text-white text-center">
-              {selectedCard.title}
-            </h1>
-            <p className="text-sm text-gray-300 text-center">
-              {selectedCard.rarity} • Studio Mode
-            </p>
           </div>
         </div>
 
