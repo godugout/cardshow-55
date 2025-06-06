@@ -4,7 +4,7 @@ import { X, Download, Share2, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CollapsibleSection } from '@/components/ui/design-system';
 import { EnhancedQuickComboPresets } from './EnhancedQuickComboPresets';
-import { EnhancedEffectsList } from './EnhancedEffectsList';
+import { StableEffectsList } from './StableEffectsList';
 import { EnvironmentSection } from './EnvironmentSection';
 import { MaterialPropertiesSection } from './MaterialPropertiesSection';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -65,20 +65,12 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
   const [sectionStates, setSectionStates] = useState(() => {
     const stored = localStorage.getItem('studio-panel-sections');
     const defaults = {
-      effects: false,
+      effects: true, // Always show effects by default
       environment: false,
       materials: false
     };
     return stored ? { ...defaults, ...JSON.parse(stored) } : defaults;
   });
-
-  // Calculate active effects count
-  const activeEffectsCount = useMemo(() => {
-    return Object.values(effectValues).filter(effect => {
-      const intensity = effect.intensity;
-      return typeof intensity === 'number' && intensity > 0;
-    }).length;
-  }, [effectValues]);
 
   // Handle section toggle with persistence
   const handleSectionToggle = useCallback((section: string, isOpen: boolean) => {
@@ -118,22 +110,19 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
             />
           </div>
 
-          {/* Advanced Effects Section */}
-          {activeEffectsCount > 0 && (
-            <CollapsibleSection
-              title="Effects"
-              emoji="✨"
-              statusCount={activeEffectsCount}
-              isOpen={sectionStates.effects}
-              onToggle={(isOpen) => handleSectionToggle('effects', isOpen)}
-            >
-              <EnhancedEffectsList
-                effectValues={effectValues}
-                onEffectChange={onEffectChange}
-                selectedPresetId={selectedPresetId}
-              />
-            </CollapsibleSection>
-          )}
+          {/* Effects Section - Always visible with stable layout */}
+          <CollapsibleSection
+            title="Effects"
+            emoji="✨"
+            isOpen={sectionStates.effects}
+            onToggle={(isOpen) => handleSectionToggle('effects', isOpen)}
+          >
+            <StableEffectsList
+              effectValues={effectValues}
+              onEffectChange={onEffectChange}
+              selectedPresetId={selectedPresetId}
+            />
+          </CollapsibleSection>
 
           {/* Environment Section */}
           <CollapsibleSection
