@@ -41,7 +41,7 @@ export const StableEffectsList: React.FC<StableEffectsListProps> = ({
   return (
     <div className="space-y-3">
       {relevantEffects.map((effectId) => {
-        const effectConfig = ENHANCED_VISUAL_EFFECTS[effectId];
+        const effectConfig = ENHANCED_VISUAL_EFFECTS.find(e => e.id === effectId);
         const effectData = effectValues[effectId] || { intensity: 0 };
         const intensity = typeof effectData.intensity === 'number' ? effectData.intensity : 0;
         const isActive = intensity > 0;
@@ -58,10 +58,7 @@ export const StableEffectsList: React.FC<StableEffectsListProps> = ({
           >
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-2 flex-1">
-                <span className={cn(
-                  "text-sm font-medium min-w-[80px]",
-                  effectConfig.color || "text-crd-lightGray"
-                )}>
+                <span className="text-sm font-medium min-w-[80px] text-crd-lightGray">
                   {effectConfig.name}
                 </span>
                 <div className="flex-1">
@@ -80,25 +77,27 @@ export const StableEffectsList: React.FC<StableEffectsListProps> = ({
             </div>
 
             {/* Show additional parameters if they exist and effect is active */}
-            {isActive && effectConfig.parameters && Object.keys(effectConfig.parameters).length > 1 && (
+            {isActive && effectConfig.parameters && effectConfig.parameters.length > 1 && (
               <div className="mt-2 space-y-2 pl-2 border-l border-white/10">
-                {Object.entries(effectConfig.parameters).map(([paramId, paramConfig]) => {
-                  if (paramId === 'intensity') return null;
+                {effectConfig.parameters.map((param) => {
+                  if (param.id === 'intensity') return null;
                   
-                  const value = typeof effectData[paramId] === 'number' ? effectData[paramId] : paramConfig.min;
+                  const value = typeof effectData[param.id] === 'number' ? effectData[param.id] : param.defaultValue;
+                  
+                  if (param.type !== 'slider') return null;
                   
                   return (
-                    <div key={paramId} className="flex items-center space-x-2">
+                    <div key={param.id} className="flex items-center space-x-2">
                       <Label className="text-xs w-16 text-right text-crd-lightGray/70">
-                        {paramConfig.label}
+                        {param.name}
                       </Label>
                       <div className="flex-1">
                         <ColoredSlider
-                          value={[value]}
-                          onValueChange={(newValue) => onEffectChange(effectId, paramId, newValue[0])}
-                          min={paramConfig.min}
-                          max={paramConfig.max}
-                          step={paramConfig.step}
+                          value={[Number(value)]}
+                          onValueChange={(newValue) => onEffectChange(effectId, param.id, newValue[0])}
+                          min={param.min || 0}
+                          max={param.max || 100}
+                          step={param.step || 1}
                           color="green"
                           variant="secondary"
                         />
