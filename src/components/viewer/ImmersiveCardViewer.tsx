@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,6 @@ import { EnhancedCardContainer } from './components/EnhancedCardContainer';
 import { CompactCardDetails } from './components/CompactCardDetails';
 import { useCardExport } from './hooks/useCardExport';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
-import { MinimizedPanelButton } from './components/MinimizedPanelButton';
 import { StudioContent } from './components/studio/StudioContent';
 
 // Update the interface to support card navigation
@@ -48,12 +48,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   const [autoRotate, setAutoRotate] = useState(false);
   const [showEffects, setShowEffects] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [showCustomizePanel, setShowCustomizePanel] = useState(true);
+  const [showCustomizePanel, setShowCustomizePanel] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [isHoveringControls, setIsHoveringControls] = useState(false);
-  
-  // New states for minimize functionality (remove layout state)
-  const [isPanelMinimized, setIsPanelMinimized] = useState(false);
   
   // Enhanced effects state with improved synchronization
   const enhancedEffectsHook = useEnhancedCardEffects();
@@ -88,15 +85,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   const containerRef = useRef<HTMLDivElement>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
-
-  // Handle panel minimize/restore
-  const handleMinimizePanel = useCallback(() => {
-    setIsPanelMinimized(true);
-  }, []);
-
-  const handleRestorePanel = useCallback(() => {
-    setIsPanelMinimized(false);
-  }, []);
 
   // Determine if we have multiple cards to navigate
   const hasMultipleCards = cards.length > 1;
@@ -200,22 +188,43 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     };
   }, [autoRotate, isDragging]);
 
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
-      setZoom(prev => Math.max(0.5, Math.min(3, prev + zoomDelta)));
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: false });
-      return () => container.removeEventListener('wheel', handleWheel);
+  // Safe zone detection - check if mouse is over UI elements
+  const isInSafeZone = useCallback((clientX: number, clientY: number) => {
+    if (!containerRef.current) return false;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const relativeX = clientX - rect.left;
+    const relativeY = clientY - rect.top;
+    
+    // Panel area (right side)
+    const panelWidth = 320;
+    if (showCustomizePanel && relativeX > rect.width - panelWidth) {
+      return true;
     }
-  }, []);
+    
+    // Bottom info area (bottom 100px when stats are shown)
+    if (showStats && relativeY > rect.height - 100) {
+      return true;
+    }
+    
+    // Card details area (bottom left)
+    if (relativeX < 280 && relativeY > rect.height - 120) {
+      return true;
+    }
+    
+    // Navigation controls area (bottom right)
+    if (hasMultipleCards && relativeX > rect.width - 180 && relativeY > rect.height - 80) {
+      return true;
+    }
+    
+    return false;
+  }, [showCustomizePanel, showStats, hasMultipleCards]);
 
+  // Enhanced mouse handling with safe zones
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging && containerRef.current) {
+    const inSafeZone = isInSafeZone(e.clientX, e.clientY);
+    
+    if (!isDragging && containerRef.current && !inSafeZone) {
       const rect = containerRef.current.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width;
       const y = (e.clientY - rect.top) / rect.height;
@@ -231,15 +240,36 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         });
       }
     }
-  }, [isDragging, allowRotation, autoRotate]);
+  }, [isDragging, allowRotation, autoRotate, isInSafeZone]);
+
+  // Enhanced wheel handling for safe zones
+  const handleWheel = useCallback((e: WheelEvent) => {
+    const inSafeZone = isInSafeZone(e.clientX, e.clientY);
+    
+    if (!inSafeZone) {
+      e.preventDefault();
+      const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
+      setZoom(prev => Math.max(0.5, Math.min(3, prev + zoomDelta)));
+    }
+  }, [isInSafeZone]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
+      return () => container.removeEventListener('wheel', handleWheel);
+    }
+  }, [handleWheel]);
 
   const handleDragStart = useCallback((e: React.MouseEvent) => {
-    if (allowRotation) {
+    const inSafeZone = isInSafeZone(e.clientX, e.clientY);
+    
+    if (allowRotation && !inSafeZone) {
       setIsDragging(true);
       setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
       setAutoRotate(false);
     }
-  }, [rotation, allowRotation]);
+  }, [rotation, allowRotation, isInSafeZone]);
 
   const handleDrag = useCallback((e: React.MouseEvent) => {
     if (isDragging && allowRotation) {
@@ -321,7 +351,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   if (!isOpen) return null;
 
   const panelWidth = 320;
-  const shouldShowPanel = showCustomizePanel && !isPanelMinimized;
+  const shouldShowPanel = showCustomizePanel;
 
   return (
     <>
@@ -353,6 +383,41 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           />
         )}
 
+        {/* New Header Layout */}
+        <div className="absolute top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none">
+          {/* Left: Back to CRD Button */}
+          <div className="pointer-events-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center space-x-2 px-3 py-2"
+            >
+              <img 
+                src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
+                alt="CRD Logo" 
+                className="w-5 h-5"
+              />
+              <span className="text-sm font-medium">Back to CRD</span>
+            </Button>
+          </div>
+
+          {/* Right: Studio Button (when panel is closed) */}
+          {!shouldShowPanel && (
+            <div className="pointer-events-auto">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowCustomizePanel(true)}
+                className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center space-x-2 px-3 py-2"
+              >
+                <Sparkles className="w-4 h-4 text-crd-green" />
+                <span className="text-sm font-medium">Studio</span>
+              </Button>
+            </div>
+          )}
+        </div>
+
         {/* Compact Card Details - positioned above ViewerControls */}
         <div className="absolute bottom-20 left-4 z-20">
           <CompactCardDetails 
@@ -365,29 +430,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
             interactiveLighting={interactiveLighting}
           />
         </div>
-
-        {/* Settings Panel Toggle Button - Only show when panel is closed */}
-        {!showCustomizePanel && !isPanelMinimized && (
-          <div className="absolute top-4 right-4 z-10">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowCustomizePanel(true)}
-              className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20"
-            >
-              <Sparkles className="w-4 h-4 text-white mr-2" />
-              <span className="text-white text-sm">Open Studio</span>
-            </Button>
-          </div>
-        )}
-
-        {/* Minimized Panel Button */}
-        {isPanelMinimized && (
-          <MinimizedPanelButton
-            currentLayout="minimalist"
-            onRestore={handleRestorePanel}
-          />
-        )}
 
         {/* Basic Controls with hover visibility */}
         <div className={`transition-opacity duration-200 ${isHoveringControls ? 'opacity-100 z-20' : 'opacity-100 z-10'}`}>
@@ -433,9 +475,13 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           </div>
         )}
 
-        {/* Simplified Studio Panel */}
+        {/* Studio Panel with Scroll Support */}
         {shouldShowPanel && (
-          <div className="fixed top-0 right-0 h-full z-50" style={{ width: `${panelWidth}px` }}>
+          <div 
+            className="fixed top-0 right-0 h-full z-50" 
+            style={{ width: `${panelWidth}px` }}
+            onWheel={(e) => e.stopPropagation()} // Prevent wheel events from bubbling
+          >
             <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col">
               {/* Simplified Header */}
               <div className="p-4 border-b border-white/10 flex items-center justify-between">
@@ -443,52 +489,37 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
                   <Sparkles className="w-5 h-5 text-crd-green" />
                   <h2 className="text-lg font-semibold text-white">Studio</h2>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleMinimizePanel}
-                    className="bg-white bg-opacity-10 hover:bg-opacity-20 border border-white/10"
-                    title="Minimize panel"
-                  >
-                    <span className="w-4 h-4 text-white">−</span>
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => {
-                      if (onClose) {
-                        onClose();
-                      } else {
-                        setShowCustomizePanel(false);
-                      }
-                    }}
-                    className="bg-white bg-opacity-10 hover:bg-opacity-20 border border-white/10"
-                  >
-                    <span className="w-4 h-4 text-white">×</span>
-                  </Button>
-                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowCustomizePanel(false)}
+                  className="bg-white bg-opacity-10 hover:bg-opacity-20 border border-white/10"
+                >
+                  <span className="w-4 h-4 text-white">×</span>
+                </Button>
               </div>
 
-              {/* Studio Content */}
-              <StudioContent
-                selectedScene={selectedScene}
-                selectedLighting={selectedLighting}
-                effectValues={effectValues}
-                overallBrightness={overallBrightness}
-                interactiveLighting={interactiveLighting}
-                materialSettings={materialSettings}
-                onSceneChange={setSelectedScene}
-                onLightingChange={setSelectedLighting}
-                onEffectChange={handleManualEffectChange}
-                onBrightnessChange={setOverallBrightness}
-                onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
-                onMaterialSettingsChange={setMaterialSettings}
-                selectedPresetId={selectedPresetId}
-                onPresetSelect={setSelectedPresetId}
-                onApplyCombo={handleComboApplication}
-                isApplyingPreset={isApplyingPreset}
-              />
+              {/* Studio Content with Scroll Support */}
+              <div className="flex-1 overflow-hidden">
+                <StudioContent
+                  selectedScene={selectedScene}
+                  selectedLighting={selectedLighting}
+                  effectValues={effectValues}
+                  overallBrightness={overallBrightness}
+                  interactiveLighting={interactiveLighting}
+                  materialSettings={materialSettings}
+                  onSceneChange={setSelectedScene}
+                  onLightingChange={setSelectedLighting}
+                  onEffectChange={handleManualEffectChange}
+                  onBrightnessChange={setOverallBrightness}
+                  onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
+                  onMaterialSettingsChange={setMaterialSettings}
+                  selectedPresetId={selectedPresetId}
+                  onPresetSelect={setSelectedPresetId}
+                  onApplyCombo={handleComboApplication}
+                  isApplyingPreset={isApplyingPreset}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -513,7 +544,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
             selectedLighting={selectedLighting}
             materialSettings={materialSettings}
             overallBrightness={overallBrightness}
-            showBackgroundInfo={!shouldShowPanel && !isPanelMinimized}
+            showBackgroundInfo={!shouldShowPanel}
             onMouseDown={handleDragStart}
             onMouseMove={handleDrag}
             onMouseEnter={() => setIsHovering(true)}
@@ -523,7 +554,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         </div>
 
         {/* Info Panel - Enhanced visibility with updated instruction */}
-        {showStats && !isFlipped && !shouldShowPanel && !isPanelMinimized && (
+        {showStats && !isFlipped && !shouldShowPanel && (
           <div className="absolute bottom-4 left-4 right-4 max-w-2xl mx-auto z-10" style={{ marginRight: hasMultipleCards ? '180px' : '100px', marginLeft: '280px' }}>
             <div className="bg-black bg-opacity-80 backdrop-blur-lg rounded-lg p-4 border border-white/10">
               <div className="flex items-center justify-between text-white">
