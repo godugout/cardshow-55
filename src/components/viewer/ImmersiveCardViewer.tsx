@@ -14,6 +14,7 @@ import { ViewerHeader } from './components/ViewerHeader';
 import { CardNavigationControls } from './components/CardNavigationControls';
 import { ViewerInfoPanel } from './components/ViewerInfoPanel';
 import { StudioPanel } from './components/StudioPanel';
+import { EnhancedEnvironmentSphere } from './components/EnhancedEnvironmentSphere';
 import { useViewerState } from './hooks/useViewerState';
 import { useSafeZones } from './hooks/useSafeZones';
 
@@ -334,13 +335,23 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onMouseUp={handleDragEnd}
         onMouseLeave={handleDragEnd}
       >
+        {/* Full-Screen Environment Background */}
+        <div className="absolute inset-0 z-0">
+          <EnhancedEnvironmentSphere
+            scene={selectedScene}
+            controls={environmentControls}
+            mousePosition={mousePosition}
+            isHovering={isHovering}
+          />
+        </div>
+
         {/* Enhanced Dark Overlay */}
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/40 z-10" />
 
         {/* Subtle Ambient Background Effect */}
         {ambient && selectedScene && (
           <div 
-            className="absolute inset-0 opacity-30"
+            className="absolute inset-0 opacity-20 z-15"
             style={{
               background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
                 ${selectedScene.lighting.color} 0%, transparent 40%)`,
@@ -393,7 +404,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           onNext={handleNextCard}
         />
 
-        {/* Enhanced Card Container with Environment Controls */}
+        {/* Enhanced Card Container without Environment */}
         <div ref={cardContainerRef}>
           <EnhancedCardContainer
             card={card}
@@ -414,7 +425,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
             materialSettings={materialSettings}
             overallBrightness={overallBrightness}
             environmentControls={environmentControls}
-            showBackgroundInfo={!shouldShowPanel}
+            showBackgroundInfo={false}
             onMouseDown={handleDragStart}
             onMouseMove={handleDrag}
             onMouseEnter={() => setIsHovering(true)}

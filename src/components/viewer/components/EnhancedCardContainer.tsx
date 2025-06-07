@@ -6,8 +6,6 @@ import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentCon
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
-import { EnvironmentSphere } from './EnvironmentSphere';
-import { EnhancedEnvironmentSphere } from './EnhancedEnvironmentSphere';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
@@ -109,16 +107,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Enhanced 3D Environment */}
-      {showBackgroundInfo && selectedScene && (
-        <EnhancedEnvironmentSphere
-          scene={selectedScene}
-          controls={environmentControls}
-          mousePosition={mousePosition}
-          isHovering={isHovering}
-        />
-      )}
-
       <Card3DTransform
         rotation={rotation}
         mousePosition={mousePosition}
