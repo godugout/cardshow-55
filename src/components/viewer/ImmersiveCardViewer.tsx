@@ -11,14 +11,12 @@ import {
 import { useCardEffects } from './hooks/useCardEffects';
 import { useDynamicCardBackMaterials } from './hooks/useDynamicCardBackMaterials';
 import { ViewerControls } from './components/ViewerControls';
-import { ProgressiveCustomizePanel } from './components/ProgressiveCustomizePanel';
-import { ComboStudioPanel } from './components/ComboStudioPanel';
 import { EnhancedCardContainer } from './components/EnhancedCardContainer';
 import { CompactCardDetails } from './components/CompactCardDetails';
 import { useCardExport } from './hooks/useCardExport';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
-import { PanelLayoutSelector } from './components/PanelLayoutSelector';
 import { MinimizedPanelButton } from './components/MinimizedPanelButton';
+import { StudioContent } from './components/studio/StudioContent';
 
 // Update the interface to support card navigation
 interface ExtendedImmersiveCardViewerProps extends ImmersiveCardViewerProps {
@@ -54,10 +52,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   const [isHovering, setIsHovering] = useState(false);
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   
-  // New states for layout and minimize functionality
-  const [panelLayout, setPanelLayout] = useState<'original' | 'minimalist'>(() => {
-    return (localStorage.getItem('studio-panel-layout') as 'original' | 'minimalist') || 'minimalist';
-  });
+  // New states for minimize functionality (remove layout state)
   const [isPanelMinimized, setIsPanelMinimized] = useState(false);
   
   // Enhanced effects state with improved synchronization
@@ -93,12 +88,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   const containerRef = useRef<HTMLDivElement>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
-
-  // Handle layout change and persist to localStorage
-  const handleLayoutChange = useCallback((layout: 'original' | 'minimalist') => {
-    setPanelLayout(layout);
-    localStorage.setItem('studio-panel-layout', layout);
-  }, []);
 
   // Handle panel minimize/restore
   const handleMinimizePanel = useCallback(() => {
@@ -331,7 +320,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 
   if (!isOpen) return null;
 
-  const panelWidth = panelLayout === 'original' ? 520 : 320;
+  const panelWidth = 320;
   const shouldShowPanel = showCustomizePanel && !isPanelMinimized;
 
   return (
@@ -395,7 +384,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         {/* Minimized Panel Button */}
         {isPanelMinimized && (
           <MinimizedPanelButton
-            currentLayout={panelLayout}
+            currentLayout="minimalist"
             onRestore={handleRestorePanel}
           />
         )}
@@ -444,25 +433,26 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           </div>
         )}
 
-        {/* Dynamic Panel Rendering */}
+        {/* Simplified Studio Panel */}
         {shouldShowPanel && (
           <div className="fixed top-0 right-0 h-full z-50" style={{ width: `${panelWidth}px` }}>
             <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col">
-              {/* Cleaned up Header with Layout Selector */}
+              {/* Simplified Header */}
               <div className="p-4 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Sparkles className="w-5 h-5 text-crd-green" />
                   <h2 className="text-lg font-semibold text-white">Studio</h2>
-                  <div className="text-xs text-crd-lightGray bg-crd-green/20 px-2 py-1 rounded">
-                    {panelLayout === 'original' ? 'Tabbed' : 'Scrolling'}
-                  </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <PanelLayoutSelector
-                    currentLayout={panelLayout}
-                    onLayoutChange={handleLayoutChange}
-                    onMinimize={handleMinimizePanel}
-                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleMinimizePanel}
+                    className="bg-white bg-opacity-10 hover:bg-opacity-20 border border-white/10"
+                    title="Minimize panel"
+                  >
+                    <span className="w-4 h-4 text-white">−</span>
+                  </Button>
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -480,59 +470,25 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
                 </div>
               </div>
 
-              {/* Panel Content Based on Layout */}
-              <div className="flex-1 overflow-hidden">
-                {panelLayout === 'original' ? (
-                  <ComboStudioPanel
-                    selectedScene={selectedScene}
-                    selectedLighting={selectedLighting}
-                    effectValues={effectValues}
-                    overallBrightness={overallBrightness}
-                    interactiveLighting={interactiveLighting}
-                    materialSettings={materialSettings}
-                    isFullscreen={isFullscreen}
-                    onSceneChange={setSelectedScene}
-                    onLightingChange={setSelectedLighting}
-                    onEffectChange={handleManualEffectChange}
-                    onResetEffect={resetEffect}
-                    onResetAllEffects={resetAllEffects}
-                    onBrightnessChange={setOverallBrightness}
-                    onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
-                    onMaterialSettingsChange={setMaterialSettings}
-                    onToggleFullscreen={toggleFullscreen}
-                    onDownload={handleDownloadClick}
-                    onShare={handleShareClick}
-                    onClose={() => setShowCustomizePanel(false)}
-                    card={card}
-                  />
-                ) : (
-                  <ProgressiveCustomizePanel
-                    selectedScene={selectedScene}
-                    selectedLighting={selectedLighting}
-                    effectValues={effectValues}
-                    overallBrightness={overallBrightness}
-                    interactiveLighting={interactiveLighting}
-                    materialSettings={materialSettings}
-                    isFullscreen={isFullscreen}
-                    onSceneChange={setSelectedScene}
-                    onLightingChange={setSelectedLighting}
-                    onEffectChange={handleManualEffectChange}
-                    onResetAllEffects={resetAllEffects}
-                    onBrightnessChange={setOverallBrightness}
-                    onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
-                    onMaterialSettingsChange={setMaterialSettings}
-                    onToggleFullscreen={toggleFullscreen}
-                    onDownload={handleDownloadClick}
-                    onShare={handleShareClick}
-                    onClose={() => setShowCustomizePanel(false)}
-                    card={card}
-                    selectedPresetId={selectedPresetId}
-                    onPresetSelect={setSelectedPresetId}
-                    onApplyCombo={handleComboApplication}
-                    isApplyingPreset={isApplyingPreset}
-                  />
-                )}
-              </div>
+              {/* Studio Content */}
+              <StudioContent
+                selectedScene={selectedScene}
+                selectedLighting={selectedLighting}
+                effectValues={effectValues}
+                overallBrightness={overallBrightness}
+                interactiveLighting={interactiveLighting}
+                materialSettings={materialSettings}
+                onSceneChange={setSelectedScene}
+                onLightingChange={setSelectedLighting}
+                onEffectChange={handleManualEffectChange}
+                onBrightnessChange={setOverallBrightness}
+                onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
+                onMaterialSettingsChange={setMaterialSettings}
+                selectedPresetId={selectedPresetId}
+                onPresetSelect={setSelectedPresetId}
+                onApplyCombo={handleComboApplication}
+                isApplyingPreset={isApplyingPreset}
+              />
             </div>
           </div>
         )}
@@ -589,7 +545,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
                 <div className="flex items-center space-x-2">
                   <Sparkles className="w-4 h-4" />
                   <span className="text-sm">
-                    Enhanced Studio | 3D Configuration Display
+                    Studio | 3D Configuration Display
                   </span>
                 </div>
               </div>
