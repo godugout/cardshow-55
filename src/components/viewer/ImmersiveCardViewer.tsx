@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps, EnvironmentScene, LightingPreset, MaterialSettings } from './types';
 import { 
@@ -14,7 +15,7 @@ import { ViewerHeader } from './components/ViewerHeader';
 import { CardNavigationControls } from './components/CardNavigationControls';
 import { ViewerInfoPanel } from './components/ViewerInfoPanel';
 import { StudioPanel } from './components/StudioPanel';
-import { EnhancedEnvironmentSphere } from './components/EnhancedEnvironmentSphere';
+import { SimpleEnvironmentBackground } from './components/SimpleEnvironmentBackground';
 import { useViewerState } from './hooks/useViewerState';
 import { useSafeZones } from './hooks/useSafeZones';
 
@@ -328,18 +329,16 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           isFullscreen ? 'p-0' : 'p-8'
         } ${shouldShowPanel ? `pr-[${panelWidth + 32}px]` : ''}`}
         style={{
-          ...getEnvironmentStyle(),
           paddingRight: shouldShowPanel ? `${panelWidth + 32}px` : isFullscreen ? '0' : '32px'
         }}
         onMouseMove={handleMouseMove}
         onMouseUp={handleDragEnd}
         onMouseLeave={handleDragEnd}
       >
-        {/* Full-Screen Environment Background */}
+        {/* Simple Environment Background */}
         <div className="absolute inset-0 z-0">
-          <EnhancedEnvironmentSphere
+          <SimpleEnvironmentBackground
             scene={selectedScene}
-            controls={environmentControls}
             mousePosition={mousePosition}
             isHovering={isHovering}
           />

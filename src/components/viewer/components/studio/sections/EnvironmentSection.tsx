@@ -1,9 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Globe, Mountain, Sparkles, Eye } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import type { EnvironmentScene, EnvironmentControls } from '../../../types';
 import { ENVIRONMENT_SCENES } from '../../../constants';
 
@@ -18,11 +16,9 @@ interface EnvironmentSectionProps {
 
 export const EnvironmentSection: React.FC<EnvironmentSectionProps> = ({
   selectedScene,
-  environmentControls,
   isOpen,
   onToggle,
-  onSceneChange,
-  onControlsChange
+  onSceneChange
 }) => {
   const categories = ['natural', 'fantasy', 'futuristic', 'architectural'] as const;
   
@@ -34,13 +30,6 @@ export const EnvironmentSection: React.FC<EnvironmentSectionProps> = ({
       case 'architectural': return '🏛️';
       default: return '🌍';
     }
-  };
-
-  const updateControl = (key: keyof EnvironmentControls, value: number) => {
-    onControlsChange({
-      ...environmentControls,
-      [key]: value
-    });
   };
 
   return (
@@ -107,74 +96,6 @@ export const EnvironmentSection: React.FC<EnvironmentSectionProps> = ({
               </div>
             );
           })}
-
-          {/* Environment Controls */}
-          <div className="space-y-4 border-t border-white/10 pt-4">
-            <h4 className="text-white font-medium flex items-center">
-              <Eye className="w-4 h-4 mr-2" />
-              Environment Controls
-            </h4>
-
-            {/* Depth of Field */}
-            <div>
-              <Label className="text-white text-sm mb-2 block">
-                Depth of Field: {environmentControls.depthOfField.toFixed(1)}
-              </Label>
-              <Slider
-                value={[environmentControls.depthOfField]}
-                onValueChange={([value]) => updateControl('depthOfField', value)}
-                min={0}
-                max={5}
-                step={0.1}
-                className="w-full"
-              />
-            </div>
-
-            {/* Parallax Intensity */}
-            <div>
-              <Label className="text-white text-sm mb-2 block">
-                Parallax Intensity: {environmentControls.parallaxIntensity.toFixed(1)}
-              </Label>
-              <Slider
-                value={[environmentControls.parallaxIntensity]}
-                onValueChange={([value]) => updateControl('parallaxIntensity', value)}
-                min={0}
-                max={3}
-                step={0.1}
-                className="w-full"
-              />
-            </div>
-
-            {/* Field of View */}
-            <div>
-              <Label className="text-white text-sm mb-2 block">
-                Field of View: {environmentControls.fieldOfView}°
-              </Label>
-              <Slider
-                value={[environmentControls.fieldOfView]}
-                onValueChange={([value]) => updateControl('fieldOfView', value)}
-                min={60}
-                max={120}
-                step={5}
-                className="w-full"
-              />
-            </div>
-
-            {/* Atmospheric Density */}
-            <div>
-              <Label className="text-white text-sm mb-2 block">
-                Atmospheric Density: {(environmentControls.atmosphericDensity * 100).toFixed(0)}%
-              </Label>
-              <Slider
-                value={[environmentControls.atmosphericDensity]}
-                onValueChange={([value]) => updateControl('atmosphericDensity', value)}
-                min={0}
-                max={2}
-                step={0.1}
-                className="w-full"
-              />
-            </div>
-          </div>
         </div>
       )}
     </div>
