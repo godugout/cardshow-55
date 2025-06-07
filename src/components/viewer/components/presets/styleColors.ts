@@ -72,7 +72,32 @@ export const STYLE_COLORS = {
     bg: 'rgba(100, 116, 139, 0.1)',
     gradient: 'linear-gradient(135deg, #64748B, #94A3B8)'
   },
-  // Add lighting preset color mappings to prevent undefined errors
+  // Exact lighting preset colors from the image
+  'natural': {
+    primary: '#22c55e',
+    border: '#16a34a',
+    bg: 'rgba(34, 197, 94, 0.1)',
+    gradient: 'linear-gradient(90deg, #4ade80, #22c55e, #15803d)'
+  },
+  'dramatic': {
+    primary: '#374151',
+    border: '#4b5563',
+    bg: 'rgba(55, 65, 81, 0.1)',
+    gradient: 'linear-gradient(90deg, #6b7280, #374151, #1f2937)'
+  },
+  'soft': {
+    primary: '#60a5fa',
+    border: '#3b82f6',
+    bg: 'rgba(96, 165, 250, 0.1)',
+    gradient: 'linear-gradient(90deg, #93c5fd, #60a5fa, #2563eb)'
+  },
+  'vibrant': {
+    primary: '#8b5cf6',
+    border: '#7c3aed',
+    bg: 'rgba(139, 92, 246, 0.1)',
+    gradient: 'linear-gradient(90deg, #a78bfa, #8b5cf6, #6d28d9)'
+  },
+  // Legacy lighting preset mappings for backwards compatibility
   'warm': {
     primary: '#F59E0B',
     border: '#EAB308',
@@ -90,12 +115,6 @@ export const STYLE_COLORS = {
     border: '#9CA3AF',
     bg: 'rgba(107, 114, 128, 0.1)',
     gradient: 'linear-gradient(90deg, #6B7280, #9CA3AF, #D1D5DB)'
-  },
-  'dramatic': {
-    primary: '#8B5CF6',
-    border: '#A855F7',
-    bg: 'rgba(139, 92, 246, 0.1)',
-    gradient: 'linear-gradient(90deg, #8B5CF6, #A855F7, #C084FC)'
   }
 } as const;
 
