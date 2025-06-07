@@ -13,14 +13,17 @@ export const useAutoRotationEffect = ({
   setRotation
 }: UseAutoRotationEffectProps) => {
   const animationRef = useRef<number>();
+  const rotationRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     if (autoRotate && !isDragging) {
       const animate = () => {
-        setRotation(prev => ({
+        const newRotation = {
           x: Math.sin(Date.now() * 0.0005) * 10,
-          y: prev.y + 0.5
-        }));
+          y: rotationRef.current.y + 0.5
+        };
+        rotationRef.current = newRotation;
+        setRotation(newRotation);
         animationRef.current = requestAnimationFrame(animate);
       };
       animationRef.current = requestAnimationFrame(animate);
