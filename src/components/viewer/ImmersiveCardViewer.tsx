@@ -1,5 +1,4 @@
-
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps, EnvironmentScene, LightingPreset, MaterialSettings } from './types';
 import { 
   useEnhancedCardEffects, 
@@ -307,6 +306,14 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     validateEffectState();
   }, [handleReset, resetAllEffects, validateEffectState]);
 
+  // Add environment controls state
+  const [environmentControls, setEnvironmentControls] = useState({
+    depthOfField: 1.0,
+    parallaxIntensity: 1.0,
+    fieldOfView: 75,
+    atmosphericDensity: 1.0
+  });
+
   if (!isOpen) return null;
 
   const panelWidth = 320;
@@ -386,7 +393,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           onNext={handleNextCard}
         />
 
-        {/* Enhanced Card Container */}
+        {/* Enhanced Card Container with Environment Controls */}
         <div ref={cardContainerRef}>
           <EnhancedCardContainer
             card={card}
@@ -406,6 +413,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
             selectedLighting={selectedLighting}
             materialSettings={materialSettings}
             overallBrightness={overallBrightness}
+            environmentControls={environmentControls}
             showBackgroundInfo={!shouldShowPanel}
             onMouseDown={handleDragStart}
             onMouseMove={handleDrag}
@@ -424,7 +432,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         />
       </div>
 
-      {/* Studio Panel */}
+      {/* Studio Panel with Environment Controls */}
       <StudioPanel
         isVisible={shouldShowPanel}
         onClose={() => setShowCustomizePanel(false)}
@@ -434,12 +442,14 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         overallBrightness={overallBrightness}
         interactiveLighting={interactiveLighting}
         materialSettings={materialSettings}
+        environmentControls={environmentControls}
         onSceneChange={setSelectedScene}
         onLightingChange={setSelectedLighting}
         onEffectChange={handleManualEffectChange}
         onBrightnessChange={setOverallBrightness}
         onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
         onMaterialSettingsChange={setMaterialSettings}
+        onEnvironmentControlsChange={setEnvironmentControls}
         selectedPresetId={selectedPresetId}
         onPresetSelect={setSelectedPresetId}
         onApplyCombo={handleComboApplication}

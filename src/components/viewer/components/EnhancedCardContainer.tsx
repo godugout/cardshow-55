@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -7,6 +6,7 @@ import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
 import { EnvironmentSphere } from './EnvironmentSphere';
+import { EnhancedEnvironmentSphere } from './EnhancedEnvironmentSphere';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
@@ -34,6 +34,7 @@ interface EnhancedCardContainerProps {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onClick: () => void;
+  environmentControls?: EnvironmentControls;
 }
 
 export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
@@ -59,7 +60,13 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
-  onClick
+  onClick,
+  environmentControls = {
+    depthOfField: 1.0,
+    parallaxIntensity: 1.0,
+    fieldOfView: 75,
+    atmosphericDensity: 1.0
+  }
 }) => {
   // Use cached effects for better performance only when all required props are available
   const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
@@ -101,10 +108,11 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Immersive 3D Environment */}
+      {/* Enhanced 3D Environment */}
       {showBackgroundInfo && selectedScene && (
-        <EnvironmentSphere
+        <EnhancedEnvironmentSphere
           scene={selectedScene}
+          controls={environmentControls}
           mousePosition={mousePosition}
           isHovering={isHovering}
         />

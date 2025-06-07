@@ -4,16 +4,27 @@ export interface EnvironmentScene {
   id: string;
   name: string;
   icon: string;
-  gradient: string;
+  category: 'natural' | 'fantasy' | 'futuristic' | 'architectural';
   description: string;
+  panoramicUrl: string;
+  previewUrl: string;
   lighting: {
     color: string;
     intensity: number;
     elevation: number;
     azimuth: number;
   };
-  backgroundImage: string;
-  reflections: 'soft' | 'sharp' | 'warm' | 'cold' | 'sparkle' | 'vivid';
+  atmosphere: {
+    fog: boolean;
+    fogColor: string;
+    fogDensity: number;
+    particles: boolean;
+  };
+  depth: {
+    layers: number;
+    parallaxIntensity: number;
+    fieldOfView: number;
+  };
 }
 
 export interface LightingPreset {
@@ -52,4 +63,11 @@ export interface ImmersiveCardViewerProps {
   allowRotation?: boolean;
   showStats?: boolean;
   ambient?: boolean;
+}
+
+export interface EnvironmentControls {
+  depthOfField: number;
+  parallaxIntensity: number;
+  fieldOfView: number;
+  atmosphericDensity: number;
 }
