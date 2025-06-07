@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { CRDButton } from '@/components/ui/design-system';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { CardDetailsSection } from './right-sidebar/CardDetailsSection';
 import { PropertiesSection } from './right-sidebar/PropertiesSection';
@@ -9,7 +10,6 @@ import { RaritySection } from './right-sidebar/RaritySection';
 import { PublishingSection } from './right-sidebar/PublishingSection';
 import { CustomizeDesignSection } from './right-sidebar/CustomizeDesignSection';
 import { AdvancedEffectsSection } from './right-sidebar/AdvancedEffectsSection';
-import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { Sparkles } from 'lucide-react';
 
 interface RightSidebarProps {
@@ -17,7 +17,7 @@ interface RightSidebarProps {
 }
 
 export const RightSidebar = ({ cardEditor: providedCardEditor }: RightSidebarProps) => {
-  const [showImmersiveViewer, setShowImmersiveViewer] = useState(false);
+  const navigate = useNavigate();
   
   // Use provided card editor or create a fallback one
   const fallbackCardEditor = useCardEditor({
@@ -69,65 +69,9 @@ export const RightSidebar = ({ cardEditor: providedCardEditor }: RightSidebarPro
       toast.error('Please add a card title before viewing in immersive mode');
       return;
     }
-    setShowImmersiveViewer(true);
-  };
-
-  const handleDownloadCard = async () => {
-    try {
-      // Find the card preview element
-      const cardElement = document.querySelector('.card-preview') as HTMLElement;
-      
-      if (!cardElement) {
-        toast.error('Card preview not found. Please make sure the card is visible.');
-        return;
-      }
-
-      // Import html2canvas dynamically
-      const html2canvas = (await import('html2canvas')).default;
-      
-      // Capture the card element as canvas
-      const canvas = await html2canvas(cardElement, {
-        backgroundColor: null,
-        scale: 2, // Higher resolution
-        useCORS: true,
-        allowTaint: true,
-      });
-
-      // Convert canvas to blob
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          toast.error('Failed to generate image');
-          return;
-        }
-
-        // Create download link
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${cardEditor.cardData.title.replace(/\s+/g, '_')}_card.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        toast.success('Card image downloaded successfully!');
-      }, 'image/png');
-    } catch (error) {
-      console.error('Download error:', error);
-      toast.error('Failed to download card image');
-    }
-  };
-
-  const handleShareCard = () => {
-    const shareUrl = window.location.href;
     
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(shareUrl)
-        .then(() => toast.success('Card link copied to clipboard'))
-        .catch(() => toast.error('Failed to copy link'));
-    } else {
-      toast.error('Sharing not supported in this browser');
-    }
+    // Navigate to the unified viewer
+    navigate(`/viewer/${cardEditor.cardData.id || 'new'}?mode=studio`);
   };
   
   return (
@@ -170,20 +114,6 @@ export const RightSidebar = ({ cardEditor: providedCardEditor }: RightSidebarPro
           {isSaving ? 'Publishing...' : 'Publish Card'}
         </CRDButton>
       </div>
-
-      {/* Immersive Card Viewer */}
-      {showImmersiveViewer && (
-        <ImmersiveCardViewer
-          card={cardEditor.cardData}
-          isOpen={showImmersiveViewer}
-          onClose={() => setShowImmersiveViewer(false)}
-          onShare={handleShareCard}
-          onDownload={handleDownloadCard}
-          allowRotation={true}
-          showStats={true}
-          ambient={true}
-        />
-      )}
     </div>
   );
 };
