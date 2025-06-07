@@ -6,7 +6,7 @@ import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../type
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
-import { HDRBackgroundGallery } from './HDRBackgroundGallery';
+import { EnvironmentSphere } from './EnvironmentSphere';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
@@ -101,9 +101,10 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* HDR 3D Photography Background */}
-      {showBackgroundInfo && (
-        <HDRBackgroundGallery
+      {/* Immersive 3D Environment */}
+      {showBackgroundInfo && selectedScene && (
+        <EnvironmentSphere
+          scene={selectedScene}
           mousePosition={mousePosition}
           isHovering={isHovering}
         />

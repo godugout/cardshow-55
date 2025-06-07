@@ -1,4 +1,3 @@
-
 import type { EnvironmentScene, LightingPreset, VisualEffect } from './types';
 
 export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
@@ -7,7 +6,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     name: 'Studio',
     icon: '🎬',
     gradient: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-    description: 'Clean studio lighting',
+    description: 'Clean minimalist void',
     lighting: {
       color: '#ffffff',
       intensity: 0.9,
@@ -19,10 +18,10 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
   },
   {
     id: 'neon',
-    name: 'Neon',
+    name: 'Cyberpunk',
     icon: '🌈',
     gradient: 'linear-gradient(135deg, #ff0080 0%, #0080ff 100%)',
-    description: 'Vibrant neon atmosphere',
+    description: 'Neon cyberpunk cityscape',
     lighting: {
       color: '#ff0080',
       intensity: 1.2,
@@ -37,7 +36,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     name: 'Golden Hour',
     icon: '🌅',
     gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    description: 'Warm golden lighting',
+    description: 'Warm golden landscape',
     lighting: {
       color: '#ffa500',
       intensity: 0.9,
@@ -52,7 +51,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     name: 'Twilight',
     icon: '🌙',
     gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    description: 'Mystical twilight ambiance',
+    description: 'Mystical twilight realm',
     lighting: {
       color: '#4a5ee8',
       intensity: 0.8,
