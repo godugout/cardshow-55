@@ -54,9 +54,14 @@ export const LightingStyleCards: React.FC<LightingStyleCardsProps> = ({
     const lightingPreset: LightingPreset = {
       id: styleId,
       name: LIGHTING_STYLES.find(s => s.id === styleId)?.name || styleId,
-      intensity: 1.0,
-      color: '#ffffff',
-      position: { x: 0, y: 0, z: 1 }
+      description: LIGHTING_STYLES.find(s => s.id === styleId)?.description || '',
+      brightness: 1.0,
+      contrast: 1.0,
+      shadows: 0.5,
+      highlights: 0.5,
+      temperature: 0.0,
+      position: { x: 0, y: 0, z: 1 },
+      shadowSoftness: 0.5
     };
     onLightingChange(lightingPreset);
   };
