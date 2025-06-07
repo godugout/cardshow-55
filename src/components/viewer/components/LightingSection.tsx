@@ -7,7 +7,7 @@ import type { LightingPreset } from '../types';
 import { LIGHTING_PRESETS } from '../constants';
 import { cn } from '@/lib/utils';
 
-interface EnhancedLightingSectionProps {
+interface LightingSectionProps {
   selectedLighting: LightingPreset;
   overallBrightness: number[];
   interactiveLighting: boolean;
@@ -45,7 +45,7 @@ const LIGHTING_COLORS = {
   }
 };
 
-export const EnhancedLightingSection: React.FC<EnhancedLightingSectionProps> = ({
+export const LightingSection: React.FC<LightingSectionProps> = ({
   selectedLighting,
   overallBrightness,
   interactiveLighting,
