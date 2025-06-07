@@ -71,74 +71,9 @@ export const STYLE_COLORS = {
     border: '#475569',
     bg: 'rgba(100, 116, 139, 0.1)',
     gradient: 'linear-gradient(135deg, #64748B, #94A3B8)'
-  },
-  // Exact lighting preset colors from the image
-  'natural': {
-    primary: '#22c55e',
-    border: '#16a34a',
-    bg: 'rgba(34, 197, 94, 0.1)',
-    gradient: 'linear-gradient(90deg, #4ade80, #22c55e, #15803d)'
-  },
-  'dramatic': {
-    primary: '#374151',
-    border: '#4b5563',
-    bg: 'rgba(55, 65, 81, 0.1)',
-    gradient: 'linear-gradient(90deg, #6b7280, #374151, #1f2937)'
-  },
-  'soft': {
-    primary: '#60a5fa',
-    border: '#3b82f6',
-    bg: 'rgba(96, 165, 250, 0.1)',
-    gradient: 'linear-gradient(90deg, #93c5fd, #60a5fa, #2563eb)'
-  },
-  'vibrant': {
-    primary: '#8b5cf6',
-    border: '#7c3aed',
-    bg: 'rgba(139, 92, 246, 0.1)',
-    gradient: 'linear-gradient(90deg, #a78bfa, #8b5cf6, #6d28d9)'
-  },
-  // Legacy lighting preset mappings for backwards compatibility
-  'warm': {
-    primary: '#F59E0B',
-    border: '#EAB308',
-    bg: 'rgba(245, 158, 11, 0.1)',
-    gradient: 'linear-gradient(90deg, #F59E0B, #EAB308, #FCD34D)'
-  },
-  'cool': {
-    primary: '#0EA5E9',
-    border: '#06B6D4',
-    bg: 'rgba(14, 165, 233, 0.1)',
-    gradient: 'linear-gradient(90deg, #0EA5E9, #06B6D4, #7DD3FC)'
-  },
-  'neutral': {
-    primary: '#6B7280',
-    border: '#9CA3AF',
-    bg: 'rgba(107, 114, 128, 0.1)',
-    gradient: 'linear-gradient(90deg, #6B7280, #9CA3AF, #D1D5DB)'
   }
 } as const;
 
-// Default fallback color to prevent undefined errors
-const DEFAULT_STYLE_COLOR = {
-  primary: '#45B26B',
-  border: '#4ADE80',
-  bg: 'rgba(69, 178, 107, 0.1)',
-  gradient: 'linear-gradient(135deg, #45B26B, #4ADE80)'
-};
-
 export const getStyleColor = (styleId: string) => {
-  console.log('Getting style color for:', styleId);
-  
-  if (!styleId) {
-    console.warn('No styleId provided, using default');
-    return DEFAULT_STYLE_COLOR;
-  }
-  
-  const color = STYLE_COLORS[styleId as keyof typeof STYLE_COLORS];
-  if (!color) {
-    console.warn(`Style color not found for: ${styleId}, using default`);
-    return DEFAULT_STYLE_COLOR;
-  }
-  
-  return color;
+  return STYLE_COLORS[styleId as keyof typeof STYLE_COLORS] || STYLE_COLORS['custom-style'];
 };
