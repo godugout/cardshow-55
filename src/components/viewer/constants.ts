@@ -1,4 +1,3 @@
-
 import type { EnvironmentScene, LightingPreset, VisualEffect } from './types';
 
 export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
@@ -64,9 +63,9 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     icon: '💎',
     category: 'fantasy',
     description: 'Glowing crystal cave realm',
-    panoramicUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1920&h=1080&fit=crop&crop=center',
+    panoramicUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop&crop=center',
     gradient: 'linear-gradient(135deg, #4a5ee8 0%, #7b2cbf 100%)',
     lighting: {
       color: '#4a5ee8',
