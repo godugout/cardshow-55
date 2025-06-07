@@ -6,6 +6,7 @@ interface SectionStates {
   effects: boolean;
   environment: boolean;
   materials: boolean;
+  spaces: boolean;
 }
 
 interface SectionManager {
@@ -21,7 +22,8 @@ export const useSectionManager = (): SectionManager => {
       styles: true,
       effects: false,
       environment: false,
-      materials: false
+      materials: false,
+      spaces: false
     };
     return stored ? { ...defaults, ...JSON.parse(stored) } : defaults;
   });

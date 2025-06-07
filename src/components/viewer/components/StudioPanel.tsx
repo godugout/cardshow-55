@@ -4,6 +4,7 @@ import { Sparkles } from 'lucide-react';
 import { ScrollableStudioContent } from './studio/ScrollableStudioContent';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
+import type { CardData } from '@/hooks/useCardEditor';
 
 interface StudioPanelProps {
   isVisible: boolean;
@@ -24,11 +25,13 @@ interface StudioPanelProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
+  currentCard?: CardData;
 }
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({
   isVisible,
   onClose,
+  currentCard,
   ...studioProps
 }) => {
   if (!isVisible) return null;
@@ -57,7 +60,7 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
         </div>
 
         {/* Studio Content with Scroll Support */}
-        <ScrollableStudioContent {...studioProps} />
+        <ScrollableStudioContent {...studioProps} currentCard={currentCard} />
       </div>
     </div>
   );

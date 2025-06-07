@@ -444,6 +444,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onPresetSelect={setSelectedPresetId}
         onApplyCombo={handleComboApplication}
         isApplyingPreset={isApplyingPreset}
+        currentCard={card}
       />
 
       {/* Export Options Dialog */}

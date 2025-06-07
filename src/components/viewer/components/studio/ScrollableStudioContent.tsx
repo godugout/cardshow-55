@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { StudioContent } from './StudioContent';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
+import type { CardData } from '@/hooks/useCardEditor';
 
 interface ScrollableStudioContentProps {
   selectedScene: EnvironmentScene;
@@ -22,20 +22,9 @@ interface ScrollableStudioContentProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
+  currentCard?: CardData;
 }
 
 export const ScrollableStudioContent: React.FC<ScrollableStudioContentProps> = (props) => {
-  return (
-    <div 
-      className="flex-1 overflow-hidden"
-      onWheel={(e) => {
-        // Allow scroll events to propagate within the panel
-        e.stopPropagation();
-      }}
-    >
-      <ScrollArea className="h-full">
-        <StudioContent {...props} />
-      </ScrollArea>
-    </div>
-  );
+  return <StudioContent {...props} />;
 };
