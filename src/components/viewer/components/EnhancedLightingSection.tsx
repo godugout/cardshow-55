@@ -36,6 +36,12 @@ const LIGHTING_COLORS = {
     primary: '#8B5CF6',
     secondary: '#A855F7',
     gradient: 'linear-gradient(90deg, #8B5CF6, #A855F7, #C084FC)'
+  },
+  // Add fallback for any missing presets
+  default: {
+    primary: '#6B7280',
+    secondary: '#9CA3AF',
+    gradient: 'linear-gradient(90deg, #6B7280, #9CA3AF, #D1D5DB)'
   }
 };
 
@@ -49,11 +55,15 @@ export const EnhancedLightingSection: React.FC<EnhancedLightingSectionProps> = (
 }) => {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
+  const getColorsForPreset = (presetId: string) => {
+    return LIGHTING_COLORS[presetId as keyof typeof LIGHTING_COLORS] || LIGHTING_COLORS.default;
+  };
+
   const GridView = () => (
     <div className="grid grid-cols-2 gap-3">
       {LIGHTING_PRESETS.map((preset) => {
         const isSelected = selectedLighting.id === preset.id;
-        const colors = LIGHTING_COLORS[preset.id as keyof typeof LIGHTING_COLORS];
+        const colors = getColorsForPreset(preset.id);
         
         return (
           <Button
@@ -101,7 +111,7 @@ export const EnhancedLightingSection: React.FC<EnhancedLightingSectionProps> = (
     <div className="space-y-2">
       {LIGHTING_PRESETS.map((preset) => {
         const isSelected = selectedLighting.id === preset.id;
-        const colors = LIGHTING_COLORS[preset.id as keyof typeof LIGHTING_COLORS];
+        const colors = getColorsForPreset(preset.id);
         
         return (
           <div
