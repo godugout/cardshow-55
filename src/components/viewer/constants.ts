@@ -1,3 +1,4 @@
+
 import type { EnvironmentScene, LightingPreset, VisualEffect } from './types';
 
 export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
@@ -9,6 +10,8 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     description: 'Mystical forest with ancient trees',
     panoramicUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #2d4a36 0%, #4a7c59 100%)',
     lighting: {
       color: '#4a7c59',
       intensity: 0.8,
@@ -35,6 +38,8 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     description: 'Breathtaking mountain landscape',
     panoramicUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #ffa500 0%, #ff7f50 100%)',
     lighting: {
       color: '#ffa500',
       intensity: 0.9,
@@ -61,6 +66,8 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     description: 'Glowing crystal cave realm',
     panoramicUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #4a5ee8 0%, #7b2cbf 100%)',
     lighting: {
       color: '#4a5ee8',
       intensity: 1.1,
@@ -87,6 +94,8 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     description: 'Cyberpunk cityscape at night',
     panoramicUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #ff0080 0%, #00ffff 100%)',
     lighting: {
       color: '#ff0080',
       intensity: 1.2,
@@ -113,6 +122,8 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     description: 'Majestic ancient temple ruins',
     panoramicUrl: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73c6e?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73c6e?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73c6e?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #d4af37 0%, #ffd700 100%)',
     lighting: {
       color: '#d4af37',
       intensity: 0.9,
@@ -139,6 +150,8 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     description: 'Orbital space station interior',
     panoramicUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #00aaff 0%, #0066cc 100%)',
     lighting: {
       color: '#00aaff',
       intensity: 1.0,

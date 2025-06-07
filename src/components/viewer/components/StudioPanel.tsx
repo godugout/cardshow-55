@@ -4,7 +4,7 @@ import { Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollableStudioContent } from './studio/ScrollableStudioContent';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
+import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
 
 interface StudioPanelProps {
   isVisible: boolean;
@@ -25,6 +25,8 @@ interface StudioPanelProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
+  environmentControls?: EnvironmentControls;
+  onEnvironmentControlsChange?: (controls: EnvironmentControls) => void;
 }
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({

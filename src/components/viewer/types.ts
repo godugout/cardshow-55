@@ -1,3 +1,4 @@
+
 import type { CardData } from '@/hooks/useCardEditor';
 
 export interface EnvironmentScene {
@@ -8,6 +9,9 @@ export interface EnvironmentScene {
   description: string;
   panoramicUrl: string;
   previewUrl: string;
+  // Legacy properties for backward compatibility
+  backgroundImage?: string;
+  gradient?: string;
   lighting: {
     color: string;
     intensity: number;
@@ -54,6 +58,13 @@ export interface MaterialSettings {
   clearcoat: number;
 }
 
+export interface EnvironmentControls {
+  depthOfField: number;
+  parallaxIntensity: number;
+  fieldOfView: number;
+  atmosphericDensity: number;
+}
+
 export interface ImmersiveCardViewerProps {
   card: CardData;
   isOpen?: boolean;
@@ -63,11 +74,4 @@ export interface ImmersiveCardViewerProps {
   allowRotation?: boolean;
   showStats?: boolean;
   ambient?: boolean;
-}
-
-export interface EnvironmentControls {
-  depthOfField: number;
-  parallaxIntensity: number;
-  fieldOfView: number;
-  atmosphericDensity: number;
 }
