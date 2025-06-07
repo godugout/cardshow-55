@@ -1,173 +1,66 @@
+
 import type { EnvironmentScene, LightingPreset, VisualEffect } from './types';
 
 export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
   {
-    id: 'forest',
-    name: 'Enchanted Forest',
-    icon: '🌲',
-    category: 'natural',
-    description: 'Mystical forest with ancient trees',
-    panoramicUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&h=1080&fit=crop&crop=center',
-    gradient: 'linear-gradient(135deg, #2d4a36 0%, #4a7c59 100%)',
+    id: 'studio',
+    name: 'Studio',
+    icon: '🎬',
+    gradient: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+    description: 'Clean studio lighting',
     lighting: {
-      color: '#4a7c59',
-      intensity: 0.8,
-      elevation: 30,
-      azimuth: 45
-    },
-    atmosphere: {
-      fog: true,
-      fogColor: '#2d4a36',
-      fogDensity: 0.3,
-      particles: true
-    },
-    depth: {
-      layers: 5,
-      parallaxIntensity: 1.2,
-      fieldOfView: 75
-    }
-  },
-  {
-    id: 'mountain',
-    name: 'Mountain Vista',
-    icon: '🏔️',
-    category: 'natural',
-    description: 'Breathtaking mountain landscape',
-    panoramicUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop&crop=center',
-    gradient: 'linear-gradient(135deg, #ffa500 0%, #ff7f50 100%)',
-    lighting: {
-      color: '#ffa500',
+      color: '#ffffff',
       intensity: 0.9,
-      elevation: 15,
-      azimuth: 60
+      elevation: 45,
+      azimuth: 0
     },
-    atmosphere: {
-      fog: false,
-      fogColor: '#ffffff',
-      fogDensity: 0.1,
-      particles: false
-    },
-    depth: {
-      layers: 7,
-      parallaxIntensity: 1.5,
-      fieldOfView: 85
-    }
+    backgroundImage: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+    reflections: 'soft'
   },
   {
-    id: 'crystal-cave',
-    name: 'Crystal Cavern',
-    icon: '💎',
-    category: 'fantasy',
-    description: 'Glowing crystal cave realm',
-    panoramicUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop&crop=center',
-    gradient: 'linear-gradient(135deg, #4a5ee8 0%, #7b2cbf 100%)',
-    lighting: {
-      color: '#4a5ee8',
-      intensity: 1.1,
-      elevation: 60,
-      azimuth: -30
-    },
-    atmosphere: {
-      fog: true,
-      fogColor: '#4a5ee8',
-      fogDensity: 0.4,
-      particles: true
-    },
-    depth: {
-      layers: 6,
-      parallaxIntensity: 1.8,
-      fieldOfView: 70
-    }
-  },
-  {
-    id: 'cyberpunk-city',
-    name: 'Neon Metropolis',
-    icon: '🌃',
-    category: 'futuristic',
-    description: 'Cyberpunk cityscape at night',
-    panoramicUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1920&h=1080&fit=crop&crop=center',
-    gradient: 'linear-gradient(135deg, #ff0080 0%, #00ffff 100%)',
+    id: 'neon',
+    name: 'Neon',
+    icon: '🌈',
+    gradient: 'linear-gradient(135deg, #ff0080 0%, #0080ff 100%)',
+    description: 'Vibrant neon atmosphere',
     lighting: {
       color: '#ff0080',
       intensity: 1.2,
       elevation: 30,
       azimuth: 45
     },
-    atmosphere: {
-      fog: true,
-      fogColor: '#ff0080',
-      fogDensity: 0.2,
-      particles: true
-    },
-    depth: {
-      layers: 8,
-      parallaxIntensity: 2.0,
-      fieldOfView: 90
-    }
+    backgroundImage: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+    reflections: 'vivid'
   },
   {
-    id: 'ancient-temple',
-    name: 'Ancient Temple',
-    icon: '🏛️',
-    category: 'architectural',
-    description: 'Majestic ancient temple ruins',
-    panoramicUrl: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73c6e?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73c6e?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73c6e?w=1920&h=1080&fit=crop&crop=center',
-    gradient: 'linear-gradient(135deg, #d4af37 0%, #ffd700 100%)',
+    id: 'golden',
+    name: 'Golden Hour',
+    icon: '🌅',
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    description: 'Warm golden lighting',
     lighting: {
-      color: '#d4af37',
+      color: '#ffa500',
       intensity: 0.9,
-      elevation: 45,
-      azimuth: 0
+      elevation: 15,
+      azimuth: 60
     },
-    atmosphere: {
-      fog: false,
-      fogColor: '#d4af37',
-      fogDensity: 0.15,
-      particles: false
-    },
-    depth: {
-      layers: 6,
-      parallaxIntensity: 1.3,
-      fieldOfView: 80
-    }
+    backgroundImage: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+    reflections: 'warm'
   },
   {
-    id: 'space-station',
-    name: 'Space Station',
-    icon: '🚀',
-    category: 'futuristic',
-    description: 'Orbital space station interior',
-    panoramicUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1920&h=1080&fit=crop&crop=center',
-    gradient: 'linear-gradient(135deg, #00aaff 0%, #0066cc 100%)',
+    id: 'twilight',
+    name: 'Twilight',
+    icon: '🌙',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    description: 'Mystical twilight ambiance',
     lighting: {
-      color: '#00aaff',
-      intensity: 1.0,
-      elevation: 90,
-      azimuth: 0
+      color: '#4a5ee8',
+      intensity: 0.8,
+      elevation: 60,
+      azimuth: -30
     },
-    atmosphere: {
-      fog: false,
-      fogColor: '#000000',
-      fogDensity: 0.0,
-      particles: true
-    },
-    depth: {
-      layers: 4,
-      parallaxIntensity: 0.8,
-      fieldOfView: 110
-    }
+    backgroundImage: 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)',
+    reflections: 'cold'
   }
 ];
 

@@ -8,7 +8,7 @@ import { useCardEditor } from '@/hooks/useCardEditor';
 import { localCardStorage } from '@/lib/localCardStorage';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Sparkles } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
 
@@ -18,9 +18,9 @@ interface SimpleEditorProps {
 }
 
 export const SimpleEditor = ({ initialData, onStartOver }: SimpleEditorProps) => {
-  const navigate = useNavigate();
   const [selectedTemplate, setSelectedTemplate] = useState(initialData?.template_id || 'template1');
   const [zoom, setZoom] = useState(100);
+  const [showImmersiveViewer, setShowImmersiveViewer] = useState(false);
 
   const cardEditor = useCardEditor({
     initialData: initialData || {
@@ -53,9 +53,34 @@ export const SimpleEditor = ({ initialData, onStartOver }: SimpleEditorProps) =>
       toast.error('Please add a card title before viewing in immersive mode');
       return;
     }
+    setShowImmersiveViewer(true);
+  };
+
+  const handleDownloadCard = () => {
+    const card = cardEditor.cardData;
+    const dataStr = JSON.stringify(card, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
     
-    // Navigate to the unified viewer
-    navigate(`/viewer/${cardEditor.cardData.id || 'new'}?mode=studio`);
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${card.title.replace(/\s+/g, '_')}_card.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    toast.success('Card exported successfully');
+  };
+
+  const handleShareCard = () => {
+    const shareUrl = window.location.href;
+    
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => toast.success('Card link copied to clipboard'))
+        .catch(() => toast.error('Failed to copy link'));
+    } else {
+      toast.error('Sharing not supported in this browser');
+    }
   };
 
   return (
@@ -104,6 +129,20 @@ export const SimpleEditor = ({ initialData, onStartOver }: SimpleEditorProps) =>
           <RightSidebar cardEditor={cardEditor} />
         </div>
       </div>
+
+      {/* Immersive Card Viewer */}
+      {showImmersiveViewer && (
+        <ImmersiveCardViewer
+          card={cardEditor.cardData}
+          isOpen={showImmersiveViewer}
+          onClose={() => setShowImmersiveViewer(false)}
+          onShare={handleShareCard}
+          onDownload={handleDownloadCard}
+          allowRotation={true}
+          showStats={true}
+          ambient={true}
+        />
+      )}
     </div>
   );
 };

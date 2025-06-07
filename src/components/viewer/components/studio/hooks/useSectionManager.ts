@@ -1,32 +1,44 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
-export interface SectionStates {
+interface SectionStates {
   styles: boolean;
   effects: boolean;
   environment: boolean;
-  lighting: boolean;
   materials: boolean;
 }
 
-export const useSectionManager = () => {
-  const [sectionStates, setSectionStates] = useState<SectionStates>({
-    styles: true, // Default open
-    effects: false,
-    environment: false,
-    lighting: false,
-    materials: false
+interface SectionManager {
+  sectionStates: SectionStates;
+  toggleSection: (section: keyof SectionStates) => void;
+  setSectionState: (section: keyof SectionStates, isOpen: boolean) => void;
+}
+
+export const useSectionManager = (): SectionManager => {
+  const [sectionStates, setSectionStates] = useState<SectionStates>(() => {
+    const stored = localStorage.getItem('studio-panel-sections');
+    const defaults: SectionStates = {
+      styles: true,
+      effects: false,
+      environment: false,
+      materials: false
+    };
+    return stored ? { ...defaults, ...JSON.parse(stored) } : defaults;
   });
 
-  const setSectionState = (section: keyof SectionStates, isOpen: boolean) => {
-    setSectionStates(prev => ({
-      ...prev,
-      [section]: isOpen
-    }));
-  };
+  const setSectionState = useCallback((section: keyof SectionStates, isOpen: boolean) => {
+    const newStates = { ...sectionStates, [section]: isOpen };
+    setSectionStates(newStates);
+    localStorage.setItem('studio-panel-sections', JSON.stringify(newStates));
+  }, [sectionStates]);
+
+  const toggleSection = useCallback((section: keyof SectionStates) => {
+    setSectionState(section, !sectionStates[section]);
+  }, [sectionStates, setSectionState]);
 
   return {
     sectionStates,
+    toggleSection,
     setSectionState
   };
 };

@@ -1,3 +1,4 @@
+
 import React, { useCallback } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSectionManager } from './hooks/useSectionManager';
@@ -5,11 +6,10 @@ import {
   StylesSection, 
   EffectsSection, 
   SceneSection, 
-  SurfaceSection,
-  EnvironmentSection 
+  SurfaceSection 
 } from './sections';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
-import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../../types';
+import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
 
 interface StudioContentProps {
   selectedScene: EnvironmentScene;
@@ -28,8 +28,6 @@ interface StudioContentProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
-  environmentControls?: EnvironmentControls;
-  onEnvironmentControlsChange?: (controls: EnvironmentControls) => void;
 }
 
 export const StudioContent: React.FC<StudioContentProps> = ({
@@ -48,14 +46,7 @@ export const StudioContent: React.FC<StudioContentProps> = ({
   selectedPresetId,
   onPresetSelect,
   onApplyCombo,
-  isApplyingPreset = false,
-  environmentControls = {
-    depthOfField: 1.0,
-    parallaxIntensity: 1.0,
-    fieldOfView: 75,
-    atmosphericDensity: 1.0
-  },
-  onEnvironmentControlsChange = () => {}
+  isApplyingPreset = false
 }) => {
   const { sectionStates, setSectionState } = useSectionManager();
 
@@ -90,24 +81,14 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             selectedPresetId={selectedPresetId}
           />
 
-          {/* Environment Section - New */}
-          <EnvironmentSection
-            selectedScene={selectedScene}
-            environmentControls={environmentControls}
-            isOpen={sectionStates.environment}
-            onToggle={(isOpen) => setSectionState('environment', isOpen)}
-            onSceneChange={onSceneChange}
-            onControlsChange={onEnvironmentControlsChange}
-          />
-
-          {/* Scene Section - Keep for lighting only */}
+          {/* Scene Section */}
           <SceneSection
             selectedScene={selectedScene}
             selectedLighting={selectedLighting}
             overallBrightness={overallBrightness}
             interactiveLighting={interactiveLighting}
-            isOpen={sectionStates.lighting || false}
-            onToggle={(isOpen) => setSectionState('lighting', isOpen)}
+            isOpen={sectionStates.environment}
+            onToggle={(isOpen) => setSectionState('environment', isOpen)}
             onSceneChange={onSceneChange}
             onLightingChange={onLightingChange}
             onBrightnessChange={handleBrightnessChange}
