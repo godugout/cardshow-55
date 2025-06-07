@@ -1,22 +1,22 @@
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React, { useRef, useEffect, useCallback } from 'react';
 import type { ImmersiveCardViewerProps, EnvironmentScene, LightingPreset, MaterialSettings } from './types';
-import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from './constants';
 import { 
   useEnhancedCardEffects, 
-  ENHANCED_VISUAL_EFFECTS,
   type EffectValues 
 } from './hooks/useEnhancedCardEffects';
 import { useCardEffects } from './hooks/useCardEffects';
-import { useDynamicCardBackMaterials } from './hooks/useDynamicCardBackMaterials';
 import { ViewerControls } from './components/ViewerControls';
 import { EnhancedCardContainer } from './components/EnhancedCardContainer';
 import { CompactCardDetails } from './components/CompactCardDetails';
 import { useCardExport } from './hooks/useCardExport';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
-import { StudioContent } from './components/studio/StudioContent';
+import { ViewerHeader } from './components/ViewerHeader';
+import { CardNavigationControls } from './components/CardNavigationControls';
+import { ViewerInfoPanel } from './components/ViewerInfoPanel';
+import { StudioPanel } from './components/StudioPanel';
+import { useViewerState } from './hooks/useViewerState';
+import { useSafeZones } from './hooks/useSafeZones';
 
 // Update the interface to support card navigation
 interface ExtendedImmersiveCardViewerProps extends ImmersiveCardViewerProps {
@@ -38,92 +38,93 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   showStats = true,
   ambient = true
 }) => {
-  // State
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [autoRotate, setAutoRotate] = useState(false);
-  const [showEffects, setShowEffects] = useState(true);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [showCustomizePanel, setShowCustomizePanel] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
-  const [isHoveringControls, setIsHoveringControls] = useState(false);
-  
-  // Enhanced effects state with improved synchronization
+  // Use the custom state hook
+  const viewerState = useViewerState();
+  const {
+    isFullscreen,
+    rotation,
+    setRotation,
+    isDragging,
+    setIsDragging,
+    dragStart,
+    setDragStart,
+    zoom,
+    isFlipped,
+    setIsFlipped,
+    autoRotate,
+    setAutoRotate,
+    showEffects,
+    setShowEffects,
+    mousePosition,
+    setMousePosition,
+    showCustomizePanel,
+    setShowCustomizePanel,
+    isHovering,
+    setIsHovering,
+    isHoveringControls,
+    setIsHoveringControls,
+    showExportDialog,
+    setShowExportDialog,
+    selectedScene,
+    setSelectedScene,
+    selectedLighting,
+    setSelectedLighting,
+    overallBrightness,
+    setOverallBrightness,
+    interactiveLighting,
+    setInteractiveLighting,
+    materialSettings,
+    setMaterialSettings,
+    selectedPresetId,
+    setSelectedPresetId,
+    handleReset,
+    handleZoom
+  } = viewerState;
+
+  // Enhanced effects hook
   const enhancedEffectsHook = useEnhancedCardEffects();
   const {
     effectValues,
     handleEffectChange,
-    resetEffect,
     resetAllEffects,
     applyPreset,
     isApplyingPreset,
     validateEffectState
   } = enhancedEffectsHook;
-  
-  // Get dynamic material based on current effects
-  const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
-  
-  // Advanced settings - Updated for more professional defaults
-  const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]); // Studio instead of Twilight
-  const [selectedLighting, setSelectedLighting] = useState<LightingPreset>(LIGHTING_PRESETS[0]);
-  const [overallBrightness, setOverallBrightness] = useState([100]); // Reduced from 120
-  const [interactiveLighting, setInteractiveLighting] = useState(true);
-  
-  // Material properties - More balanced defaults
-  const [materialSettings, setMaterialSettings] = useState<MaterialSettings>({
-    roughness: 0.40, // Increased from 0.30
-    metalness: 0.45, // Reduced from 0.60
-    clearcoat: 0.60, // Reduced from 0.75
-    reflectivity: 0.40 // Reduced from 0.50
-  });
 
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
 
-  // Determine if we have multiple cards to navigate
+  // Navigation logic
   const hasMultipleCards = cards.length > 1;
   const canGoNext = hasMultipleCards && currentCardIndex < cards.length - 1;
   const canGoPrev = hasMultipleCards && currentCardIndex > 0;
 
-  // Navigation handlers
   const handlePreviousCard = useCallback(() => {
     if (canGoPrev && onCardChange) {
       onCardChange(currentCardIndex - 1);
-      setIsFlipped(false); // Reset flip state when changing cards
+      setIsFlipped(false);
     }
-  }, [canGoPrev, currentCardIndex, onCardChange]);
+  }, [canGoPrev, currentCardIndex, onCardChange, setIsFlipped]);
 
   const handleNextCard = useCallback(() => {
     if (canGoNext && onCardChange) {
       onCardChange(currentCardIndex + 1);
-      setIsFlipped(false); // Reset flip state when changing cards
+      setIsFlipped(false);
     }
-  }, [canGoNext, currentCardIndex, onCardChange]);
+  }, [canGoNext, currentCardIndex, onCardChange, setIsFlipped]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
-        handlePreviousCard();
-      } else if (e.key === 'ArrowRight') {
-        handleNextCard();
-      }
-    };
+  // Safe zone detection
+  const { isInSafeZone } = useSafeZones({
+    panelWidth: 320,
+    showPanel: showCustomizePanel,
+    showStats,
+    hasNavigation: hasMultipleCards
+  });
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handlePreviousCard, handleNextCard]);
-
-  // Add new state for export dialog
-  const [showExportDialog, setShowExportDialog] = useState(false);
-
-  // Add export functionality
+  // Export functionality
   const { exportCard, isExporting, exportProgress } = useCardExport({
     cardRef: cardContainerRef,
     card,
@@ -131,22 +132,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     onEffectChange: handleEffectChange,
     effectValues
   });
-
-  const handleRotationChange = useCallback((newRotation: { x: number; y: number }) => {
-    setRotation(newRotation);
-  }, []);
-
-  // Update the existing download handler to open export dialog
-  const handleDownloadClick = useCallback(() => {
-    setShowExportDialog(true);
-  }, []);
-
-  // Fix the share handler to pass the current card
-  const handleShareClick = useCallback(() => {
-    if (onShare) {
-      onShare(card);
-    }
-  }, [onShare, card]);
 
   // Style generation hook
   const { getFrameStyles, getEnhancedEffectStyles, getEnvironmentStyle, SurfaceTexture } = useCardEffects({
@@ -186,46 +171,30 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [autoRotate, isDragging]);
+  }, [autoRotate, isDragging, setRotation]);
 
-  // Safe zone detection - check if mouse is over UI elements
-  const isInSafeZone = useCallback((clientX: number, clientY: number) => {
-    if (!containerRef.current) return false;
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const relativeX = clientX - rect.left;
-    const relativeY = clientY - rect.top;
-    
-    // Panel area (right side)
-    const panelWidth = 320;
-    if (showCustomizePanel && relativeX > rect.width - panelWidth) {
-      return true;
-    }
-    
-    // Bottom info area (bottom 100px when stats are shown)
-    if (showStats && relativeY > rect.height - 100) {
-      return true;
-    }
-    
-    // Card details area (bottom left)
-    if (relativeX < 280 && relativeY > rect.height - 120) {
-      return true;
-    }
-    
-    // Navigation controls area (bottom right)
-    if (hasMultipleCards && relativeX > rect.width - 180 && relativeY > rect.height - 80) {
-      return true;
-    }
-    
-    return false;
-  }, [showCustomizePanel, showStats, hasMultipleCards]);
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        handlePreviousCard();
+      } else if (e.key === 'ArrowRight') {
+        handleNextCard();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handlePreviousCard, handleNextCard]);
 
   // Enhanced mouse handling with safe zones
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const inSafeZone = isInSafeZone(e.clientX, e.clientY);
+    if (!containerRef.current) return;
     
-    if (!isDragging && containerRef.current && !inSafeZone) {
-      const rect = containerRef.current.getBoundingClientRect();
+    const rect = containerRef.current.getBoundingClientRect();
+    const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
+    
+    if (!isDragging && !inSafeZone) {
       const x = (e.clientX - rect.left) / rect.width;
       const y = (e.clientY - rect.top) / rect.height;
       setMousePosition({ x, y });
@@ -240,18 +209,21 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         });
       }
     }
-  }, [isDragging, allowRotation, autoRotate, isInSafeZone]);
+  }, [isDragging, allowRotation, autoRotate, isInSafeZone, setMousePosition, setIsHoveringControls, setRotation]);
 
   // Enhanced wheel handling for safe zones
   const handleWheel = useCallback((e: WheelEvent) => {
-    const inSafeZone = isInSafeZone(e.clientX, e.clientY);
+    if (!containerRef.current) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
     
     if (!inSafeZone) {
       e.preventDefault();
       const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
-      setZoom(prev => Math.max(0.5, Math.min(3, prev + zoomDelta)));
+      handleZoom(zoomDelta);
     }
-  }, [isInSafeZone]);
+  }, [isInSafeZone, handleZoom]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -262,14 +234,17 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   }, [handleWheel]);
 
   const handleDragStart = useCallback((e: React.MouseEvent) => {
-    const inSafeZone = isInSafeZone(e.clientX, e.clientY);
+    if (!containerRef.current) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
     
     if (allowRotation && !inSafeZone) {
       setIsDragging(true);
       setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
       setAutoRotate(false);
     }
-  }, [rotation, allowRotation, isInSafeZone]);
+  }, [rotation, allowRotation, isInSafeZone, setIsDragging, setDragStart, setAutoRotate]);
 
   const handleDrag = useCallback((e: React.MouseEvent) => {
     if (isDragging && allowRotation) {
@@ -278,60 +253,37 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         y: e.clientX - dragStart.x
       });
     }
-  }, [isDragging, dragStart, allowRotation]);
+  }, [isDragging, dragStart, allowRotation, setRotation]);
 
   const handleDragEnd = useCallback(() => {
     setIsDragging(false);
-  }, []);
+  }, [setIsDragging]);
 
-  const handleReset = useCallback(() => {
-    setRotation({ x: 0, y: 0 });
-    setZoom(1);
-    setIsFlipped(false);
-    setAutoRotate(false);
-    setSelectedPresetId(undefined);
-    resetAllEffects();
-    validateEffectState();
-  }, [resetAllEffects, validateEffectState]);
+  const handleDownloadClick = useCallback(() => {
+    setShowExportDialog(true);
+  }, [setShowExportDialog]);
 
-  const handleZoom = useCallback((delta: number) => {
-    setZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
-  }, []);
-
-  const toggleFullscreen = useCallback(() => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
+  const handleShareClick = useCallback(() => {
+    if (onShare) {
+      onShare(card);
     }
-  }, []);
-
-  // Add state for preset selection tracking
-  const [selectedPresetId, setSelectedPresetId] = useState<string>();
+  }, [onShare, card]);
 
   // Enhanced combo application with validation
   const handleComboApplication = useCallback((combo: any) => {
     console.log('🚀 Applying combo with enhanced synchronization:', combo.id);
     
-    // Validate state before application
     validateEffectState();
-    
-    // Apply preset atomically with all related state
     applyPreset(combo.effects, combo.id);
-    
-    // Update preset selection
     setSelectedPresetId(combo.id);
     
-    // Apply any scene/lighting changes if specified
     if (combo.scene) {
       setSelectedScene(combo.scene);
     }
     if (combo.lighting) {
       setSelectedLighting(combo.lighting);
     }
-  }, [applyPreset, validateEffectState]);
+  }, [applyPreset, validateEffectState, setSelectedPresetId, setSelectedScene, setSelectedLighting]);
 
   // Enhanced manual effect change with state tracking
   const handleManualEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
@@ -339,7 +291,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
       setSelectedPresetId(undefined);
     }
     handleEffectChange(effectId, parameterId, value);
-  }, [handleEffectChange, isApplyingPreset]);
+  }, [handleEffectChange, isApplyingPreset, setSelectedPresetId]);
 
   // Enhanced state validation on card change
   useEffect(() => {
@@ -347,6 +299,13 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
       validateEffectState();
     }
   }, [card, validateEffectState]);
+
+  // Enhanced reset that includes all state
+  const handleResetWithEffects = useCallback(() => {
+    handleReset();
+    resetAllEffects();
+    validateEffectState();
+  }, [handleReset, resetAllEffects, validateEffectState]);
 
   if (!isOpen) return null;
 
@@ -383,42 +342,14 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           />
         )}
 
-        {/* New Header Layout */}
-        <div className="absolute top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none">
-          {/* Left: Back to CRD Button */}
-          <div className="pointer-events-auto">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center space-x-2 px-3 py-2"
-            >
-              <img 
-                src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
-                alt="CRD Logo" 
-                className="w-5 h-5"
-              />
-              <span className="text-sm font-medium">Back to CRD</span>
-            </Button>
-          </div>
+        {/* Header */}
+        <ViewerHeader
+          onClose={onClose}
+          showStudioButton={!shouldShowPanel}
+          onOpenStudio={() => setShowCustomizePanel(true)}
+        />
 
-          {/* Right: Studio Button (when panel is closed) */}
-          {!shouldShowPanel && (
-            <div className="pointer-events-auto">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowCustomizePanel(true)}
-                className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center space-x-2 px-3 py-2"
-              >
-                <Sparkles className="w-4 h-4 text-crd-green" />
-                <span className="text-sm font-medium">Studio</span>
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {/* Compact Card Details - positioned above ViewerControls */}
+        {/* Compact Card Details */}
         <div className="absolute bottom-20 left-4 z-20">
           <CompactCardDetails 
             card={card}
@@ -431,100 +362,31 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           />
         </div>
 
-        {/* Basic Controls with hover visibility */}
+        {/* Basic Controls */}
         <div className={`transition-opacity duration-200 ${isHoveringControls ? 'opacity-100 z-20' : 'opacity-100 z-10'}`}>
           <ViewerControls
             showEffects={showEffects}
             autoRotate={autoRotate}
             onToggleEffects={() => setShowEffects(!showEffects)}
             onToggleAutoRotate={() => setAutoRotate(!autoRotate)}
-            onReset={handleReset}
+            onReset={handleResetWithEffects}
             onZoomIn={() => handleZoom(0.1)}
             onZoomOut={() => handleZoom(-0.1)}
           />
         </div>
 
         {/* Card Navigation Controls */}
-        {hasMultipleCards && (
-          <div className="absolute bottom-4 right-4 z-10">
-            <div className="flex items-center space-x-2 bg-black bg-opacity-80 backdrop-blur-lg rounded-lg p-3 border border-white/10">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handlePreviousCard}
-                disabled={!canGoPrev}
-                className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              
-              <div className="text-white text-sm px-3">
-                {currentCardIndex + 1} / {cards.length}
-              </div>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleNextCard}
-                disabled={!canGoNext}
-                className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        )}
+        <CardNavigationControls
+          hasMultipleCards={hasMultipleCards}
+          currentCardIndex={currentCardIndex}
+          totalCards={cards.length}
+          canGoPrev={canGoPrev}
+          canGoNext={canGoNext}
+          onPrevious={handlePreviousCard}
+          onNext={handleNextCard}
+        />
 
-        {/* Studio Panel with Scroll Support */}
-        {shouldShowPanel && (
-          <div 
-            className="fixed top-0 right-0 h-full z-50" 
-            style={{ width: `${panelWidth}px` }}
-            onWheel={(e) => e.stopPropagation()} // Prevent wheel events from bubbling
-          >
-            <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col">
-              {/* Simplified Header */}
-              <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Sparkles className="w-5 h-5 text-crd-green" />
-                  <h2 className="text-lg font-semibold text-white">Studio</h2>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => setShowCustomizePanel(false)}
-                  className="bg-white bg-opacity-10 hover:bg-opacity-20 border border-white/10"
-                >
-                  <span className="w-4 h-4 text-white">×</span>
-                </Button>
-              </div>
-
-              {/* Studio Content with Scroll Support */}
-              <div className="flex-1 overflow-hidden">
-                <StudioContent
-                  selectedScene={selectedScene}
-                  selectedLighting={selectedLighting}
-                  effectValues={effectValues}
-                  overallBrightness={overallBrightness}
-                  interactiveLighting={interactiveLighting}
-                  materialSettings={materialSettings}
-                  onSceneChange={setSelectedScene}
-                  onLightingChange={setSelectedLighting}
-                  onEffectChange={handleManualEffectChange}
-                  onBrightnessChange={setOverallBrightness}
-                  onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
-                  onMaterialSettingsChange={setMaterialSettings}
-                  selectedPresetId={selectedPresetId}
-                  onPresetSelect={setSelectedPresetId}
-                  onApplyCombo={handleComboApplication}
-                  isApplyingPreset={isApplyingPreset}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Enhanced Card Container - Now with background info */}
+        {/* Enhanced Card Container */}
         <div ref={cardContainerRef}>
           <EnhancedCardContainer
             card={card}
@@ -553,37 +415,36 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           />
         </div>
 
-        {/* Info Panel - Enhanced visibility with updated instruction */}
-        {showStats && !isFlipped && !shouldShowPanel && (
-          <div className="absolute bottom-4 left-4 right-4 max-w-2xl mx-auto z-10" style={{ marginRight: hasMultipleCards ? '180px' : '100px', marginLeft: '280px' }}>
-            <div className="bg-black bg-opacity-80 backdrop-blur-lg rounded-lg p-4 border border-white/10">
-              <div className="flex items-center justify-between text-white">
-                <div className="flex space-x-4 text-sm">
-                  <span>Double-click card to flip</span>
-                  <span>•</span>
-                  <span>Drag to rotate manually</span>
-                  <span>•</span>
-                  <span>Scroll to zoom</span>
-                  <span>•</span>
-                  <span>Move mouse for effects</span>
-                  {hasMultipleCards && (
-                    <>
-                      <span>•</span>
-                      <span>Use ← → keys to navigate</span>
-                    </>
-                  )}
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4" />
-                  <span className="text-sm">
-                    Studio | 3D Configuration Display
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Info Panel */}
+        <ViewerInfoPanel
+          showStats={showStats}
+          isFlipped={isFlipped}
+          shouldShowPanel={shouldShowPanel}
+          hasMultipleCards={hasMultipleCards}
+        />
       </div>
+
+      {/* Studio Panel */}
+      <StudioPanel
+        isVisible={shouldShowPanel}
+        onClose={() => setShowCustomizePanel(false)}
+        selectedScene={selectedScene}
+        selectedLighting={selectedLighting}
+        effectValues={effectValues}
+        overallBrightness={overallBrightness}
+        interactiveLighting={interactiveLighting}
+        materialSettings={materialSettings}
+        onSceneChange={setSelectedScene}
+        onLightingChange={setSelectedLighting}
+        onEffectChange={handleManualEffectChange}
+        onBrightnessChange={setOverallBrightness}
+        onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
+        onMaterialSettingsChange={setMaterialSettings}
+        selectedPresetId={selectedPresetId}
+        onPresetSelect={setSelectedPresetId}
+        onApplyCombo={handleComboApplication}
+        isApplyingPreset={isApplyingPreset}
+      />
 
       {/* Export Options Dialog */}
       <ExportOptionsDialog
@@ -597,48 +458,3 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     </>
   );
 };
-
-const presets = [
-  {
-    name: 'Crystal Prism',
-    description: 'Translucent crystalline finish',
-    effects: {
-      crystal: { intensity: 85, facets: 12, dispersion: 75, clarity: 80, sparkle: true }
-    }
-  },
-  {
-    name: 'Chrome Mirror',
-    description: 'Polished metallic chrome',
-    effects: {
-      chrome: { intensity: 75, sharpness: 85, distortion: 5, highlightSize: 45, polish: 90 }
-    }
-  },
-  {
-    name: 'Brushed Steel',
-    description: 'Industrial brushed metal',
-    effects: {
-      brushedmetal: { intensity: 70, direction: 45, grainDensity: 12, metallic: 85, roughness: 25 }
-    }
-  },
-  {
-    name: 'Vintage Classic',
-    description: 'Aged cardboard patina',
-    effects: {
-      vintage: { intensity: 55, aging: 65, patina: '#8b7355', wear: 45, scratches: true }
-    }
-  },
-  {
-    name: 'Holographic Premium',
-    description: 'Rainbow holographic effect',
-    effects: {
-      holographic: { intensity: 70, shiftSpeed: 100, rainbowSpread: 180, prismaticDepth: 50, animated: true }
-    }
-  },
-  {
-    name: 'Gold Luxury',
-    description: 'Luxurious gold plating',
-    effects: {
-      gold: { intensity: 85, shimmerSpeed: 120, platingThickness: 7, goldTone: 'rich', reflectivity: 90, colorEnhancement: true }
-    }
-  }
-];
