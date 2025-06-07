@@ -31,8 +31,8 @@ export const SceneSection: React.FC<SceneSectionProps> = ({
 }) => {
   return (
     <CollapsibleSection
-      title="Scene"
-      emoji="🌅"
+      title="Lighting"
+      emoji="💡"
       statusText={selectedLighting.name}
       isOpen={isOpen}
       onToggle={onToggle}

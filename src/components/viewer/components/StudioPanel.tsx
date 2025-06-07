@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { ScrollableStudioContent } from './studio/ScrollableStudioContent';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -49,14 +48,12 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
             <Sparkles className="w-5 h-5 text-crd-green" />
             <h2 className="text-lg font-semibold text-white">Studio</h2>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <button
             onClick={onClose}
-            className="bg-white bg-opacity-10 hover:bg-opacity-20 border border-white/10"
+            className="w-6 h-6 flex items-center justify-center text-white hover:text-gray-300 transition-colors"
           >
-            <span className="w-4 h-4 text-white">×</span>
-          </Button>
+            ×
+          </button>
         </div>
 
         {/* Studio Content with Scroll Support */}

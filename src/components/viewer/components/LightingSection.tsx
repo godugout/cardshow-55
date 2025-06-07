@@ -171,8 +171,7 @@ export const LightingSection: React.FC<LightingSectionProps> = ({
   return (
     <div className="space-y-4">
       {/* View Mode Toggle */}
-      <div className="flex items-center justify-between">
-        <h4 className="text-white font-medium text-sm">Lighting Style</h4>
+      <div className="flex items-center justify-end">
         <div className="flex items-center space-x-1 bg-white/10 rounded-lg p-1">
           <Button
             onClick={() => setViewMode('list')}
