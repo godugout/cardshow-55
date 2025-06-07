@@ -81,13 +81,8 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
           return (
             <div
               key={preset.id}
-              className={`relative rounded-lg transition-all duration-200 ${
-                isSelected 
-                  ? 'ring-2 ring-offset-2 ring-offset-black' 
-                  : ''
-              }`}
+              className="relative rounded-lg transition-all duration-200"
               style={isSelected ? {
-                '--tw-ring-color': styleColor.border,
                 boxShadow: `0 0 0 2px black, 0 0 0 4px ${styleColor.border}`
               } : {}}
             >
