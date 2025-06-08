@@ -9,7 +9,7 @@ import { AdvancedStudioTab } from './tabs/AdvancedStudioTab';
 import { LightingSection } from '../LightingSection';
 import { CollapsibleSection } from '@/components/ui/design-system';
 import { SpaceTemplateSelector } from '../spaces/SpaceTemplateSelector';
-import { EnvironmentSection } from '../EnvironmentSection';
+import { EnvironmentControls } from '../EnvironmentControls';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -146,13 +146,13 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
                     />
                   </div>
 
-                  {/* Background Scenes */}
+                  {/* Background Environments */}
                   <div>
                     <h4 className="text-white font-medium text-sm mb-3">Background Environments</h4>
                     <p className="text-xs text-gray-400 mb-3">
                       Standard single-card viewing environments
                     </p>
-                    <EnvironmentSection
+                    <EnvironmentControls
                       selectedScene={selectedScene}
                       selectedLighting={selectedLighting}
                       overallBrightness={overallBrightness}
