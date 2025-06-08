@@ -120,7 +120,13 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
               >
                 <EnvironmentSection
                   selectedScene={selectedScene}
+                  selectedLighting={selectedLighting}
+                  overallBrightness={overallBrightness}
+                  interactiveLighting={interactiveLighting}
                   onSceneChange={onSceneChange}
+                  onLightingChange={onLightingChange}
+                  onBrightnessChange={onBrightnessChange}
+                  onInteractiveLightingToggle={onInteractiveLightingToggle}
                 />
               </CollapsibleSection>
 
