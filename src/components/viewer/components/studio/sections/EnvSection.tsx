@@ -50,7 +50,7 @@ export const EnvSection: React.FC<EnvSectionProps> = ({
                 boxShadow: '0 0 15px #00C85130'
               } : {}}
             >
-              <div className="text-lg">{scene.emoji}</div>
+              <div className="text-lg">{scene.icon}</div>
               <div className="text-center">
                 <div className="text-xs font-medium text-white">{scene.name}</div>
                 <div className="text-xs text-gray-400 mt-1">{scene.description}</div>
@@ -66,7 +66,18 @@ export const EnvSection: React.FC<EnvSectionProps> = ({
         <EnhancedSpacesSection
           effectValues={effectValues}
           selectedScene={selectedScene}
-          selectedLighting={{ id: 'default', name: 'Default', description: '', color: '#ffffff' }}
+          selectedLighting={{ 
+            id: 'default', 
+            name: 'Default', 
+            description: '', 
+            brightness: 1,
+            contrast: 1,
+            shadows: 0.5,
+            highlights: 1,
+            temperature: 0,
+            position: { x: 0, y: 0, z: 0 },
+            shadowSoftness: 0.5
+          }}
           materialSettings={materialSettings}
           overallBrightness={overallBrightness}
           interactiveLighting={interactiveLighting}
