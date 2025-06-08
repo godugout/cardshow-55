@@ -51,16 +51,17 @@ export const Enhanced3DSpaceCanvas: React.FC<Enhanced3DSpaceCanvasProps> = ({
   return (
     <div
       ref={canvasRef}
-      className="relative w-full h-80 overflow-hidden rounded-lg border border-white/10"
+      className="relative w-full h-full min-h-[600px] overflow-hidden rounded-lg border border-white/10"
       style={{
-        perspective: '1000px',
-        transformStyle: 'preserve-3d'
+        perspective: '1200px',
+        transformStyle: 'preserve-3d',
+        background: template?.environment.background || 'linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%)'
       }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Environment Layer */}
+      {/* Environment Layer - now fills entire canvas */}
       <SpaceEnvironmentLayer template={template} />
 
       {/* Empty State */}
@@ -68,7 +69,7 @@ export const Enhanced3DSpaceCanvas: React.FC<Enhanced3DSpaceCanvasProps> = ({
         <SpaceEmptyState template={template} />
       )}
 
-      {/* Enhanced space cards */}
+      {/* Enhanced space cards with corrected transforms */}
       {template && spaceCards.map((spaceCard, index) => (
         <SpaceCardRenderer
           key={spaceCard.id}
@@ -90,6 +91,13 @@ export const Enhanced3DSpaceCanvas: React.FC<Enhanced3DSpaceCanvasProps> = ({
 
       {/* Edit Mode Overlay */}
       <SpaceEditModeOverlay isEditMode={isEditMode} />
+
+      {/* 3D Scene Depth Indicators */}
+      {template && spaceCards.length > 0 && (
+        <div className="absolute bottom-4 left-4 text-xs text-white/60">
+          {template.name} • {spaceCards.length}/{template.maxCards} cards
+        </div>
+      )}
     </div>
   );
 };

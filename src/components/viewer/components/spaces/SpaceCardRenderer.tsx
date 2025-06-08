@@ -62,25 +62,45 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
     />
   );
 
-  // Enhanced 3D transform calculation
-  const baseTransform = `
-    translate3d(${spaceCard.position.x * 60}px, ${-spaceCard.position.y * 60}px, ${spaceCard.position.z * 40}px)
-    rotateX(${spaceCard.rotation.x + (template.category === 'constellation' ? Math.sin(Date.now() * 0.001 + index) * 2 : 0)}deg)
-    rotateY(${spaceCard.rotation.y + (isHovering ? Math.sin(Date.now() * 0.002 + index) * 1 : 0)}deg)
-    rotateZ(${spaceCard.rotation.z}deg)
-    scale(${spaceCard.scale * 0.4})
-  `;
+  // Fixed 3D transform calculation - corrected scaling and rotation
+  const getCardTransform = () => {
+    const baseScale = 0.25; // Smaller scale for better fit
+    const spacing = 120; // Increased spacing between cards
+    
+    // Calculate position based on template and card position
+    const x = spaceCard.position.x * spacing;
+    const y = -spaceCard.position.y * spacing; // Negative for proper Y orientation
+    const z = spaceCard.position.z * 60;
+    
+    // Fixed rotation - cards should face forward (no crazy rotations)
+    const rotX = spaceCard.rotation.x;
+    const rotY = spaceCard.rotation.y;
+    const rotZ = spaceCard.rotation.z;
+    
+    // Add subtle floating animation for constellation
+    const floatY = template.category === 'constellation' 
+      ? Math.sin(Date.now() * 0.001 + index) * 10 
+      : 0;
+    
+    return `
+      translate3d(${x}px, ${y + floatY}px, ${z}px)
+      rotateX(${rotX}deg)
+      rotateY(${rotY}deg)
+      rotateZ(${rotZ}deg)
+      scale(${baseScale * spaceCard.scale})
+    `;
+  };
 
   return (
     <div
-      className={`absolute top-1/2 left-1/2 transition-all duration-300 ${
+      className={`absolute top-1/2 left-1/2 transition-all duration-500 ${
         spaceCard.isSelected ? 'ring-2 ring-crd-green ring-opacity-80' : ''
       } ${isEditMode ? 'cursor-pointer hover:scale-110' : ''}`}
       style={{
-        transform: baseTransform,
+        transform: getCardTransform(),
         transformStyle: 'preserve-3d',
         zIndex: 10 + index + Math.floor(spaceCard.position.z * 5),
-        filter: `drop-shadow(0 ${4 + spaceCard.position.z * 2}px ${8 + spaceCard.position.z * 4}px rgba(0,0,0,0.3))`
+        filter: `drop-shadow(0 ${8 + spaceCard.position.z * 3}px ${16 + spaceCard.position.z * 6}px rgba(0,0,0,0.4))`
       }}
       onClick={(e) => {
         e.stopPropagation();
@@ -89,39 +109,37 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
         }
       }}
     >
-      <div style={{ transform: 'scale(0.6)' }}>
-        <EnhancedCardContainer
-          card={spaceCard.card}
-          isFlipped={false}
-          isHovering={isHovering}
-          showEffects={true}
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-          rotation={{ x: 0, y: 0 }}
-          zoom={1}
-          isDragging={false}
-          frameStyles={getFrameStyles()}
-          enhancedEffectStyles={getEnhancedEffectStyles()}
-          SurfaceTexture={SurfaceTexture}
-          interactiveLighting={interactiveLighting}
-          selectedScene={selectedScene}
-          selectedLighting={selectedLighting}
-          materialSettings={materialSettings}
-          overallBrightness={overallBrightness}
-          showBackgroundInfo={false}
-          onMouseDown={() => {}}
-          onMouseMove={() => {}}
-          onMouseEnter={() => {}}
-          onMouseLeave={() => {}}
-          onClick={() => {}}
-        />
-      </div>
+      <EnhancedCardContainer
+        card={spaceCard.card}
+        isFlipped={false}
+        isHovering={isHovering}
+        showEffects={true}
+        effectValues={effectValues}
+        mousePosition={mousePosition}
+        rotation={{ x: 0, y: 0 }}
+        zoom={1}
+        isDragging={false}
+        frameStyles={getFrameStyles()}
+        enhancedEffectStyles={getEnhancedEffectStyles()}
+        SurfaceTexture={SurfaceTexture}
+        interactiveLighting={interactiveLighting}
+        selectedScene={selectedScene}
+        selectedLighting={selectedLighting}
+        materialSettings={materialSettings}
+        overallBrightness={overallBrightness}
+        showBackgroundInfo={false}
+        onMouseDown={() => {}}
+        onMouseMove={() => {}}
+        onMouseEnter={() => {}}
+        onMouseLeave={() => {}}
+        onClick={() => {}}
+      />
       
       {/* Enhanced selection indicator */}
       {spaceCard.isSelected && (
-        <div className="absolute -inset-3 border-2 border-crd-green rounded-xl bg-crd-green/10 pointer-events-none">
+        <div className="absolute -inset-6 border-2 border-crd-green rounded-xl bg-crd-green/10 pointer-events-none">
           <div className="absolute inset-0 border border-crd-green/50 rounded-xl animate-pulse" />
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-crd-green rounded-full animate-pulse" />
+          <div className="absolute -top-2 -right-2 w-4 h-4 bg-crd-green rounded-full animate-pulse" />
         </div>
       )}
     </div>

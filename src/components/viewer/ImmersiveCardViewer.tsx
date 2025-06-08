@@ -1,4 +1,3 @@
-
 import React, { useRef, useCallback } from 'react';
 import type { ImmersiveCardViewerProps, EnvironmentScene, LightingPreset, MaterialSettings } from './types';
 import { 
@@ -225,7 +224,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     handleReset();
     resetAllEffects();
     validateEffectState();
-    setSelectedTemplate(null); // Also reset spaces mode
+    setSelectedTemplate(null);
   }, [handleReset, resetAllEffects, validateEffectState, setSelectedTemplate]);
 
   // Handle template selection - this switches to 3D space mode
@@ -293,10 +292,18 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           isFlipped={isFlipped}
         />
 
-        {/* Conditional rendering: 3D Space or Single Card */}
-        <div ref={cardContainerRef}>
+        {/* Conditional rendering: 3D Space or Single Card - now with full viewport for 3D */}
+        <div 
+          ref={cardContainerRef}
+          className={isSpaceMode ? "absolute inset-0" : "relative z-20"}
+          style={isSpaceMode ? { 
+            paddingRight: shouldShowPanel ? `${panelWidth}px` : '0',
+            paddingTop: '60px', // Account for header
+            paddingBottom: '60px' // Account for any bottom UI
+          } : {}}
+        >
           {isSpaceMode ? (
-            // 3D Space Mode
+            // 3D Space Mode - now takes full viewport
             <Enhanced3DSpaceCanvas
               spaceCards={spaceState.cards}
               template={spaceState.selectedTemplate}
