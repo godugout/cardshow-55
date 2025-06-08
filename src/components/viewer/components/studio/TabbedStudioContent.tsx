@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Map, FrameIcon, Sparkles } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -7,8 +7,9 @@ import { SpacesTab } from './tabs/SpacesTab';
 import { FramesTab } from './tabs/FramesTab';
 import { AdvancedStudioTab } from './tabs/AdvancedStudioTab';
 import { LightingSection } from '../LightingSection';
-import { EnvironmentSection } from '../EnvironmentSection';
 import { CollapsibleSection } from '@/components/ui/design-system';
+import { SpaceTemplateSelector } from '../spaces/SpaceTemplateSelector';
+import { EnvironmentSection } from '../EnvironmentSection';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -60,12 +61,25 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
   isApplyingPreset = false,
   currentCard,
   spaceState,
-  spacesTemplates,
+  spacesTemplates = [],
   onTemplateSelect,
   onAddCardToSpace,
   onRemoveCardFromSpace,
   onToggleEditMode
 }) => {
+  // Section state management
+  const [sectionsOpen, setSectionsOpen] = useState({
+    sceneEnvironment: true,
+    lighting: false
+  });
+
+  const toggleSection = (section: keyof typeof sectionsOpen) => {
+    setSectionsOpen(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
   return (
     <div className="flex-1 min-h-0">
       <Tabs defaultValue="spaces" className="h-full flex flex-col">
@@ -110,32 +124,55 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
                 onToggleEditMode={onToggleEditMode}
               />
 
-              {/* Scene & Lighting Controls - Restored as separate sections */}
+              {/* Combined Scene & Environment Section */}
               <CollapsibleSection
                 title="Scene & Environment"
                 emoji="🌍"
-                statusText={selectedScene.name}
-                isOpen={false}
-                onToggle={() => {}}
+                statusText={`${selectedScene.name} • ${spaceState?.selectedTemplate ? '3D Mode' : 'Standard'}`}
+                isOpen={sectionsOpen.sceneEnvironment}
+                onToggle={() => toggleSection('sceneEnvironment')}
               >
-                <EnvironmentSection
-                  selectedScene={selectedScene}
-                  selectedLighting={selectedLighting}
-                  overallBrightness={overallBrightness}
-                  interactiveLighting={interactiveLighting}
-                  onSceneChange={onSceneChange}
-                  onLightingChange={onLightingChange}
-                  onBrightnessChange={onBrightnessChange}
-                  onInteractiveLightingToggle={onInteractiveLightingToggle}
-                />
+                <div className="space-y-6">
+                  {/* 3D Space Templates */}
+                  <div>
+                    <h4 className="text-white font-medium text-sm mb-3">3D Environment Templates</h4>
+                    <p className="text-xs text-gray-400 mb-3">
+                      Switch to 3D space mode with multi-card environments
+                    </p>
+                    <SpaceTemplateSelector
+                      templates={spacesTemplates}
+                      selectedTemplate={spaceState?.selectedTemplate || null}
+                      onTemplateSelect={onTemplateSelect || (() => {})}
+                    />
+                  </div>
+
+                  {/* Background Scenes */}
+                  <div>
+                    <h4 className="text-white font-medium text-sm mb-3">Background Environments</h4>
+                    <p className="text-xs text-gray-400 mb-3">
+                      Standard single-card viewing environments
+                    </p>
+                    <EnvironmentSection
+                      selectedScene={selectedScene}
+                      selectedLighting={selectedLighting}
+                      overallBrightness={overallBrightness}
+                      interactiveLighting={interactiveLighting}
+                      onSceneChange={onSceneChange}
+                      onLightingChange={onLightingChange}
+                      onBrightnessChange={onBrightnessChange}
+                      onInteractiveLightingToggle={onInteractiveLightingToggle}
+                    />
+                  </div>
+                </div>
               </CollapsibleSection>
 
+              {/* Separate Lighting Section */}
               <CollapsibleSection
                 title="Lighting"
                 emoji="💡"
                 statusText={selectedLighting.name}
-                isOpen={false}
-                onToggle={() => {}}
+                isOpen={sectionsOpen.lighting}
+                onToggle={() => toggleSection('lighting')}
               >
                 <LightingSection
                   selectedLighting={selectedLighting}

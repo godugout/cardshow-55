@@ -2,7 +2,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit3, RotateCcw, Trash2 } from 'lucide-react';
-import { SpaceTemplateSelector } from '../../spaces/SpaceTemplateSelector';
 import type { SpaceState, SpaceTemplate } from '../../../types/spaces';
 import type { CardData } from '@/hooks/useCardEditor';
 
@@ -34,46 +33,34 @@ export const SpacesTab: React.FC<SpacesTabProps> = ({
 
   const isSpaceMode = !!spaceState?.selectedTemplate;
 
-  // Debug logging
-  console.log('🎯 SpacesTab - spacesTemplates:', spacesTemplates);
-  console.log('🎯 SpacesTab - spaceState:', spaceState);
-
   return (
     <div className="space-y-6">
-      {/* 3D Environment Templates */}
+      {/* 3D Spaces Overview */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-medium">3D Environment Templates</h3>
-          {isSpaceMode && (
-            <Button
-              onClick={() => onTemplateSelect?.(null)}
-              variant="outline"
-              size="sm"
-              className="text-xs"
-            >
-              <RotateCcw className="w-3 h-3 mr-1" />
-              Exit 3D
-            </Button>
-          )}
-        </div>
-        
+        <h3 className="text-white font-medium mb-2">3D Card Spaces</h3>
         <p className="text-sm text-gray-400 mb-4">
-          {isSpaceMode 
-            ? 'You are in 3D space mode. The main viewer shows your 3D environment.'
-            : 'Select a template to switch the main viewer to 3D space mode with your card.'
-          }
+          Create immersive 3D environments with multiple cards. Templates and backgrounds are configured in the Scene & Environment section below.
         </p>
-
-        <SpaceTemplateSelector
-          templates={spacesTemplates}
-          selectedTemplate={spaceState?.selectedTemplate || null}
-          onTemplateSelect={onTemplateSelect || (() => {})}
-        />
         
-        <div className="mt-3 p-3 bg-white/5 rounded-lg border border-white/10">
+        <div className="p-3 bg-white/5 rounded-lg border border-white/10">
           <div className="text-xs text-gray-400">
             Status: {getStatusText()}
           </div>
+          {isSpaceMode && (
+            <div className="flex items-center space-x-2 mt-2">
+              <div className="w-2 h-2 bg-crd-green rounded-full" />
+              <span className="text-xs text-crd-green">3D Mode Active</span>
+              <Button
+                onClick={() => onTemplateSelect?.(null)}
+                variant="outline"
+                size="sm"
+                className="ml-auto text-xs"
+              >
+                <RotateCcw className="w-3 h-3 mr-1" />
+                Exit 3D
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -144,6 +131,18 @@ export const SpacesTab: React.FC<SpacesTabProps> = ({
             </div>
           </div>
         </>
+      )}
+
+      {/* Help Text when not in 3D mode */}
+      {!isSpaceMode && (
+        <div className="p-4 bg-white/5 rounded-lg border border-white/10 text-center">
+          <div className="text-sm text-gray-400 mb-2">
+            Configure 3D templates and background environments in the <strong>Scene & Environment</strong> section below
+          </div>
+          <div className="text-xs text-gray-500">
+            Select a 3D template to activate space mode and manage multiple cards
+          </div>
+        </div>
       )}
     </div>
   );
