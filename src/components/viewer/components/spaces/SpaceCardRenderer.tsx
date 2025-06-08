@@ -121,6 +121,15 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
     setIsDragging(false);
   };
 
+  // Create wrapper function for onClick prop that doesn't expect parameters
+  const handleClickWrapper = () => {
+    if (isEditMode) {
+      onCardSelect(spaceCard.id, false);
+    } else {
+      setIsCardFlipped(!isCardFlipped);
+    }
+  };
+
   return (
     <div
       className={`absolute top-1/2 left-1/2 transition-all duration-500 cursor-pointer ${
@@ -160,7 +169,7 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
         onMouseMove={() => {}}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onClick={handleCardClick}
+        onClick={handleClickWrapper}
       />
       
       {/* Enhanced selection indicator */}
