@@ -2,24 +2,11 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit3, RotateCcw, Trash2 } from 'lucide-react';
-import { CollapsibleSection } from '@/components/ui/design-system';
 import { SpaceTemplateSelector } from '../../spaces/SpaceTemplateSelector';
-import type { EffectValues } from '../../../hooks/useEnhancedCardEffects';
-import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../../types';
-import type { CardData } from '@/hooks/useCardEditor';
 import type { SpaceState, SpaceTemplate } from '../../../types/spaces';
+import type { CardData } from '@/hooks/useCardEditor';
 
 interface SpacesTabProps {
-  selectedScene: EnvironmentScene;
-  selectedLighting: LightingPreset;
-  overallBrightness: number[];
-  interactiveLighting: boolean;
-  onSceneChange: (scene: EnvironmentScene) => void;
-  onLightingChange: (lighting: LightingPreset) => void;
-  onBrightnessChange: (value: number[]) => void;
-  onInteractiveLightingToggle: () => void;
-  effectValues: EffectValues;
-  materialSettings: MaterialSettings;
   currentCard?: CardData;
   spaceState?: SpaceState;
   spacesTemplates?: SpaceTemplate[];
@@ -30,16 +17,6 @@ interface SpacesTabProps {
 }
 
 export const SpacesTab: React.FC<SpacesTabProps> = ({
-  selectedScene,
-  selectedLighting,
-  overallBrightness,
-  interactiveLighting,
-  onSceneChange,
-  onLightingChange,
-  onBrightnessChange,
-  onInteractiveLightingToggle,
-  effectValues,
-  materialSettings,
   currentCard,
   spaceState,
   spacesTemplates = [],
@@ -56,6 +33,10 @@ export const SpacesTab: React.FC<SpacesTabProps> = ({
   };
 
   const isSpaceMode = !!spaceState?.selectedTemplate;
+
+  // Debug logging
+  console.log('🎯 SpacesTab - spacesTemplates:', spacesTemplates);
+  console.log('🎯 SpacesTab - spaceState:', spaceState);
 
   return (
     <div className="space-y-6">
@@ -96,17 +77,12 @@ export const SpacesTab: React.FC<SpacesTabProps> = ({
         </div>
       </div>
 
-      {/* Space Controls - only show when in space mode */}
+      {/* Card Management - only show when in space mode */}
       {isSpaceMode && spaceState && (
         <>
-          {/* Card Management */}
-          <CollapsibleSection
-            title="Card Management"
-            emoji="🎴"
-            statusText={`${spaceState.cards.length} cards`}
-            isOpen={true}
-            onToggle={() => {}}
-          >
+          <div className="border-t border-white/10 pt-6">
+            <h4 className="text-white font-medium text-sm mb-4">Card Management</h4>
+            
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-2">
                 <Button
@@ -139,7 +115,7 @@ export const SpacesTab: React.FC<SpacesTabProps> = ({
                 </div>
               )}
             </div>
-          </CollapsibleSection>
+          </div>
 
           {/* Selected Cards Info */}
           {spaceState.selectedCardIds.length > 0 && (
@@ -169,75 +145,6 @@ export const SpacesTab: React.FC<SpacesTabProps> = ({
           </div>
         </>
       )}
-
-      {/* Scene & Lighting Controls */}
-      <CollapsibleSection
-        title="Scene & Lighting"
-        emoji="💡"
-        statusText={`${selectedScene.name} • ${selectedLighting.name}`}
-        isOpen={false}
-        onToggle={() => {}}
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-white mb-2">Scene</label>
-            <select
-              value={selectedScene.id}
-              onChange={(e) => {
-                const scene = [selectedScene].find(s => s.id === e.target.value);
-                if (scene) onSceneChange(scene);
-              }}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
-            >
-              <option value={selectedScene.id}>{selectedScene.name}</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-white mb-2">Lighting</label>
-            <select
-              value={selectedLighting.id}
-              onChange={(e) => {
-                const lighting = [selectedLighting].find(l => l.id === e.target.value);
-                if (lighting) onLightingChange(lighting);
-              }}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
-            >
-              <option value={selectedLighting.id}>{selectedLighting.name}</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-white mb-2">
-              Brightness: {overallBrightness[0]}%
-            </label>
-            <input
-              type="range"
-              min="20"
-              max="200"
-              value={overallBrightness[0]}
-              onChange={(e) => onBrightnessChange([parseInt(e.target.value)])}
-              className="w-full"
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-white">Interactive Lighting</span>
-            <button
-              onClick={onInteractiveLightingToggle}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                interactiveLighting ? 'bg-crd-green' : 'bg-gray-600'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  interactiveLighting ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
-          </div>
-        </div>
-      </CollapsibleSection>
     </div>
   );
 };

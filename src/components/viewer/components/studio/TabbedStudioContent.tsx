@@ -6,6 +6,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { SpacesTab } from './tabs/SpacesTab';
 import { FramesTab } from './tabs/FramesTab';
 import { AdvancedStudioTab } from './tabs/AdvancedStudioTab';
+import { LightingSection } from '../LightingSection';
+import { EnvironmentSection } from '../EnvironmentSection';
+import { CollapsibleSection } from '@/components/ui/design-system';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -96,18 +99,8 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
         {/* Tab Content */}
         <TabsContent value="spaces" className="flex-1 min-h-0 m-0">
           <ScrollArea className="h-full">
-            <div className="p-4">
+            <div className="p-4 space-y-6">
               <SpacesTab
-                selectedScene={selectedScene}
-                selectedLighting={selectedLighting}
-                overallBrightness={overallBrightness}
-                interactiveLighting={interactiveLighting}
-                onSceneChange={onSceneChange}
-                onLightingChange={onLightingChange}
-                onBrightnessChange={onBrightnessChange}
-                onInteractiveLightingToggle={onInteractiveLightingToggle}
-                effectValues={effectValues}
-                materialSettings={materialSettings}
                 currentCard={currentCard}
                 spaceState={spaceState}
                 spacesTemplates={spacesTemplates}
@@ -116,6 +109,37 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
                 onRemoveCardFromSpace={onRemoveCardFromSpace}
                 onToggleEditMode={onToggleEditMode}
               />
+
+              {/* Scene & Lighting Controls - Restored as separate sections */}
+              <CollapsibleSection
+                title="Scene & Environment"
+                emoji="🌍"
+                statusText={selectedScene.name}
+                isOpen={false}
+                onToggle={() => {}}
+              >
+                <EnvironmentSection
+                  selectedScene={selectedScene}
+                  onSceneChange={onSceneChange}
+                />
+              </CollapsibleSection>
+
+              <CollapsibleSection
+                title="Lighting"
+                emoji="💡"
+                statusText={selectedLighting.name}
+                isOpen={false}
+                onToggle={() => {}}
+              >
+                <LightingSection
+                  selectedLighting={selectedLighting}
+                  overallBrightness={overallBrightness}
+                  interactiveLighting={interactiveLighting}
+                  onLightingChange={onLightingChange}
+                  onBrightnessChange={onBrightnessChange}
+                  onInteractiveLightingToggle={onInteractiveLightingToggle}
+                />
+              </CollapsibleSection>
             </div>
           </ScrollArea>
         </TabsContent>
