@@ -37,7 +37,6 @@ export const FramesTab: React.FC<FramesTabProps> = ({
         onPresetSelect={onPresetSelect}
         onApplyCombo={onApplyCombo}
         isApplyingPreset={isApplyingPreset}
-        showFramesFocus={true}
       />
     </div>
   );

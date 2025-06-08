@@ -43,7 +43,6 @@ export const SceneSetupTab: React.FC<SceneSetupTabProps> = ({
           onLightingChange={onLightingChange}
           onBrightnessChange={onBrightnessChange}
           onInteractiveLightingToggle={onInteractiveLightingToggle}
-          showOnlyEnvironment={true}
         />
       </div>
 
