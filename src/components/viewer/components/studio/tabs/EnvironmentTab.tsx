@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { SceneSection } from '../sections/SceneSection';
-import { SpacesSection } from '../sections/SpacesSection';
+import { LightingSection } from '../../LightingSection';
+import { EnhancedSpacesSection } from '../sections/EnhancedSpacesSection';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../../types';
 import type { EffectValues } from '../../../hooks/useEnhancedCardEffects';
 import type { CardData } from '@/hooks/useCardEditor';
 
-interface SceneSetupTabProps {
+interface EnvironmentTabProps {
   selectedScene: EnvironmentScene;
   selectedLighting: LightingPreset;
   overallBrightness: number[];
@@ -20,7 +20,7 @@ interface SceneSetupTabProps {
   currentCard?: CardData;
 }
 
-export const SceneSetupTab: React.FC<SceneSetupTabProps> = ({
+export const EnvironmentTab: React.FC<EnvironmentTabProps> = ({
   selectedScene,
   selectedLighting,
   overallBrightness,
@@ -35,19 +35,15 @@ export const SceneSetupTab: React.FC<SceneSetupTabProps> = ({
 }) => {
   return (
     <div className="space-y-6">
-      {/* Environment Section */}
+      {/* Lighting Section */}
       <div>
         <h3 className="text-white font-medium text-lg mb-4 flex items-center">
-          🌍 Environment
+          💡 Lighting
         </h3>
-        <SceneSection
-          selectedScene={selectedScene}
+        <LightingSection
           selectedLighting={selectedLighting}
           overallBrightness={overallBrightness}
           interactiveLighting={interactiveLighting}
-          isOpen={true}
-          onToggle={() => {}}
-          onSceneChange={onSceneChange}
           onLightingChange={onLightingChange}
           onBrightnessChange={onBrightnessChange}
           onInteractiveLightingToggle={onInteractiveLightingToggle}
@@ -57,11 +53,9 @@ export const SceneSetupTab: React.FC<SceneSetupTabProps> = ({
       {/* Spaces Section */}
       <div>
         <h3 className="text-white font-medium text-lg mb-4 flex items-center">
-          🌌 3D Spaces
+          🌌 Spaces
         </h3>
-        <SpacesSection
-          isOpen={true}
-          onToggle={() => {}}
+        <EnhancedSpacesSection
           effectValues={effectValues}
           selectedScene={selectedScene}
           selectedLighting={selectedLighting}
