@@ -33,13 +33,13 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
 }) => {
   return (
     <div 
-      className={`absolute inset-0 rounded-xl overflow-hidden ${
+      className={`absolute inset-0 rounded-xl overflow-hidden transition-all duration-600 ${
         isFlipped ? 'opacity-0' : 'opacity-100'
       }`}
       style={{
         transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-        transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
         backfaceVisibility: 'hidden',
+        transformStyle: 'preserve-3d',
         ...frameStyles
       }}
     >
@@ -59,59 +59,69 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         {SurfaceTexture}
       </div>
 
-      {/* Card Content - Prevent highlighting and selection */}
+      {/* Card Content with enhanced image visibility */}
       <div 
-        className="relative h-full p-6 flex flex-col z-15"
+        className="relative h-full p-6 flex flex-col z-30"
         style={{
           userSelect: 'none',
           WebkitUserSelect: 'none',
           pointerEvents: 'none'
         }}
       >
-        {/* Image Section */}
+        {/* Enhanced Image Section with proper visibility */}
         {card.image_url && (
-          <div className="flex-1 mb-6 relative overflow-hidden rounded-lg">
+          <div className="flex-1 mb-6 relative overflow-hidden rounded-lg bg-black/20">
             <img 
               src={card.image_url} 
               alt={card.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-all duration-300"
               style={{
                 filter: isHovering ? 
-                  `brightness(${interactiveLighting ? 1.2 : 1.1}) contrast(${interactiveLighting ? 1.1 : 1.05})` : 
-                  'brightness(1)',
+                  `brightness(${interactiveLighting ? 1.2 : 1.1}) contrast(${interactiveLighting ? 1.1 : 1.05}) saturate(1.1)` : 
+                  'brightness(1) contrast(1) saturate(1)',
                 userSelect: 'none',
                 WebkitUserSelect: 'none',
-                pointerEvents: 'none'
+                pointerEvents: 'none',
+                position: 'relative',
+                zIndex: 10
               }}
               draggable={false}
+              onLoad={() => console.log('Card image loaded successfully:', card.title)}
+              onError={() => console.log('Failed to load card image:', card.image_url)}
             />
+            
+            {/* Image loading overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 opacity-20 pointer-events-none" />
           </div>
         )}
         
-        {/* Details Section */}
+        {/* Enhanced Details Section with better contrast */}
         <div 
-          className="mt-auto p-4 rounded-lg bg-black bg-opacity-60 backdrop-blur-sm"
+          className="mt-auto p-4 rounded-lg backdrop-blur-sm border border-white/10"
           style={{
+            background: 'linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%)',
             userSelect: 'none',
-            WebkitUserSelect: 'none'
+            WebkitUserSelect: 'none',
+            position: 'relative',
+            zIndex: 20
           }}
         >
-          <h3 className="text-white text-xl font-bold mb-2">{card.title}</h3>
+          <h3 className="text-white text-xl font-bold mb-2 drop-shadow-lg">{card.title}</h3>
           {card.description && (
-            <p className="text-gray-300 text-sm mb-2">{card.description}</p>
+            <p className="text-gray-300 text-sm mb-2 drop-shadow-md">{card.description}</p>
           )}
           {card.rarity && (
-            <p className="text-gray-400 text-xs uppercase tracking-wide">{card.rarity}</p>
+            <p className="text-gray-400 text-xs uppercase tracking-wide font-semibold">{card.rarity}</p>
           )}
         </div>
       </div>
 
-      {/* Softer Interactive Lighting Effect - Multi-layered radial system */}
+      {/* Enhanced Interactive Lighting Effect with proper layering */}
       {isHovering && interactiveLighting && (
         <>
           {/* Primary soft light center */}
           <div 
-            className="absolute inset-0 pointer-events-none z-30"
+            className="absolute inset-0 pointer-events-none z-40"
             style={{
               background: `radial-gradient(
                 ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
@@ -126,7 +136,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
           
           {/* Secondary diffusion layer */}
           <div 
-            className="absolute inset-0 pointer-events-none z-31"
+            className="absolute inset-0 pointer-events-none z-41"
             style={{
               background: `radial-gradient(
                 ellipse 180% 120% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
@@ -136,22 +146,6 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
               )`,
               mixBlendMode: 'soft-light',
               transition: 'background 0.15s ease'
-            }}
-          />
-          
-          {/* Subtle directional highlight */}
-          <div 
-            className="absolute inset-0 pointer-events-none z-32"
-            style={{
-              background: `linear-gradient(
-                ${Math.atan2(mousePosition.y - 0.5, mousePosition.x - 0.5) * (180 / Math.PI) + 90}deg,
-                transparent 40%,
-                rgba(255, 255, 255, 0.04) 50%,
-                transparent 60%
-              )`,
-              mixBlendMode: 'overlay',
-              opacity: Math.max(0.3, 1 - Math.sqrt(Math.pow(mousePosition.x - 0.5, 2) + Math.pow(mousePosition.y - 0.5, 2)) * 2),
-              transition: 'opacity 0.1s ease'
             }}
           />
         </>

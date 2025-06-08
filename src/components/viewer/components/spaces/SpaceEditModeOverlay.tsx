@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Edit3, Hand } from 'lucide-react';
 
 interface SpaceEditModeOverlayProps {
   isEditMode: boolean;
@@ -9,10 +10,13 @@ export const SpaceEditModeOverlay: React.FC<SpaceEditModeOverlayProps> = ({ isEd
   if (!isEditMode) return null;
 
   return (
-    <div className="absolute top-3 right-3 bg-crd-green/20 border border-crd-green/40 text-crd-green px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
-      <div className="flex items-center space-x-1">
-        <div className="w-2 h-2 bg-crd-green rounded-full animate-pulse" />
-        <span>Edit Mode</span>
+    <div className="absolute top-4 left-4 z-50">
+      <div className="flex items-center space-x-2 bg-crd-green/90 text-black px-3 py-2 rounded-lg backdrop-blur-sm">
+        <Edit3 className="w-4 h-4" />
+        <span className="text-sm font-semibold">Edit Mode</span>
+      </div>
+      <div className="mt-2 text-xs text-white/80 bg-black/50 px-2 py-1 rounded backdrop-blur-sm">
+        Click cards to select • Ctrl+click for multi-select
       </div>
     </div>
   );
