@@ -211,7 +211,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 
   if (!isOpen) return null;
 
-  const panelWidth = 320;
+  const panelWidth = 380; // Updated from 320
   const shouldShowPanel = showCustomizePanel;
 
   return (

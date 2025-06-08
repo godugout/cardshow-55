@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import { ScrollableStudioContent } from './studio/ScrollableStudioContent';
+import { TabbedStudioContent } from './studio/TabbedStudioContent';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -36,7 +36,7 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
 }) => {
   if (!isVisible) return null;
 
-  const panelWidth = 320;
+  const panelWidth = 380; // Increased from 320px
 
   return (
     <div 
@@ -59,8 +59,8 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
           </button>
         </div>
 
-        {/* Studio Content with Scroll Support */}
-        <ScrollableStudioContent {...studioProps} currentCard={currentCard} />
+        {/* Tabbed Studio Content */}
+        <TabbedStudioContent {...studioProps} currentCard={currentCard} />
       </div>
     </div>
   );
