@@ -1,8 +1,10 @@
 
 import React from 'react';
 import { SceneSection } from '../sections/SceneSection';
-import { LightingSection } from '../../LightingSection';
-import type { EnvironmentScene, LightingPreset } from '../../../types';
+import { SpacesSection } from '../sections/SpacesSection';
+import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../../types';
+import type { EffectValues } from '../../../hooks/useEnhancedCardEffects';
+import type { CardData } from '@/hooks/useCardEditor';
 
 interface SceneSetupTabProps {
   selectedScene: EnvironmentScene;
@@ -13,6 +15,9 @@ interface SceneSetupTabProps {
   onLightingChange: (lighting: LightingPreset) => void;
   onBrightnessChange: (value: number[]) => void;
   onInteractiveLightingToggle: () => void;
+  effectValues: EffectValues;
+  materialSettings: MaterialSettings;
+  currentCard?: CardData;
 }
 
 export const SceneSetupTab: React.FC<SceneSetupTabProps> = ({
@@ -23,7 +28,10 @@ export const SceneSetupTab: React.FC<SceneSetupTabProps> = ({
   onSceneChange,
   onLightingChange,
   onBrightnessChange,
-  onInteractiveLightingToggle
+  onInteractiveLightingToggle,
+  effectValues,
+  materialSettings,
+  currentCard
 }) => {
   return (
     <div className="space-y-6">
@@ -46,18 +54,21 @@ export const SceneSetupTab: React.FC<SceneSetupTabProps> = ({
         />
       </div>
 
-      {/* Lighting Section */}
+      {/* Spaces Section */}
       <div>
         <h3 className="text-white font-medium text-lg mb-4 flex items-center">
-          💡 Lighting
+          🌌 3D Spaces
         </h3>
-        <LightingSection
+        <SpacesSection
+          isOpen={true}
+          onToggle={() => {}}
+          effectValues={effectValues}
+          selectedScene={selectedScene}
           selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
           overallBrightness={overallBrightness}
           interactiveLighting={interactiveLighting}
-          onLightingChange={onLightingChange}
-          onBrightnessChange={onBrightnessChange}
-          onInteractiveLightingToggle={onInteractiveLightingToggle}
+          currentCard={currentCard}
         />
       </div>
     </div>

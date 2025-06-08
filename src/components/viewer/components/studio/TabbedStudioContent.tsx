@@ -92,6 +92,9 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
                 onLightingChange={onLightingChange}
                 onBrightnessChange={onBrightnessChange}
                 onInteractiveLightingToggle={onInteractiveLightingToggle}
+                effectValues={effectValues}
+                materialSettings={materialSettings}
+                currentCard={currentCard}
               />
             </div>
           </ScrollArea>
@@ -106,6 +109,7 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
                 onPresetSelect={onPresetSelect}
                 onApplyCombo={onApplyCombo}
                 isApplyingPreset={isApplyingPreset}
+                onEffectChange={onEffectChange}
               />
             </div>
           </ScrollArea>
@@ -115,16 +119,8 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
           <ScrollArea className="h-full">
             <div className="p-4">
               <AdvancedStudioTab
-                effectValues={effectValues}
-                selectedScene={selectedScene}
-                selectedLighting={selectedLighting}
                 materialSettings={materialSettings}
-                overallBrightness={overallBrightness}
-                interactiveLighting={interactiveLighting}
-                onEffectChange={onEffectChange}
                 onMaterialSettingsChange={onMaterialSettingsChange}
-                selectedPresetId={selectedPresetId}
-                currentCard={currentCard}
               />
             </div>
           </ScrollArea>

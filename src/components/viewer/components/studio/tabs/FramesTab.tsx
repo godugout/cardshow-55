@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { StylesSection } from '../sections/StylesSection';
+import { EffectsSection } from '../sections/EffectsSection';
 import type { EffectValues } from '../../../hooks/useEnhancedCardEffects';
 
 interface FramesTabProps {
@@ -9,6 +10,7 @@ interface FramesTabProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
+  onEffectChange: (effectId: string, parameterId: string, value: number | boolean | string) => void;
 }
 
 export const FramesTab: React.FC<FramesTabProps> = ({
@@ -16,19 +18,21 @@ export const FramesTab: React.FC<FramesTabProps> = ({
   selectedPresetId,
   onPresetSelect,
   onApplyCombo,
-  isApplyingPreset = false
+  isApplyingPreset = false,
+  onEffectChange
 }) => {
   return (
     <div className="space-y-6">
       <div className="text-center">
         <h3 className="text-white font-medium text-lg mb-2 flex items-center justify-center">
-          🖼️ Card Frames
+          🖼️ Card Frames & Effects
         </h3>
         <p className="text-crd-lightGray text-sm mb-4">
-          Choose borders, templates, and frame designs for your card
+          Choose styles, borders, and visual effects for your card
         </p>
       </div>
 
+      {/* Styles Section */}
       <StylesSection
         effectValues={effectValues}
         isOpen={true}
@@ -37,6 +41,15 @@ export const FramesTab: React.FC<FramesTabProps> = ({
         onPresetSelect={onPresetSelect}
         onApplyCombo={onApplyCombo}
         isApplyingPreset={isApplyingPreset}
+      />
+
+      {/* Effects Section */}
+      <EffectsSection
+        effectValues={effectValues}
+        isOpen={true}
+        onToggle={() => {}}
+        onEffectChange={onEffectChange}
+        selectedPresetId={selectedPresetId}
       />
     </div>
   );
