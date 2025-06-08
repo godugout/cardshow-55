@@ -15,11 +15,13 @@ import { useCardNavigation } from './hooks/useCardNavigation';
 import { useMouseInteraction } from './hooks/useMouseInteraction';
 import { useAutoRotationEffect } from './hooks/useAutoRotationEffect';
 import { useWheelZoom } from './hooks/useWheelZoom';
+import { useSpacesState } from './hooks/useSpacesState';
 import { EnhancedCardContainer } from './components/EnhancedCardContainer';
+import { Enhanced3DSpaceCanvas } from './components/spaces/Enhanced3DSpaceCanvas';
 import { ImmersiveCardBackground } from './components/ImmersiveCardBackground';
 import { ImmersiveCardLayoutElements } from './components/ImmersiveCardLayoutElements';
 
-// Update the interface to support card navigation
+// Update the interface to support card navigation and spaces
 interface ExtendedImmersiveCardViewerProps extends ImmersiveCardViewerProps {
   cards?: any[];
   currentCardIndex?: number;
@@ -39,7 +41,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   showStats = true,
   ambient = true
 }) => {
-  // Use the custom state hook
+  // Main viewer state
   const viewerState = useViewerState();
   const {
     isFullscreen,
@@ -81,6 +83,22 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     handleReset,
     handleZoom
   } = viewerState;
+
+  // Spaces state for 3D environments
+  const spacesState = useSpacesState();
+  const {
+    spaceState,
+    setSelectedTemplate,
+    addCard,
+    removeCard,
+    updateCardPosition,
+    toggleCardSelection,
+    setEditMode,
+    templates
+  } = spacesState;
+
+  // Determine if we're in 3D space mode
+  const isSpaceMode = !!spaceState.selectedTemplate;
 
   // Enhanced effects hook
   const enhancedEffectsHook = useEnhancedCardEffects();
@@ -207,11 +225,21 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     handleReset();
     resetAllEffects();
     validateEffectState();
-  }, [handleReset, resetAllEffects, validateEffectState]);
+    setSelectedTemplate(null); // Also reset spaces mode
+  }, [handleReset, resetAllEffects, validateEffectState, setSelectedTemplate]);
+
+  // Handle template selection - this switches to 3D space mode
+  const handleTemplateSelect = useCallback((template: any) => {
+    setSelectedTemplate(template);
+    if (template && card) {
+      // Add current card to the space when template is selected
+      addCard(card);
+    }
+  }, [setSelectedTemplate, addCard, card]);
 
   if (!isOpen) return null;
 
-  const panelWidth = 380; // Updated from 320
+  const panelWidth = 380;
   const shouldShowPanel = showCustomizePanel;
 
   return (
@@ -265,37 +293,55 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           isFlipped={isFlipped}
         />
 
-        {/* Enhanced Card Container */}
+        {/* Conditional rendering: 3D Space or Single Card */}
         <div ref={cardContainerRef}>
-          <EnhancedCardContainer
-            card={card}
-            isFlipped={isFlipped}
-            isHovering={isHovering}
-            showEffects={showEffects}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={zoom}
-            isDragging={isDragging}
-            frameStyles={getFrameStyles()}
-            enhancedEffectStyles={getEnhancedEffectStyles()}
-            SurfaceTexture={SurfaceTexture}
-            interactiveLighting={interactiveLighting}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            showBackgroundInfo={!shouldShowPanel}
-            onMouseDown={mouseInteraction.handleDragStart}
-            onMouseMove={mouseInteraction.handleDrag}
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-            onClick={() => setIsFlipped(!isFlipped)}
-          />
+          {isSpaceMode ? (
+            // 3D Space Mode
+            <Enhanced3DSpaceCanvas
+              spaceCards={spaceState.cards}
+              template={spaceState.selectedTemplate}
+              effectValues={effectValues}
+              selectedScene={selectedScene}
+              selectedLighting={selectedLighting}
+              materialSettings={materialSettings}
+              overallBrightness={overallBrightness}
+              interactiveLighting={interactiveLighting}
+              isEditMode={spaceState.isEditMode}
+              onCardSelect={toggleCardSelection}
+              onCardPositionChange={updateCardPosition}
+            />
+          ) : (
+            // Single Card Mode
+            <EnhancedCardContainer
+              card={card}
+              isFlipped={isFlipped}
+              isHovering={isHovering}
+              showEffects={showEffects}
+              effectValues={effectValues}
+              mousePosition={mousePosition}
+              rotation={rotation}
+              zoom={zoom}
+              isDragging={isDragging}
+              frameStyles={getFrameStyles()}
+              enhancedEffectStyles={getEnhancedEffectStyles()}
+              SurfaceTexture={SurfaceTexture}
+              interactiveLighting={interactiveLighting}
+              selectedScene={selectedScene}
+              selectedLighting={selectedLighting}
+              materialSettings={materialSettings}
+              overallBrightness={overallBrightness}
+              showBackgroundInfo={!shouldShowPanel}
+              onMouseDown={mouseInteraction.handleDragStart}
+              onMouseMove={mouseInteraction.handleDrag}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+              onClick={() => setIsFlipped(!isFlipped)}
+            />
+          )}
         </div>
       </div>
 
-      {/* Studio Panel */}
+      {/* Studio Panel with Spaces Integration */}
       <StudioPanel
         isVisible={shouldShowPanel}
         onClose={() => setShowCustomizePanel(false)}
@@ -316,6 +362,13 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onApplyCombo={handleComboApplication}
         isApplyingPreset={isApplyingPreset}
         currentCard={card}
+        // Spaces integration props
+        spaceState={spaceState}
+        spacesTemplates={templates}
+        onTemplateSelect={handleTemplateSelect}
+        onAddCardToSpace={() => card && addCard(card)}
+        onRemoveCardFromSpace={removeCard}
+        onToggleEditMode={() => setEditMode(!spaceState.isEditMode)}
       />
 
       {/* Export Options Dialog */}

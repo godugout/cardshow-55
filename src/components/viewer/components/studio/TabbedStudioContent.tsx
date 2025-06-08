@@ -9,6 +9,7 @@ import { AdvancedStudioTab } from './tabs/AdvancedStudioTab';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
+import type { SpaceState, SpaceTemplate } from '../../types/spaces';
 
 interface TabbedStudioContentProps {
   selectedScene: EnvironmentScene;
@@ -28,6 +29,13 @@ interface TabbedStudioContentProps {
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
   currentCard?: CardData;
+  // Spaces integration props
+  spaceState?: SpaceState;
+  spacesTemplates?: SpaceTemplate[];
+  onTemplateSelect?: (template: SpaceTemplate | null) => void;
+  onAddCardToSpace?: () => void;
+  onRemoveCardFromSpace?: (cardId: string) => void;
+  onToggleEditMode?: () => void;
 }
 
 export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
@@ -47,7 +55,13 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
   onPresetSelect,
   onApplyCombo,
   isApplyingPreset = false,
-  currentCard
+  currentCard,
+  spaceState,
+  spacesTemplates,
+  onTemplateSelect,
+  onAddCardToSpace,
+  onRemoveCardFromSpace,
+  onToggleEditMode
 }) => {
   return (
     <div className="flex-1 min-h-0">
@@ -95,6 +109,12 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
                 effectValues={effectValues}
                 materialSettings={materialSettings}
                 currentCard={currentCard}
+                spaceState={spaceState}
+                spacesTemplates={spacesTemplates}
+                onTemplateSelect={onTemplateSelect}
+                onAddCardToSpace={onAddCardToSpace}
+                onRemoveCardFromSpace={onRemoveCardFromSpace}
+                onToggleEditMode={onToggleEditMode}
               />
             </div>
           </ScrollArea>
