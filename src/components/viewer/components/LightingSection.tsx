@@ -14,6 +14,7 @@ interface LightingSectionProps {
   onLightingChange: (lighting: LightingPreset) => void;
   onBrightnessChange: (value: number[]) => void;
   onInteractiveLightingToggle: () => void;
+  filteredPresets?: LightingPreset[];
 }
 
 export const LightingSection: React.FC<LightingSectionProps> = ({
@@ -22,25 +23,36 @@ export const LightingSection: React.FC<LightingSectionProps> = ({
   interactiveLighting,
   onLightingChange,
   onBrightnessChange,
-  onInteractiveLightingToggle
+  onInteractiveLightingToggle,
+  filteredPresets
 }) => {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  
+  // Use filtered presets if provided, otherwise use all presets
+  const presetsToShow = filteredPresets || LIGHTING_PRESETS;
 
   return (
     <div className="space-y-4">
       {/* View Mode Toggle */}
       <LightingViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
 
+      {/* Filtered indicator */}
+      {filteredPresets && filteredPresets.length < LIGHTING_PRESETS.length && (
+        <div className="text-xs text-crd-green bg-crd-green/10 px-2 py-1 rounded border border-crd-green/20">
+          Showing {filteredPresets.length} recommended presets
+        </div>
+      )}
+
       {/* Lighting Presets */}
       {viewMode === 'grid' ? (
         <LightingPresetGrid
-          presets={LIGHTING_PRESETS}
+          presets={presetsToShow}
           selectedLighting={selectedLighting}
           onLightingChange={onLightingChange}
         />
       ) : (
         <LightingPresetList
-          presets={LIGHTING_PRESETS}
+          presets={presetsToShow}
           selectedLighting={selectedLighting}
           onLightingChange={onLightingChange}
         />

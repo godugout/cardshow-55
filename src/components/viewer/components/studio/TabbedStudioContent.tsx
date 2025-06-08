@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Globe, FrameIcon, Sparkles } from 'lucide-react';
+import { Map, FrameIcon, Sparkles } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { EnvironmentTab } from './tabs/EnvironmentTab';
+import { SpacesTab } from './tabs/SpacesTab';
 import { FramesTab } from './tabs/FramesTab';
 import { AdvancedStudioTab } from './tabs/AdvancedStudioTab';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
@@ -51,16 +51,16 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
 }) => {
   return (
     <div className="flex-1 min-h-0">
-      <Tabs defaultValue="environment" className="h-full flex flex-col">
+      <Tabs defaultValue="spaces" className="h-full flex flex-col">
         {/* Tab Navigation */}
         <div className="p-4 border-b border-white/10">
           <TabsList className="grid w-full grid-cols-3 bg-white/5">
             <TabsTrigger 
-              value="environment" 
+              value="spaces" 
               className="flex items-center space-x-2 data-[state=active]:bg-crd-green data-[state=active]:text-black"
             >
-              <Globe className="w-4 h-4" />
-              <span className="hidden sm:inline">Environment</span>
+              <Map className="w-4 h-4" />
+              <span className="hidden sm:inline">Spaces</span>
             </TabsTrigger>
             <TabsTrigger 
               value="frames" 
@@ -80,10 +80,10 @@ export const TabbedStudioContent: React.FC<TabbedStudioContentProps> = ({
         </div>
 
         {/* Tab Content */}
-        <TabsContent value="environment" className="flex-1 min-h-0 m-0">
+        <TabsContent value="spaces" className="flex-1 min-h-0 m-0">
           <ScrollArea className="h-full">
             <div className="p-4">
-              <EnvironmentTab
+              <SpacesTab
                 selectedScene={selectedScene}
                 selectedLighting={selectedLighting}
                 overallBrightness={overallBrightness}
