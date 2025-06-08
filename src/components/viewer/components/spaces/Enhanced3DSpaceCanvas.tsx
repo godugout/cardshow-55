@@ -48,9 +48,9 @@ export const Enhanced3DSpaceCanvas: React.FC<Enhanced3DSpaceCanvasProps> = ({
     setMousePosition({ x, y });
   };
 
-  // Enhanced 3D perspective and styling
+  // Enhanced 3D perspective and styling for immersive gallery
   const canvasStyle = {
-    perspective: '1500px', // Increased perspective for better 3D effect
+    perspective: '2000px', // Increased for more dramatic 3D effect
     transformStyle: 'preserve-3d' as const,
     background: template?.environment.background || 'linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%)',
     overflow: 'hidden'
@@ -65,7 +65,7 @@ export const Enhanced3DSpaceCanvas: React.FC<Enhanced3DSpaceCanvasProps> = ({
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Enhanced Environment Layer - fills entire canvas with proper 3D background */}
+      {/* Enhanced Environment Layer - fills entire canvas with immersive 3D background */}
       <div className="absolute inset-0" style={{ transformStyle: 'preserve-3d' }}>
         <SpaceEnvironmentLayer template={template} />
       </div>
@@ -75,20 +75,21 @@ export const Enhanced3DSpaceCanvas: React.FC<Enhanced3DSpaceCanvasProps> = ({
         <SpaceEmptyState template={template} />
       )}
 
-      {/* 3D Space Container with proper perspective */}
+      {/* 3D Space Container with enhanced perspective for gallery wall */}
       {template && spaceCards.length > 0 && (
         <div 
           className="absolute inset-0 flex items-center justify-center"
           style={{
             transformStyle: 'preserve-3d',
             transform: `
-              perspective(1500px) 
-              rotateX(${template.category === 'gallery' ? '0deg' : '5deg'}) 
+              perspective(2000px) 
+              rotateX(${template.category === 'gallery' ? '8deg' : '5deg'}) 
               rotateY(0deg)
+              translateZ(50px)
             `
           }}
         >
-          {/* Enhanced space cards with proper positioning */}
+          {/* Enhanced space cards with improved visibility and interaction */}
           {spaceCards.map((spaceCard, index) => (
             <SpaceCardRenderer
               key={spaceCard.id}
@@ -128,7 +129,7 @@ export const Enhanced3DSpaceCanvas: React.FC<Enhanced3DSpaceCanvasProps> = ({
       {/* Interaction hints */}
       {!isEditMode && spaceCards.length > 0 && (
         <div className="absolute bottom-4 right-4 text-xs text-white/60 bg-black/30 px-3 py-2 rounded-lg backdrop-blur-sm">
-          Click cards to flip • Mouse to look around
+          Double-click cards to flip • Mouse to explore gallery
         </div>
       )}
     </div>

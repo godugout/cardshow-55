@@ -4,6 +4,7 @@ import { EnhancedCardContainer } from '../EnhancedCardContainer';
 import type { SpaceCard, SpaceTemplate } from '../../types/spaces';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
 
 interface SpaceCardRendererProps {
   spaceCard: SpaceCard;
@@ -39,7 +40,27 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
   // Enhanced card state management
   const [isCardFlipped, setIsCardFlipped] = React.useState(false);
   const [isCardHovering, setIsCardHovering] = React.useState(false);
-  const [isDragging, setIsDragging] = React.useState(false);
+
+  // Double-click handler for card flipping
+  const handleDoubleClick = useDoubleClick({
+    onDoubleClick: () => {
+      if (!isEditMode) {
+        setIsCardFlipped(!isCardFlipped);
+      }
+    },
+    delay: 300
+  });
+
+  // Single click handler for selection/interaction
+  const handleSingleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isEditMode) {
+      onCardSelect(spaceCard.id, e.ctrlKey || e.metaKey);
+    } else {
+      // In view mode, single clicks are handled by double-click detector
+      handleDoubleClick();
+    }
+  };
 
   // Generate frame styles
   const getFrameStyles = () => ({
@@ -67,24 +88,24 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
     />
   );
 
-  // Fixed 3D transform calculation - proper scaling and positioning
+  // Enhanced 3D transform calculation with proper card size
   const getCardTransform = () => {
-    const baseScale = 1.0; // Full scale for proper card size
-    const spacing = 200; // Better spacing for gallery wall
+    const baseScale = 1.2; // Increased card size for better visibility
+    const spacing = 180; // Optimized spacing for gallery wall
     
     // Calculate position based on template and card position
     const x = spaceCard.position.x * spacing;
     const y = -spaceCard.position.y * spacing; // Negative for proper Y orientation
-    const z = spaceCard.position.z * 100; // More pronounced Z depth
+    const z = spaceCard.position.z * 80; // Depth positioning
     
-    // Gallery wall - cards should face forward (no rotation for wall mounting)
-    const rotX = template.category === 'gallery' ? 0 : spaceCard.rotation.x;
+    // Gallery wall - cards should face forward with slight angle for depth
+    const rotX = template.category === 'gallery' ? -5 : spaceCard.rotation.x;
     const rotY = template.category === 'gallery' ? 0 : spaceCard.rotation.y;
     const rotZ = spaceCard.rotation.z;
     
     // Add subtle floating animation for constellation only
     const floatY = template.category === 'constellation' 
-      ? Math.sin(Date.now() * 0.001 + index) * 10 
+      ? Math.sin(Date.now() * 0.001 + index) * 8 
       : 0;
     
     return `
@@ -96,37 +117,19 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
     `;
   };
 
-  // Enhanced click handlers for proper interaction
-  const handleCardClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isEditMode) {
-      onCardSelect(spaceCard.id, e.ctrlKey || e.metaKey);
-    } else {
-      // Double-click to flip card
-      setIsCardFlipped(!isCardFlipped);
-    }
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
+  // Mouse event handlers
   const handleMouseEnter = () => {
     setIsCardHovering(true);
   };
 
   const handleMouseLeave = () => {
     setIsCardHovering(false);
-    setIsDragging(false);
   };
 
-  // Create wrapper function for onClick prop that doesn't expect parameters
-  const handleClickWrapper = () => {
-    if (isEditMode) {
-      onCardSelect(spaceCard.id, false);
-    } else {
-      setIsCardFlipped(!isCardFlipped);
+  // Wrapper function for EnhancedCardContainer onClick that doesn't expect parameters
+  const handleContainerClick = () => {
+    if (!isEditMode) {
+      handleDoubleClick();
     }
   };
 
@@ -141,8 +144,7 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
         zIndex: 10 + index + Math.floor(spaceCard.position.z * 5),
         filter: `drop-shadow(0 ${8 + spaceCard.position.z * 3}px ${16 + spaceCard.position.z * 6}px rgba(0,0,0,0.4))`
       }}
-      onClick={handleCardClick}
-      onMouseDown={handleMouseDown}
+      onClick={handleSingleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -155,7 +157,7 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
         mousePosition={mousePosition}
         rotation={{ x: 0, y: 0 }}
         zoom={1}
-        isDragging={isDragging}
+        isDragging={false}
         frameStyles={getFrameStyles()}
         enhancedEffectStyles={getEnhancedEffectStyles()}
         SurfaceTexture={SurfaceTexture}
@@ -165,11 +167,11 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
         materialSettings={materialSettings}
         overallBrightness={overallBrightness}
         showBackgroundInfo={false}
-        onMouseDown={handleMouseDown}
+        onMouseDown={() => {}}
         onMouseMove={() => {}}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onClick={handleClickWrapper}
+        onClick={handleContainerClick}
       />
       
       {/* Enhanced selection indicator */}
@@ -183,7 +185,7 @@ export const SpaceCardRenderer: React.FC<SpaceCardRendererProps> = ({
       {/* Interaction hints */}
       {!isEditMode && isCardHovering && (
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-white/60 text-xs whitespace-nowrap">
-          Click to flip
+          Double-click to flip
         </div>
       )}
     </div>
