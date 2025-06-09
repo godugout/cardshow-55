@@ -2,19 +2,25 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Orbit, RotateCcw, Move3D } from 'lucide-react';
+import { Orbit, RotateCcw, Move3D, Globe } from 'lucide-react';
 import { CollapsibleSection } from '@/components/ui/design-system';
 import { EnhancedColoredSlider } from '../../EnhancedColoredSlider';
 import { cn } from '@/lib/utils';
 import type { SpaceEnvironment, SpaceControls } from '../../../spaces/types';
+import type { EnvironmentScene, EnvironmentControls } from '../../../types';
+import { ENVIRONMENT_SCENES } from '../../../constants';
 
 interface SpacesSectionProps {
   selectedSpace?: SpaceEnvironment;
   spaceControls: SpaceControls;
+  selectedScene: EnvironmentScene;
+  environmentControls: EnvironmentControls;
   isOpen: boolean;
   onToggle: (isOpen: boolean) => void;
   onSpaceChange?: (space: SpaceEnvironment) => void;
   onControlsChange: (controls: SpaceControls) => void;
+  onSceneChange: (scene: EnvironmentScene) => void;
+  onEnvironmentControlsChange: (controls: EnvironmentControls) => void;
   onResetCamera?: () => void;
 }
 
@@ -175,10 +181,14 @@ const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
 export const SpacesSection: React.FC<SpacesSectionProps> = ({
   selectedSpace = SPACE_ENVIRONMENTS[0],
   spaceControls,
+  selectedScene,
+  environmentControls,
   isOpen,
   onToggle,
   onSpaceChange = () => {},
   onControlsChange,
+  onSceneChange,
+  onEnvironmentControlsChange,
   onResetCamera = () => {}
 }) => {
   const updateControl = (key: keyof SpaceControls, value: number | boolean) => {
@@ -188,19 +198,91 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
     });
   };
 
-  const statusText = selectedSpace.name;
+  const updateEnvironmentControl = (key: keyof EnvironmentControls, value: number) => {
+    onEnvironmentControlsChange({
+      ...environmentControls,
+      [key]: value
+    });
+  };
+
+  const categories = ['natural', 'fantasy', 'futuristic', 'architectural'] as const;
+  
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'natural': return '🌿';
+      case 'fantasy': return '✨';
+      case 'futuristic': return '🚀';
+      case 'architectural': return '🏛️';
+      default: return '🌍';
+    }
+  };
+
+  const statusText = `${selectedSpace.name} • ${selectedScene.name}`;
 
   return (
     <CollapsibleSection
-      title="Spaces"
+      title="Spaces & Environments"
       emoji="🌌"
       statusText={statusText}
       isOpen={isOpen}
       onToggle={onToggle}
     >
       <div className="space-y-6">
-        {/* Space Environment Selection */}
+        {/* Environment Categories */}
         <div className="space-y-3">
+          <h4 className="text-white font-medium text-sm flex items-center">
+            <Globe className="w-4 h-4 text-blue-400 mr-2" />
+            Environment Scenes
+          </h4>
+          
+          {categories.map((category) => {
+            const categoryScenes = ENVIRONMENT_SCENES.filter(s => s.category === category);
+            if (categoryScenes.length === 0) return null;
+
+            return (
+              <div key={category} className="space-y-2">
+                <h5 className="text-white/70 font-medium text-xs flex items-center capitalize">
+                  <span className="mr-2">{getCategoryIcon(category)}</span>
+                  {category}
+                </h5>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  {categoryScenes.map((scene) => (
+                    <button
+                      key={scene.id}
+                      onClick={() => onSceneChange(scene)}
+                      className={cn(
+                        "relative aspect-video rounded-lg overflow-hidden transition-all border-2",
+                        selectedScene.id === scene.id 
+                          ? 'border-blue-400 scale-105 shadow-lg shadow-blue-400/20' 
+                          : 'border-white/20 hover:border-white/40 opacity-80 hover:opacity-100'
+                      )}
+                    >
+                      <img
+                        src={scene.previewUrl}
+                        alt={scene.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/20 flex items-end p-2">
+                        <div className="text-white text-xs font-medium">
+                          {scene.name}
+                        </div>
+                      </div>
+                      {selectedScene.id === scene.id && (
+                        <div className="absolute top-2 right-2">
+                          <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* 3D Space Environment Selection */}
+        <div className="space-y-3 border-t border-white/10 pt-4">
           <h4 className="text-white font-medium text-sm flex items-center">
             <Orbit className="w-4 h-4 text-purple-400 mr-2" />
             3D Spaces
@@ -358,14 +440,88 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
           </div>
         </div>
 
+        {/* Environment Controls */}
+        <div className="space-y-4 border-t border-white/10 pt-4">
+          <h4 className="text-white font-medium flex items-center">
+            Environment Controls
+          </h4>
+
+          {/* Depth of Field */}
+          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <Label className="text-white text-sm mb-3 block font-medium">
+              Depth of Field: {environmentControls.depthOfField.toFixed(1)}
+            </Label>
+            <EnhancedColoredSlider
+              value={[environmentControls.depthOfField]}
+              onValueChange={([value]) => updateEnvironmentControl('depthOfField', value)}
+              min={0}
+              max={5}
+              step={0.1}
+              isActive={environmentControls.depthOfField > 0}
+              styleColor="#45B26B"
+              effectName="Depth of Field"
+            />
+          </div>
+
+          {/* Parallax Intensity */}
+          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <Label className="text-white text-sm mb-3 block font-medium">
+              Parallax Intensity: {environmentControls.parallaxIntensity.toFixed(1)}
+            </Label>
+            <EnhancedColoredSlider
+              value={[environmentControls.parallaxIntensity]}
+              onValueChange={([value]) => updateEnvironmentControl('parallaxIntensity', value)}
+              min={0}
+              max={3}
+              step={0.1}
+              isActive={environmentControls.parallaxIntensity > 0}
+              styleColor="#3B82F6"
+              effectName="Parallax"
+            />
+          </div>
+
+          {/* Field of View */}
+          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <Label className="text-white text-sm mb-3 block font-medium">
+              Field of View: {environmentControls.fieldOfView}°
+            </Label>
+            <EnhancedColoredSlider
+              value={[environmentControls.fieldOfView]}
+              onValueChange={([value]) => updateEnvironmentControl('fieldOfView', value)}
+              min={60}
+              max={120}
+              step={5}
+              isActive={environmentControls.fieldOfView !== 75}
+              styleColor="#8B5CF6"
+              effectName="Field of View"
+            />
+          </div>
+
+          {/* Atmospheric Density */}
+          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <Label className="text-white text-sm mb-3 block font-medium">
+              Atmospheric Density: {(environmentControls.atmosphericDensity * 100).toFixed(0)}%
+            </Label>
+            <EnhancedColoredSlider
+              value={[environmentControls.atmosphericDensity]}
+              onValueChange={([value]) => updateEnvironmentControl('atmosphericDensity', value)}
+              min={0}
+              max={2}
+              step={0.1}
+              isActive={environmentControls.atmosphericDensity !== 1}
+              styleColor="#F59E0B"
+              effectName="Atmospheric Density"
+            />
+          </div>
+        </div>
+
         {/* Feature Status */}
         <div className="p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-400/30">
           <div className="text-purple-300 text-xs font-medium mb-1">
-            🚀 3D Spaces Active
+            🚀 Unified Spaces & Environments
           </div>
           <div className="text-white/70 text-xs">
-            Immersive 3D environments with full camera control and card physics. 
-            Select different spaces to explore unique atmospheres.
+            Complete control over backgrounds, 3D environments, camera behavior, and atmospheric effects.
           </div>
         </div>
       </div>

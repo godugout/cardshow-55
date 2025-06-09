@@ -1,4 +1,3 @@
-
 import React, { useCallback } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSectionManager } from './hooks/useSectionManager';
@@ -7,7 +6,6 @@ import {
   EffectsSection, 
   SceneSection, 
   SurfaceSection,
-  EnvironmentSection,
   SpacesSection 
 } from './sections';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
@@ -126,25 +124,19 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             selectedPresetId={selectedPresetId}
           />
 
-          {/* Spaces Section - Enhanced 3D Navigation */}
+          {/* Unified Spaces & Environment Section */}
           <SpacesSection
             selectedSpace={selectedSpace}
             spaceControls={spaceControls}
+            selectedScene={selectedScene}
+            environmentControls={environmentControls}
             isOpen={sectionStates.spaces || false}
             onToggle={(isOpen) => setSectionState('spaces', isOpen)}
             onSpaceChange={setSelectedSpace}
             onControlsChange={setSpaceControls}
-            onResetCamera={handleResetCamera}
-          />
-
-          {/* Environment Section */}
-          <EnvironmentSection
-            selectedScene={selectedScene}
-            environmentControls={environmentControls}
-            isOpen={sectionStates.environment}
-            onToggle={(isOpen) => setSectionState('environment', isOpen)}
             onSceneChange={onSceneChange}
-            onControlsChange={onEnvironmentControlsChange}
+            onEnvironmentControlsChange={onEnvironmentControlsChange}
+            onResetCamera={handleResetCamera}
           />
 
           {/* Scene Section - Keep for lighting only */}
