@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useLoader } from '@react-three/fiber';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { TextureLoader, Texture } from 'three';
+import { TextureLoader, Texture, EquirectangularReflectionMapping } from 'three';
 import { hdriCache } from '../utils/hdriCache';
 
 interface HDRILoadState {
@@ -67,7 +67,7 @@ export const useHDRILoader = ({
           url,
           (texture) => {
             // Configure texture for environment mapping
-            texture.mapping = 1; // EquirectangularReflectionMapping
+            texture.mapping = EquirectangularReflectionMapping;
             resolve(texture);
           },
           undefined,
