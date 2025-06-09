@@ -1,8 +1,17 @@
+
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, ContactShadows } from '@react-three/drei';
 import { LoadingState } from '@/components/common/LoadingState';
 import { HDRIEnvironmentRenderer } from '../environments/HDRIEnvironmentRenderer';
+import { CartoonWorldSpace } from './environments/CartoonWorldSpace';
+import { MatrixCodeSpace } from './environments/MatrixCodeSpace';
+import { SketchArtSpace } from './environments/SketchArtSpace';
+import { ForestGladeSpace } from './environments/ForestGladeSpace';
+import { NeonCitySpace } from './environments/NeonCitySpace';
+import { OceanDepthsSpace } from './environments/OceanDepthsSpace';
+import { VoidSpace } from './environments/VoidSpace';
+import { CosmicNebulaSpace } from './environments/CosmicNebulaSpace';
 import type { SpaceEnvironment, SpaceControls } from './types';
 import type { EnvironmentScene } from '../types';
 
@@ -23,6 +32,55 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
 }) => {
   // Check if environment is an EnvironmentScene (has hdriUrl) or SpaceEnvironment
   const isEnvironmentScene = 'hdriUrl' in environment || 'panoramicUrl' in environment;
+  
+  // Render the appropriate space environment
+  const renderSpaceEnvironment = () => {
+    if (isEnvironmentScene) return null;
+    
+    const spaceEnv = environment as SpaceEnvironment;
+    
+    switch (spaceEnv.type) {
+      case 'void':
+        return <VoidSpace config={spaceEnv.config} />;
+      case 'cosmic':
+        return <CosmicNebulaSpace config={spaceEnv.config} />;
+      case 'cartoon':
+        return <CartoonWorldSpace config={spaceEnv.config} />;
+      case 'matrix':
+        return <MatrixCodeSpace config={spaceEnv.config} />;
+      case 'sketch':
+        return <SketchArtSpace config={spaceEnv.config} />;
+      case 'forest':
+        return <ForestGladeSpace config={spaceEnv.config} />;
+      case 'neon':
+        return <NeonCitySpace config={spaceEnv.config} />;
+      case 'ocean':
+        return <OceanDepthsSpace config={spaceEnv.config} />;
+      case 'studio':
+        return (
+          <>
+            <ambientLight intensity={spaceEnv.config.lightIntensity * 0.8} color={spaceEnv.config.ambientColor} />
+            <directionalLight position={[10, 10, 5]} intensity={spaceEnv.config.lightIntensity} castShadow />
+            <pointLight position={[-10, -10, -5]} intensity={spaceEnv.config.lightIntensity * 0.3} />
+          </>
+        );
+      case 'abstract':
+        return (
+          <>
+            <fog attach="fog" args={[spaceEnv.config.backgroundColor, 20, 100]} />
+            <ambientLight intensity={spaceEnv.config.lightIntensity * 0.4} color={spaceEnv.config.ambientColor} />
+            <pointLight position={[0, 10, 0]} intensity={spaceEnv.config.lightIntensity * 0.6} color={spaceEnv.config.ambientColor} />
+          </>
+        );
+      default:
+        return (
+          <>
+            <ambientLight intensity={0.4} />
+            <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
+          </>
+        );
+    }
+  };
 
   return (
     <div className="w-full h-full">
@@ -44,12 +102,8 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
               enableCaching={true}
             />
           ) : (
-            // Keep existing space environment rendering for SpaceEnvironments
-            <>
-              <ambientLight intensity={0.4} />
-              <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
-              <pointLight position={[-10, -10, -5]} intensity={0.5} />
-            </>
+            // Render 3D space environment
+            renderSpaceEnvironment()
           )}
 
           {children}

@@ -6,7 +6,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     id: 'void',
     name: 'Dark Void',
     description: 'Infinite darkness with subtle stars',
-    previewUrl: '/api/placeholder/120/80',
+    previewUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=120&h=80&fit=crop&crop=center',
     type: 'void',
     emoji: '🌌',
     config: {
@@ -21,7 +21,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     id: 'nebula',
     name: 'Cosmic Nebula',
     description: 'Colorful cosmic clouds and particles',
-    previewUrl: '/api/placeholder/120/80',
+    previewUrl: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=120&h=80&fit=crop&crop=center',
     type: 'cosmic',
     emoji: '✨',
     config: {
@@ -36,7 +36,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     id: 'studio-space',
     name: 'Studio Space',
     description: 'Clean minimal space with soft lighting',
-    previewUrl: '/api/placeholder/120/80',
+    previewUrl: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=120&h=80&fit=crop&crop=center',
     type: 'studio',
     emoji: '⚪',
     config: {
@@ -51,7 +51,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     id: 'abstract-flow',
     name: 'Abstract Flow',
     description: 'Flowing geometric patterns',
-    previewUrl: '/api/placeholder/120/80',
+    previewUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=120&h=80&fit=crop&crop=center',
     type: 'abstract',
     emoji: '🔮',
     config: {
@@ -66,7 +66,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     id: 'matrix-code',
     name: 'Matrix Code',
     description: 'Flowing green digital rain',
-    previewUrl: '/api/placeholder/120/80',
+    previewUrl: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=120&h=80&fit=crop&crop=center',
     type: 'matrix',
     emoji: '🔢',
     config: {
@@ -81,7 +81,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     id: 'cartoon-world',
     name: 'Cartoon World',
     description: 'Whimsical colorful cartoon environment',
-    previewUrl: '/api/placeholder/120/80',
+    previewUrl: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=120&h=80&fit=crop&crop=center',
     type: 'cartoon',
     emoji: '🎨',
     config: {
@@ -96,7 +96,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     id: 'sketch-art',
     name: 'Sketch Art',
     description: 'Hand-drawn artistic sketch style',
-    previewUrl: '/api/placeholder/120/80',
+    previewUrl: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=120&h=80&fit=crop&crop=center',
     type: 'sketch',
     emoji: '✏️',
     config: {
@@ -111,7 +111,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     id: 'neon-city',
     name: 'Neon City',
     description: 'Cyberpunk cityscape with neon lights',
-    previewUrl: '/api/placeholder/120/80',
+    previewUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=120&h=80&fit=crop&crop=center',
     type: 'neon',
     emoji: '🌆',
     config: {
@@ -126,7 +126,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     id: 'forest-glade',
     name: 'Forest Glade',
     description: 'Natural woodland with dappled light',
-    previewUrl: '/api/placeholder/120/80',
+    previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=120&h=80&fit=crop&crop=center',
     type: 'forest',
     emoji: '🌲',
     config: {
@@ -141,7 +141,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     id: 'ocean-depths',
     name: 'Ocean Depths',
     description: 'Underwater scene with floating bubbles',
-    previewUrl: '/api/placeholder/120/80',
+    previewUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=120&h=80&fit=crop&crop=center',
     type: 'ocean',
     emoji: '🌊',
     config: {
