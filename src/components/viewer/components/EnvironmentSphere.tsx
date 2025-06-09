@@ -8,20 +8,13 @@ interface EnvironmentSphereProps {
   isHovering: boolean;
 }
 
-// Environment image mappings for each scene type
-const ENVIRONMENT_IMAGES = {
-  studio: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=2048&h=1024&fit=crop&crop=center',
-  neon: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2048&h=1024&fit=crop&crop=center',
-  golden: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=2048&h=1024&fit=crop&crop=center',
-  twilight: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=2048&h=1024&fit=crop&crop=center'
-};
-
 export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
   scene,
   mousePosition,
   isHovering
 }) => {
-  const environmentImage = ENVIRONMENT_IMAGES[scene.id as keyof typeof ENVIRONMENT_IMAGES] || ENVIRONMENT_IMAGES.studio;
+  // Use the scene's configured background image directly
+  const environmentImage = scene.backgroundImage || scene.panoramicUrl;
   
   // Calculate parallax movement based on mouse position
   const parallaxOffset = useMemo(() => ({
@@ -83,7 +76,7 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
       />
 
       {/* Scene-specific environmental effects */}
-      {scene.id === 'neon' && (
+      {scene.id === 'cyberpunk-city' && (
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -97,7 +90,7 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
         />
       )}
 
-      {scene.id === 'golden' && (
+      {scene.id === 'mountain' && (
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -108,7 +101,7 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
         />
       )}
 
-      {scene.id === 'twilight' && (
+      {scene.id === 'crystal-cave' && (
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
