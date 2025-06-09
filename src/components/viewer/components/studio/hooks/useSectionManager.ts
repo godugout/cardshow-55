@@ -7,6 +7,7 @@ export interface SectionStates {
   environment: boolean;
   lighting: boolean;
   materials: boolean;
+  spaces: boolean;
 }
 
 export const useSectionManager = () => {
@@ -15,7 +16,8 @@ export const useSectionManager = () => {
     effects: false,
     environment: false,
     lighting: false,
-    materials: false
+    materials: false,
+    spaces: false
   });
 
   const setSectionState = (section: keyof SectionStates, isOpen: boolean) => {
