@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -221,7 +220,7 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
 
   return (
     <CollapsibleSection
-      title="Spaces & Environments"
+      title="Spaces"
       emoji="🌌"
       statusText={statusText}
       isOpen={isOpen}
@@ -232,7 +231,7 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
         <div className="space-y-3">
           <h4 className="text-white font-medium text-sm flex items-center">
             <Globe className="w-4 h-4 text-blue-400 mr-2" />
-            Environment Scenes
+            Scenes
           </h4>
           
           {categories.map((category) => {
