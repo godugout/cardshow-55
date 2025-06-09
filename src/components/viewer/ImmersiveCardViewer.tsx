@@ -330,7 +330,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   const panelWidth = 320;
   const shouldShowPanel = showCustomizePanel;
 
-  // Determine active background for rendering
+  // Determine active environment for rendering
   const activeEnvironment = backgroundType === '3dSpace' ? selectedSpace : selectedScene;
 
   return (
@@ -341,7 +341,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           isFullscreen ? 'p-0' : 'p-8'
         } ${shouldShowPanel ? `pr-[${panelWidth + 32}px]` : ''}`}
         style={{
-          ...getEnvironmentStyle(),
           paddingRight: shouldShowPanel ? `${panelWidth + 32}px` : isFullscreen ? '0' : '32px'
         }}
         onMouseMove={handleMouseMove}
@@ -360,12 +359,91 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
             </SpaceRenderer3D>
           ) : (
             <>
-              <EnhancedEnvironmentSphere
-                scene={selectedScene}
-                controls={environmentControls}
-                mousePosition={mousePosition}
-                isHovering={isHovering}
+              {/* Use the improved environment sphere with better depth effects */}
+              <div 
+                className="absolute inset-0"
+                style={{
+                  background: selectedScene.backgroundImage || selectedScene.gradient,
+                  filter: `brightness(${selectedLighting.brightness}%)`,
+                  transition: 'all 0.5s ease'
+                }}
               />
+              
+              {/* Improved depth layers without jarring parallax */}
+              <div className="absolute inset-0">
+                {/* Static depth layer 1 - Far background */}
+                <div 
+                  className="absolute inset-0 opacity-30"
+                  style={{
+                    backgroundImage: `url(${selectedScene.backgroundImage || selectedScene.panoramicUrl})`,
+                    backgroundSize: '130% 130%',
+                    backgroundPosition: 'center center',
+                    backgroundRepeat: 'no-repeat',
+                    filter: 'blur(8px) brightness(0.7)',
+                    transform: 'scale(1.1) translateZ(-200px)',
+                    mixBlendMode: 'multiply'
+                  }}
+                />
+                
+                {/* Static depth layer 2 - Mid background */}
+                <div 
+                  className="absolute inset-0 opacity-50"
+                  style={{
+                    backgroundImage: `url(${selectedScene.backgroundImage || selectedScene.panoramicUrl})`,
+                    backgroundSize: '115% 115%',
+                    backgroundPosition: 'center center',
+                    backgroundRepeat: 'no-repeat',
+                    filter: 'blur(4px) brightness(0.8)',
+                    transform: 'scale(1.05) translateZ(-100px)',
+                    mixBlendMode: 'overlay'
+                  }}
+                />
+                
+                {/* Main background layer with subtle breathing animation */}
+                <div 
+                  className="absolute inset-0 transition-all duration-[3000ms] ease-in-out"
+                  style={{
+                    backgroundImage: `url(${selectedScene.backgroundImage || selectedScene.panoramicUrl})`,
+                    backgroundSize: '120% 120%',
+                    backgroundPosition: 'center center',
+                    backgroundRepeat: 'no-repeat',
+                    transform: `scale(${1 + Math.sin(Date.now() * 0.0008) * 0.01})`,
+                    filter: `brightness(${selectedScene.lighting.intensity}) contrast(1.1) saturate(1.2)`,
+                    opacity: 0.9
+                  }}
+                />
+              </div>
+              
+              {/* Dynamic lighting that follows mouse */}
+              <div 
+                className="absolute inset-0 pointer-events-none transition-all duration-300"
+                style={{
+                  background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
+                    ${selectedScene.lighting.color}40 0%, 
+                    ${selectedScene.lighting.color}20 30%,
+                    transparent 70%)`,
+                  mixBlendMode: 'overlay'
+                }}
+              />
+              
+              {/* Atmospheric particles */}
+              <div className="absolute inset-0 pointer-events-none">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute rounded-full bg-white opacity-20"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      width: `${Math.random() * 3 + 1}px`,
+                      height: `${Math.random() * 3 + 1}px`,
+                      transform: `translateY(${Math.sin(Date.now() * 0.001 * (i + 1)) * 15}px)`,
+                      transition: 'transform 0.1s ease-out'
+                    }}
+                  />
+                ))}
+              </div>
+              
               {/* Enhanced Dark Overlay */}
               <div className="absolute inset-0 bg-black/40 z-10" />
             </>
@@ -375,11 +453,12 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         {/* Subtle Ambient Background Effect (only for 2D scenes) */}
         {ambient && backgroundType === 'scene' && (
           <div 
-            className="absolute inset-0 opacity-20 z-15"
+            className="absolute inset-0 opacity-20 z-15 transition-opacity duration-500"
             style={{
               background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
                 ${selectedScene.lighting.color} 0%, transparent 40%)`,
-              mixBlendMode: 'screen'
+              mixBlendMode: 'screen',
+              opacity: isHovering ? 0.3 : 0.2
             }}
           />
         )}

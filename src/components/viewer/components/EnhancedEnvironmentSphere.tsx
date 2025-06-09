@@ -15,44 +15,33 @@ export const EnhancedEnvironmentSphere: React.FC<EnhancedEnvironmentSphereProps>
   mousePosition,
   isHovering
 }) => {
-  // Calculate enhanced parallax with depth layers
-  const parallaxLayers = useMemo(() => {
-    const layers = [];
-    const baseParallax = controls.parallaxIntensity * 20;
-    
-    for (let i = 0; i < scene.depth.layers; i++) {
-      const layerDepth = -50 - (i * 30);
-      const layerScale = 1 + (i * 0.05);
-      const layerSpeed = 1 + (i * 0.2);
-      
-      layers.push({
-        depth: layerDepth,
-        scale: layerScale,
-        parallaxX: (mousePosition.x - 0.5) * baseParallax * layerSpeed,
-        parallaxY: (mousePosition.y - 0.5) * baseParallax * layerSpeed * 0.5,
-        opacity: 0.3 + (i * 0.1),
-        blur: Math.max(0, i - 1)
-      });
-    }
-    
-    return layers;
-  }, [scene.depth.layers, controls.parallaxIntensity, mousePosition]);
+  // Use the scene's configured background image directly
+  const environmentImage = scene.backgroundImage || scene.panoramicUrl;
+  
+  // Subtle lighting effect instead of aggressive parallax
+  const lightingEffect = useMemo(() => ({
+    background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
+      ${scene.lighting.color}30 0%, 
+      ${scene.lighting.color}15 40%,
+      transparent 70%)`,
+    mixBlendMode: 'overlay' as const
+  }), [scene.lighting.color, mousePosition]);
 
-  // Field of view transform
+  // Field of view transform with reduced intensity
   const fovTransform = useMemo(() => {
-    const fovScale = 1 + (controls.fieldOfView - 75) * 0.01;
+    const fovScale = 1 + (controls.fieldOfView - 75) * 0.005; // Reduced from 0.01
     return `scale(${fovScale})`;
   }, [controls.fieldOfView]);
 
-  // Atmospheric effects
+  // Atmospheric effects with reduced intensity
   const atmosphericStyle = useMemo(() => {
-    if (!scene.atmosphere.fog) return {};
+    if (!scene.atmosphere?.fog) return {};
     
     return {
       background: `
         radial-gradient(
           ellipse at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
-          ${scene.atmosphere.fogColor}${Math.floor(scene.atmosphere.fogDensity * controls.atmosphericDensity * 255).toString(16).padStart(2, '0')} 0%, 
+          ${scene.atmosphere.fogColor}${Math.floor(scene.atmosphere.fogDensity * controls.atmosphericDensity * 128).toString(16).padStart(2, '0')} 0%, 
           transparent 60%
         )
       `,
@@ -62,65 +51,48 @@ export const EnhancedEnvironmentSphere: React.FC<EnhancedEnvironmentSphereProps>
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Main Panoramic Environment */}
+      {/* Main Environment - Reduced movement */}
       <div 
         className="absolute inset-0 transition-all duration-1000 ease-out"
         style={{
-          backgroundImage: `url(${scene.panoramicUrl})`,
-          backgroundSize: `${200 + (controls.fieldOfView - 75)}% 100%`,
-          backgroundPosition: `${50 + (mousePosition.x - 0.5) * controls.parallaxIntensity * 10}% ${50 + (mousePosition.y - 0.5) * controls.parallaxIntensity * 5}%`,
+          backgroundImage: `url(${environmentImage})`,
+          backgroundSize: '120% 100%', // Reduced from 200%
+          backgroundPosition: 'center center', // Fixed position
           backgroundRepeat: 'no-repeat',
-          transform: `${fovTransform} perspective(1000px) rotateY(${(mousePosition.x - 0.5) * controls.parallaxIntensity * 2}deg) rotateX(${(mousePosition.y - 0.5) * controls.parallaxIntensity * 1}deg)`,
+          transform: `${fovTransform} scale(${isHovering ? 1.02 : 1})`, // Removed aggressive rotation
           filter: `brightness(${scene.lighting.intensity}) contrast(1.1) saturate(1.2) blur(${controls.depthOfField * 0.5}px)`,
           opacity: 0.9
         }}
       />
 
-      {/* Depth Layers for 3D Diorama Effect */}
-      {parallaxLayers.map((layer, index) => (
-        <div
-          key={`depth-layer-${index}`}
-          className="absolute inset-0 pointer-events-none transition-all duration-700"
-          style={{
-            backgroundImage: `url(${scene.panoramicUrl})`,
-            backgroundSize: `${200 * layer.scale}% ${100 * layer.scale}%`,
-            backgroundPosition: `${50 + layer.parallaxX}% ${50 + layer.parallaxY}%`,
-            backgroundRepeat: 'no-repeat',
-            transform: `translateZ(${layer.depth}px) scale(${layer.scale})`,
-            opacity: layer.opacity * (isHovering ? 1.2 : 1),
-            filter: `blur(${layer.blur + controls.depthOfField}px) brightness(${scene.lighting.intensity * 0.7})`,
-            mixBlendMode: index % 2 === 0 ? 'screen' : 'overlay'
-          }}
-        />
-      ))}
+      {/* Static depth layers instead of moving parallax */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-20"
+        style={{
+          backgroundImage: `url(${environmentImage})`,
+          backgroundSize: '130% 130%',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat',
+          filter: `blur(4px) brightness(${scene.lighting.intensity * 0.7})`,
+          mixBlendMode: 'multiply'
+        }}
+      />
+
+      {/* Subtle lighting overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none transition-all duration-500"
+        style={lightingEffect}
+      />
 
       {/* Atmospheric Fog Layer */}
-      {scene.atmosphere.fog && (
+      {scene.atmosphere?.fog && (
         <div 
           className="absolute inset-0 pointer-events-none transition-all duration-500"
           style={atmosphericStyle}
         />
       )}
 
-      {/* Particle Effects */}
-      {scene.atmosphere.particles && (
-        <div className="absolute inset-0 pointer-events-none">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div
-              key={`particle-${i}`}
-              className="absolute w-1 h-1 bg-white rounded-full opacity-30"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                transform: `translateX(${(mousePosition.x - 0.5) * (i + 1) * 2}px) translateY(${(mousePosition.y - 0.5) * (i + 1) * 1}px)`
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Scene-specific Environmental Effects */}
+      {/* Scene-specific environmental effects */}
       {scene.category === 'fantasy' && (
         <div 
           className="absolute inset-0 pointer-events-none"
@@ -139,8 +111,8 @@ export const EnhancedEnvironmentSphere: React.FC<EnhancedEnvironmentSphereProps>
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `
-              linear-gradient(45deg, transparent 30%, ${scene.lighting.color}30 35%, transparent 40%),
-              linear-gradient(-45deg, transparent 60%, ${scene.lighting.color}20 65%, transparent 70%)
+              linear-gradient(45deg, transparent 30%, ${scene.lighting.color}20 35%, transparent 40%),
+              linear-gradient(-45deg, transparent 60%, ${scene.lighting.color}15 65%, transparent 70%)
             `,
             animation: 'pulse 4s ease-in-out infinite',
             mixBlendMode: 'screen'
@@ -159,18 +131,13 @@ export const EnhancedEnvironmentSphere: React.FC<EnhancedEnvironmentSphereProps>
         />
       )}
 
-      {/* Interactive Light Rays */}
+      {/* Gentle ambient glow instead of aggressive interactive rays */}
       <div 
-        className="absolute inset-0 pointer-events-none opacity-10"
+        className="absolute inset-0 pointer-events-none opacity-15 transition-opacity duration-300"
         style={{
-          background: `conic-gradient(from ${mousePosition.x * 360}deg at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
-            transparent 0deg, 
-            ${scene.lighting.color} 10deg, 
-            transparent 20deg, 
-            ${scene.lighting.color} 170deg, 
-            transparent 180deg)`,
-          transform: `translateX(${(mousePosition.x - 0.5) * controls.parallaxIntensity * 5}px) translateY(${(mousePosition.y - 0.5) * controls.parallaxIntensity * 2}px)`,
-          transition: 'transform 0.2s ease-out'
+          background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
+            rgba(255,255,255,0.2) 0%, transparent 40%)`,
+          opacity: isHovering ? 0.2 : 0.1
         }}
       />
     </div>
