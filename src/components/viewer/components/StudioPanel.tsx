@@ -46,10 +46,10 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
       <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col">
         {/* Header */}
         <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between min-h-[3.5rem]">
-          <div className="flex items-center space-x-2">
+          <h2 className="text-lg font-semibold text-white leading-none flex items-center space-x-2">
             <Sparkles className="w-5 h-5 text-crd-green flex-shrink-0 -mt-0.5" />
-            <h2 className="text-lg font-semibold text-white leading-none">Studio</h2>
-          </div>
+            <span>Studio</span>
+          </h2>
           <button 
             onClick={onClose}
             className="w-6 h-6 flex items-center justify-center text-white hover:text-gray-300 transition-colors flex-shrink-0"
