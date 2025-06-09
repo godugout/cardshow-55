@@ -1,3 +1,4 @@
+
 import type { EnvironmentScene, LightingPreset, VisualEffect } from './types';
 
 export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
@@ -119,9 +120,9 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     icon: '🏛️',
     category: 'architectural',
     description: 'Majestic ancient temple ruins',
-    panoramicUrl: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73c6e?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73c6e?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73c6e?w=1920&h=1080&fit=crop&crop=center',
+    panoramicUrl: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=1920&h=1080&fit=crop&crop=center',
     gradient: 'linear-gradient(135deg, #d4af37 0%, #ffd700 100%)',
     lighting: {
       color: '#d4af37',
