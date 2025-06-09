@@ -62,7 +62,7 @@ export const NeonCitySpace: React.FC<NeonCitySpaceProps> = ({ config }) => {
       <group ref={neonRef}>
         <mesh position={[-20, 0, -35]}>
           <boxGeometry args={[0.2, 3, 0.2]} />
-          <meshBasicMaterial 
+          <meshStandardMaterial 
             color="#ff00ff" 
             emissive="#ff00ff" 
             emissiveIntensity={0.5}
@@ -70,7 +70,7 @@ export const NeonCitySpace: React.FC<NeonCitySpaceProps> = ({ config }) => {
         </mesh>
         <mesh position={[-10, 2, -35]}>
           <boxGeometry args={[0.2, 4, 0.2]} />
-          <meshBasicMaterial 
+          <meshStandardMaterial 
             color="#00ffff" 
             emissive="#00ffff" 
             emissiveIntensity={0.5}
@@ -78,7 +78,7 @@ export const NeonCitySpace: React.FC<NeonCitySpaceProps> = ({ config }) => {
         </mesh>
         <mesh position={[0, 1, -35]}>
           <boxGeometry args={[0.2, 5, 0.2]} />
-          <meshBasicMaterial 
+          <meshStandardMaterial 
             color="#ffff00" 
             emissive="#ffff00" 
             emissiveIntensity={0.5}
@@ -86,7 +86,7 @@ export const NeonCitySpace: React.FC<NeonCitySpaceProps> = ({ config }) => {
         </mesh>
         <mesh position={[15, 3, -35]}>
           <boxGeometry args={[0.2, 3, 0.2]} />
-          <meshBasicMaterial 
+          <meshStandardMaterial 
             color="#ff0080" 
             emissive="#ff0080" 
             emissiveIntensity={0.5}
