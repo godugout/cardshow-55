@@ -1,26 +1,24 @@
-import React, { useRef, useCallback } from 'react';
+
+import React, { useRef, useEffect, useCallback } from 'react';
 import type { ImmersiveCardViewerProps, EnvironmentScene, LightingPreset, MaterialSettings } from './types';
 import { 
   useEnhancedCardEffects, 
   type EffectValues 
 } from './hooks/useEnhancedCardEffects';
 import { useCardEffects } from './hooks/useCardEffects';
+import { ViewerControls } from './components/ViewerControls';
+import { EnhancedCardContainer } from './components/EnhancedCardContainer';
+import { CompactCardDetails } from './components/CompactCardDetails';
 import { useCardExport } from './hooks/useCardExport';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
+import { ViewerHeader } from './components/ViewerHeader';
+import { CardNavigationControls } from './components/CardNavigationControls';
+import { ViewerInfoPanel } from './components/ViewerInfoPanel';
 import { StudioPanel } from './components/StudioPanel';
 import { useViewerState } from './hooks/useViewerState';
 import { useSafeZones } from './hooks/useSafeZones';
-import { useCardNavigation } from './hooks/useCardNavigation';
-import { useMouseInteraction } from './hooks/useMouseInteraction';
-import { useAutoRotationEffect } from './hooks/useAutoRotationEffect';
-import { useWheelZoom } from './hooks/useWheelZoom';
-import { useSpacesState } from './hooks/useSpacesState';
-import { EnhancedCardContainer } from './components/EnhancedCardContainer';
-import { Enhanced3DSpaceCanvas } from './components/spaces/Enhanced3DSpaceCanvas';
-import { ImmersiveCardBackground } from './components/ImmersiveCardBackground';
-import { ImmersiveCardLayoutElements } from './components/ImmersiveCardLayoutElements';
 
-// Update the interface to support card navigation and spaces
+// Update the interface to support card navigation
 interface ExtendedImmersiveCardViewerProps extends ImmersiveCardViewerProps {
   cards?: any[];
   currentCardIndex?: number;
@@ -40,7 +38,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   showStats = true,
   ambient = true
 }) => {
-  // Main viewer state
+  // Use the custom state hook
   const viewerState = useViewerState();
   const {
     isFullscreen,
@@ -83,22 +81,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     handleZoom
   } = viewerState;
 
-  // Spaces state for 3D environments
-  const spacesState = useSpacesState();
-  const {
-    spaceState,
-    setSelectedTemplate,
-    addCard,
-    removeCard,
-    updateCardPosition,
-    toggleCardSelection,
-    setEditMode,
-    templates
-  } = spacesState;
-
-  // Determine if we're in 3D space mode
-  const isSpaceMode = !!spaceState.selectedTemplate;
-
   // Enhanced effects hook
   const enhancedEffectsHook = useEnhancedCardEffects();
   const {
@@ -111,52 +93,35 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   } = enhancedEffectsHook;
 
   // Refs
+  const containerRef = useRef<HTMLDivElement>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number>();
 
   // Navigation logic
-  const cardNavigation = useCardNavigation({
-    cards,
-    currentCardIndex,
-    onCardChange,
-    setIsFlipped
-  });
+  const hasMultipleCards = cards.length > 1;
+  const canGoNext = hasMultipleCards && currentCardIndex < cards.length - 1;
+  const canGoPrev = hasMultipleCards && currentCardIndex > 0;
+
+  const handlePreviousCard = useCallback(() => {
+    if (canGoPrev && onCardChange) {
+      onCardChange(currentCardIndex - 1);
+      setIsFlipped(false);
+    }
+  }, [canGoPrev, currentCardIndex, onCardChange, setIsFlipped]);
+
+  const handleNextCard = useCallback(() => {
+    if (canGoNext && onCardChange) {
+      onCardChange(currentCardIndex + 1);
+      setIsFlipped(false);
+    }
+  }, [canGoNext, currentCardIndex, onCardChange, setIsFlipped]);
 
   // Safe zone detection
   const { isInSafeZone } = useSafeZones({
     panelWidth: 320,
     showPanel: showCustomizePanel,
     showStats,
-    hasNavigation: cardNavigation.hasMultipleCards
-  });
-
-  // Mouse interaction
-  const mouseInteraction = useMouseInteraction({
-    rotation,
-    setRotation,
-    isDragging,
-    setIsDragging,
-    dragStart,
-    setDragStart,
-    setAutoRotate,
-    setMousePosition,
-    setIsHoveringControls,
-    allowRotation,
-    autoRotate,
-    isInSafeZone
-  });
-
-  // Auto-rotation effect
-  useAutoRotationEffect({
-    autoRotate,
-    isDragging,
-    setRotation
-  });
-
-  // Wheel zoom
-  useWheelZoom({
-    containerRef: mouseInteraction.containerRef,
-    handleZoom,
-    isInSafeZone
+    hasNavigation: hasMultipleCards
   });
 
   // Export functionality
@@ -184,7 +149,116 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     isHovering
   });
 
-  // Event handlers
+  // Auto-rotation effect
+  useEffect(() => {
+    if (autoRotate && !isDragging) {
+      const animate = () => {
+        setRotation(prev => ({
+          x: Math.sin(Date.now() * 0.0005) * 10,
+          y: prev.y + 0.5
+        }));
+        animationRef.current = requestAnimationFrame(animate);
+      };
+      animationRef.current = requestAnimationFrame(animate);
+    } else {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    }
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [autoRotate, isDragging, setRotation]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        handlePreviousCard();
+      } else if (e.key === 'ArrowRight') {
+        handleNextCard();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handlePreviousCard, handleNextCard]);
+
+  // Enhanced mouse handling with safe zones
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
+    
+    if (!isDragging && !inSafeZone) {
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      setMousePosition({ x, y });
+      
+      const isInControlsArea = e.clientX - rect.left < 300 && e.clientY - rect.top > rect.height - 100;
+      setIsHoveringControls(isInControlsArea);
+      
+      if (allowRotation && !autoRotate) {
+        setRotation({
+          x: (y - 0.5) * 20,
+          y: (x - 0.5) * -20
+        });
+      }
+    }
+  }, [isDragging, allowRotation, autoRotate, isInSafeZone, setMousePosition, setIsHoveringControls, setRotation]);
+
+  // Enhanced wheel handling for safe zones
+  const handleWheel = useCallback((e: WheelEvent) => {
+    if (!containerRef.current) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
+    
+    if (!inSafeZone) {
+      e.preventDefault();
+      const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
+      handleZoom(zoomDelta);
+    }
+  }, [isInSafeZone, handleZoom]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
+      return () => container.removeEventListener('wheel', handleWheel);
+    }
+  }, [handleWheel]);
+
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
+    
+    if (allowRotation && !inSafeZone) {
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
+      setAutoRotate(false);
+    }
+  }, [rotation, allowRotation, isInSafeZone, setIsDragging, setDragStart, setAutoRotate]);
+
+  const handleDrag = useCallback((e: React.MouseEvent) => {
+    if (isDragging && allowRotation) {
+      setRotation({
+        x: e.clientY - dragStart.y,
+        y: e.clientX - dragStart.x
+      });
+    }
+  }, [isDragging, dragStart, allowRotation, setRotation]);
+
+  const handleDragEnd = useCallback(() => {
+    setIsDragging(false);
+  }, [setIsDragging]);
+
   const handleDownloadClick = useCallback(() => {
     setShowExportDialog(true);
   }, [setShowExportDialog]);
@@ -219,32 +293,29 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     handleEffectChange(effectId, parameterId, value);
   }, [handleEffectChange, isApplyingPreset, setSelectedPresetId]);
 
+  // Enhanced state validation on card change
+  useEffect(() => {
+    if (card) {
+      validateEffectState();
+    }
+  }, [card, validateEffectState]);
+
   // Enhanced reset that includes all state
   const handleResetWithEffects = useCallback(() => {
     handleReset();
     resetAllEffects();
     validateEffectState();
-    setSelectedTemplate(null);
-  }, [handleReset, resetAllEffects, validateEffectState, setSelectedTemplate]);
-
-  // Handle template selection - this switches to 3D space mode
-  const handleTemplateSelect = useCallback((template: any) => {
-    setSelectedTemplate(template);
-    if (template && card) {
-      // Add current card to the space when template is selected
-      addCard(card);
-    }
-  }, [setSelectedTemplate, addCard, card]);
+  }, [handleReset, resetAllEffects, validateEffectState]);
 
   if (!isOpen) return null;
 
-  const panelWidth = 380;
+  const panelWidth = 320;
   const shouldShowPanel = showCustomizePanel;
 
   return (
     <>
       <div 
-        ref={mouseInteraction.containerRef}
+        ref={containerRef}
         className={`fixed inset-0 z-50 flex items-center justify-center ${
           isFullscreen ? 'p-0' : 'p-8'
         } ${shouldShowPanel ? `pr-[${panelWidth + 32}px]` : ''}`}
@@ -252,103 +323,108 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           ...getEnvironmentStyle(),
           paddingRight: shouldShowPanel ? `${panelWidth + 32}px` : isFullscreen ? '0' : '32px'
         }}
-        onMouseMove={mouseInteraction.handleMouseMove}
-        onMouseUp={mouseInteraction.handleDragEnd}
-        onMouseLeave={mouseInteraction.handleDragEnd}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleDragEnd}
+        onMouseLeave={handleDragEnd}
       >
-        <ImmersiveCardBackground
-          selectedScene={selectedScene}
-          mousePosition={mousePosition}
-          ambient={ambient}
-          getEnvironmentStyle={getEnvironmentStyle}
+        {/* Enhanced Dark Overlay */}
+        <div className="absolute inset-0 bg-black/60" />
+
+        {/* Subtle Ambient Background Effect */}
+        {ambient && selectedScene && (
+          <div 
+            className="absolute inset-0 opacity-30"
+            style={{
+              background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
+                ${selectedScene.lighting.color} 0%, transparent 40%)`,
+              mixBlendMode: 'screen'
+            }}
+          />
+        )}
+
+        {/* Header */}
+        <ViewerHeader
+          onClose={onClose}
+          showStudioButton={!shouldShowPanel}
+          onOpenStudio={() => setShowCustomizePanel(true)}
         />
 
-        <ImmersiveCardLayoutElements
-          onClose={onClose}
-          shouldShowPanel={shouldShowPanel}
-          setShowCustomizePanel={setShowCustomizePanel}
-          card={card}
-          effectValues={effectValues}
-          selectedScene={selectedScene}
-          selectedLighting={selectedLighting}
-          materialSettings={materialSettings}
-          overallBrightness={overallBrightness}
-          interactiveLighting={interactiveLighting}
-          isHoveringControls={isHoveringControls}
-          showEffects={showEffects}
-          setShowEffects={setShowEffects}
-          autoRotate={autoRotate}
-          setAutoRotate={setAutoRotate}
-          handleResetWithEffects={handleResetWithEffects}
-          handleZoom={handleZoom}
-          hasMultipleCards={cardNavigation.hasMultipleCards}
+        {/* Compact Card Details */}
+        <div className="absolute bottom-20 left-4 z-20">
+          <CompactCardDetails 
+            card={card}
+            effectValues={effectValues}
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            materialSettings={materialSettings}
+            overallBrightness={overallBrightness}
+            interactiveLighting={interactiveLighting}
+          />
+        </div>
+
+        {/* Basic Controls */}
+        <div className={`transition-opacity duration-200 ${isHoveringControls ? 'opacity-100 z-20' : 'opacity-100 z-10'}`}>
+          <ViewerControls
+            showEffects={showEffects}
+            autoRotate={autoRotate}
+            onToggleEffects={() => setShowEffects(!showEffects)}
+            onToggleAutoRotate={() => setAutoRotate(!autoRotate)}
+            onReset={handleResetWithEffects}
+            onZoomIn={() => handleZoom(0.1)}
+            onZoomOut={() => handleZoom(-0.1)}
+          />
+        </div>
+
+        {/* Card Navigation Controls */}
+        <CardNavigationControls
+          hasMultipleCards={hasMultipleCards}
           currentCardIndex={currentCardIndex}
           totalCards={cards.length}
-          canGoPrev={cardNavigation.canGoPrev}
-          canGoNext={cardNavigation.canGoNext}
-          handlePreviousCard={cardNavigation.handlePreviousCard}
-          handleNextCard={cardNavigation.handleNextCard}
-          showStats={showStats}
-          isFlipped={isFlipped}
+          canGoPrev={canGoPrev}
+          canGoNext={canGoNext}
+          onPrevious={handlePreviousCard}
+          onNext={handleNextCard}
         />
 
-        {/* Conditional rendering: 3D Space or Single Card - now with full viewport for 3D */}
-        <div 
-          ref={cardContainerRef}
-          className={isSpaceMode ? "absolute inset-0" : "relative z-20"}
-          style={isSpaceMode ? { 
-            paddingRight: shouldShowPanel ? `${panelWidth}px` : '0',
-            paddingTop: '60px', // Account for header
-            paddingBottom: '60px' // Account for any bottom UI
-          } : {}}
-        >
-          {isSpaceMode ? (
-            // 3D Space Mode - now takes full viewport
-            <Enhanced3DSpaceCanvas
-              spaceCards={spaceState.cards}
-              template={spaceState.selectedTemplate}
-              effectValues={effectValues}
-              selectedScene={selectedScene}
-              selectedLighting={selectedLighting}
-              materialSettings={materialSettings}
-              overallBrightness={overallBrightness}
-              interactiveLighting={interactiveLighting}
-              isEditMode={spaceState.isEditMode}
-              onCardSelect={toggleCardSelection}
-              onCardPositionChange={updateCardPosition}
-            />
-          ) : (
-            // Single Card Mode
-            <EnhancedCardContainer
-              card={card}
-              isFlipped={isFlipped}
-              isHovering={isHovering}
-              showEffects={showEffects}
-              effectValues={effectValues}
-              mousePosition={mousePosition}
-              rotation={rotation}
-              zoom={zoom}
-              isDragging={isDragging}
-              frameStyles={getFrameStyles()}
-              enhancedEffectStyles={getEnhancedEffectStyles()}
-              SurfaceTexture={SurfaceTexture}
-              interactiveLighting={interactiveLighting}
-              selectedScene={selectedScene}
-              selectedLighting={selectedLighting}
-              materialSettings={materialSettings}
-              overallBrightness={overallBrightness}
-              showBackgroundInfo={!shouldShowPanel}
-              onMouseDown={mouseInteraction.handleDragStart}
-              onMouseMove={mouseInteraction.handleDrag}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-              onClick={() => setIsFlipped(!isFlipped)}
-            />
-          )}
+        {/* Enhanced Card Container */}
+        <div ref={cardContainerRef}>
+          <EnhancedCardContainer
+            card={card}
+            isFlipped={isFlipped}
+            isHovering={isHovering}
+            showEffects={showEffects}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            rotation={rotation}
+            zoom={zoom}
+            isDragging={isDragging}
+            frameStyles={getFrameStyles()}
+            enhancedEffectStyles={getEnhancedEffectStyles()}
+            SurfaceTexture={SurfaceTexture}
+            interactiveLighting={interactiveLighting}
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            materialSettings={materialSettings}
+            overallBrightness={overallBrightness}
+            showBackgroundInfo={!shouldShowPanel}
+            onMouseDown={handleDragStart}
+            onMouseMove={handleDrag}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+            onClick={() => setIsFlipped(!isFlipped)}
+          />
         </div>
+
+        {/* Info Panel */}
+        <ViewerInfoPanel
+          showStats={showStats}
+          isFlipped={isFlipped}
+          shouldShowPanel={shouldShowPanel}
+          hasMultipleCards={hasMultipleCards}
+        />
       </div>
 
-      {/* Studio Panel with Spaces Integration */}
+      {/* Studio Panel */}
       <StudioPanel
         isVisible={shouldShowPanel}
         onClose={() => setShowCustomizePanel(false)}
@@ -368,14 +444,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onPresetSelect={setSelectedPresetId}
         onApplyCombo={handleComboApplication}
         isApplyingPreset={isApplyingPreset}
-        currentCard={card}
-        // Spaces integration props
-        spaceState={spaceState}
-        spacesTemplates={templates}
-        onTemplateSelect={handleTemplateSelect}
-        onAddCardToSpace={() => card && addCard(card)}
-        onRemoveCardFromSpace={removeCard}
-        onToggleEditMode={() => setEditMode(!spaceState.isEditMode)}
       />
 
       {/* Export Options Dialog */}

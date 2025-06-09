@@ -1,11 +1,9 @@
 
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import { TabbedStudioContent } from './studio/TabbedStudioContent';
+import { ScrollableStudioContent } from './studio/ScrollableStudioContent';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
-import type { CardData } from '@/hooks/useCardEditor';
-import type { SpaceState, SpaceTemplate } from '../types/spaces';
 
 interface StudioPanelProps {
   isVisible: boolean;
@@ -26,31 +24,16 @@ interface StudioPanelProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
-  currentCard?: CardData;
-  // New spaces integration props
-  spaceState?: SpaceState;
-  spacesTemplates?: SpaceTemplate[];
-  onTemplateSelect?: (template: SpaceTemplate | null) => void;
-  onAddCardToSpace?: () => void;
-  onRemoveCardFromSpace?: (cardId: string) => void;
-  onToggleEditMode?: () => void;
 }
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({
   isVisible,
   onClose,
-  currentCard,
-  spaceState,
-  spacesTemplates,
-  onTemplateSelect,
-  onAddCardToSpace,
-  onRemoveCardFromSpace,
-  onToggleEditMode,
   ...studioProps
 }) => {
   if (!isVisible) return null;
 
-  const panelWidth = 380;
+  const panelWidth = 320;
 
   return (
     <div 
@@ -64,11 +47,6 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
           <div className="flex items-center space-x-2">
             <Sparkles className="w-5 h-5 text-crd-green" />
             <h2 className="text-lg font-semibold text-white">Studio</h2>
-            {spaceState?.selectedTemplate && (
-              <span className="text-xs bg-crd-green/20 text-crd-green px-2 py-1 rounded-full">
-                3D Mode
-              </span>
-            )}
           </div>
           <button
             onClick={onClose}
@@ -78,17 +56,8 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
           </button>
         </div>
 
-        {/* Tabbed Studio Content with Spaces Integration */}
-        <TabbedStudioContent 
-          {...studioProps} 
-          currentCard={currentCard}
-          spaceState={spaceState}
-          spacesTemplates={spacesTemplates}
-          onTemplateSelect={onTemplateSelect}
-          onAddCardToSpace={onAddCardToSpace}
-          onRemoveCardFromSpace={onRemoveCardFromSpace}
-          onToggleEditMode={onToggleEditMode}
-        />
+        {/* Studio Content with Scroll Support */}
+        <ScrollableStudioContent {...studioProps} />
       </div>
     </div>
   );

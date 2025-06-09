@@ -6,12 +6,10 @@ import {
   StylesSection, 
   EffectsSection, 
   SceneSection, 
-  SurfaceSection,
-  SpacesSection 
+  SurfaceSection 
 } from './sections';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
-import type { CardData } from '@/hooks/useCardEditor';
 
 interface StudioContentProps {
   selectedScene: EnvironmentScene;
@@ -30,7 +28,6 @@ interface StudioContentProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
-  currentCard?: CardData;
 }
 
 export const StudioContent: React.FC<StudioContentProps> = ({
@@ -49,8 +46,7 @@ export const StudioContent: React.FC<StudioContentProps> = ({
   selectedPresetId,
   onPresetSelect,
   onApplyCombo,
-  isApplyingPreset = false,
-  currentCard
+  isApplyingPreset = false
 }) => {
   const { sectionStates, setSectionState } = useSectionManager();
 
@@ -74,19 +70,6 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             onPresetSelect={onPresetSelect}
             onApplyCombo={onApplyCombo}
             isApplyingPreset={isApplyingPreset}
-          />
-
-          {/* Spaces Section - New multi-card 3D environments */}
-          <SpacesSection
-            isOpen={sectionStates.spaces}
-            onToggle={(isOpen) => setSectionState('spaces', isOpen)}
-            effectValues={effectValues}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            interactiveLighting={interactiveLighting}
-            currentCard={currentCard}
           />
 
           {/* Effects Section */}
