@@ -97,6 +97,10 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
 
+  // Background state management
+  const [backgroundType, setBackgroundType] = React.useState<'scene' | '3dSpace'>('scene');
+  const [selectedSpace, setSelectedSpace] = React.useState<any>(null);
+
   // Navigation logic
   const hasMultipleCards = cards.length > 1;
   const canGoNext = hasMultipleCards && currentCardIndex < cards.length - 1;
@@ -320,6 +324,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   const panelWidth = 320;
   const shouldShowPanel = showCustomizePanel;
 
+  // Determine active background for rendering
+  const activeEnvironment = backgroundType === '3dSpace' ? selectedSpace : selectedScene;
+
   return (
     <>
       <div 
@@ -337,24 +344,36 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
       >
         {/* Full-Screen Environment Background */}
         <div className="absolute inset-0 z-0">
-          <EnhancedEnvironmentSphere
-            scene={selectedScene}
-            controls={environmentControls}
-            mousePosition={mousePosition}
-            isHovering={isHovering}
-          />
+          {backgroundType === '3dSpace' && selectedSpace ? (
+            <div className="w-full h-full">
+              {/* 3D Space Renderer would go here */}
+              <div 
+                className="w-full h-full"
+                style={{
+                  background: `linear-gradient(135deg, ${selectedSpace.config.backgroundColor}, ${selectedSpace.config.ambientColor})`
+                }}
+              />
+            </div>
+          ) : (
+            <EnhancedEnvironmentSphere
+              scene={selectedScene}
+              controls={environmentControls}
+              mousePosition={mousePosition}
+              isHovering={isHovering}
+            />
+          )}
         </div>
 
         {/* Enhanced Dark Overlay */}
         <div className="absolute inset-0 bg-black/40 z-10" />
 
         {/* Subtle Ambient Background Effect */}
-        {ambient && selectedScene && (
+        {ambient && activeEnvironment && (
           <div 
             className="absolute inset-0 opacity-20 z-15"
             style={{
               background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
-                ${selectedScene.lighting.color} 0%, transparent 40%)`,
+                ${backgroundType === '3dSpace' ? selectedSpace?.config.ambientColor || '#444' : selectedScene.lighting.color} 0%, transparent 40%)`,
               mixBlendMode: 'screen'
             }}
           />
@@ -465,6 +484,10 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onPresetSelect={setSelectedPresetId}
         onApplyCombo={handleComboApplication}
         isApplyingPreset={isApplyingPreset}
+        backgroundType={backgroundType}
+        onBackgroundTypeChange={setBackgroundType}
+        onSpaceChange={setSelectedSpace}
+        selectedSpace={selectedSpace}
       />
 
       {/* Export Options Dialog */}

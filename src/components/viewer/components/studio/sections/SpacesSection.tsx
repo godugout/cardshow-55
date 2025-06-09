@@ -2,7 +2,7 @@
 import React from 'react';
 import { CollapsibleSection } from '@/components/ui/design-system';
 import type { SpaceEnvironment, SpaceControls } from '../../../spaces/types';
-import type { EnvironmentScene, EnvironmentControls } from '../../../types';
+import type { EnvironmentScene, EnvironmentControls, BackgroundType } from '../../../types';
 import { 
   SceneGrid, 
   SpaceEnvironmentGrid, 
@@ -24,6 +24,8 @@ interface SpacesSectionProps {
   onSceneChange: (scene: EnvironmentScene) => void;
   onEnvironmentControlsChange: (controls: EnvironmentControls) => void;
   onResetCamera?: () => void;
+  backgroundType?: BackgroundType;
+  onBackgroundTypeChange?: (type: BackgroundType) => void;
 }
 
 export const SpacesSection: React.FC<SpacesSectionProps> = ({
@@ -37,9 +39,23 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
   onControlsChange,
   onSceneChange,
   onEnvironmentControlsChange,
-  onResetCamera = () => {}
+  onResetCamera = () => {},
+  backgroundType = 'scene',
+  onBackgroundTypeChange = () => {}
 }) => {
-  const statusText = `${selectedSpace.name} • ${selectedScene.name}`;
+  const statusText = backgroundType === '3dSpace' 
+    ? `${selectedSpace.name} (3D Space)` 
+    : `${selectedScene.name} (Scene)`;
+
+  const handleSceneChange = (scene: EnvironmentScene) => {
+    onSceneChange(scene);
+    onBackgroundTypeChange('scene');
+  };
+
+  const handleSpaceChange = (space: SpaceEnvironment) => {
+    onSpaceChange(space);
+    onBackgroundTypeChange('3dSpace');
+  };
 
   return (
     <CollapsibleSection
@@ -53,13 +69,15 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
         {/* Environment Scenes */}
         <SceneGrid
           selectedScene={selectedScene}
-          onSceneChange={onSceneChange}
+          onSceneChange={handleSceneChange}
+          isActive={backgroundType === 'scene'}
         />
 
         {/* 3D Space Environment Selection */}
         <SpaceEnvironmentGrid
           selectedSpace={selectedSpace}
-          onSpaceChange={onSpaceChange}
+          onSpaceChange={handleSpaceChange}
+          isActive={backgroundType === '3dSpace'}
         />
 
         {/* Camera Controls */}
@@ -87,7 +105,7 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
             🚀 Unified Spaces & Environments
           </div>
           <div className="text-white/70 text-xs">
-            Complete control over backgrounds, 3D environments, camera behavior, and atmospheric effects.
+            Switch between 2D scenes and immersive 3D environments. Active: {backgroundType === '3dSpace' ? '3D Space' : '2D Scene'}
           </div>
         </div>
       </div>

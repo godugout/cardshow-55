@@ -9,7 +9,7 @@ import {
   SpacesSection 
 } from './sections';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
-import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../../types';
+import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls, BackgroundType } from '../../types';
 
 interface StudioContentProps {
   selectedScene: EnvironmentScene;
@@ -30,6 +30,10 @@ interface StudioContentProps {
   isApplyingPreset?: boolean;
   environmentControls?: EnvironmentControls;
   onEnvironmentControlsChange?: (controls: EnvironmentControls) => void;
+  backgroundType?: BackgroundType;
+  onBackgroundTypeChange?: (type: BackgroundType) => void;
+  onSpaceChange?: (space: any) => void;
+  selectedSpace?: any;
 }
 
 export const StudioContent: React.FC<StudioContentProps> = ({
@@ -55,7 +59,11 @@ export const StudioContent: React.FC<StudioContentProps> = ({
     fieldOfView: 75,
     atmosphericDensity: 1.0
   },
-  onEnvironmentControlsChange = () => {}
+  onEnvironmentControlsChange = () => {},
+  backgroundType = 'scene',
+  onBackgroundTypeChange = () => {},
+  onSpaceChange = () => {},
+  selectedSpace
 }) => {
   const { sectionStates, setSectionState } = useSectionManager();
 
@@ -73,22 +81,6 @@ export const StudioContent: React.FC<StudioContentProps> = ({
     cameraDistance: 8.0,
     autoRotate: false,
     gravityEffect: 0.2
-  });
-
-  // Initialize selected space with first environment
-  const [selectedSpace, setSelectedSpace] = React.useState<any>({
-    id: 'void',
-    name: 'Dark Void',
-    description: 'Infinite darkness with subtle stars',
-    type: 'void',
-    emoji: '🌌',
-    config: {
-      backgroundColor: '#000000',
-      ambientColor: '#404040',
-      lightIntensity: 0.3,
-      particleCount: 5000,
-      animationSpeed: 1
-    }
   });
 
   const handleResetCamera = () => {
@@ -132,11 +124,13 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             environmentControls={environmentControls}
             isOpen={sectionStates.spaces || false}
             onToggle={(isOpen) => setSectionState('spaces', isOpen)}
-            onSpaceChange={setSelectedSpace}
+            onSpaceChange={onSpaceChange}
             onControlsChange={setSpaceControls}
             onSceneChange={onSceneChange}
             onEnvironmentControlsChange={onEnvironmentControlsChange}
             onResetCamera={handleResetCamera}
+            backgroundType={backgroundType}
+            onBackgroundTypeChange={onBackgroundTypeChange}
           />
 
           {/* Scene Section - Keep for lighting only */}

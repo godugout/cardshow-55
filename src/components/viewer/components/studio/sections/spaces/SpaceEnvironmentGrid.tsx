@@ -8,17 +8,20 @@ import { SPACE_ENVIRONMENTS } from './constants';
 interface SpaceEnvironmentGridProps {
   selectedSpace: SpaceEnvironment;
   onSpaceChange: (space: SpaceEnvironment) => void;
+  isActive?: boolean;
 }
 
 export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
   selectedSpace,
-  onSpaceChange
+  onSpaceChange,
+  isActive = false
 }) => {
   return (
-    <div className="space-y-3 border-t border-white/10 pt-4">
+    <div className={cn("space-y-3 border-t border-white/10 pt-4", !isActive && "opacity-50")}>
       <h4 className="text-white font-medium text-sm flex items-center">
-        <Orbit className="w-4 h-4 text-purple-400 mr-2" />
+        <Orbit className={cn("w-4 h-4 mr-2", isActive ? "text-purple-400" : "text-gray-500")} />
         3D Spaces
+        {isActive && <span className="ml-2 w-2 h-2 bg-purple-400 rounded-full"></span>}
       </h4>
       
       <div className="grid grid-cols-2 gap-2">
@@ -28,7 +31,7 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
             onClick={() => onSpaceChange(space)}
             className={cn(
               "relative aspect-video rounded-lg overflow-hidden transition-all border-2",
-              selectedSpace.id === space.id 
+              isActive && selectedSpace.id === space.id 
                 ? 'border-purple-400 scale-105 shadow-lg shadow-purple-400/20' 
                 : 'border-white/20 hover:border-white/40 opacity-80 hover:opacity-100'
             )}
@@ -46,7 +49,7 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
                 {space.name}
               </div>
             </div>
-            {selectedSpace.id === space.id && (
+            {isActive && selectedSpace.id === space.id && (
               <div className="absolute top-2 right-2">
                 <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
               </div>

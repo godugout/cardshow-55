@@ -8,6 +8,7 @@ import { ENVIRONMENT_SCENES } from '../../../../constants';
 interface SceneGridProps {
   selectedScene: EnvironmentScene;
   onSceneChange: (scene: EnvironmentScene) => void;
+  isActive?: boolean;
 }
 
 const categories = ['natural', 'fantasy', 'futuristic', 'architectural'] as const;
@@ -24,13 +25,15 @@ const getCategoryIcon = (category: string) => {
 
 export const SceneGrid: React.FC<SceneGridProps> = ({
   selectedScene,
-  onSceneChange
+  onSceneChange,
+  isActive = true
 }) => {
   return (
-    <div className="space-y-3">
+    <div className={cn("space-y-3", !isActive && "opacity-50")}>
       <h4 className="text-white font-medium text-sm flex items-center">
-        <Globe className="w-4 h-4 text-blue-400 mr-2" />
+        <Globe className={cn("w-4 h-4 mr-2", isActive ? "text-blue-400" : "text-gray-500")} />
         Scenes
+        {isActive && <span className="ml-2 w-2 h-2 bg-blue-400 rounded-full"></span>}
       </h4>
       
       {categories.map((category) => {
@@ -51,7 +54,7 @@ export const SceneGrid: React.FC<SceneGridProps> = ({
                   onClick={() => onSceneChange(scene)}
                   className={cn(
                     "relative aspect-video rounded-lg overflow-hidden transition-all border-2",
-                    selectedScene.id === scene.id 
+                    isActive && selectedScene.id === scene.id 
                       ? 'border-blue-400 scale-105 shadow-lg shadow-blue-400/20' 
                       : 'border-white/20 hover:border-white/40 opacity-80 hover:opacity-100'
                   )}
@@ -66,7 +69,7 @@ export const SceneGrid: React.FC<SceneGridProps> = ({
                       {scene.name}
                     </div>
                   </div>
-                  {selectedScene.id === scene.id && (
+                  {isActive && selectedScene.id === scene.id && (
                     <div className="absolute top-2 right-2">
                       <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
                     </div>
