@@ -1,4 +1,3 @@
-
 import type { EnvironmentScene, LightingPreset, VisualEffect } from './types';
 
 export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
@@ -64,9 +63,9 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     icon: '💎',
     category: 'fantasy',
     description: 'Glowing crystal cave realm',
-    panoramicUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1920&h=1080&fit=crop&crop=center',
+    panoramicUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&h=1080&fit=crop&crop=center',
     gradient: 'linear-gradient(135deg, #4a5ee8 0%, #7b2cbf 100%)',
     lighting: {
       color: '#4a5ee8',
@@ -92,9 +91,9 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     icon: '🌃',
     category: 'futuristic',
     description: 'Cyberpunk cityscape at night',
-    panoramicUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1920&h=1080&fit=crop&crop=center',
+    panoramicUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1920&h=1080&fit=crop&crop=center',
     gradient: 'linear-gradient(135deg, #ff0080 0%, #00ffff 100%)',
     lighting: {
       color: '#ff0080',
