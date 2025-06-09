@@ -11,6 +11,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     panoramicUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop&crop=center',
     backgroundImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&h=1080&fit=crop&crop=center',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/forest_slope_4k.hdr',
     gradient: 'linear-gradient(135deg, #2d4a36 0%, #4a7c59 100%)',
     lighting: {
       color: '#4a7c59',
@@ -39,6 +40,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     panoramicUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop&crop=center',
     backgroundImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop&crop=center',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/kiara_1_dawn_4k.hdr',
     gradient: 'linear-gradient(135deg, #ffa500 0%, #ff7f50 100%)',
     lighting: {
       color: '#ffa500',
@@ -67,6 +69,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     panoramicUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300&h=200&fit=crop&crop=center',
     backgroundImage: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&h=1080&fit=crop&crop=center',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/cave_wall_4k.hdr',
     gradient: 'linear-gradient(135deg, #4a5ee8 0%, #7b2cbf 100%)',
     lighting: {
       color: '#4a5ee8',
@@ -95,6 +98,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     panoramicUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=300&h=200&fit=crop&crop=center',
     backgroundImage: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1920&h=1080&fit=crop&crop=center',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/night_street_4k.hdr',
     gradient: 'linear-gradient(135deg, #ff0080 0%, #00ffff 100%)',
     lighting: {
       color: '#ff0080',
@@ -123,6 +127,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     panoramicUrl: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=300&h=200&fit=crop&crop=center',
     backgroundImage: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=1920&h=1080&fit=crop&crop=center',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/temple_02_4k.hdr',
     gradient: 'linear-gradient(135deg, #d4af37 0%, #ffd700 100%)',
     lighting: {
       color: '#d4af37',
@@ -151,6 +156,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     panoramicUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=4096&h=2048&fit=crop&crop=center',
     previewUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=300&h=200&fit=crop&crop=center',
     backgroundImage: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1920&h=1080&fit=crop&crop=center',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/spacecraft_4k.hdr',
     gradient: 'linear-gradient(135deg, #00aaff 0%, #0066cc 100%)',
     lighting: {
       color: '#00aaff',

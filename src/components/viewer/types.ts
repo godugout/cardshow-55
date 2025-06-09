@@ -4,12 +4,12 @@ export interface EnvironmentScene {
   id: string;
   name: string;
   icon: string;
-  category: 'natural' | 'fantasy' | 'futuristic' | 'architectural';
+  category: 'natural' | 'architectural' | 'fantasy' | 'futuristic';
   description: string;
-  panoramicUrl: string;
+  panoramicUrl?: string;
   previewUrl: string;
-  // Legacy properties for backward compatibility
   backgroundImage?: string;
+  hdriUrl?: string; // New HDRI URL property
   gradient?: string;
   lighting: {
     color: string;
@@ -17,7 +17,7 @@ export interface EnvironmentScene {
     elevation: number;
     azimuth: number;
   };
-  atmosphere: {
+  atmosphere?: {
     fog: boolean;
     fogColor: string;
     fogDensity: number;
