@@ -1,3 +1,4 @@
+
 import React, { useCallback } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSectionManager } from './hooks/useSectionManager';
@@ -125,7 +126,7 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             isOpen={sectionStates.spaces || false}
             onToggle={(isOpen) => setSectionState('spaces', isOpen)}
             onSpaceChange={onSpaceChange}
-            onControlsChange={setSpaceControls}
+            onSpaceControlsChange={setSpaceControls}
             onSceneChange={onSceneChange}
             onEnvironmentControlsChange={onEnvironmentControlsChange}
             onResetCamera={handleResetCamera}
