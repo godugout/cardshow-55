@@ -68,7 +68,7 @@ export const StudioContent: React.FC<StudioContentProps> = ({
     [onBrightnessChange],
   );
 
-  // Mock space controls for the early test
+  // Initialize space controls with default values
   const [spaceControls, setSpaceControls] = React.useState({
     orbitSpeed: 0.5,
     floatIntensity: 1.0,
@@ -76,6 +76,31 @@ export const StudioContent: React.FC<StudioContentProps> = ({
     autoRotate: false,
     gravityEffect: 0.2
   });
+
+  // Initialize selected space with first environment
+  const [selectedSpace, setSelectedSpace] = React.useState<any>({
+    id: 'void',
+    name: 'Dark Void',
+    description: 'Infinite darkness with subtle stars',
+    type: 'void',
+    emoji: '🌌',
+    config: {
+      backgroundColor: '#000000',
+      ambientColor: '#404040',
+      lightIntensity: 0.3,
+      particleCount: 5000,
+      animationSpeed: 1
+    }
+  });
+
+  const handleResetCamera = () => {
+    setSpaceControls(prev => ({
+      ...prev,
+      cameraDistance: 8.0,
+      orbitSpeed: 0.5,
+      autoRotate: false
+    }));
+  };
 
   return (
     <div className="flex-1 min-h-0">
@@ -101,12 +126,15 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             selectedPresetId={selectedPresetId}
           />
 
-          {/* Spaces Section - New 3D Navigation Feature */}
+          {/* Spaces Section - Enhanced 3D Navigation */}
           <SpacesSection
+            selectedSpace={selectedSpace}
             spaceControls={spaceControls}
             isOpen={sectionStates.spaces || false}
             onToggle={(isOpen) => setSectionState('spaces', isOpen)}
+            onSpaceChange={setSelectedSpace}
             onControlsChange={setSpaceControls}
+            onResetCamera={handleResetCamera}
           />
 
           {/* Environment Section */}
