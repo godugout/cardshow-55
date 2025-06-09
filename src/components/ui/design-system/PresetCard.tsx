@@ -82,7 +82,7 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
         return {
           borderColor: styleColor.border,
           backgroundColor: styleColor.bg,
-          boxShadow: `0 0 20px ${styleColor.primary}40, 0 4px 12px rgba(0,0,0,0.2)`,
+          boxShadow: `0 0 20px ${styleColor.primary}40, 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 ${styleColor.border}40`,
           '--ring-color': styleColor.primary
         } as React.CSSProperties;
       }
@@ -105,6 +105,7 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
           "w-full h-auto text-left p-0 min-h-[80px] hover:scale-[1.02] transition-all duration-200",
           !styleColor && isSelected && "border-crd-green bg-crd-green/10 shadow-lg shadow-crd-green/20",
           styleColor && "hover:border-[var(--hover-border)] hover:bg-[var(--hover-bg)]",
+          styleColor && isSelected && "border-2",
           isDisabled && "opacity-50 cursor-not-allowed",
           className
         )}
@@ -114,7 +115,7 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
         {/* Status Indicators */}
         {isSelected && (
           <div 
-            className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center"
+            className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center border border-white/20"
             style={{ backgroundColor: styleColor?.primary || '#45B26B' }}
           >
             <Check className="w-2.5 h-2.5 text-white" />
