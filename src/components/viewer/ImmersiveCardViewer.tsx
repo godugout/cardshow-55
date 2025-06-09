@@ -15,6 +15,8 @@ import { CardNavigationControls } from './components/CardNavigationControls';
 import { ViewerInfoPanel } from './components/ViewerInfoPanel';
 import { StudioPanel } from './components/StudioPanel';
 import { EnhancedEnvironmentSphere } from './components/EnhancedEnvironmentSphere';
+import { SpaceRenderer3D } from './spaces/SpaceRenderer3D';
+import { Card3D } from './spaces/Card3D';
 import { useViewerState } from './hooks/useViewerState';
 import { useSafeZones } from './hooks/useSafeZones';
 
@@ -77,8 +79,13 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     setMaterialSettings,
     selectedPresetId,
     setSelectedPresetId,
+    selectedSpace,
+    setSelectedSpace,
+    spaceControls,
+    setSpaceControls,
     handleReset,
-    handleZoom
+    handleZoom,
+    handleResetCamera
   } = viewerState;
 
   // Enhanced effects hook
@@ -99,7 +106,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 
   // Background state management
   const [backgroundType, setBackgroundType] = React.useState<'scene' | '3dSpace'>('scene');
-  const [selectedSpace, setSelectedSpace] = React.useState<any>(null);
 
   // Navigation logic
   const hasMultipleCards = cards.length > 1;
@@ -342,38 +348,37 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onMouseUp={handleDragEnd}
         onMouseLeave={handleDragEnd}
       >
-        {/* Full-Screen Environment Background */}
+        {/* Background Renderer - 2D or 3D */}
         <div className="absolute inset-0 z-0">
           {backgroundType === '3dSpace' && selectedSpace ? (
-            <div className="w-full h-full">
-              {/* 3D Space Renderer would go here */}
-              <div 
-                className="w-full h-full"
-                style={{
-                  background: `linear-gradient(135deg, ${selectedSpace.config.backgroundColor}, ${selectedSpace.config.ambientColor})`
-                }}
-              />
-            </div>
+            <SpaceRenderer3D
+              environment={selectedSpace}
+              controls={spaceControls}
+              onCameraReset={handleResetCamera}
+            >
+              <Card3D card={card} controls={spaceControls} />
+            </SpaceRenderer3D>
           ) : (
-            <EnhancedEnvironmentSphere
-              scene={selectedScene}
-              controls={environmentControls}
-              mousePosition={mousePosition}
-              isHovering={isHovering}
-            />
+            <>
+              <EnhancedEnvironmentSphere
+                scene={selectedScene}
+                controls={environmentControls}
+                mousePosition={mousePosition}
+                isHovering={isHovering}
+              />
+              {/* Enhanced Dark Overlay */}
+              <div className="absolute inset-0 bg-black/40 z-10" />
+            </>
           )}
         </div>
 
-        {/* Enhanced Dark Overlay */}
-        <div className="absolute inset-0 bg-black/40 z-10" />
-
-        {/* Subtle Ambient Background Effect */}
-        {ambient && activeEnvironment && (
+        {/* Subtle Ambient Background Effect (only for 2D scenes) */}
+        {ambient && backgroundType === 'scene' && (
           <div 
             className="absolute inset-0 opacity-20 z-15"
             style={{
               background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
-                ${backgroundType === '3dSpace' ? selectedSpace?.config.ambientColor || '#444' : selectedScene.lighting.color} 0%, transparent 40%)`,
+                ${selectedScene.lighting.color} 0%, transparent 40%)`,
               mixBlendMode: 'screen'
             }}
           />
@@ -423,35 +428,37 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           onNext={handleNextCard}
         />
 
-        {/* Enhanced Card Container without Environment */}
-        <div ref={cardContainerRef}>
-          <EnhancedCardContainer
-            card={card}
-            isFlipped={isFlipped}
-            isHovering={isHovering}
-            showEffects={showEffects}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={zoom}
-            isDragging={isDragging}
-            frameStyles={getFrameStyles()}
-            enhancedEffectStyles={getEnhancedEffectStyles()}
-            SurfaceTexture={SurfaceTexture}
-            interactiveLighting={interactiveLighting}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            environmentControls={environmentControls}
-            showBackgroundInfo={false}
-            onMouseDown={handleDragStart}
-            onMouseMove={handleDrag}
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-            onClick={() => setIsFlipped(!isFlipped)}
-          />
-        </div>
+        {/* Enhanced Card Container (only for 2D scenes) */}
+        {backgroundType === 'scene' && (
+          <div ref={cardContainerRef}>
+            <EnhancedCardContainer
+              card={card}
+              isFlipped={isFlipped}
+              isHovering={isHovering}
+              showEffects={showEffects}
+              effectValues={effectValues}
+              mousePosition={mousePosition}
+              rotation={rotation}
+              zoom={zoom}
+              isDragging={isDragging}
+              frameStyles={getFrameStyles()}
+              enhancedEffectStyles={getEnhancedEffectStyles()}
+              SurfaceTexture={SurfaceTexture}
+              interactiveLighting={interactiveLighting}
+              selectedScene={selectedScene}
+              selectedLighting={selectedLighting}
+              materialSettings={materialSettings}
+              overallBrightness={overallBrightness}
+              environmentControls={environmentControls}
+              showBackgroundInfo={false}
+              onMouseDown={handleDragStart}
+              onMouseMove={handleDrag}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+              onClick={() => setIsFlipped(!isFlipped)}
+            />
+          </div>
+        )}
 
         {/* Info Panel */}
         <ViewerInfoPanel
@@ -488,6 +495,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onBackgroundTypeChange={setBackgroundType}
         onSpaceChange={setSelectedSpace}
         selectedSpace={selectedSpace}
+        spaceControls={spaceControls}
+        onSpaceControlsChange={setSpaceControls}
+        onResetCamera={handleResetCamera}
       />
 
       {/* Export Options Dialog */}

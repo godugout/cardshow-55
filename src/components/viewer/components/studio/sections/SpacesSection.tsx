@@ -13,14 +13,14 @@ import {
 } from './spaces';
 
 interface SpacesSectionProps {
-  selectedSpace?: SpaceEnvironment;
-  spaceControls: SpaceControls;
+  selectedSpace?: SpaceEnvironment | null;
+  spaceControls?: SpaceControls;
   selectedScene: EnvironmentScene;
   environmentControls: EnvironmentControls;
   isOpen: boolean;
   onToggle: (isOpen: boolean) => void;
   onSpaceChange?: (space: SpaceEnvironment) => void;
-  onControlsChange: (controls: SpaceControls) => void;
+  onSpaceControlsChange?: (controls: SpaceControls) => void;
   onSceneChange: (scene: EnvironmentScene) => void;
   onEnvironmentControlsChange: (controls: EnvironmentControls) => void;
   onResetCamera?: () => void;
@@ -29,21 +29,27 @@ interface SpacesSectionProps {
 }
 
 export const SpacesSection: React.FC<SpacesSectionProps> = ({
-  selectedSpace = SPACE_ENVIRONMENTS[0],
-  spaceControls,
+  selectedSpace = null,
+  spaceControls = {
+    orbitSpeed: 0.5,
+    floatIntensity: 1.0,
+    cameraDistance: 8,
+    autoRotate: false,
+    gravityEffect: 0.0
+  },
   selectedScene,
   environmentControls,
   isOpen,
   onToggle,
   onSpaceChange = () => {},
-  onControlsChange,
+  onSpaceControlsChange = () => {},
   onSceneChange,
   onEnvironmentControlsChange,
   onResetCamera = () => {},
   backgroundType = 'scene',
   onBackgroundTypeChange = () => {}
 }) => {
-  const statusText = backgroundType === '3dSpace' 
+  const statusText = backgroundType === '3dSpace' && selectedSpace
     ? `${selectedSpace.name} (3D Space)` 
     : `${selectedScene.name} (Scene)`;
 
@@ -75,25 +81,30 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
 
         {/* 3D Space Environment Selection */}
         <SpaceEnvironmentGrid
-          selectedSpace={selectedSpace}
+          selectedSpace={selectedSpace || SPACE_ENVIRONMENTS[0]}
           onSpaceChange={handleSpaceChange}
           isActive={backgroundType === '3dSpace'}
         />
 
-        {/* Camera Controls */}
-        <CameraControlsSection
-          spaceControls={spaceControls}
-          onControlsChange={onControlsChange}
-          onResetCamera={onResetCamera}
-        />
+        {/* 3D Space Controls (only show when 3D space is active) */}
+        {backgroundType === '3dSpace' && (
+          <>
+            {/* Camera Controls */}
+            <CameraControlsSection
+              spaceControls={spaceControls}
+              onControlsChange={onSpaceControlsChange}
+              onResetCamera={onResetCamera}
+            />
 
-        {/* Card Physics */}
-        <CardPhysicsSection
-          spaceControls={spaceControls}
-          onControlsChange={onControlsChange}
-        />
+            {/* Card Physics */}
+            <CardPhysicsSection
+              spaceControls={spaceControls}
+              onControlsChange={onSpaceControlsChange}
+            />
+          </>
+        )}
 
-        {/* Environment Controls */}
+        {/* Environment Controls (for both 2D and 3D) */}
         <EnvironmentControlsSection
           environmentControls={environmentControls}
           onEnvironmentControlsChange={onEnvironmentControlsChange}

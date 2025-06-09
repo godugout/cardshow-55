@@ -1,28 +1,30 @@
 
 import React from 'react';
-import { Orbit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SpaceEnvironment } from '../../../../spaces/types';
-import { SPACE_ENVIRONMENTS } from './constants';
+import { SPACE_ENVIRONMENTS } from './index';
 
 interface SpaceEnvironmentGridProps {
   selectedSpace: SpaceEnvironment;
   onSpaceChange: (space: SpaceEnvironment) => void;
-  isActive?: boolean;
+  isActive: boolean;
 }
 
 export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
   selectedSpace,
   onSpaceChange,
-  isActive = false
+  isActive
 }) => {
   return (
-    <div className={cn("space-y-3 border-t border-white/10 pt-4", !isActive && "opacity-50")}>
-      <h4 className="text-white font-medium text-sm flex items-center">
-        <Orbit className={cn("w-4 h-4 mr-2", isActive ? "text-purple-400" : "text-gray-500")} />
-        3D Spaces
-        {isActive && <span className="ml-2 w-2 h-2 bg-purple-400 rounded-full"></span>}
-      </h4>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h4 className="text-white font-medium">3D Spaces</h4>
+        {isActive && (
+          <span className="text-xs text-blue-400 bg-blue-400/10 px-2 py-1 rounded">
+            Active
+          </span>
+        )}
+      </div>
       
       <div className="grid grid-cols-2 gap-2">
         {SPACE_ENVIRONMENTS.map((space) => (
@@ -30,30 +32,26 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
             key={space.id}
             onClick={() => onSpaceChange(space)}
             className={cn(
-              "relative aspect-video rounded-lg overflow-hidden transition-all border-2",
-              isActive && selectedSpace.id === space.id 
-                ? 'border-purple-400 scale-105 shadow-lg shadow-purple-400/20' 
-                : 'border-white/20 hover:border-white/40 opacity-80 hover:opacity-100'
+              "relative group rounded-lg overflow-hidden transition-all",
+              "border-2 hover:scale-105",
+              selectedSpace?.id === space.id && isActive
+                ? "border-blue-400 shadow-lg shadow-blue-400/20"
+                : "border-white/20 hover:border-white/40"
             )}
           >
-            <div 
-              className="w-full h-full flex items-center justify-center text-2xl"
-              style={{ 
-                background: `linear-gradient(135deg, ${space.config.backgroundColor}80, ${space.config.ambientColor}40)`
-              }}
-            >
-              {space.emoji}
-            </div>
-            <div className="absolute inset-0 bg-black/20 flex items-end p-2">
-              <div className="text-white text-xs font-medium">
-                {space.name}
+            <img
+              src={space.previewUrl}
+              alt={space.name}
+              className="w-full h-20 object-cover"
+            />
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-lg mb-1">{space.emoji}</div>
+                <div className="text-xs text-white font-medium">
+                  {space.name}
+                </div>
               </div>
             </div>
-            {isActive && selectedSpace.id === space.id && (
-              <div className="absolute top-2 right-2">
-                <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-              </div>
-            )}
           </button>
         ))}
       </div>

@@ -1,6 +1,7 @@
 
 import { useState, useCallback } from 'react';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
+import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
 
 export const useViewerState = () => {
@@ -34,6 +35,16 @@ export const useViewerState = () => {
   // Preset state
   const [selectedPresetId, setSelectedPresetId] = useState<string>();
 
+  // 3D Space state
+  const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(null);
+  const [spaceControls, setSpaceControls] = useState<SpaceControls>({
+    orbitSpeed: 0.5,
+    floatIntensity: 1.0,
+    cameraDistance: 8,
+    autoRotate: false,
+    gravityEffect: 0.0
+  });
+
   // Action handlers
   const handleReset = useCallback(() => {
     setRotation({ x: 0, y: 0 });
@@ -54,6 +65,14 @@ export const useViewerState = () => {
       document.exitFullscreen();
       setIsFullscreen(false);
     }
+  }, []);
+
+  const handleResetCamera = useCallback(() => {
+    setSpaceControls(prev => ({
+      ...prev,
+      cameraDistance: 8,
+      orbitSpeed: 0.5
+    }));
   }, []);
 
   return {
@@ -100,9 +119,16 @@ export const useViewerState = () => {
     selectedPresetId,
     setSelectedPresetId,
 
+    // 3D Space state
+    selectedSpace,
+    setSelectedSpace,
+    spaceControls,
+    setSpaceControls,
+
     // Action handlers
     handleReset,
     handleZoom,
-    toggleFullscreen
+    toggleFullscreen,
+    handleResetCamera
   };
 };
