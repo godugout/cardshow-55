@@ -47,7 +47,7 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
         {/* Header */}
         <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between min-h-[3.5rem]">
           <div className="flex items-center space-x-2">
-            <Sparkles className="w-5 h-5 text-crd-green flex-shrink-0" />
+            <Sparkles className="w-5 h-5 text-crd-green flex-shrink-0 -mt-0.5" />
             <h2 className="text-lg font-semibold text-white leading-none">Studio</h2>
           </div>
           <button 
