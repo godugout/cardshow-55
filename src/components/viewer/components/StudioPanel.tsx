@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { ScrollableStudioContent } from './studio/ScrollableStudioContent';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
+import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
 
 interface StudioPanelProps {
   isVisible: boolean;
@@ -24,6 +25,8 @@ interface StudioPanelProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
+  environmentControls?: EnvironmentControls;
+  onEnvironmentControlsChange?: (controls: EnvironmentControls) => void;
 }
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({
@@ -48,12 +51,14 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
             <Sparkles className="w-5 h-5 text-crd-green" />
             <h2 className="text-lg font-semibold text-white">Studio</h2>
           </div>
-          <button
+          <Button 
+            variant="ghost" 
+            size="sm" 
             onClick={onClose}
-            className="w-6 h-6 flex items-center justify-center text-white hover:text-gray-300 transition-colors"
+            className="bg-white bg-opacity-10 hover:bg-opacity-20 border border-white/10"
           >
-            ×
-          </button>
+            <span className="w-4 h-4 text-white">×</span>
+          </Button>
         </div>
 
         {/* Studio Content with Scroll Support */}

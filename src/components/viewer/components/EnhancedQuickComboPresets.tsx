@@ -79,29 +79,18 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
           const styleColor = getStyleColor(preset.id);
           
           return (
-            <div
+            <PresetCard
               key={preset.id}
-              className="relative rounded-lg transition-all duration-200"
-              style={isSelected ? {
-                boxShadow: `0 0 0 2px black, 0 0 0 4px ${styleColor.border}`
-              } : {}}
-            >
-              <PresetCard
-                title={preset.name}
-                emoji={preset.emoji}
-                isSelected={isSelected}
-                isLoading={isLoading}
-                isDisabled={isApplyingPreset && !isSelected}
-                onSelect={() => handlePresetClick(preset)}
-                size="sm"
-                styleColor={styleColor}
-                className="h-auto border-2"
-                style={isSelected ? {
-                  borderColor: styleColor.border,
-                  backgroundColor: styleColor.bg
-                } : {}}
-              />
-            </div>
+              title={preset.name}
+              emoji={preset.emoji}
+              isSelected={isSelected}
+              isLoading={isLoading}
+              isDisabled={isApplyingPreset && !isSelected}
+              onSelect={() => handlePresetClick(preset)}
+              size="sm"
+              styleColor={styleColor}
+              className="h-auto"
+            />
           );
         })}
       </div>
