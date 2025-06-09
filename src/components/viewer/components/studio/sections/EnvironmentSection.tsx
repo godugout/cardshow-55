@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
 import { Globe } from 'lucide-react';
 import { CollapsibleSection } from '@/components/ui/design-system';
+import { EnhancedColoredSlider } from '../../EnhancedColoredSlider';
 import type { EnvironmentScene, EnvironmentControls } from '../../../types';
 import { ENVIRONMENT_SCENES } from '../../../constants';
 
@@ -83,10 +82,9 @@ export const EnvironmentSection: React.FC<EnvironmentSectionProps> = ({
                       alt={scene.name}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/40 flex items-end p-2">
-                      <div className="text-white text-xs">
-                        <div className="font-medium">{scene.name}</div>
-                        <div className="opacity-75">{scene.description}</div>
+                    <div className="absolute inset-0 bg-black/20 flex items-end p-2">
+                      <div className="text-white text-xs font-medium">
+                        {scene.name}
                       </div>
                     </div>
                     {selectedScene.id === scene.id && (
@@ -108,62 +106,70 @@ export const EnvironmentSection: React.FC<EnvironmentSectionProps> = ({
           </h4>
 
           {/* Depth of Field */}
-          <div>
-            <Label className="text-white text-sm mb-2 block">
+          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <Label className="text-white text-sm mb-3 block font-medium">
               Depth of Field: {environmentControls.depthOfField.toFixed(1)}
             </Label>
-            <Slider
+            <EnhancedColoredSlider
               value={[environmentControls.depthOfField]}
               onValueChange={([value]) => updateControl('depthOfField', value)}
               min={0}
               max={5}
               step={0.1}
-              className="w-full"
+              isActive={environmentControls.depthOfField > 0}
+              styleColor="#45B26B"
+              effectName="Depth of Field"
             />
           </div>
 
           {/* Parallax Intensity */}
-          <div>
-            <Label className="text-white text-sm mb-2 block">
+          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <Label className="text-white text-sm mb-3 block font-medium">
               Parallax Intensity: {environmentControls.parallaxIntensity.toFixed(1)}
             </Label>
-            <Slider
+            <EnhancedColoredSlider
               value={[environmentControls.parallaxIntensity]}
               onValueChange={([value]) => updateControl('parallaxIntensity', value)}
               min={0}
               max={3}
               step={0.1}
-              className="w-full"
+              isActive={environmentControls.parallaxIntensity > 0}
+              styleColor="#3B82F6"
+              effectName="Parallax"
             />
           </div>
 
           {/* Field of View */}
-          <div>
-            <Label className="text-white text-sm mb-2 block">
+          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <Label className="text-white text-sm mb-3 block font-medium">
               Field of View: {environmentControls.fieldOfView}°
             </Label>
-            <Slider
+            <EnhancedColoredSlider
               value={[environmentControls.fieldOfView]}
               onValueChange={([value]) => updateControl('fieldOfView', value)}
               min={60}
               max={120}
               step={5}
-              className="w-full"
+              isActive={environmentControls.fieldOfView !== 75}
+              styleColor="#8B5CF6"
+              effectName="Field of View"
             />
           </div>
 
           {/* Atmospheric Density */}
-          <div>
-            <Label className="text-white text-sm mb-2 block">
+          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <Label className="text-white text-sm mb-3 block font-medium">
               Atmospheric Density: {(environmentControls.atmosphericDensity * 100).toFixed(0)}%
             </Label>
-            <Slider
+            <EnhancedColoredSlider
               value={[environmentControls.atmosphericDensity]}
               onValueChange={([value]) => updateControl('atmosphericDensity', value)}
               min={0}
               max={2}
               step={0.1}
-              className="w-full"
+              isActive={environmentControls.atmosphericDensity !== 1}
+              styleColor="#F59E0B"
+              effectName="Atmospheric Density"
             />
           </div>
         </div>

@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { Sun, Lightbulb, Grid3X3, List } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Sun, Lightbulb } from 'lucide-react';
+import { EnhancedColoredSlider } from './EnhancedColoredSlider';
 import type { LightingPreset } from '../types';
 import { LIGHTING_PRESETS } from '../constants';
 import { cn } from '@/lib/utils';
@@ -37,7 +38,6 @@ const LIGHTING_COLORS = {
     secondary: '#A855F7',
     gradient: 'linear-gradient(90deg, #8B5CF6, #A855F7, #C084FC)'
   },
-  // Add fallback for any missing presets
   default: {
     primary: '#6B7280',
     secondary: '#9CA3AF',
@@ -59,7 +59,7 @@ export const LightingSection: React.FC<LightingSectionProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Lighting Presets - List View Only */}
+      {/* Lighting Presets */}
       <div className="space-y-2">
         {LIGHTING_PRESETS.map((preset) => {
           const isSelected = selectedLighting.id === preset.id;
@@ -100,7 +100,6 @@ export const LightingSection: React.FC<LightingSectionProps> = ({
                   </div>
                 </div>
                 
-                {/* Color tone indicator */}
                 <div className="flex items-center space-x-1">
                   <div 
                     className="w-16 h-3 rounded-full"
@@ -124,19 +123,21 @@ export const LightingSection: React.FC<LightingSectionProps> = ({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <Sun className="w-4 h-4 text-yellow-400" />
-            <span className="text-white text-sm font-medium">Brightness</span>
+            <Label className="text-white text-sm font-medium">Brightness</Label>
           </div>
           <span className="text-yellow-400 text-sm font-medium">
             {overallBrightness[0]}%
           </span>
         </div>
-        <Slider
+        <EnhancedColoredSlider
           value={overallBrightness}
           onValueChange={onBrightnessChange}
           min={50}
           max={200}
           step={5}
-          className="w-full"
+          isActive={overallBrightness[0] !== 100}
+          styleColor="#EAB308"
+          effectName="Brightness"
         />
       </div>
 

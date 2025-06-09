@@ -1,3 +1,4 @@
+
 import React, { useCallback } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSectionManager } from './hooks/useSectionManager';
@@ -6,7 +7,8 @@ import {
   EffectsSection, 
   SceneSection, 
   SurfaceSection,
-  EnvironmentSection 
+  EnvironmentSection,
+  SpacesSection 
 } from './sections';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../../types';
@@ -66,11 +68,20 @@ export const StudioContent: React.FC<StudioContentProps> = ({
     [onBrightnessChange],
   );
 
+  // Mock space controls for the early test
+  const [spaceControls, setSpaceControls] = React.useState({
+    orbitSpeed: 0.5,
+    floatIntensity: 1.0,
+    cameraDistance: 8.0,
+    autoRotate: false,
+    gravityEffect: 0.2
+  });
+
   return (
     <div className="flex-1 min-h-0">
       <ScrollArea className="h-full">
         <div className="p-4 space-y-6">
-          {/* Styles Section - With Header */}
+          {/* Styles Section */}
           <StylesSection
             effectValues={effectValues}
             isOpen={sectionStates.styles !== false}
@@ -90,7 +101,15 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             selectedPresetId={selectedPresetId}
           />
 
-          {/* Environment Section - New */}
+          {/* Spaces Section - New 3D Navigation Feature */}
+          <SpacesSection
+            spaceControls={spaceControls}
+            isOpen={sectionStates.spaces || false}
+            onToggle={(isOpen) => setSectionState('spaces', isOpen)}
+            onControlsChange={setSpaceControls}
+          />
+
+          {/* Environment Section */}
           <EnvironmentSection
             selectedScene={selectedScene}
             environmentControls={environmentControls}
