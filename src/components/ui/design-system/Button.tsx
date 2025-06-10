@@ -10,11 +10,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         // CRD Design System variants with proper text colors
-        primary: "bg-crd-blue text-white hover:bg-crd-blue/90",
+        primary: "bg-crd-blue text-black hover:bg-crd-blue/90",
         secondary: "bg-crd-lightGray text-black hover:bg-crd-lightGray/90",
         outline: "bg-transparent border border-crd-lightGray text-crd-lightGray hover:border-crd-lightGray hover:text-black hover:bg-crd-lightGray",
-        ghost: "bg-transparent text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white",
-        action: "p-3 rounded-full border-2 border-crd-mediumGray bg-transparent hover:bg-crd-mediumGray/10 text-crd-lightGray hover:text-white",
+        ghost: "bg-transparent text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-crd-white",
+        action: "p-3 rounded-full border-2 border-crd-mediumGray bg-transparent hover:bg-crd-mediumGray/10 text-crd-lightGray hover:text-crd-white",
         // Standard variants
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",

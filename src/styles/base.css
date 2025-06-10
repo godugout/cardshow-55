@@ -75,10 +75,24 @@
   }
   
   h2 {
-    @apply text-3xl font-bold mb-3;
+    @apply text-3xl font-bold mb-2;
   }
   
   h3 {
     @apply text-2xl font-bold mb-2;
+  }
+  
+  /* Ensure proper button contrast */
+  button {
+    @apply transition-colors;
+  }
+  
+  /* Override any white text on buttons that might cause contrast issues */
+  .btn-fix-contrast {
+    color: #121212 !important;
+  }
+  
+  .btn-fix-contrast-light {
+    color: #FCFCFD !important;
   }
 }

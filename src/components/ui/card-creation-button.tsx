@@ -10,8 +10,8 @@ const cardCreationButtonVariants = cva(
     variants: {
       variant: {
         "card-primary": "bg-crd-green text-black hover:bg-crd-green/90 font-semibold shadow-lg hover:shadow-xl",
-        "card-secondary": "bg-editor-dark border-2 border-crd-mediumGray text-crd-lightGray hover:border-crd-green hover:text-white hover:bg-crd-green/10",
-        "card-ghost": "text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20",
+        "card-secondary": "bg-crd-darkGray border-2 border-crd-mediumGray text-crd-lightGray hover:border-crd-green hover:text-crd-green hover:bg-crd-green/10",
+        "card-ghost": "text-crd-lightGray hover:text-crd-white hover:bg-crd-mediumGray/20",
         "card-danger": "bg-red-600/20 border border-red-600/40 text-red-400 hover:bg-red-600/30 hover:text-red-300",
       },
       size: {

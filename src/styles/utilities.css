@@ -33,6 +33,28 @@
     color: #777E90 !important;
   }
   
+  /* CRD button color utilities for proper contrast */
+  .btn-crd-primary {
+    background-color: #45B26B;
+    color: #121212;
+  }
+  
+  .btn-crd-secondary {
+    background-color: #23262F;
+    color: #777E90;
+    border: 1px solid #353945;
+  }
+  
+  .btn-crd-ghost {
+    background-color: transparent;
+    color: #777E90;
+  }
+  
+  .btn-crd-ghost:hover {
+    background-color: rgba(53, 57, 69, 0.2);
+    color: #FCFCFD;
+  }
+  
   /* Dynamic color utilities for secondary parameter labels */
   .text-purple-400\/70 {
     color: rgba(168, 85, 247, 0.7) !important;
