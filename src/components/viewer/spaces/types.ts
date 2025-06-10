@@ -4,7 +4,7 @@ export interface SpaceEnvironment {
   name: string;
   description: string;
   previewUrl: string;
-  type: 'void' | 'cosmic' | 'studio' | 'abstract' | 'matrix' | 'cartoon' | 'sketch' | 'neon' | 'forest' | 'ocean' | 'sports' | 'cultural' | 'retail' | 'natural' | 'professional' | 'panoramic';
+  type: 'void' | 'cosmic' | 'studio' | 'abstract' | 'matrix' | 'cartoon' | 'sketch' | 'neon' | 'forest' | 'ocean' | 'desert' | 'sports' | 'cultural' | 'retail' | 'natural' | 'professional' | 'panoramic';
   category: 'basic' | 'themed' | 'sports' | 'cultural' | 'retail' | 'natural' | 'professional' | 'photorealistic';
   emoji: string;
   config: {

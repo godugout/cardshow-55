@@ -1,3 +1,4 @@
+
 export interface Local360Image {
   id: string;
   name: string;
@@ -16,7 +17,7 @@ export interface Local360Image {
   };
 }
 
-// Updated to use reliable cached images
+// Updated to use reliable cached images with correct mappings
 export const LOCAL_360_IMAGES: Local360Image[] = [
   {
     id: 'forest-clearing',
@@ -24,7 +25,7 @@ export const LOCAL_360_IMAGES: Local360Image[] = [
     category: 'natural',
     localUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=2048&h=1024&fit=crop&q=80',
     fallbackUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1024&h=512&fit=crop&q=60',
-    description: 'Sunlit forest clearing with natural lighting',
+    description: 'Sunlit forest clearing with ancient trees',
     lighting: { intensity: 1.2, warmth: 0.7, contrast: 0.6 },
     camera: { defaultDistance: 8, autoRotateSpeed: 0.3 }
   },
@@ -42,11 +43,21 @@ export const LOCAL_360_IMAGES: Local360Image[] = [
     id: 'ocean-sunset',
     name: 'Ocean Sunset',
     category: 'natural',
-    localUrl: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=2048&h=1024&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1024&h=512&fit=crop&q=60',
+    localUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=2048&h=1024&fit=crop&q=80',
+    fallbackUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1024&h=512&fit=crop&q=60',
     description: 'Golden hour ocean view with warm lighting',
     lighting: { intensity: 1.3, warmth: 0.9, contrast: 0.7 },
     camera: { defaultDistance: 8, autoRotateSpeed: 0.4 }
+  },
+  {
+    id: 'desert-dunes',
+    name: 'Desert Dunes',
+    category: 'natural',
+    localUrl: 'https://images.unsplash.com/photo-1482881497185-d4a9ddbe4151?w=2048&h=1024&fit=crop&q=80',
+    fallbackUrl: 'https://images.unsplash.com/photo-1482881497185-d4a9ddbe4151?w=1024&h=512&fit=crop&q=60',
+    description: 'Endless desert sand dunes with golden light',
+    lighting: { intensity: 1.5, warmth: 0.8, contrast: 0.9 },
+    camera: { defaultDistance: 9, autoRotateSpeed: 0.2 }
   },
   {
     id: 'city-rooftop',

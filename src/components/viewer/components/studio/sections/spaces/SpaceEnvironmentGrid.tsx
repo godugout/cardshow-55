@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { cn } from '@/lib/utils';
 import type { SpaceEnvironment } from '../../../../spaces/types';
 import { SPACE_ENVIRONMENTS } from './constants';
@@ -15,20 +15,10 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
   onSpaceChange,
   isActive
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('photorealistic');
-  
-  const categories = [
-    { id: 'photorealistic', name: '360° Photos', emoji: '📸' },
-    { id: 'basic', name: 'Basic', emoji: '⭐' },
-    { id: 'sports', name: 'Sports', emoji: '🏟️' },
-    { id: 'cultural', name: 'Cultural', emoji: '🏛️' },
-    { id: 'retail', name: 'Retail', emoji: '🏪' },
-    { id: 'natural', name: 'Natural', emoji: '🌍' },
-    { id: 'professional', name: 'Professional', emoji: '🏢' },
-    { id: 'themed', name: 'Themed', emoji: '🎭' }
-  ];
-
-  const filteredSpaces = SPACE_ENVIRONMENTS.filter(space => space.category === selectedCategory);
+  // Remove duplicates and filter out basic spaces for cleaner display
+  const uniqueSpaces = SPACE_ENVIRONMENTS.filter((space, index, arr) => 
+    arr.findIndex(s => s.config.panoramicPhotoId === space.config.panoramicPhotoId) === index
+  );
 
   return (
     <div className="space-y-4">
@@ -41,30 +31,9 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
         )}
       </div>
       
-      {/* Category Tabs */}
-      <div className="grid grid-cols-3 gap-1 bg-black/20 rounded-lg p-1">
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => setSelectedCategory(category.id)}
-            className={cn(
-              "text-xs py-2 px-1 rounded transition-all",
-              selectedCategory === category.id
-                ? "bg-blue-500 text-white"
-                : "text-gray-400 hover:text-white hover:bg-white/10"
-            )}
-          >
-            <div className="flex flex-col items-center space-y-1">
-              <span>{category.emoji}</span>
-              <span className="text-[10px]">{category.name}</span>
-            </div>
-          </button>
-        ))}
-      </div>
-      
-      {/* Spaces Grid */}
-      <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
-        {filteredSpaces.map((space) => (
+      {/* Unified Spaces Grid */}
+      <div className="grid grid-cols-3 gap-2 max-h-80 overflow-y-auto">
+        {uniqueSpaces.map((space) => (
           <button
             key={space.id}
             onClick={() => onSpaceChange(space)}
@@ -79,11 +48,11 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
             <img
               src={space.previewUrl}
               alt={space.name}
-              className="w-full h-16 object-cover"
+              className="w-full h-20 object-cover"
             />
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
               <div className="text-center">
-                <div className="text-base mb-1">{space.emoji}</div>
+                <div className="text-lg mb-1">{space.emoji}</div>
                 <div className="text-xs text-white font-medium px-1">
                   {space.name}
                 </div>
@@ -103,18 +72,9 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
         ))}
       </div>
       
-      {/* Category Description */}
+      {/* Simple Description */}
       <div className="text-xs text-gray-400 bg-black/20 rounded p-2">
-        <strong>{categories.find(c => c.id === selectedCategory)?.name}:</strong> {
-          selectedCategory === 'photorealistic' ? 'Real 360° photography for immersive environments' :
-          selectedCategory === 'basic' ? 'Essential 3D environments for card viewing' :
-          selectedCategory === 'sports' ? 'Professional sports venues and arenas' :
-          selectedCategory === 'cultural' ? 'Museums, galleries, and performance spaces' :
-          selectedCategory === 'retail' ? 'Card shops, gaming lounges, and conventions' :
-          selectedCategory === 'natural' ? 'Outdoor environments with realistic lighting' :
-          selectedCategory === 'professional' ? 'Corporate and creative workspaces' :
-          'Stylized and fantastical environments'
-        }
+        <strong>3D Immersive Spaces:</strong> Choose from photorealistic 360° environments to showcase your cards in stunning detail.
       </div>
     </div>
   );
