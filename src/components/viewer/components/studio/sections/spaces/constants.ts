@@ -8,7 +8,7 @@ const createPanoramicEnvironments = (): SpaceEnvironment[] => {
     id: `panoramic-${image.id}`,
     name: image.name,
     description: image.description,
-    previewUrl: image.fallbackUrl,
+    previewUrl: image.fallbackUrl, // Use fallback URL as preview
     type: 'panoramic' as const,
     category: 'photorealistic' as const,
     emoji: getCategoryEmoji(image.category),
@@ -16,7 +16,7 @@ const createPanoramicEnvironments = (): SpaceEnvironment[] => {
       backgroundColor: '#1a1a2e',
       ambientColor: '#ffffff',
       lightIntensity: image.lighting.intensity,
-      panoramicPhotoId: image.id,
+      panoramicPhotoId: image.id, // Use the reliable local image ID
       exposure: image.lighting.intensity,
       saturation: 1.0,
       autoRotation: image.camera.autoRotateSpeed,
@@ -37,7 +37,7 @@ const getCategoryEmoji = (category: string): string => {
 };
 
 export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
-  // Basic Spaces
+  // Basic Spaces (now using reliable 360° images)
   {
     id: 'void',
     name: 'Cosmic Void',
@@ -69,15 +69,15 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     },
   },
 
-  // All panoramic environments with correct mappings
+  // Add all panoramic environments with proper ID mapping
   ...createPanoramicEnvironments(),
 
-  // Additional specific environment mappings with corrected images
+  // Specific environment mappings
   {
     id: 'forest',
     name: 'Forest Clearing',
-    description: 'Sunlit forest with ancient trees',
-    previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400',
+    description: 'Natural forest environment',
+    previewUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
     type: 'forest',
     category: 'natural',
     emoji: '🌲',
@@ -101,21 +101,6 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
       ambientColor: '#87CEEB',
       lightIntensity: 1.3,
       panoramicPhotoId: 'ocean-sunset',
-    },
-  },
-  {
-    id: 'desert',
-    name: 'Desert Dunes',
-    description: 'Endless golden sand dunes',
-    previewUrl: 'https://images.unsplash.com/photo-1482881497185-d4a9ddbe4151?w=400',
-    type: 'desert',
-    category: 'natural',
-    emoji: '🏜️',
-    config: {
-      backgroundColor: '#d4af37',
-      ambientColor: '#ffd700',
-      lightIntensity: 1.5,
-      panoramicPhotoId: 'desert-dunes',
     },
   },
   {
