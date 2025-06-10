@@ -75,6 +75,10 @@ export const useViewerState = () => {
     }));
   }, []);
 
+  const onCardClick = useCallback(() => {
+    setIsFlipped(prev => !prev);
+  }, []);
+
   return {
     // UI State
     isFullscreen,
@@ -129,6 +133,7 @@ export const useViewerState = () => {
     handleReset,
     handleZoom,
     toggleFullscreen,
-    handleResetCamera
+    handleResetCamera,
+    onCardClick
   };
 };
