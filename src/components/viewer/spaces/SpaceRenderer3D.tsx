@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { Card3D } from './Card3D';
 import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
-import { ReliablePanoramicSpace } from './environments/ReliablePanoramicSpace';
+import { ReliableSpaceEnvironment } from './environments/ReliableSpaceEnvironment';
 import type { SpaceEnvironment, SpaceControls } from './types';
 
 interface Simple3DCard {
@@ -23,20 +23,17 @@ interface SpaceRenderer3DProps {
 
 const LoadingFallback: React.FC = () => (
   <>
-    {/* Transparent background to allow panoramic to show through */}
     <ambientLight intensity={0.4} />
     <directionalLight position={[5, 10, 5]} intensity={0.6} />
   </>
 );
 
-// Map all environment types to appropriate image IDs
+// Map environment types to reliable image IDs
 const getEnvironmentImageId = (environment: SpaceEnvironment): string => {
-  // If already has panoramic photo ID, use it
   if (environment.config.panoramicPhotoId) {
     return environment.config.panoramicPhotoId;
   }
   
-  // Map environment types to image IDs
   switch (environment.type) {
     case 'forest':
       return 'forest-clearing';
@@ -56,7 +53,7 @@ const getEnvironmentImageId = (environment: SpaceEnvironment): string => {
     case 'panoramic':
       return environment.config.panoramicPhotoId || 'modern-studio';
     default:
-      return 'modern-studio'; // Safe fallback
+      return 'modern-studio';
   }
 };
 
@@ -67,13 +64,11 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   onCardClick,
   onCameraReset,
 }) => {
-  console.log('SpaceRenderer3D: Rendering environment:', environment.type, environment.name);
+  console.log('🎬 SpaceRenderer3D: Rendering environment:', environment.type, environment.name);
 
-  // Create reliable panoramic environment config
-  const reliableConfig = {
-    ...environment.config,
-    panoramicPhotoId: getEnvironmentImageId(environment),
-  };
+  const imageId = getEnvironmentImageId(environment);
+  const exposure = environment.config.exposure || 1.0;
+  const brightness = environment.config.lightIntensity || 1.0;
 
   return (
     <div className="w-full h-full">
@@ -83,16 +78,29 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
         dpr={[1, 2]}
         gl={{ 
           antialias: true, 
-          alpha: true,  // Allow transparency
-          premultipliedAlpha: false
+          alpha: false, // Disable alpha to prevent transparency issues
+          premultipliedAlpha: false,
+          // CRITICAL: Remove default background color
+          clearColor: 0x000000,
+          clearAlpha: 0
+        }}
+        style={{ background: 'transparent' }} // Ensure Canvas has no background
+        onCreated={({ gl }) => {
+          // Remove any default background styling
+          gl.domElement.style.background = 'transparent';
         }}
         onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}
       >
-        {/* Remove the background color to let panoramic images show through */}
-        
         <Suspense fallback={<LoadingFallback />}>
           <SpaceErrorBoundary spaceName={environment.name} fallback={<LoadingFallback />}>
-            <ReliablePanoramicSpace config={reliableConfig} controls={controls} />
+            <ReliableSpaceEnvironment
+              imageId={imageId}
+              rotation={environment.config.autoRotation || 0}
+              exposure={exposure}
+              brightness={brightness}
+              onLoadComplete={() => console.log('✅ Environment loaded:', imageId)}
+              onLoadError={(error) => console.error('❌ Environment error:', error)}
+            />
           </SpaceErrorBoundary>
           
           <Card3D
@@ -102,7 +110,6 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
           />
         </Suspense>
 
-        {/* Camera controls for user interaction */}
         <OrbitControls
           enablePan={false}
           enableZoom={true}
