@@ -1,32 +1,34 @@
+
 import type { CardData } from '@/hooks/useCardEditor';
+
+export type BackgroundType = 'scene' | '3dSpace';
+
+export interface ImmersiveCardViewerProps {
+  card: CardData;
+  cards?: CardData[];
+  currentCardIndex?: number;
+  onCardChange?: (card: CardData, index: number) => void;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onShare?: (card: CardData) => void;
+  onDownload?: (cards: CardData[]) => void;
+  allowRotation?: boolean;
+  showStats?: boolean;
+  ambient?: boolean;
+}
 
 export interface EnvironmentScene {
   id: string;
   name: string;
-  icon: string;
-  category: 'natural' | 'architectural' | 'fantasy' | 'futuristic';
   description: string;
-  panoramicUrl?: string;
   previewUrl: string;
-  backgroundImage?: string;
-  hdriUrl?: string; // New HDRI URL property
-  gradient?: string;
-  lighting: {
-    color: string;
-    intensity: number;
-    elevation: number;
-    azimuth: number;
-  };
-  atmosphere?: {
-    fog: boolean;
-    fogColor: string;
-    fogDensity: number;
-    particles: boolean;
-  };
-  depth: {
-    layers: number;
-    parallaxIntensity: number;
-    fieldOfView: number;
+  hdriUrl?: string;
+  panoramicUrl?: string;
+  emoji?: string;
+  config?: {
+    intensity?: number;
+    blur?: number;
+    background?: boolean;
   };
 }
 
@@ -34,27 +36,28 @@ export interface LightingPreset {
   id: string;
   name: string;
   description: string;
-  brightness: number;
-  contrast: number;
-  shadows: number;
-  highlights: number;
-  temperature: number;
-  position: { x: number; y: number; z: number };
-  shadowSoftness: number;
-}
-
-export interface VisualEffect {
-  id: string;
-  name: string;
-  description: string;
-  category: 'prismatic' | 'metallic' | 'surface' | 'vintage';
+  config: {
+    ambientIntensity: number;
+    directionalIntensity: number;
+    pointLights: Array<{
+      position: [number, number, number];
+      intensity: number;
+      color: string;
+    }>;
+    shadows: boolean;
+    shadowIntensity: number;
+  };
 }
 
 export interface MaterialSettings {
-  metalness: number;
   roughness: number;
+  metalness: number;
   reflectivity: number;
   clearcoat: number;
+  clearcoatRoughness: number;
+  ior: number;
+  transmission: number;
+  thickness: number;
 }
 
 export interface EnvironmentControls {
@@ -62,23 +65,4 @@ export interface EnvironmentControls {
   parallaxIntensity: number;
   fieldOfView: number;
   atmosphericDensity: number;
-}
-
-export interface ImmersiveCardViewerProps {
-  card: CardData;
-  isOpen?: boolean;
-  onClose?: () => void;
-  onShare?: (card: CardData) => void;
-  onDownload?: (card: CardData) => void;
-  allowRotation?: boolean;
-  showStats?: boolean;
-  ambient?: boolean;
-}
-
-export type BackgroundType = 'scene' | '3dSpace';
-
-export interface UnifiedBackground {
-  type: BackgroundType;
-  scene?: EnvironmentScene;
-  space?: any; // Will be properly typed when 3D spaces are fully implemented
 }

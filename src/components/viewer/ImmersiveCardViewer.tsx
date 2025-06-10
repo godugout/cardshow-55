@@ -171,7 +171,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         
         <EnhancedCardContainer
           card={card}
-          effects={effectValues}
+          effectValues={effectValues}
           rotation={rotation}
           zoom={zoom}
           isFlipped={isFlipped}
@@ -182,6 +182,17 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
           environmentBrightness={overallBrightness[0] / 100}
           interactiveLightingEnabled={interactiveLighting}
           mousePosition={mousePosition}
+          isHovering={isHovering}
+          isDragging={isDragging}
+          frameStyles={{}}
+          enhancedEffectStyles={{}}
+          SurfaceTexture={null}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={handleMouseLeave}
+          onClick={() => setIsFlipped(!isFlipped)}
+          environmentControls={environmentControls}
         />
       </div>
     );
@@ -307,7 +318,6 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         <ExportOptionsDialog
           isOpen={showExportDialog}
           onClose={() => setShowExportDialog(false)}
-          card={card}
           onExport={() => {}}
           isExporting={false}
           exportProgress={0}
