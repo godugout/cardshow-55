@@ -18,7 +18,6 @@ export const convertCardToCardData = (card: Card): CardData => {
     collection_id: card.collection_id,
     team_id: card.team_id,
     creator_id: card.creator_id,
-    edition_size: card.edition_size,
     creator_attribution: {
       collaboration_type: 'solo'
     },
@@ -51,7 +50,7 @@ export const convertCardDataToCard = (cardData: CardData, creatorId: string): Om
     rarity: cardData.rarity,
     tags: cardData.tags,
     design_metadata: cardData.design_metadata,
-    edition_size: cardData.edition_size || cardData.publishing_options.distribution?.edition_size || 1,
+    edition_size: cardData.publishing_options.distribution?.edition_size || 1,
     price: cardData.publishing_options.pricing?.base_price,
     is_public: cardData.visibility === 'public',
     template_id: cardData.template_id
