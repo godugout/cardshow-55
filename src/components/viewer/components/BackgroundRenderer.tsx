@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { SceneBackground } from './SceneBackground';
 import { SpaceRenderer } from '../spaces/SpaceRenderer';
 import type { EnvironmentScene, LightingPreset } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
+import { ReliableSceneBackground } from './ReliableSceneBackground';
 
 interface BackgroundRendererProps {
   backgroundType: 'scene' | '3dSpace';
@@ -58,7 +58,6 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
       setIsSpaceLoading(true);
       console.log('🔄 Loading new space:', selectedSpace.name);
       
-      // Simulate loading completion after a brief delay
       const timer = setTimeout(() => {
         setIsSpaceLoading(false);
         console.log('✅ Space loading completed');
@@ -68,7 +67,6 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     }
   }, [selectedSpace]);
 
-  // Handle space loading errors
   const handleSpaceError = (error: string) => {
     console.error('❌ Space loading error:', error);
     setSpaceLoadError(error);
@@ -79,7 +77,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     if (!selectedSpace) {
       console.warn('⚠️ No space selected for 3D mode, falling back to 2D');
       return (
-        <SceneBackground
+        <ReliableSceneBackground
           selectedScene={selectedScene}
           selectedLighting={selectedLighting}
           mousePosition={mousePosition}
@@ -93,7 +91,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
       console.warn('⚠️ Space loading failed, showing fallback:', spaceLoadError);
       return (
         <>
-          <SceneBackground
+          <ReliableSceneBackground
             selectedScene={selectedScene}
             selectedLighting={selectedLighting}
             mousePosition={mousePosition}
@@ -101,7 +99,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
             environmentControls={environmentControls}
           />
           <div className="fixed top-4 right-4 z-50 bg-red-500/80 text-white px-3 py-2 rounded-lg text-sm">
-            3D Space failed to load: {spaceLoadError}
+            3D Space failed: {spaceLoadError}
           </div>
         </>
       );
@@ -110,7 +108,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     if (isSpaceLoading) {
       return (
         <>
-          <SceneBackground
+          <ReliableSceneBackground
             selectedScene={selectedScene}
             selectedLighting={selectedLighting}
             mousePosition={mousePosition}
@@ -118,7 +116,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
             environmentControls={environmentControls}
           />
           <div className="fixed top-4 right-4 z-50 bg-blue-500/80 text-white px-3 py-2 rounded-lg text-sm">
-            Loading 3D Space: {selectedSpace.name}...
+            Loading: {selectedSpace.name}...
           </div>
         </>
       );
@@ -140,7 +138,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
       console.error('❌ SpaceRenderer error:', error);
       handleSpaceError(error instanceof Error ? error.message : 'Unknown error');
       return (
-        <SceneBackground
+        <ReliableSceneBackground
           selectedScene={selectedScene}
           selectedLighting={selectedLighting}
           mousePosition={mousePosition}
@@ -152,7 +150,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   }
 
   return (
-    <SceneBackground
+    <ReliableSceneBackground
       selectedScene={selectedScene}
       selectedLighting={selectedLighting}
       mousePosition={mousePosition}

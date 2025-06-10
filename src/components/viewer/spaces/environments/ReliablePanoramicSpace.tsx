@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { OptimizedPanoramicEnvironment } from './OptimizedPanoramicEnvironment';
+import { SimplePanoramicEnvironment } from './SimplePanoramicEnvironment';
 import { useImageSelection } from './hooks/useImageSelection';
 import { useLoadingState } from './hooks/useLoadingState';
 import { calculateExposure } from './utils/exposureCalculator';
@@ -33,26 +33,25 @@ export const ReliablePanoramicSpace: React.FC<ReliablePanoramicSpaceProps> = ({
 
   const finalExposure = calculateExposure({ config, imageConfig });
 
-  // Handle loading errors
   const handleError = (error: Error) => {
     console.error('❌ ReliablePanoramicSpace error:', error);
     handleLoadError(error);
     onError?.(error);
   };
 
-  // If we have a loading error, don't render the environment
   if (loadError) {
-    console.warn('⚠️ Panoramic space has loading error, using fallback');
+    console.warn('⚠️ Panoramic space has loading error, using enhanced fallback');
     return (
       <>
         <ambientLight intensity={0.4} />
         <directionalLight position={[5, 10, 5]} intensity={0.6} />
+        <directionalLight position={[-5, 5, -5]} intensity={0.3} />
       </>
     );
   }
 
   return (
-    <OptimizedPanoramicEnvironment
+    <SimplePanoramicEnvironment
       imageUrl={imageConfig.localUrl}
       fallbackUrl={imageConfig.fallbackUrl}
       rotation={config.autoRotation || 0}
