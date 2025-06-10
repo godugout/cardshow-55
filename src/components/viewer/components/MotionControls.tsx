@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { StopCircle, Target, Play, RotateCcw, FlipHorizontal } from 'lucide-react';
+import { Target, RotateCcw, FlipHorizontal, Square } from 'lucide-react';
 
 interface MotionControlsProps {
   onStopMotion: () => void;
@@ -24,41 +24,28 @@ export const MotionControls: React.FC<MotionControlsProps> = ({
 }) => {
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
-      {/* Stop/Resume Motion */}
+      {/* Stop Motion */}
       <Button
-        onClick={isMotionStopped ? onResumeMotion : onStopMotion}
+        onClick={onStopMotion}
         variant="outline"
         size="sm"
-        className={`h-9 px-3 ${
-          isMotionStopped 
-            ? 'bg-green-500/20 border-green-500/50 text-green-400 hover:bg-green-500/30' 
-            : 'bg-red-500/20 border-red-500/50 text-red-400 hover:bg-red-500/30'
-        }`}
-        title={isMotionStopped ? 'Resume Motion' : 'Stop All Motion'}
+        className="h-9 px-3 bg-red-500/20 border-red-500/50 text-red-400 hover:bg-red-500/30"
+        title="Stop Rotation"
       >
-        {isMotionStopped ? (
-          <>
-            <Play className="w-4 h-4 mr-1" />
-            Resume
-          </>
-        ) : (
-          <>
-            <StopCircle className="w-4 h-4 mr-1" />
-            Stop
-          </>
-        )}
+        <Square className="w-4 h-4 mr-1" />
+        Stop
       </Button>
 
-      {/* Snap to Center */}
+      {/* Reset to Center */}
       <Button
         onClick={onSnapToCenter}
         variant="outline"
         size="sm"
         className="h-9 px-3 bg-blue-500/20 border-blue-500/50 text-blue-400 hover:bg-blue-500/30"
-        title="Snap to Center"
+        title="Reset to Front View"
       >
         <Target className="w-4 h-4 mr-1" />
-        Center
+        Reset
       </Button>
 
       {/* Flip Card */}
@@ -75,16 +62,16 @@ export const MotionControls: React.FC<MotionControlsProps> = ({
         </Button>
       )}
 
-      {/* Reset Rotation */}
+      {/* Reset Camera */}
       <Button
         onClick={onResetRotation}
         variant="outline"
         size="sm"
         className="h-9 px-3 bg-purple-500/20 border-purple-500/50 text-purple-400 hover:bg-purple-500/30"
-        title="Reset Rotation"
+        title="Reset Camera & Card"
       >
         <RotateCcw className="w-4 h-4 mr-1" />
-        Reset
+        Camera
       </Button>
     </div>
   );

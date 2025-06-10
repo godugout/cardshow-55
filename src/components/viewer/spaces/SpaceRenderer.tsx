@@ -39,11 +39,9 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
   }
 }) => {
   const orbitControlsRef = useRef<any>();
-  const cardPhysicsRef = useRef<any>();
   const cardRotationRef = useRef<any>();
-  const [isMotionStopped, setIsMotionStopped] = useState(false);
   
-  console.log('🌌 SpaceRenderer with interactive rotation:', { 
+  console.log('🌌 SpaceRenderer with simple rotation:', { 
     spaceName: spaceEnvironment.name,
     spaceControls, 
     environmentControls 
@@ -64,7 +62,7 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
     }
   }, [spaceControls.cameraDistance]);
 
-  // Enhanced camera settings based on environment controls
+  // Enhanced camera settings
   const cameraSettings = {
     position: [0, 0, spaceControls.cameraDistance] as [number, number, number],
     fov: environmentControls.fieldOfView,
@@ -84,28 +82,16 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
     onError?.(errorMessage);
   };
 
-  // Motion control handlers
+  // Simplified control handlers
   const handleStopMotion = () => {
-    if (cardPhysicsRef.current) {
-      cardPhysicsRef.current.stopAllMotion();
-      setIsMotionStopped(true);
-    }
     if (cardRotationRef.current) {
-      cardRotationRef.current.resetRotation();
-    }
-  };
-
-  const handleResumeMotion = () => {
-    if (cardPhysicsRef.current) {
-      cardPhysicsRef.current.resumeMotion();
-      setIsMotionStopped(false);
+      cardRotationRef.current.stopMotion();
     }
   };
 
   const handleSnapToCenter = () => {
-    if (cardPhysicsRef.current) {
-      cardPhysicsRef.current.snapToCenter();
-      setIsMotionStopped(false);
+    if (cardRotationRef.current) {
+      cardRotationRef.current.resetRotation();
     }
   };
 
@@ -118,32 +104,32 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
     }
   };
 
-  // New rotation-specific handlers
   const handleFlipCard = () => {
     if (cardRotationRef.current) {
-      cardRotationRef.current.handleFlip('y');
+      cardRotationRef.current.flipCard();
     }
   };
 
   return (
     <div className="fixed inset-0 w-full h-full">
-      {/* Enhanced Motion Controls Overlay */}
+      {/* Simplified Motion Controls */}
       <div className="absolute top-4 left-4 z-50">
         <MotionControls
           onStopMotion={handleStopMotion}
           onSnapToCenter={handleSnapToCenter}
-          onResumeMotion={handleResumeMotion}
+          onResumeMotion={() => {}} // No complex motion to resume
           onResetRotation={handleResetRotation}
-          isMotionStopped={isMotionStopped}
+          onFlipCard={handleFlipCard}
+          isMotionStopped={false} // Always allow interaction
         />
       </div>
 
-      {/* Rotation Instructions */}
+      {/* Simple Instructions */}
       <div className="absolute bottom-4 right-4 z-50 bg-black/60 text-white p-3 rounded-lg text-sm">
         <div className="space-y-1">
-          <div>• Drag to spin card</div>
+          <div>• Drag to rotate card</div>
           <div>• Double-click to flip</div>
-          <div>• Swipe fast for momentum</div>
+          <div>• Use controls to reset</div>
         </div>
       </div>
 
@@ -160,7 +146,7 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
         }}
         onError={handleCanvasError}
         onCreated={({ gl }) => {
-          console.log('✅ Canvas created successfully with interactive rotation');
+          console.log('✅ Canvas created successfully with simple rotation');
         }}
       >
         {/* Enhanced fog for atmospheric density */}
@@ -170,7 +156,7 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
         />
         
         <Suspense fallback={<LoadingFallback />}>
-          {/* Environment with enhanced error handling */}
+          {/* Environment */}
           <ReliablePanoramicSpace
             config={{
               ...spaceEnvironment.config,
@@ -180,23 +166,16 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
             onError={handleSpaceLoadError}
           />
           
-          {/* Enhanced floating card with interactive rotation */}
+          {/* Simplified floating card - always centered */}
           <FloatingCard
             card={card}
-            floatIntensity={spaceControls.floatIntensity}
-            autoRotate={spaceControls.autoRotate}
-            gravityEffect={spaceControls.gravityEffect}
             onClick={onCardClick}
-            environmentControls={environmentControls}
-            onPhysicsRef={(physics) => {
-              cardPhysicsRef.current = physics;
-            }}
             onRotationRef={(rotation) => {
               cardRotationRef.current = rotation;
             }}
           />
           
-          {/* Enhanced orbit controls with better limits */}
+          {/* Enhanced orbit controls */}
           <OrbitControls
             ref={orbitControlsRef}
             enablePan={false}

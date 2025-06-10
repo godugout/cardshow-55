@@ -1,39 +1,17 @@
-
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useCardPhysics } from '../../hooks/useCardPhysics';
-import { useInteractiveCardRotation } from '../../hooks/useInteractiveCardRotation';
+import { useSimpleCardRotation } from '../../hooks/useSimpleCardRotation';
 
 interface FloatingCardProps {
   card: any;
-  floatIntensity?: number;
-  autoRotate?: boolean;
-  gravityEffect?: number;
   onClick?: () => void;
-  environmentControls?: {
-    depthOfField: number;
-    parallaxIntensity: number;
-    fieldOfView: number;
-    atmosphericDensity: number;
-  };
-  onPhysicsRef?: (physics: any) => void;
   onRotationRef?: (rotation: any) => void;
 }
 
 export const FloatingCard: React.FC<FloatingCardProps> = ({
   card,
-  floatIntensity = 1.0,
-  autoRotate = false,
-  gravityEffect = 0.0,
   onClick,
-  environmentControls = {
-    depthOfField: 1.0,
-    parallaxIntensity: 1.0,
-    fieldOfView: 75,
-    atmosphericDensity: 1.0
-  },
-  onPhysicsRef,
   onRotationRef
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -45,47 +23,21 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
   const cardHeight = 3.5;
   const cardDepth = 0.02;
 
-  // Initialize physics system with bounded movement
-  const physics = useCardPhysics({
-    floatIntensity,
-    autoRotate: autoRotate && !useInteractiveCardRotation().isUserControlled(), // Disable auto-rotate when user is controlling
-    gravityEffect,
-    centerPosition: new THREE.Vector3(0, 0, 0),
-    maxDistance: 1.5,
-    snapBackForce: 0.15,
-    dampingFactor: 0.92
-  });
+  // Initialize simple rotation system
+  const rotation = useSimpleCardRotation();
 
-  // Initialize interactive rotation system
-  const interactiveRotation = useInteractiveCardRotation({
-    sensitivity: 0.005,
-    dampingFactor: 0.95,
-    momentumDecay: 0.98,
-    maxAngularVelocity: 0.15,
-    snapToAngles: false
-  });
-
-  // Expose physics and rotation controls to parent
-  useEffect(() => {
-    if (onPhysicsRef) {
-      onPhysicsRef(physics);
-    }
-  }, [physics, onPhysicsRef]);
-
+  // Expose rotation controls to parent
   useEffect(() => {
     if (onRotationRef) {
-      onRotationRef(interactiveRotation);
+      onRotationRef(rotation);
     }
-  }, [interactiveRotation, onRotationRef]);
+  }, [rotation, onRotationRef]);
 
-  console.log('🃏 FloatingCard with interactive rotation:', { 
-    floatIntensity, 
-    autoRotate, 
-    gravityEffect,
-    isInteracting: interactiveRotation.isInteracting 
+  console.log('🃏 FloatingCard with simple rotation:', { 
+    isInteracting: rotation.isInteracting 
   });
 
-  // Load texture safely in useEffect to prevent re-render loops
+  // Load texture safely
   useEffect(() => {
     let isMounted = true;
     const imageUrl = card?.image_url || '/placeholder-card.jpg';
@@ -121,7 +73,7 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
     };
   }, [card?.image_url]);
 
-  // Memoize material to prevent re-creation on every render
+  // Memoize material
   const material = useMemo(() => {
     return new THREE.MeshStandardMaterial({
       map: texture,
@@ -129,59 +81,27 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
       roughness: 0.3,
       metalness: 0.1,
       transparent: true,
-      opacity: 0.9 + (environmentControls.atmosphericDensity * 0.1),
+      opacity: 0.95,
       side: THREE.DoubleSide
     });
-  }, [texture, textureError, environmentControls.atmosphericDensity]);
-
-  // Handle pointer events for rotation
-  const handlePointerDown = (event: any) => {
-    event.stopPropagation();
-    interactiveRotation.startRotation(event);
-  };
-
-  const handlePointerMove = (event: any) => {
-    interactiveRotation.updateRotation(event);
-  };
-
-  const handlePointerUp = () => {
-    interactiveRotation.endRotation();
-  };
+  }, [texture, textureError]);
 
   // Handle double-click for flip
   const handleDoubleClick = (event: any) => {
     event.stopPropagation();
-    interactiveRotation.handleFlip('y'); // Flip around Y axis
+    rotation.flipCard();
     if (onClick) {
       onClick();
     }
   };
 
-  useFrame((state) => {
+  useFrame(() => {
     if (meshRef.current) {
-      // Update physics with bounded, centered movement (only if not user controlled)
-      if (!interactiveRotation.isUserControlled()) {
-        const physicsResult = physics.updatePhysics(meshRef.current, state.clock.elapsedTime * 1000);
-        
-        // Visual feedback for snap-back state
-        if (physicsResult?.isReturningToCenter) {
-          const material = meshRef.current.material as THREE.MeshStandardMaterial;
-          material.emissive.setHex(0x0033aa);
-          material.emissiveIntensity = 0.2;
-        } else {
-          const material = meshRef.current.material as THREE.MeshStandardMaterial;
-          material.emissive.setHex(0x000000);
-          material.emissiveIntensity = 0;
-        }
-      }
-
-      // Update interactive rotation
-      const rotationState = interactiveRotation.updatePhysics();
+      // Apply current rotation directly
+      meshRef.current.rotation.copy(rotation.getCurrentRotation());
       
-      // Apply rotation (override physics rotation when user is controlling)
-      if (interactiveRotation.isUserControlled() || rotationState.angularVelocity.length() > 0.001) {
-        meshRef.current.rotation.copy(rotationState.rotation);
-      }
+      // Keep card perfectly centered at origin
+      meshRef.current.position.set(0, 0, 0);
     }
   });
 
@@ -191,9 +111,9 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
       castShadow 
       receiveShadow 
       position={[0, 0, 0]}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
+      onPointerDown={rotation.startRotation}
+      onPointerMove={rotation.updateRotation}
+      onPointerUp={rotation.endRotation}
       onDoubleClick={handleDoubleClick}
     >
       <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
