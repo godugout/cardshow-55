@@ -1,6 +1,6 @@
 
 import React, { useRef, useEffect, useCallback, useState } from 'react';
-import type { ImmersiveCardViewerProps, EnvironmentScene, LightingPreset, MaterialSettings } from './types';
+import type { ImmersiveCardViewerProps } from './types';
 import { 
   useEnhancedCardEffects, 
   type EffectValues 
@@ -12,15 +12,13 @@ import { CompactCardDetails } from './components/CompactCardDetails';
 import { useCardExport } from './hooks/useCardExport';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
 import { ViewerHeader } from './components/ViewerHeader';
-import { CardNavigationControls } from './components/CardNavigationControls';
 import { ViewerInfoPanel } from './components/ViewerInfoPanel';
 import { StudioPanel } from './components/StudioPanel';
-import { EnhancedEnvironmentSphere } from './components/EnhancedEnvironmentSphere';
-import { SpaceRenderer3D } from './spaces/SpaceRenderer3D';
-import { Card3D } from './spaces/Card3D';
 import { useViewerState } from './hooks/useViewerState';
-import { useSafeZones } from './hooks/useSafeZones';
 import { adaptCardForSpaceRenderer } from './utils/cardAdapter';
+import { BackgroundRenderer } from './components/BackgroundRenderer';
+import { useViewerInteractions } from './hooks/useViewerInteractions';
+import { CardNavigationHandler } from './components/CardNavigationHandler';
 
 // Update the interface to support card navigation
 interface ExtendedImmersiveCardViewerProps extends ImmersiveCardViewerProps {
@@ -105,35 +103,29 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   } = enhancedEffectsHook;
 
   // Refs
-  const containerRef = useRef<HTMLDivElement>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
 
   // Navigation logic
   const hasMultipleCards = cards.length > 1;
-  const canGoNext = hasMultipleCards && currentCardIndex < cards.length - 1;
-  const canGoPrev = hasMultipleCards && currentCardIndex > 0;
 
-  const handlePreviousCard = useCallback(() => {
-    if (canGoPrev && onCardChange) {
-      onCardChange(currentCardIndex - 1);
-      setIsFlipped(false);
-    }
-  }, [canGoPrev, currentCardIndex, onCardChange, setIsFlipped]);
-
-  const handleNextCard = useCallback(() => {
-    if (canGoNext && onCardChange) {
-      onCardChange(currentCardIndex + 1);
-      setIsFlipped(false);
-    }
-  }, [canGoNext, currentCardIndex, onCardChange, setIsFlipped]);
-
-  // Safe zone detection
-  const { isInSafeZone } = useSafeZones({
-    panelWidth: 320,
-    showPanel: showCustomizePanel,
+  // Viewer interactions hook
+  const { containerRef, handleMouseMove, handleDragStart, handleDrag, handleDragEnd } = useViewerInteractions({
+    allowRotation,
+    autoRotate,
+    isDragging,
+    setIsDragging,
+    setDragStart,
+    setAutoRotate,
+    setRotation,
+    setMousePosition,
+    setIsHoveringControls,
+    rotation,
+    dragStart,
+    handleZoom,
+    showCustomizePanel,
     showStats,
-    hasNavigation: hasMultipleCards
+    hasMultipleCards
   });
 
   // Export functionality
@@ -146,7 +138,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   });
 
   // Style generation hook
-  const { getFrameStyles, getEnhancedEffectStyles, getEnvironmentStyle, SurfaceTexture } = useCardEffects({
+  const { getFrameStyles, getEnhancedEffectStyles, SurfaceTexture } = useCardEffects({
     card,
     effectValues,
     mousePosition,
@@ -184,92 +176,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
       }
     };
   }, [autoRotate, isDragging, setRotation]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
-        handlePreviousCard();
-      } else if (e.key === 'ArrowRight') {
-        handleNextCard();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handlePreviousCard, handleNextCard]);
-
-  // Enhanced mouse handling with safe zones
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!containerRef.current) return;
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
-    
-    if (!isDragging && !inSafeZone) {
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-      setMousePosition({ x, y });
-      
-      const isInControlsArea = e.clientX - rect.left < 300 && e.clientY - rect.top > rect.height - 100;
-      setIsHoveringControls(isInControlsArea);
-      
-      if (allowRotation && !autoRotate) {
-        setRotation({
-          x: (y - 0.5) * 20,
-          y: (x - 0.5) * -20
-        });
-      }
-    }
-  }, [isDragging, allowRotation, autoRotate, isInSafeZone, setMousePosition, setIsHoveringControls, setRotation]);
-
-  // Enhanced wheel handling for safe zones
-  const handleWheel = useCallback((e: WheelEvent) => {
-    if (!containerRef.current) return;
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
-    
-    if (!inSafeZone) {
-      e.preventDefault();
-      const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
-      handleZoom(zoomDelta);
-    }
-  }, [isInSafeZone, handleZoom]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: false });
-      return () => container.removeEventListener('wheel', handleWheel);
-    }
-  }, [handleWheel]);
-
-  const handleDragStart = useCallback((e: React.MouseEvent) => {
-    if (!containerRef.current) return;
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
-    
-    if (allowRotation && !inSafeZone) {
-      setIsDragging(true);
-      setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
-      setAutoRotate(false);
-    }
-  }, [rotation, allowRotation, isInSafeZone, setIsDragging, setDragStart, setAutoRotate]);
-
-  const handleDrag = useCallback((e: React.MouseEvent) => {
-    if (isDragging && allowRotation) {
-      setRotation({
-        x: e.clientY - dragStart.y,
-        y: e.clientX - dragStart.x
-      });
-    }
-  }, [isDragging, dragStart, allowRotation, setRotation]);
-
-  const handleDragEnd = useCallback(() => {
-    setIsDragging(false);
-  }, [setIsDragging]);
 
   const handleDownloadClick = useCallback(() => {
     setShowExportDialog(true);
@@ -349,124 +255,18 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onMouseUp={handleDragEnd}
         onMouseLeave={handleDragEnd}
       >
-        {/* Emergency Fallback Background - Always renders first */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-crd-darkest via-crd-dark to-crd-darker" />
-
-        {/* Background Renderer - 2D or 3D */}
-        <div className="absolute inset-0 z-10">
-          {backgroundType === '3dSpace' && selectedSpace ? (
-            <SpaceRenderer3D
-              card={adaptedCard}
-              environment={selectedSpace}
-              controls={spaceControls}
-              onCardClick={onCardClick}
-              onCameraReset={handleResetCamera}
-            />
-          ) : (
-            <>
-              {/* Use the improved environment sphere with better depth effects */}
-              <div 
-                className="absolute inset-0"
-                style={{
-                  background: selectedScene.backgroundImage || selectedScene.gradient || 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
-                  filter: `brightness(${selectedLighting.brightness}%)`,
-                  transition: 'all 0.5s ease'
-                }}
-              />
-              
-              {/* Improved depth layers without jarring parallax */}
-              <div className="absolute inset-0">
-                {/* Static depth layer 1 - Far background */}
-                <div 
-                  className="absolute inset-0 opacity-30"
-                  style={{
-                    backgroundImage: `url(${selectedScene.backgroundImage || selectedScene.panoramicUrl})`,
-                    backgroundSize: '130% 130%',
-                    backgroundPosition: 'center center',
-                    backgroundRepeat: 'no-repeat',
-                    filter: 'blur(8px) brightness(0.7)',
-                    transform: 'scale(1.1) translateZ(-200px)',
-                    mixBlendMode: 'multiply'
-                  }}
-                />
-                
-                {/* Static depth layer 2 - Mid background */}
-                <div 
-                  className="absolute inset-0 opacity-50"
-                  style={{
-                    backgroundImage: `url(${selectedScene.backgroundImage || selectedScene.panoramicUrl})`,
-                    backgroundSize: '115% 115%',
-                    backgroundPosition: 'center center',
-                    backgroundRepeat: 'no-repeat',
-                    filter: 'blur(4px) brightness(0.8)',
-                    transform: 'scale(1.05) translateZ(-100px)',
-                    mixBlendMode: 'overlay'
-                  }}
-                />
-                
-                {/* Main background layer with subtle breathing animation */}
-                <div 
-                  className="absolute inset-0 transition-all duration-[3000ms] ease-in-out"
-                  style={{
-                    backgroundImage: `url(${selectedScene.backgroundImage || selectedScene.panoramicUrl})`,
-                    backgroundSize: '120% 120%',
-                    backgroundPosition: 'center center',
-                    backgroundRepeat: 'no-repeat',
-                    transform: `scale(${1 + Math.sin(Date.now() * 0.0008) * 0.01})`,
-                    filter: `brightness(${selectedScene.lighting.intensity}) contrast(1.1) saturate(1.2)`,
-                    opacity: 0.9
-                  }}
-                />
-              </div>
-              
-              {/* Dynamic lighting that follows mouse */}
-              <div 
-                className="absolute inset-0 pointer-events-none transition-all duration-300"
-                style={{
-                  background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
-                    ${selectedScene.lighting.color}40 0%, 
-                    ${selectedScene.lighting.color}20 30%,
-                    transparent 70%)`,
-                  mixBlendMode: 'overlay'
-                }}
-              />
-              
-              {/* Atmospheric particles */}
-              <div className="absolute inset-0 pointer-events-none">
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute rounded-full bg-white opacity-20"
-                    style={{
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 100}%`,
-                      width: `${Math.random() * 3 + 1}px`,
-                      height: `${Math.random() * 3 + 1}px`,
-                      transform: `translateY(${Math.sin(Date.now() * 0.001 * (i + 1)) * 15}px)`,
-                      transition: 'transform 0.1s ease-out'
-                    }}
-                  />
-                ))}
-              </div>
-              
-              {/* Enhanced Dark Overlay */}
-              <div className="absolute inset-0 bg-black/40 z-10" />
-            </>
-          )}
-        </div>
-
-        {/* Subtle Ambient Background Effect (only for 2D scenes) */}
-        {ambient && backgroundType === 'scene' && (
-          <div 
-            className="absolute inset-0 opacity-20 z-15 transition-opacity duration-500"
-            style={{
-              background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
-                ${selectedScene.lighting.color} 0%, transparent 40%)`,
-              mixBlendMode: 'screen',
-              opacity: isHovering ? 0.3 : 0.2
-            }}
-          />
-        )}
+        <BackgroundRenderer
+          backgroundType={backgroundType}
+          selectedSpace={selectedSpace}
+          spaceControls={spaceControls}
+          adaptedCard={adaptedCard}
+          onCardClick={onCardClick}
+          onCameraReset={handleResetCamera}
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          mousePosition={mousePosition}
+          isHovering={isHovering}
+        />
 
         {/* Header */}
         <ViewerHeader
@@ -502,14 +302,11 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         </div>
 
         {/* Card Navigation Controls */}
-        <CardNavigationControls
-          hasMultipleCards={hasMultipleCards}
+        <CardNavigationHandler
+          cards={cards}
           currentCardIndex={currentCardIndex}
-          totalCards={cards.length}
-          canGoPrev={canGoPrev}
-          canGoNext={canGoNext}
-          onPrevious={handlePreviousCard}
-          onNext={handleNextCard}
+          onCardChange={onCardChange}
+          setIsFlipped={setIsFlipped}
         />
 
         {/* Enhanced Card Container (only for 2D scenes) */}
