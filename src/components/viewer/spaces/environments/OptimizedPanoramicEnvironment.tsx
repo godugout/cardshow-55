@@ -65,7 +65,7 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
             loadedTexture.mapping = THREE.EquirectangularReflectionMapping;
             loadedTexture.wrapS = THREE.RepeatWrapping;
             loadedTexture.wrapT = THREE.ClampToEdgeWrapping;
-            loadedTexture.flipY = false; // Important for proper orientation
+            loadedTexture.flipY = false;
             
             // Enhanced filtering
             loadedTexture.magFilter = THREE.LinearFilter;
@@ -76,8 +76,11 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
             loadedTexture.colorSpace = THREE.SRGBColorSpace;
             
             setTexture(loadedTexture);
-            setIsLoading(false);
+            setIsLoading(false); // Clear loading state here
+            setLoadError(null);
             onLoadComplete?.();
+            
+            console.log('✨ Texture set and loading cleared');
           },
           undefined,
           (error) => {
@@ -85,21 +88,16 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
             console.error('❌ Failed to create texture:', error);
             const textureError = new Error('Failed to create 360° texture');
             setLoadError(textureError);
-            setIsLoading(false);
+            setIsLoading(false); // Clear loading state on error too
             onLoadError?.(textureError);
           }
         );
-        
-        // Immediate texture assignment for faster rendering
-        if (isMounted) {
-          setTexture(newTexture);
-        }
         
       } catch (error) {
         if (!isMounted) return;
         console.error('❌ Image loading failed:', error);
         setLoadError(error as Error);
-        setIsLoading(false);
+        setIsLoading(false); // Clear loading state
         onLoadError?.(error as Error);
       }
     };
@@ -108,13 +106,17 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
     
     return () => {
       isMounted = false;
+      // Clean up texture
+      if (texture) {
+        texture.dispose();
+      }
     };
   }, [imageUrl, fallbackUrl, onLoadStart, onLoadComplete, onLoadError]);
 
   useEffect(() => {
-    if (!texture || loadError) {
-      // Enhanced fallback with gradient
-      console.warn('⚠️ Using enhanced gradient fallback');
+    if (loadError) {
+      // Enhanced fallback with gradient - only when there's an actual error
+      console.warn('⚠️ Using enhanced gradient fallback due to error');
       
       const canvas = document.createElement('canvas');
       canvas.width = 1024;
@@ -123,10 +125,10 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
       
       // Create sophisticated gradient
       const gradient = ctx.createLinearGradient(0, 0, 0, 512);
-      gradient.addColorStop(0, '#1a1a2e');   // Dark blue top
-      gradient.addColorStop(0.3, '#16213e'); // Mid blue
-      gradient.addColorStop(0.7, '#0f3460'); // Deep blue
-      gradient.addColorStop(1, '#533483');   // Purple bottom
+      gradient.addColorStop(0, '#1a1a2e');
+      gradient.addColorStop(0.3, '#16213e');
+      gradient.addColorStop(0.7, '#0f3460');
+      gradient.addColorStop(1, '#533483');
       
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 1024, 512);
@@ -148,25 +150,30 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
       scene.environment = fallbackTexture;
       scene.background = fallbackTexture;
       
-      gl.toneMapping = THREE.ACESFilmicToneMapping;
-      gl.toneMappingExposure = exposure;
+      // Remove any Canvas background color to avoid conflicts
+      scene.background = fallbackTexture;
       
       return;
     }
 
-    // Apply loaded texture
-    scene.environment = texture;
-    scene.background = texture;
-    
-    // Configure tone mapping
-    gl.toneMapping = THREE.ACESFilmicToneMapping;
-    gl.toneMappingExposure = exposure;
-    gl.shadowMap.enabled = true;
-    gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    
-    console.log('✨ 360° environment configured successfully');
+    if (texture && !isLoading) {
+      // Apply loaded texture only when we have it and aren't loading
+      console.log('🎨 Applying 360° texture to scene');
+      
+      scene.environment = texture;
+      scene.background = texture;
+      
+      // Configure tone mapping
+      gl.toneMapping = THREE.ACESFilmicToneMapping;
+      gl.toneMappingExposure = exposure;
+      gl.shadowMap.enabled = true;
+      gl.shadowMap.type = THREE.PCFSoftShadowMap;
+      
+      console.log('✨ 360° environment configured successfully');
+    }
     
     return () => {
+      // Clean up when component unmounts or texture changes
       if (scene.environment === texture) {
         scene.environment = null;
       }
@@ -174,7 +181,7 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
         scene.background = null;
       }
     };
-  }, [texture, scene, gl, exposure, loadError]);
+  }, [texture, scene, gl, exposure, loadError, isLoading]);
 
   useFrame(() => {
     if (sphereRef.current && rotation !== 0) {
@@ -182,21 +189,22 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
     }
   });
 
-  // Loading indicator
-  if (isLoading) {
+  // Only show loading indicators while actually loading
+  if (isLoading && !texture) {
+    console.log('🔄 Showing loading state');
     return (
       <>
-        <color attach="background" args={['#1a1a2e']} />
+        {/* Remove Canvas background color during loading */}
         <ambientLight intensity={0.6 * brightness} />
         <directionalLight
           position={[5, 10, 5]}
           intensity={0.8 * brightness}
           castShadow
         />
-        {/* Animated loading indicator */}
+        {/* Subtle loading indicator instead of green ring */}
         <mesh position={[0, 0, 0]}>
-          <ringGeometry args={[0.8, 1, 32]} />
-          <meshBasicMaterial color="#4CAF50" transparent opacity={0.6} />
+          <sphereGeometry args={[0.02, 8, 6]} />
+          <meshBasicMaterial color="#ffffff" transparent opacity={0.3} />
         </mesh>
       </>
     );

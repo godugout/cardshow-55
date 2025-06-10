@@ -1,7 +1,7 @@
 
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { Card3D } from './Card3D';
 import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
 import { ReliablePanoramicSpace } from './environments/ReliablePanoramicSpace';
@@ -23,8 +23,7 @@ interface SpaceRenderer3DProps {
 
 const LoadingFallback: React.FC = () => (
   <>
-    <color attach="background" args={['#1a1a2e']} />
-    <Environment preset="studio" />
+    {/* Transparent background to allow panoramic to show through */}
     <ambientLight intensity={0.4} />
     <directionalLight position={[5, 10, 5]} intensity={0.6} />
   </>
@@ -82,10 +81,14 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
         camera={{ position: [0, 0, 8], fov: controls.fieldOfView || 45 }}
         shadows
         dpr={[1, 2]}
-        gl={{ antialias: true, alpha: false }}
+        gl={{ 
+          antialias: true, 
+          alpha: true,  // Allow transparency
+          premultipliedAlpha: false
+        }}
         onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}
       >
-        <color attach="background" args={[environment.config.backgroundColor || '#1a1a2e']} />
+        {/* Remove the background color to let panoramic images show through */}
         
         <Suspense fallback={<LoadingFallback />}>
           <SpaceErrorBoundary spaceName={environment.name} fallback={<LoadingFallback />}>
@@ -99,7 +102,7 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
           />
         </Suspense>
 
-        {/* Separate camera controls - ONLY for camera, not card */}
+        {/* Camera controls for user interaction */}
         <OrbitControls
           enablePan={false}
           enableZoom={true}
