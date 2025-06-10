@@ -15,6 +15,7 @@ import { CulturalSpace } from './environments/CulturalSpace';
 import { RetailSpace } from './environments/RetailSpace';
 import { NaturalSpace } from './environments/NaturalSpace';
 import { ProfessionalSpace } from './environments/ProfessionalSpace';
+import { PanoramicSpace } from './environments/PanoramicSpace';
 import type { SpaceEnvironment, SpaceControls } from './types';
 
 interface Simple3DCard {
@@ -51,6 +52,8 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   const renderEnvironment = () => {
     try {
       switch (environment.type) {
+        case 'panoramic':
+          return <PanoramicSpace config={environment.config} controls={controls} />;
         case 'forest':
           return <ForestGladeSpace config={environment.config} />;
         case 'ocean':
@@ -105,10 +108,12 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
     }
   };
 
+  const isPanoramicEnvironment = environment.type === 'panoramic';
+
   return (
     <div className="w-full h-full">
       <Canvas
-        camera={{ position: [0, 0, 8], fov: 45 }}
+        camera={{ position: [0, 0, 8], fov: controls.fieldOfView || 45 }}
         shadows
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: false }}
@@ -128,25 +133,31 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
             onClick={onCardClick}
           />
           
-          <ContactShadows
-            opacity={0.4}
-            scale={10}
-            blur={1}
-            far={10}
-            resolution={256}
-            color="#000000"
-          />
+          {/* Only add contact shadows for non-panoramic environments */}
+          {!isPanoramicEnvironment && (
+            <ContactShadows
+              opacity={0.4}
+              scale={10}
+              blur={1}
+              far={10}
+              resolution={256}
+              color="#000000"
+            />
+          )}
           
-          <OrbitControls
-            enablePan={false}
-            enableZoom={true}
-            autoRotate={controls.autoRotate}
-            autoRotateSpeed={controls.orbitSpeed}
-            minDistance={5}
-            maxDistance={15}
-            minPolarAngle={Math.PI / 6}
-            maxPolarAngle={Math.PI - Math.PI / 6}
-          />
+          {/* Only add OrbitControls for non-panoramic environments (panoramic uses its own) */}
+          {!isPanoramicEnvironment && (
+            <OrbitControls
+              enablePan={false}
+              enableZoom={true}
+              autoRotate={controls.autoRotate}
+              autoRotateSpeed={controls.orbitSpeed}
+              minDistance={5}
+              maxDistance={15}
+              minPolarAngle={Math.PI / 6}
+              maxPolarAngle={Math.PI - Math.PI / 6}
+            />
+          )}
         </Suspense>
       </Canvas>
     </div>

@@ -15,9 +15,10 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
   onSpaceChange,
   isActive
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('basic');
+  const [selectedCategory, setSelectedCategory] = useState<string>('photorealistic');
   
   const categories = [
+    { id: 'photorealistic', name: '360° Photos', emoji: '📸' },
     { id: 'basic', name: 'Basic', emoji: '⭐' },
     { id: 'sports', name: 'Sports', emoji: '🏟️' },
     { id: 'cultural', name: 'Cultural', emoji: '🏛️' },
@@ -55,7 +56,7 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
           >
             <div className="flex flex-col items-center space-y-1">
               <span>{category.emoji}</span>
-              <span>{category.name}</span>
+              <span className="text-[10px]">{category.name}</span>
             </div>
           </button>
         ))}
@@ -93,6 +94,11 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
               </div>
             )}
+            {space.type === 'panoramic' && (
+              <div className="absolute bottom-1 left-1">
+                <span className="text-xs text-blue-300 bg-blue-500/30 px-1 rounded">360°</span>
+              </div>
+            )}
           </button>
         ))}
       </div>
@@ -100,6 +106,7 @@ export const SpaceEnvironmentGrid: React.FC<SpaceEnvironmentGridProps> = ({
       {/* Category Description */}
       <div className="text-xs text-gray-400 bg-black/20 rounded p-2">
         <strong>{categories.find(c => c.id === selectedCategory)?.name}:</strong> {
+          selectedCategory === 'photorealistic' ? 'Real 360° photography for immersive environments' :
           selectedCategory === 'basic' ? 'Essential 3D environments for card viewing' :
           selectedCategory === 'sports' ? 'Professional sports venues and arenas' :
           selectedCategory === 'cultural' ? 'Museums, galleries, and performance spaces' :

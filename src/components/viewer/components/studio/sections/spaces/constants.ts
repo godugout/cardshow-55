@@ -1,5 +1,39 @@
-
 import type { SpaceEnvironment } from '../../../../spaces/types';
+import { PANORAMIC_PHOTO_LIBRARY } from '../../../../spaces/environments/photoLibrary';
+
+// Helper function to create panoramic environments from photo library
+const createPanoramicEnvironments = (): SpaceEnvironment[] => {
+  return PANORAMIC_PHOTO_LIBRARY.map(photo => ({
+    id: `panoramic-${photo.id}`,
+    name: photo.name,
+    description: photo.description,
+    previewUrl: photo.thumbnail,
+    type: 'panoramic' as const,
+    category: 'photorealistic' as const,
+    emoji: getCategoryEmoji(photo.category),
+    config: {
+      backgroundColor: '#000000',
+      ambientColor: '#ffffff',
+      lightIntensity: photo.lighting.intensity,
+      panoramicPhotoId: photo.id,
+      exposure: photo.lighting.intensity,
+      saturation: 1.0,
+      autoRotation: photo.camera.autoRotateSpeed,
+    },
+  }));
+};
+
+const getCategoryEmoji = (category: string): string => {
+  const emojiMap: Record<string, string> = {
+    natural: '🌲',
+    urban: '🏙️',
+    interior: '🏛️',
+    sports: '🏟️',
+    cultural: '🎭',
+    fantasy: '✨'
+  };
+  return emojiMap[category] || '📸';
+};
 
 export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
   // Basic Spaces
@@ -46,6 +80,9 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
       lightIntensity: 1.2,
     },
   },
+
+  // Add all panoramic environments
+  ...createPanoramicEnvironments(),
 
   // Natural Spaces
   {

@@ -4,8 +4,8 @@ export interface SpaceEnvironment {
   name: string;
   description: string;
   previewUrl: string;
-  type: 'void' | 'cosmic' | 'studio' | 'abstract' | 'matrix' | 'cartoon' | 'sketch' | 'neon' | 'forest' | 'ocean' | 'sports' | 'cultural' | 'retail' | 'natural' | 'professional';
-  category: 'basic' | 'themed' | 'sports' | 'cultural' | 'retail' | 'natural' | 'professional';
+  type: 'void' | 'cosmic' | 'studio' | 'abstract' | 'matrix' | 'cartoon' | 'sketch' | 'neon' | 'forest' | 'ocean' | 'sports' | 'cultural' | 'retail' | 'natural' | 'professional' | 'panoramic';
+  category: 'basic' | 'themed' | 'sports' | 'cultural' | 'retail' | 'natural' | 'professional' | 'photorealistic';
   emoji: string;
   config: {
     backgroundColor: string;
@@ -13,7 +13,12 @@ export interface SpaceEnvironment {
     lightIntensity: number;
     particleCount?: number;
     animationSpeed?: number;
-    venue?: string; // Specific venue type within category
+    venue?: string;
+    // New panoramic-specific properties
+    panoramicPhotoId?: string;
+    exposure?: number;
+    saturation?: number;
+    autoRotation?: number;
   };
 }
 
@@ -23,6 +28,10 @@ export interface SpaceControls {
   cameraDistance: number;
   autoRotate: boolean;
   gravityEffect: number;
+  // New panoramic controls
+  panoramicAutoRotate?: boolean;
+  panoramicRotationSpeed?: number;
+  fieldOfView?: number;
 }
 
 export interface CameraState {
