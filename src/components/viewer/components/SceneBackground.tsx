@@ -41,9 +41,9 @@ export const SceneBackground: React.FC<SceneBackgroundProps> = ({
       backgroundPosition: parallaxOffset,
       filter: `
         blur(${environmentControls.depthOfField * 2}px) 
-        brightness(${selectedLighting.brightness}) 
-        contrast(${selectedLighting.contrast}) 
-        saturate(${selectedLighting.saturation || 1})
+        brightness(${selectedLighting.brightness / 100}) 
+        contrast(${selectedLighting.contrast / 100}) 
+        saturate(1)
         opacity(${environmentControls.atmosphericDensity})
       `,
       transition: 'all 0.3s ease-out'
@@ -51,8 +51,10 @@ export const SceneBackground: React.FC<SceneBackgroundProps> = ({
   }, [selectedScene, selectedLighting, mousePosition, isHovering, environmentControls]);
 
   const overlayStyles = useMemo(() => ({
-    background: selectedLighting.color ? 
-      `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, ${selectedLighting.color}40 0%, transparent 70%)` : 
+    background: selectedLighting.temperature ? 
+      `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, ${
+        selectedLighting.temperature > 5500 ? '#87CEEB' : '#FFA500'
+      }40 0%, transparent 70%)` : 
       'none',
     opacity: isHovering ? 0.8 : 0.4,
     filter: `blur(${environmentControls.depthOfField}px)`,
