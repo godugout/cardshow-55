@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps } from './types';
 import { 
@@ -404,5 +405,3 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 };
 
 export default ImmersiveCardViewer;
-
-</edits_to_apply>
