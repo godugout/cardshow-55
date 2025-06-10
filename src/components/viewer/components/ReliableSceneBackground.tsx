@@ -33,13 +33,15 @@ export const ReliableSceneBackground: React.FC<ReliableSceneBackgroundProps> = (
 
   console.log('🖼️ ReliableSceneBackground rendering:', selectedScene.name);
 
-  // Try to preload scene image if it has one
+  // Try to preload scene image (use panoramicUrl or backgroundImage)
   useEffect(() => {
-    if (selectedScene.imageUrl) {
+    const imageUrl = selectedScene.panoramicUrl || selectedScene.backgroundImage;
+    
+    if (imageUrl) {
       setImageLoaded(false);
       setImageError(false);
       
-      preloadImage(selectedScene.imageUrl)
+      preloadImage(imageUrl)
         .then(() => {
           setImageLoaded(true);
           setImageError(false);
@@ -53,22 +55,24 @@ export const ReliableSceneBackground: React.FC<ReliableSceneBackgroundProps> = (
       setImageLoaded(false);
       setImageError(false);
     }
-  }, [selectedScene.imageUrl]);
+  }, [selectedScene.panoramicUrl, selectedScene.backgroundImage]);
 
   const backgroundStyles = useMemo(() => {
     const parallaxOffset = isHovering ? 
       `${(mousePosition.x - 0.5) * environmentControls.parallaxIntensity * 20}px ${(mousePosition.y - 0.5) * environmentControls.parallaxIntensity * 20}px` : 
       '0px 0px';
     
+    const imageUrl = selectedScene.panoramicUrl || selectedScene.backgroundImage;
+    
     // Use image if loaded, otherwise use gradient fallback
-    const background = imageLoaded && selectedScene.imageUrl && !imageError
-      ? `url(${selectedScene.imageUrl})`
-      : createFallbackBackground(selectedScene.id);
+    const background = imageLoaded && imageUrl && !imageError
+      ? `url(${imageUrl})`
+      : selectedScene.gradient || createFallbackBackground(selectedScene.id);
     
     return {
       background,
-      backgroundSize: selectedScene.imageUrl ? 'cover' : `${100 + environmentControls.parallaxIntensity * 10}% ${100 + environmentControls.parallaxIntensity * 10}%`,
-      backgroundPosition: selectedScene.imageUrl ? 'center' : parallaxOffset,
+      backgroundSize: imageUrl ? 'cover' : `${100 + environmentControls.parallaxIntensity * 10}% ${100 + environmentControls.parallaxIntensity * 10}%`,
+      backgroundPosition: imageUrl ? 'center' : parallaxOffset,
       backgroundRepeat: 'no-repeat',
       filter: `
         blur(${environmentControls.depthOfField * 2}px) 
@@ -91,6 +95,8 @@ export const ReliableSceneBackground: React.FC<ReliableSceneBackgroundProps> = (
     filter: `blur(${environmentControls.depthOfField}px)`,
     transition: 'all 0.3s ease-out'
   }), [selectedLighting, mousePosition, isHovering, environmentControls]);
+
+  const imageUrl = selectedScene.panoramicUrl || selectedScene.backgroundImage;
 
   return (
     <>
@@ -120,7 +126,7 @@ export const ReliableSceneBackground: React.FC<ReliableSceneBackgroundProps> = (
       )}
       
       {/* Loading indicator */}
-      {selectedScene.imageUrl && !imageLoaded && !imageError && (
+      {imageUrl && !imageLoaded && !imageError && (
         <div className="fixed bottom-4 left-4 z-50 bg-black/50 text-white px-3 py-2 rounded-lg text-sm">
           Loading background...
         </div>
