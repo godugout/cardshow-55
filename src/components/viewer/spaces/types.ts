@@ -4,7 +4,8 @@ export interface SpaceEnvironment {
   name: string;
   description: string;
   previewUrl: string;
-  type: 'void' | 'cosmic' | 'studio' | 'abstract' | 'matrix' | 'cartoon' | 'sketch' | 'neon' | 'forest' | 'ocean';
+  type: 'void' | 'cosmic' | 'studio' | 'abstract' | 'matrix' | 'cartoon' | 'sketch' | 'neon' | 'forest' | 'ocean' | 'sports' | 'cultural' | 'retail' | 'natural' | 'professional';
+  category: 'basic' | 'themed' | 'sports' | 'cultural' | 'retail' | 'natural' | 'professional';
   emoji: string;
   config: {
     backgroundColor: string;
@@ -12,6 +13,7 @@ export interface SpaceEnvironment {
     lightIntensity: number;
     particleCount?: number;
     animationSpeed?: number;
+    venue?: string; // Specific venue type within category
   };
 }
 

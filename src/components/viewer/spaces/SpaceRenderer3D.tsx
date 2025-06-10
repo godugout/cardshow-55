@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Float, Environment } from '@react-three/drei';
@@ -10,6 +9,11 @@ import { SketchArtSpace } from './environments/SketchArtSpace';
 import { NeonCitySpace } from './environments/NeonCitySpace';
 import { ForestGladeSpace } from './environments/ForestGladeSpace';
 import { OceanDepthsSpace } from './environments/OceanDepthsSpace';
+import { SportsVenueSpace } from './environments/SportsVenueSpace';
+import { CulturalSpace } from './environments/CulturalSpace';
+import { RetailSpace } from './environments/RetailSpace';
+import { NaturalSpace } from './environments/NaturalSpace';
+import { ProfessionalSpace } from './environments/ProfessionalSpace';
 
 interface SpaceRenderer3DProps {
   environment: SpaceEnvironment;
@@ -55,6 +59,19 @@ function FloatingCard({ controls, children }: { controls: SpaceControls; childre
 
 function SpaceEnvironmentRenderer({ environment }: { environment: SpaceEnvironment }) {
   switch (environment.type) {
+    // New categorized environments
+    case 'sports':
+      return <SportsVenueSpace config={environment.config} />;
+    case 'cultural':
+      return <CulturalSpace config={environment.config} />;
+    case 'retail':
+      return <RetailSpace config={environment.config} />;
+    case 'natural':
+      return <NaturalSpace config={environment.config} />;
+    case 'professional':
+      return <ProfessionalSpace config={environment.config} />;
+    
+    // Existing themed environments
     case 'matrix':
       return <MatrixCodeSpace config={environment.config} />;
     case 'cartoon':
