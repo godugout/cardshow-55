@@ -47,7 +47,7 @@ export const usePanoramicTexture = ({
         loadedTexture.mapping = THREE.EquirectangularReflectionMapping;
         loadedTexture.wrapS = THREE.RepeatWrapping;
         loadedTexture.wrapT = THREE.ClampToEdgeWrapping;
-        loadedTexture.flipY = false;
+        loadedTexture.flipY = true; // Fixed: changed from false to true
         
         // Enhanced filtering
         loadedTexture.magFilter = THREE.LinearFilter;
