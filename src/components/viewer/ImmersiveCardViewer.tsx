@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps } from './types';
 import { 
@@ -266,6 +265,10 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           selectedLighting={selectedLighting}
           mousePosition={mousePosition}
           isHovering={isHovering}
+          effectValues={effectValues}
+          materialSettings={materialSettings}
+          overallBrightness={overallBrightness}
+          interactiveLighting={interactiveLighting}
         />
 
         {/* Header */}
@@ -367,7 +370,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onBrightnessChange={setOverallBrightness}
         onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
         onMaterialSettingsChange={setMaterialSettings}
-        onEnvironmentControlsChange={setEnvironmentControls}
         selectedPresetId={selectedPresetId}
         onPresetSelect={setSelectedPresetId}
         onApplyCombo={handleComboApplication}
