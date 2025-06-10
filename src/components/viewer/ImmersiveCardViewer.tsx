@@ -6,21 +6,22 @@ import {
   Minimize2,
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { ExportDialog } from './ExportDialog';
-import { ViewerControls } from './ViewerControls';
-import { StudioPanel } from './StudioPanel';
-import { EnhancedEnvironmentSphere } from './EnhancedEnvironmentSphere';
-import { EnhancedCardContainer } from './EnhancedCardContainer';
-import { useEnhancedCardEffects } from '../hooks/useEnhancedCardEffects';
-import { useViewerState } from '../hooks/useViewerState';
-import type { ImmersiveCardViewerProps, BackgroundType } from '../types';
-import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
+import { ExportOptionsDialog } from './components/ExportOptionsDialog';
+import { ViewerControls } from './components/ViewerControls';
+import { StudioPanel } from './components/StudioPanel';
+import { EnhancedEnvironmentSphere } from './components/EnhancedEnvironmentSphere';
+import { EnhancedCardContainer } from './components/EnhancedCardContainer';
+import { useEnhancedCardEffects } from './hooks/useEnhancedCardEffects';
+import { useViewerState } from './hooks/useViewerState';
+import type { ImmersiveCardViewerProps, BackgroundType } from './types';
+import type { SpaceEnvironment, SpaceControls } from './spaces/types';
 import { SpaceRenderer3D } from './spaces/SpaceRenderer3D';
 
 export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
@@ -158,10 +159,14 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
       <div className="relative w-full h-full">
         <EnhancedEnvironmentSphere 
           scene={selectedScene}
-          environmentIntensity={overallBrightness[0] / 100}
-          interactiveLightingEnabled={interactiveLighting}
+          controls={environmentControls || {
+            depthOfField: 0,
+            parallaxIntensity: 0.5,
+            fieldOfView: 75,
+            atmosphericDensity: 0.5
+          }}
           mousePosition={mousePosition}
-          materialSettings={materialSettings}
+          isHovering={isHovering}
         />
         
         <EnhancedCardContainer
@@ -299,10 +304,14 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         />
 
         {/* Export Dialog */}
-        <ExportDialog
+        <ExportOptionsDialog
           isOpen={showExportDialog}
           onClose={() => setShowExportDialog(false)}
           card={card}
+          onExport={() => {}}
+          isExporting={false}
+          exportProgress={0}
+          cardTitle={card.title || 'Card'}
         />
       </div>
     </div>
