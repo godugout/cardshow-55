@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -33,8 +34,9 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
     }
   }, [rotation, onRotationRef]);
 
-  console.log('🃏 FloatingCard with simple rotation:', { 
-    isInteracting: rotation.isInteracting 
+  console.log('🃏 FloatingCard with fixed rotation:', { 
+    isInteracting: rotation.isInteracting,
+    isDragging: rotation.isUserControlled()
   });
 
   // Load texture safely
@@ -95,6 +97,12 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
     }
   };
 
+  // Handle pointer leave to stop dragging
+  const handlePointerLeave = (event: any) => {
+    event.stopPropagation();
+    rotation.endRotation();
+  };
+
   useFrame(() => {
     if (meshRef.current) {
       // Apply current rotation directly
@@ -114,6 +122,7 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
       onPointerDown={rotation.startRotation}
       onPointerMove={rotation.updateRotation}
       onPointerUp={rotation.endRotation}
+      onPointerLeave={handlePointerLeave}
       onDoubleClick={handleDoubleClick}
     >
       <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />

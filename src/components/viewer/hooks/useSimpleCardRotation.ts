@@ -30,11 +30,15 @@ export const useSimpleCardRotation = () => {
     state.isDragging = true;
     state.lastPointerPosition = { x: clientX, y: clientY };
     setIsInteracting(true);
+    
+    console.log('🎯 Started card drag rotation');
   }, []);
 
-  // Update rotation during drag - handles Three.js events
+  // Update rotation during drag - ONLY when actively dragging
   const updateRotation = useCallback((event: any) => {
     const state = stateRef.current;
+    
+    // CRITICAL: Only rotate when actively dragging
     if (!state.isDragging) return;
 
     // Extract pointer position from Three.js event
@@ -45,7 +49,8 @@ export const useSimpleCardRotation = () => {
     const deltaX = clientX - state.lastPointerPosition.x;
     const deltaY = clientY - state.lastPointerPosition.y;
 
-    const sensitivity = 0.01;
+    // Reduced sensitivity for more controlled movement
+    const sensitivity = 0.005;
     const rotationY = deltaX * sensitivity;
     const rotationX = -deltaY * sensitivity;
 
@@ -67,6 +72,8 @@ export const useSimpleCardRotation = () => {
     const state = stateRef.current;
     state.isDragging = false;
     setIsInteracting(false);
+    
+    console.log('🛑 Ended card drag rotation');
   }, []);
 
   // Flip card 180 degrees on Y axis
@@ -74,19 +81,29 @@ export const useSimpleCardRotation = () => {
     const state = stateRef.current;
     state.targetRotation.y += Math.PI;
     state.rotation.copy(state.targetRotation);
+    
+    console.log('🔄 Flipped card');
   }, []);
 
-  // Reset to neutral position
+  // Reset to neutral upright position
   const resetRotation = useCallback(() => {
     const state = stateRef.current;
     state.targetRotation.set(0, 0, 0);
     state.rotation.copy(state.targetRotation);
+    state.isDragging = false;
+    setIsInteracting(false);
+    
+    console.log('↺ Reset card to upright position');
   }, []);
 
   // Stop all motion immediately
   const stopMotion = useCallback(() => {
     const state = stateRef.current;
     state.targetRotation.copy(state.rotation);
+    state.isDragging = false;
+    setIsInteracting(false);
+    
+    console.log('⏹️ Stopped card motion');
   }, []);
 
   // Get current rotation for rendering

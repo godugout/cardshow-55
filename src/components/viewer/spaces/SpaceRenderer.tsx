@@ -1,7 +1,7 @@
 
 import React, { Suspense, useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { Environment } from '@react-three/drei';
 import { FloatingCard } from './components/FloatingCard';
 import { ReliablePanoramicSpace } from './environments/ReliablePanoramicSpace';
 import { LoadingFallback } from './components/LoadingFallback';
@@ -38,31 +38,15 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
     atmosphericDensity: 1.0
   }
 }) => {
-  const orbitControlsRef = useRef<any>();
   const cardRotationRef = useRef<any>();
   
-  console.log('🌌 SpaceRenderer with simple rotation:', { 
+  console.log('🌌 SpaceRenderer with fixed card controls:', { 
     spaceName: spaceEnvironment.name,
     spaceControls, 
     environmentControls 
   });
 
-  // Reset camera when requested
-  useEffect(() => {
-    if (orbitControlsRef.current) {
-      const controls = orbitControlsRef.current;
-      
-      // Apply camera distance with smooth transition
-      const targetDistance = spaceControls.cameraDistance;
-      const currentDistance = controls.getDistance();
-      
-      if (Math.abs(currentDistance - targetDistance) > 0.1) {
-        controls.dollyTo(targetDistance, true);
-      }
-    }
-  }, [spaceControls.cameraDistance]);
-
-  // Enhanced camera settings
+  // Enhanced camera settings - fixed position for stable viewing
   const cameraSettings = {
     position: [0, 0, spaceControls.cameraDistance] as [number, number, number],
     fov: environmentControls.fieldOfView,
@@ -99,9 +83,6 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
     if (cardRotationRef.current) {
       cardRotationRef.current.resetRotation();
     }
-    if (orbitControlsRef.current) {
-      orbitControlsRef.current.reset();
-    }
   };
 
   const handleFlipCard = () => {
@@ -127,13 +108,14 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
       {/* Simple Instructions */}
       <div className="absolute bottom-4 right-4 z-50 bg-black/60 text-white p-3 rounded-lg text-sm">
         <div className="space-y-1">
-          <div>• Drag to rotate card</div>
+          <div>• Click and drag to rotate card</div>
           <div>• Double-click to flip</div>
           <div>• Use controls to reset</div>
+          <div>• Card stays upright by default</div>
         </div>
       </div>
 
-      {/* 3D Canvas */}
+      {/* 3D Canvas - No OrbitControls */}
       <Canvas
         camera={cameraSettings}
         shadows
@@ -146,7 +128,7 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
         }}
         onError={handleCanvasError}
         onCreated={({ gl }) => {
-          console.log('✅ Canvas created successfully with simple rotation');
+          console.log('✅ Canvas created successfully with fixed card controls');
         }}
       >
         {/* Enhanced fog for atmospheric density */}
@@ -166,30 +148,13 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
             onError={handleSpaceLoadError}
           />
           
-          {/* Simplified floating card - always centered */}
+          {/* Fixed floating card - always centered, only rotates on drag */}
           <FloatingCard
             card={card}
             onClick={onCardClick}
             onRotationRef={(rotation) => {
               cardRotationRef.current = rotation;
             }}
-          />
-          
-          {/* Enhanced orbit controls */}
-          <OrbitControls
-            ref={orbitControlsRef}
-            enablePan={false}
-            enableZoom={true}
-            autoRotate={spaceControls.orbitSpeed > 0}
-            autoRotateSpeed={spaceControls.orbitSpeed * 2}
-            minDistance={3}
-            maxDistance={15}
-            minPolarAngle={Math.PI / 6}
-            maxPolarAngle={Math.PI - Math.PI / 6}
-            maxAzimuthAngle={Math.PI / 3}
-            minAzimuthAngle={-Math.PI / 3}
-            dampingFactor={0.1}
-            enableDamping={true}
           />
         </Suspense>
       </Canvas>
