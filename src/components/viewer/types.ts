@@ -5,7 +5,6 @@ export interface LightingPreset {
   description: string;
   brightness: number;
   contrast: number;
-  shadows: number;
   highlights: number;
   temperature: number;
   position: { x: number; y: number; z: number };
@@ -26,14 +25,12 @@ export interface EnvironmentScene {
   lighting: {
     color: string;
     intensity: number;
-    elevation: number;
     azimuth: number;
   };
   atmosphere: {
     fog: boolean;
     fogColor: string;
     fogDensity: number;
-    particles: boolean;
   };
   depth: {
     layers: number;
@@ -60,4 +57,30 @@ export interface VisualEffect {
   type: 'surface' | 'lighting' | 'atmospheric';
   intensity: number[];
   properties: Record<string, any>;
+}
+
+export interface ImmersiveCardViewerProps {
+  card: any;
+  cards: any[];
+  currentCardIndex: number;
+  onCardChange: (card: any, index: number) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onShare: (card: any) => void;
+  onDownload: (cards: any[]) => void;
+  allowRotation?: boolean;
+  showStats?: boolean;
+  ambient?: boolean;
+}
+
+export type BackgroundType = 'gradient' | 'image' | 'solid';
+
+export interface EnvironmentControls {
+  backgroundType: BackgroundType;
+  gradientColors: string[];
+  backgroundImage?: string;
+  backgroundOpacity: number;
+  blur: number;
+  brightness: number;
+  contrast: number;
 }
