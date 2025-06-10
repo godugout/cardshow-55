@@ -29,7 +29,11 @@ export const useViewerState = () => {
     roughness: 0.40,
     metalness: 0.45,
     clearcoat: 0.60,
-    reflectivity: 0.40
+    reflectivity: 0.40,
+    clearcoatRoughness: 0.1,
+    ior: 1.4,
+    transmission: 0.0,
+    thickness: 0.5
   });
 
   // Preset state

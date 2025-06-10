@@ -1,91 +1,63 @@
 
-import type { CardData } from '@/hooks/useCardEditor';
-
-export type BackgroundType = 'scene' | '3dSpace';
-
-export interface ImmersiveCardViewerProps {
-  card: CardData;
-  cards?: CardData[];
-  currentCardIndex?: number;
-  onCardChange?: (card: CardData, index: number) => void;
-  isOpen?: boolean;
-  onClose?: () => void;
-  onShare?: (card: CardData) => void;
-  onDownload?: (cards: CardData[]) => void;
-  allowRotation?: boolean;
-  showStats?: boolean;
-  ambient?: boolean;
+export interface LightingPreset {
+  id: string;
+  name: string;
+  description: string;
+  brightness: number;
+  contrast: number;
+  shadows: number;
+  highlights: number;
+  temperature: number;
+  position: { x: number; y: number; z: number };
+  shadowSoftness: number;
 }
 
 export interface EnvironmentScene {
   id: string;
   name: string;
+  icon: string;
+  category: string;
   description: string;
+  panoramicUrl: string;
   previewUrl: string;
-  hdriUrl?: string;
-  panoramicUrl?: string;
-  backgroundImage?: string;
-  emoji?: string;
-  icon?: string;
-  gradient?: string;
-  category?: string;
-  lighting?: {
+  backgroundImage: string;
+  hdriUrl: string;
+  gradient: string;
+  lighting: {
     color: string;
     intensity: number;
+    elevation: number;
+    azimuth: number;
   };
-  atmosphere?: {
-    fog?: boolean;
-    fogColor?: string;
-    fogDensity?: number;
+  atmosphere: {
+    fog: boolean;
+    fogColor: string;
+    fogDensity: number;
+    particles: boolean;
   };
-  config?: {
-    intensity?: number;
-    blur?: number;
-    background?: boolean;
-  };
-}
-
-export interface VisualEffect {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-}
-
-export interface LightingPreset {
-  id: string;
-  name: string;
-  description: string;
-  brightness?: number;
-  contrast?: number;
-  temperature?: number;
-  config: {
-    ambientIntensity: number;
-    directionalIntensity: number;
-    pointLights: Array<{
-      position: [number, number, number];
-      intensity: number;
-      color: string;
-    }>;
-    shadows: boolean;
-    shadowIntensity: number;
+  depth: {
+    layers: number;
+    parallaxIntensity: number;
+    fieldOfView: number;
   };
 }
 
 export interface MaterialSettings {
   roughness: number;
   metalness: number;
-  reflectivity: number;
   clearcoat: number;
+  reflectivity: number;
   clearcoatRoughness: number;
   ior: number;
   transmission: number;
   thickness: number;
 }
 
-export interface EnvironmentControls {
-  depthOfField: number;
-  parallaxIntensity: number;
-  fieldOfView: number;
-  atmosphericDensity: number;
+export interface VisualEffect {
+  id: string;
+  name: string;
+  description: string;
+  type: 'surface' | 'lighting' | 'atmospheric';
+  intensity: number[];
+  properties: Record<string, any>;
 }

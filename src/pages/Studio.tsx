@@ -27,6 +27,10 @@ const Studio = () => {
     return <NoCardSelected />;
   }
 
+  const handleCardChangeWrapper = (card: any, index: number) => {
+    handleCardChange(index);
+  };
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-crd-darkest">
@@ -38,7 +42,7 @@ const Studio = () => {
           card={selectedCard}
           cards={mockCards}
           currentCardIndex={currentCardIndex}
-          onCardChange={handleCardChange}
+          onCardChange={handleCardChangeWrapper}
           isOpen={true}
           onClose={handleClose}
           onShare={handleShare}
