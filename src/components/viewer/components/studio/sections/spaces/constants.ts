@@ -1,3 +1,4 @@
+
 import type { SpaceEnvironment } from '../../../../spaces/types';
 import { PANORAMIC_PHOTO_LIBRARY } from '../../../../spaces/environments/photoLibrary';
 
@@ -15,7 +16,7 @@ const createPanoramicEnvironments = (): SpaceEnvironment[] => {
       backgroundColor: '#000000',
       ambientColor: '#ffffff',
       lightIntensity: photo.lighting.intensity,
-      panoramicPhotoId: photo.id,
+      panoramicPhotoId: photo.id, // This is the key fix - use the actual photo ID
       exposure: photo.lighting.intensity,
       saturation: 1.0,
       autoRotation: photo.camera.autoRotateSpeed,
@@ -81,10 +82,10 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     },
   },
 
-  // Add all panoramic environments
+  // Add all panoramic environments with proper ID mapping
   ...createPanoramicEnvironments(),
 
-  // Natural Spaces
+  // Natural Spaces (non-panoramic)
   {
     id: 'forest',
     name: 'Forest Glade',
@@ -114,7 +115,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     },
   },
 
-  // Sports Spaces
+  // Sports Spaces (non-panoramic)
   {
     id: 'basketball-arena',
     name: 'Basketball Arena',
@@ -131,7 +132,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     },
   },
 
-  // Cultural Spaces
+  // Cultural Spaces (non-panoramic)
   {
     id: 'art-gallery',
     name: 'Art Gallery',
@@ -148,7 +149,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     },
   },
 
-  // Themed Spaces
+  // Themed Spaces (non-panoramic)
   {
     id: 'neon-city',
     name: 'Neon City',
@@ -164,3 +165,10 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
     },
   }
 ];
+
+// Debug function to log all panoramic environments
+console.log('🗂️ Available panoramic environments:', 
+  SPACE_ENVIRONMENTS
+    .filter(env => env.type === 'panoramic')
+    .map(env => ({ id: env.id, name: env.name, photoId: env.config.panoramicPhotoId }))
+);

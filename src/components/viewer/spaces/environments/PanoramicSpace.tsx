@@ -2,7 +2,7 @@
 import React from 'react';
 import { PanoramicEnvironment } from './PanoramicEnvironment';
 import { PanoramicControls } from '../controls/PanoramicControls';
-import { getPhotoById } from './photoLibrary';
+import { getPhotoById, getFallbackPhoto } from './photoLibrary';
 import type { SpaceEnvironment, SpaceControls } from '../types';
 
 interface PanoramicSpaceProps {
@@ -11,18 +11,26 @@ interface PanoramicSpaceProps {
 }
 
 export const PanoramicSpace: React.FC<PanoramicSpaceProps> = ({ config, controls }) => {
-  const photo = config.panoramicPhotoId ? getPhotoById(config.panoramicPhotoId) : null;
+  console.log('🎪 PanoramicSpace config:', config);
   
-  if (!photo) {
-    console.warn('PanoramicSpace: No photo found for ID:', config.panoramicPhotoId);
-    return (
-      <>
-        <color attach="background" args={[config.backgroundColor || '#1a1a1a']} />
-        <ambientLight intensity={0.4} />
-        <directionalLight position={[10, 10, 5]} intensity={0.6} />
-      </>
-    );
+  // Try to get the photo by ID, with fallback
+  let photo = null;
+  
+  if (config.panoramicPhotoId) {
+    photo = getPhotoById(config.panoramicPhotoId);
+    console.log('📸 Photo lookup result:', { 
+      requestedId: config.panoramicPhotoId, 
+      found: photo ? photo.name : 'NOT FOUND' 
+    });
   }
+  
+  // If no photo found, use fallback
+  if (!photo) {
+    console.warn('⚠️ No photo found, using fallback');
+    photo = getFallbackPhoto();
+  }
+  
+  console.log('🖼️ Final photo to render:', photo.name, photo.url);
 
   return (
     <>
