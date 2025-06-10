@@ -14,14 +14,15 @@ import { CulturalSpace } from './environments/CulturalSpace';
 import { RetailSpace } from './environments/RetailSpace';
 import { NaturalSpace } from './environments/NaturalSpace';
 import { ProfessionalSpace } from './environments/ProfessionalSpace';
-import type { Card } from '@/types/card';
+import type { CardData } from '@/types/card';
 import type { SpaceEnvironment, SpaceControls } from './types';
 
 interface SpaceRenderer3DProps {
-  card: Card;
+  card: CardData;
   environment: SpaceEnvironment;
   controls: SpaceControls;
   onCardClick?: () => void;
+  onCameraReset?: () => void;
 }
 
 export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
@@ -29,6 +30,7 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   environment,
   controls,
   onCardClick,
+  onCameraReset,
 }) => {
   const renderEnvironment = () => {
     switch (environment.type) {

@@ -85,7 +85,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     setSpaceControls,
     handleReset,
     handleZoom,
-    handleResetCamera
+    handleResetCamera,
+    onCardClick
   } = viewerState;
 
   // Enhanced effects hook
@@ -351,12 +352,12 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         <div className="absolute inset-0 z-0">
           {backgroundType === '3dSpace' && selectedSpace ? (
             <SpaceRenderer3D
+              card={card}
               environment={selectedSpace}
               controls={spaceControls}
+              onCardClick={onCardClick}
               onCameraReset={handleResetCamera}
-            >
-              <Card3D card={card} controls={spaceControls} />
-            </SpaceRenderer3D>
+            />
           ) : (
             <>
               {/* Use the improved environment sphere with better depth effects */}
@@ -591,3 +592,5 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     </>
   );
 };
+
+export default ImmersiveCardViewer;

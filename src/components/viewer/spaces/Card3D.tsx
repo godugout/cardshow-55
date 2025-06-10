@@ -3,15 +3,16 @@ import React, { useRef } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { TextureLoader } from 'three';
 import { Mesh, PlaneGeometry, MeshStandardMaterial } from 'three';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { SpaceControls } from './types';
 
 interface Card3DProps {
   card: CardData;
   controls: SpaceControls;
+  onClick?: () => void;
 }
 
-export const Card3D: React.FC<Card3DProps> = ({ card, controls }) => {
+export const Card3D: React.FC<Card3DProps> = ({ card, controls, onClick }) => {
   const meshRef = useRef<Mesh>(null);
   
   // Load card image as texture
@@ -37,7 +38,12 @@ export const Card3D: React.FC<Card3DProps> = ({ card, controls }) => {
   });
 
   return (
-    <mesh ref={meshRef} castShadow receiveShadow>
+    <mesh 
+      ref={meshRef} 
+      castShadow 
+      receiveShadow
+      onClick={onClick}
+    >
       <planeGeometry args={[2.5, 3.5]} />
       <meshStandardMaterial 
         map={texture} 
