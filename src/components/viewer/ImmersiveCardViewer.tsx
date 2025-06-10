@@ -24,7 +24,7 @@ import type { SpaceEnvironment, SpaceControls } from './spaces/types';
 import { SpaceRenderer3D } from './spaces/SpaceRenderer3D';
 
 export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
-  card,
+  card: providedCard,
   cards = [],
   currentCardIndex = 0,
   onCardChange,
@@ -36,6 +36,14 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   showStats = true,
   ambient = false
 }) => {
+  // Use default card if none provided
+  const card = providedCard || {
+    id: 'default',
+    title: 'Sample Card',
+    image_url: '/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png',
+    description: 'A sample trading card for testing'
+  };
+
   const {
     isFullscreen,
     rotation,

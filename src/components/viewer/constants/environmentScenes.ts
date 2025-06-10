@@ -8,9 +8,9 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     icon: '🎬',
     category: 'professional',
     description: 'Clean studio environment',
-    panoramicUrl: '/environments/studio-360.hdr',
-    previewUrl: '/environments/studio-preview.jpg',
-    backgroundImage: '/environments/studio-bg.jpg',
+    panoramicUrl: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=2048&h=1024&fit=crop',
+    previewUrl: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop',
+    backgroundImage: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=2048&h=1024&fit=crop',
     hdriUrl: '/environments/studio.hdr',
     gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     lighting: {
@@ -37,9 +37,9 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     icon: '🌆',
     category: 'futuristic',
     description: 'Neon-lit cyberpunk cityscape',
-    panoramicUrl: '/environments/cyberpunk-360.hdr',
-    previewUrl: '/environments/cyberpunk-preview.jpg',
-    backgroundImage: '/environments/cyberpunk-bg.jpg',
+    panoramicUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2048&h=1024&fit=crop',
+    previewUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
+    backgroundImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2048&h=1024&fit=crop',
     hdriUrl: '/environments/cyberpunk.hdr',
     gradient: 'linear-gradient(135deg, #ff006e 0%, #8338ec 100%)',
     lighting: {
@@ -61,43 +61,14 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     }
   },
   {
-    id: 'fantasy',
-    name: 'Fantasy Realm',
-    icon: '🏰',
-    category: 'magical',
-    description: 'Mystical fantasy landscape',
-    panoramicUrl: '/environments/fantasy-360.hdr',
-    previewUrl: '/environments/fantasy-preview.jpg',
-    backgroundImage: '/environments/fantasy-bg.jpg',
-    hdriUrl: '/environments/fantasy.hdr',
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    lighting: {
-      color: '#ffd700',
-      intensity: 0.9,
-      azimuth: 60,
-      elevation: 60
-    },
-    atmosphere: {
-      fog: true,
-      fogColor: '#9370db',
-      fogDensity: 0.2,
-      particles: true
-    },
-    depth: {
-      layers: 4,
-      parallaxIntensity: 1.2,
-      fieldOfView: 70
-    }
-  },
-  {
     id: 'space',
     name: 'Deep Space',
     icon: '🌌',
     category: 'cosmic',
     description: 'Vast cosmic environment',
-    panoramicUrl: '/environments/space-360.hdr',
-    previewUrl: '/environments/space-preview.jpg',
-    backgroundImage: '/environments/space-bg.jpg',
+    panoramicUrl: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=2048&h=1024&fit=crop',
+    previewUrl: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=400&h=300&fit=crop',
+    backgroundImage: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=2048&h=1024&fit=crop',
     hdriUrl: '/environments/space.hdr',
     gradient: 'radial-gradient(ellipse at center, #1e3c72 0%, #2a5298 100%)',
     lighting: {
@@ -119,43 +90,14 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
     }
   },
   {
-    id: 'retro',
-    name: 'Retro Wave',
-    icon: '🌴',
-    category: 'nostalgic',
-    description: '80s retro synthwave vibe',
-    panoramicUrl: '/environments/retro-360.hdr',
-    previewUrl: '/environments/retro-preview.jpg',
-    backgroundImage: '/environments/retro-bg.jpg',
-    hdriUrl: '/environments/retro.hdr',
-    gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
-    lighting: {
-      color: '#ff1493',
-      intensity: 1.1,
-      azimuth: 30,
-      elevation: 45
-    },
-    atmosphere: {
-      fog: true,
-      fogColor: '#ff1493',
-      fogDensity: 0.25,
-      particles: false
-    },
-    depth: {
-      layers: 4,
-      parallaxIntensity: 1.3,
-      fieldOfView: 75
-    }
-  },
-  {
-    id: 'nature',
+    id: 'forest',
     name: 'Forest Grove',
     icon: '🌲',
     category: 'natural',
     description: 'Peaceful forest environment',
-    panoramicUrl: '/environments/forest-360.hdr',
-    previewUrl: '/environments/forest-preview.jpg',
-    backgroundImage: '/environments/forest-bg.jpg',
+    panoramicUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=2048&h=1024&fit=crop',
+    previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop',
+    backgroundImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=2048&h=1024&fit=crop',
     hdriUrl: '/environments/forest.hdr',
     gradient: 'linear-gradient(135deg, #134e5e 0%, #71b280 100%)',
     lighting: {

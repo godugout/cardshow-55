@@ -15,7 +15,7 @@ import { CosmicNebulaSpace } from './environments/CosmicNebulaSpace';
 import { Card3D } from './Card3D';
 import type { SpaceEnvironment, SpaceControls } from './types';
 import type { EnvironmentScene } from '../types';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 interface SpaceRenderer3DProps {
   environment: SpaceEnvironment | EnvironmentScene;
