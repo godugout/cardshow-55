@@ -6,11 +6,11 @@ import type { EnvironmentScene, EnvironmentControls, BackgroundType } from '../.
 import { 
   SceneGrid, 
   SpaceEnvironmentGrid, 
-  CameraControlsSection, 
   CardPhysicsSection, 
   EnvironmentControlsSection,
   SPACE_ENVIRONMENTS 
 } from './spaces';
+import { EnhancedCameraControlsSection } from './spaces/EnhancedCameraControlsSection';
 
 interface SpacesSectionProps {
   selectedSpace?: SpaceEnvironment | null;
@@ -54,11 +54,13 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
     : `${selectedScene.name} (Scene)`;
 
   const handleSceneChange = (scene: EnvironmentScene) => {
+    console.log('🎬 Scene changed to:', scene.name);
     onSceneChange(scene);
     onBackgroundTypeChange('scene');
   };
 
   const handleSpaceChange = (space: SpaceEnvironment) => {
+    console.log('🌌 Space changed to:', space.name);
     onSpaceChange(space);
     onBackgroundTypeChange('3dSpace');
   };
@@ -89,8 +91,8 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
         {/* 3D Space Controls (only show when 3D space is active) */}
         {backgroundType === '3dSpace' && (
           <>
-            {/* Camera Controls */}
-            <CameraControlsSection
+            {/* Enhanced Camera Controls */}
+            <EnhancedCameraControlsSection
               spaceControls={spaceControls}
               onControlsChange={onSpaceControlsChange}
               onResetCamera={onResetCamera}
@@ -110,13 +112,15 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
           onEnvironmentControlsChange={onEnvironmentControlsChange}
         />
 
-        {/* Feature Status */}
+        {/* Enhanced Feature Status */}
         <div className="p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-400/30">
-          <div className="text-purple-300 text-xs font-medium mb-1">
-            🚀 Unified Spaces & Environments
+          <div className="text-purple-300 text-xs font-medium mb-1 flex items-center">
+            <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+            🚀 Enhanced Studio Controls
           </div>
           <div className="text-white/70 text-xs">
-            Switch between 2D scenes and immersive 3D environments. Active: {backgroundType === '3dSpace' ? '3D Space' : '2D Scene'}
+            All controls now provide real-time visual feedback. 
+            Mode: {backgroundType === '3dSpace' ? '3D Immersive' : '2D Enhanced'}
           </div>
         </div>
       </div>
