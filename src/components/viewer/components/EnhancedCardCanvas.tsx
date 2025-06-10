@@ -139,7 +139,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         frameStyles={frameStyles}
         enhancedEffectStyles={enhancedEffectStyles}
         SurfaceTexture={SurfaceTexture}
-        interactiveLighting={interactiveLighting}
+        interactiveLightingEnabled={interactiveLighting}
         selectedScene={selectedScene}
         selectedLighting={selectedLighting}
         materialSettings={materialSettings}
@@ -153,6 +153,14 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
           onMouseLeave();
         }}
         onClick={handleDoubleClick}
+        environmentControls={{
+          depthOfField: 1.0,
+          parallaxIntensity: 1.0,
+          fieldOfView: 75,
+          atmosphericDensity: 1.0
+        }}
+        lightingPreset={selectedLighting}
+        environmentBrightness={overallBrightness}
       />
 
       {/* Click instruction updated */}

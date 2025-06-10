@@ -32,26 +32,45 @@ const getRarityColor = (rarity: string) => {
   }
 };
 
+// Default empty effect values to prevent type errors
+const defaultEffectValues: EffectValues = {
+  holographic: 0,
+  chrome: 0,
+  foil: 0,
+  vintage: 0,
+  prismatic: 0,
+  aurora: 0,
+  crystal: 0,
+  lunar: 0,
+  waves: 0,
+  interference: 0,
+  gold: 0,
+  ice: 0,
+  prizm: 0,
+  foilspray: 0,
+  brushedmetal: 0
+};
+
 export const CompactCardDetails: React.FC<CompactCardDetailsProps> = ({ 
   card,
-  effectValues,
+  effectValues = defaultEffectValues,
   selectedScene,
   selectedLighting,
   materialSettings,
   overallBrightness = [100],
   interactiveLighting = false
 }) => {
-  const { selectedMaterial } = useDynamicCardBackMaterials(effectValues || {});
+  const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
 
   // Get active effects with their intensities
-  const activeEffects = effectValues ? Object.entries(effectValues)
-    .filter(([_, params]) => params && typeof params.intensity === 'number' && params.intensity > 0)
-    .map(([effectId, params]) => ({
+  const activeEffects = Object.entries(effectValues)
+    .filter(([_, value]) => typeof value === 'number' && value > 0)
+    .map(([effectId, value]) => ({
       id: effectId,
       name: effectId.charAt(0).toUpperCase() + effectId.slice(1),
-      intensity: params.intensity as number
+      intensity: value as number
     }))
-    .sort((a, b) => b.intensity - a.intensity) : [];
+    .sort((a, b) => b.intensity - a.intensity);
 
   return (
     <div className="bg-black bg-opacity-90 backdrop-blur-lg rounded-lg p-4 border border-white/10 max-w-sm">
