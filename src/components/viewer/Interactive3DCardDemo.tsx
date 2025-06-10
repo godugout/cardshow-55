@@ -11,6 +11,7 @@ export const Interactive3DCardDemo = () => {
     id: 'demo-card',
     title: 'Sample CRD Card',
     description: 'Experience different 3D interaction modes with this demo card. Try switching between modes to see how each one feels!',
+    image_url: '/placeholder.svg', // Added placeholder image
     rarity: 'epic',
     tags: ['demo', '3d', 'interactive'],
     design_metadata: {},

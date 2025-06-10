@@ -32,7 +32,7 @@ export interface CardData {
   id: string;
   title: string;
   description?: string;
-  image_url: string;
+  image_url?: string; // Made optional since cards can be created without images
   thumbnail_url?: string;
   created_at?: string;
   updated_at?: string;

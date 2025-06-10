@@ -14,6 +14,7 @@ export const useSimpleCardEditor = () => {
     id: uuidv4(),
     title: '',
     description: '',
+    image_url: '', // Initialize as empty string
     rarity: 'common' as CardRarity,
     tags: [],
     design_metadata: {},
