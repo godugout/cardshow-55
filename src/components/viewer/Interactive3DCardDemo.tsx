@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Interactive3DCard, type InteractionMode } from './Interactive3DCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +15,12 @@ export const Interactive3DCardDemo = () => {
     tags: ['demo', '3d', 'interactive'],
     design_metadata: {},
     visibility: 'public',
+    category: 'demo',
+    effects: {
+      holographic: true,
+      foil: false,
+      chrome: false
+    },
     creator_attribution: {
       creator_name: 'Demo Creator',
       collaboration_type: 'solo'
