@@ -72,6 +72,17 @@ export interface CardData {
   publishing_options: PublishingOptions;
   verification_status?: 'pending' | 'verified' | 'rejected';
   print_metadata?: Record<string, any>;
+  category: string;
+  effects: {
+    holographic: boolean;
+    foil: boolean;
+    chrome: boolean;
+  };
+  price?: number;
+  edition_size?: number;
+  marketplace_listing?: boolean;
+  crd_catalog_inclusion?: boolean;
+  print_available?: boolean;
 }
 
 export interface UseCardEditorOptions {

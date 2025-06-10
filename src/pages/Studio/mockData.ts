@@ -18,6 +18,12 @@ export const mockCards: CardData[] = [
       }
     },
     visibility: 'public',
+    category: 'fantasy',
+    effects: {
+      holographic: true,
+      foil: false,
+      chrome: false
+    },
     creator_attribution: {
       collaboration_type: 'solo'
     },
@@ -45,6 +51,12 @@ export const mockCards: CardData[] = [
       }
     },
     visibility: 'public',
+    category: 'fantasy',
+    effects: {
+      holographic: false,
+      foil: true,
+      chrome: false
+    },
     creator_attribution: {
       collaboration_type: 'solo'
     },
@@ -71,6 +83,12 @@ export const mockCards: CardData[] = [
       }
     },
     visibility: 'public',
+    category: 'nature',
+    effects: {
+      holographic: false,
+      foil: false,
+      chrome: true
+    },
     creator_attribution: {
       collaboration_type: 'solo'
     },

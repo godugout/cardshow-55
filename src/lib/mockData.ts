@@ -11,10 +11,21 @@ export const mockCards: CardData[] = [
     category: 'fantasy',
     tags: ['dragon', 'fire', 'legendary'],
     design_metadata: {},
+    visibility: 'public',
     effects: {
       holographic: true,
       foil: false,
       chrome: false
+    },
+    creator_attribution: {
+      collaboration_type: 'solo'
+    },
+    publishing_options: {
+      marketplace_listing: false,
+      crd_catalog_inclusion: true,
+      print_available: false,
+      pricing: { currency: 'USD' },
+      distribution: { limited_edition: false }
     }
   },
   {
@@ -26,10 +37,21 @@ export const mockCards: CardData[] = [
     category: 'fantasy',
     tags: ['warrior', 'crystal', 'magic'],
     design_metadata: {},
+    visibility: 'public',
     effects: {
       holographic: false,
       foil: true,
       chrome: false
+    },
+    creator_attribution: {
+      collaboration_type: 'solo'
+    },
+    publishing_options: {
+      marketplace_listing: false,
+      crd_catalog_inclusion: true,
+      print_available: false,
+      pricing: { currency: 'USD' },
+      distribution: { limited_edition: false }
     }
   },
   {
@@ -41,10 +63,21 @@ export const mockCards: CardData[] = [
     category: 'sci-fi',
     tags: ['space', 'explorer', 'adventure'],
     design_metadata: {},
+    visibility: 'public',
     effects: {
       holographic: false,
       foil: false,
       chrome: true
+    },
+    creator_attribution: {
+      collaboration_type: 'solo'
+    },
+    publishing_options: {
+      marketplace_listing: false,
+      crd_catalog_inclusion: true,
+      print_available: false,
+      pricing: { currency: 'USD' },
+      distribution: { limited_edition: false }
     }
   },
   {
@@ -56,10 +89,21 @@ export const mockCards: CardData[] = [
     category: 'cyberpunk',
     tags: ['samurai', 'neon', 'cyberpunk'],
     design_metadata: {},
+    visibility: 'public',
     effects: {
       holographic: true,
       foil: true,
       chrome: false
+    },
+    creator_attribution: {
+      collaboration_type: 'solo'
+    },
+    publishing_options: {
+      marketplace_listing: false,
+      crd_catalog_inclusion: true,
+      print_available: false,
+      pricing: { currency: 'USD' },
+      distribution: { limited_edition: false }
     }
   },
   {
@@ -71,10 +115,21 @@ export const mockCards: CardData[] = [
     category: 'digital',
     tags: ['phoenix', 'digital', 'rebirth'],
     design_metadata: {},
+    visibility: 'public',
     effects: {
       holographic: true,
       foil: false,
       chrome: true
+    },
+    creator_attribution: {
+      collaboration_type: 'solo'
+    },
+    publishing_options: {
+      marketplace_listing: false,
+      crd_catalog_inclusion: true,
+      print_available: false,
+      pricing: { currency: 'USD' },
+      distribution: { limited_edition: false }
     }
   }
 ];

@@ -3,44 +3,18 @@ import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useLocalAutoSave } from './card-editor/useLocalAutoSave';
 import { useAutoSave } from './card-editor/useAutoSave';
-import type { CardData, UseCardEditorOptions, CardRarity, CardVisibility, CreatorAttribution, PublishingOptions, DesignTemplate } from './card-editor/types';
-
-export interface CardData {
-  id?: string;
-  title: string;
-  description?: string;
-  type?: string;
-  series?: string;
-  rarity: CardRarity;
-  tags: string[];
-  image_url?: string;
-  thumbnail_url?: string;
-  design_metadata: Record<string, any>;
-  visibility: CardVisibility;
-  is_public?: boolean;
-  shop_id?: string;
-  template_id?: string;
-  collection_id?: string;
-  team_id?: string;
-  creator_attribution: CreatorAttribution;
-  publishing_options: PublishingOptions;
-  verification_status?: 'pending' | 'verified' | 'rejected';
-  print_metadata?: Record<string, any>;
-  category: string;
-  effects: {
-    holographic: boolean;
-    foil: boolean;
-    chrome: boolean;
-  };
-  price?: number;
-  edition_size?: number;
-  marketplace_listing?: boolean;
-  crd_catalog_inclusion?: boolean;
-  print_available?: boolean;
-}
+import type { 
+  CardData, 
+  UseCardEditorOptions, 
+  CardRarity, 
+  CardVisibility, 
+  CreatorAttribution, 
+  PublishingOptions, 
+  DesignTemplate 
+} from './card-editor/types';
 
 // Re-export types for convenience
-export type { CardRarity, CardVisibility, CreatorAttribution, PublishingOptions, DesignTemplate, UseCardEditorOptions };
+export type { CardData, CardRarity, CardVisibility, CreatorAttribution, PublishingOptions, DesignTemplate, UseCardEditorOptions };
 
 export const useCardEditor = (options: UseCardEditorOptions = {}) => {
   const [cardData, setCardData] = useState<CardData>({
