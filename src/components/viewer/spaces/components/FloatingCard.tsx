@@ -32,7 +32,16 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
   }
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useTexture(card.image_url || '/placeholder-card.jpg');
+  
+  // Handle texture loading with proper typing
+  let texture: THREE.Texture;
+  try {
+    const loadedTexture = useTexture(card.image_url || '/placeholder-card.jpg');
+    texture = Array.isArray(loadedTexture) ? loadedTexture[0] : loadedTexture;
+  } catch (error) {
+    console.warn('Failed to load texture, using fallback');
+    texture = new THREE.Texture();
+  }
   
   // Card dimensions (standard trading card ratio)
   const cardWidth = 2.5;
