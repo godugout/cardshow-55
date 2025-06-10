@@ -56,6 +56,9 @@ export interface LightingPreset {
   id: string;
   name: string;
   description: string;
+  brightness?: number;
+  contrast?: number;
+  temperature?: number;
   config: {
     ambientIntensity: number;
     directionalIntensity: number;

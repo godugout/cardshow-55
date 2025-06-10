@@ -4,6 +4,7 @@ import type { EnvironmentControls } from '../types';
 import { ENHANCED_VISUAL_EFFECTS } from './effects/effectConfigs';
 import type { VisualEffectConfig } from './effects/types';
 
+// Update EffectValues to match the actual usage pattern in components
 export interface EffectValues {
   holographic: number;
   chrome: number;
@@ -18,7 +19,8 @@ export interface EffectValues {
   gold: number;
   ice: number;
   prizm: number;
-  foilSpray: number;
+  foilspray: number;
+  brushedmetal: number;
 }
 
 // Re-export the effects configuration and types for convenience
@@ -40,7 +42,8 @@ export const useEnhancedCardEffects = () => {
     gold: 0,
     ice: 0,
     prizm: 0,
-    foilSpray: 0
+    foilspray: 0,
+    brushedmetal: 0
   });
 
   const [isApplyingPreset, setIsApplyingPreset] = useState(false);
@@ -101,7 +104,8 @@ export const useEnhancedCardEffects = () => {
       gold: 0,
       ice: 0,
       prizm: 0,
-      foilSpray: 0
+      foilspray: 0,
+      brushedmetal: 0
     });
   }, []);
 

@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import type { MaterialSettings, LightingPreset, EnvironmentControls } from '../types';
+import type { MaterialSettings, LightingPreset, EnvironmentControls, EnvironmentScene } from '../types';
 
 export interface EnhancedCardContainerProps {
   card: CardData;
@@ -18,6 +18,7 @@ export interface EnhancedCardContainerProps {
   lightingPreset: LightingPreset;
   environmentBrightness: number;
   interactiveLightingEnabled: boolean;
+  interactiveLighting?: boolean;
   mousePosition: { x: number; y: number };
   isHovering: boolean;
   isDragging: boolean;
@@ -30,6 +31,9 @@ export interface EnhancedCardContainerProps {
   onMouseLeave: () => void;
   onClick: () => void;
   environmentControls: EnvironmentControls;
+  selectedScene?: EnvironmentScene;
+  overallBrightness?: number[];
+  showBackgroundInfo?: boolean;
 }
 
 export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
