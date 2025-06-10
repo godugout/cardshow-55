@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useCardPhysics } from '../../hooks/useCardPhysics';
+import { useInteractiveCardRotation } from '../../hooks/useInteractiveCardRotation';
 
 interface FloatingCardProps {
   card: any;
@@ -17,6 +18,7 @@ interface FloatingCardProps {
     atmosphericDensity: number;
   };
   onPhysicsRef?: (physics: any) => void;
+  onRotationRef?: (rotation: any) => void;
 }
 
 export const FloatingCard: React.FC<FloatingCardProps> = ({
@@ -31,7 +33,8 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
     fieldOfView: 75,
     atmosphericDensity: 1.0
   },
-  onPhysicsRef
+  onPhysicsRef,
+  onRotationRef
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
@@ -45,22 +48,42 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
   // Initialize physics system with bounded movement
   const physics = useCardPhysics({
     floatIntensity,
-    autoRotate,
+    autoRotate: autoRotate && !useInteractiveCardRotation().isUserControlled(), // Disable auto-rotate when user is controlling
     gravityEffect,
     centerPosition: new THREE.Vector3(0, 0, 0),
-    maxDistance: 1.5, // Card can't move more than 1.5 units from center
+    maxDistance: 1.5,
     snapBackForce: 0.15,
     dampingFactor: 0.92
   });
 
-  // Expose physics controls to parent
+  // Initialize interactive rotation system
+  const interactiveRotation = useInteractiveCardRotation({
+    sensitivity: 0.005,
+    dampingFactor: 0.95,
+    momentumDecay: 0.98,
+    maxAngularVelocity: 0.15,
+    snapToAngles: false
+  });
+
+  // Expose physics and rotation controls to parent
   useEffect(() => {
     if (onPhysicsRef) {
       onPhysicsRef(physics);
     }
   }, [physics, onPhysicsRef]);
 
-  console.log('🃏 FloatingCard physics:', { floatIntensity, autoRotate, gravityEffect });
+  useEffect(() => {
+    if (onRotationRef) {
+      onRotationRef(interactiveRotation);
+    }
+  }, [interactiveRotation, onRotationRef]);
+
+  console.log('🃏 FloatingCard with interactive rotation:', { 
+    floatIntensity, 
+    autoRotate, 
+    gravityEffect,
+    isInteracting: interactiveRotation.isInteracting 
+  });
 
   // Load texture safely in useEffect to prevent re-render loops
   useEffect(() => {
@@ -111,20 +134,53 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
     });
   }, [texture, textureError, environmentControls.atmosphericDensity]);
 
+  // Handle pointer events for rotation
+  const handlePointerDown = (event: any) => {
+    event.stopPropagation();
+    interactiveRotation.startRotation(event);
+  };
+
+  const handlePointerMove = (event: any) => {
+    interactiveRotation.updateRotation(event);
+  };
+
+  const handlePointerUp = () => {
+    interactiveRotation.endRotation();
+  };
+
+  // Handle double-click for flip
+  const handleDoubleClick = (event: any) => {
+    event.stopPropagation();
+    interactiveRotation.handleFlip('y'); // Flip around Y axis
+    if (onClick) {
+      onClick();
+    }
+  };
+
   useFrame((state) => {
     if (meshRef.current) {
-      // Update physics with bounded, centered movement
-      const physicsResult = physics.updatePhysics(meshRef.current, state.clock.elapsedTime * 1000);
+      // Update physics with bounded, centered movement (only if not user controlled)
+      if (!interactiveRotation.isUserControlled()) {
+        const physicsResult = physics.updatePhysics(meshRef.current, state.clock.elapsedTime * 1000);
+        
+        // Visual feedback for snap-back state
+        if (physicsResult?.isReturningToCenter) {
+          const material = meshRef.current.material as THREE.MeshStandardMaterial;
+          material.emissive.setHex(0x0033aa);
+          material.emissiveIntensity = 0.2;
+        } else {
+          const material = meshRef.current.material as THREE.MeshStandardMaterial;
+          material.emissive.setHex(0x000000);
+          material.emissiveIntensity = 0;
+        }
+      }
+
+      // Update interactive rotation
+      const rotationState = interactiveRotation.updatePhysics();
       
-      // Visual feedback for snap-back state
-      if (physicsResult?.isReturningToCenter) {
-        const material = meshRef.current.material as THREE.MeshStandardMaterial;
-        material.emissive.setHex(0x0033aa); // Blue glow when returning to center
-        material.emissiveIntensity = 0.2;
-      } else {
-        const material = meshRef.current.material as THREE.MeshStandardMaterial;
-        material.emissive.setHex(0x000000);
-        material.emissiveIntensity = 0;
+      // Apply rotation (override physics rotation when user is controlling)
+      if (interactiveRotation.isUserControlled() || rotationState.angularVelocity.length() > 0.001) {
+        meshRef.current.rotation.copy(rotationState.rotation);
       }
     }
   });
@@ -134,8 +190,11 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
       ref={meshRef} 
       castShadow 
       receiveShadow 
-      onClick={onClick}
       position={[0, 0, 0]}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onDoubleClick={handleDoubleClick}
     >
       <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
       <primitive object={material} />

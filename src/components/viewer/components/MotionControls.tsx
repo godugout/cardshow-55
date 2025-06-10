@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { StopCircle, Target, Play, RotateCcw } from 'lucide-react';
+import { StopCircle, Target, Play, RotateCcw, FlipHorizontal } from 'lucide-react';
 
 interface MotionControlsProps {
   onStopMotion: () => void;
   onSnapToCenter: () => void;
   onResumeMotion: () => void;
   onResetRotation: () => void;
+  onFlipCard?: () => void;
   isMotionStopped?: boolean;
   className?: string;
 }
@@ -17,6 +18,7 @@ export const MotionControls: React.FC<MotionControlsProps> = ({
   onSnapToCenter,
   onResumeMotion,
   onResetRotation,
+  onFlipCard,
   isMotionStopped = false,
   className = ''
 }) => {
@@ -58,6 +60,20 @@ export const MotionControls: React.FC<MotionControlsProps> = ({
         <Target className="w-4 h-4 mr-1" />
         Center
       </Button>
+
+      {/* Flip Card */}
+      {onFlipCard && (
+        <Button
+          onClick={onFlipCard}
+          variant="outline"
+          size="sm"
+          className="h-9 px-3 bg-yellow-500/20 border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/30"
+          title="Flip Card"
+        >
+          <FlipHorizontal className="w-4 h-4 mr-1" />
+          Flip
+        </Button>
+      )}
 
       {/* Reset Rotation */}
       <Button

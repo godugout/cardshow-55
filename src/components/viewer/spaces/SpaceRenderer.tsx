@@ -40,9 +40,10 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
 }) => {
   const orbitControlsRef = useRef<any>();
   const cardPhysicsRef = useRef<any>();
+  const cardRotationRef = useRef<any>();
   const [isMotionStopped, setIsMotionStopped] = useState(false);
   
-  console.log('🌌 SpaceRenderer rendering:', { 
+  console.log('🌌 SpaceRenderer with interactive rotation:', { 
     spaceName: spaceEnvironment.name,
     spaceControls, 
     environmentControls 
@@ -89,6 +90,9 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
       cardPhysicsRef.current.stopAllMotion();
       setIsMotionStopped(true);
     }
+    if (cardRotationRef.current) {
+      cardRotationRef.current.resetRotation();
+    }
   };
 
   const handleResumeMotion = () => {
@@ -106,14 +110,24 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
   };
 
   const handleResetRotation = () => {
+    if (cardRotationRef.current) {
+      cardRotationRef.current.resetRotation();
+    }
     if (orbitControlsRef.current) {
       orbitControlsRef.current.reset();
     }
   };
 
+  // New rotation-specific handlers
+  const handleFlipCard = () => {
+    if (cardRotationRef.current) {
+      cardRotationRef.current.handleFlip('y');
+    }
+  };
+
   return (
     <div className="fixed inset-0 w-full h-full">
-      {/* Motion Controls Overlay */}
+      {/* Enhanced Motion Controls Overlay */}
       <div className="absolute top-4 left-4 z-50">
         <MotionControls
           onStopMotion={handleStopMotion}
@@ -122,6 +136,15 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
           onResetRotation={handleResetRotation}
           isMotionStopped={isMotionStopped}
         />
+      </div>
+
+      {/* Rotation Instructions */}
+      <div className="absolute bottom-4 right-4 z-50 bg-black/60 text-white p-3 rounded-lg text-sm">
+        <div className="space-y-1">
+          <div>• Drag to spin card</div>
+          <div>• Double-click to flip</div>
+          <div>• Swipe fast for momentum</div>
+        </div>
       </div>
 
       {/* 3D Canvas */}
@@ -137,7 +160,7 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
         }}
         onError={handleCanvasError}
         onCreated={({ gl }) => {
-          console.log('✅ Canvas created successfully');
+          console.log('✅ Canvas created successfully with interactive rotation');
         }}
       >
         {/* Enhanced fog for atmospheric density */}
@@ -157,7 +180,7 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
             onError={handleSpaceLoadError}
           />
           
-          {/* Enhanced floating card with bounded physics */}
+          {/* Enhanced floating card with interactive rotation */}
           <FloatingCard
             card={card}
             floatIntensity={spaceControls.floatIntensity}
@@ -167,6 +190,9 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
             environmentControls={environmentControls}
             onPhysicsRef={(physics) => {
               cardPhysicsRef.current = physics;
+            }}
+            onRotationRef={(rotation) => {
+              cardRotationRef.current = rotation;
             }}
           />
           
