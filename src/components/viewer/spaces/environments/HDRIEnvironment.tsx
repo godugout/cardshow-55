@@ -1,7 +1,6 @@
 
 import React, { useRef, useEffect } from 'react';
-import { useFrame, useLoader } from '@react-three/fiber';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
+import { useFrame, useThree } from '@react-three/fiber';
 import { Environment, Sphere } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -20,17 +19,13 @@ export const HDRIEnvironment: React.FC<HDRIEnvironmentProps> = ({
   environmentIntensity = 1.0,
   rotationY = 0
 }) => {
+  const { gl } = useThree();
   const envMapRef = useRef<THREE.Texture | null>(null);
 
-  // Load HDRI texture
-  const hdriTexture = useLoader(RGBELoader, hdriUrl);
-
   useEffect(() => {
-    if (hdriTexture) {
-      hdriTexture.mapping = THREE.EquirectangularReflectionMapping;
-      envMapRef.current = hdriTexture;
-    }
-  }, [hdriTexture]);
+    // Set exposure for tone mapping
+    gl.toneMappingExposure = exposure;
+  }, [gl, exposure]);
 
   useFrame(() => {
     if (envMapRef.current && rotationY !== 0) {
@@ -40,20 +35,21 @@ export const HDRIEnvironment: React.FC<HDRIEnvironmentProps> = ({
 
   return (
     <>
-      <Environment
-        map={hdriTexture}
-        background
-        backgroundBlurriness={backgroundBlurriness}
-        environmentIntensity={environmentIntensity}
-      />
+      {/* Use a high-res texture as background */}
+      <Sphere args={[50]} scale={[-1, 1, 1]}>
+        <meshBasicMaterial 
+          map={new THREE.TextureLoader().load(hdriUrl)}
+          side={THREE.BackSide}
+        />
+      </Sphere>
       
-      {/* Additional atmospheric effects can be added here */}
-      <ambientLight intensity={0.2} />
+      {/* Additional atmospheric effects */}
+      <ambientLight intensity={0.2 * environmentIntensity} />
       
-      {/* Dynamic directional light based on HDRI */}
+      {/* Dynamic directional light */}
       <directionalLight
         position={[10, 10, 5]}
-        intensity={0.5}
+        intensity={0.5 * environmentIntensity}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
