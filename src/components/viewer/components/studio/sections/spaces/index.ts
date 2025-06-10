@@ -1,5 +1,4 @@
-
-import type { SpaceEnvironment, HDRIEnvironment } from '../../../spaces/types';
+import type { SpaceEnvironment, HDRIEnvironment } from '../../../../spaces/types';
 
 // 3D Generated Space Environments
 export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
