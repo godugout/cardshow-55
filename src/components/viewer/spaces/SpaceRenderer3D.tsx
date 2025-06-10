@@ -1,10 +1,10 @@
 
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
+import { OrbitControls, Environment } from '@react-three/drei';
 import { Card3D } from './Card3D';
 import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
-import { PanoramicSpace } from './environments/PanoramicSpace';
+import { ReliablePanoramicSpace } from './environments/ReliablePanoramicSpace';
 import type { SpaceEnvironment, SpaceControls } from './types';
 
 interface Simple3DCard {
@@ -23,26 +23,28 @@ interface SpaceRenderer3DProps {
 
 const LoadingFallback: React.FC = () => (
   <>
-    <color attach="background" args={['#1a1a1a']} />
+    <color attach="background" args={['#1a1a2e']} />
     <Environment preset="studio" />
     <ambientLight intensity={0.4} />
+    <directionalLight position={[5, 10, 5]} intensity={0.6} />
   </>
 );
 
-// Map environment types to panoramic photo IDs
-const getEnvironmentPhotoId = (environment: SpaceEnvironment): string => {
-  // If already panoramic with photoId, use it
-  if (environment.type === 'panoramic' && environment.config.panoramicPhotoId) {
+// Map all environment types to appropriate image IDs
+const getEnvironmentImageId = (environment: SpaceEnvironment): string => {
+  // If already has panoramic photo ID, use it
+  if (environment.config.panoramicPhotoId) {
     return environment.config.panoramicPhotoId;
   }
   
-  // Map other environment types to appropriate panoramic photos
+  // Map environment types to image IDs
   switch (environment.type) {
     case 'forest':
       return 'forest-clearing';
     case 'ocean':
       return 'ocean-sunset';
     case 'neon':
+      return 'neon-city';
     case 'cosmic':
       return 'cosmic-void';
     case 'sports':
@@ -52,8 +54,10 @@ const getEnvironmentPhotoId = (environment: SpaceEnvironment): string => {
     case 'studio':
     case 'void':
       return 'modern-studio';
+    case 'panoramic':
+      return environment.config.panoramicPhotoId || 'modern-studio';
     default:
-      return 'modern-studio'; // Fallback to studio
+      return 'modern-studio'; // Safe fallback
   }
 };
 
@@ -66,19 +70,10 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
 }) => {
   console.log('SpaceRenderer3D: Rendering environment:', environment.type, environment.name);
 
-  // Create panoramic environment config
-  const panoramicConfig = {
+  // Create reliable panoramic environment config
+  const reliableConfig = {
     ...environment.config,
-    panoramicPhotoId: getEnvironmentPhotoId(environment),
-  };
-
-  const renderEnvironment = () => {
-    try {
-      return <PanoramicSpace config={panoramicConfig} controls={controls} />;
-    } catch (error) {
-      console.error('SpaceRenderer3D: Error rendering environment:', error);
-      return <LoadingFallback />;
-    }
+    panoramicPhotoId: getEnvironmentImageId(environment),
   };
 
   return (
@@ -90,11 +85,11 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
         gl={{ antialias: true, alpha: false }}
         onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}
       >
-        <color attach="background" args={[environment.config.backgroundColor || '#1a1a1a']} />
+        <color attach="background" args={[environment.config.backgroundColor || '#1a1a2e']} />
         
         <Suspense fallback={<LoadingFallback />}>
           <SpaceErrorBoundary spaceName={environment.name} fallback={<LoadingFallback />}>
-            {renderEnvironment()}
+            <ReliablePanoramicSpace config={reliableConfig} controls={controls} />
           </SpaceErrorBoundary>
           
           <Card3D
@@ -103,6 +98,21 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
             onClick={onCardClick}
           />
         </Suspense>
+
+        {/* Separate camera controls - ONLY for camera, not card */}
+        <OrbitControls
+          enablePan={false}
+          enableZoom={true}
+          autoRotate={controls.autoRotate}
+          autoRotateSpeed={controls.orbitSpeed || 0.5}
+          minDistance={3}
+          maxDistance={15}
+          minPolarAngle={Math.PI / 6}
+          maxPolarAngle={Math.PI - Math.PI / 6}
+          enableDamping={true}
+          dampingFactor={0.05}
+          target={[0, 0, 0]}
+        />
       </Canvas>
     </div>
   );
