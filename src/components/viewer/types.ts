@@ -32,6 +32,13 @@ export interface EnvironmentScene {
   };
 }
 
+export interface VisualEffect {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+}
+
 export interface LightingPreset {
   id: string;
   name: string;

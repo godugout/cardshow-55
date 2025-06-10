@@ -1,6 +1,8 @@
 
 import { useState, useCallback } from 'react';
 import type { EnvironmentControls } from '../types';
+import { ENHANCED_VISUAL_EFFECTS } from './effects/effectConfigs';
+import type { VisualEffectConfig } from './effects/types';
 
 export interface EffectValues {
   holographic: number;
@@ -18,6 +20,10 @@ export interface EffectValues {
   prizm: number;
   foilSpray: number;
 }
+
+// Re-export the effects configuration and types for convenience
+export { ENHANCED_VISUAL_EFFECTS };
+export type { VisualEffectConfig };
 
 export const useEnhancedCardEffects = () => {
   const [effectValues, setEffectValues] = useState<EffectValues>({
@@ -80,6 +86,29 @@ export const useEnhancedCardEffects = () => {
     setIsApplyingPreset(false);
   }, []);
 
+  const resetAllEffects = useCallback(() => {
+    setEffectValues({
+      holographic: 0,
+      chrome: 0,
+      foil: 0,
+      vintage: 0,
+      prismatic: 0,
+      aurora: 0,
+      crystal: 0,
+      lunar: 0,
+      waves: 0,
+      interference: 0,
+      gold: 0,
+      ice: 0,
+      prizm: 0,
+      foilSpray: 0
+    });
+  }, []);
+
+  const applyPreset = useCallback((presetEffects: Partial<EffectValues>) => {
+    setEffectValues(prev => ({ ...prev, ...presetEffects }));
+  }, []);
+
   const validateEffectState = useCallback(() => {
     return Object.values(effectValues).some(value => value > 0);
   }, [effectValues]);
@@ -88,6 +117,8 @@ export const useEnhancedCardEffects = () => {
     effectValues,
     handleEffectChange,
     resetEffect,
+    resetAllEffects,
+    applyPreset,
     handleApplyCombo,
     isApplyingPreset,
     environmentControls,
