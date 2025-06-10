@@ -19,43 +19,27 @@ export const useSimpleCardRotation = () => {
 
   const [isInteracting, setIsInteracting] = useState(false);
 
-  // Start rotation interaction
-  const startRotation = useCallback((event: React.PointerEvent | React.TouchEvent) => {
+  // Start rotation interaction - handles Three.js events
+  const startRotation = useCallback((event: any) => {
     const state = stateRef.current;
     
-    // Get pointer position
-    let clientX, clientY;
-    if ('touches' in event && event.touches.length > 0) {
-      clientX = event.touches[0].clientX;
-      clientY = event.touches[0].clientY;
-    } else if ('clientX' in event) {
-      clientX = event.clientX;
-      clientY = event.clientY;
-    } else {
-      return;
-    }
+    // Extract pointer position from Three.js event
+    const clientX = event.nativeEvent?.clientX || event.clientX || 0;
+    const clientY = event.nativeEvent?.clientY || event.clientY || 0;
 
     state.isDragging = true;
     state.lastPointerPosition = { x: clientX, y: clientY };
     setIsInteracting(true);
   }, []);
 
-  // Update rotation during drag
-  const updateRotation = useCallback((event: React.PointerEvent | React.TouchEvent) => {
+  // Update rotation during drag - handles Three.js events
+  const updateRotation = useCallback((event: any) => {
     const state = stateRef.current;
     if (!state.isDragging) return;
 
-    // Get current pointer position
-    let clientX, clientY;
-    if ('touches' in event && event.touches.length > 0) {
-      clientX = event.touches[0].clientX;
-      clientY = event.touches[0].clientY;
-    } else if ('clientX' in event) {
-      clientX = event.clientX;
-      clientY = event.clientY;
-    } else {
-      return;
-    }
+    // Extract pointer position from Three.js event
+    const clientX = event.nativeEvent?.clientX || event.clientX || 0;
+    const clientY = event.nativeEvent?.clientY || event.clientY || 0;
 
     // Calculate delta movement and convert to rotation
     const deltaX = clientX - state.lastPointerPosition.x;
