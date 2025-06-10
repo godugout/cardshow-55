@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
@@ -32,27 +32,17 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
   }
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
+  const [textureError, setTextureError] = useState(false);
   
-  // Handle texture loading with proper error handling
-  let texture: THREE.Texture | null = null;
-  try {
-    const loadedTexture = useTexture(card.image_url || '/placeholder-card.jpg');
-    // Handle both single texture and texture map cases
-    if (loadedTexture && typeof loadedTexture === 'object') {
-      if ('isTexture' in loadedTexture && loadedTexture.isTexture) {
-        texture = loadedTexture as THREE.Texture;
-      } else if (typeof loadedTexture === 'object' && !Array.isArray(loadedTexture)) {
-        // Handle texture map case - take the first available texture
-        const textureKeys = Object.keys(loadedTexture);
-        if (textureKeys.length > 0) {
-          texture = (loadedTexture as any)[textureKeys[0]] as THREE.Texture;
-        }
-      }
-    }
-  } catch (error) {
-    console.warn('Failed to load texture, using fallback');
-    texture = null;
-  }
+  // Use texture hook properly without try-catch wrapper
+  const imageUrl = card.image_url || '/placeholder-card.jpg';
+  const texture = useTexture(imageUrl, (loadedTexture) => {
+    console.log('✅ FloatingCard texture loaded successfully');
+    setTextureError(false);
+  }, undefined, (error) => {
+    console.warn('❌ FloatingCard texture failed to load:', error);
+    setTextureError(true);
+  });
   
   // Card dimensions (standard trading card ratio)
   const cardWidth = 2.5;
@@ -112,7 +102,8 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
     >
       <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
       <meshStandardMaterial
-        map={texture}
+        map={textureError ? null : texture}
+        color={textureError ? '#666666' : '#ffffff'}
         roughness={0.3}
         metalness={0.1}
         transparent={true}

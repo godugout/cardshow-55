@@ -62,6 +62,10 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
     far: 1000
   };
 
+  const handleCanvasError = (error: any) => {
+    console.error('🚨 SpaceRenderer Canvas error:', error);
+  };
+
   return (
     <div className="fixed inset-0 w-full h-full">
       <Canvas
@@ -74,6 +78,7 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
           powerPreference: "high-performance",
           preserveDrawingBuffer: true
         }}
+        onError={handleCanvasError}
       >
         {/* Enhanced fog for atmospheric density */}
         <fog 
