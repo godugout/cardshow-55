@@ -63,7 +63,7 @@ export interface VisualEffect {
   properties: Record<string, any>;
 }
 
-export type BackgroundType = 'gradient' | 'image' | 'solid' | 'scene' | '3dSpace';
+export type BackgroundType = 'gradient' | 'image' | 'solid' | 'scene' | '3dSpace' | 'hdri';
 
 export interface EnvironmentControls {
   backgroundType: BackgroundType;

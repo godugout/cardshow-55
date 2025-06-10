@@ -2,6 +2,7 @@
 export interface SpaceEnvironment {
   id: string;
   name: string;
+  description?: string;
   type: 'void' | 'cosmic' | 'cartoon' | 'matrix' | 'sketch' | 'forest' | 'neon' | 'ocean' | 'studio' | 'abstract';
   emoji: string;
   previewUrl: string;

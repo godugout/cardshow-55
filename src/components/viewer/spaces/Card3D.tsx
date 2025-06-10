@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { SpaceControls } from './types';
 
 interface Card3DProps {
@@ -14,8 +14,8 @@ interface Card3DProps {
 export const Card3D: React.FC<Card3DProps> = ({ card, controls }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   
-  // Load card texture
-  const texture = useTexture(card.imageUrl || '/placeholder-card.jpg');
+  // Load card texture - use image_url from CardData type
+  const texture = useTexture(card.image_url || '/placeholder-card.jpg');
   
   // Apply controls to card animation
   useFrame((state) => {

@@ -6,6 +6,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
   {
     id: 'void-space',
     name: 'Void Space',
+    description: 'Infinite darkness with subtle stars',
     type: 'void',
     emoji: '🌌',
     previewUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=300&fit=crop',
@@ -19,6 +20,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
   {
     id: 'cosmic-nebula',
     name: 'Cosmic Nebula',
+    description: 'Colorful cosmic clouds and particles',
     type: 'cosmic',
     emoji: '🪐',
     previewUrl: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=400&h=300&fit=crop',
@@ -33,6 +35,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
   {
     id: 'neon-city',
     name: 'Neon City',
+    description: 'Cyberpunk cityscape with neon lights',
     type: 'neon',
     emoji: '🌃',
     previewUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
@@ -47,6 +50,7 @@ export const SPACE_ENVIRONMENTS: SpaceEnvironment[] = [
   {
     id: 'matrix-code',
     name: 'Matrix Code',
+    description: 'Flowing green digital rain',
     type: 'matrix',
     emoji: '💻',
     previewUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',

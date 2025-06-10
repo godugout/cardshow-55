@@ -80,10 +80,31 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
     const hdriAsScene: EnvironmentScene = {
       id: hdri.id,
       name: hdri.name,
+      icon: '🎯',
       category: 'natural',
+      description: `HDRI environment: ${hdri.name}`,
       previewUrl: hdri.previewUrl,
       hdriUrl: hdri.hdriUrl,
-      backgroundImage: hdri.fallbackUrl
+      panoramicUrl: hdri.fallbackUrl || hdri.previewUrl,
+      backgroundImage: hdri.fallbackUrl || hdri.previewUrl,
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      lighting: {
+        color: '#ffffff',
+        intensity: 1.0,
+        azimuth: 180,
+        elevation: 45
+      },
+      atmosphere: {
+        fog: false,
+        fogColor: '#ffffff',
+        fogDensity: 0.01,
+        particles: false
+      },
+      depth: {
+        layers: 3,
+        parallaxIntensity: 0.5,
+        fieldOfView: 75
+      }
     };
     onSceneChange(hdriAsScene);
   };
