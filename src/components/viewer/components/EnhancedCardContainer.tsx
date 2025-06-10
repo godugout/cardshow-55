@@ -1,5 +1,5 @@
 
-import React, { useMemo, useCallback } from 'react';
+import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
@@ -67,82 +67,45 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     atmosphericDensity: 1.0
   }
 }) => {
-  // Memoize cached effects to prevent recalculation on every render
-  const shouldUseCachedEffects = useMemo(() => {
-    return selectedScene && selectedLighting && materialSettings;
-  }, [selectedScene, selectedLighting, materialSettings]);
+  // Use cached effects for better performance only when all required props are available
+  const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
+    card,
+    effectValues,
+    mousePosition,
+    showEffects,
+    overallBrightness,
+    interactiveLighting,
+    selectedScene,
+    selectedLighting,
+    materialSettings,
+    zoom,
+    rotation,
+    isHovering
+  }) : null;
 
-  const cachedEffects = useCachedCardEffects(
-    shouldUseCachedEffects ? {
-      card,
-      effectValues,
-      mousePosition,
-      showEffects,
-      overallBrightness,
-      interactiveLighting,
-      selectedScene: selectedScene!,
-      selectedLighting: selectedLighting!,
-      materialSettings: materialSettings!,
-      zoom,
-      rotation,
-      isHovering
-    } : null
-  );
-
-  // Memoize the double-click handler to prevent recreation
+  // Use double-click/tap detection for card flip
   const handleDoubleClick = useDoubleClick({
     onDoubleClick: onClick,
     delay: 300
   });
 
-  // Memoize styles to prevent re-renders
-  const effectiveFrameStyles = useMemo(() => 
-    cachedEffects?.frameStyles || frameStyles, 
-    [cachedEffects?.frameStyles, frameStyles]
-  );
-  
-  const effectiveEnhancedEffectStyles = useMemo(() => 
-    cachedEffects?.enhancedEffectStyles || enhancedEffectStyles,
-    [cachedEffects?.enhancedEffectStyles, enhancedEffectStyles]
-  );
-  
-  const effectiveSurfaceTexture = useMemo(() => 
-    cachedEffects?.SurfaceTexture || SurfaceTexture,
-    [cachedEffects?.SurfaceTexture, SurfaceTexture]
-  );
-
-  // Memoize container styles to prevent re-calculation
-  const containerStyles = useMemo(() => ({
-    transform: `scale(${zoom})`,
-    transition: isDragging ? 'none' : 'transform 0.3s ease',
-    filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`
-  }), [zoom, isDragging, interactiveLighting, isHovering]);
-
-  // Memoize event handlers to prevent re-creation
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    onMouseDown(e);
-  }, [onMouseDown]);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    onMouseMove(e);
-  }, [onMouseMove]);
-
-  const handleMouseEnter = useCallback(() => {
-    onMouseEnter();
-  }, [onMouseEnter]);
-
-  const handleMouseLeave = useCallback(() => {
-    onMouseLeave();
-  }, [onMouseLeave]);
+  // Use cached styles if available, otherwise fall back to provided styles
+  const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
+  const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
+  const effectiveSurfaceTexture = cachedEffects?.SurfaceTexture || SurfaceTexture;
 
   return (
     <div 
       className={`relative z-20 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-      style={containerStyles}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      style={{
+        transform: `scale(${zoom})`,
+        transition: isDragging ? 'none' : 'transform 0.3s ease',
+        filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`
+      }}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       <Card3DTransform
         rotation={rotation}

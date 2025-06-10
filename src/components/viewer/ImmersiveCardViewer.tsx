@@ -220,21 +220,12 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 
   // Enhanced reset that includes all state
   const handleResetWithEffects = useCallback(() => {
-    console.log('🔄 Full reset including environment controls');
     handleReset();
     resetAllEffects();
     validateEffectState();
-    
-    // Reset environment controls to defaults
-    setEnvironmentControls({
-      depthOfField: 1.0,
-      parallaxIntensity: 1.0,
-      fieldOfView: 75,
-      atmosphericDensity: 1.0
-    });
   }, [handleReset, resetAllEffects, validateEffectState]);
 
-  // Add environment controls state with enhanced defaults
+  // Add environment controls state
   const [environmentControls, setEnvironmentControls] = useState({
     depthOfField: 1.0,
     parallaxIntensity: 1.0,
@@ -275,7 +266,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           selectedLighting={selectedLighting}
           mousePosition={mousePosition}
           isHovering={isHovering}
-          environmentControls={environmentControls}
         />
 
         {/* Header */}
@@ -360,7 +350,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         />
       </div>
 
-      {/* Enhanced Studio Panel with Environment Controls */}
+      {/* Studio Panel with Environment Controls */}
       <StudioPanel
         isVisible={shouldShowPanel}
         onClose={() => setShowCustomizePanel(false)}

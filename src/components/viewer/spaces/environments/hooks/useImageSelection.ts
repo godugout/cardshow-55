@@ -1,26 +1,34 @@
 
-import { useMemo } from 'react';
-import { getLocal360ImageById, getDefaultLocal360Image } from '../LocalImageLibrary';
+import { getLocal360ImageById, getDefaultLocal360Image, type Local360Image } from '../LocalImageLibrary';
 
 interface UseImageSelectionProps {
   panoramicPhotoId?: string;
 }
 
 export const useImageSelection = ({ panoramicPhotoId }: UseImageSelectionProps) => {
-  const imageConfig = useMemo(() => {
-    if (panoramicPhotoId) {
-      const image = getLocal360ImageById(panoramicPhotoId);
-      if (image) {
-        console.log('✅ Found image for ID:', panoramicPhotoId);
-        return image;
-      }
-      console.warn('⚠️ Image not found for ID:', panoramicPhotoId, 'using default');
+  console.log('🎪 Image selection for ID:', panoramicPhotoId);
+  
+  // Get image configuration
+  let imageConfig: Local360Image | null = null;
+  
+  if (panoramicPhotoId) {
+    imageConfig = getLocal360ImageById(panoramicPhotoId);
+    if (imageConfig) {
+      console.log('📸 Using configured image:', imageConfig.name);
     }
-    
-    const defaultImage = getDefaultLocal360Image();
-    console.log('🔄 Using default image:', defaultImage.name);
-    return defaultImage;
-  }, [panoramicPhotoId]);
+  }
+  
+  // Use default if no specific image found
+  if (!imageConfig) {
+    console.warn('⚠️ No specific image found, using default');
+    imageConfig = getDefaultLocal360Image();
+  }
+  
+  console.log('🖼️ Final image selection:', {
+    name: imageConfig.name,
+    localUrl: imageConfig.localUrl,
+    fallbackUrl: imageConfig.fallbackUrl
+  });
 
   return imageConfig;
 };

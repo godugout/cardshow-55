@@ -6,16 +6,20 @@ interface PanoramicLoadingIndicatorProps {
 }
 
 export const PanoramicLoadingIndicator: React.FC<PanoramicLoadingIndicatorProps> = ({ brightness }) => {
+  console.log('🔄 Showing loading state');
+  
   return (
     <>
-      {/* Fallback lighting while loading */}
-      <ambientLight intensity={0.3 * brightness} />
-      <directionalLight position={[5, 5, 5]} intensity={0.5 * brightness} />
-      
-      {/* Simple loading mesh */}
-      <mesh>
-        <boxGeometry args={[0.1, 0.1, 0.1]} />
-        <meshBasicMaterial color="#333333" transparent opacity={0.5} />
+      <ambientLight intensity={0.6 * brightness} />
+      <directionalLight
+        position={[5, 10, 5]}
+        intensity={0.8 * brightness}
+        castShadow
+      />
+      {/* Subtle loading indicator instead of green ring */}
+      <mesh position={[0, 0, 0]}>
+        <sphereGeometry args={[0.02, 8, 6]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.3} />
       </mesh>
     </>
   );

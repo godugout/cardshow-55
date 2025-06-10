@@ -8,18 +8,40 @@ interface PanoramicLightingProps {
 export const PanoramicLighting: React.FC<PanoramicLightingProps> = ({ brightness }) => {
   return (
     <>
+      {/* Optimized lighting for card illumination */}
       <ambientLight intensity={0.4 * brightness} />
-      <directionalLight 
-        position={[10, 10, 5]} 
+      
+      {/* Primary directional light */}
+      <directionalLight
+        position={[10, 15, 10]}
         intensity={0.8 * brightness}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
+        shadow-camera-far={50}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
       />
-      <pointLight 
-        position={[-10, -10, -5]} 
+      
+      {/* Secondary fill light */}
+      <directionalLight
+        position={[-10, 10, -10]}
         intensity={0.3 * brightness}
-        color="#4A90E2"
+        color="#ffffff"
+      />
+      
+      {/* Rim lighting */}
+      <pointLight
+        position={[15, 0, 15]}
+        intensity={0.2 * brightness}
+        distance={50}
+      />
+      <pointLight
+        position={[-15, 0, -15]}
+        intensity={0.2 * brightness}
+        distance={50}
       />
     </>
   );
