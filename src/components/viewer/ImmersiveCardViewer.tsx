@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps } from './types';
 import { 
@@ -312,7 +313,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           setIsFlipped={setIsFlipped}
         />
 
-        {/* Enhanced Card Container (only for 2D scenes) */}
+        {/* Enhanced Card Container (only for scene background) */}
         {backgroundType === 'scene' && (
           <div ref={cardContainerRef}>
             <EnhancedCardContainer

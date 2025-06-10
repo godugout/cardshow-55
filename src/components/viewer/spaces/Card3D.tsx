@@ -2,7 +2,7 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
-import { Mesh } from 'three';
+import { Group } from 'three';
 import { EnhancedCardContainer } from '../components/EnhancedCardContainer';
 import { useCardEffects } from '../hooks/useCardEffects';
 import type { SpaceControls } from './types';
@@ -27,6 +27,29 @@ interface Card3DProps {
   onClick?: () => void;
 }
 
+// Helper function to convert simple card to full CardData format
+const adaptCardForViewer = (card: Simple3DCard) => ({
+  id: card.id,
+  title: card.title,
+  description: '',
+  rarity: 'common' as const,
+  tags: [],
+  image_url: card.image_url || '/placeholder-card.jpg',
+  design_metadata: {},
+  visibility: 'public' as const,
+  creator_attribution: {
+    creator_name: 'Unknown',
+    collaboration_type: 'solo' as const
+  },
+  publishing_options: {
+    marketplace_listing: false,
+    crd_catalog_inclusion: false,
+    print_available: false,
+    pricing: { currency: 'USD' },
+    distribution: { limited_edition: false }
+  }
+});
+
 export const Card3D: React.FC<Card3DProps> = ({ 
   card, 
   controls, 
@@ -38,7 +61,7 @@ export const Card3D: React.FC<Card3DProps> = ({
   interactiveLighting = false,
   onClick 
 }) => {
-  const meshRef = useRef<Mesh>(null);
+  const groupRef = useRef<Group>(null);
   
   // Simple state for 3D card interaction
   const [isFlipped, setIsFlipped] = React.useState(false);
@@ -48,9 +71,12 @@ export const Card3D: React.FC<Card3DProps> = ({
   const zoom = 1;
   const isDragging = false;
 
+  // Convert simple card to full CardData format for useCardEffects
+  const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
+
   // Use card effects if we have the required props
   const cardEffects = (selectedScene && selectedLighting && materialSettings) ? useCardEffects({
-    card: { id: card.id, title: card.title, image_url: card.image_url },
+    card: adaptedCard,
     effectValues,
     mousePosition,
     showEffects: true,
@@ -65,20 +91,20 @@ export const Card3D: React.FC<Card3DProps> = ({
   }) : null;
 
   useFrame((state) => {
-    if (meshRef.current) {
+    if (groupRef.current) {
       // Floating animation
       const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
-      meshRef.current.position.y = floatY;
+      groupRef.current.position.y = floatY;
 
       // Auto rotation
       if (controls.autoRotate) {
-        meshRef.current.rotation.y += 0.005 * controls.orbitSpeed;
+        groupRef.current.rotation.y += 0.005 * controls.orbitSpeed;
       }
 
       // Gravity effect simulation
       if (controls.gravityEffect > 0) {
         const gravity = Math.sin(state.clock.elapsedTime * 0.3) * controls.gravityEffect * 0.05;
-        meshRef.current.position.y += gravity;
+        groupRef.current.position.y += gravity;
       }
     }
   });
@@ -93,15 +119,8 @@ export const Card3D: React.FC<Card3DProps> = ({
   const handleMouseDown = () => {};
   const handleMouseMove = () => {};
 
-  // Convert the 3D card data to the format expected by EnhancedCardContainer
-  const enhancedCardData = {
-    id: card.id,
-    title: card.title,
-    image_url: card.image_url || '/placeholder-card.jpg'
-  };
-
   return (
-    <group ref={meshRef}>
+    <group ref={groupRef}>
       {/* Render the enhanced card container with 3D positioning */}
       <mesh 
         castShadow 
@@ -128,7 +147,7 @@ export const Card3D: React.FC<Card3DProps> = ({
       >
         <div style={{ width: '250px', height: '350px', transform: 'scale(0.6)' }}>
           <EnhancedCardContainer
-            card={enhancedCardData}
+            card={adaptedCard}
             isFlipped={isFlipped}
             isHovering={isHovering}
             showEffects={true}
