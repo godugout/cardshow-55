@@ -14,6 +14,7 @@ interface SpaceRendererProps {
   card: any;
   onCardClick: () => void;
   onCameraReset: () => void;
+  onError?: (error: string) => void;
   environmentControls?: {
     depthOfField: number;
     parallaxIntensity: number;
@@ -28,6 +29,7 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
   card,
   onCardClick,
   onCameraReset,
+  onError,
   environmentControls = {
     depthOfField: 1.0,
     parallaxIntensity: 1.0,
@@ -37,7 +39,11 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
 }) => {
   const orbitControlsRef = useRef<any>();
   
-  console.log('🌌 SpaceRenderer rendering with controls:', { spaceControls, environmentControls });
+  console.log('🌌 SpaceRenderer rendering:', { 
+    spaceName: spaceEnvironment.name,
+    spaceControls, 
+    environmentControls 
+  });
 
   // Reset camera when requested
   useEffect(() => {
@@ -63,7 +69,15 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
   };
 
   const handleCanvasError = (error: any) => {
-    console.error('🚨 SpaceRenderer Canvas error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Canvas rendering error';
+    console.error('🚨 SpaceRenderer Canvas error:', errorMessage);
+    onError?.(errorMessage);
+  };
+
+  const handleSpaceLoadError = (error: Error) => {
+    const errorMessage = `Failed to load space "${spaceEnvironment.name}": ${error.message}`;
+    console.error('🚨 Space loading error:', errorMessage);
+    onError?.(errorMessage);
   };
 
   return (
@@ -79,6 +93,9 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
           preserveDrawingBuffer: true
         }}
         onError={handleCanvasError}
+        onCreated={({ gl }) => {
+          console.log('✅ Canvas created successfully');
+        }}
       >
         {/* Enhanced fog for atmospheric density */}
         <fog 
@@ -87,13 +104,14 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
         />
         
         <Suspense fallback={<LoadingFallback />}>
-          {/* Environment with enhanced controls */}
+          {/* Environment with enhanced error handling */}
           <ReliablePanoramicSpace
             config={{
               ...spaceEnvironment.config,
               exposure: spaceEnvironment.config.exposure * environmentControls.atmosphericDensity
             }}
             controls={spaceControls}
+            onError={handleSpaceLoadError}
           />
           
           {/* Enhanced floating card with physics */}

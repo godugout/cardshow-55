@@ -9,11 +9,13 @@ import type { SpaceEnvironment, SpaceControls } from '../types';
 interface ReliablePanoramicSpaceProps {
   config: SpaceEnvironment['config'];
   controls: SpaceControls;
+  onError?: (error: Error) => void;
 }
 
 export const ReliablePanoramicSpace: React.FC<ReliablePanoramicSpaceProps> = ({ 
   config, 
-  controls 
+  controls,
+  onError
 }) => {
   console.log('🎪 ReliablePanoramicSpace config:', config);
   
@@ -31,6 +33,24 @@ export const ReliablePanoramicSpace: React.FC<ReliablePanoramicSpaceProps> = ({
 
   const finalExposure = calculateExposure({ config, imageConfig });
 
+  // Handle loading errors
+  const handleError = (error: Error) => {
+    console.error('❌ ReliablePanoramicSpace error:', error);
+    handleLoadError(error);
+    onError?.(error);
+  };
+
+  // If we have a loading error, don't render the environment
+  if (loadError) {
+    console.warn('⚠️ Panoramic space has loading error, using fallback');
+    return (
+      <>
+        <ambientLight intensity={0.4} />
+        <directionalLight position={[5, 10, 5]} intensity={0.6} />
+      </>
+    );
+  }
+
   return (
     <OptimizedPanoramicEnvironment
       imageUrl={imageConfig.localUrl}
@@ -41,7 +61,7 @@ export const ReliablePanoramicSpace: React.FC<ReliablePanoramicSpaceProps> = ({
       brightness={imageConfig.lighting.intensity}
       onLoadStart={handleLoadStart}
       onLoadComplete={handleLoadComplete}
-      onLoadError={handleLoadError}
+      onLoadError={handleError}
     />
   );
 };

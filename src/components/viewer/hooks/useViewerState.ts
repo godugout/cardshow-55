@@ -21,8 +21,10 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  // Background state
-  const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
+  // Background state - Default to 3D space if available, fallback to scene
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>(
+    SPACE_ENVIRONMENTS.length > 0 ? '3dSpace' : 'scene'
+  );
 
   // Advanced settings
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
@@ -39,10 +41,26 @@ export const useViewerState = () => {
   // Preset state
   const [selectedPresetId, setSelectedPresetId] = useState<string>();
 
-  // 3D Space state - Initialize with first available space to prevent null errors
-  const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(
-    SPACE_ENVIRONMENTS.length > 0 ? SPACE_ENVIRONMENTS[0] : null
-  );
+  // 3D Space state - Initialize with first reliable photorealistic space
+  const getDefaultSpace = (): SpaceEnvironment | null => {
+    // Try to find a photorealistic space first
+    const photoRealisticSpaces = SPACE_ENVIRONMENTS.filter(space => space.category === 'photorealistic');
+    if (photoRealisticSpaces.length > 0) {
+      console.log('🎯 Using default photorealistic space:', photoRealisticSpaces[0].name);
+      return photoRealisticSpaces[0];
+    }
+    
+    // Fallback to any available space
+    if (SPACE_ENVIRONMENTS.length > 0) {
+      console.log('🎯 Using fallback space:', SPACE_ENVIRONMENTS[0].name);
+      return SPACE_ENVIRONMENTS[0];
+    }
+    
+    console.warn('⚠️ No 3D spaces available');
+    return null;
+  };
+
+  const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(getDefaultSpace());
   const [spaceControls, setSpaceControls] = useState<SpaceControls>({
     orbitSpeed: 0.5,
     floatIntensity: 1.0,
@@ -85,16 +103,56 @@ export const useViewerState = () => {
     setIsFlipped(prev => !prev);
   }, []);
 
-  // Safe space setter that ensures we always have a valid space
+  // Enhanced space setter with automatic fallback and background type switching
   const setSelectedSpaceSafe = useCallback((space: SpaceEnvironment | null) => {
-    console.log('useViewerState: Setting selected space to:', space?.name || 'null');
+    console.log('🔄 Setting selected space to:', space?.name || 'null');
+    
     if (space) {
       setSelectedSpace(space);
-    } else if (SPACE_ENVIRONMENTS.length > 0) {
-      console.log('useViewerState: Falling back to default space:', SPACE_ENVIRONMENTS[0].name);
-      setSelectedSpace(SPACE_ENVIRONMENTS[0]);
+      // Automatically switch to 3D mode when a space is selected
+      setBackgroundType('3dSpace');
+      console.log('✅ Space set and switched to 3D mode');
+    } else {
+      // If no space provided, try to find a default
+      const defaultSpace = getDefaultSpace();
+      if (defaultSpace) {
+        console.log('🔄 Using default space fallback:', defaultSpace.name);
+        setSelectedSpace(defaultSpace);
+        setBackgroundType('3dSpace');
+      } else {
+        // No spaces available, fallback to 2D scene
+        console.warn('⚠️ No spaces available, falling back to 2D scene');
+        setSelectedSpace(null);
+        setBackgroundType('scene');
+      }
     }
   }, []);
+
+  // Enhanced background type setter with validation
+  const setBackgroundTypeSafe = useCallback((type: BackgroundType) => {
+    console.log('🔄 Setting background type to:', type);
+    
+    if (type === '3dSpace') {
+      // Ensure we have a valid space when switching to 3D
+      if (!selectedSpace) {
+        const defaultSpace = getDefaultSpace();
+        if (defaultSpace) {
+          setSelectedSpace(defaultSpace);
+          setBackgroundType('3dSpace');
+          console.log('✅ Switched to 3D with default space:', defaultSpace.name);
+        } else {
+          console.warn('⚠️ No 3D spaces available, staying in 2D mode');
+          setBackgroundType('scene');
+        }
+      } else {
+        setBackgroundType('3dSpace');
+        console.log('✅ Switched to 3D mode with existing space');
+      }
+    } else {
+      setBackgroundType(type);
+      console.log('✅ Switched to 2D mode');
+    }
+  }, [selectedSpace]);
 
   return {
     // UI State
@@ -126,7 +184,7 @@ export const useViewerState = () => {
 
     // Background state
     backgroundType,
-    setBackgroundType,
+    setBackgroundType: setBackgroundTypeSafe,
 
     // Advanced settings
     selectedScene,

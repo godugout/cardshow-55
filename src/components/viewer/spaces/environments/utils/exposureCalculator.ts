@@ -1,23 +1,19 @@
 
-import type { Local360Image } from '../LocalImageLibrary';
 import type { SpaceEnvironment } from '../../types';
+import type { Local360Image } from '../LocalImageLibrary';
 
-interface CalculateExposureProps {
+interface ExposureCalculationParams {
   config: SpaceEnvironment['config'];
   imageConfig: Local360Image;
 }
 
-export const calculateExposure = ({ config, imageConfig }: CalculateExposureProps) => {
-  // Enhanced exposure calculation
+export const calculateExposure = ({ config, imageConfig }: ExposureCalculationParams): number => {
   const baseExposure = config.exposure || imageConfig.lighting.intensity;
-  const finalExposure = Math.max(0.5, Math.min(3.0, baseExposure * 1.2));
+  const contrastMultiplier = imageConfig.lighting.contrast || 1.0;
+  const warmthAdjustment = (imageConfig.lighting.warmth - 0.5) * 0.2; // -0.1 to +0.1
   
-  console.log('💡 Exposure calculated:', {
-    baseExposure,
-    finalExposure,
-    configExposure: config.exposure,
-    lightingIntensity: imageConfig.lighting.intensity
-  });
-
-  return finalExposure;
+  const finalExposure = baseExposure * contrastMultiplier + warmthAdjustment;
+  
+  // Clamp exposure to reasonable range
+  return Math.max(0.1, Math.min(3.0, finalExposure));
 };
