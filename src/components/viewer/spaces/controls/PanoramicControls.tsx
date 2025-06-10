@@ -19,9 +19,9 @@ export const PanoramicControls: React.FC<PanoramicControlsProps> = ({
   autoRotateSpeed = 0.5,
   enableZoom = true,
   enablePan = false,
-  minDistance = 3,
-  maxDistance = 20,
-  dampingFactor = 0.1
+  minDistance = 2,
+  maxDistance = 25,
+  dampingFactor = 0.05
 }) => {
   const controlsRef = useRef<any>();
   const { camera } = useThree();
@@ -46,6 +46,12 @@ export const PanoramicControls: React.FC<PanoramicControlsProps> = ({
       minPolarAngle={0}
       maxPolarAngle={Math.PI}
       target={[0, 0, 0]}
+      // Enhanced mouse sensitivity
+      rotateSpeed={0.5}
+      zoomSpeed={0.8}
+      // Smooth zoom limits
+      minZoom={0.3}
+      maxZoom={3.0}
     />
   );
 };
