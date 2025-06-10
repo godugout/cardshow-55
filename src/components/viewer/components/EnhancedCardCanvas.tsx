@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -51,17 +51,17 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
 
   console.log('EnhancedCardCanvas rendering, isFlipped:', isFlipped);
 
-  // Handle card flip on double-click/tap
+  // Memoize the double-click handler to prevent re-creation
   const handleDoubleClick = useDoubleClick({
-    onDoubleClick: () => {
-      setIsFlipped(!isFlipped);
+    onDoubleClick: useCallback(() => {
+      setIsFlipped(prev => !prev);
       console.log('Card flipped to:', !isFlipped);
-    },
+    }, [isFlipped]),
     delay: 300
   });
 
-  // Handle mouse move with throttling
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+  // Memoize mouse move handler to prevent re-creation
+  const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     onMouseMove(event);
     
     if (canvasRef.current) {
@@ -70,24 +70,45 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
       const y = (event.clientY - rect.top) / rect.height;
       updateMousePosition(x, y);
     }
-  };
+  }, [onMouseMove, updateMousePosition]);
+
+  // Memoize mouse handlers to prevent re-creation
+  const handleMouseEnter = useCallback(() => {
+    onMouseEnter();
+  }, [onMouseEnter]);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsDragging(false);
+    onMouseLeave();
+  }, [onMouseLeave]);
+
+  const handleMouseDown = useCallback(() => {
+    setIsDragging(true);
+  }, []);
 
   // Use the provided mouse position for immediate updates, throttled for internal calculations
-  const effectiveMousePosition = interactiveLighting ? throttledMousePosition : mousePosition;
+  const effectiveMousePosition = useMemo(() => 
+    interactiveLighting ? throttledMousePosition : mousePosition,
+    [interactiveLighting, throttledMousePosition, mousePosition]
+  );
 
-  // Cached frame styles
-  const frameStyles: React.CSSProperties = React.useMemo(() => ({
+  // Memoize styles to prevent re-creation
+  const canvasStyles = useMemo(() => ({
+    width: `${width}px`,
+    height: `${height}px`,
+    perspective: '1000px'
+  }), [width, height]);
+
+  const frameStyles = useMemo(() => ({
     background: `linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)`,
     border: '1px solid rgba(255,255,255,0.1)'
   }), []);
 
-  // Cached enhanced effect styles
-  const enhancedEffectStyles: React.CSSProperties = React.useMemo(() => ({
+  const enhancedEffectStyles = useMemo(() => ({
     filter: `brightness(${overallBrightness / 100}) contrast(1.1)`
   }), [overallBrightness]);
 
-  // Cached surface texture component
-  const SurfaceTexture = React.useMemo(() => (
+  const SurfaceTexture = useMemo(() => (
     <div 
       className="absolute inset-0 opacity-20"
       style={{
@@ -101,14 +122,10 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
     <div
       ref={canvasRef}
       className="relative flex items-center justify-center"
-      style={{
-        width: `${width}px`,
-        height: `${height}px`,
-        perspective: '1000px'
-      }}
+      style={canvasStyles}
       onMouseMove={handleMouseMove}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={handleDoubleClick}
     >
       {/* CRD Logo Branding - Upper Right */}
@@ -145,13 +162,10 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         materialSettings={materialSettings}
         overallBrightness={[overallBrightness]}
         showBackgroundInfo={true}
-        onMouseDown={() => setIsDragging(true)}
+        onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={() => {
-          setIsDragging(false);
-          onMouseLeave();
-        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         onClick={handleDoubleClick}
       />
 

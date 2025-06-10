@@ -33,20 +33,31 @@ const Studio = () => {
         {/* Studio Header */}
         <StudioHeader />
 
-        {/* Immersive Card Viewer */}
-        <ImmersiveCardViewer
-          card={selectedCard}
-          cards={mockCards}
-          currentCardIndex={currentCardIndex}
-          onCardChange={handleCardChange}
-          isOpen={true}
-          onClose={handleClose}
-          onShare={handleShare}
-          onDownload={handleDownload}
-          allowRotation={true}
-          showStats={true}
-          ambient={true}
-        />
+        {/* Immersive Card Viewer with Enhanced Error Handling */}
+        <ErrorBoundary 
+          fallback={
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center p-8">
+                <div className="text-text-primary text-xl mb-2">Viewer Error</div>
+                <div className="text-text-secondary">Please try refreshing the page</div>
+              </div>
+            </div>
+          }
+        >
+          <ImmersiveCardViewer
+            card={selectedCard}
+            cards={mockCards}
+            currentCardIndex={currentCardIndex}
+            onCardChange={handleCardChange}
+            isOpen={true}
+            onClose={handleClose}
+            onShare={handleShare}
+            onDownload={handleDownload}
+            allowRotation={true}
+            showStats={true}
+            ambient={true}
+          />
+        </ErrorBoundary>
       </div>
     </ErrorBoundary>
   );

@@ -1,7 +1,6 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface FloatingCardProps {
@@ -32,20 +31,8 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
   }
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [textureError, setTextureError] = useState(false);
-  
-  // Use texture hook properly - simplified approach
-  const imageUrl = card.image_url || '/placeholder-card.jpg';
-  let texture;
-  
-  try {
-    texture = useTexture(imageUrl);
-    console.log('✅ FloatingCard texture loaded successfully');
-  } catch (error) {
-    console.warn('❌ FloatingCard texture failed to load:', error);
-    setTextureError(true);
-    texture = null;
-  }
   
   // Card dimensions (standard trading card ratio)
   const cardWidth = 2.5;
@@ -53,6 +40,55 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
   const cardDepth = 0.02;
   
   console.log('🃏 FloatingCard physics:', { floatIntensity, autoRotate, gravityEffect });
+
+  // Load texture safely in useEffect to prevent re-render loops
+  useEffect(() => {
+    let isMounted = true;
+    const imageUrl = card?.image_url || '/placeholder-card.jpg';
+    
+    if (!imageUrl) {
+      setTextureError(true);
+      return;
+    }
+
+    const textureLoader = new THREE.TextureLoader();
+    
+    textureLoader.load(
+      imageUrl,
+      (loadedTexture) => {
+        if (isMounted) {
+          console.log('✅ FloatingCard texture loaded successfully');
+          setTexture(loadedTexture);
+          setTextureError(false);
+        }
+      },
+      undefined,
+      (error) => {
+        if (isMounted) {
+          console.warn('❌ FloatingCard texture failed to load:', error);
+          setTextureError(true);
+          setTexture(null);
+        }
+      }
+    );
+
+    return () => {
+      isMounted = false;
+    };
+  }, [card?.image_url]);
+
+  // Memoize material to prevent re-creation on every render
+  const material = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      map: texture,
+      color: textureError ? '#666666' : '#ffffff',
+      roughness: 0.3,
+      metalness: 0.1,
+      transparent: true,
+      opacity: 0.9 + (environmentControls.atmosphericDensity * 0.1),
+      side: THREE.DoubleSide
+    });
+  }, [texture, textureError, environmentControls.atmosphericDensity]);
 
   useFrame((state) => {
     if (meshRef.current) {
@@ -104,15 +140,7 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
       position={[0, 0, 0]}
     >
       <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
-      <meshStandardMaterial
-        map={textureError ? null : texture}
-        color={textureError ? '#666666' : '#ffffff'}
-        roughness={0.3}
-        metalness={0.1}
-        transparent={true}
-        opacity={0.9 + (environmentControls.atmosphericDensity * 0.1)}
-        side={THREE.DoubleSide}
-      />
+      <primitive object={material} />
     </mesh>
   );
 };
