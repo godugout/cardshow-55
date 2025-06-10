@@ -1,6 +1,5 @@
 
 import { supabase } from '@/lib/supabase-client';
-import { mockCards } from '@/pages/Studio/mockData';
 import { toast } from 'sonner';
 
 export interface MigrationResult {
@@ -8,6 +7,103 @@ export interface MigrationResult {
   migratedCount: number;
   errors: string[];
 }
+
+// Mock cards data for migration - these will be migrated to the database
+const mockCards = [
+  {
+    id: 'card_1',
+    title: 'Lightning Striker',
+    description: 'A powerful athlete captured in motion',
+    image_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
+    rarity: 'rare' as const,
+    tags: ['sports', 'action', 'athlete'],
+    design_metadata: {
+      effects: {
+        holographic: true,
+        chrome: false,
+        foil: false,
+        intensity: 0.8
+      }
+    },
+    visibility: 'public' as const,
+    template_id: 'sports_portrait_001',
+    publishing_options: {
+      marketplace_listing: true,
+      crd_catalog_inclusion: true,
+      print_available: true,
+      pricing: {
+        base_price: 15.99,
+        currency: 'USD'
+      },
+      distribution: {
+        limited_edition: true,
+        edition_size: 500
+      }
+    }
+  },
+  {
+    id: 'card_2',
+    title: 'Cosmic Wanderer',
+    description: 'An explorer of distant galaxies',
+    image_url: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=400',
+    rarity: 'legendary' as const,
+    tags: ['space', 'exploration', 'cosmic'],
+    design_metadata: {
+      effects: {
+        holographic: false,
+        chrome: true,
+        foil: true,
+        intensity: 0.9
+      }
+    },
+    visibility: 'public' as const,
+    template_id: 'cosmic_portrait_001',
+    publishing_options: {
+      marketplace_listing: true,
+      crd_catalog_inclusion: true,
+      print_available: true,
+      pricing: {
+        base_price: 29.99,
+        currency: 'USD'
+      },
+      distribution: {
+        limited_edition: true,
+        edition_size: 100
+      }
+    }
+  },
+  {
+    id: 'card_3',
+    title: 'Digital Pioneer',
+    description: 'Leading the future of technology',
+    image_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+    rarity: 'epic' as const,
+    tags: ['technology', 'innovation', 'future'],
+    design_metadata: {
+      effects: {
+        holographic: true,
+        chrome: true,
+        foil: false,
+        intensity: 0.7
+      }
+    },
+    visibility: 'public' as const,
+    template_id: 'tech_portrait_001',
+    publishing_options: {
+      marketplace_listing: true,
+      crd_catalog_inclusion: true,
+      print_available: false,
+      pricing: {
+        base_price: 12.99,
+        currency: 'USD'
+      },
+      distribution: {
+        limited_edition: false,
+        edition_size: 1000
+      }
+    }
+  }
+];
 
 export const migrateMockDataToDatabase = async (creatorId: string): Promise<MigrationResult> => {
   const result: MigrationResult = {
