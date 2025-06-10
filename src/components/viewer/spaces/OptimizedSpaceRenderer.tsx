@@ -1,5 +1,5 @@
 
-import React, { Suspense, useState, useEffect, useRef } from 'react';
+import React, { Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, ContactShadows } from '@react-three/drei';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
@@ -44,60 +44,92 @@ export const OptimizedSpaceRenderer: React.FC<OptimizedSpaceRendererProps> = ({
   onCameraReset,
   environmentIntensity = 1.0
 }) => {
-  const [performanceLevel, setPerformanceLevel] = useState<'low' | 'medium' | 'high'>('high');
+  const [performanceLevel, setPerformanceLevel] = useState<'low' | 'medium' | 'high'>('medium');
   const [hasError, setHasError] = useState(false);
-  const performanceMonitor = useRef(new PerformanceMonitor());
-  const resourceManager = useRef(ResourceManager.getInstance());
+  const performanceMonitor = useRef<PerformanceMonitor | null>(null);
+  const resourceManager = useRef<ResourceManager | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Initialize managers safely
+  useEffect(() => {
+    try {
+      performanceMonitor.current = new PerformanceMonitor();
+      resourceManager.current = ResourceManager.getInstance();
+      performanceMonitor.current.start();
+    } catch (error) {
+      console.error('Error initializing managers:', error);
+      setHasError(true);
+    }
+  }, []);
+
+  // Performance monitoring with safety checks
   useEffect(() => {
     const monitor = performanceMonitor.current;
-    const interval = setInterval(() => {
-      monitor.update();
-      const newLevel = monitor.getPerformanceLevel();
-      if (newLevel !== performanceLevel) {
-        setPerformanceLevel(newLevel);
-        console.log(`Performance level changed to: ${newLevel}`);
+    if (!monitor) return;
+
+    intervalRef.current = setInterval(() => {
+      try {
+        monitor.update();
+        const newLevel = monitor.getPerformanceLevel();
+        
+        if (newLevel && newLevel !== performanceLevel) {
+          setPerformanceLevel(newLevel);
+          console.log(`Performance level changed to: ${newLevel}`);
+        }
+      } catch (error) {
+        console.warn('Performance monitoring error:', error);
       }
     }, 1000);
 
     return () => {
-      clearInterval(interval);
-      resourceManager.current.dispose();
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      
+      try {
+        monitor?.stop();
+        resourceManager.current?.dispose();
+      } catch (error) {
+        console.warn('Cleanup error:', error);
+      }
     };
   }, [performanceLevel]);
 
-  const renderEnvironment = () => {
-    if (hasError) {
+  const renderEnvironment = useCallback(() => {
+    if (hasError || !environment?.type || !environment?.config) {
       return <FallbackEnvironment />;
     }
 
-    const config = {
-      ...environment.config,
-      lightIntensity: environment.config.lightIntensity * environmentIntensity
+    const safeConfig = {
+      backgroundColor: environment.config.backgroundColor || '#000000',
+      ambientColor: environment.config.ambientColor || '#ffffff',
+      lightIntensity: (environment.config.lightIntensity || 1.0) * environmentIntensity,
+      ...environment.config
     };
 
     try {
       switch (environment.type) {
         case 'void':
         case 'cosmic':
-          return <OptimizedVoidSpace config={config} performanceLevel={performanceLevel} />;
+          return <OptimizedVoidSpace config={safeConfig} performanceLevel={performanceLevel} />;
         
         case 'matrix':
-          return <OptimizedMatrixSpace config={config} performanceLevel={performanceLevel} />;
+          return <OptimizedMatrixSpace config={safeConfig} performanceLevel={performanceLevel} />;
         
         case 'forest':
-          return <ForestGladeSpace config={config} />;
+          return <ForestGladeSpace config={safeConfig} />;
         
         case 'neon':
-          return <NeonCitySpace config={config} />;
+          return <NeonCitySpace config={safeConfig} />;
         
         case 'ocean':
-          return <OceanDepthsSpace config={config} />;
+          return <OceanDepthsSpace config={safeConfig} />;
         
         case 'sketch':
-          return <SketchArtSpace config={config} />;
+          return <SketchArtSpace config={safeConfig} />;
         
         default:
+          console.warn(`Unknown environment type: ${environment.type}`);
           return <FallbackEnvironment />;
       }
     } catch (error) {
@@ -105,24 +137,82 @@ export const OptimizedSpaceRenderer: React.FC<OptimizedSpaceRendererProps> = ({
       setHasError(true);
       return <FallbackEnvironment />;
     }
-  };
+  }, [environment, environmentIntensity, performanceLevel, hasError]);
+
+  // Safe card validation
+  const safeCard = React.useMemo(() => {
+    if (!card) {
+      return {
+        id: 'fallback',
+        title: 'Loading Card',
+        image_url: '/placeholder-card.jpg',
+        rarity: 'common' as const,
+        tags: [],
+        design_metadata: {},
+        visibility: 'private' as const,
+        category: 'default',
+        effects: {
+          holographic: false,
+          foil: false,
+          chrome: false
+        },
+        creator_attribution: {},
+        publishing_options: {
+          marketplace_listing: false,
+          crd_catalog_inclusion: false,
+          print_available: false,
+          pricing: { currency: 'USD' },
+          distribution: { limited_edition: false }
+        }
+      };
+    }
+    return card;
+  }, [card]);
+
+  // Safe controls validation
+  const safeControls = React.useMemo(() => {
+    if (!controls) {
+      return {
+        autoRotate: false,
+        orbitSpeed: 1,
+        cameraDistance: 8,
+        floatIntensity: 0,
+        gravityEffect: 0
+      };
+    }
+    return controls;
+  }, [controls]);
+
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full bg-black text-white">
+        <div className="text-center">
+          <p>Unable to load 3D environment</p>
+          <p className="text-sm text-gray-400">Using fallback view</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <ErrorBoundary
       fallback={
         <div className="flex items-center justify-center h-full bg-black text-white">
           <div className="text-center">
-            <p>Unable to load 3D environment</p>
-            <p className="text-sm text-gray-400">Using fallback view</p>
+            <p>3D Environment Error</p>
+            <p className="text-sm text-gray-400">Fallback mode active</p>
           </div>
         </div>
       }
-      onError={() => setHasError(true)}
+      onError={(error) => {
+        console.error('3D Environment Error:', error);
+        setHasError(true);
+      }}
     >
       <div className="w-full h-full relative">
         <Canvas
           camera={{ 
-            position: [0, 0, controls.cameraDistance], 
+            position: [0, 0, safeControls.cameraDistance || 8], 
             fov: 75 
           }}
           shadows={performanceLevel === 'high'}
@@ -135,10 +225,17 @@ export const OptimizedSpaceRenderer: React.FC<OptimizedSpaceRendererProps> = ({
           onCreated={() => {
             console.log('Canvas created successfully');
           }}
+          onError={(error) => {
+            console.error('Canvas error:', error);
+            setHasError(true);
+          }}
         >
           <Suspense fallback={null}>
             {renderEnvironment()}
-            <Card3D card={card} controls={controls} />
+            
+            <ErrorBoundary fallback={null}>
+              <Card3D card={safeCard} controls={safeControls} />
+            </ErrorBoundary>
             
             {performanceLevel === 'high' && (
               <ContactShadows
@@ -154,8 +251,8 @@ export const OptimizedSpaceRenderer: React.FC<OptimizedSpaceRendererProps> = ({
             <OrbitControls
               enablePan={false}
               enableZoom={true}
-              autoRotate={controls.autoRotate}
-              autoRotateSpeed={controls.orbitSpeed}
+              autoRotate={safeControls.autoRotate || false}
+              autoRotateSpeed={safeControls.orbitSpeed || 1}
               minDistance={3}
               maxDistance={20}
               minPolarAngle={Math.PI / 6}

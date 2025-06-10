@@ -20,48 +20,70 @@ export const OptimizedMatrixSpace: React.FC<OptimizedMatrixSpaceProps> = ({
   const groupRef = useRef<THREE.Group>(null);
 
   const textCount = useMemo(() => {
-    switch (performanceLevel) {
-      case 'low': return 8;
-      case 'medium': return 15;
-      case 'high': return 25;
-      default: return 15;
+    try {
+      switch (performanceLevel) {
+        case 'low': return 5;
+        case 'medium': return 10;
+        case 'high': return 15;
+        default: return 10;
+      }
+    } catch (error) {
+      console.warn('Error determining text count:', error);
+      return 10;
     }
   }, [performanceLevel]);
 
-  const matrixChars = useMemo(() => 
-    Array.from({ length: textCount }, (_, i) => ({
-      char: String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96)),
-      position: [
-        (Math.random() - 0.5) * 40,
-        (Math.random() - 0.5) * 30,
-        (Math.random() - 0.5) * 40
-      ] as [number, number, number],
-      speed: 0.5 + Math.random() * 1.5
-    })), 
-  [textCount]);
+  const matrixChars = useMemo(() => {
+    try {
+      return Array.from({ length: textCount }, (_, i) => ({
+        char: String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96)),
+        position: [
+          (Math.random() - 0.5) * 30,
+          (Math.random() - 0.5) * 20,
+          (Math.random() - 0.5) * 30
+        ] as [number, number, number],
+        speed: 0.3 + Math.random() * 1.0
+      }));
+    } catch (error) {
+      console.error('Error creating matrix characters:', error);
+      return [];
+    }
+  }, [textCount]);
 
   useFrame((state) => {
-    if (groupRef.current && performanceLevel !== 'low') {
-      groupRef.current.children.forEach((child, i) => {
-        child.position.y -= matrixChars[i].speed * 0.02;
-        if (child.position.y < -20) {
-          child.position.y = 20;
-        }
-      });
+    try {
+      if (groupRef.current && performanceLevel !== 'low' && matrixChars.length > 0) {
+        groupRef.current.children.forEach((child, i) => {
+          if (i < matrixChars.length) {
+            child.position.y -= matrixChars[i].speed * 0.01;
+            if (child.position.y < -15) {
+              child.position.y = 15;
+            }
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('Matrix space animation error:', error);
     }
   });
 
+  const safeConfig = useMemo(() => ({
+    backgroundColor: config?.backgroundColor || '#000000',
+    ambientColor: config?.ambientColor || '#00ff00',
+    lightIntensity: config?.lightIntensity || 0.3
+  }), [config]);
+
   return (
     <>
-      <color attach="background" args={[config.backgroundColor]} />
-      <ambientLight intensity={config.lightIntensity * 0.3} color={config.ambientColor} />
+      <color attach="background" args={[safeConfig.backgroundColor]} />
+      <ambientLight intensity={safeConfig.lightIntensity * 0.3} color={safeConfig.ambientColor} />
       
       <group ref={groupRef}>
         {matrixChars.map((item, i) => (
           <Text
             key={i}
             position={item.position}
-            fontSize={1}
+            fontSize={0.8}
             color="#00ff00"
             anchorX="center"
             anchorY="middle"
