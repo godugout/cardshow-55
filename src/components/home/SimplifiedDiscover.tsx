@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
@@ -70,11 +71,6 @@ export const SimplifiedDiscover: React.FC = () => {
     if (cards && cards.length > 0) {
       handleCardClick(cards[index], cards.slice(0, 6));
     }
-  };
-
-  // Fixed: Updated to match expected signature (card: CardData, index: number) => void
-  const handleCardChangeWrapper = (card: any, index: number) => {
-    handleCardChange(index);
   };
 
   return (
@@ -157,7 +153,7 @@ export const SimplifiedDiscover: React.FC = () => {
           card={convertedCards[selectedCardIndex]}
           cards={convertedCards}
           currentCardIndex={selectedCardIndex}
-          onCardChange={handleCardChangeWrapper}
+          onCardChange={handleCardChange}
           isOpen={showImmersiveViewer}
           onClose={handleCloseViewer}
           onShare={() => handleShareCard(convertedCards)}

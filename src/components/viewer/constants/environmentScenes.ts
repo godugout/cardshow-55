@@ -3,21 +3,48 @@ import type { EnvironmentScene } from '../types';
 
 export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
   {
-    id: 'studio',
-    name: 'Studio',
-    icon: '🎬',
-    category: 'professional',
-    description: 'Clean studio environment',
-    panoramicUrl: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=2048&h=1024&fit=crop',
-    previewUrl: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop',
-    backgroundImage: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=2048&h=1024&fit=crop',
-    hdriUrl: '/environments/studio.hdr',
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    id: 'forest',
+    name: 'Enchanted Forest',
+    icon: '🌲',
+    category: 'natural',
+    description: 'Mystical forest with ancient trees',
+    panoramicUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #2d4a36 0%, #4a7c59 100%)',
     lighting: {
-      color: '#ffffff',
-      intensity: 1.0,
-      azimuth: 0,
-      elevation: 45
+      color: '#4a7c59',
+      intensity: 0.8,
+      elevation: 30,
+      azimuth: 45
+    },
+    atmosphere: {
+      fog: true,
+      fogColor: '#2d4a36',
+      fogDensity: 0.3,
+      particles: true
+    },
+    depth: {
+      layers: 5,
+      parallaxIntensity: 1.2,
+      fieldOfView: 75
+    }
+  },
+  {
+    id: 'mountain',
+    name: 'Mountain Vista',
+    icon: '🏔️',
+    category: 'natural',
+    description: 'Breathtaking mountain landscape',
+    panoramicUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #ffa500 0%, #ff7f50 100%)',
+    lighting: {
+      color: '#ffa500',
+      intensity: 0.9,
+      elevation: 15,
+      azimuth: 60
     },
     atmosphere: {
       fog: false,
@@ -26,96 +53,121 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
       particles: false
     },
     depth: {
-      layers: 3,
-      parallaxIntensity: 1.0,
-      fieldOfView: 75
-    }
-  },
-  {
-    id: 'cyberpunk',
-    name: 'Cyberpunk City',
-    icon: '🌆',
-    category: 'futuristic',
-    description: 'Neon-lit cyberpunk cityscape',
-    panoramicUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2048&h=1024&fit=crop',
-    previewUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
-    backgroundImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2048&h=1024&fit=crop',
-    hdriUrl: '/environments/cyberpunk.hdr',
-    gradient: 'linear-gradient(135deg, #ff006e 0%, #8338ec 100%)',
-    lighting: {
-      color: '#ff00ff',
-      intensity: 1.2,
-      azimuth: 45,
-      elevation: 30
-    },
-    atmosphere: {
-      fog: true,
-      fogColor: '#ff00ff',
-      fogDensity: 0.3,
-      particles: true
-    },
-    depth: {
-      layers: 5,
+      layers: 7,
       parallaxIntensity: 1.5,
-      fieldOfView: 80
-    }
-  },
-  {
-    id: 'space',
-    name: 'Deep Space',
-    icon: '🌌',
-    category: 'cosmic',
-    description: 'Vast cosmic environment',
-    panoramicUrl: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=2048&h=1024&fit=crop',
-    previewUrl: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=400&h=300&fit=crop',
-    backgroundImage: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=2048&h=1024&fit=crop',
-    hdriUrl: '/environments/space.hdr',
-    gradient: 'radial-gradient(ellipse at center, #1e3c72 0%, #2a5298 100%)',
-    lighting: {
-      color: '#ffffff',
-      intensity: 0.7,
-      azimuth: 0,
-      elevation: 90
-    },
-    atmosphere: {
-      fog: false,
-      fogColor: '#000000',
-      fogDensity: 0.05,
-      particles: true
-    },
-    depth: {
-      layers: 6,
-      parallaxIntensity: 2.0,
       fieldOfView: 85
     }
   },
   {
-    id: 'forest',
-    name: 'Forest Grove',
-    icon: '🌲',
-    category: 'natural',
-    description: 'Peaceful forest environment',
-    panoramicUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=2048&h=1024&fit=crop',
-    previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop',
-    backgroundImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=2048&h=1024&fit=crop',
-    hdriUrl: '/environments/forest.hdr',
-    gradient: 'linear-gradient(135deg, #134e5e 0%, #71b280 100%)',
+    id: 'crystal-cave',
+    name: 'Crystal Cavern',
+    icon: '💎',
+    category: 'fantasy',
+    description: 'Glowing crystal cave realm',
+    panoramicUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #4a5ee8 0%, #7b2cbf 100%)',
     lighting: {
-      color: '#90ee90',
-      intensity: 0.8,
-      azimuth: 45,
-      elevation: 60
+      color: '#4a5ee8',
+      intensity: 1.1,
+      elevation: 60,
+      azimuth: -30
     },
     atmosphere: {
       fog: true,
-      fogColor: '#90ee90',
-      fogDensity: 0.15,
+      fogColor: '#4a5ee8',
+      fogDensity: 0.4,
       particles: true
     },
     depth: {
-      layers: 5,
-      parallaxIntensity: 1.1,
+      layers: 6,
+      parallaxIntensity: 1.8,
       fieldOfView: 70
+    }
+  },
+  {
+    id: 'cyberpunk-city',
+    name: 'Neon Metropolis',
+    icon: '🌃',
+    category: 'futuristic',
+    description: 'Cyberpunk cityscape at night',
+    panoramicUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #ff0080 0%, #00ffff 100%)',
+    lighting: {
+      color: '#ff0080',
+      intensity: 1.2,
+      elevation: 30,
+      azimuth: 45
+    },
+    atmosphere: {
+      fog: true,
+      fogColor: '#ff0080',
+      fogDensity: 0.2,
+      particles: true
+    },
+    depth: {
+      layers: 8,
+      parallaxIntensity: 2.0,
+      fieldOfView: 90
+    }
+  },
+  {
+    id: 'ancient-temple',
+    name: 'Ancient Temple',
+    icon: '🏛️',
+    category: 'architectural',
+    description: 'Majestic ancient temple ruins',
+    panoramicUrl: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #d4af37 0%, #ffd700 100%)',
+    lighting: {
+      color: '#d4af37',
+      intensity: 0.9,
+      elevation: 45,
+      azimuth: 0
+    },
+    atmosphere: {
+      fog: false,
+      fogColor: '#d4af37',
+      fogDensity: 0.15,
+      particles: false
+    },
+    depth: {
+      layers: 6,
+      parallaxIntensity: 1.3,
+      fieldOfView: 80
+    }
+  },
+  {
+    id: 'space-station',
+    name: 'Space Station',
+    icon: '🚀',
+    category: 'futuristic',
+    description: 'Orbital space station interior',
+    panoramicUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #00aaff 0%, #0066cc 100%)',
+    lighting: {
+      color: '#00aaff',
+      intensity: 1.0,
+      elevation: 90,
+      azimuth: 0
+    },
+    atmosphere: {
+      fog: false,
+      fogColor: '#000000',
+      fogDensity: 0.0,
+      particles: true
+    },
+    depth: {
+      layers: 4,
+      parallaxIntensity: 0.8,
+      fieldOfView: 110
     }
   }
 ];

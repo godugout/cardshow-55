@@ -3,51 +3,51 @@ import type { LightingPreset } from '../types';
 
 export const LIGHTING_PRESETS: LightingPreset[] = [
   {
-    id: 'studio',
-    name: 'Studio Lighting',
-    description: 'Professional studio setup',
-    brightness: 100,
-    contrast: 100,
-    highlights: 80,
-    shadows: 20,
+    id: 'natural',
+    name: 'Natural',
+    description: 'Balanced natural lighting',
+    brightness: 90,
+    contrast: 90,
+    shadows: 40,
+    highlights: 65,
     temperature: 5500,
-    position: { x: 0, y: 5, z: 5 },
-    shadowSoftness: 0.5
+    position: { x: 0, y: 1, z: 1 },
+    shadowSoftness: 25
   },
   {
     id: 'dramatic',
     name: 'Dramatic',
     description: 'High contrast dramatic lighting',
     brightness: 120,
-    contrast: 140,
+    contrast: 150,
+    shadows: 80,
     highlights: 90,
-    shadows: 10,
     temperature: 4000,
-    position: { x: -3, y: 8, z: 3 },
-    shadowSoftness: 0.8
+    position: { x: 1, y: 0.5, z: 0.5 },
+    shadowSoftness: 10
   },
   {
     id: 'soft',
-    name: 'Soft Light',
+    name: 'Soft',
     description: 'Gentle diffused lighting',
     brightness: 90,
     contrast: 80,
-    highlights: 70,
-    shadows: 40,
+    shadows: 30,
+    highlights: 60,
     temperature: 6000,
-    position: { x: 2, y: 6, z: 4 },
-    shadowSoftness: 0.3
+    position: { x: 0, y: 1, z: 0 },
+    shadowSoftness: 40
   },
   {
-    id: 'golden',
-    name: 'Golden Hour',
-    description: 'Warm golden hour lighting',
-    brightness: 85,
-    contrast: 110,
+    id: 'vibrant',
+    name: 'Vibrant',
+    description: 'Enhanced color vibrancy',
+    brightness: 110,
+    contrast: 130,
+    shadows: 40,
     highlights: 85,
-    shadows: 25,
-    temperature: 3200,
-    position: { x: 5, y: 3, z: 2 },
-    shadowSoftness: 0.6
+    temperature: 5800,
+    position: { x: -0.5, y: 1, z: 1 },
+    shadowSoftness: 25
   }
 ];

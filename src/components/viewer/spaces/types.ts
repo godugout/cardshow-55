@@ -2,16 +2,14 @@
 export interface SpaceEnvironment {
   id: string;
   name: string;
-  description?: string;
-  type: 'void' | 'cosmic' | 'cartoon' | 'matrix' | 'sketch' | 'forest' | 'neon' | 'ocean' | 'studio' | 'abstract';
-  emoji: string;
+  description: string;
   previewUrl: string;
+  type: 'void' | 'cosmic' | 'studio' | 'abstract' | 'matrix' | 'cartoon' | 'sketch' | 'neon' | 'forest' | 'ocean';
+  emoji: string;
   config: {
     backgroundColor: string;
-    lightIntensity: number;
     ambientColor: string;
-    fogColor?: string;
-    fogDensity?: number;
+    lightIntensity: number;
     particleCount?: number;
     animationSpeed?: number;
   };
@@ -25,12 +23,8 @@ export interface SpaceControls {
   gravityEffect: number;
 }
 
-export interface HDRIEnvironment {
-  id: string;
-  name: string;
-  type: 'hdri';
-  emoji: string;
-  previewUrl: string;
-  hdriUrl: string;
-  fallbackUrl?: string;
+export interface CameraState {
+  position: [number, number, number];
+  target: [number, number, number];
+  rotation: { x: number; y: number };
 }

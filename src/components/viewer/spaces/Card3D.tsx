@@ -1,10 +1,10 @@
 
 import React, { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-import type { CardData } from '@/types/card';
+import { useFrame, useLoader } from '@react-three/fiber';
+import { TextureLoader } from 'three';
+import { Mesh, PlaneGeometry, MeshStandardMaterial } from 'three';
+import type { CardData } from '@/hooks/useCardEditor';
 import type { SpaceControls } from './types';
-import { useCardTexture } from '../hooks/useCardTexture';
 
 interface Card3DProps {
   card: CardData;
@@ -12,77 +12,38 @@ interface Card3DProps {
 }
 
 export const Card3D: React.FC<Card3DProps> = ({ card, controls }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<Mesh>(null);
   
-  // Use the enhanced texture loading hook
-  const { texture, fallbackMaterial, hasTexture, isLoading } = useCardTexture({
-    imageUrl: card?.image_url,
-    fallbackUrl: '/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png'
-  });
-
-  // Apply controls to card animation with safety checks
+  // Load card image as texture
+  const texture = useLoader(TextureLoader, card.image_url || '/placeholder-card.jpg');
+  
   useFrame((state) => {
-    if (!meshRef.current || !controls) return;
-    
-    try {
-      const time = state.clock.elapsedTime;
-      
-      // Auto rotation with safe defaults
+    if (meshRef.current) {
+      // Floating animation
+      const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
+      meshRef.current.position.y = floatY;
+
+      // Auto rotation
       if (controls.autoRotate) {
-        const speed = controls.orbitSpeed || 1;
-        meshRef.current.rotation.y += speed * 0.01;
+        meshRef.current.rotation.y += 0.005 * controls.orbitSpeed;
       }
-      
-      // Float effect with safe defaults
-      const floatIntensity = controls.floatIntensity || 0;
-      if (floatIntensity > 0) {
-        meshRef.current.position.y = Math.sin(time * 0.5) * floatIntensity * 0.1;
+
+      // Gravity effect simulation
+      if (controls.gravityEffect > 0) {
+        const gravity = Math.sin(state.clock.elapsedTime * 0.3) * controls.gravityEffect * 0.05;
+        meshRef.current.position.y += gravity;
       }
-      
-      // Gravity effect with safe defaults
-      const gravityEffect = controls.gravityEffect || 0;
-      if (gravityEffect > 0) {
-        meshRef.current.rotation.x = Math.sin(time * 0.3) * gravityEffect * 0.05;
-      }
-    } catch (error) {
-      console.warn('Card3D animation error:', error);
     }
   });
 
-  const cardWidth = 2.5;
-  const cardHeight = 3.5;
-  const cardDepth = 0.02;
-
-  // Show loading state or actual card
-  if (isLoading) {
-    return (
-      <mesh ref={meshRef} castShadow receiveShadow position={[0, 0, 0]}>
-        <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
-        <meshStandardMaterial
-          color="#6B7280"
-          roughness={0.3}
-          metalness={0.1}
-          side={THREE.DoubleSide}
-          transparent
-          opacity={0.7}
-        />
-      </mesh>
-    );
-  }
-
   return (
-    <mesh ref={meshRef} castShadow receiveShadow position={[0, 0, 0]}>
-      <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
-      {hasTexture ? (
-        <meshStandardMaterial
-          map={texture}
-          roughness={0.3}
-          metalness={0.1}
-          side={THREE.DoubleSide}
-        />
-      ) : (
-        <primitive object={fallbackMaterial} />
-      )}
+    <mesh ref={meshRef} castShadow receiveShadow>
+      <planeGeometry args={[2.5, 3.5]} />
+      <meshStandardMaterial 
+        map={texture} 
+        transparent 
+        side={2} // DoubleSide
+      />
     </mesh>
   );
 };

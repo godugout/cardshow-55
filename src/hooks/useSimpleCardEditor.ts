@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/lib/supabase-client';
@@ -14,17 +15,10 @@ export const useSimpleCardEditor = () => {
     id: uuidv4(),
     title: '',
     description: '',
-    image_url: '', // Initialize as empty string
     rarity: 'common' as CardRarity,
     tags: [],
     design_metadata: {},
     visibility: 'private',
-    category: 'fantasy',
-    effects: {
-      holographic: false,
-      foil: false,
-      chrome: false
-    },
     creator_attribution: { collaboration_type: 'solo' },
     publishing_options: {
       marketplace_listing: false,

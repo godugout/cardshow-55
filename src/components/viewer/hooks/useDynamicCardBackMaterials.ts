@@ -38,12 +38,12 @@ export const CARD_BACK_MATERIALS: Record<string, CardBackMaterial> = {
     name: 'Crystal Glitter Surface',
     background: 'linear-gradient(135deg, rgba(248, 250, 252, 0.3) 0%, rgba(241, 245, 249, 0.4) 25%, rgba(226, 232, 240, 0.5) 50%, rgba(203, 213, 225, 0.4) 75%, rgba(148, 163, 184, 0.3) 100%)',
     borderColor: 'rgba(148, 163, 184, 0.6)',
-    opacity: 0.6,
+    opacity: 0.6, // More transparent
     blur: 0.5,
     texture: 'glitter',
     logoTreatment: {
       filter: 'drop-shadow(0 8px 25px rgba(148, 163, 184, 0.9)) brightness(1.6) contrast(1.3)',
-      opacity: 0.7,
+      opacity: 0.7, // More transparent
       transform: 'scale(1.08)'
     }
   },
@@ -129,6 +129,7 @@ export const CARD_BACK_MATERIALS: Record<string, CardBackMaterial> = {
     }
   },
 
+  // New Solar material - blues, greens, purples
   solar: {
     id: 'solar',
     name: 'Aurora Solar Surface',
@@ -142,6 +143,7 @@ export const CARD_BACK_MATERIALS: Record<string, CardBackMaterial> = {
     }
   },
 
+  // New Lunar material - dull NASA gray with moon dust
   lunar: {
     id: 'lunar',
     name: 'Lunar Dust Surface',
@@ -181,10 +183,10 @@ export const useDynamicCardBackMaterials = (effectValues: EffectValues) => {
     }
     
     // Calculate effect intensities with enhanced debugging
-    const effectIntensities = Object.entries(effectValues).map(([effectId, intensity]) => {
-      const effectIntensity = typeof intensity === 'number' ? intensity : 0;
-      return { effectId, intensity: effectIntensity };
-    }).filter(({ intensity }) => intensity > 5);
+    const effectIntensities = Object.entries(effectValues).map(([effectId, params]) => {
+      const intensity = typeof params.intensity === 'number' ? params.intensity : 0;
+      return { effectId, intensity };
+    }).filter(({ intensity }) => intensity > 5); // Increased threshold to prevent flickering
     
     console.log('🎨 Material Selection: Active effects (>5 intensity):', effectIntensities);
     
@@ -210,15 +212,18 @@ export const useDynamicCardBackMaterials = (effectValues: EffectValues) => {
       gold: 'gold',
       vintage: 'vintage',
       prizm: 'prizm',
-      interference: 'lunar',
-      foilspray: 'starlight',
+      interference: 'lunar', // Map interference to lunar material
+      foilspray: 'starlight', // Map foil spray to starlight material
     };
 
-    // Check for solar tone in gold effect (simplified since gold is now just a number)
-    if (dominantEffect.effectId === 'gold' && dominantEffect.intensity > 50) {
-      const selectedMat = CARD_BACK_MATERIALS.solar;
-      console.log('🎨 Material Selection: Selected solar material:', selectedMat.name);
-      return selectedMat;
+    // Check for solar tone in gold effect
+    if (dominantEffect.effectId === 'gold') {
+      const goldTone = effectValues.gold?.goldTone;
+      if (goldTone === 'solar') {
+        const selectedMat = CARD_BACK_MATERIALS.solar;
+        console.log('🎨 Material Selection: Selected solar material:', selectedMat.name);
+        return selectedMat;
+      }
     }
     
     const materialId = materialMapping[dominantEffect.effectId] || 'default';

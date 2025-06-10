@@ -1,6 +1,5 @@
 
 export type CardRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-
 export type CardVisibility = 'private' | 'public' | 'shared';
 
 export interface CreatorAttribution {
@@ -29,49 +28,27 @@ export interface PublishingOptions {
 }
 
 export interface CardData {
-  id: string;
+  id?: string;
   title: string;
   description?: string;
-  image_url?: string; // Made optional since cards can be created without images
-  thumbnail_url?: string;
-  created_at?: string;
-  updated_at?: string;
-  creator?: {
-    id: string;
-    name: string;
-  };
-  metadata?: {
-    rarity?: string;
-    effects?: {
-      holographic?: boolean;
-      chrome?: boolean;
-      foil?: boolean;
-    };
-  };
-  // Extended properties for editor compatibility
   rarity: CardRarity;
   tags: string[];
+  image_url?: string;
+  thumbnail_url?: string;
   design_metadata: Record<string, any>;
   visibility: CardVisibility;
   is_public?: boolean;
-  category: string;
-  effects: {
-    holographic: boolean;
-    foil: boolean;
-    chrome: boolean;
-  };
+  template_id?: string;
+  collection_id?: string;
+  team_id?: string;
   creator_attribution: CreatorAttribution;
   publishing_options: PublishingOptions;
   verification_status?: 'pending' | 'verified' | 'rejected';
   print_metadata?: Record<string, any>;
+  creator_id?: string;
   price?: number;
   edition_size?: number;
   marketplace_listing?: boolean;
   crd_catalog_inclusion?: boolean;
   print_available?: boolean;
-  template_id?: string;
-  collection_id?: string;
-  team_id?: string;
-  type?: string;
-  series?: string;
 }

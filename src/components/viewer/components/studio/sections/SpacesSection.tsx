@@ -1,17 +1,15 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { CollapsibleSection } from '@/components/ui/design-system';
-import type { SpaceEnvironment, SpaceControls, HDRIEnvironment } from '../../../spaces/types';
+import type { SpaceEnvironment, SpaceControls } from '../../../spaces/types';
 import type { EnvironmentScene, EnvironmentControls, BackgroundType } from '../../../types';
 import { 
   SceneGrid, 
   SpaceEnvironmentGrid, 
-  HDRIEnvironmentGrid,
   CameraControlsSection, 
   CardPhysicsSection, 
   EnvironmentControlsSection,
-  SPACE_ENVIRONMENTS,
-  HDRI_ENVIRONMENTS
+  SPACE_ENVIRONMENTS 
 } from './spaces';
 
 interface SpacesSectionProps {
@@ -51,16 +49,9 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
   backgroundType = 'scene',
   onBackgroundTypeChange = () => {}
 }) => {
-  const [selectedHDRI, setSelectedHDRI] = useState<HDRIEnvironment | null>(null);
-
-  const getStatusText = () => {
-    if (backgroundType === '3dSpace' && selectedSpace) {
-      return `${selectedSpace.name} (3D Space)`;
-    } else if (backgroundType === 'hdri' && selectedHDRI) {
-      return `${selectedHDRI.name} (HDRI)`;
-    }
-    return `${selectedScene.name} (Scene)`;
-  };
+  const statusText = backgroundType === '3dSpace' && selectedSpace
+    ? `${selectedSpace.name} (3D Space)` 
+    : `${selectedScene.name} (Scene)`;
 
   const handleSceneChange = (scene: EnvironmentScene) => {
     onSceneChange(scene);
@@ -70,52 +61,13 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
   const handleSpaceChange = (space: SpaceEnvironment) => {
     onSpaceChange(space);
     onBackgroundTypeChange('3dSpace');
-    setSelectedHDRI(null);
   };
-
-  const handleHDRIChange = (hdri: HDRIEnvironment) => {
-    setSelectedHDRI(hdri);
-    onBackgroundTypeChange('hdri');
-    // Convert HDRI to scene format for compatibility
-    const hdriAsScene: EnvironmentScene = {
-      id: hdri.id,
-      name: hdri.name,
-      icon: '🎯',
-      category: 'natural',
-      description: `HDRI environment: ${hdri.name}`,
-      previewUrl: hdri.previewUrl,
-      hdriUrl: hdri.hdriUrl,
-      panoramicUrl: hdri.fallbackUrl || hdri.previewUrl,
-      backgroundImage: hdri.fallbackUrl || hdri.previewUrl,
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      lighting: {
-        color: '#ffffff',
-        intensity: 1.0,
-        azimuth: 180,
-        elevation: 45
-      },
-      atmosphere: {
-        fog: false,
-        fogColor: '#ffffff',
-        fogDensity: 0.01,
-        particles: false
-      },
-      depth: {
-        layers: 3,
-        parallaxIntensity: 0.5,
-        fieldOfView: 75
-      }
-    };
-    onSceneChange(hdriAsScene);
-  };
-
-  const isControlsActive = backgroundType === '3dSpace' || backgroundType === 'hdri';
 
   return (
     <CollapsibleSection
-      title="Spaces & Environments"
+      title="Spaces"
       emoji="🌌"
-      statusText={getStatusText()}
+      statusText={statusText}
       isOpen={isOpen}
       onToggle={onToggle}
     >
@@ -134,15 +86,8 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
           isActive={backgroundType === '3dSpace'}
         />
 
-        {/* HDRI Environment Selection */}
-        <HDRIEnvironmentGrid
-          selectedHDRI={selectedHDRI}
-          onHDRIChange={handleHDRIChange}
-          isActive={backgroundType === 'hdri'}
-        />
-
-        {/* Controls (show when 3D space or HDRI is active) */}
-        {isControlsActive && (
+        {/* 3D Space Controls (only show when 3D space is active) */}
+        {backgroundType === '3dSpace' && (
           <>
             {/* Camera Controls */}
             <CameraControlsSection
@@ -159,7 +104,7 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
           </>
         )}
 
-        {/* Environment Controls (for all types) */}
+        {/* Environment Controls (for both 2D and 3D) */}
         <EnvironmentControlsSection
           environmentControls={environmentControls}
           onEnvironmentControlsChange={onEnvironmentControlsChange}
@@ -168,14 +113,10 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
         {/* Feature Status */}
         <div className="p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-400/30">
           <div className="text-purple-300 text-xs font-medium mb-1">
-            🚀 Enhanced Environments
+            🚀 Unified Spaces & Environments
           </div>
           <div className="text-white/70 text-xs">
-            Switch between 2D scenes, 3D spaces, and HDRI environments. Active: {
-              backgroundType === '3dSpace' ? '3D Space' : 
-              backgroundType === 'hdri' ? 'HDRI Environment' : 
-              '2D Scene'
-            }
+            Switch between 2D scenes and immersive 3D environments. Active: {backgroundType === '3dSpace' ? '3D Space' : '2D Scene'}
           </div>
         </div>
       </div>

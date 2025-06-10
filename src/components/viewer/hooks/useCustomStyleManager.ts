@@ -32,21 +32,50 @@ const mapControlsToEffects = (controls: CustomStyleControls): EffectValues => {
   const { shimmer, depth, color, texture, glow, movement } = controls;
   
   return {
-    holographic: Math.round(shimmer * 0.8),
-    foilspray: Math.round(texture * 0.6),
-    prizm: Math.round(color * 0.5),
-    chrome: Math.round(shimmer * 0.4),
-    interference: Math.round(depth * 0.3),
-    brushedmetal: Math.round(texture * 0.4),
-    crystal: Math.round((shimmer + depth) * 0.25),
-    vintage: 0,
-    gold: 0,
-    aurora: 0,
-    waves: 0,
-    ice: 0,
-    lunar: 0,
-    foil: 0,
-    prismatic: 0
+    holographic: {
+      intensity: Math.round(shimmer * 0.8),
+      shiftSpeed: 50 + (movement * 1.5),
+      rainbowSpread: 120 + (color * 2),
+      animated: movement > 20
+    },
+    foilspray: {
+      intensity: Math.round(texture * 0.6),
+      density: 30 + (texture * 0.4),
+      direction: 45
+    },
+    prizm: {
+      intensity: Math.round(color * 0.5),
+      complexity: Math.max(1, Math.round(depth * 0.08)),
+      colorSeparation: 40 + (color * 0.4)
+    },
+    chrome: {
+      intensity: Math.round(shimmer * 0.4),
+      sharpness: 60 + (depth * 0.3),
+      highlightSize: 30 + (glow * 0.4)
+    },
+    interference: {
+      intensity: Math.round(depth * 0.3),
+      frequency: Math.max(1, Math.round(6 + texture * 0.1)),
+      thickness: 2 + (depth * 0.05)
+    },
+    brushedmetal: {
+      intensity: Math.round(texture * 0.4),
+      direction: 45,
+      grainDensity: Math.max(1, Math.round(4 + texture * 0.08))
+    },
+    crystal: {
+      intensity: Math.round((shimmer + depth) * 0.25),
+      facets: Math.max(3, Math.round(6 + depth * 0.1)),
+      dispersion: 40 + (color * 0.4),
+      clarity: 40 + (depth * 0.4),
+      sparkle: glow > 30
+    },
+    vintage: { intensity: 0 },
+    gold: { intensity: 0, shimmerSpeed: 80, platingThickness: 5, goldTone: 'rich', reflectivity: 85, colorEnhancement: true },
+    aurora: { intensity: 0, waveSpeed: 80, colorShift: 120 },
+    waves: { intensity: 0, frequency: 10, amplitude: 30, direction: 45, complexity: 3, wobble: 50 },
+    ice: { intensity: 0 },
+    lunar: { intensity: 0 }
   };
 };
 

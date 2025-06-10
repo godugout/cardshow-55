@@ -29,12 +29,6 @@ export const useCardConversion = () => {
       design_metadata: card.design_metadata || {},
       visibility: card.is_public ? 'public' : 'private',
       is_public: card.is_public || false,
-      category: 'fantasy', // Default category for converted cards
-      effects: {
-        holographic: false,
-        foil: false,
-        chrome: false
-      },
       creator_attribution: (card.creator_attribution || {
         creator_name: '',
         creator_id: card.creator_id,

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -33,10 +34,7 @@ export const PreviewTab = ({ selectedTemplate, cardData, onContinueToEffects }: 
     toast.success('Generating share link...');
   };
 
-  const handleDownloadCards = (cards: CardData[]) => {
-    if (cards.length === 0) return;
-    
-    const card = cards[0]; // Take the first card from the array
+  const handleDownloadCard = (card: CardData) => {
     const dataStr = JSON.stringify(card, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     
@@ -163,7 +161,7 @@ export const PreviewTab = ({ selectedTemplate, cardData, onContinueToEffects }: 
           isOpen={showImmersiveViewer}
           onClose={() => setShowImmersiveViewer(false)}
           onShare={handleShareCard}
-          onDownload={handleDownloadCards}
+          onDownload={handleDownloadCard}
           allowRotation={true}
           showStats={true}
           ambient={true}

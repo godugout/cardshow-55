@@ -1,110 +1,150 @@
 
-import React, { useRef, useCallback } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
+import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import type { MaterialSettings, LightingPreset, EnvironmentControls, EnvironmentScene } from '../types';
+import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
+import { CardFrontContainer } from './CardFrontContainer';
+import { CardBackContainer } from './CardBackContainer';
+import { Card3DTransform } from './Card3DTransform';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
+import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
-export interface EnhancedCardContainerProps {
+interface EnhancedCardContainerProps {
   card: CardData;
+  isFlipped: boolean;
+  isHovering: boolean;
+  showEffects: boolean;
   effectValues: EffectValues;
+  mousePosition: { x: number; y: number };
   rotation: { x: number; y: number };
   zoom: number;
-  isFlipped: boolean;
-  autoRotate?: boolean;
-  showEffects: boolean;
-  materialSettings: MaterialSettings;
-  lightingPreset: LightingPreset;
-  environmentBrightness: number;
-  interactiveLightingEnabled: boolean;
-  interactiveLighting?: boolean;
-  mousePosition: { x: number; y: number };
-  isHovering: boolean;
   isDragging: boolean;
-  frameStyles: Record<string, any>;
-  enhancedEffectStyles: Record<string, any>;
-  SurfaceTexture: any;
+  frameStyles: React.CSSProperties;
+  enhancedEffectStyles: React.CSSProperties;
+  SurfaceTexture: React.ReactNode;
+  interactiveLighting?: boolean;
+  selectedScene?: EnvironmentScene;
+  selectedLighting?: LightingPreset;
+  materialSettings?: MaterialSettings;
+  overallBrightness?: number[];
+  showBackgroundInfo?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onClick: () => void;
-  environmentControls: EnvironmentControls;
-  selectedScene?: EnvironmentScene;
-  overallBrightness?: number[];
-  showBackgroundInfo?: boolean;
+  environmentControls?: EnvironmentControls;
 }
 
 export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   card,
+  isFlipped,
+  isHovering,
+  showEffects,
   effectValues,
+  mousePosition,
   rotation,
   zoom,
-  isFlipped,
-  autoRotate = false,
-  showEffects,
-  materialSettings,
-  lightingPreset,
-  environmentBrightness,
-  interactiveLightingEnabled,
-  mousePosition,
-  isHovering,
   isDragging,
+  frameStyles,
+  enhancedEffectStyles,
+  SurfaceTexture,
+  interactiveLighting = false,
+  selectedScene,
+  selectedLighting,
+  materialSettings,
+  overallBrightness = [100],
+  showBackgroundInfo = true,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
   onClick,
-  environmentControls
+  environmentControls = {
+    depthOfField: 1.0,
+    parallaxIntensity: 1.0,
+    fieldOfView: 75,
+    atmosphericDensity: 1.0
+  }
 }) => {
-  const meshRef = useRef();
+  // Use cached effects for better performance only when all required props are available
+  const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
+    card,
+    effectValues,
+    mousePosition,
+    showEffects,
+    overallBrightness,
+    interactiveLighting,
+    selectedScene,
+    selectedLighting,
+    materialSettings,
+    zoom,
+    rotation,
+    isHovering
+  }) : null;
+
+  // Use double-click/tap detection for card flip
+  const handleDoubleClick = useDoubleClick({
+    onDoubleClick: onClick,
+    delay: 300
+  });
+
+  // Use cached styles if available, otherwise fall back to provided styles
+  const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
+  const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
+  const effectiveSurfaceTexture = cachedEffects?.SurfaceTexture || SurfaceTexture;
 
   return (
     <div 
-      className="w-full h-full relative"
+      className={`relative z-20 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      style={{
+        transform: `scale(${zoom})`,
+        transition: isDragging ? 'none' : 'transform 0.3s ease',
+        filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`
+      }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      onClick={onClick}
     >
-      <Canvas
-        camera={{ position: [0, 0, 8], fov: environmentControls?.fieldOfView || 75 }}
-        shadows
-        dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true }}
+      <Card3DTransform
+        rotation={rotation}
+        mousePosition={mousePosition}
+        isDragging={isDragging}
+        interactiveLighting={interactiveLighting}
+        isHovering={isHovering}
+        onClick={handleDoubleClick}
       >
-        <Environment preset="studio" />
-        
-        <mesh ref={meshRef} position={[0, 0, 0]} rotation={[rotation.x, rotation.y, 0]} scale={zoom}>
-          <planeGeometry args={[2.5, 3.5]} />
-          <meshStandardMaterial 
-            map={null}
-            roughness={materialSettings.roughness}
-            metalness={materialSettings.metalness}
-            side={2}
-          />
-        </mesh>
-        
-        <ContactShadows
-          opacity={0.3}
-          scale={10}
-          blur={1}
-          far={10}
-          resolution={256}
-          color="#000000"
+        {/* Front of Card */}
+        <CardFrontContainer
+          card={card}
+          isFlipped={isFlipped}
+          isHovering={isHovering}
+          showEffects={showEffects}
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          frameStyles={effectiveFrameStyles}
+          enhancedEffectStyles={effectiveEnhancedEffectStyles}
+          SurfaceTexture={effectiveSurfaceTexture}
+          interactiveLighting={interactiveLighting}
+          onClick={handleDoubleClick}
         />
-        
-        <OrbitControls
-          enablePan={false}
-          enableZoom={true}
-          autoRotate={autoRotate}
-          autoRotateSpeed={0.5}
-          minDistance={5}
-          maxDistance={15}
+
+        {/* Back of Card */}
+        <CardBackContainer
+          isFlipped={isFlipped}
+          isHovering={isHovering}
+          showEffects={showEffects}
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          frameStyles={effectiveFrameStyles}
+          enhancedEffectStyles={effectiveEnhancedEffectStyles}
+          SurfaceTexture={effectiveSurfaceTexture}
+          interactiveLighting={interactiveLighting}
         />
-      </Canvas>
+      </Card3DTransform>
     </div>
   );
 };
+
+EnhancedCardContainer.displayName = 'EnhancedCardContainer';

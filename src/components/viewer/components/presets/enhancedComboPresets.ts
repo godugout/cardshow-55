@@ -1,4 +1,3 @@
-
 import { Sparkles, Zap, Gem, Clock, Flame, Snowflake, Sun, Moon, Star, Waves, Chrome, Diamond, Palette } from 'lucide-react';
 import type { ComboPreset } from './types';
 
@@ -12,23 +11,7 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     description: 'Create your own unique style with simplified controls',
     materialHint: 'Customizable surface with your personal touch',
     tags: ['Personal', 'Creative', 'Custom'],
-    effects: {
-      holographic: 0,
-      chrome: 0,
-      foil: 0,
-      vintage: 0,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 0,
-      lunar: 0,
-      waves: 0,
-      interference: 0,
-      gold: 0,
-      ice: 0,
-      prizm: 0,
-      foilspray: 0,
-      brushedmetal: 0
-    }
+    effects: {} // Will be handled specially
   },
   {
     id: 'holographic-burst',
@@ -40,21 +23,8 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Deep holographic surface with rainbow color shifts',
     tags: ['Popular', 'Trading Cards', 'Premium'],
     effects: {
-      holographic: 85,
-      chrome: 45,
-      foil: 0,
-      vintage: 0,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 0,
-      lunar: 0,
-      waves: 0,
-      interference: 0,
-      gold: 0,
-      ice: 0,
-      prizm: 0,
-      foilspray: 0,
-      brushedmetal: 0
+      holographic: { intensity: 85, shiftSpeed: 150, rainbowSpread: 270, animated: true },
+      chrome: { intensity: 45, sharpness: 80, highlightSize: 60 }
     }
   },
   {
@@ -67,21 +37,8 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Translucent crystal surface with brilliant light dispersion',
     tags: ['Luxury', 'Geometric', 'Brilliant'],
     effects: {
-      holographic: 0,
-      chrome: 0,
-      foil: 0,
-      vintage: 0,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 80,
-      lunar: 0,
-      waves: 0,
-      interference: 60,
-      gold: 0,
-      ice: 0,
-      prizm: 0,
-      foilspray: 0,
-      brushedmetal: 0
+      crystal: { intensity: 80, facets: 12, dispersion: 85, clarity: 60, sparkle: true },
+      interference: { intensity: 60, frequency: 15, thickness: 4 }
     }
   },
   {
@@ -94,21 +51,8 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Polished chrome surface with mirror-like reflections',
     tags: ['Modern', 'Reflective', 'Sharp'],
     effects: {
-      holographic: 0,
-      chrome: 80,
-      foil: 0,
-      vintage: 0,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 0,
-      lunar: 0,
-      waves: 0,
-      interference: 0,
-      gold: 0,
-      ice: 0,
-      prizm: 0,
-      foilspray: 0,
-      brushedmetal: 40
+      chrome: { intensity: 80, sharpness: 95, highlightSize: 70 },
+      brushedmetal: { intensity: 40, direction: 90, grainDensity: 8 }
     }
   },
   {
@@ -121,21 +65,8 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Rich golden surface with authentic shimmer',
     tags: ['Luxury', 'Warm', 'Premium'],
     effects: {
-      holographic: 0,
-      chrome: 40,
-      foil: 0,
-      vintage: 0,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 0,
-      lunar: 0,
-      waves: 0,
-      interference: 0,
-      gold: 75,
-      ice: 0,
-      prizm: 0,
-      foilspray: 0,
-      brushedmetal: 0
+      gold: { intensity: 75, shimmerSpeed: 80, platingThickness: 5, goldTone: 'rich', reflectivity: 85, colorEnhancement: true },
+      chrome: { intensity: 40, sharpness: 60, highlightSize: 50 }
     }
   },
   {
@@ -148,21 +79,9 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Calm ocean surface with flowing wave patterns',
     tags: ['Natural', 'Flowing', 'Calm'],
     effects: {
-      holographic: 0,
-      chrome: 0,
-      foil: 0,
-      vintage: 0,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 0,
-      lunar: 0,
-      waves: 45,
-      interference: 25,
-      gold: 0,
-      ice: 0,
-      prizm: 15,
-      foilspray: 0,
-      brushedmetal: 0
+      waves: { intensity: 45, frequency: 6, amplitude: 35, direction: 0, complexity: 3, wobble: 25 },
+      interference: { intensity: 25, frequency: 8, thickness: 3 },
+      prizm: { intensity: 15, complexity: 2, colorSeparation: 30 }
     }
   },
   {
@@ -175,21 +94,9 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Shimmering aurora with flowing light waves',
     tags: ['Dynamic', 'Colorful', 'Magical'],
     effects: {
-      holographic: 0,
-      chrome: 0,
-      foil: 0,
-      vintage: 0,
-      prismatic: 0,
-      aurora: 70,
-      crystal: 0,
-      lunar: 0,
-      waves: 35,
-      interference: 25,
-      gold: 0,
-      ice: 0,
-      prizm: 0,
-      foilspray: 0,
-      brushedmetal: 0
+      aurora: { intensity: 70, waveSpeed: 120, colorShift: 180 },
+      waves: { intensity: 35, frequency: 8, amplitude: 25, direction: 135, complexity: 3, wobble: 30 },
+      interference: { intensity: 25, frequency: 6, thickness: 2 }
     }
   },
   {
@@ -202,21 +109,8 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Delicate spectrum film over metallic surface',
     tags: ['Balanced', 'Spectrum', 'Subtle'],
     effects: {
-      holographic: 0,
-      chrome: 0,
-      foil: 0,
-      vintage: 0,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 0,
-      lunar: 0,
-      waves: 0,
-      interference: 0,
-      gold: 0,
-      ice: 0,
-      prizm: 40,
-      foilspray: 0,
-      brushedmetal: 25
+      prizm: { intensity: 40, complexity: 4, colorSeparation: 60 },
+      brushedmetal: { intensity: 25, direction: 45, grainDensity: 8 }
     }
   },
   {
@@ -229,21 +123,8 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Weathered surface with vintage character',
     tags: ['Classic', 'Aged', 'Character'],
     effects: {
-      holographic: 0,
-      chrome: 0,
-      foil: 0,
-      vintage: 65,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 0,
-      lunar: 0,
-      waves: 0,
-      interference: 0,
-      gold: 0,
-      ice: 0,
-      prizm: 0,
-      foilspray: 50,
-      brushedmetal: 0
+      vintage: { intensity: 65, aging: 70, patina: '#8b6914' },
+      foilspray: { intensity: 50, density: 60, direction: 90 }
     }
   },
   {
@@ -256,21 +137,8 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Frosted crystal with natural ice patterns',
     tags: ['Cool', 'Natural', 'Crisp'],
     effects: {
-      holographic: 0,
-      chrome: 35,
-      foil: 0,
-      vintage: 0,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 70,
-      lunar: 0,
-      waves: 0,
-      interference: 0,
-      gold: 0,
-      ice: 0,
-      prizm: 0,
-      foilspray: 0,
-      brushedmetal: 0
+      crystal: { intensity: 70, facets: 8, dispersion: 70, clarity: 60, sparkle: true },
+      chrome: { intensity: 35, sharpness: 90, highlightSize: 40 }
     }
   },
   {
@@ -283,21 +151,8 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Metallic surface with starlight atmosphere',
     tags: ['Sparkling', 'Atmospheric', 'Shimmer'],
     effects: {
-      holographic: 0,
-      chrome: 0,
-      foil: 0,
-      vintage: 0,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 0,
-      lunar: 0,
-      waves: 0,
-      interference: 0,
-      gold: 0,
-      ice: 0,
-      prizm: 35,
-      foilspray: 65,
-      brushedmetal: 0
+      foilspray: { intensity: 65, density: 80, direction: 135 },
+      prizm: { intensity: 35, complexity: 4, colorSeparation: 50 }
     }
   },
   {
@@ -310,21 +165,8 @@ export const ENHANCED_COMBO_PRESETS: ComboPreset[] = [
     materialHint: 'Soft silvery surface with gentle patterns',
     tags: ['Subtle', 'Vintage', 'Space'],
     effects: {
-      holographic: 0,
-      chrome: 0,
-      foil: 0,
-      vintage: 35,
-      prismatic: 0,
-      aurora: 0,
-      crystal: 0,
-      lunar: 0,
-      waves: 0,
-      interference: 45,
-      gold: 0,
-      ice: 0,
-      prizm: 0,
-      foilspray: 0,
-      brushedmetal: 0
+      interference: { intensity: 45, frequency: 12, thickness: 3 },
+      vintage: { intensity: 35, aging: 40, patina: '#c0c0c0' }
     }
   }
 ];

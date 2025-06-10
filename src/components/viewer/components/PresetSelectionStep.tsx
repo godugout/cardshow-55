@@ -44,21 +44,14 @@ const PRESET_CATEGORIES: PresetCategory[] = [
         description: 'Intense holographic effects with perfect rainbow shifts',
         category: 'premium',
         effects: {
-          holographic: 85,
-          foilspray: 30,
-          prizm: 20,
-          chrome: 0,
-          interference: 0,
-          brushedmetal: 0,
-          crystal: 0,
-          vintage: 0,
-          foil: 0,
-          prismatic: 0,
-          aurora: 0,
-          lunar: 0,
-          waves: 0,
-          gold: 0,
-          ice: 0
+          holographic: { intensity: 85, shiftSpeed: 150, rainbowSpread: 280, prismaticDepth: 70 },
+          foilspray: { intensity: 30 },
+          prizm: { intensity: 20 },
+          chrome: { intensity: 0 },
+          interference: { intensity: 0 },
+          brushedmetal: { intensity: 0 },
+          crystal: { intensity: 0 },
+          vintage: { intensity: 0 }
         },
         tags: ['Premium', 'Holographic', 'Rainbow']
       },
@@ -68,21 +61,14 @@ const PRESET_CATEGORIES: PresetCategory[] = [
         description: 'Elegant gold foiling with subtle metallic shine',
         category: 'premium',
         effects: {
-          holographic: 0,
-          foilspray: 70,
-          prizm: 0,
-          chrome: 40,
-          interference: 0,
-          brushedmetal: 50,
-          crystal: 0,
-          vintage: 0,
-          foil: 0,
-          prismatic: 0,
-          aurora: 0,
-          lunar: 0,
-          waves: 0,
-          gold: 80,
-          ice: 0
+          holographic: { intensity: 0 },
+          foilspray: { intensity: 70 },
+          prizm: { intensity: 0 },
+          chrome: { intensity: 40 },
+          interference: { intensity: 0 },
+          brushedmetal: { intensity: 50 },
+          crystal: { intensity: 0 },
+          vintage: { intensity: 0 }
         },
         tags: ['Luxury', 'Gold', 'Metallic']
       }
@@ -100,21 +86,14 @@ const PRESET_CATEGORIES: PresetCategory[] = [
         description: 'Reflective chrome finish with mirror-like quality',
         category: 'metallic',
         effects: {
-          holographic: 0,
-          foilspray: 0,
-          prizm: 0,
-          chrome: 90,
-          interference: 0,
-          brushedmetal: 30,
-          crystal: 0,
-          vintage: 0,
-          foil: 0,
-          prismatic: 0,
-          aurora: 0,
-          lunar: 0,
-          waves: 0,
-          gold: 0,
-          ice: 0
+          holographic: { intensity: 0 },
+          foilspray: { intensity: 0 },
+          prizm: { intensity: 0 },
+          chrome: { intensity: 90 },
+          interference: { intensity: 0 },
+          brushedmetal: { intensity: 30 },
+          crystal: { intensity: 0 },
+          vintage: { intensity: 0 }
         },
         tags: ['Chrome', 'Mirror', 'Reflective']
       },
@@ -124,21 +103,14 @@ const PRESET_CATEGORIES: PresetCategory[] = [
         description: 'Industrial brushed metal texture with subtle shine',
         category: 'metallic',
         effects: {
-          holographic: 0,
-          foilspray: 0,
-          prizm: 0,
-          chrome: 20,
-          interference: 0,
-          brushedmetal: 80,
-          crystal: 0,
-          vintage: 0,
-          foil: 0,
-          prismatic: 0,
-          aurora: 0,
-          lunar: 0,
-          waves: 0,
-          gold: 0,
-          ice: 0
+          holographic: { intensity: 0 },
+          foilspray: { intensity: 0 },
+          prizm: { intensity: 0 },
+          chrome: { intensity: 20 },
+          interference: { intensity: 0 },
+          brushedmetal: { intensity: 80 },
+          crystal: { intensity: 0 },
+          vintage: { intensity: 0 }
         },
         tags: ['Steel', 'Industrial', 'Brushed']
       }
@@ -156,21 +128,14 @@ const PRESET_CATEGORIES: PresetCategory[] = [
         description: 'Crystalline effects with light refraction',
         category: 'specialty',
         effects: {
-          holographic: 20,
-          foilspray: 0,
-          prizm: 70,
-          chrome: 0,
-          interference: 40,
-          brushedmetal: 0,
-          crystal: 85,
-          vintage: 0,
-          foil: 0,
-          prismatic: 60,
-          aurora: 0,
-          lunar: 0,
-          waves: 0,
-          gold: 0,
-          ice: 30
+          holographic: { intensity: 20 },
+          foilspray: { intensity: 0 },
+          prizm: { intensity: 70 },
+          chrome: { intensity: 0 },
+          interference: { intensity: 40 },
+          brushedmetal: { intensity: 0 },
+          crystal: { intensity: 85 },
+          vintage: { intensity: 0 }
         },
         tags: ['Crystal', 'Prism', 'Refraction']
       },
@@ -180,21 +145,14 @@ const PRESET_CATEGORIES: PresetCategory[] = [
         description: 'Aged look with subtle weathering effects',
         category: 'specialty',
         effects: {
-          holographic: 0,
-          foilspray: 0,
-          prizm: 0,
-          chrome: 0,
-          interference: 0,
-          brushedmetal: 0,
-          crystal: 0,
-          vintage: 75,
-          foil: 0,
-          prismatic: 0,
-          aurora: 0,
-          lunar: 0,
-          waves: 0,
-          gold: 0,
-          ice: 0
+          holographic: { intensity: 0 },
+          foilspray: { intensity: 0 },
+          prizm: { intensity: 0 },
+          chrome: { intensity: 0 },
+          interference: { intensity: 0 },
+          brushedmetal: { intensity: 0 },
+          crystal: { intensity: 0 },
+          vintage: { intensity: 75 }
         },
         tags: ['Vintage', 'Classic', 'Aged']
       }
@@ -243,6 +201,7 @@ export const PresetSelectionStep: React.FC<PresetSelectionStepProps> = ({
         </p>
       </div>
 
+      {/* Preview Mode Toggle */}
       <div className="flex items-center justify-center">
         <Button
           onClick={onTogglePreviewMode}
@@ -259,6 +218,7 @@ export const PresetSelectionStep: React.FC<PresetSelectionStepProps> = ({
         </Button>
       </div>
 
+      {/* Category Tabs */}
       <div className="flex space-x-2">
         {PRESET_CATEGORIES.map((category) => {
           const Icon = category.icon;
@@ -307,6 +267,7 @@ export const PresetSelectionStep: React.FC<PresetSelectionStepProps> = ({
                     <h4 className="text-white font-medium text-lg mb-1">{preset.name}</h4>
                     <p className="text-crd-lightGray text-sm mb-3">{preset.description}</p>
                     
+                    {/* Tags */}
                     <div className="flex flex-wrap gap-1 mb-2">
                       {preset.tags.map((tag) => (
                         <span
@@ -319,6 +280,7 @@ export const PresetSelectionStep: React.FC<PresetSelectionStepProps> = ({
                     </div>
                   </div>
                   
+                  {/* Selection Indicator */}
                   {isSelected && (
                     <div className="w-6 h-6 bg-crd-green rounded-full flex items-center justify-center">
                       <Check className="w-4 h-4 text-black" />
@@ -326,6 +288,7 @@ export const PresetSelectionStep: React.FC<PresetSelectionStepProps> = ({
                   )}
                 </div>
                 
+                {/* Preview Indicator */}
                 {isHovered && isPreviewMode && !isSelected && (
                   <div className="absolute top-2 right-2">
                     <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
@@ -337,6 +300,7 @@ export const PresetSelectionStep: React.FC<PresetSelectionStepProps> = ({
         </div>
       )}
 
+      {/* Continue Button */}
       <div className="pt-4 border-t border-editor-border">
         <Button
           onClick={onNext}

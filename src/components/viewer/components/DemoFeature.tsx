@@ -10,7 +10,7 @@ interface DemoFeatureProps {
   onStartTour: () => void;
 }
 
-// Predefined effect presets with correct simple number format
+// Predefined effect presets with visual examples
 const EFFECT_PRESETS = [
   {
     id: 'holographic-premium',
@@ -18,22 +18,15 @@ const EFFECT_PRESETS = [
     description: 'Classic holographic trading card with rainbow shimmer',
     thumbnail: '🌈',
     effects: {
-      holographic: 85,
-      foilspray: 0,
-      prizm: 0,
-      chrome: 0,
-      interference: 0,
-      brushedmetal: 0,
-      crystal: 0,
-      vintage: 0,
-      foil: 0,
-      prismatic: 0,
-      aurora: 0,
-      lunar: 0,
-      waves: 0,
-      gold: 0,
-      ice: 0
-    } as EffectValues
+      holographic: { intensity: 85, shiftSpeed: 150, rainbowSpread: 280, prismaticDepth: 70 },
+      foilspray: { intensity: 0 },
+      prizm: { intensity: 0 },
+      chrome: { intensity: 0 },
+      interference: { intensity: 0 },
+      brushedmetal: { intensity: 0 },
+      crystal: { intensity: 0 },
+      vintage: { intensity: 0 }
+    }
   },
   {
     id: 'chrome-mirror',
@@ -41,22 +34,15 @@ const EFFECT_PRESETS = [
     description: 'Ultra-reflective chrome finish with sharp highlights',
     thumbnail: '🪞',
     effects: {
-      holographic: 0,
-      foilspray: 0,
-      prizm: 0,
-      chrome: 90,
-      interference: 0,
-      brushedmetal: 0,
-      crystal: 0,
-      vintage: 0,
-      foil: 0,
-      prismatic: 0,
-      aurora: 0,
-      lunar: 0,
-      waves: 0,
-      gold: 0,
-      ice: 0
-    } as EffectValues
+      holographic: { intensity: 0 },
+      foilspray: { intensity: 0 },
+      prizm: { intensity: 0 },
+      chrome: { intensity: 90, reflectionSharpness: 85, distortion: 15, highlightSize: 60 },
+      interference: { intensity: 0 },
+      brushedmetal: { intensity: 0 },
+      crystal: { intensity: 0 },
+      vintage: { intensity: 0 }
+    }
   },
   {
     id: 'crystal-prizm',
@@ -64,22 +50,15 @@ const EFFECT_PRESETS = [
     description: 'Multi-faceted crystal with geometric light patterns',
     thumbnail: '💎',
     effects: {
-      holographic: 0,
-      foilspray: 0,
-      prizm: 80,
-      chrome: 0,
-      interference: 0,
-      brushedmetal: 0,
-      crystal: 70,
-      vintage: 0,
-      foil: 0,
-      prismatic: 0,
-      aurora: 0,
-      lunar: 0,
-      waves: 0,
-      gold: 0,
-      ice: 0
-    } as EffectValues
+      holographic: { intensity: 0 },
+      foilspray: { intensity: 0 },
+      prizm: { intensity: 80, patternComplexity: 7, colorSeparation: 90, geometricScale: 150 },
+      chrome: { intensity: 0 },
+      interference: { intensity: 0 },
+      brushedmetal: { intensity: 0 },
+      crystal: { intensity: 70, facetCount: 8, lightDispersion: 85, crystallineClarity: 75 },
+      vintage: { intensity: 0 }
+    }
   },
   {
     id: 'vintage-gold',
@@ -87,22 +66,15 @@ const EFFECT_PRESETS = [
     description: 'Aged gold finish with patina and wear patterns',
     thumbnail: '🏆',
     effects: {
-      holographic: 0,
-      foilspray: 0,
-      prizm: 0,
-      chrome: 0,
-      interference: 0,
-      brushedmetal: 45,
-      crystal: 0,
-      vintage: 85,
-      foil: 0,
-      prismatic: 0,
-      aurora: 0,
-      lunar: 0,
-      waves: 0,
-      gold: 0,
-      ice: 0
-    } as EffectValues
+      holographic: { intensity: 0 },
+      foilspray: { intensity: 0 },
+      prizm: { intensity: 0 },
+      chrome: { intensity: 0 },
+      interference: { intensity: 0 },
+      brushedmetal: { intensity: 45, brushDirection: 45, grainDensity: 60, metallicPolish: 80 },
+      crystal: { intensity: 0 },
+      vintage: { intensity: 85, agingLevel: 70, patinaColor: '#DAA520', wearPatterns: 60 }
+    }
   },
   {
     id: 'interference-wave',
@@ -110,22 +82,15 @@ const EFFECT_PRESETS = [
     description: 'Soap bubble effect with shifting color waves',
     thumbnail: '🫧',
     effects: {
-      holographic: 0,
-      foilspray: 0,
-      prizm: 0,
-      chrome: 0,
-      interference: 80,
-      brushedmetal: 0,
-      crystal: 0,
-      vintage: 0,
-      foil: 0,
-      prismatic: 0,
-      aurora: 0,
-      lunar: 0,
-      waves: 0,
-      gold: 0,
-      ice: 0
-    } as EffectValues
+      holographic: { intensity: 0 },
+      foilspray: { intensity: 0 },
+      prizm: { intensity: 0 },
+      chrome: { intensity: 0 },
+      interference: { intensity: 80, waveFrequency: 120, bubbleThickness: 70, colorShiftingSpeed: 160 },
+      brushedmetal: { intensity: 0 },
+      crystal: { intensity: 0 },
+      vintage: { intensity: 0 }
+    }
   },
   {
     id: 'foil-spray',
@@ -133,22 +98,15 @@ const EFFECT_PRESETS = [
     description: 'Metallic spray pattern with directional flow',
     thumbnail: '✨',
     effects: {
-      holographic: 0,
-      foilspray: 75,
-      prizm: 0,
-      chrome: 0,
-      interference: 0,
-      brushedmetal: 0,
-      crystal: 0,
-      vintage: 0,
-      foil: 0,
-      prismatic: 0,
-      aurora: 0,
-      lunar: 0,
-      waves: 0,
-      gold: 0,
-      ice: 0
-    } as EffectValues
+      holographic: { intensity: 0 },
+      foilspray: { intensity: 75, metallicDensity: 80, sprayPattern: 'radial', directionalFlow: 135 },
+      prizm: { intensity: 0 },
+      chrome: { intensity: 0 },
+      interference: { intensity: 0 },
+      brushedmetal: { intensity: 0 },
+      crystal: { intensity: 0 },
+      vintage: { intensity: 0 }
+    }
   }
 ];
 
@@ -227,21 +185,14 @@ export const DemoFeature: React.FC<DemoFeatureProps> = ({
             onClick={() => {
               setSelectedPreset(null);
               onApplyPreset({
-                holographic: 0,
-                foilspray: 0,
-                prizm: 0,
-                chrome: 0,
-                interference: 0,
-                brushedmetal: 0,
-                crystal: 0,
-                vintage: 0,
-                foil: 0,
-                prismatic: 0,
-                aurora: 0,
-                lunar: 0,
-                waves: 0,
-                gold: 0,
-                ice: 0
+                holographic: { intensity: 0 },
+                foilspray: { intensity: 0 },
+                prizm: { intensity: 0 },
+                chrome: { intensity: 0 },
+                interference: { intensity: 0 },
+                brushedmetal: { intensity: 0 },
+                crystal: { intensity: 0 },
+                vintage: { intensity: 0 }
               });
             }}
           >

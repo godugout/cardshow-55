@@ -1,33 +1,21 @@
-
-export interface LightingPreset {
-  id: string;
-  name: string;
-  description: string;
-  brightness: number;
-  contrast: number;
-  highlights: number;
-  shadows: number;
-  temperature: number;
-  position: { x: number; y: number; z: number };
-  shadowSoftness: number;
-}
+import type { CardData } from '@/hooks/useCardEditor';
 
 export interface EnvironmentScene {
   id: string;
   name: string;
   icon: string;
-  category: string;
+  category: 'natural' | 'fantasy' | 'futuristic' | 'architectural';
   description: string;
   panoramicUrl: string;
   previewUrl: string;
-  backgroundImage: string;
-  hdriUrl: string;
-  gradient: string;
+  // Legacy properties for backward compatibility
+  backgroundImage?: string;
+  gradient?: string;
   lighting: {
     color: string;
     intensity: number;
-    azimuth: number;
     elevation: number;
+    azimuth: number;
   };
   atmosphere: {
     fog: boolean;
@@ -42,37 +30,34 @@ export interface EnvironmentScene {
   };
 }
 
-export interface MaterialSettings {
-  roughness: number;
-  metalness: number;
-  clearcoat: number;
-  reflectivity: number;
-  clearcoatRoughness: number;
-  ior: number;
-  transmission: number;
-  thickness: number;
+export interface LightingPreset {
+  id: string;
+  name: string;
+  description: string;
+  brightness: number;
+  contrast: number;
+  shadows: number;
+  highlights: number;
+  temperature: number;
+  position: { x: number; y: number; z: number };
+  shadowSoftness: number;
 }
 
 export interface VisualEffect {
   id: string;
   name: string;
   description: string;
-  type: 'surface' | 'lighting' | 'atmospheric';
-  category: string;
-  intensity: number[];
-  properties: Record<string, any>;
+  category: 'prismatic' | 'metallic' | 'surface' | 'vintage';
 }
 
-export type BackgroundType = 'gradient' | 'image' | 'solid' | 'scene' | '3dSpace' | 'hdri';
+export interface MaterialSettings {
+  metalness: number;
+  roughness: number;
+  reflectivity: number;
+  clearcoat: number;
+}
 
 export interface EnvironmentControls {
-  backgroundType: BackgroundType;
-  gradientColors: string[];
-  backgroundImage?: string;
-  backgroundOpacity: number;
-  blur: number;
-  brightness: number;
-  contrast: number;
   depthOfField: number;
   parallaxIntensity: number;
   fieldOfView: number;
@@ -80,15 +65,20 @@ export interface EnvironmentControls {
 }
 
 export interface ImmersiveCardViewerProps {
-  card: any;
-  cards?: any[];
-  currentCardIndex?: number;
-  onCardChange?: (card: any, index: number) => void;
-  isOpen: boolean;
-  onClose: () => void;
-  onShare: (card: any) => void;
-  onDownload: (cards: any[]) => void;
+  card: CardData;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onShare?: (card: CardData) => void;
+  onDownload?: (card: CardData) => void;
   allowRotation?: boolean;
   showStats?: boolean;
   ambient?: boolean;
+}
+
+export type BackgroundType = 'scene' | '3dSpace';
+
+export interface UnifiedBackground {
+  type: BackgroundType;
+  scene?: EnvironmentScene;
+  space?: any; // Will be properly typed when 3D spaces are fully implemented
 }

@@ -139,7 +139,9 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         frameStyles={frameStyles}
         enhancedEffectStyles={enhancedEffectStyles}
         SurfaceTexture={SurfaceTexture}
-        interactiveLightingEnabled={interactiveLighting}
+        interactiveLighting={interactiveLighting}
+        selectedScene={selectedScene}
+        selectedLighting={selectedLighting}
         materialSettings={materialSettings}
         overallBrightness={[overallBrightness]}
         showBackgroundInfo={true}
@@ -151,20 +153,6 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
           onMouseLeave();
         }}
         onClick={handleDoubleClick}
-        environmentControls={{
-          backgroundType: 'scene',
-          gradientColors: ['#000000', '#333333'],
-          backgroundOpacity: 1.0,
-          blur: 0,
-          brightness: 100,
-          contrast: 100,
-          depthOfField: 1.0,
-          parallaxIntensity: 1.0,
-          fieldOfView: 75,
-          atmosphericDensity: 1.0
-        }}
-        lightingPreset={selectedLighting}
-        environmentBrightness={overallBrightness}
       />
 
       {/* Click instruction updated */}

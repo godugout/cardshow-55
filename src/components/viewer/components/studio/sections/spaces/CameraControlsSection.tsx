@@ -18,12 +18,10 @@ export const CameraControlsSection: React.FC<CameraControlsSectionProps> = ({
   onResetCamera
 }) => {
   const updateControl = (key: keyof SpaceControls, value: number | boolean) => {
-    const newControls = {
+    onControlsChange({
       ...spaceControls,
       [key]: value
-    };
-    onControlsChange(newControls);
-    console.log('Camera controls updated:', key, value);
+    });
   };
 
   return (

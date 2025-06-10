@@ -29,8 +29,8 @@ export const ToolbarButton = ({
             size="icon" 
             className={`h-8 w-8 p-1.5 ${
               active 
-                ? 'bg-editor-tool text-crd-white' 
-                : 'text-crd-lightGray hover:text-crd-white'
+                ? 'bg-editor-tool text-white' 
+                : 'text-gray-400 hover:text-white'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={onClick}
             disabled={disabled}
@@ -43,7 +43,7 @@ export const ToolbarButton = ({
         </TooltipContent>
       </Tooltip>
       {badge !== undefined && (
-        <span className="absolute -top-1 -right-1 bg-crd-orange text-black text-[10px] rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+        <span className="absolute -top-1 -right-1 bg-crd-orange text-white text-[10px] rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
           {badge}
         </span>
       )}
