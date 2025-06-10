@@ -6,6 +6,7 @@ export interface LightingPreset {
   brightness: number;
   contrast: number;
   highlights: number;
+  shadows: number;
   temperature: number;
   position: { x: number; y: number; z: number };
   shadowSoftness: number;
@@ -26,11 +27,13 @@ export interface EnvironmentScene {
     color: string;
     intensity: number;
     azimuth: number;
+    elevation: number;
   };
   atmosphere: {
     fog: boolean;
     fogColor: string;
     fogDensity: number;
+    particles: boolean;
   };
   depth: {
     layers: number;
@@ -55,6 +58,7 @@ export interface VisualEffect {
   name: string;
   description: string;
   type: 'surface' | 'lighting' | 'atmospheric';
+  category: string;
   intensity: number[];
   properties: Record<string, any>;
 }

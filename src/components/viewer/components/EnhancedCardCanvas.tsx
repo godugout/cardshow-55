@@ -152,6 +152,12 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         }}
         onClick={handleDoubleClick}
         environmentControls={{
+          backgroundType: 'scene',
+          gradientColors: ['#000000', '#333333'],
+          backgroundOpacity: 1.0,
+          blur: 0,
+          brightness: 100,
+          contrast: 100,
           depthOfField: 1.0,
           parallaxIntensity: 1.0,
           fieldOfView: 75,
