@@ -1,4 +1,3 @@
-
 import React, { Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, ContactShadows } from '@react-three/drei';
@@ -139,13 +138,13 @@ export const OptimizedSpaceRenderer: React.FC<OptimizedSpaceRendererProps> = ({
     }
   }, [environment, environmentIntensity, performanceLevel, hasError]);
 
-  // Safe card validation
+  // Enhanced card validation with proper fallback
   const safeCard = React.useMemo(() => {
     if (!card) {
       return {
         id: 'fallback',
-        title: 'Loading Card',
-        image_url: '/placeholder-card.jpg',
+        title: 'Sample Card',
+        image_url: '/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png',
         rarity: 'common' as const,
         tags: [],
         design_metadata: {},
@@ -166,7 +165,12 @@ export const OptimizedSpaceRenderer: React.FC<OptimizedSpaceRendererProps> = ({
         }
       };
     }
-    return card;
+    
+    // Ensure card has a valid image_url
+    return {
+      ...card,
+      image_url: card.image_url || '/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png'
+    };
   }, [card]);
 
   // Safe controls validation

@@ -1,10 +1,10 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import type { CardData } from '@/types/card';
 import type { SpaceControls } from './types';
+import { useCardTexture } from '../hooks/useCardTexture';
 
 interface Card3DProps {
   card: CardData;
@@ -14,12 +14,12 @@ interface Card3DProps {
 export const Card3D: React.FC<Card3DProps> = ({ card, controls }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   
-  // Safe texture loading with fallback
-  const textureUrl = card?.image_url || '/placeholder-card.jpg';
-  const texture = useTexture(textureUrl, (error) => {
-    console.warn('Texture loading error:', error);
+  // Use the enhanced texture loading hook
+  const { texture, fallbackMaterial, hasTexture, isLoading } = useCardTexture({
+    imageUrl: card?.image_url,
+    fallbackUrl: '/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png'
   });
-  
+
   // Apply controls to card animation with safety checks
   useFrame((state) => {
     if (!meshRef.current || !controls) return;
@@ -53,15 +53,36 @@ export const Card3D: React.FC<Card3DProps> = ({ card, controls }) => {
   const cardHeight = 3.5;
   const cardDepth = 0.02;
 
+  // Show loading state or actual card
+  if (isLoading) {
+    return (
+      <mesh ref={meshRef} castShadow receiveShadow position={[0, 0, 0]}>
+        <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
+        <meshStandardMaterial
+          color="#6B7280"
+          roughness={0.3}
+          metalness={0.1}
+          side={THREE.DoubleSide}
+          transparent
+          opacity={0.7}
+        />
+      </mesh>
+    );
+  }
+
   return (
     <mesh ref={meshRef} castShadow receiveShadow position={[0, 0, 0]}>
       <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
-      <meshStandardMaterial
-        map={texture}
-        roughness={0.3}
-        metalness={0.1}
-        side={THREE.DoubleSide}
-      />
+      {hasTexture ? (
+        <meshStandardMaterial
+          map={texture}
+          roughness={0.3}
+          metalness={0.1}
+          side={THREE.DoubleSide}
+        />
+      ) : (
+        <primitive object={fallbackMaterial} />
+      )}
     </mesh>
   );
 };
