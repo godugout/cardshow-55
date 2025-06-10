@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps, EnvironmentScene, LightingPreset, MaterialSettings } from './types';
 import { 
@@ -19,6 +20,7 @@ import { SpaceRenderer3D } from './spaces/SpaceRenderer3D';
 import { Card3D } from './spaces/Card3D';
 import { useViewerState } from './hooks/useViewerState';
 import { useSafeZones } from './hooks/useSafeZones';
+import { adaptCardForSpaceRenderer } from './utils/cardAdapter';
 
 // Update the interface to support card navigation
 interface ExtendedImmersiveCardViewerProps extends ImmersiveCardViewerProps {
@@ -67,6 +69,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     setIsHoveringControls,
     showExportDialog,
     setShowExportDialog,
+    backgroundType,
+    setBackgroundType,
     selectedScene,
     setSelectedScene,
     selectedLighting,
@@ -104,9 +108,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   const containerRef = useRef<HTMLDivElement>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
-
-  // Background state management
-  const [backgroundType, setBackgroundType] = React.useState<'scene' | '3dSpace'>('scene');
 
   // Navigation logic
   const hasMultipleCards = cards.length > 1;
@@ -331,8 +332,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   const panelWidth = 320;
   const shouldShowPanel = showCustomizePanel;
 
-  // Determine active environment for rendering
-  const activeEnvironment = backgroundType === '3dSpace' ? selectedSpace : selectedScene;
+  // Adapt card for space renderer
+  const adaptedCard = adaptCardForSpaceRenderer(card);
 
   return (
     <>
@@ -348,11 +349,14 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onMouseUp={handleDragEnd}
         onMouseLeave={handleDragEnd}
       >
+        {/* Emergency Fallback Background - Always renders first */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-crd-darkest via-crd-dark to-crd-darker" />
+
         {/* Background Renderer - 2D or 3D */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-10">
           {backgroundType === '3dSpace' && selectedSpace ? (
             <SpaceRenderer3D
-              card={card}
+              card={adaptedCard}
               environment={selectedSpace}
               controls={spaceControls}
               onCardClick={onCardClick}
@@ -364,7 +368,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
               <div 
                 className="absolute inset-0"
                 style={{
-                  background: selectedScene.backgroundImage || selectedScene.gradient,
+                  background: selectedScene.backgroundImage || selectedScene.gradient || 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
                   filter: `brightness(${selectedLighting.brightness}%)`,
                   transition: 'all 0.5s ease'
                 }}

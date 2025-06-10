@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
+import type { EnvironmentScene, LightingPreset, MaterialSettings, BackgroundType } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
 import { SPACE_ENVIRONMENTS } from '../components/studio/sections/spaces/constants';
@@ -20,6 +20,9 @@ export const useViewerState = () => {
   const [isHovering, setIsHovering] = useState(false);
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
+
+  // Background state
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
 
   // Advanced settings
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
@@ -120,6 +123,10 @@ export const useViewerState = () => {
     setIsHoveringControls,
     showExportDialog,
     setShowExportDialog,
+
+    // Background state
+    backgroundType,
+    setBackgroundType,
 
     // Advanced settings
     selectedScene,
