@@ -3,11 +3,16 @@ import React, { useRef } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { TextureLoader } from 'three';
 import { Mesh, PlaneGeometry, MeshStandardMaterial } from 'three';
-import type { CardData } from '@/types/card';
 import type { SpaceControls } from './types';
 
+interface Simple3DCard {
+  id: string;
+  title: string;
+  image_url?: string;
+}
+
 interface Card3DProps {
-  card: CardData;
+  card: Simple3DCard;
   controls: SpaceControls;
   onClick?: () => void;
 }

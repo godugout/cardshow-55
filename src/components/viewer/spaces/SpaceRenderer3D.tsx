@@ -17,12 +17,14 @@ import { NaturalSpace } from './environments/NaturalSpace';
 import { ProfessionalSpace } from './environments/ProfessionalSpace';
 import type { SpaceEnvironment, SpaceControls } from './types';
 
+interface Simple3DCard {
+  id: string;
+  title: string;
+  image_url?: string;
+}
+
 interface SpaceRenderer3DProps {
-  card: {
-    id: string;
-    title: string;
-    image_url?: string;
-  };
+  card: Simple3DCard;
   environment: SpaceEnvironment;
   controls: SpaceControls;
   onCardClick?: () => void;
