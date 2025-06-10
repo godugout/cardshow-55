@@ -34,8 +34,7 @@ export const PreviewTab = ({ selectedTemplate, cardData, onContinueToEffects }: 
     toast.success('Generating share link...');
   };
 
-  const handleDownloadCard = (cards: CardData[]) => {
-    const card = cards[0]; // Take the first card from the array
+  const handleDownloadCard = (card: CardData) => {
     const dataStr = JSON.stringify(card, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     
@@ -49,7 +48,7 @@ export const PreviewTab = ({ selectedTemplate, cardData, onContinueToEffects }: 
     toast.success('Card exported successfully');
   };
 
-  const handleShareCard = (cards: CardData[]) => {
+  const handleShareCard = (card: CardData) => {
     const shareUrl = window.location.href;
     
     if (navigator.clipboard) {

@@ -71,11 +71,9 @@ export const EnhancedCustomizePanel: React.FC<EnhancedCustomizePanelProps> = ({
   const [activeTab, setActiveTab] = useState('start');
 
   const handleApplyPreset = (presetEffects: EffectValues) => {
-    // Apply all preset effects
-    Object.entries(presetEffects).forEach(([effectId, parameters]) => {
-      Object.entries(parameters).forEach(([parameterId, value]) => {
-        onEffectChange(effectId, parameterId, value);
-      });
+    // Apply all preset effects using simple numeric values
+    Object.entries(presetEffects).forEach(([effectId, value]) => {
+      onEffectChange(effectId, 'intensity', value as number);
     });
     
     // Switch to effects tab to show the applied settings
@@ -85,16 +83,23 @@ export const EnhancedCustomizePanel: React.FC<EnhancedCustomizePanelProps> = ({
   const handleTourStep = (step: number, action: string) => {
     switch (step) {
       case 1:
-        // Apply holographic preset
+        // Apply holographic preset with simple values
         handleApplyPreset({
-          holographic: { intensity: 85, shiftSpeed: 150, rainbowSpread: 280, prismaticDepth: 70 },
-          foilspray: { intensity: 0 },
-          prizm: { intensity: 0 },
-          chrome: { intensity: 0 },
-          interference: { intensity: 0 },
-          brushedmetal: { intensity: 0 },
-          crystal: { intensity: 0 },
-          vintage: { intensity: 0 }
+          holographic: 85,
+          foilspray: 0,
+          prizm: 0,
+          chrome: 0,
+          interference: 0,
+          brushedmetal: 0,
+          crystal: 0,
+          vintage: 0,
+          foil: 0,
+          prismatic: 0,
+          aurora: 0,
+          lunar: 0,
+          waves: 0,
+          gold: 0,
+          ice: 0
         });
         break;
       case 2:
@@ -117,10 +122,8 @@ export const EnhancedCustomizePanel: React.FC<EnhancedCustomizePanelProps> = ({
 
   // Calculate active effects count safely
   const getActiveEffectsCount = () => {
-    return Object.values(effectValues).filter(effect => {
-      // Check if the effect has an intensity parameter and it's greater than 0
-      const intensity = effect.intensity;
-      return typeof intensity === 'number' && intensity > 0;
+    return Object.values(effectValues).filter(value => {
+      return typeof value === 'number' && value > 0;
     }).length;
   };
 
@@ -228,11 +231,11 @@ export const EnhancedCustomizePanel: React.FC<EnhancedCustomizePanelProps> = ({
                           : 'hover:scale-102'
                       }`}
                       style={{
-                        background: `linear-gradient(135deg, ${scene.gradient.split(' ').join(', ')})`
+                        background: scene.gradient ? `linear-gradient(135deg, ${scene.gradient.split(' ').join(', ')})` : '#333'
                       }}
                     >
                       <div className="flex flex-col items-center justify-center h-full text-white">
-                        <span className="text-lg mb-1">{scene.icon}</span>
+                        <span className="text-lg mb-1">{scene.icon || '🌟'}</span>
                         <span className="text-xs font-medium text-center">{scene.name}</span>
                       </div>
                     </button>
