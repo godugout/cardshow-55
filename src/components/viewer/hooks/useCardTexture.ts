@@ -22,24 +22,31 @@ export const useCardTexture = ({ imageUrl, fallbackUrl }: UseCardTextureOptions)
   }, [imageUrl, fallbackUrl]);
 
   // Load texture with error handling
-  const texture = useTexture(
-    currentUrl,
-    (loadedTexture) => {
-      setIsLoading(false);
-      setError(null);
-    },
-    undefined,
-    (err) => {
-      console.warn('Texture loading failed:', err);
-      setError(err.message || 'Failed to load texture');
-      setIsLoading(false);
-      
-      // Try fallback if original failed and we haven't tried fallback yet
-      if (imageUrl && currentUrl === imageUrl && fallbackUrl) {
-        setCurrentUrl(fallbackUrl);
+  let texture = null;
+  let hasTexture = false;
+
+  try {
+    texture = useTexture(currentUrl);
+    hasTexture = true;
+    
+    // Set loading to false when texture is available
+    useEffect(() => {
+      if (texture) {
+        setIsLoading(false);
+        setError(null);
       }
+    }, [texture]);
+  } catch (err) {
+    console.warn('Texture loading failed:', err);
+    setError(err instanceof Error ? err.message : 'Failed to load texture');
+    setIsLoading(false);
+    hasTexture = false;
+    
+    // Try fallback if original failed and we haven't tried fallback yet
+    if (imageUrl && currentUrl === imageUrl && fallbackUrl) {
+      setCurrentUrl(fallbackUrl);
     }
-  );
+  }
 
   // Create fallback material for cases where all textures fail
   const fallbackMaterial = new THREE.MeshStandardMaterial({
@@ -54,6 +61,6 @@ export const useCardTexture = ({ imageUrl, fallbackUrl }: UseCardTextureOptions)
     fallbackMaterial,
     isLoading,
     error,
-    hasTexture: !error && !!texture
+    hasTexture: !error && hasTexture
   };
 };
