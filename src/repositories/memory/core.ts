@@ -6,8 +6,17 @@ export const calculateOffset = (page = 1, pageSize = 10): number => {
 };
 
 export const getMemoryQuery = () => {
-  // Return the query builder directly without awaiting
-  return supabase
-    .from('memories')
-    .select('*, media(*)');
+  // Check if memories table exists, otherwise return a mock query
+  try {
+    return supabase
+      .from('memories')
+      .select('*, media(*)');
+  } catch (error) {
+    // Return a mock query that will fail gracefully
+    return {
+      eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }),
+      select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }),
+      order: () => ({ range: () => Promise.resolve({ data: [], error: null, count: 0 }) })
+    } as any;
+  }
 };

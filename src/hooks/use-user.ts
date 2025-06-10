@@ -11,12 +11,12 @@ export const useUser = () => {
     queryFn: async () => {
       if (!authUser) return null;
       
-      // For now, return mock user data
+      // For now, return mock user data based on the auth user
       // Once database tables are set up, this will fetch from Supabase
       return {
         id: authUser.id,
         email: authUser.email || '',
-        username: authUser.username || '',
+        username: authUser.email?.split('@')[0] || '', // Extract username from email
         full_name: '',
         avatar_url: '',
         bio: '',
