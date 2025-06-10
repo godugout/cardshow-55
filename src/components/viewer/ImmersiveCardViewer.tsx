@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
 import { ViewerControls } from './components/ViewerControls';
+import { ViewerHeader } from './components/ViewerHeader';
 import { StudioPanel } from './components/StudioPanel';
 import { EnhancedEnvironmentSphere } from './components/EnhancedEnvironmentSphere';
 import { EnhancedCardContainer } from './components/EnhancedCardContainer';
@@ -131,7 +132,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   }, [cards, currentCardIndex, onCardChange]);
 
   const renderViewer = () => {
-    if (backgroundType === '3dSpace' && selectedSpace) {
+    if ((backgroundType === '3dSpace' || backgroundType === 'hdri') && selectedSpace) {
       return (
         <SpaceRenderer3D
           environment={selectedSpace}
@@ -139,9 +140,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
           onCameraReset={handleResetCamera}
           environmentIntensity={overallBrightness[0] / 100}
           card={card}
-        >
-          {/* No additional children needed as Card3D is rendered inside SpaceRenderer3D */}
-        </SpaceRenderer3D>
+        />
       );
     }
 
@@ -192,49 +191,12 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
           {renderViewer()}
         </div>
 
-        {/* Top Right Controls */}
-        <div className="absolute top-4 right-4 flex space-x-2 z-10">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowExportDialog(true)}
-            className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20"
-          >
-            <Download className="w-4 h-4 text-white" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onShare?.(card)}
-            className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20"
-          >
-            <Share2 className="w-4 h-4 text-white" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowCustomizePanel(true)}
-            className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20"
-          >
-            <Settings className="w-4 h-4 text-white" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleFullscreen}
-            className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20"
-          >
-            {isFullscreen ? <Minimize2 className="w-4 h-4 text-white" /> : <Maximize2 className="w-4 h-4 text-white" />}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20"
-          >
-            <X className="w-4 h-4 text-white" />
-          </Button>
-        </div>
+        {/* ViewerHeader - Restored to original layout */}
+        <ViewerHeader
+          onClose={onClose}
+          showStudioButton={!showCustomizePanel}
+          onOpenStudio={() => setShowCustomizePanel(true)}
+        />
 
         {/* Bottom Controls */}
         <ViewerControls
@@ -254,17 +216,17 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
               variant="ghost"
               size="sm"
               onClick={handlePrev}
-              className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20"
+              className="bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white"
             >
-              <ChevronLeft className="w-4 h-4 text-white" />
+              <ChevronLeft className="w-4 h-4" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleNext}
-              className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20"
+              className="bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white"
             >
-              <ChevronRight className="w-4 h-4 text-white" />
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         )}

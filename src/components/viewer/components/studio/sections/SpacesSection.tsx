@@ -1,15 +1,17 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { CollapsibleSection } from '@/components/ui/design-system';
-import type { SpaceEnvironment, SpaceControls } from '../../../spaces/types';
+import type { SpaceEnvironment, SpaceControls, HDRIEnvironment } from '../../../spaces/types';
 import type { EnvironmentScene, EnvironmentControls, BackgroundType } from '../../../types';
 import { 
   SceneGrid, 
   SpaceEnvironmentGrid, 
+  HDRIEnvironmentGrid,
   CameraControlsSection, 
   CardPhysicsSection, 
   EnvironmentControlsSection,
-  SPACE_ENVIRONMENTS 
+  SPACE_ENVIRONMENTS,
+  HDRI_ENVIRONMENTS
 } from './spaces';
 
 interface SpacesSectionProps {
@@ -49,9 +51,16 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
   backgroundType = 'scene',
   onBackgroundTypeChange = () => {}
 }) => {
-  const statusText = backgroundType === '3dSpace' && selectedSpace
-    ? `${selectedSpace.name} (3D Space)` 
-    : `${selectedScene.name} (Scene)`;
+  const [selectedHDRI, setSelectedHDRI] = useState<HDRIEnvironment | null>(null);
+
+  const getStatusText = () => {
+    if (backgroundType === '3dSpace' && selectedSpace) {
+      return `${selectedSpace.name} (3D Space)`;
+    } else if (backgroundType === 'hdri' && selectedHDRI) {
+      return `${selectedHDRI.name} (HDRI)`;
+    }
+    return `${selectedScene.name} (Scene)`;
+  };
 
   const handleSceneChange = (scene: EnvironmentScene) => {
     onSceneChange(scene);
@@ -61,13 +70,31 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
   const handleSpaceChange = (space: SpaceEnvironment) => {
     onSpaceChange(space);
     onBackgroundTypeChange('3dSpace');
+    setSelectedHDRI(null);
   };
+
+  const handleHDRIChange = (hdri: HDRIEnvironment) => {
+    setSelectedHDRI(hdri);
+    onBackgroundTypeChange('hdri');
+    // Convert HDRI to scene format for compatibility
+    const hdriAsScene: EnvironmentScene = {
+      id: hdri.id,
+      name: hdri.name,
+      category: 'natural',
+      previewUrl: hdri.previewUrl,
+      hdriUrl: hdri.hdriUrl,
+      backgroundImage: hdri.fallbackUrl
+    };
+    onSceneChange(hdriAsScene);
+  };
+
+  const isControlsActive = backgroundType === '3dSpace' || backgroundType === 'hdri';
 
   return (
     <CollapsibleSection
-      title="Spaces"
+      title="Spaces & Environments"
       emoji="🌌"
-      statusText={statusText}
+      statusText={getStatusText()}
       isOpen={isOpen}
       onToggle={onToggle}
     >
@@ -86,8 +113,15 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
           isActive={backgroundType === '3dSpace'}
         />
 
-        {/* 3D Space Controls (only show when 3D space is active) */}
-        {backgroundType === '3dSpace' && (
+        {/* HDRI Environment Selection */}
+        <HDRIEnvironmentGrid
+          selectedHDRI={selectedHDRI}
+          onHDRIChange={handleHDRIChange}
+          isActive={backgroundType === 'hdri'}
+        />
+
+        {/* Controls (show when 3D space or HDRI is active) */}
+        {isControlsActive && (
           <>
             {/* Camera Controls */}
             <CameraControlsSection
@@ -104,7 +138,7 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
           </>
         )}
 
-        {/* Environment Controls (for both 2D and 3D) */}
+        {/* Environment Controls (for all types) */}
         <EnvironmentControlsSection
           environmentControls={environmentControls}
           onEnvironmentControlsChange={onEnvironmentControlsChange}
@@ -113,10 +147,14 @@ export const SpacesSection: React.FC<SpacesSectionProps> = ({
         {/* Feature Status */}
         <div className="p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-400/30">
           <div className="text-purple-300 text-xs font-medium mb-1">
-            🚀 Unified Spaces & Environments
+            🚀 Enhanced Environments
           </div>
           <div className="text-white/70 text-xs">
-            Switch between 2D scenes and immersive 3D environments. Active: {backgroundType === '3dSpace' ? '3D Space' : '2D Scene'}
+            Switch between 2D scenes, 3D spaces, and HDRI environments. Active: {
+              backgroundType === '3dSpace' ? '3D Space' : 
+              backgroundType === 'hdri' ? 'HDRI Environment' : 
+              '2D Scene'
+            }
           </div>
         </div>
       </div>

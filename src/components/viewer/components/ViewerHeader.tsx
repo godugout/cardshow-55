@@ -22,7 +22,7 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
           variant="ghost"
           size="sm"
           onClick={onClose}
-          className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center space-x-2 px-3 py-2"
+          className="bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white flex items-center space-x-2 px-4 py-2 transition-all"
         >
           <img 
             src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
@@ -44,7 +44,7 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
             variant="ghost"
             size="sm"
             onClick={onOpenStudio}
-            className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center space-x-2 px-3 py-2"
+            className="bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white flex items-center space-x-2 px-4 py-2 transition-all"
           >
             <Sparkles className="w-4 h-4 text-crd-green" />
             <span className="text-sm font-medium">Studio</span>
