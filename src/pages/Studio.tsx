@@ -20,10 +20,10 @@ const Studio = () => {
   } = useStudioState();
 
   if (isLoading) {
-    return <LoadingState message="Loading your card collection..." fullPage />;
+    return <LoadingState message="Loading studio..." fullPage />;
   }
 
-  if (!selectedCard || mockCards.length === 0) {
+  if (!selectedCard) {
     return <NoCardSelected />;
   }
 
