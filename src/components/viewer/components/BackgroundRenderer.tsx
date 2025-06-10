@@ -39,7 +39,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   overallBrightness = [100],
   interactiveLighting = false
 }) => {
-  // Fix: Check for '3dSpace' instead of 'space' based on the BackgroundType definition
+  // Check for '3dSpace' instead of 'space' based on the BackgroundType definition
   if (backgroundType === '3dSpace' && selectedSpace) {
     return (
       <div className="absolute inset-0 z-0">
@@ -64,6 +64,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     return (
       <div className="absolute inset-0 z-0">
         <EnvironmentSphere
+          scene={selectedScene}
           mousePosition={mousePosition}
           isHovering={isHovering}
         />
