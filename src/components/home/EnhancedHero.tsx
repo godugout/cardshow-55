@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
@@ -24,6 +23,11 @@ export const EnhancedHero: React.FC = () => {
   const handleCardPreview = (card: any, index: number) => {
     setActiveCardIndex(index);
     handleCardClick(card, showcaseCards);
+  };
+
+  // Fixed: Updated to match expected signature (card: CardData, index: number) => void
+  const handleCardChangeWrapper = (card: any, index: number) => {
+    handleCardChange(index);
   };
 
   return (
@@ -109,7 +113,7 @@ export const EnhancedHero: React.FC = () => {
           card={convertedCards[selectedCardIndex]}
           cards={convertedCards}
           currentCardIndex={selectedCardIndex}
-          onCardChange={handleCardChange}
+          onCardChange={handleCardChangeWrapper}
           isOpen={showImmersiveViewer}
           onClose={handleCloseViewer}
           onShare={() => handleShareCard(convertedCards)}

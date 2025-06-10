@@ -71,7 +71,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true }}
       >
-        <Environment preset="studio" intensity={environmentBrightness} />
+        <Environment preset="studio" />
         
         <mesh ref={meshRef} position={[0, 0, 0]} rotation={[rotation.x, rotation.y, 0]} scale={zoom}>
           <planeGeometry args={[2.5, 3.5]} />

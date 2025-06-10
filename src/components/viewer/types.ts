@@ -24,7 +24,20 @@ export interface EnvironmentScene {
   previewUrl: string;
   hdriUrl?: string;
   panoramicUrl?: string;
+  backgroundImage?: string;
   emoji?: string;
+  icon?: string;
+  gradient?: string;
+  category?: string;
+  lighting?: {
+    color: string;
+    intensity: number;
+  };
+  atmosphere?: {
+    fog?: boolean;
+    fogColor?: string;
+    fogDensity?: number;
+  };
   config?: {
     intensity?: number;
     blur?: number;

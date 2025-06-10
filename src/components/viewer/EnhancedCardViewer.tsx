@@ -49,12 +49,16 @@ export const EnhancedCardViewer: React.FC<EnhancedCardViewerProps> = ({
   const [interactiveLighting, setInteractiveLighting] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Material properties - now including clearcoat
+  // Material properties - complete MaterialSettings interface
   const [materialSettings, setMaterialSettings] = useState<MaterialSettings>({
     metalness: 0.5,
     roughness: 0.5,
     reflectivity: 0.5,
-    clearcoat: 0.3
+    clearcoat: 0.3,
+    clearcoatRoughness: 0.1,
+    ior: 1.5,
+    transmission: 0,
+    thickness: 0.5
   });
 
   const handleToggleFullscreen = useCallback(() => {
