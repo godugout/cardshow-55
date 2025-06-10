@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { PanoramicEnvironment } from './PanoramicEnvironment';
-import { PanoramicControls } from '../controls/PanoramicControls';
 import { 
   getPhotoById, 
   getFallbackPhoto, 
@@ -89,24 +88,12 @@ export const PanoramicSpace: React.FC<PanoramicSpaceProps> = ({ config, controls
   });
 
   return (
-    <>
-      <PanoramicEnvironment
-        photoUrl={photo.url}
-        rotation={config.autoRotation || 0}
-        exposure={finalExposure}
-        saturation={config.saturation || 1.0}
-        brightness={photo.lighting.intensity}
-      />
-      
-      <PanoramicControls
-        autoRotate={controls.panoramicAutoRotate || controls.autoRotate}
-        autoRotateSpeed={controls.panoramicRotationSpeed || controls.orbitSpeed}
-        enableZoom={true}
-        enablePan={false}
-        minDistance={photo.camera.defaultDistance * 0.3}
-        maxDistance={photo.camera.defaultDistance * 3}
-        dampingFactor={0.05} // Smoother controls
-      />
-    </>
+    <PanoramicEnvironment
+      photoUrl={photo.url}
+      rotation={config.autoRotation || 0}
+      exposure={finalExposure}
+      saturation={config.saturation || 1.0}
+      brightness={photo.lighting.intensity}
+    />
   );
 };
