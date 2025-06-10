@@ -2,48 +2,88 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { CardRepository } from '@/repositories/cardRepository';
+import { migrateMockDataToDatabase, checkMigrationStatus } from '@/services/migrations/mockDataMigration';
+import { convertCardToCardData } from '@/utils/cardAdapter';
 import type { CardData } from '@/hooks/useCardEditor';
-import { mockCards } from '../mockData';
 
 export const useStudioState = () => {
   const { cardId } = useParams<{ cardId?: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [cards, setCards] = useState<CardData[]>([]);
 
-  // Load card data based on URL params
+  // Load cards from database and handle migration if needed
   useEffect(() => {
-    const loadCard = async () => {
+    const loadCards = async () => {
       setIsLoading(true);
       
-      if (cardId) {
-        // Find the specific card
-        const card = mockCards.find(c => c.id === cardId);
-        if (card) {
-          setSelectedCard(card);
-          const index = mockCards.findIndex(c => c.id === cardId);
-          setCurrentCardIndex(index);
-        } else {
-          toast.error('Card not found');
-          navigate('/studio');
-          return;
+      try {
+        // Check if migration is needed and user is available
+        if (user) {
+          const isMigrated = await checkMigrationStatus();
+          
+          if (!isMigrated) {
+            console.log('🔄 Running mock data migration...');
+            toast.info('Setting up your card collection...');
+            
+            const migrationResult = await migrateMockDataToDatabase(user.id);
+            
+            if (migrationResult.success) {
+              toast.success(`Successfully migrated ${migrationResult.migratedCount} cards to your collection!`);
+            } else {
+              toast.error('Migration had some issues, but continuing...');
+              console.error('Migration errors:', migrationResult.errors);
+            }
+          }
         }
-      } else {
-        // Default to first card if no ID specified
-        setSelectedCard(mockCards[0]);
-        setCurrentCardIndex(0);
+        
+        // Fetch cards from database
+        const dbCards = await CardRepository.getStudioCards(20);
+        const convertedCards = dbCards.map(convertCardToCardData);
+        setCards(convertedCards);
+        
+        if (cardId) {
+          // Find the specific card
+          const card = convertedCards.find(c => c.id === cardId);
+          if (card) {
+            setSelectedCard(card);
+            const index = convertedCards.findIndex(c => c.id === cardId);
+            setCurrentCardIndex(index);
+          } else {
+            toast.error('Card not found');
+            navigate('/studio');
+            return;
+          }
+        } else {
+          // Default to first card if no ID specified
+          if (convertedCards.length > 0) {
+            setSelectedCard(convertedCards[0]);
+            setCurrentCardIndex(0);
+          }
+        }
+        
+      } catch (error) {
+        console.error('Error loading cards:', error);
+        toast.error('Failed to load cards');
+        // Fallback to empty state
+        setCards([]);
+        setSelectedCard(null);
       }
       
       setIsLoading(false);
     };
 
-    loadCard();
-  }, [cardId, navigate]);
+    loadCards();
+  }, [cardId, navigate, user]);
 
   // Handle card navigation
   const handleCardChange = (index: number) => {
-    const newCard = mockCards[index];
+    const newCard = cards[index];
     if (newCard) {
       setSelectedCard(newCard);
       setCurrentCardIndex(index);
@@ -82,7 +122,7 @@ export const useStudioState = () => {
     selectedCard,
     currentCardIndex,
     isLoading,
-    mockCards,
+    mockCards: cards, // Keep same property name for compatibility
     handleCardChange,
     handleShare,
     handleDownload,

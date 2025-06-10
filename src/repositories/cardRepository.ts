@@ -17,6 +17,7 @@ export interface Card {
   edition_size: number;
   price?: number;
   is_public: boolean;
+  template_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -35,6 +36,7 @@ export interface CardCreateParams {
   edition_size?: number;
   price?: number;
   is_public?: boolean;
+  template_id?: string;
 }
 
 export interface CardUpdateParams {
@@ -51,6 +53,7 @@ export interface CardUpdateParams {
   edition_size?: number;
   price?: number;
   is_public?: boolean;
+  template_id?: string;
 }
 
 export interface CardListOptions {
@@ -93,6 +96,46 @@ export const CardRepository = {
     }
   },
 
+  async getAllCards(): Promise<Card[]> {
+    try {
+      const { data, error } = await supabase
+        .from('cards')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if (error) {
+        console.error('Error fetching all cards:', error);
+        return [];
+      }
+      
+      return data as Card[] || [];
+    } catch (error) {
+      console.error('Error in getAllCards:', error);
+      return [];
+    }
+  },
+
+  async getStudioCards(limit = 10): Promise<Card[]> {
+    try {
+      const { data, error } = await supabase
+        .from('cards')
+        .select('*')
+        .eq('is_public', true)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+        
+      if (error) {
+        console.error('Error fetching studio cards:', error);
+        return [];
+      }
+      
+      return data as Card[] || [];
+    } catch (error) {
+      console.error('Error in getStudioCards:', error);
+      return [];
+    }
+  },
+
   async createCard(params: CardCreateParams): Promise<Card | null> {
     try {
       // Get app_id if available
@@ -114,6 +157,7 @@ export const CardRepository = {
           edition_size: params.edition_size || 1,
           price: params.price,
           is_public: params.is_public || false,
+          template_id: params.template_id,
         })
         .select()
         .single();
@@ -146,6 +190,7 @@ export const CardRepository = {
       if (params.edition_size !== undefined) updates.edition_size = params.edition_size;
       if (params.price !== undefined) updates.price = params.price;
       if (params.is_public !== undefined) updates.is_public = params.is_public;
+      if (params.template_id !== undefined) updates.template_id = params.template_id;
 
       const { data, error } = await supabase
         .from('cards')
