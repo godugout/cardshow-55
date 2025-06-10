@@ -2,6 +2,7 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useCardPhysics } from '../../hooks/useCardPhysics';
 
 interface FloatingCardProps {
   card: any;
@@ -15,6 +16,7 @@ interface FloatingCardProps {
     fieldOfView: number;
     atmosphericDensity: number;
   };
+  onPhysicsRef?: (physics: any) => void;
 }
 
 export const FloatingCard: React.FC<FloatingCardProps> = ({
@@ -28,7 +30,8 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
     parallaxIntensity: 1.0,
     fieldOfView: 75,
     atmosphericDensity: 1.0
-  }
+  },
+  onPhysicsRef
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
@@ -38,7 +41,25 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
   const cardWidth = 2.5;
   const cardHeight = 3.5;
   const cardDepth = 0.02;
-  
+
+  // Initialize physics system with bounded movement
+  const physics = useCardPhysics({
+    floatIntensity,
+    autoRotate,
+    gravityEffect,
+    centerPosition: new THREE.Vector3(0, 0, 0),
+    maxDistance: 1.5, // Card can't move more than 1.5 units from center
+    snapBackForce: 0.15,
+    dampingFactor: 0.92
+  });
+
+  // Expose physics controls to parent
+  useEffect(() => {
+    if (onPhysicsRef) {
+      onPhysicsRef(physics);
+    }
+  }, [physics, onPhysicsRef]);
+
   console.log('🃏 FloatingCard physics:', { floatIntensity, autoRotate, gravityEffect });
 
   // Load texture safely in useEffect to prevent re-render loops
@@ -92,41 +113,18 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
 
   useFrame((state) => {
     if (meshRef.current) {
-      const time = state.clock.elapsedTime;
+      // Update physics with bounded, centered movement
+      const physicsResult = physics.updatePhysics(meshRef.current, state.clock.elapsedTime * 1000);
       
-      // Enhanced floating animation with intensity control
-      if (floatIntensity > 0) {
-        const floatY = Math.sin(time * 0.8) * (0.2 * floatIntensity);
-        const floatX = Math.cos(time * 0.5) * (0.1 * floatIntensity);
-        meshRef.current.position.y = floatY;
-        meshRef.current.position.x = floatX;
-      }
-      
-      // Enhanced gravity effect
-      if (gravityEffect > 0) {
-        const gravityOffset = -gravityEffect * 0.5;
-        meshRef.current.position.y += gravityOffset;
-        
-        // Add slight sway for gravity effect
-        const sway = Math.sin(time * 0.3) * (gravityEffect * 0.1);
-        meshRef.current.rotation.z = sway;
-      }
-      
-      // Enhanced auto-rotation with physics
-      if (autoRotate) {
-        meshRef.current.rotation.y += 0.005;
-        
-        // Add subtle wobble for more natural rotation
-        const wobble = Math.sin(time * 2) * 0.02;
-        meshRef.current.rotation.x = wobble;
-      }
-      
-      // Parallax effect based on environment controls
-      if (environmentControls.parallaxIntensity > 0) {
-        const parallaxX = Math.sin(time * 0.2) * (environmentControls.parallaxIntensity * 0.1);
-        const parallaxZ = Math.cos(time * 0.15) * (environmentControls.parallaxIntensity * 0.05);
-        meshRef.current.position.x += parallaxX;
-        meshRef.current.position.z += parallaxZ;
+      // Visual feedback for snap-back state
+      if (physicsResult?.isReturningToCenter) {
+        const material = meshRef.current.material as THREE.MeshStandardMaterial;
+        material.emissive.setHex(0x0033aa); // Blue glow when returning to center
+        material.emissiveIntensity = 0.2;
+      } else {
+        const material = meshRef.current.material as THREE.MeshStandardMaterial;
+        material.emissive.setHex(0x000000);
+        material.emissiveIntensity = 0;
       }
     }
   });

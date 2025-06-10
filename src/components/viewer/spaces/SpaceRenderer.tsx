@@ -1,10 +1,11 @@
 
-import React, { Suspense, useRef, useEffect } from 'react';
+import React, { Suspense, useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import { FloatingCard } from './components/FloatingCard';
 import { ReliablePanoramicSpace } from './environments/ReliablePanoramicSpace';
 import { LoadingFallback } from './components/LoadingFallback';
+import { MotionControls } from '../components/MotionControls';
 import type { SpaceEnvironment, SpaceControls } from './types';
 import * as THREE from 'three';
 
@@ -38,6 +39,8 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
   }
 }) => {
   const orbitControlsRef = useRef<any>();
+  const cardPhysicsRef = useRef<any>();
+  const [isMotionStopped, setIsMotionStopped] = useState(false);
   
   console.log('🌌 SpaceRenderer rendering:', { 
     spaceName: spaceEnvironment.name,
@@ -50,7 +53,7 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
     if (orbitControlsRef.current) {
       const controls = orbitControlsRef.current;
       
-      // Apply camera distance
+      // Apply camera distance with smooth transition
       const targetDistance = spaceControls.cameraDistance;
       const currentDistance = controls.getDistance();
       
@@ -80,8 +83,48 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
     onError?.(errorMessage);
   };
 
+  // Motion control handlers
+  const handleStopMotion = () => {
+    if (cardPhysicsRef.current) {
+      cardPhysicsRef.current.stopAllMotion();
+      setIsMotionStopped(true);
+    }
+  };
+
+  const handleResumeMotion = () => {
+    if (cardPhysicsRef.current) {
+      cardPhysicsRef.current.resumeMotion();
+      setIsMotionStopped(false);
+    }
+  };
+
+  const handleSnapToCenter = () => {
+    if (cardPhysicsRef.current) {
+      cardPhysicsRef.current.snapToCenter();
+      setIsMotionStopped(false);
+    }
+  };
+
+  const handleResetRotation = () => {
+    if (orbitControlsRef.current) {
+      orbitControlsRef.current.reset();
+    }
+  };
+
   return (
     <div className="fixed inset-0 w-full h-full">
+      {/* Motion Controls Overlay */}
+      <div className="absolute top-4 left-4 z-50">
+        <MotionControls
+          onStopMotion={handleStopMotion}
+          onSnapToCenter={handleSnapToCenter}
+          onResumeMotion={handleResumeMotion}
+          onResetRotation={handleResetRotation}
+          isMotionStopped={isMotionStopped}
+        />
+      </div>
+
+      {/* 3D Canvas */}
       <Canvas
         camera={cameraSettings}
         shadows
@@ -114,7 +157,7 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
             onError={handleSpaceLoadError}
           />
           
-          {/* Enhanced floating card with physics */}
+          {/* Enhanced floating card with bounded physics */}
           <FloatingCard
             card={card}
             floatIntensity={spaceControls.floatIntensity}
@@ -122,20 +165,25 @@ export const SpaceRenderer: React.FC<SpaceRendererProps> = ({
             gravityEffect={spaceControls.gravityEffect}
             onClick={onCardClick}
             environmentControls={environmentControls}
+            onPhysicsRef={(physics) => {
+              cardPhysicsRef.current = physics;
+            }}
           />
           
-          {/* Enhanced orbit controls */}
+          {/* Enhanced orbit controls with better limits */}
           <OrbitControls
             ref={orbitControlsRef}
             enablePan={false}
             enableZoom={true}
             autoRotate={spaceControls.orbitSpeed > 0}
             autoRotateSpeed={spaceControls.orbitSpeed * 2}
-            minDistance={2}
-            maxDistance={20}
+            minDistance={3}
+            maxDistance={15}
             minPolarAngle={Math.PI / 6}
             maxPolarAngle={Math.PI - Math.PI / 6}
-            dampingFactor={0.05}
+            maxAzimuthAngle={Math.PI / 3}
+            minAzimuthAngle={-Math.PI / 3}
+            dampingFactor={0.1}
             enableDamping={true}
           />
         </Suspense>
