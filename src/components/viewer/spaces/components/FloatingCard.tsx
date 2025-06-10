@@ -34,15 +34,18 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
   const meshRef = useRef<THREE.Mesh>(null);
   const [textureError, setTextureError] = useState(false);
   
-  // Use texture hook properly without try-catch wrapper
+  // Use texture hook properly - simplified approach
   const imageUrl = card.image_url || '/placeholder-card.jpg';
-  const texture = useTexture(imageUrl, (loadedTexture) => {
+  let texture;
+  
+  try {
+    texture = useTexture(imageUrl);
     console.log('✅ FloatingCard texture loaded successfully');
-    setTextureError(false);
-  }, undefined, (error) => {
+  } catch (error) {
     console.warn('❌ FloatingCard texture failed to load:', error);
     setTextureError(true);
-  });
+    texture = null;
+  }
   
   // Card dimensions (standard trading card ratio)
   const cardWidth = 2.5;
