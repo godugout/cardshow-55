@@ -17,11 +17,10 @@ import { ViewerHeader } from './components/ViewerHeader';
 import { StudioPanel } from './components/StudioPanel';
 import { EnhancedEnvironmentSphere } from './components/EnhancedEnvironmentSphere';
 import { EnhancedCardContainer } from './components/EnhancedCardContainer';
+import { OptimizedSpaceRenderer } from './spaces/OptimizedSpaceRenderer';
 import { useEnhancedCardEffects } from './hooks/useEnhancedCardEffects';
 import { useViewerState } from './hooks/useViewerState';
 import type { ImmersiveCardViewerProps, BackgroundType } from './types';
-import type { SpaceEnvironment, SpaceControls } from './spaces/types';
-import { SpaceRenderer3D } from './spaces/SpaceRenderer3D';
 
 export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   card: providedCard,
@@ -94,7 +93,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
 
   const { effectValues, handleEffectChange, handleApplyCombo, isApplyingPreset, environmentControls, setEnvironmentControls } = useEnhancedCardEffects();
 
-  // Background type state
+  // Simplified background type state
   const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -139,20 +138,21 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     }
   }, [cards, currentCardIndex, onCardChange]);
 
+  // Unified rendering method that chooses between scene and 3D space rendering
   const renderViewer = () => {
-    if ((backgroundType === '3dSpace' || backgroundType === 'hdri') && selectedSpace) {
+    if (backgroundType === '3dSpace' && selectedSpace) {
       return (
-        <SpaceRenderer3D
+        <OptimizedSpaceRenderer
           environment={selectedSpace}
           controls={spaceControls}
+          card={card}
           onCameraReset={handleResetCamera}
           environmentIntensity={overallBrightness[0] / 100}
-          card={card}
         />
       );
     }
 
-    // Default to scene-based rendering
+    // Default to scene-based rendering with optimized container
     return (
       <div className="relative w-full h-full">
         <EnhancedEnvironmentSphere 
@@ -199,7 +199,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
           {renderViewer()}
         </div>
 
-        {/* ViewerHeader - Restored to original layout */}
+        {/* ViewerHeader */}
         <ViewerHeader
           onClose={onClose}
           showStudioButton={!showCustomizePanel}
