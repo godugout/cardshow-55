@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import {
   Share2,
@@ -10,9 +11,6 @@ import {
   X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
 import { ViewerControls } from './components/ViewerControls';
 import { StudioPanel } from './components/StudioPanel';
@@ -118,24 +116,17 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     handleZoom(-0.1);
   }, [handleZoom]);
 
-  const handleRotate = useCallback((deltaX: number, deltaY: number) => {
-    setRotation(prev => ({
-      x: prev.x + deltaY * 0.2,
-      y: prev.y + deltaX * 0.2
-    }));
-  }, [setRotation]);
-
   const handleNext = useCallback(() => {
-    if (cards.length > 0) {
+    if (cards.length > 0 && onCardChange) {
       const nextIndex = (currentCardIndex + 1) % cards.length;
-      onCardChange?.(cards[nextIndex], nextIndex);
+      onCardChange(cards[nextIndex], nextIndex);
     }
   }, [cards, currentCardIndex, onCardChange]);
 
   const handlePrev = useCallback(() => {
-    if (cards.length > 0) {
+    if (cards.length > 0 && onCardChange) {
       const prevIndex = (currentCardIndex - 1 + cards.length) % cards.length;
-      onCardChange?.(cards[prevIndex], prevIndex);
+      onCardChange(cards[prevIndex], prevIndex);
     }
   }, [cards, currentCardIndex, onCardChange]);
 
@@ -159,12 +150,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
       <div className="relative w-full h-full">
         <EnhancedEnvironmentSphere 
           scene={selectedScene}
-          controls={environmentControls || {
-            depthOfField: 0,
-            parallaxIntensity: 0.5,
-            fieldOfView: 75,
-            atmosphericDensity: 0.5
-          }}
+          controls={environmentControls}
           mousePosition={mousePosition}
           isHovering={isHovering}
         />
@@ -262,7 +248,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         />
 
         {/* Card Navigation */}
-        {cards.length > 1 && (
+        {cards.length > 1 && onCardChange && (
           <div className="absolute bottom-4 right-4 flex space-x-2 z-10">
             <Button
               variant="ghost"

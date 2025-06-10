@@ -59,21 +59,7 @@ export interface VisualEffect {
   properties: Record<string, any>;
 }
 
-export interface ImmersiveCardViewerProps {
-  card: any;
-  cards: any[];
-  currentCardIndex: number;
-  onCardChange: (card: any, index: number) => void;
-  isOpen: boolean;
-  onClose: () => void;
-  onShare: (card: any) => void;
-  onDownload: (cards: any[]) => void;
-  allowRotation?: boolean;
-  showStats?: boolean;
-  ambient?: boolean;
-}
-
-export type BackgroundType = 'gradient' | 'image' | 'solid';
+export type BackgroundType = 'gradient' | 'image' | 'solid' | 'scene' | '3dSpace';
 
 export interface EnvironmentControls {
   backgroundType: BackgroundType;
@@ -83,4 +69,22 @@ export interface EnvironmentControls {
   blur: number;
   brightness: number;
   contrast: number;
+  depthOfField: number;
+  parallaxIntensity: number;
+  fieldOfView: number;
+  atmosphericDensity: number;
+}
+
+export interface ImmersiveCardViewerProps {
+  card: any;
+  cards?: any[];
+  currentCardIndex?: number;
+  onCardChange?: (card: any, index: number) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onShare: (card: any) => void;
+  onDownload: (cards: any[]) => void;
+  allowRotation?: boolean;
+  showStats?: boolean;
+  ambient?: boolean;
 }
