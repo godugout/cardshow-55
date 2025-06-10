@@ -1,6 +1,5 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase, getAppId } from '@/integrations/supabase/client';
 
 export interface AppSettings {
   theme?: string;
@@ -12,34 +11,19 @@ export const useAppSettings = () => {
   const queryClient = useQueryClient();
   
   const fetchSettings = async () => {
-    const appId = await getAppId();
-    if (!appId) throw new Error('Could not determine app ID');
-
-    const { data, error } = await supabase
-      .from('app_settings')
-      .select('settings')
-      .eq('app_id', appId)
-      .single();
-
-    if (error) throw error;
-    return data?.settings as AppSettings;
+    // For now, return default settings from localStorage
+    // Once database tables are set up, this will fetch from Supabase
+    const stored = localStorage.getItem('app_settings');
+    return stored ? JSON.parse(stored) : { theme: 'dark', features: [], config: {} };
   };
 
   const updateSettings = async (newSettings: Partial<AppSettings>) => {
-    const appId = await getAppId();
-    if (!appId) throw new Error('Could not determine app ID');
-
-    const { data, error } = await supabase
-      .from('app_settings')
-      .upsert({
-        app_id: appId,
-        settings: newSettings
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data.settings as AppSettings;
+    // For now, save to localStorage
+    // Once database tables are set up, this will save to Supabase
+    const current = await fetchSettings();
+    const updated = { ...current, ...newSettings };
+    localStorage.setItem('app_settings', JSON.stringify(updated));
+    return updated;
   };
 
   const { data: settings, isLoading } = useQuery({
