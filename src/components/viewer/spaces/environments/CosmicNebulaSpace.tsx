@@ -2,6 +2,7 @@
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
+import * as THREE from 'three';
 
 interface CosmicNebulaSpaceProps {
   config: {
@@ -14,9 +15,9 @@ interface CosmicNebulaSpaceProps {
 }
 
 export const CosmicNebulaSpace: React.FC<CosmicNebulaSpaceProps> = ({ config }) => {
-  const pointsRef = useRef<any>(null);
-  const nebula1Ref = useRef<any>(null);
-  const nebula2Ref = useRef<any>(null);
+  const pointsRef = useRef<THREE.Points>(null);
+  const nebula1Ref = useRef<THREE.Mesh>(null);
+  const nebula2Ref = useRef<THREE.Mesh>(null);
   
   const particleCount = config.particleCount || 3000;
   
@@ -75,7 +76,13 @@ export const CosmicNebulaSpace: React.FC<CosmicNebulaSpaceProps> = ({ config }) 
 
   return (
     <>
+      {/* Set scene background */}
+      <color attach="background" args={[config.backgroundColor]} />
+      
+      {/* Fog for atmosphere */}
       <fog attach="fog" args={[config.backgroundColor, 30, 120]} />
+      
+      {/* Lighting setup */}
       <ambientLight intensity={config.lightIntensity * 0.3} color={config.ambientColor} />
       <pointLight position={[0, 0, 0]} intensity={config.lightIntensity * 0.5} color="#ff00ff" />
       <pointLight position={[30, 30, 30]} intensity={config.lightIntensity * 0.3} color="#00ffff" />

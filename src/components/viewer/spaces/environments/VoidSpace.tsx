@@ -2,6 +2,7 @@
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
+import * as THREE from 'three';
 
 interface VoidSpaceProps {
   config: {
@@ -14,7 +15,7 @@ interface VoidSpaceProps {
 }
 
 export const VoidSpace: React.FC<VoidSpaceProps> = ({ config }) => {
-  const pointsRef = useRef<any>(null);
+  const pointsRef = useRef<THREE.Points>(null);
   
   const particleCount = config.particleCount || 5000;
   
@@ -45,9 +46,16 @@ export const VoidSpace: React.FC<VoidSpaceProps> = ({ config }) => {
 
   return (
     <>
-      <fog attach="fog" args={[config.backgroundColor, 50, 200]} />
-      <ambientLight intensity={config.lightIntensity * 0.1} color={config.ambientColor} />
+      {/* Set scene background */}
+      <color attach="background" args={[config.backgroundColor]} />
       
+      {/* Fog for depth */}
+      <fog attach="fog" args={[config.backgroundColor, 50, 200]} />
+      
+      {/* Ambient lighting */}
+      <ambientLight intensity={config.lightIntensity * 0.2} color={config.ambientColor} />
+      
+      {/* Starfield particles */}
       <Points ref={pointsRef}>
         <bufferGeometry>
           <bufferAttribute
@@ -56,10 +64,10 @@ export const VoidSpace: React.FC<VoidSpaceProps> = ({ config }) => {
           />
         </bufferGeometry>
         <PointMaterial
-          size={0.5}
+          size={0.8}
           color="#ffffff"
           transparent
-          opacity={0.6}
+          opacity={0.8}
           sizeAttenuation={true}
         />
       </Points>

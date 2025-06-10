@@ -12,8 +12,10 @@ import { NeonCitySpace } from './environments/NeonCitySpace';
 import { OceanDepthsSpace } from './environments/OceanDepthsSpace';
 import { VoidSpace } from './environments/VoidSpace';
 import { CosmicNebulaSpace } from './environments/CosmicNebulaSpace';
+import { Card3D } from './Card3D';
 import type { SpaceEnvironment, SpaceControls } from './types';
 import type { EnvironmentScene } from '../types';
+import type { CardData } from '@/hooks/useCardEditor';
 
 interface SpaceRenderer3DProps {
   environment: SpaceEnvironment | EnvironmentScene;
@@ -21,6 +23,7 @@ interface SpaceRenderer3DProps {
   onCameraReset?: () => void;
   children?: React.ReactNode;
   environmentIntensity?: number;
+  card?: CardData;
 }
 
 export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
@@ -28,7 +31,8 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   controls,
   onCameraReset,
   children,
-  environmentIntensity = 1.0
+  environmentIntensity = 1.0,
+  card
 }) => {
   // Check if environment is an EnvironmentScene (has hdriUrl) or SpaceEnvironment
   const isEnvironmentScene = 'hdriUrl' in environment || 'panoramicUrl' in environment;
@@ -82,8 +86,12 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
     }
   };
 
+  // Set background color for 3D spaces
+  const backgroundColor = !isEnvironmentScene && (environment as SpaceEnvironment).config ? 
+    (environment as SpaceEnvironment).config.backgroundColor : '#000000';
+
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full" style={{ backgroundColor }}>
       <Canvas
         camera={{
           position: [0, 0, controls.cameraDistance || 8],
@@ -106,6 +114,9 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
             renderSpaceEnvironment()
           )}
 
+          {/* Render the card if provided */}
+          {card && <Card3D card={card} controls={controls} />}
+
           {children}
 
           <ContactShadows
@@ -126,6 +137,7 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
             maxDistance={20}
             minPolarAngle={Math.PI / 6}
             maxPolarAngle={Math.PI - Math.PI / 6}
+            target={[0, 0, 0]}
           />
         </Suspense>
       </Canvas>
