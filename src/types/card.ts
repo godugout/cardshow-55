@@ -31,6 +31,8 @@ export interface CardData {
   id?: string;
   title: string;
   description?: string;
+  type?: string;
+  series?: string;
   rarity: CardRarity;
   tags: string[];
   image_url?: string;
@@ -38,6 +40,7 @@ export interface CardData {
   design_metadata: Record<string, any>;
   visibility: CardVisibility;
   is_public?: boolean;
+  shop_id?: string;
   template_id?: string;
   collection_id?: string;
   team_id?: string;
@@ -46,6 +49,12 @@ export interface CardData {
   verification_status?: 'pending' | 'verified' | 'rejected';
   print_metadata?: Record<string, any>;
   creator_id?: string;
+  category: string;
+  effects: {
+    holographic: boolean;
+    foil: boolean;
+    chrome: boolean;
+  };
   price?: number;
   edition_size?: number;
   marketplace_listing?: boolean;
