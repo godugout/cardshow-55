@@ -78,15 +78,11 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
         dpr={[1, 2]}
         gl={{ 
           antialias: true, 
-          alpha: false, // Disable alpha to prevent transparency issues
-          premultipliedAlpha: false,
-          // CRITICAL: Remove default background color
-          clearColor: 0x000000,
-          clearAlpha: 0
+          alpha: false,
+          premultipliedAlpha: false
         }}
-        style={{ background: 'transparent' }} // Ensure Canvas has no background
+        style={{ background: 'transparent' }}
         onCreated={({ gl }) => {
-          // Remove any default background styling
           gl.domElement.style.background = 'transparent';
         }}
         onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}

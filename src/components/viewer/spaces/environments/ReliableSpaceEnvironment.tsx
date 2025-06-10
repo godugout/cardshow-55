@@ -76,18 +76,20 @@ export const ReliableSpaceEnvironment: React.FC<ReliableSpaceEnvironmentProps> =
           (error) => {
             if (!isMounted) return;
             console.error('❌ Texture creation failed:', error);
+            const errorObj = error instanceof Error ? error : new Error('Texture creation failed');
             setHasError(true);
             setIsLoading(false);
-            onLoadError?.(error);
+            onLoadError?.(errorObj);
           }
         );
         
       } catch (error) {
         if (!isMounted) return;
         console.error('❌ Environment loading failed:', error);
+        const errorObj = error instanceof Error ? error : new Error('Environment loading failed');
         setHasError(true);
         setIsLoading(false);
-        onLoadError?.(error as Error);
+        onLoadError?.(errorObj);
       }
     };
 
@@ -137,7 +139,6 @@ export const ReliableSpaceEnvironment: React.FC<ReliableSpaceEnvironmentProps> =
         const fallbackTexture = new THREE.CanvasTexture(canvas);
         fallbackTexture.mapping = THREE.EquirectangularReflectionMapping;
         
-        // REMOVE background color completely - let texture handle it
         scene.background = fallbackTexture;
         scene.environment = fallbackTexture;
       }
@@ -146,7 +147,7 @@ export const ReliableSpaceEnvironment: React.FC<ReliableSpaceEnvironmentProps> =
 
     console.log('🎨 Applying environment texture to scene');
     
-    // CRITICAL: Remove any existing background color to prevent conflicts
+    // Remove any existing background color to prevent conflicts
     if (gl.domElement.style.backgroundColor) {
       gl.domElement.style.backgroundColor = '';
     }
