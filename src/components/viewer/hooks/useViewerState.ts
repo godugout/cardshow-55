@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
+import { SPACE_ENVIRONMENTS } from '../components/studio/sections/spaces/constants';
 
 export const useViewerState = () => {
   // UI State
@@ -35,8 +36,10 @@ export const useViewerState = () => {
   // Preset state
   const [selectedPresetId, setSelectedPresetId] = useState<string>();
 
-  // 3D Space state
-  const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(null);
+  // 3D Space state - Initialize with first available space to prevent null errors
+  const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(
+    SPACE_ENVIRONMENTS.length > 0 ? SPACE_ENVIRONMENTS[0] : null
+  );
   const [spaceControls, setSpaceControls] = useState<SpaceControls>({
     orbitSpeed: 0.5,
     floatIntensity: 1.0,
@@ -77,6 +80,17 @@ export const useViewerState = () => {
 
   const onCardClick = useCallback(() => {
     setIsFlipped(prev => !prev);
+  }, []);
+
+  // Safe space setter that ensures we always have a valid space
+  const setSelectedSpaceSafe = useCallback((space: SpaceEnvironment | null) => {
+    console.log('useViewerState: Setting selected space to:', space?.name || 'null');
+    if (space) {
+      setSelectedSpace(space);
+    } else if (SPACE_ENVIRONMENTS.length > 0) {
+      console.log('useViewerState: Falling back to default space:', SPACE_ENVIRONMENTS[0].name);
+      setSelectedSpace(SPACE_ENVIRONMENTS[0]);
+    }
   }, []);
 
   return {
@@ -125,7 +139,7 @@ export const useViewerState = () => {
 
     // 3D Space state
     selectedSpace,
-    setSelectedSpace,
+    setSelectedSpace: setSelectedSpaceSafe,
     spaceControls,
     setSpaceControls,
 

@@ -1,6 +1,6 @@
 
-import React, { useRef, useEffect } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import React, { useRef, useEffect, Suspense } from 'react';
+import { useFrame, useThree, useLoader } from '@react-three/fiber';
 import { Environment, Sphere } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -12,6 +12,37 @@ interface HDRIEnvironmentProps {
   rotationY?: number;
 }
 
+const HDRITexture: React.FC<{ url: string; rotationY?: number }> = ({ url, rotationY = 0 }) => {
+  const texture = useLoader(THREE.TextureLoader, url);
+  
+  useFrame(() => {
+    if (texture && rotationY !== 0) {
+      texture.offset.x += rotationY * 0.001;
+    }
+  });
+
+  return (
+    <Sphere args={[50]} scale={[-1, 1, 1]}>
+      <meshBasicMaterial 
+        map={texture}
+        side={THREE.BackSide}
+      />
+    </Sphere>
+  );
+};
+
+const FallbackEnvironment: React.FC<{ environmentIntensity: number }> = ({ environmentIntensity }) => (
+  <>
+    <Environment preset="studio" />
+    <ambientLight intensity={0.3 * environmentIntensity} />
+    <directionalLight
+      position={[10, 10, 5]}
+      intensity={0.5 * environmentIntensity}
+      castShadow
+    />
+  </>
+);
+
 export const HDRIEnvironment: React.FC<HDRIEnvironmentProps> = ({
   hdriUrl,
   exposure = 1.0,
@@ -20,33 +51,18 @@ export const HDRIEnvironment: React.FC<HDRIEnvironmentProps> = ({
   rotationY = 0
 }) => {
   const { gl } = useThree();
-  const envMapRef = useRef<THREE.Texture | null>(null);
 
   useEffect(() => {
-    // Set exposure for tone mapping
+    console.log('HDRIEnvironment: Loading HDRI from:', hdriUrl);
     gl.toneMappingExposure = exposure;
-  }, [gl, exposure]);
-
-  useFrame(() => {
-    if (envMapRef.current && rotationY !== 0) {
-      envMapRef.current.offset.x += rotationY * 0.001;
-    }
-  });
+  }, [gl, exposure, hdriUrl]);
 
   return (
-    <>
-      {/* Use a high-res texture as background */}
-      <Sphere args={[50]} scale={[-1, 1, 1]}>
-        <meshBasicMaterial 
-          map={new THREE.TextureLoader().load(hdriUrl)}
-          side={THREE.BackSide}
-        />
-      </Sphere>
+    <Suspense fallback={<FallbackEnvironment environmentIntensity={environmentIntensity} />}>
+      <HDRITexture url={hdriUrl} rotationY={rotationY} />
       
-      {/* Additional atmospheric effects */}
       <ambientLight intensity={0.2 * environmentIntensity} />
       
-      {/* Dynamic directional light */}
       <directionalLight
         position={[10, 10, 5]}
         intensity={0.5 * environmentIntensity}
@@ -54,6 +70,6 @@ export const HDRIEnvironment: React.FC<HDRIEnvironmentProps> = ({
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
       />
-    </>
+    </Suspense>
   );
 };

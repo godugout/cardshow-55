@@ -3,6 +3,7 @@ import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
 import { Card3D } from './Card3D';
+import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
 import { ForestGladeSpace } from './environments/ForestGladeSpace';
 import { OceanDepthsSpace } from './environments/OceanDepthsSpace';
 import { NeonCitySpace } from './environments/NeonCitySpace';
@@ -14,16 +15,26 @@ import { CulturalSpace } from './environments/CulturalSpace';
 import { RetailSpace } from './environments/RetailSpace';
 import { NaturalSpace } from './environments/NaturalSpace';
 import { ProfessionalSpace } from './environments/ProfessionalSpace';
-import type { CardData } from '@/types/card';
 import type { SpaceEnvironment, SpaceControls } from './types';
 
 interface SpaceRenderer3DProps {
-  card: CardData;
+  card: {
+    id: string;
+    title: string;
+    image_url?: string;
+  };
   environment: SpaceEnvironment;
   controls: SpaceControls;
   onCardClick?: () => void;
   onCameraReset?: () => void;
 }
+
+const LoadingFallback: React.FC = () => (
+  <>
+    <Environment preset="studio" />
+    <ambientLight intensity={0.4} />
+  </>
+);
 
 export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   card,
@@ -32,53 +43,61 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   onCardClick,
   onCameraReset,
 }) => {
+  console.log('SpaceRenderer3D: Rendering environment:', environment.type, environment.name);
+
   const renderEnvironment = () => {
-    switch (environment.type) {
-      case 'forest':
-        return <ForestGladeSpace config={environment.config} />;
-      case 'ocean':
-        return <OceanDepthsSpace config={environment.config} />;
-      case 'neon':
-        return <NeonCitySpace config={environment.config} />;
-      case 'matrix':
-        return <MatrixCodeSpace config={environment.config} />;
-      case 'cartoon':
-        return <CartoonWorldSpace config={environment.config} />;
-      case 'sketch':
-        return <SketchArtSpace config={environment.config} />;
-      case 'sports':
-        return <SportsVenueSpace config={{
-          ...environment.config,
-          venue: environment.config.venue as "basketball" | "football" | "baseball" | "racing" | undefined
-        }} />;
-      case 'cultural':
-        return <CulturalSpace config={{
-          ...environment.config,
-          venue: environment.config.venue as "gallery" | "concert" | "library" | "theater" | undefined
-        }} />;
-      case 'retail':
-        return <RetailSpace config={{
-          ...environment.config,
-          venue: environment.config.venue as "cardshop" | "gaming" | "comic" | "convention" | undefined
-        }} />;
-      case 'natural':
-        return <NaturalSpace config={{
-          ...environment.config,
-          venue: environment.config.venue as "mountain" | "beach" | "forest" | "desert" | undefined,
-          animationSpeed: environment.config.animationSpeed
-        }} />;
-      case 'professional':
-        return <ProfessionalSpace config={{
-          ...environment.config,
-          venue: environment.config.venue as "office" | "studio" | "broadcast" | "workshop" | undefined
-        }} />;
-      default:
-        return (
-          <>
-            <Environment preset="studio" />
-            <ambientLight intensity={environment.config.lightIntensity} color={environment.config.ambientColor} />
-          </>
-        );
+    try {
+      switch (environment.type) {
+        case 'forest':
+          return <ForestGladeSpace config={environment.config} />;
+        case 'ocean':
+          return <OceanDepthsSpace config={environment.config} />;
+        case 'neon':
+          return <NeonCitySpace config={environment.config} />;
+        case 'matrix':
+          return <MatrixCodeSpace config={environment.config} />;
+        case 'cartoon':
+          return <CartoonWorldSpace config={environment.config} />;
+        case 'sketch':
+          return <SketchArtSpace config={environment.config} />;
+        case 'sports':
+          return <SportsVenueSpace config={{
+            ...environment.config,
+            venue: environment.config.venue as "basketball" | "football" | "baseball" | "racing" | undefined
+          }} />;
+        case 'cultural':
+          return <CulturalSpace config={{
+            ...environment.config,
+            venue: environment.config.venue as "gallery" | "concert" | "library" | "theater" | undefined
+          }} />;
+        case 'retail':
+          return <RetailSpace config={{
+            ...environment.config,
+            venue: environment.config.venue as "cardshop" | "gaming" | "comic" | "convention" | undefined
+          }} />;
+        case 'natural':
+          return <NaturalSpace config={{
+            ...environment.config,
+            venue: environment.config.venue as "mountain" | "beach" | "forest" | "desert" | undefined,
+            animationSpeed: environment.config.animationSpeed
+          }} />;
+        case 'professional':
+          return <ProfessionalSpace config={{
+            ...environment.config,
+            venue: environment.config.venue as "office" | "studio" | "broadcast" | "workshop" | undefined
+          }} />;
+        default:
+          console.log('SpaceRenderer3D: Using default environment for type:', environment.type);
+          return (
+            <>
+              <Environment preset="studio" />
+              <ambientLight intensity={environment.config.lightIntensity} color={environment.config.ambientColor} />
+            </>
+          );
+      }
+    } catch (error) {
+      console.error('SpaceRenderer3D: Error rendering environment:', error);
+      return <LoadingFallback />;
     }
   };
 
@@ -89,9 +108,12 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
         shadows
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true }}
+        onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}
       >
-        <Suspense fallback={null}>
-          {renderEnvironment()}
+        <Suspense fallback={<LoadingFallback />}>
+          <SpaceErrorBoundary spaceName={environment.name} fallback={<LoadingFallback />}>
+            {renderEnvironment()}
+          </SpaceErrorBoundary>
           
           <Card3D
             card={card}
