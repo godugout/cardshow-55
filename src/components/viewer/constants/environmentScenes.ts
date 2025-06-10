@@ -3,50 +3,21 @@ import type { EnvironmentScene } from '../types';
 
 export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
   {
-    id: 'forest',
-    name: 'Enchanted Forest',
-    icon: '🌲',
-    category: 'natural',
-    description: 'Mystical forest with ancient trees',
-    panoramicUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&h=1080&fit=crop&crop=center',
-    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/forest_slope_4k.hdr',
-    gradient: 'linear-gradient(135deg, #2d4a36 0%, #4a7c59 100%)',
+    id: 'studio',
+    name: 'Studio',
+    icon: '🎬',
+    category: 'professional',
+    description: 'Clean studio environment',
+    panoramicUrl: '/environments/studio-360.hdr',
+    previewUrl: '/environments/studio-preview.jpg',
+    backgroundImage: '/environments/studio-bg.jpg',
+    hdriUrl: '/environments/studio.hdr',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     lighting: {
-      color: '#4a7c59',
-      intensity: 0.8,
-      elevation: 30,
-      azimuth: 45
-    },
-    atmosphere: {
-      fog: true,
-      fogColor: '#2d4a36',
-      fogDensity: 0.3,
-      particles: true
-    },
-    depth: {
-      layers: 5,
-      parallaxIntensity: 1.2,
-      fieldOfView: 75
-    }
-  },
-  {
-    id: 'mountain',
-    name: 'Mountain Vista',
-    icon: '🏔️',
-    category: 'natural',
-    description: 'Breathtaking mountain landscape',
-    panoramicUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop&crop=center',
-    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/kiara_1_dawn_4k.hdr',
-    gradient: 'linear-gradient(135deg, #ffa500 0%, #ff7f50 100%)',
-    lighting: {
-      color: '#ffa500',
-      intensity: 0.9,
-      elevation: 15,
-      azimuth: 60
+      color: '#ffffff',
+      intensity: 1.0,
+      azimuth: 0,
+      elevation: 45
     },
     atmosphere: {
       fog: false,
@@ -55,125 +26,154 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
       particles: false
     },
     depth: {
-      layers: 7,
-      parallaxIntensity: 1.5,
-      fieldOfView: 85
+      layers: 3,
+      parallaxIntensity: 1.0,
+      fieldOfView: 75
     }
   },
   {
-    id: 'crystal-cave',
-    name: 'Crystal Cavern',
-    icon: '💎',
-    category: 'fantasy',
-    description: 'Glowing crystal cave realm',
-    panoramicUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&h=1080&fit=crop&crop=center',
-    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/cave_wall_4k.hdr',
-    gradient: 'linear-gradient(135deg, #4a5ee8 0%, #7b2cbf 100%)',
-    lighting: {
-      color: '#4a5ee8',
-      intensity: 1.1,
-      elevation: 60,
-      azimuth: -30
-    },
-    atmosphere: {
-      fog: true,
-      fogColor: '#4a5ee8',
-      fogDensity: 0.4,
-      particles: true
-    },
-    depth: {
-      layers: 6,
-      parallaxIntensity: 1.8,
-      fieldOfView: 70
-    }
-  },
-  {
-    id: 'cyberpunk-city',
-    name: 'Neon Metropolis',
-    icon: '🌃',
+    id: 'cyberpunk',
+    name: 'Cyberpunk City',
+    icon: '🌆',
     category: 'futuristic',
-    description: 'Cyberpunk cityscape at night',
-    panoramicUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1920&h=1080&fit=crop&crop=center',
-    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/night_street_4k.hdr',
-    gradient: 'linear-gradient(135deg, #ff0080 0%, #00ffff 100%)',
+    description: 'Neon-lit cyberpunk cityscape',
+    panoramicUrl: '/environments/cyberpunk-360.hdr',
+    previewUrl: '/environments/cyberpunk-preview.jpg',
+    backgroundImage: '/environments/cyberpunk-bg.jpg',
+    hdriUrl: '/environments/cyberpunk.hdr',
+    gradient: 'linear-gradient(135deg, #ff006e 0%, #8338ec 100%)',
     lighting: {
-      color: '#ff0080',
+      color: '#ff00ff',
       intensity: 1.2,
-      elevation: 30,
-      azimuth: 45
+      azimuth: 45,
+      elevation: 30
     },
     atmosphere: {
       fog: true,
-      fogColor: '#ff0080',
-      fogDensity: 0.2,
+      fogColor: '#ff00ff',
+      fogDensity: 0.3,
       particles: true
     },
     depth: {
-      layers: 8,
-      parallaxIntensity: 2.0,
-      fieldOfView: 90
-    }
-  },
-  {
-    id: 'ancient-temple',
-    name: 'Ancient Temple',
-    icon: '🏛️',
-    category: 'architectural',
-    description: 'Majestic ancient temple ruins',
-    panoramicUrl: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=1920&h=1080&fit=crop&crop=center',
-    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/temple_02_4k.hdr',
-    gradient: 'linear-gradient(135deg, #d4af37 0%, #ffd700 100%)',
-    lighting: {
-      color: '#d4af37',
-      intensity: 0.9,
-      elevation: 45,
-      azimuth: 0
-    },
-    atmosphere: {
-      fog: false,
-      fogColor: '#d4af37',
-      fogDensity: 0.15,
-      particles: false
-    },
-    depth: {
-      layers: 6,
-      parallaxIntensity: 1.3,
+      layers: 5,
+      parallaxIntensity: 1.5,
       fieldOfView: 80
     }
   },
   {
-    id: 'space-station',
-    name: 'Space Station',
-    icon: '🚀',
-    category: 'futuristic',
-    description: 'Orbital space station interior',
-    panoramicUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=4096&h=2048&fit=crop&crop=center',
-    previewUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=300&h=200&fit=crop&crop=center',
-    backgroundImage: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1920&h=1080&fit=crop&crop=center',
-    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/spacecraft_4k.hdr',
-    gradient: 'linear-gradient(135deg, #00aaff 0%, #0066cc 100%)',
+    id: 'fantasy',
+    name: 'Fantasy Realm',
+    icon: '🏰',
+    category: 'magical',
+    description: 'Mystical fantasy landscape',
+    panoramicUrl: '/environments/fantasy-360.hdr',
+    previewUrl: '/environments/fantasy-preview.jpg',
+    backgroundImage: '/environments/fantasy-bg.jpg',
+    hdriUrl: '/environments/fantasy.hdr',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     lighting: {
-      color: '#00aaff',
-      intensity: 1.0,
-      elevation: 90,
-      azimuth: 0
+      color: '#ffd700',
+      intensity: 0.9,
+      azimuth: 60,
+      elevation: 60
     },
     atmosphere: {
-      fog: false,
-      fogColor: '#000000',
-      fogDensity: 0.0,
+      fog: true,
+      fogColor: '#9370db',
+      fogDensity: 0.2,
       particles: true
     },
     depth: {
       layers: 4,
-      parallaxIntensity: 0.8,
-      fieldOfView: 110
+      parallaxIntensity: 1.2,
+      fieldOfView: 70
+    }
+  },
+  {
+    id: 'space',
+    name: 'Deep Space',
+    icon: '🌌',
+    category: 'cosmic',
+    description: 'Vast cosmic environment',
+    panoramicUrl: '/environments/space-360.hdr',
+    previewUrl: '/environments/space-preview.jpg',
+    backgroundImage: '/environments/space-bg.jpg',
+    hdriUrl: '/environments/space.hdr',
+    gradient: 'radial-gradient(ellipse at center, #1e3c72 0%, #2a5298 100%)',
+    lighting: {
+      color: '#ffffff',
+      intensity: 0.7,
+      azimuth: 0,
+      elevation: 90
+    },
+    atmosphere: {
+      fog: false,
+      fogColor: '#000000',
+      fogDensity: 0.05,
+      particles: true
+    },
+    depth: {
+      layers: 6,
+      parallaxIntensity: 2.0,
+      fieldOfView: 85
+    }
+  },
+  {
+    id: 'retro',
+    name: 'Retro Wave',
+    icon: '🌴',
+    category: 'nostalgic',
+    description: '80s retro synthwave vibe',
+    panoramicUrl: '/environments/retro-360.hdr',
+    previewUrl: '/environments/retro-preview.jpg',
+    backgroundImage: '/environments/retro-bg.jpg',
+    hdriUrl: '/environments/retro.hdr',
+    gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
+    lighting: {
+      color: '#ff1493',
+      intensity: 1.1,
+      azimuth: 30,
+      elevation: 45
+    },
+    atmosphere: {
+      fog: true,
+      fogColor: '#ff1493',
+      fogDensity: 0.25,
+      particles: false
+    },
+    depth: {
+      layers: 4,
+      parallaxIntensity: 1.3,
+      fieldOfView: 75
+    }
+  },
+  {
+    id: 'nature',
+    name: 'Forest Grove',
+    icon: '🌲',
+    category: 'natural',
+    description: 'Peaceful forest environment',
+    panoramicUrl: '/environments/forest-360.hdr',
+    previewUrl: '/environments/forest-preview.jpg',
+    backgroundImage: '/environments/forest-bg.jpg',
+    hdriUrl: '/environments/forest.hdr',
+    gradient: 'linear-gradient(135deg, #134e5e 0%, #71b280 100%)',
+    lighting: {
+      color: '#90ee90',
+      intensity: 0.8,
+      azimuth: 45,
+      elevation: 60
+    },
+    atmosphere: {
+      fog: true,
+      fogColor: '#90ee90',
+      fogDensity: 0.15,
+      particles: true
+    },
+    depth: {
+      layers: 5,
+      parallaxIntensity: 1.1,
+      fieldOfView: 70
     }
   }
 ];
