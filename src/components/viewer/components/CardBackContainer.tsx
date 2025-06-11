@@ -32,15 +32,19 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
   
-  // Get visibility styles from physics system if available
+  // Always use physics-based visibility when available
   const faceStyles = getFaceVisibility ? getFaceVisibility(false) : {
     opacity: isFlipped ? 1 : 0,
     zIndex: isFlipped ? 30 : 10,
     backfaceVisibility: 'hidden' as const
   };
   
-  // Debug logging
-  console.log('CardBack - isFlipped:', isFlipped, 'faceStyles:', faceStyles);
+  console.log('CardBack - Visibility:', {
+    isFlipped,
+    opacity: faceStyles.opacity,
+    zIndex: faceStyles.zIndex,
+    usingPhysics: !!getFaceVisibility
+  });
   
   // Enhanced logo effects based on mouse position, lighting, and material
   const getLogoEffects = () => {
@@ -86,7 +90,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
     ...(selectedMaterial.blur && {
       backdropFilter: `blur(${selectedMaterial.blur}px)`
     }),
-    transition: getFaceVisibility ? 'none' : 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+    transition: getFaceVisibility ? 'opacity 0.1s ease' : 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
     boxShadow: `
       0 0 30px ${selectedMaterial.borderColor},
       inset 0 0 20px rgba(255, 255, 255, 0.1)
@@ -99,11 +103,10 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       style={{
         ...dynamicFrameStyles,
         ...faceStyles,
-        transition: getFaceVisibility ? 'none' : 'opacity 0.3s ease',
         transform: getFaceVisibility ? 'none' : (isFlipped ? 'rotateY(0deg)' : 'rotateY(-180deg)')
       }}
       data-face="back"
-      data-visible={isFlipped}
+      data-visible={faceStyles.opacity === 1}
       data-material={selectedMaterial.id}
       data-material-name={selectedMaterial.name}
     >
@@ -111,7 +114,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       <CardEffectsLayer
         showEffects={showEffects}
         isHovering={isHovering}
-        effectIntensity={[50]} // Keep for backward compatibility
+        effectIntensity={[50]}
         mousePosition={mousePosition}
         physicalEffectStyles={enhancedEffectStyles}
         effectValues={effectValues}
@@ -155,7 +158,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         }}
       />
 
-      {/* Enhanced CRD Logo with Dynamic Material Treatment - z-30 to ensure visibility */}
+      {/* Enhanced CRD Logo with Dynamic Material Treatment */}
       <div 
         className="relative h-full flex items-center justify-center z-30"
         style={{

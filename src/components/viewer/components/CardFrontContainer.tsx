@@ -33,15 +33,19 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   onClick,
   getFaceVisibility
 }) => {
-  // Get visibility styles from physics system if available
+  // Always use physics-based visibility when available
   const faceStyles = getFaceVisibility ? getFaceVisibility(true) : {
     opacity: isFlipped ? 0 : 1,
     zIndex: isFlipped ? 10 : 30,
     backfaceVisibility: 'hidden' as const
   };
 
-  // Debug logging
-  console.log('CardFront - isFlipped:', isFlipped, 'faceStyles:', faceStyles);
+  console.log('CardFront - Visibility:', {
+    isFlipped,
+    opacity: faceStyles.opacity,
+    zIndex: faceStyles.zIndex,
+    usingPhysics: !!getFaceVisibility
+  });
 
   return (
     <div 
@@ -49,11 +53,11 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       style={{
         ...frameStyles,
         ...faceStyles,
-        transition: getFaceVisibility ? 'none' : 'opacity 0.3s ease',
+        transition: getFaceVisibility ? 'opacity 0.1s ease' : 'opacity 0.3s ease',
         transform: getFaceVisibility ? 'none' : (isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)')
       }}
       data-face="front"
-      data-visible={!isFlipped}
+      data-visible={faceStyles.opacity === 1}
     >
       {/* Base Layer - Card Frame */}
       <div className="absolute inset-0 z-10" style={frameStyles} />
@@ -63,7 +67,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         <CardEffectsLayer
           showEffects={showEffects}
           isHovering={isHovering}
-          effectIntensity={[50]} // Keep for backward compatibility
+          effectIntensity={[50]}
           mousePosition={mousePosition}
           physicalEffectStyles={enhancedEffectStyles}
           effectValues={effectValues}
@@ -71,13 +75,13 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
           applyToFrame={true}
         />
         
-        {/* Surface Texture - Only applied to frame areas */}
+        {/* Surface Texture */}
         <div className="relative">
           {SurfaceTexture}
         </div>
       </div>
 
-      {/* Card Image - Lowered z-index from z-40 to z-30 */}
+      {/* Card Image - Proper z-index for layering */}
       <div className="absolute inset-0 z-30">
         {card.image_url && (
           <img 
@@ -94,7 +98,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         )}
       </div>
 
-      {/* Card Content - Overlay - Raised z-index to z-35 to stay above image */}
+      {/* Card Content - Overlay - Above image */}
       <div 
         className="absolute inset-0 p-6 flex flex-col z-35"
         style={{
@@ -116,7 +120,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         </div>
       </div>
 
-      {/* Interactive Lighting Overlay - Very Subtle */}
+      {/* Interactive Lighting Overlay */}
       {isHovering && interactiveLighting && (
         <div 
           className="absolute inset-0 pointer-events-none z-50"

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useCardFlipPhysics } from '../hooks/useCardFlipPhysics';
 
@@ -25,7 +24,8 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
   onFlip,
   onClick
 }) => {
-  const { physicsState, triggerFlip, getTransformStyle, getShadowStyle } = useCardFlipPhysics();
+  // Initialize physics with the current flip state
+  const { physicsState, triggerFlip, getTransformStyle, getShadowStyle, getFaceVisibility } = useCardFlipPhysics(isFlipped);
 
   // Handle click to trigger physics flip
   const handleClick = () => {
@@ -43,17 +43,17 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
       return physicsTransform.transform;
     }
     
-    // Otherwise, use mouse interaction
-    let baseTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+    // Otherwise, use mouse interaction with current physics rotation as base
+    const baseRotationY = physicsState.rotationY;
+    let finalTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${baseRotationY + rotation.y}deg)`;
     
     // Add subtle interactive lighting-based depth effect
     if (interactiveLighting && isHovering && !physicsState.isFlipping) {
-      const lightDepth = (mousePosition.x - 0.5) * 2; // -1 to 1
-      const additionalRotateY = lightDepth * 2; // Max 2 degrees
-      baseTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y + additionalRotateY}deg)`;
+      const lightDepth = (mousePosition.x - 0.5) * 1.5; // -0.75 to 0.75
+      finalTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${baseRotationY + rotation.y + lightDepth}deg)`;
     }
     
-    return baseTransform;
+    return finalTransform;
   };
 
   const shadowStyles = getShadowStyle();
@@ -71,17 +71,12 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
       }}
       onClick={handleClick}
     >
-      {/* Pass the physics face visibility function to children */}
+      {/* Always pass the physics face visibility function to children */}
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
           return React.cloneElement(child, {
             ...child.props,
-            getFaceVisibility: physicsState.isFlipping ? 
-              (isFront: boolean) => ({
-                opacity: 1,
-                zIndex: isFront ? 30 : 10,
-                backfaceVisibility: 'hidden' as const
-              }) : undefined
+            getFaceVisibility
           } as any);
         }
         return child;

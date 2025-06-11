@@ -21,18 +21,18 @@ interface FlipConfig {
   bounceDecay: number;
 }
 
-export const useCardFlipPhysics = () => {
-  const [isFlipped, setIsFlipped] = useState(false);
+export const useCardFlipPhysics = (initialFlipped = false) => {
+  const [isFlipped, setIsFlipped] = useState(initialFlipped);
   const [physicsState, setPhysicsState] = useState<FlipPhysicsState>({
     isFlipping: false,
     progress: 0,
-    rotationY: 0,
+    rotationY: initialFlipped ? 180 : 0,
     rotationX: 0,
     rotationZ: 0,
     scale: 1,
     shadowIntensity: 0.8,
     zOffset: 0,
-    showingFront: true
+    showingFront: !initialFlipped
   });
 
   const animationRef = useRef<number>();
@@ -42,22 +42,22 @@ export const useCardFlipPhysics = () => {
   // Generate random flip configuration
   const generateFlipConfig = useCallback((): FlipConfig => {
     return {
-      duration: 400 + Math.random() * 400, // 400-800ms
+      duration: 600 + Math.random() * 200, // 600-800ms
       direction: Math.random() > 0.5 ? 1 : -1,
-      randomTilt: (Math.random() - 0.5) * 10, // -5° to +5°
-      bounceCount: Math.floor(Math.random() * 3) + 1, // 1-3 bounces
-      bounceDecay: 0.3 + Math.random() * 0.3 // 0.3-0.6 decay
+      randomTilt: (Math.random() - 0.5) * 8, // -4° to +4°
+      bounceCount: Math.floor(Math.random() * 2) + 1, // 1-2 bounces
+      bounceDecay: 0.4 + Math.random() * 0.2 // 0.4-0.6 decay
     };
   }, []);
 
   // Easing function for realistic motion
   const easeOutBounce = useCallback((t: number, bounceCount: number, bounceDecay: number) => {
-    if (t < 0.7) {
-      // Main flip motion with slight deceleration
+    if (t < 0.8) {
+      // Main flip motion with smooth deceleration
       return t * t * (3 - 2 * t); // Smoothstep
     } else {
-      // Bounce phase
-      const bouncePhase = (t - 0.7) / 0.3;
+      // Subtle bounce phase
+      const bouncePhase = (t - 0.8) / 0.2;
       let bounce = 0;
       
       for (let i = 0; i < bounceCount; i++) {
@@ -71,7 +71,7 @@ export const useCardFlipPhysics = () => {
         }
       }
       
-      return 1 + bounce * 0.05; // Small oscillation around final position
+      return 1 + bounce * 0.02; // Very small oscillation
     }
   }, []);
 
@@ -88,33 +88,34 @@ export const useCardFlipPhysics = () => {
     // Apply easing
     const easedProgress = easeOutBounce(progress, config.bounceCount, config.bounceDecay);
 
-    // Calculate rotations
-    const baseRotationY = easedProgress * 180 * config.direction;
-    const anticipationX = progress < 0.1 ? (progress / 0.1) * -3 : 0; // Pre-flip anticipation
+    // Calculate target rotation based on flip direction
+    const targetRotation = isFlipped ? 180 : 0;
+    const startRotation = isFlipped ? 0 : 180;
+    const rotationDelta = (targetRotation - startRotation) * config.direction;
+    
+    // Current rotation during animation
+    const currentRotationY = startRotation + (rotationDelta * easedProgress);
+
+    // Calculate other animation properties
+    const anticipationX = progress < 0.1 ? (progress / 0.1) * -2 : 0;
     const randomTiltZ = config.randomTilt * Math.sin(progress * Math.PI);
+    const scaleEffect = 1 - (Math.sin(progress * Math.PI) * 0.03);
+    const shadowIntensity = 0.8 + (Math.sin(progress * Math.PI) * 0.3);
+    const zOffset = Math.sin(progress * Math.PI) * 15;
 
-    // Scale effect (slight shrink at flip peak)
-    const scaleEffect = 1 - (Math.sin(progress * Math.PI) * 0.05);
-
-    // Shadow intensity (stronger when card is perpendicular)
-    const shadowIntensity = 0.8 + (Math.sin(progress * Math.PI) * 0.4);
-
-    // Z-offset for 3D depth
-    const zOffset = Math.sin(progress * Math.PI) * 20;
-
-    // Fixed face visibility logic - switch at exactly 90 degrees
-    const currentRotationY = isFlipped ? 180 + baseRotationY : baseRotationY;
+    // Determine which face should be visible based on rotation
+    // Face switches at exactly 90° (halfway point)
     const normalizedRotation = Math.abs(currentRotationY % 360);
+    const showingFront = normalizedRotation < 90 || normalizedRotation > 270;
     
-    // More precise face switching: front shows when rotation is 0-90 or 270-360
-    const showingFront = normalizedRotation <= 90 || normalizedRotation >= 270;
-    
-    // Debug logging
-    console.log('Physics Animation - Progress:', progress.toFixed(2), 
-                'RotationY:', currentRotationY.toFixed(1), 
-                'Normalized:', normalizedRotation.toFixed(1),
-                'ShowingFront:', showingFront,
-                'IsFlipped:', isFlipped);
+    console.log('Physics Animation:', {
+      progress: progress.toFixed(2),
+      currentRotationY: currentRotationY.toFixed(1),
+      normalizedRotation: normalizedRotation.toFixed(1),
+      showingFront,
+      isFlipped,
+      targetRotation
+    });
 
     setPhysicsState({
       isFlipping: progress < 1,
@@ -125,25 +126,31 @@ export const useCardFlipPhysics = () => {
       scale: scaleEffect,
       shadowIntensity,
       zOffset,
-      showingFront: isFlipped ? !showingFront : showingFront
+      showingFront
     });
 
     if (progress < 1) {
       animationRef.current = requestAnimationFrame(animateFlip);
     } else {
-      // Animation complete - ensure clean final state
+      // Animation complete - set final clean state
+      console.log('Flip animation complete - Final state:', {
+        isFlipped,
+        finalRotation: targetRotation,
+        showingFront: !isFlipped
+      });
+      
       setPhysicsState(prev => ({
         ...prev,
         isFlipping: false,
-        rotationY: isFlipped ? 180 : 0,
+        rotationY: targetRotation,
         rotationX: 0,
         rotationZ: 0,
         scale: 1,
         zOffset: 0,
         showingFront: !isFlipped
       }));
+      
       startTimeRef.current = undefined;
-      console.log('Flip animation complete - Final state isFlipped:', isFlipped, 'showingFront:', !isFlipped);
     }
   }, [easeOutBounce, isFlipped]);
 
@@ -156,15 +163,20 @@ export const useCardFlipPhysics = () => {
       cancelAnimationFrame(animationRef.current);
     }
 
-    // Generate new configuration
-    configRef.current = generateFlipConfig();
+    // Update flip state first
+    const newFlippedState = !isFlipped;
+    setIsFlipped(newFlippedState);
     
-    // Start animation
+    console.log('Triggering flip - New state will be:', {
+      newFlippedState,
+      currentRotation: physicsState.rotationY
+    });
+
+    // Generate new configuration and start animation
+    configRef.current = generateFlipConfig();
     startTimeRef.current = undefined;
-    setIsFlipped(!isFlipped);
-    console.log('Triggering flip - New isFlipped state will be:', !isFlipped);
     animationRef.current = requestAnimationFrame(animateFlip);
-  }, [physicsState.isFlipping, isFlipped, animateFlip, generateFlipConfig]);
+  }, [physicsState.isFlipping, physicsState.rotationY, isFlipped, animateFlip, generateFlipConfig]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -189,7 +201,7 @@ export const useCardFlipPhysics = () => {
         scale(${scale})
       `,
       transformStyle: 'preserve-3d' as const,
-      transition: physicsState.isFlipping ? 'none' : 'transform 0.2s ease-out'
+      transition: physicsState.isFlipping ? 'none' : 'transform 0.3s ease-out'
     };
   }, [physicsState]);
 
@@ -198,31 +210,31 @@ export const useCardFlipPhysics = () => {
     const { shadowIntensity, zOffset } = physicsState;
     
     return {
-      filter: `drop-shadow(0 ${25 + zOffset * 0.5}px ${50 + zOffset}px rgba(0,0,0,${shadowIntensity * 0.8}))`
+      filter: `drop-shadow(0 ${20 + zOffset * 0.3}px ${40 + zOffset * 0.8}px rgba(0,0,0,${shadowIntensity * 0.7}))`
     };
   }, [physicsState]);
 
-  // Get visibility styles for card faces - with more aggressive opacity switching
+  // Get visibility styles for card faces - ALWAYS return physics-based visibility
   const getFaceVisibility = useCallback((isFront: boolean) => {
     const { showingFront, isFlipping } = physicsState;
     
+    // During animation, use physics-determined visibility
     if (isFlipping) {
-      // During flip, use aggressive opacity and z-index control
       const shouldShow = (isFront && showingFront) || (!isFront && !showingFront);
       return {
         opacity: shouldShow ? 1 : 0,
         zIndex: shouldShow ? 30 : 10,
         backfaceVisibility: 'hidden' as const
       };
-    } else {
-      // When not flipping, clean visibility state based on isFlipped
-      const shouldShow = (isFront && !isFlipped) || (!isFront && isFlipped);
-      return {
-        opacity: shouldShow ? 1 : 0,
-        zIndex: shouldShow ? 30 : 10,
-        backfaceVisibility: 'hidden' as const
-      };
     }
+    
+    // When not flipping, use current flip state
+    const shouldShow = (isFront && !isFlipped) || (!isFront && isFlipped);
+    return {
+      opacity: shouldShow ? 1 : 0,
+      zIndex: shouldShow ? 30 : 10,
+      backfaceVisibility: 'hidden' as const
+    };
   }, [physicsState, isFlipped]);
 
   return {
