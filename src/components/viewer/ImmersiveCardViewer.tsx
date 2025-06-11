@@ -245,11 +245,15 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     <>
       <div 
         ref={containerRef}
-        className={`fixed inset-0 z-50 flex items-center justify-center ${
+        className={`fixed inset-0 z-50 flex items-center justify-center select-none ${
           isFullscreen ? 'p-0' : 'p-8'
         } ${shouldShowPanel ? `pr-[${panelWidth + 32}px]` : ''}`}
         style={{
-          paddingRight: shouldShowPanel ? `${panelWidth + 32}px` : isFullscreen ? '0' : '32px'
+          paddingRight: shouldShowPanel ? `${panelWidth + 32}px` : isFullscreen ? '0' : '32px',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          MozUserSelect: 'none',
+          msUserSelect: 'none'
         }}
         onMouseMove={handleMouseMove}
         onMouseUp={handleDragEnd}
@@ -279,8 +283,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           onOpenStudio={() => setShowCustomizePanel(true)}
         />
 
-        {/* Compact Card Details */}
-        <div className="absolute bottom-20 left-4 z-20">
+        {/* Compact Card Details - Prevent text selection */}
+        <div className="absolute bottom-20 left-4 z-20 select-none">
           <CompactCardDetails 
             card={card}
             effectValues={effectValues}
@@ -345,7 +349,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           </div>
         )}
 
-        {/* Info Panel */}
+        {/* Info Panel - Prevent text selection */}
         <ViewerInfoPanel
           showStats={showStats}
           isFlipped={isFlipped}
@@ -354,7 +358,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         />
       </div>
 
-      {/* Studio Panel with Environment Controls */}
+      {/* Studio Panel with Environment Controls - Prevent text selection */}
       <StudioPanel
         isVisible={shouldShowPanel}
         onClose={() => setShowCustomizePanel(false)}

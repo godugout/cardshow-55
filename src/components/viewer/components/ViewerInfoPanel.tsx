@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Sparkles } from 'lucide-react';
 
 interface ViewerInfoPanelProps {
   showStats: boolean;
@@ -15,39 +14,35 @@ export const ViewerInfoPanel: React.FC<ViewerInfoPanelProps> = ({
   shouldShowPanel,
   hasMultipleCards
 }) => {
-  if (!showStats || isFlipped || shouldShowPanel) return null;
+  if (!showStats) return null;
 
   return (
-    <div 
-      className="absolute bottom-4 left-4 right-4 max-w-2xl mx-auto z-10" 
-      style={{ 
-        marginRight: hasMultipleCards ? '180px' : '100px', 
-        marginLeft: '280px' 
-      }}
-    >
-      <div className="bg-black bg-opacity-80 backdrop-blur-lg rounded-lg p-4 border border-white/10">
-        <div className="flex items-center justify-between text-white">
-          <div className="flex space-x-4 text-sm">
-            <span>Double-click card to flip</span>
-            <span>•</span>
-            <span>Drag to rotate manually</span>
-            <span>•</span>
-            <span>Scroll to zoom</span>
-            <span>•</span>
-            <span>Move mouse for effects</span>
-            {hasMultipleCards && (
-              <>
-                <span>•</span>
-                <span>Use ← → keys to navigate</span>
-              </>
-            )}
-          </div>
-          <div className="flex items-center space-x-2">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-sm">
-              Studio | 3D Configuration Display
-            </span>
-          </div>
+    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 select-none" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
+      <div className="bg-black bg-opacity-70 backdrop-blur-sm rounded-lg px-4 py-2 text-white text-sm">
+        <div className="flex items-center space-x-4">
+          <span>
+            {isFlipped ? 'Back' : 'Front'} side
+          </span>
+          <span className="text-gray-400">•</span>
+          <span>
+            Click to flip
+          </span>
+          {hasMultipleCards && (
+            <>
+              <span className="text-gray-400">•</span>
+              <span>
+                Use ← → to navigate
+              </span>
+            </>
+          )}
+          {shouldShowPanel && (
+            <>
+              <span className="text-gray-400">•</span>
+              <span>
+                Studio panel open
+              </span>
+            </>
+          )}
         </div>
       </div>
     </div>
