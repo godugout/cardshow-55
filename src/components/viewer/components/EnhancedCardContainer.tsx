@@ -28,6 +28,7 @@ interface EnhancedCardContainerProps {
   materialSettings?: MaterialSettings;
   overallBrightness?: number[];
   showBackgroundInfo?: boolean;
+  physicsEnabled?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
@@ -55,6 +56,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   materialSettings,
   overallBrightness = [100],
   showBackgroundInfo = true,
+  physicsEnabled = true,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
@@ -82,12 +84,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     rotation,
     isHovering
   }) : null;
-
-  // Use double-click/tap detection for card flip (but physics will handle the animation)
-  const handleDoubleClick = useDoubleClick({
-    onDoubleClick: onClick,
-    delay: 300
-  });
 
   // Handle flip state change
   const handleFlip = () => {
@@ -121,7 +117,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         isHovering={isHovering}
         isFlipped={isFlipped}
         onFlip={handleFlip}
-        onClick={handleDoubleClick}
+        onClick={onClick}
+        physicsEnabled={physicsEnabled}
       >
         {/* Front of Card */}
         <CardFrontContainer
@@ -135,7 +132,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
-          onClick={handleDoubleClick}
+          onClick={onClick}
         />
 
         {/* Back of Card */}

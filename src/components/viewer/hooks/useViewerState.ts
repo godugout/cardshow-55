@@ -21,6 +21,9 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
+  // Physics state
+  const [physicsEnabled, setPhysicsEnabled] = useState(true);
+
   // Background state
   const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
 
@@ -85,6 +88,10 @@ export const useViewerState = () => {
     setIsFlipped(prev => !prev);
   }, []);
 
+  const handlePhysicsToggle = useCallback(() => {
+    setPhysicsEnabled(prev => !prev);
+  }, []);
+
   // Safe space setter that ensures we always have a valid space
   const setSelectedSpaceSafe = useCallback((space: SpaceEnvironment | null) => {
     console.log('useViewerState: Setting selected space to:', space?.name || 'null');
@@ -123,6 +130,11 @@ export const useViewerState = () => {
     setIsHoveringControls,
     showExportDialog,
     setShowExportDialog,
+
+    // Physics state
+    physicsEnabled,
+    setPhysicsEnabled,
+    handlePhysicsToggle,
 
     // Background state
     backgroundType,

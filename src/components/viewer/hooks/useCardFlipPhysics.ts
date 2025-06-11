@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 interface FlipPhysicsState {
@@ -21,7 +20,7 @@ interface FlipConfig {
   bounceDecay: number;
 }
 
-export const useCardFlipPhysics = (initialFlipped = false) => {
+export const useCardFlipPhysics = (initialFlipped = false, physicsEnabled = true) => {
   const [isFlipped, setIsFlipped] = useState(initialFlipped);
   const [physicsState, setPhysicsState] = useState<FlipPhysicsState>({
     isFlipping: false,
@@ -39,8 +38,20 @@ export const useCardFlipPhysics = (initialFlipped = false) => {
   const startTimeRef = useRef<number>();
   const configRef = useRef<FlipConfig>();
 
-  // Generate random flip configuration
+  // Generate flip configuration based on physics enabled state
   const generateFlipConfig = useCallback((): FlipConfig => {
+    if (!physicsEnabled) {
+      // Simple linear flip without physics
+      return {
+        duration: 400,
+        direction: Math.random() > 0.5 ? 1 : -1,
+        randomTilt: 0,
+        bounceCount: 0,
+        bounceDecay: 0
+      };
+    }
+
+    // Physics-based flip with random elements
     return {
       duration: 600 + Math.random() * 200, // 600-800ms
       direction: Math.random() > 0.5 ? 1 : -1,
@@ -48,10 +59,15 @@ export const useCardFlipPhysics = (initialFlipped = false) => {
       bounceCount: Math.floor(Math.random() * 2) + 1, // 1-2 bounces
       bounceDecay: 0.4 + Math.random() * 0.2 // 0.4-0.6 decay
     };
-  }, []);
+  }, [physicsEnabled]);
 
   // Easing function for realistic motion
   const easeOutBounce = useCallback((t: number, bounceCount: number, bounceDecay: number) => {
+    if (!physicsEnabled || bounceCount === 0) {
+      // Simple smooth transition
+      return t * t * (3 - 2 * t); // Smoothstep
+    }
+
     if (t < 0.8) {
       // Main flip motion with smooth deceleration
       return t * t * (3 - 2 * t); // Smoothstep
@@ -73,7 +89,7 @@ export const useCardFlipPhysics = (initialFlipped = false) => {
       
       return 1 + bounce * 0.02; // Very small oscillation
     }
-  }, []);
+  }, [physicsEnabled]);
 
   // Animation step function
   const animateFlip = useCallback((timestamp: number) => {
@@ -99,23 +115,13 @@ export const useCardFlipPhysics = (initialFlipped = false) => {
     // Calculate other animation properties
     const anticipationX = progress < 0.1 ? (progress / 0.1) * -2 : 0;
     const randomTiltZ = config.randomTilt * Math.sin(progress * Math.PI);
-    const scaleEffect = 1 - (Math.sin(progress * Math.PI) * 0.03);
-    const shadowIntensity = 0.8 + (Math.sin(progress * Math.PI) * 0.3);
-    const zOffset = Math.sin(progress * Math.PI) * 15;
+    const scaleEffect = 1 - (Math.sin(progress * Math.PI) * (physicsEnabled ? 0.03 : 0.01));
+    const shadowIntensity = 0.8 + (Math.sin(progress * Math.PI) * (physicsEnabled ? 0.3 : 0.1));
+    const zOffset = Math.sin(progress * Math.PI) * (physicsEnabled ? 15 : 5);
 
     // Determine which face should be visible based on rotation
-    // Face switches at exactly 90° (halfway point)
     const normalizedRotation = Math.abs(currentRotationY % 360);
     const showingFront = normalizedRotation < 90 || normalizedRotation > 270;
-    
-    console.log('Physics Animation:', {
-      progress: progress.toFixed(2),
-      currentRotationY: currentRotationY.toFixed(1),
-      normalizedRotation: normalizedRotation.toFixed(1),
-      showingFront,
-      isFlipped,
-      targetRotation
-    });
 
     setPhysicsState({
       isFlipping: progress < 1,
@@ -133,12 +139,6 @@ export const useCardFlipPhysics = (initialFlipped = false) => {
       animationRef.current = requestAnimationFrame(animateFlip);
     } else {
       // Animation complete - set final clean state
-      console.log('Flip animation complete - Final state:', {
-        isFlipped,
-        finalRotation: targetRotation,
-        showingFront: !isFlipped
-      });
-      
       setPhysicsState(prev => ({
         ...prev,
         isFlipping: false,
@@ -152,7 +152,7 @@ export const useCardFlipPhysics = (initialFlipped = false) => {
       
       startTimeRef.current = undefined;
     }
-  }, [easeOutBounce, isFlipped]);
+  }, [easeOutBounce, isFlipped, physicsEnabled]);
 
   // Trigger flip animation
   const triggerFlip = useCallback(() => {
@@ -166,17 +166,12 @@ export const useCardFlipPhysics = (initialFlipped = false) => {
     // Update flip state first
     const newFlippedState = !isFlipped;
     setIsFlipped(newFlippedState);
-    
-    console.log('Triggering flip - New state will be:', {
-      newFlippedState,
-      currentRotation: physicsState.rotationY
-    });
 
     // Generate new configuration and start animation
     configRef.current = generateFlipConfig();
     startTimeRef.current = undefined;
     animationRef.current = requestAnimationFrame(animateFlip);
-  }, [physicsState.isFlipping, physicsState.rotationY, isFlipped, animateFlip, generateFlipConfig]);
+  }, [physicsState.isFlipping, isFlipped, animateFlip, generateFlipConfig]);
 
   // Cleanup on unmount
   useEffect(() => {

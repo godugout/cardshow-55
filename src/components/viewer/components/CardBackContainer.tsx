@@ -2,6 +2,7 @@
 import React from 'react';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { CardEffectsLayer } from './CardEffectsLayer';
+import { InteractiveLogo } from './InteractiveLogo';
 import { useDynamicCardBackMaterials } from '../hooks/useDynamicCardBackMaterials';
 
 interface CardBackContainerProps {
@@ -38,47 +39,10 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
     zIndex: isFlipped ? 30 : 10,
     backfaceVisibility: 'hidden' as const
   };
-  
-  console.log('CardBack - Visibility:', {
-    isFlipped,
-    opacity: faceStyles.opacity,
-    zIndex: faceStyles.zIndex,
-    usingPhysics: !!getFaceVisibility
-  });
-  
-  // Enhanced logo effects based on mouse position, lighting, and material
-  const getLogoEffects = () => {
-    const baseTreatment = selectedMaterial.logoTreatment;
-    
-    if (!interactiveLighting || !isHovering) {
-      return {
-        filter: baseTreatment.filter,
-        transform: baseTreatment.transform,
-        opacity: baseTreatment.opacity,
-        userSelect: 'none' as const,
-        WebkitUserSelect: 'none' as const,
-        pointerEvents: 'none' as const
-      };
-    }
 
-    const intensity = Math.sqrt(
-      Math.pow(mousePosition.x - 0.5, 2) + Math.pow(mousePosition.y - 0.5, 2)
-    );
-    
-    return {
-      filter: `
-        ${baseTreatment.filter}
-        drop-shadow(0 0 ${20 + intensity * 30}px rgba(255, 215, 0, ${0.3 + intensity * 0.4}))
-        drop-shadow(0 0 ${40 + intensity * 60}px rgba(59, 130, 246, ${0.2 + intensity * 0.3}))
-        brightness(${1 + intensity * 0.3})
-        contrast(${1.1 + intensity * 0.2})
-      `,
-      transform: `${baseTreatment.transform} scale(${1 + intensity * 0.05})`,
-      opacity: baseTreatment.opacity + intensity * 0.1,
-      userSelect: 'none' as const,
-      WebkitUserSelect: 'none' as const,
-      pointerEvents: 'none' as const
-    };
+  const handleLogoClick = () => {
+    console.log('🎉 Logo clicked! Adding some magic...');
+    // You can add more fun effects here later
   };
 
   // Create dynamic frame styles combining base styles with material properties
@@ -158,28 +122,18 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         }}
       />
 
-      {/* Enhanced CRD Logo with Dynamic Material Treatment */}
+      {/* Interactive CRD Logo */}
       <div 
         className="relative h-full flex items-center justify-center z-30"
         style={{
           userSelect: 'none',
-          WebkitUserSelect: 'none',
-          pointerEvents: 'none'
+          WebkitUserSelect: 'none'
         }}
       >
-        <img 
-          src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
-          alt="CRD Logo" 
-          className="w-64 h-auto relative z-10 transition-all duration-700 ease-out"
-          style={{
-            ...getLogoEffects(),
-            imageRendering: 'crisp-edges',
-            objectFit: 'contain',
-            animation: interactiveLighting && isHovering ? 'logo-glow-pulse 4s ease-in-out infinite' : 'none'
-          }}
-          onLoad={() => console.log('✅ Enhanced CRD logo loaded successfully')}
-          onError={() => console.log('❌ Error loading enhanced CRD logo')}
-          draggable={false}
+        <InteractiveLogo
+          logoUrl="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png"
+          alt="CRD Logo"
+          onLogoClick={handleLogoClick}
         />
       </div>
 

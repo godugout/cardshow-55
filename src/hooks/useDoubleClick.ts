@@ -1,34 +1,32 @@
 
-import { useRef, useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 interface UseDoubleClickOptions {
   onDoubleClick: () => void;
+  onSingleClick?: () => void;
   delay?: number;
 }
 
-export const useDoubleClick = ({ onDoubleClick, delay = 300 }: UseDoubleClickOptions) => {
+export const useDoubleClick = ({ onDoubleClick, onSingleClick, delay = 300 }: UseDoubleClickOptions) => {
+  const clickTimeoutRef = useRef<NodeJS.Timeout>();
   const clickCountRef = useRef(0);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleClick = useCallback(() => {
     clickCountRef.current += 1;
 
-    if (clickCountRef.current === 1) {
-      // First click - start timer
-      timeoutRef.current = setTimeout(() => {
-        // Reset if only single click within delay
-        clickCountRef.current = 0;
-      }, delay);
-    } else if (clickCountRef.current === 2) {
-      // Double click detected
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+
+    clickTimeoutRef.current = setTimeout(() => {
+      if (clickCountRef.current === 1) {
+        onSingleClick?.();
+      } else if (clickCountRef.current === 2) {
+        onDoubleClick();
       }
       clickCountRef.current = 0;
-      onDoubleClick();
-    }
-  }, [onDoubleClick, delay]);
+    }, delay);
+  }, [onDoubleClick, onSingleClick, delay]);
 
   return handleClick;
 };

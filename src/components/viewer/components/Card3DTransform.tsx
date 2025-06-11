@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { useCardFlipPhysics } from '../hooks/useCardFlipPhysics';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
 
 interface Card3DTransformProps {
   children: React.ReactNode;
@@ -11,6 +13,7 @@ interface Card3DTransformProps {
   isFlipped: boolean;
   onFlip: () => void;
   onClick: () => void;
+  physicsEnabled?: boolean;
 }
 
 export const Card3DTransform: React.FC<Card3DTransformProps> = ({
@@ -22,17 +25,24 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
   isHovering,
   isFlipped,
   onFlip,
-  onClick
+  onClick,
+  physicsEnabled = true
 }) => {
-  // Initialize physics with the current flip state
-  const { physicsState, triggerFlip, getTransformStyle, getShadowStyle, getFaceVisibility } = useCardFlipPhysics(isFlipped);
+  // Initialize physics with the current flip state and physics settings
+  const { physicsState, triggerFlip, getTransformStyle, getShadowStyle, getFaceVisibility } = useCardFlipPhysics(isFlipped, physicsEnabled);
 
-  // Handle click to trigger physics flip
-  const handleClick = () => {
-    triggerFlip();
-    onFlip();
-    onClick();
-  };
+  // Handle double-click to trigger physics flip
+  const handleDoubleClick = useDoubleClick({
+    onDoubleClick: () => {
+      triggerFlip();
+      onFlip();
+    },
+    onSingleClick: () => {
+      // Single click is reserved for drag operations
+      onClick();
+    },
+    delay: 250
+  });
 
   // Calculate dynamic transform - use physics during flip, mouse interaction otherwise
   const getDynamicTransform = () => {
@@ -60,7 +70,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
 
   return (
     <div
-      className="relative"
+      className={`relative ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
       style={{
         width: '400px',
         height: '560px',
@@ -69,8 +79,17 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
         transition: isDragging || physicsState.isFlipping ? 'none' : 'transform 0.1s ease',
         ...shadowStyles
       }}
-      onClick={handleClick}
+      onClick={handleDoubleClick}
     >
+      {/* Visual hint for double-click when hovering */}
+      {isHovering && !isDragging && (
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none">
+          <div className="bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap animate-fade-in">
+            Double-click to flip
+          </div>
+        </div>
+      )}
+
       {/* Always pass the physics face visibility function to children */}
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
