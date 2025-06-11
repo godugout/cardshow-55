@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps } from './types';
 import { 
@@ -6,7 +7,7 @@ import {
 } from './hooks/useEnhancedCardEffects';
 import { useCardEffects } from './hooks/useCardEffects';
 import { ViewerControls } from './components/ViewerControls';
-import { EnhancedCardContainer } from './components/EnhancedCardContainer';
+import { SimplifiedEnhancedCardContainer } from './components/SimplifiedEnhancedCardContainer';
 import { CompactCardDetails } from './components/CompactCardDetails';
 import { useCardExport } from './hooks/useCardExport';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
@@ -16,7 +17,7 @@ import { StudioPanel } from './components/StudioPanel';
 import { useViewerState } from './hooks/useViewerState';
 import { adaptCardForSpaceRenderer } from './utils/cardAdapter';
 import { BackgroundRenderer } from './components/BackgroundRenderer';
-import { useViewerInteractions } from './hooks/useViewerInteractions';
+import { useSimplifiedViewerInteractions } from './hooks/useSimplifiedViewerInteractions';
 import { CardNavigationHandler } from './components/CardNavigationHandler';
 
 // Update the interface to support card navigation
@@ -39,6 +40,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   showStats = true,
   ambient = true
 }) => {
+  console.log('🎯 ImmersiveCardViewer: Rendering with card:', card?.title);
+
   // Use the custom state hook
   const viewerState = useViewerState();
   const {
@@ -108,8 +111,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   // Navigation logic
   const hasMultipleCards = cards.length > 1;
 
-  // Viewer interactions hook
-  const { containerRef, handleMouseMove, handleDragStart, handleDrag, handleDragEnd } = useViewerInteractions({
+  // Simplified viewer interactions hook
+  const { containerRef, handleMouseMove, handleDragStart, handleDragEnd } = useSimplifiedViewerInteractions({
     allowRotation,
     autoRotate,
     isDragging,
@@ -118,13 +121,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     setAutoRotate,
     setRotation,
     setMousePosition,
-    setIsHoveringControls,
     rotation,
     dragStart,
-    handleZoom,
-    showCustomizePanel,
-    showStats,
-    hasMultipleCards
+    handleZoom
   });
 
   // Export functionality
@@ -151,14 +150,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     rotation,
     isHovering
   });
-
-  // Debug logging for card visibility
-  useEffect(() => {
-    console.log('🎯 ImmersiveCardViewer: Current background type:', backgroundType);
-    console.log('🎯 ImmersiveCardViewer: Selected space:', selectedSpace?.name || 'null');
-    console.log('🎯 ImmersiveCardViewer: Card data:', card?.title || 'No card');
-    console.log('🎯 ImmersiveCardViewer: Card should be visible in scene mode');
-  }, [backgroundType, selectedSpace, card]);
 
   // Auto-rotation effect
   useEffect(() => {
@@ -240,7 +231,10 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     atmosphericDensity: 1.0
   });
 
-  if (!isOpen) return null;
+  if (!isOpen || !card) {
+    console.log('🎯 ImmersiveCardViewer: Not rendering - isOpen:', isOpen, 'card:', !!card);
+    return null;
+  }
 
   const panelWidth = 320;
   const shouldShowPanel = showCustomizePanel;
@@ -252,9 +246,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     <>
       <div 
         ref={containerRef}
-        className={`fixed inset-0 z-50 flex items-center justify-center select-none ${
+        className={`fixed inset-0 z-50 bg-black/90 flex items-center justify-center select-none ${
           isFullscreen ? 'p-0' : 'p-8'
-        } ${shouldShowPanel ? `pr-[${panelWidth + 32}px]` : ''}`}
+        }`}
         style={{
           paddingRight: shouldShowPanel ? `${panelWidth + 32}px` : isFullscreen ? '0' : '32px',
           userSelect: 'none',
@@ -266,23 +260,25 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onMouseUp={handleDragEnd}
         onMouseLeave={handleDragEnd}
       >
-        {/* Background Renderer */}
-        <BackgroundRenderer
-          backgroundType={backgroundType}
-          selectedSpace={selectedSpace}
-          spaceControls={spaceControls}
-          adaptedCard={adaptedCard}
-          onCardClick={onCardClick}
-          onCameraReset={handleResetCamera}
-          selectedScene={selectedScene}
-          selectedLighting={selectedLighting}
-          mousePosition={mousePosition}
-          isHovering={isHovering}
-          effectValues={effectValues}
-          materialSettings={materialSettings}
-          overallBrightness={overallBrightness}
-          interactiveLighting={interactiveLighting}
-        />
+        {/* Background - Only show when not in plain mode */}
+        {backgroundType !== 'plain' && (
+          <BackgroundRenderer
+            backgroundType={backgroundType}
+            selectedSpace={selectedSpace}
+            spaceControls={spaceControls}
+            adaptedCard={adaptedCard}
+            onCardClick={onCardClick}
+            onCameraReset={handleResetCamera}
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            mousePosition={mousePosition}
+            isHovering={isHovering}
+            effectValues={effectValues}
+            materialSettings={materialSettings}
+            overallBrightness={overallBrightness}
+            interactiveLighting={interactiveLighting}
+          />
+        )}
 
         {/* Header */}
         <ViewerHeader
@@ -291,8 +287,43 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           onOpenStudio={() => setShowCustomizePanel(true)}
         />
 
-        {/* Compact Card Details - Prevent text selection */}
-        <div className="absolute bottom-20 left-4 z-20 select-none">
+        {/* Main Card Display - ALWAYS VISIBLE */}
+        <div 
+          ref={cardContainerRef} 
+          className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
+        >
+          <div className="pointer-events-auto">
+            <SimplifiedEnhancedCardContainer
+              card={card}
+              isFlipped={isFlipped}
+              isHovering={isHovering}
+              showEffects={showEffects}
+              effectValues={effectValues}
+              mousePosition={mousePosition}
+              rotation={rotation}
+              zoom={zoom}
+              isDragging={isDragging}
+              frameStyles={getFrameStyles()}
+              enhancedEffectStyles={getEnhancedEffectStyles()}
+              SurfaceTexture={SurfaceTexture}
+              interactiveLighting={interactiveLighting}
+              selectedScene={selectedScene}
+              selectedLighting={selectedLighting}
+              materialSettings={materialSettings}
+              overallBrightness={overallBrightness}
+              environmentControls={environmentControls}
+              showBackgroundInfo={false}
+              onMouseDown={handleDragStart}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+              onClick={() => setIsFlipped(!isFlipped)}
+            />
+          </div>
+        </div>
+
+        {/* Compact Card Details */}
+        <div className="absolute bottom-20 left-4 z-20 select-none pointer-events-auto">
           <CompactCardDetails 
             card={card}
             effectValues={effectValues}
@@ -305,7 +336,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         </div>
 
         {/* Basic Controls */}
-        <div className={`transition-opacity duration-200 ${isHoveringControls ? 'opacity-100 z-20' : 'opacity-100 z-10'}`}>
+        <div className={`absolute bottom-4 left-4 transition-opacity duration-200 z-20 pointer-events-auto ${isHoveringControls ? 'opacity-100' : 'opacity-80'}`}>
           <ViewerControls
             showEffects={showEffects}
             autoRotate={autoRotate}
@@ -325,44 +356,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           setIsFlipped={setIsFlipped}
         />
 
-        {/* Enhanced Card Container - ALWAYS RENDER as fallback */}
-        <div 
-          ref={cardContainerRef} 
-          className="relative z-10 flex items-center justify-center"
-          style={{ 
-            position: backgroundType === 'scene' ? 'relative' : 'absolute',
-            inset: backgroundType === 'scene' ? 'auto' : '0'
-          }}
-        >
-          <EnhancedCardContainer
-            card={card}
-            isFlipped={isFlipped}
-            isHovering={isHovering}
-            showEffects={showEffects}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={zoom}
-            isDragging={isDragging}
-            frameStyles={getFrameStyles()}
-            enhancedEffectStyles={getEnhancedEffectStyles()}
-            SurfaceTexture={SurfaceTexture}
-            interactiveLighting={interactiveLighting}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            environmentControls={environmentControls}
-            showBackgroundInfo={false}
-            onMouseDown={handleDragStart}
-            onMouseMove={handleDrag}
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-            onClick={() => setIsFlipped(!isFlipped)}
-          />
-        </div>
-
-        {/* Info Panel - Prevent text selection */}
+        {/* Info Panel */}
         <ViewerInfoPanel
           showStats={showStats}
           isFlipped={isFlipped}
@@ -371,7 +365,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         />
       </div>
 
-      {/* Studio Panel with Environment Controls - Prevent text selection */}
+      {/* Studio Panel */}
       <StudioPanel
         isVisible={shouldShowPanel}
         onClose={() => setShowCustomizePanel(false)}
