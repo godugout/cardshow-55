@@ -40,14 +40,20 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
     backfaceVisibility: 'hidden' as const
   };
 
+  // Debug logging
+  console.log('CardFront - isFlipped:', isFlipped, 'faceStyles:', faceStyles);
+
   return (
     <div 
       className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
         ...frameStyles,
         ...faceStyles,
-        transition: getFaceVisibility ? 'none' : 'opacity 0.3s ease'
+        transition: getFaceVisibility ? 'none' : 'opacity 0.3s ease',
+        transform: getFaceVisibility ? 'none' : (isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)')
       }}
+      data-face="front"
+      data-visible={!isFlipped}
     >
       {/* Base Layer - Card Frame */}
       <div className="absolute inset-0 z-10" style={frameStyles} />
@@ -71,8 +77,8 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         </div>
       </div>
 
-      {/* Card Image - Always On Top */}
-      <div className="absolute inset-0 z-40">
+      {/* Card Image - Lowered z-index from z-40 to z-30 */}
+      <div className="absolute inset-0 z-30">
         {card.image_url && (
           <img 
             src={card.image_url} 
@@ -88,9 +94,9 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         )}
       </div>
 
-      {/* Card Content - Overlay */}
+      {/* Card Content - Overlay - Raised z-index to z-35 to stay above image */}
       <div 
-        className="absolute inset-0 p-6 flex flex-col z-30"
+        className="absolute inset-0 p-6 flex flex-col z-35"
         style={{
           userSelect: 'none',
           WebkitUserSelect: 'none',

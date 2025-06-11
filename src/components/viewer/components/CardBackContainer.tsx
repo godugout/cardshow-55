@@ -39,6 +39,9 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
     backfaceVisibility: 'hidden' as const
   };
   
+  // Debug logging
+  console.log('CardBack - isFlipped:', isFlipped, 'faceStyles:', faceStyles);
+  
   // Enhanced logo effects based on mouse position, lighting, and material
   const getLogoEffects = () => {
     const baseTreatment = selectedMaterial.logoTreatment;
@@ -96,8 +99,11 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       style={{
         ...dynamicFrameStyles,
         ...faceStyles,
-        transition: getFaceVisibility ? 'none' : 'opacity 0.3s ease'
+        transition: getFaceVisibility ? 'none' : 'opacity 0.3s ease',
+        transform: getFaceVisibility ? 'none' : (isFlipped ? 'rotateY(0deg)' : 'rotateY(-180deg)')
       }}
+      data-face="back"
+      data-visible={isFlipped}
       data-material={selectedMaterial.id}
       data-material-name={selectedMaterial.name}
     >
@@ -149,7 +155,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         }}
       />
 
-      {/* Enhanced CRD Logo with Dynamic Material Treatment */}
+      {/* Enhanced CRD Logo with Dynamic Material Treatment - z-30 to ensure visibility */}
       <div 
         className="relative h-full flex items-center justify-center z-30"
         style={{
