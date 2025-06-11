@@ -4,6 +4,7 @@ import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { CardEffectsLayer } from './CardEffectsLayer';
 import { InteractiveLogo } from './InteractiveLogo';
 import { useDynamicCardBackMaterials } from '../hooks/useDynamicCardBackMaterials';
+import type { CardData } from '@/hooks/useCardEditor';
 
 interface CardBackContainerProps {
   isFlipped: boolean;
@@ -16,14 +17,7 @@ interface CardBackContainerProps {
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
   getFaceVisibility?: (isFront: boolean) => React.CSSProperties;
-  card?: {
-    title: string;
-    rarity?: string;
-    description?: string;
-    creator_attribution?: {
-      creator_name: string;
-    };
-  };
+  card?: CardData;
 }
 
 export const CardBackContainer: React.FC<CardBackContainerProps> = ({
@@ -70,9 +64,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       style={{
         ...dynamicFrameStyles,
         ...faceStyles,
-        transform: getFaceVisibility ? 'rotateY(180deg)' : 'rotateY(180deg)',
-        transformStyle: 'preserve-3d',
-        transition: getFaceVisibility ? 'opacity 0.1s ease' : 'transform 0.3s ease'
+        transform: 'rotateY(180deg)',
+        transformStyle: 'preserve-3d'
       }}
       data-face="back"
       data-material={selectedMaterial.id}
