@@ -35,7 +35,7 @@ const Gallery = () => {
   } = useGalleryActions();
 
   // Convert cards to CardData format for the viewer
-  const convertedCards = convertCardsToCardData(featuredCards);
+  const convertedCards = convertCardsToCardData(featuredCards || []);
   const currentCard = convertedCards[selectedCardIndex];
 
   const handleCreateCollection = () => {
@@ -85,7 +85,7 @@ const Gallery = () => {
             <CardsGrid 
               cards={featuredCards || []} 
               loading={cardsLoading}
-              onCardClick={(card) => handleCardClick(card, featuredCards)}
+              onCardClick={(card) => handleCardClick(card, featuredCards || [])}
             />
           </GallerySection>
         </TabsContent>

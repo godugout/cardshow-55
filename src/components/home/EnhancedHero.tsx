@@ -19,15 +19,15 @@ export const EnhancedHero: React.FC = () => {
   const { convertCardsToCardData } = useCardConversion();
   
   // Convert cards to CardData format
-  const convertedCards = convertCardsToCardData(featuredCards);
+  const convertedCards = convertCardsToCardData(featuredCards || []);
   
   // Get top 3 featured cards for showcase
-  const showcaseCards = featuredCards.slice(0, 3);
+  const showcaseCards = (featuredCards || []).slice(0, 3);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
   const handleCardPreview = (card: Card, index: number) => {
     setActiveCardIndex(index);
-    handleCardClick(card, featuredCards); // Pass the full featuredCards array
+    handleCardClick(card, featuredCards || []); // Pass the full featuredCards array
   };
 
   return (
