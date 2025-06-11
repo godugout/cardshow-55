@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useCardFlipPhysics } from '../hooks/useCardFlipPhysics';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
@@ -29,11 +28,12 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
   physicsEnabled = true
 }) => {
   // Initialize physics with the current flip state and physics settings
-  const { physicsState, triggerFlip, getTransformStyle, getShadowStyle, getFaceVisibility } = useCardFlipPhysics(isFlipped, physicsEnabled);
+  const { physicsState, triggerFlip, getTransformStyle, getShadowStyle } = useCardFlipPhysics(isFlipped, physicsEnabled);
 
   // Handle double-click to trigger physics flip
   const handleDoubleClick = useDoubleClick({
     onDoubleClick: () => {
+      console.log('🎯 Double-click detected - triggering flip');
       triggerFlip();
       onFlip();
     },
@@ -50,6 +50,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
     
     // If flipping, use pure physics transform
     if (physicsState.isFlipping) {
+      console.log('🔄 Using physics transform during flip:', physicsTransform.transform);
       return physicsTransform.transform;
     }
     
@@ -63,16 +64,28 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
       finalTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${baseRotationY + rotation.y + lightDepth}deg)`;
     }
     
+    console.log('🎨 Using interactive transform:', finalTransform, 'baseRotationY:', baseRotationY);
     return finalTransform;
   };
 
-  // Simplified face visibility that ensures proper front/back display
+  // Fixed face visibility that ensures proper front/back display
   const getSimplifiedFaceVisibility = (isFront: boolean) => {
     const currentRotationY = physicsState.rotationY;
-    const normalizedRotation = Math.abs(currentRotationY % 360);
     
-    // Determine if front should be visible based on rotation
+    // Normalize rotation to 0-360 range
+    const normalizedRotation = ((currentRotationY % 360) + 360) % 360;
+    
+    // Front face should be visible when rotation is 0-90 or 270-360 degrees
+    // Back face should be visible when rotation is 90-270 degrees
     const frontShouldBeVisible = normalizedRotation < 90 || normalizedRotation > 270;
+    
+    console.log(`👁️ Face visibility calculation:`, {
+      isFront,
+      currentRotationY,
+      normalizedRotation,
+      frontShouldBeVisible,
+      shouldThisFaceBeVisible: isFront ? frontShouldBeVisible : !frontShouldBeVisible
+    });
     
     if (isFront) {
       return {
@@ -92,7 +105,12 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
   const shadowStyles = getShadowStyle();
 
   // Debug logging
-  console.log('Card3DTransform - isFlipped:', isFlipped, 'physicsState.rotationY:', physicsState.rotationY, 'physicsState.showingFront:', physicsState.showingFront);
+  console.log('🃏 Card3DTransform render:', {
+    isFlipped,
+    'physicsState.rotationY': physicsState.rotationY,
+    'physicsState.showingFront': physicsState.showingFront,
+    'physicsState.isFlipping': physicsState.isFlipping
+  });
 
   return (
     <div
@@ -129,3 +147,5 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
     </div>
   );
 };
+
+export default Card3DTransform;

@@ -11,7 +11,7 @@ export const useViewerState = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [isFlipped, setIsFlipped] = useState(false); // Start with front face visible
+  const [isFlipped, setIsFlipped] = useState(false); // Start with front face visible (Puff the Magic Dragon)
   const [autoRotate, setAutoRotate] = useState(false);
   const [showEffects, setShowEffects] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -57,9 +57,10 @@ export const useViewerState = () => {
   const handleReset = useCallback(() => {
     setRotation({ x: 0, y: 0 });
     setZoom(1);
-    setIsFlipped(false); // Always reset to front face
+    setIsFlipped(false); // Always reset to front face (unflipped)
     setAutoRotate(false);
     setSelectedPresetId(undefined);
+    console.log('🔄 Viewer state reset - card should show front face (Puff the Magic Dragon)');
   }, []);
 
   const handleZoom = useCallback((delta: number) => {
@@ -84,7 +85,7 @@ export const useViewerState = () => {
   }, []);
 
   const onCardClick = useCallback(() => {
-    console.log('Card clicked - flipping from:', isFlipped, 'to:', !isFlipped);
+    console.log('🎯 Card clicked - flipping from:', isFlipped, 'to:', !isFlipped);
     setIsFlipped(prev => !prev);
   }, [isFlipped]);
 

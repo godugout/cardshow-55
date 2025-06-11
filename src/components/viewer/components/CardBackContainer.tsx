@@ -38,11 +38,19 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
   
-  // Use physics-based visibility when available, but ensure back face is properly positioned
-  const faceStyles = getFaceVisibility ? getFaceVisibility(false) : { opacity: 1, zIndex: 20 };
+  // Use physics-based visibility when available, otherwise ensure back face is visible when flipped
+  const faceStyles = getFaceVisibility ? getFaceVisibility(false) : { 
+    opacity: isFlipped ? 1 : 0, 
+    zIndex: isFlipped ? 30 : 10,
+    pointerEvents: isFlipped ? 'auto' : 'none'
+  };
 
   // Debug logging
-  console.log('CardBackContainer - isFlipped:', isFlipped, 'faceStyles:', faceStyles);
+  console.log('🎭 CardBackContainer render:', {
+    isFlipped,
+    faceStyles,
+    selectedMaterial: selectedMaterial.name
+  });
 
   // Create dynamic frame styles combining base styles with material properties
   const dynamicFrameStyles = getDynamicFrameStyles(frameStyles, selectedMaterial);
@@ -53,7 +61,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       style={{
         ...dynamicFrameStyles,
         ...faceStyles,
-        transform: 'rotateY(180deg)',
+        transform: 'rotateY(180deg)', // Back face - 180 degree rotation
         transformStyle: 'preserve-3d',
         backfaceVisibility: 'hidden'
       }}

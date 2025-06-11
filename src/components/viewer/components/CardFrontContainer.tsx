@@ -33,11 +33,19 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   onClick,
   getFaceVisibility
 }) => {
-  // Use physics-based visibility when available, but ensure front face is visible by default
-  const faceStyles = getFaceVisibility ? getFaceVisibility(true) : { opacity: 1, zIndex: 20 };
+  // Use physics-based visibility when available, otherwise ensure front face is visible by default
+  const faceStyles = getFaceVisibility ? getFaceVisibility(true) : { 
+    opacity: isFlipped ? 0 : 1, 
+    zIndex: isFlipped ? 10 : 30,
+    pointerEvents: isFlipped ? 'none' : 'auto'
+  };
 
   // Debug logging
-  console.log('CardFrontContainer - isFlipped:', isFlipped, 'faceStyles:', faceStyles);
+  console.log('🎭 CardFrontContainer render:', {
+    isFlipped,
+    faceStyles,
+    cardTitle: card.title
+  });
 
   return (
     <div 
@@ -45,11 +53,12 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       style={{
         ...frameStyles,
         ...faceStyles,
-        transform: 'rotateY(0deg)',
+        transform: 'rotateY(0deg)', // Front face - no rotation
         transformStyle: 'preserve-3d',
         backfaceVisibility: 'hidden'
       }}
       data-face="front"
+      data-card-title={card.title}
     >
       {/* Base Layer - Card Frame */}
       <div className="absolute inset-0 z-10" style={frameStyles} />
@@ -85,7 +94,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
             pointerEvents: 'none'
           }}
           draggable={false}
-          onLoad={() => console.log('✅ Puff the Magic Dragon image loaded successfully')}
+          onLoad={() => console.log('✅ Puff the Magic Dragon image loaded successfully for front face')}
           onError={(e) => {
             console.error('❌ Error loading Puff the Magic Dragon image:', e);
             // Fallback to card image if available
