@@ -1,12 +1,12 @@
-
 import type { Collection, CollectionItem, CollectionListOptions, PaginatedCollections } from './types';
 import { getCollectionQuery, getCollectionItemsQuery, calculateOffset } from './core';
-import { supabase } from '@/lib/supabase-client';
+import { supabase } from '@/integrations/supabase/client';
 import { getAppId } from '@/integrations/supabase/client';
 import type { Visibility } from '@/types/common';
 
 export const getCollectionById = async (id: string): Promise<Collection | null> => {
   try {
+    console.log('Fetching collection by ID:', id);
     const { data, error } = await supabase
       .from('collections')
       .select('*')
@@ -14,12 +14,17 @@ export const getCollectionById = async (id: string): Promise<Collection | null> 
       .single();
     
     if (error) {
-      if (error.code === 'PGRST116') return null; // Record not found
+      if (error.code === 'PGRST116') {
+        console.log('Collection not found:', id);
+        return null; // Record not found
+      }
+      console.error('Database error fetching collection:', error);
       throw new Error(`Failed to fetch collection: ${error.message}`);
     }
     
     if (!data) return null;
     
+    console.log('Collection fetched successfully:', data.title);
     return {
       id: data.id,
       title: data.title,
@@ -47,17 +52,23 @@ export const getCollectionById = async (id: string): Promise<Collection | null> 
 
 export const getCollectionItems = async (collectionId: string): Promise<CollectionItem[]> => {
   try {
+    console.log('Fetching collection items for:', collectionId);
     const { data, error } = await supabase
       .from('collection_cards')
       .select('*')
       .eq('collection_id', collectionId);
     
     if (error) {
+      console.error('Database error fetching collection items:', error);
       throw new Error(`Failed to fetch collection items: ${error.message}`);
     }
     
-    if (!data || data.length === 0) return [];
+    if (!data || data.length === 0) {
+      console.log('No items found for collection:', collectionId);
+      return [];
+    }
     
+    console.log('Collection items fetched successfully:', data.length);
     return data.map((item: any) => ({
       id: item.id,
       collectionId: item.collection_id,
@@ -85,6 +96,7 @@ export const getCollectionsByUserId = async (
   options: CollectionListOptions = {}
 ): Promise<PaginatedCollections> => {
   try {
+    console.log('Fetching collections for user:', userId);
     const {
       page = 1,
       pageSize = 10,
@@ -108,8 +120,12 @@ export const getCollectionsByUserId = async (
 
     const { data, error, count } = await query;
 
-    if (error) throw new Error(`Failed to fetch collections: ${error.message}`);
+    if (error) {
+      console.error('Database error fetching user collections:', error);
+      throw new Error(`Failed to fetch collections: ${error.message}`);
+    }
     
+    console.log('User collections fetched successfully:', data?.length || 0);
     const collections: Collection[] = (data || []).map((collection: any) => ({
       id: collection.id,
       title: collection.title,
@@ -150,6 +166,7 @@ export const getPublicCollections = async (
   options: CollectionListOptions = {}
 ): Promise<PaginatedCollections> => {
   try {
+    console.log('Fetching public collections...');
     const {
       page = 1,
       pageSize = 10,
@@ -173,8 +190,12 @@ export const getPublicCollections = async (
 
     const { data, error, count } = await query;
 
-    if (error) throw new Error(`Failed to fetch public collections: ${error.message}`);
+    if (error) {
+      console.error('Database error fetching public collections:', error);
+      throw new Error(`Failed to fetch public collections: ${error.message}`);
+    }
     
+    console.log('Public collections fetched successfully:', data?.length || 0);
     const collections: Collection[] = (data || []).map((collection: any) => ({
       id: collection.id,
       title: collection.title,
