@@ -10,7 +10,7 @@ import { ImmersiveCardViewer } from "@/components/viewer/ImmersiveCardViewer";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
-type Card = Tables<'cards'>;
+type DbCard = Tables<'cards'>;
 
 const FALLBACK_CARDS = [
   {

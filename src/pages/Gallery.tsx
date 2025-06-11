@@ -15,7 +15,7 @@ import { Plus } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
-type Card = Tables<'cards'>;
+type DbCard = Tables<'cards'>;
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
@@ -85,7 +85,7 @@ const Gallery = () => {
             <CardsGrid 
               cards={featuredCards || []} 
               loading={cardsLoading}
-              onCardClick={(card) => handleCardClick(card, featuredCards || [])}
+              onCardClick={(card: DbCard) => handleCardClick(card, featuredCards || [])}
             />
           </GallerySection>
         </TabsContent>

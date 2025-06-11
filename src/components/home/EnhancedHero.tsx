@@ -10,7 +10,7 @@ import { useCardConversion } from "@/pages/Gallery/hooks/useCardConversion";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
-type Card = Tables<'cards'>;
+type DbCard = Tables<'cards'>;
 
 export const EnhancedHero: React.FC = () => {
   const { containerPadding, isMobile } = useResponsiveLayout();
@@ -25,7 +25,7 @@ export const EnhancedHero: React.FC = () => {
   const showcaseCards = (featuredCards || []).slice(0, 3);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
-  const handleCardPreview = (card: Card, index: number) => {
+  const handleCardPreview = (card: DbCard, index: number) => {
     setActiveCardIndex(index);
     handleCardClick(card, featuredCards || []); // Pass the full featuredCards array
   };
