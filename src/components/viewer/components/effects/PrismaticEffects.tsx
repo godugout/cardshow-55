@@ -5,7 +5,6 @@ import type { EnhancedLightingData } from '../../hooks/useEnhancedInteractiveLig
 import { HolographicEffect } from './HolographicEffect';
 import { InterferenceEffect } from './InterferenceEffect';
 import { PrizmEffect } from './PrizmEffect';
-import { CrystalEffect } from './CrystalEffect';
 
 interface PrismaticEffectsProps {
   effectValues: EffectValues;
@@ -23,7 +22,6 @@ export const PrismaticEffects: React.FC<PrismaticEffectsProps> = ({
       <HolographicEffect effectValues={effectValues} mousePosition={mousePosition} />
       <InterferenceEffect effectValues={effectValues} mousePosition={mousePosition} />
       <PrizmEffect effectValues={effectValues} mousePosition={mousePosition} />
-      <CrystalEffect effectValues={effectValues} mousePosition={mousePosition} />
     </>
   );
 };

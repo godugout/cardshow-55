@@ -98,26 +98,12 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
             ...frameStyles
           }}
         >
-          {/* Effects Layer - Below Image */}
+          {/* Surface Texture - Base Layer */}
           <div className="absolute inset-0 z-10">
-            <CardEffectsLayer
-              showEffects={showEffects}
-              isHovering={isHovering}
-              effectIntensity={[50]}
-              mousePosition={mousePosition}
-              physicalEffectStyles={enhancedEffectStyles}
-              effectValues={effectValues}
-              interactiveLighting={interactiveLighting}
-              applyToFrame={true}
-            />
-            
-            {/* Surface Texture */}
-            <div className="relative">
-              {SurfaceTexture}
-            </div>
+            {SurfaceTexture}
           </div>
 
-          {/* Full Bleed Card Image - Top Priority */}
+          {/* Full Bleed Card Image - Above Surface */}
           <div className="absolute inset-0 z-20">
             {card.image_url ? (
               <img 
@@ -149,8 +135,22 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
             )}
           </div>
 
-          {/* Card Content Overlay */}
-          <div className="absolute inset-0 p-6 flex flex-col z-30" style={{ pointerEvents: 'none' }}>
+          {/* Effects Layer - Above Image for Full Coverage */}
+          <div className="absolute inset-0 z-30">
+            <CardEffectsLayer
+              showEffects={showEffects}
+              isHovering={isHovering}
+              effectIntensity={[50]}
+              mousePosition={mousePosition}
+              physicalEffectStyles={enhancedEffectStyles}
+              effectValues={effectValues}
+              interactiveLighting={interactiveLighting}
+              applyToFrame={false}
+            />
+          </div>
+
+          {/* Card Content Overlay - Top Layer */}
+          <div className="absolute inset-0 p-6 flex flex-col z-40" style={{ pointerEvents: 'none' }}>
             <div className="mt-auto">
               <div className="bg-black bg-opacity-40 backdrop-filter backdrop-blur-sm rounded-lg p-3 text-white">
                 <h3 className="text-xl font-bold mb-1">{card.title}</h3>
@@ -164,10 +164,10 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
             </div>
           </div>
 
-          {/* Interactive Lighting */}
+          {/* Interactive Lighting - Top Layer */}
           {isHovering && interactiveLighting && (
             <div 
-              className="absolute inset-0 pointer-events-none z-40"
+              className="absolute inset-0 pointer-events-none z-50"
               style={{
                 background: `radial-gradient(
                   ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
@@ -196,24 +196,13 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
             ...frameStyles
           }}
         >
-          {/* Back Effects Layer */}
-          <CardEffectsLayer
-            showEffects={showEffects}
-            isHovering={isHovering}
-            effectIntensity={[50]}
-            mousePosition={mousePosition}
-            physicalEffectStyles={enhancedEffectStyles}
-            effectValues={effectValues}
-            interactiveLighting={interactiveLighting}
-          />
-
-          {/* Surface Texture on Back */}
-          <div className="relative z-20">
+          {/* Surface Texture - Base Layer */}
+          <div className="absolute inset-0 z-10">
             {SurfaceTexture}
           </div>
 
-          {/* CRD Logo */}
-          <div className="relative h-full flex items-center justify-center z-30">
+          {/* CRD Logo Background */}
+          <div className="absolute inset-0 flex items-center justify-center z-20">
             <img 
               src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
               alt="CRD Logo" 
@@ -228,7 +217,21 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
             />
           </div>
 
-          {/* Interactive Lighting on Back */}
+          {/* Back Effects Layer - Above Logo */}
+          <div className="absolute inset-0 z-30">
+            <CardEffectsLayer
+              showEffects={showEffects}
+              isHovering={isHovering}
+              effectIntensity={[50]}
+              mousePosition={mousePosition}
+              physicalEffectStyles={enhancedEffectStyles}
+              effectValues={effectValues}
+              interactiveLighting={interactiveLighting}
+              applyToFrame={false}
+            />
+          </div>
+
+          {/* Interactive Lighting on Back - Top Layer */}
           {interactiveLighting && isHovering && (
             <div className="absolute inset-0 pointer-events-none z-40">
               <div
