@@ -33,13 +33,12 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
 }) => {
   return (
     <div 
-      className={`absolute inset-0 rounded-xl overflow-hidden ${
-        isFlipped ? 'opacity-0' : 'opacity-100'
-      }`}
+      className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
-        transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-        transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
+        transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
+        transition: 'transform 0.6s ease-in-out',
         backfaceVisibility: 'hidden',
+        transformStyle: 'preserve-3d',
         ...frameStyles
       }}
     >
