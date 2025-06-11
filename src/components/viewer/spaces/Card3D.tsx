@@ -109,7 +109,7 @@ export const Card3D: React.FC<Card3DProps> = ({
     }
   });
 
-  const handleCardClick = () => {
+  const handleCardFlip = () => {
     setIsFlipped(!isFlipped);
     onClick?.();
   };
@@ -125,7 +125,6 @@ export const Card3D: React.FC<Card3DProps> = ({
       <mesh 
         castShadow 
         receiveShadow
-        onClick={handleCardClick}
         onPointerEnter={handleMouseEnter}
         onPointerLeave={handleMouseLeave}
       >
@@ -168,7 +167,7 @@ export const Card3D: React.FC<Card3DProps> = ({
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onClick={handleCardClick}
+            onClick={handleCardFlip}
           />
         </div>
       </Html>
