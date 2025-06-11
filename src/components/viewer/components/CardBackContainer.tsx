@@ -16,6 +16,14 @@ interface CardBackContainerProps {
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
   getFaceVisibility?: (isFront: boolean) => React.CSSProperties;
+  card?: {
+    title: string;
+    rarity?: string;
+    description?: string;
+    creator_attribution?: {
+      creator_name: string;
+    };
+  };
 }
 
 export const CardBackContainer: React.FC<CardBackContainerProps> = ({
@@ -28,21 +36,17 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting = false,
-  getFaceVisibility
+  getFaceVisibility,
+  card
 }) => {
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
   
-  // Always use physics-based visibility when available
-  const faceStyles = getFaceVisibility ? getFaceVisibility(false) : {
-    opacity: isFlipped ? 1 : 0,
-    zIndex: isFlipped ? 30 : 10,
-    backfaceVisibility: 'hidden' as const
-  };
+  // Use physics-based visibility when available, otherwise use simple transform
+  const faceStyles = getFaceVisibility ? getFaceVisibility(false) : {};
 
   const handleLogoClick = () => {
     console.log('🎉 Logo clicked! Adding some magic...');
-    // You can add more fun effects here later
   };
 
   // Create dynamic frame styles combining base styles with material properties
@@ -54,7 +58,6 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
     ...(selectedMaterial.blur && {
       backdropFilter: `blur(${selectedMaterial.blur}px)`
     }),
-    transition: getFaceVisibility ? 'opacity 0.1s ease' : 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
     boxShadow: `
       0 0 30px ${selectedMaterial.borderColor},
       inset 0 0 20px rgba(255, 255, 255, 0.1)
@@ -67,10 +70,11 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       style={{
         ...dynamicFrameStyles,
         ...faceStyles,
-        transform: getFaceVisibility ? 'none' : (isFlipped ? 'rotateY(0deg)' : 'rotateY(-180deg)')
+        transform: getFaceVisibility ? 'rotateY(180deg)' : 'rotateY(180deg)',
+        transformStyle: 'preserve-3d',
+        transition: getFaceVisibility ? 'opacity 0.1s ease' : 'transform 0.3s ease'
       }}
       data-face="back"
-      data-visible={faceStyles.opacity === 1}
       data-material={selectedMaterial.id}
       data-material-name={selectedMaterial.name}
     >
@@ -122,19 +126,42 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         }}
       />
 
-      {/* Interactive CRD Logo */}
-      <div 
-        className="relative h-full flex items-center justify-center z-30"
-        style={{
-          userSelect: 'none',
-          WebkitUserSelect: 'none'
-        }}
-      >
-        <InteractiveLogo
-          logoUrl="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png"
-          alt="CRD Logo"
-          onLogoClick={handleLogoClick}
-        />
+      {/* Card Back Content */}
+      <div className="relative h-full flex flex-col justify-between p-6 z-30">
+        {/* Top Section - Card Info */}
+        <div className="text-center">
+          <div className="bg-black bg-opacity-60 backdrop-blur-sm rounded-lg p-4 text-white">
+            <h3 className="text-lg font-bold mb-2">Card Details</h3>
+            {card && (
+              <>
+                <p className="text-sm mb-1">Title: {card.title}</p>
+                {card.rarity && (
+                  <p className="text-sm mb-1">Rarity: <span className="uppercase tracking-wide">{card.rarity}</span></p>
+                )}
+                {card.creator_attribution?.creator_name && (
+                  <p className="text-xs opacity-75">Created by: {card.creator_attribution.creator_name}</p>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Center Section - CRD Logo */}
+        <div className="flex-1 flex items-center justify-center">
+          <InteractiveLogo
+            logoUrl="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png"
+            alt="CRD Logo"
+            onLogoClick={handleLogoClick}
+          />
+        </div>
+
+        {/* Bottom Section - Additional Info */}
+        <div className="text-center">
+          <div className="bg-black bg-opacity-60 backdrop-blur-sm rounded-lg p-3 text-white">
+            <p className="text-xs opacity-75">Collectible Trading Card</p>
+            <p className="text-xs opacity-60">CRD Platform © 2024</p>
+          </div>
+        </div>
       </div>
 
       {/* Enhanced Interactive Lighting with Material Awareness */}

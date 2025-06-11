@@ -33,19 +33,8 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   onClick,
   getFaceVisibility
 }) => {
-  // Always use physics-based visibility when available
-  const faceStyles = getFaceVisibility ? getFaceVisibility(true) : {
-    opacity: isFlipped ? 0 : 1,
-    zIndex: isFlipped ? 10 : 30,
-    backfaceVisibility: 'hidden' as const
-  };
-
-  console.log('CardFront - Visibility:', {
-    isFlipped,
-    opacity: faceStyles.opacity,
-    zIndex: faceStyles.zIndex,
-    usingPhysics: !!getFaceVisibility
-  });
+  // Use physics-based visibility when available, otherwise use simple transform
+  const faceStyles = getFaceVisibility ? getFaceVisibility(true) : {};
 
   return (
     <div 
@@ -53,11 +42,11 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       style={{
         ...frameStyles,
         ...faceStyles,
-        transition: getFaceVisibility ? 'opacity 0.1s ease' : 'opacity 0.3s ease',
-        transform: getFaceVisibility ? 'none' : (isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)')
+        transform: getFaceVisibility ? 'rotateY(0deg)' : 'rotateY(0deg)',
+        transformStyle: 'preserve-3d',
+        transition: getFaceVisibility ? 'opacity 0.1s ease' : 'transform 0.3s ease'
       }}
       data-face="front"
-      data-visible={faceStyles.opacity === 1}
     >
       {/* Base Layer - Card Frame */}
       <div className="absolute inset-0 z-10" style={frameStyles} />
