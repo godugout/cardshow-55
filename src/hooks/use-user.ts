@@ -11,23 +11,22 @@ export const useUser = () => {
     queryFn: async () => {
       if (!authUser) return null;
       
-      // Return user data based on the auth user
+      // For now, return mock user data based on the auth user
+      // Once database tables are set up, this will fetch from Supabase
       return {
         id: authUser.id,
         email: authUser.email || '',
-        username: authUser.email?.split('@')[0] || '',
-        full_name: authUser.user_metadata?.full_name || '',
-        avatar_url: authUser.user_metadata?.avatar_url || '',
+        username: authUser.email?.split('@')[0] || '', // Extract username from email
+        full_name: '',
+        avatar_url: '',
         bio: '',
         team_id: '',
         createdAt: new Date().toISOString(),
         preferences: null,
-        profileImage: authUser.user_metadata?.avatar_url || '',
+        profileImage: '',
       } as User;
     },
     enabled: !!authUser,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    retry: 1,
   });
 
   return { 

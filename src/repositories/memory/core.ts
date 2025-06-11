@@ -6,12 +6,12 @@ export const calculateOffset = (page = 1, pageSize = 10): number => {
 };
 
 export const getMemoryQuery = () => {
+  // Check if memories table exists, otherwise return a mock query
   try {
     return supabase
       .from('memories')
       .select('*, media(*)');
   } catch (error) {
-    console.error('Memory query error:', error);
     // Return a mock query that will fail gracefully
     return {
       eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }),

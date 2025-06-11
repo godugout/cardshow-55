@@ -1,30 +1,40 @@
 
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from '@/features/auth/providers/AuthProvider';
-import App from './App.tsx';
-import './index.css';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import App from './App.tsx'
+import { AuthProvider } from './features/auth/providers/AuthProvider'
+import { Toaster } from 'sonner'
+import './index.css'
 
-// Create a single QueryClient instance
+// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 5 * 60 * 1000, // 5 minutes
       retry: 1,
     },
   },
-});
+})
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('Root element not found');
+}
+
+ReactDOM.createRoot(rootElement).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
         <AuthProvider>
-          <App />
+          <TooltipProvider>
+            <App />
+            <Toaster />
+          </TooltipProvider>
         </AuthProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
-  </StrictMode>,
-);
+      </BrowserRouter>
+    </QueryClientProvider>
+  </React.StrictMode>,
+)
