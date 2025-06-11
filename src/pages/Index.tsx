@@ -1,21 +1,17 @@
 
 import React from "react";
+import { Navbar } from "@/components/home/Navbar";
 import { EnhancedHero } from "@/components/home/EnhancedHero";
-import { SimplifiedDiscover } from "@/components/home/SimplifiedDiscover";
 import { SimplifiedCTA } from "@/components/home/SimplifiedCTA";
-import { Footer } from "@/components/home/Footer";
 
-export default function Index() {
-  console.log('Index page rendering - streamlined version');
-  
+const Index = () => {
   return (
-    <div className="bg-[#141416] min-h-screen flex flex-col overflow-hidden items-center">
-      <main className="w-full">
-        <EnhancedHero />
-        <SimplifiedDiscover />
-        <SimplifiedCTA />
-      </main>
-      <Footer />
+    <div className="min-h-screen bg-crd-darkest">
+      <Navbar />
+      <EnhancedHero />
+      <SimplifiedCTA />
     </div>
   );
-}
+};
+
+export default Index;
