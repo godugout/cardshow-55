@@ -5,17 +5,17 @@ class LocalImageCache {
   private loadingPromises = new Map<string, Promise<HTMLImageElement>>();
   private preloadedImages = new Set<string>();
 
-  // High-quality placeholder images that actually exist
+  // Updated with the same high-resolution images from LocalImageLibrary.ts
   private reliableImages = {
     'forest-clearing': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=2048&h=1024&fit=crop&q=80',
     'mountain-vista': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=2048&h=1024&fit=crop&q=80',
-    'ocean-sunset': 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=2048&h=1024&fit=crop&q=80',
-    'city-rooftop': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=2048&h=1024&fit=crop&q=80',
-    'neon-city': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2048&h=1024&fit=crop&q=80',
-    'modern-studio': 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=2048&h=1024&fit=crop&q=80',
+    'ocean-sunset': 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=2048&h=1024&fit=crop&q=80',
+    'city-rooftop': 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=2048&h=1024&fit=crop&q=80',
+    'neon-city': 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=2048&h=1024&fit=crop&q=80',
+    'modern-studio': 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=2048&h=1024&fit=crop&q=80',
     'warehouse-loft': 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=2048&h=1024&fit=crop&q=80',
-    'sports-arena': 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=2048&h=1024&fit=crop&q=80',
-    'concert-hall': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=2048&h=1024&fit=crop&q=80',
+    'sports-arena': 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=2048&h=1024&fit=crop&q=80',
+    'concert-hall': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=2048&h=1024&fit=crop&q=80',
     'cosmic-void': 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=2048&h=1024&fit=crop&q=80'
   };
 
@@ -62,6 +62,9 @@ class LocalImageCache {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       
+      // Add cache-busting parameter to force fresh load
+      const cacheBustUrl = `${url}&_cb=${Date.now()}`;
+      
       const timeout = setTimeout(() => {
         console.warn('⏰ Image load timeout:', imageId);
         reject(new Error(`Image load timeout: ${imageId}`));
@@ -79,7 +82,7 @@ class LocalImageCache {
         reject(new Error(`Failed to load image: ${imageId}`));
       };
       
-      img.src = url;
+      img.src = cacheBustUrl;
     });
   }
 
@@ -105,11 +108,14 @@ class LocalImageCache {
     return img;
   }
 
-  // Preload common images on app start
+  // Enhanced preload with cache clearing
   async preloadCommonImages() {
     const commonImages = ['modern-studio', 'forest-clearing', 'ocean-sunset', 'cosmic-void'];
     
-    console.log('🚀 Preloading common 360° images...');
+    console.log('🚀 Preloading common 360° images with fresh cache...');
+    
+    // Clear existing cache to force fresh loads
+    this.clearCache();
     
     const preloadPromises = commonImages.map(async (imageId) => {
       try {
@@ -129,10 +135,35 @@ class LocalImageCache {
            this.reliableImages['modern-studio'];
   }
 
+  // Enhanced cache clearing
   clearCache() {
+    console.log('🧹 Clearing image cache...');
     this.cache.clear();
     this.loadingPromises.clear();
     this.preloadedImages.clear();
+    
+    // Also clear browser cache for these specific images
+    Object.keys(this.reliableImages).forEach(imageId => {
+      const url = this.reliableImages[imageId as keyof typeof this.reliableImages];
+      if (url) {
+        // Create a cache-busting request to invalidate browser cache
+        const img = new Image();
+        img.src = `${url}&_invalidate=${Date.now()}`;
+      }
+    });
+  }
+
+  // Force refresh of specific image
+  async refreshImage(imageId: string): Promise<HTMLImageElement> {
+    console.log('🔄 Force refreshing image:', imageId);
+    
+    // Remove from all caches
+    this.cache.delete(imageId);
+    this.loadingPromises.delete(imageId);
+    this.preloadedImages.delete(imageId);
+    
+    // Load fresh
+    return this.loadImage(imageId);
   }
 
   getCacheInfo() {
@@ -146,5 +177,5 @@ class LocalImageCache {
 
 export const localImageCache = new LocalImageCache();
 
-// Auto-preload on module load
+// Auto-preload on module load with fresh cache
 localImageCache.preloadCommonImages().catch(console.warn);
