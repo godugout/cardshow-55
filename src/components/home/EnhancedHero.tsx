@@ -59,7 +59,7 @@ export const EnhancedHero: React.FC = () => {
             </Typography>
           </div>
 
-          {/* Featured Cards Showcase */}
+          {/* Featured Cards Showcase - Enhanced for better clickability */}
           {showcaseCards.length > 0 && (
             <div className="w-full mb-12">
               <Typography variant="h3" className="text-white mb-6">
@@ -69,7 +69,7 @@ export const EnhancedHero: React.FC = () => {
                 {showcaseCards.map((card, index) => (
                   <div 
                     key={card.id}
-                    className={`relative group cursor-pointer transform transition-all duration-300 hover:scale-105 ${
+                    className={`relative group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
                       activeCardIndex === index ? 'ring-2 ring-crd-green' : ''
                     }`}
                     onClick={() => handleCardPreview(card, index)}
@@ -78,12 +78,23 @@ export const EnhancedHero: React.FC = () => {
                       <img
                         src={card.image_url || card.thumbnail_url || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"}
                         alt={card.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="text-white text-sm font-semibold mb-1">{card.title}</div>
-                        <CRDButton size="sm" className="w-full">
+                      {/* Enhanced hover overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                      
+                      {/* Always visible click indicator */}
+                      <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-full p-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </div>
+                      
+                      {/* Enhanced bottom action area */}
+                      <div className="absolute bottom-4 left-4 right-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                        <div className="text-white text-sm font-semibold mb-2 opacity-0 group-hover:opacity-100 transition-opacity">{card.title}</div>
+                        <CRDButton size="sm" className="w-full opacity-0 group-hover:opacity-100 transition-opacity">
                           View in 3D
                         </CRDButton>
                       </div>

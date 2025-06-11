@@ -73,7 +73,12 @@ export const SimplifiedDiscover: React.FC = () => {
 
   const handleCardView = (card: any, index: number) => {
     if (cards && cards.length > 0) {
+      // Real cards - use the gallery actions
       handleCardClick(cards[index], cards.slice(0, 6));
+    } else {
+      // Fallback cards - show a placeholder message or create a mock card
+      console.log('Fallback card clicked:', card.title);
+      // For now, just log - could create a demo viewer for fallback cards
     }
   };
 
@@ -104,7 +109,7 @@ export const SimplifiedDiscover: React.FC = () => {
             displayCards.map((card, index) => (
               <div
                 key={card.id}
-                className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                className="group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                 onClick={() => handleCardView(card, index)}
               >
                 <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-xl overflow-hidden relative">
@@ -113,10 +118,22 @@ export const SimplifiedDiscover: React.FC = () => {
                     alt={card.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <CRDButton size="sm" className="w-full">
-                      View in 3D
+                  
+                  {/* Enhanced hover overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  
+                  {/* Click indicator */}
+                  <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-full p-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </div>
+                  
+                  {/* Enhanced action area */}
+                  <div className="absolute bottom-4 left-4 right-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                    <CRDButton size="sm" className="w-full opacity-0 group-hover:opacity-100 transition-opacity">
+                      {cards && cards.length > 0 ? 'View in 3D' : 'Demo Card'}
                     </CRDButton>
                   </div>
                 </div>
@@ -130,7 +147,7 @@ export const SimplifiedDiscover: React.FC = () => {
         </div>
         
         <div className="text-center">
-          <Link to="/editor">
+          <Link to="/gallery">
             <CRDButton 
               variant="secondary" 
               size="lg"
@@ -151,7 +168,7 @@ export const SimplifiedDiscover: React.FC = () => {
         </div>
       </div>
 
-      {/* Immersive Viewer */}
+      {/* Immersive Viewer - Only show for real cards */}
       {showImmersiveViewer && convertedCards.length > 0 && (
         <ImmersiveCardViewer
           card={convertedCards[selectedCardIndex]}
