@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
@@ -74,7 +75,7 @@ const convertFallbackToCardData = (fallbackCard: typeof FALLBACK_CARDS[0]) => ({
     pricing: { currency: 'USD' },
     distribution: { limited_edition: false }
   },
-  verification_status: 'approved' as const,
+  verification_status: 'verified' as const,
   print_metadata: {},
   creator_id: 'fallback-creator',
   marketplace_listing: false,
@@ -129,7 +130,7 @@ export const SimplifiedDiscover: React.FC = () => {
         tags: ['featured'],
         is_public: true,
         marketplace_listing: false,
-        verification_status: 'approved',
+        verification_status: 'verified',
         design_metadata: {},
         print_metadata: {},
         visibility: 'public',
