@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, BackgroundType } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
@@ -12,7 +11,7 @@ export const useViewerState = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false); // Start with front face visible
   const [autoRotate, setAutoRotate] = useState(false);
   const [showEffects, setShowEffects] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -58,7 +57,7 @@ export const useViewerState = () => {
   const handleReset = useCallback(() => {
     setRotation({ x: 0, y: 0 });
     setZoom(1);
-    setIsFlipped(false);
+    setIsFlipped(false); // Always reset to front face
     setAutoRotate(false);
     setSelectedPresetId(undefined);
   }, []);
@@ -85,8 +84,9 @@ export const useViewerState = () => {
   }, []);
 
   const onCardClick = useCallback(() => {
+    console.log('Card clicked - flipping from:', isFlipped, 'to:', !isFlipped);
     setIsFlipped(prev => !prev);
-  }, []);
+  }, [isFlipped]);
 
   const handlePhysicsToggle = useCallback(() => {
     setPhysicsEnabled(prev => !prev);

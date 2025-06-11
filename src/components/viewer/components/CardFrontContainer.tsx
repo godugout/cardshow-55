@@ -33,8 +33,11 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   onClick,
   getFaceVisibility
 }) => {
-  // Use physics-based visibility when available
-  const faceStyles = getFaceVisibility ? getFaceVisibility(true) : {};
+  // Use physics-based visibility when available, but ensure front face is visible by default
+  const faceStyles = getFaceVisibility ? getFaceVisibility(true) : { opacity: 1, zIndex: 20 };
+
+  // Debug logging
+  console.log('CardFrontContainer - isFlipped:', isFlipped, 'faceStyles:', faceStyles);
 
   return (
     <div 
@@ -43,7 +46,8 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         ...frameStyles,
         ...faceStyles,
         transform: 'rotateY(0deg)',
-        transformStyle: 'preserve-3d'
+        transformStyle: 'preserve-3d',
+        backfaceVisibility: 'hidden'
       }}
       data-face="front"
     >
@@ -69,8 +73,8 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         </div>
       </div>
 
-      {/* Card Image - Use Puff the Magic Dragon */}
-      <div className="absolute inset-0 z-30">
+      {/* Card Image - Use Puff the Magic Dragon - HIGHEST Z-INDEX */}
+      <div className="absolute inset-0 z-40">
         <img 
           src="/lovable-uploads/0642fcd5-3a3f-471b-abd3-81eba9d4d456.png"
           alt="Puff the Magic Dragon"
@@ -81,12 +85,20 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
             pointerEvents: 'none'
           }}
           draggable={false}
+          onLoad={() => console.log('✅ Puff the Magic Dragon image loaded successfully')}
+          onError={(e) => {
+            console.error('❌ Error loading Puff the Magic Dragon image:', e);
+            // Fallback to card image if available
+            if (card.image_url) {
+              e.currentTarget.src = card.image_url;
+            }
+          }}
         />
       </div>
 
       {/* Subtle Card Content Overlay */}
       <div 
-        className="absolute inset-0 p-6 flex flex-col z-35"
+        className="absolute inset-0 p-6 flex flex-col z-50"
         style={{
           userSelect: 'none',
           WebkitUserSelect: 'none',
@@ -106,7 +118,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       {/* Interactive Lighting Overlay */}
       {isHovering && interactiveLighting && (
         <div 
-          className="absolute inset-0 pointer-events-none z-50"
+          className="absolute inset-0 pointer-events-none z-60"
           style={{
             background: `radial-gradient(
               ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,

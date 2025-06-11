@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCardFlipPhysics } from '../hooks/useCardFlipPhysics';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
@@ -65,7 +66,33 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
     return finalTransform;
   };
 
+  // Simplified face visibility that ensures proper front/back display
+  const getSimplifiedFaceVisibility = (isFront: boolean) => {
+    const currentRotationY = physicsState.rotationY;
+    const normalizedRotation = Math.abs(currentRotationY % 360);
+    
+    // Determine if front should be visible based on rotation
+    const frontShouldBeVisible = normalizedRotation < 90 || normalizedRotation > 270;
+    
+    if (isFront) {
+      return {
+        opacity: frontShouldBeVisible ? 1 : 0,
+        zIndex: frontShouldBeVisible ? 30 : 10,
+        pointerEvents: frontShouldBeVisible ? 'auto' : 'none'
+      };
+    } else {
+      return {
+        opacity: !frontShouldBeVisible ? 1 : 0,
+        zIndex: !frontShouldBeVisible ? 30 : 10,
+        pointerEvents: !frontShouldBeVisible ? 'auto' : 'none'
+      };
+    }
+  };
+
   const shadowStyles = getShadowStyle();
+
+  // Debug logging
+  console.log('Card3DTransform - isFlipped:', isFlipped, 'physicsState.rotationY:', physicsState.rotationY, 'physicsState.showingFront:', physicsState.showingFront);
 
   return (
     <div
@@ -89,12 +116,12 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
         </div>
       )}
 
-      {/* Always pass the physics face visibility function to children */}
+      {/* Always pass the simplified face visibility function to children */}
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
           return React.cloneElement(child, {
             ...child.props,
-            getFaceVisibility
+            getFaceVisibility: getSimplifiedFaceVisibility
           } as any);
         }
         return child;
