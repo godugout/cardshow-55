@@ -37,7 +37,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   const faceStyles = getFaceVisibility ? getFaceVisibility(true) : { 
     opacity: isFlipped ? 0 : 1, 
     zIndex: isFlipped ? 10 : 30,
-    pointerEvents: isFlipped ? 'none' : 'auto'
+    pointerEvents: (isFlipped ? 'none' : 'auto') as React.CSSProperties['pointerEvents']
   };
 
   // Debug logging
