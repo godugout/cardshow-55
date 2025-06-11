@@ -32,3 +32,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     </NotificationContext.Provider>
   );
 };
+
+// Export NotificationCenter as an alias for the component that NavActions expects
+export const NotificationCenter: React.FC = () => {
+  return null; // This can be a simple notification bell icon or dropdown
+};
