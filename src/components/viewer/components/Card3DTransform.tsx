@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCardFlipPhysics } from '../hooks/useCardFlipPhysics';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
@@ -75,9 +76,9 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
     // Normalize rotation to 0-360 range
     const normalizedRotation = ((currentRotationY % 360) + 360) % 360;
     
-    // Front face should be visible when rotation is 0-90 or 270-360 degrees
-    // Back face should be visible when rotation is 90-270 degrees
-    const frontShouldBeVisible = normalizedRotation < 90 || normalizedRotation > 270;
+    // CORRECTED LOGIC: Front face should be visible when rotation is close to 0 or 360
+    // Back face should be visible when rotation is close to 180
+    const frontShouldBeVisible = normalizedRotation <= 90 || normalizedRotation >= 270;
     
     console.log(`👁️ Face visibility calculation:`, {
       isFront,
@@ -91,13 +92,13 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
       return {
         opacity: frontShouldBeVisible ? 1 : 0,
         zIndex: frontShouldBeVisible ? 30 : 10,
-        pointerEvents: frontShouldBeVisible ? 'auto' : 'none'
+        pointerEvents: (frontShouldBeVisible ? 'auto' : 'none') as React.CSSProperties['pointerEvents']
       };
     } else {
       return {
         opacity: !frontShouldBeVisible ? 1 : 0,
         zIndex: !frontShouldBeVisible ? 30 : 10,
-        pointerEvents: !frontShouldBeVisible ? 'auto' : 'none'
+        pointerEvents: (!frontShouldBeVisible ? 'auto' : 'none') as React.CSSProperties['pointerEvents']
       };
     }
   };

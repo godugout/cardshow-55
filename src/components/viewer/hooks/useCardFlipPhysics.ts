@@ -23,16 +23,17 @@ interface FlipConfig {
 
 export const useCardFlipPhysics = (initialFlipped = false, physicsEnabled = true) => {
   const [isFlipped, setIsFlipped] = useState(initialFlipped);
+  // FIXED: Initialize with correct rotation - 0 for front face, 180 for back face
   const [physicsState, setPhysicsState] = useState<FlipPhysicsState>({
     isFlipping: false,
     progress: 0,
-    rotationY: initialFlipped ? 180 : 0,
+    rotationY: initialFlipped ? 180 : 0, // Start with correct rotation
     rotationX: 0,
     rotationZ: 0,
     scale: 1,
     shadowIntensity: 0.8,
     zOffset: 0,
-    showingFront: !initialFlipped
+    showingFront: !initialFlipped // Start showing front when not flipped
   });
 
   const animationRef = useRef<number>();
@@ -106,8 +107,8 @@ export const useCardFlipPhysics = (initialFlipped = false, physicsEnabled = true
     const easedProgress = easeOutBounce(progress, config.bounceCount, config.bounceDecay);
 
     // Calculate target rotation based on flip direction
-    const targetRotation = isFlipped ? 180 : 0;
-    const startRotation = isFlipped ? 0 : 180;
+    const targetRotation = isFlipped ? 0 : 180; // FIXED: Flip between 0 and 180 correctly
+    const startRotation = isFlipped ? 180 : 0;   // FIXED: Start from opposite state
     const rotationDelta = (targetRotation - startRotation) * config.direction;
     
     // Current rotation during animation
@@ -122,7 +123,7 @@ export const useCardFlipPhysics = (initialFlipped = false, physicsEnabled = true
 
     // Determine which face should be visible based on rotation
     const normalizedRotation = Math.abs(currentRotationY % 360);
-    const showingFront = normalizedRotation < 90 || normalizedRotation > 270;
+    const showingFront = normalizedRotation <= 90 || normalizedRotation >= 270;
 
     setPhysicsState({
       isFlipping: progress < 1,
@@ -148,7 +149,7 @@ export const useCardFlipPhysics = (initialFlipped = false, physicsEnabled = true
         rotationZ: 0,
         scale: 1,
         zOffset: 0,
-        showingFront: !isFlipped
+        showingFront: targetRotation === 0 // FIXED: Correctly determine final state
       }));
       
       startTimeRef.current = undefined;

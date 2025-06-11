@@ -82,11 +82,11 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         </div>
       </div>
 
-      {/* Card Image - Use Puff the Magic Dragon - HIGHEST Z-INDEX */}
+      {/* Card Image - Use new uploaded image - HIGHEST Z-INDEX */}
       <div className="absolute inset-0 z-40">
         <img 
-          src="/lovable-uploads/0642fcd5-3a3f-471b-abd3-81eba9d4d456.png"
-          alt="Puff the Magic Dragon"
+          src="/lovable-uploads/bd3d4ab6-d44a-44af-9f5b-f77c05329e1a.png"
+          alt="Card Front Image"
           className="w-full h-full object-cover"
           style={{
             userSelect: 'none',
@@ -94,9 +94,9 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
             pointerEvents: 'none'
           }}
           draggable={false}
-          onLoad={() => console.log('✅ Puff the Magic Dragon image loaded successfully for front face')}
+          onLoad={() => console.log('✅ New card front image loaded successfully')}
           onError={(e) => {
-            console.error('❌ Error loading Puff the Magic Dragon image:', e);
+            console.error('❌ Error loading new card front image:', e);
             // Fallback to card image if available
             if (card.image_url) {
               e.currentTarget.src = card.image_url;
