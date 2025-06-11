@@ -42,11 +42,31 @@ export const CardFront: React.FC<CardFrontProps> = ({
         backfaceVisibility: 'hidden'
       }}
     >
-      {/* Base Card Layer - z-index 1 */}
+      {/* Base Card Frame Layer - z-index 10 */}
       <div className="absolute inset-0 z-10" style={frameStyles} />
       
-      {/* Full Image Display - Centered and Full Coverage - z-index 3 */}
-      <div className="relative h-full z-30">
+      {/* Effects Layer (Below Image) - z-index 20 */}
+      <div className="absolute inset-0 z-20">
+        {showEffects && (
+          <CardEffectsLayer
+            showEffects={showEffects}
+            isHovering={isHovering}
+            effectIntensity={effectIntensity}
+            mousePosition={mousePosition}
+            physicalEffectStyles={physicalEffectStyles}
+            effectValues={effectValues}
+            materialSettings={materialSettings}
+            interactiveLighting={interactiveLighting}
+            applyToFrame={true}
+          />
+        )}
+        
+        {/* Surface Texture (Applied to frame only) */}
+        {SurfaceTexture}
+      </div>
+      
+      {/* Full Image Display - Highest Priority - z-index 40 */}
+      <div className="relative h-full z-40">
         {card.image_url ? (
           <div className="w-full h-full relative overflow-hidden">
             <img 
@@ -55,22 +75,12 @@ export const CardFront: React.FC<CardFrontProps> = ({
               className="w-full h-full object-cover object-center"
               style={{
                 filter: showEffects 
-                  ? 'brightness(1.1) contrast(1.05) saturate(1.1)' 
-                  : 'brightness(1.05) contrast(1.02)',
+                  ? 'brightness(1.05) contrast(1.02)' 
+                  : 'none',
                 transition: 'filter 0.3s ease'
               }}
+              draggable="false"
             />
-            {/* Enhanced image overlay for better effect blending */}
-            {showEffects && (
-              <div 
-                className="absolute inset-0 bg-gradient-to-br from-transparent via-white/1 to-transparent" 
-                style={{
-                  opacity: isHovering ? 0.2 : 0.1,
-                  mixBlendMode: 'overlay',
-                  transition: 'opacity 0.3s ease'
-                }}
-              />
-            )}
           </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
@@ -85,40 +95,43 @@ export const CardFront: React.FC<CardFrontProps> = ({
           </div>
         )}
       </div>
-      
-      {/* Surface Texture Layer - z-index 2 */}
-      <div className="absolute inset-0 z-20">
-        {SurfaceTexture}
-      </div>
-      
-      {/* Enhanced Effects Layer with individual effect values */}
-      <CardEffectsLayer
-        showEffects={showEffects}
-        isHovering={isHovering}
-        effectIntensity={effectIntensity}
-        mousePosition={mousePosition}
-        physicalEffectStyles={physicalEffectStyles}
-        effectValues={effectValues}
-        materialSettings={materialSettings}
-        interactiveLighting={interactiveLighting}
-      />
 
-      {/* Interactive lighting enhancement overlay - SOFTENED */}
+      {/* Card Content Overlay (transparent text/info) - z-index 30 */}
+      <div className="absolute inset-0 z-30 p-6 pointer-events-none">
+        <div className="h-full flex flex-col">
+          {/* Title & Info at the bottom */}
+          <div className="mt-auto">
+            <div className="bg-black bg-opacity-30 backdrop-filter backdrop-blur-sm rounded-lg p-3">
+              {card.title && (
+                <h3 className="text-white text-xl font-bold mb-1">{card.title}</h3>
+              )}
+              {card.description && (
+                <p className="text-white text-sm opacity-90">{card.description}</p>
+              )}
+              {card.rarity && (
+                <p className="text-white text-xs uppercase tracking-wide opacity-75 mt-1">{card.rarity}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Very Subtle Interactive Lighting - Topmost, z-index 50 */}
       {interactiveLighting && isHovering && (
         <div
-          className="absolute inset-0 z-40 pointer-events-none"
+          className="absolute inset-0 z-50 pointer-events-none"
           style={{
             background: `
               radial-gradient(
                 ellipse 180% 140% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
                 rgba(255, 255, 255, 0.03) 0%,
-                rgba(255, 255, 255, 0.02) 50%,
+                rgba(255, 255, 255, 0.01) 50%,
                 transparent 85%
               )
             `,
-            mixBlendMode: 'overlay',
+            mixBlendMode: 'soft-light',
             transition: 'opacity 0.2s ease',
-            opacity: showEffects ? 1 : 0.5
+            opacity: showEffects ? 0.6 : 0.3
           }}
         />
       )}

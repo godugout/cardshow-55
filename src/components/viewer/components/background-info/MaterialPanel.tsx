@@ -20,7 +20,7 @@ export const MaterialPanel: React.FC<MaterialPanelProps> = React.memo(({
 
   return (
     <div 
-      className="absolute right-8 top-1/2 transform translate-y-8"
+      className="absolute right-8 top-1/2 transform translate-y-8 z-10" // Reduced z-index to avoid overlapping
       style={{
         transform: `perspective(800px) rotateY(-15deg) translateZ(-30px) translateX(${parallaxOffset.x}px) translateY(${parallaxOffset.y + 32}px)`,
         filter: 'blur(0.3px)'
