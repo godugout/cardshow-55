@@ -28,7 +28,7 @@ export const EffectsSection: React.FC<EffectsSectionProps> = ({
   return (
     <CollapsibleSection
       title="Visual Effects"
-      icon={<Sparkles className="w-4 h-4" />}
+      icon={Sparkles}
       isOpen={isOpen}
       onToggle={onToggle}
     >
