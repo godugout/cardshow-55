@@ -1,3 +1,4 @@
+
 export interface Local360Image {
   id: string;
   name: string;
@@ -16,7 +17,7 @@ export interface Local360Image {
   };
 }
 
-// Updated to use reliable cached images
+// Updated with high-resolution, card-viewing optimized images
 export const LOCAL_360_IMAGES: Local360Image[] = [
   {
     id: 'forest-clearing',
@@ -42,41 +43,41 @@ export const LOCAL_360_IMAGES: Local360Image[] = [
     id: 'ocean-sunset',
     name: 'Ocean Sunset',
     category: 'natural',
-    localUrl: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=2048&h=1024&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1024&h=512&fit=crop&q=60',
-    description: 'Golden hour ocean view with warm lighting',
-    lighting: { intensity: 1.3, warmth: 0.9, contrast: 0.7 },
-    camera: { defaultDistance: 8, autoRotateSpeed: 0.4 }
+    localUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=2048&h=1024&fit=crop&q=80',
+    fallbackUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=1024&h=512&fit=crop&q=60',
+    description: 'Dramatic ocean wave with golden hour lighting',
+    lighting: { intensity: 1.5, warmth: 0.8, contrast: 0.9 },
+    camera: { defaultDistance: 9, autoRotateSpeed: 0.2 }
   },
   {
     id: 'city-rooftop',
     name: 'City Rooftop',
     category: 'urban',
-    localUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=2048&h=1024&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1024&h=512&fit=crop&q=60',
-    description: 'Urban skyline from rooftop perspective',
-    lighting: { intensity: 1.0, warmth: 0.5, contrast: 0.9 },
-    camera: { defaultDistance: 9, autoRotateSpeed: 0.3 }
+    localUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=2048&h=1024&fit=crop&q=80',
+    fallbackUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1024&h=512&fit=crop&q=60',
+    description: 'Modern white concrete architecture with clean lines',
+    lighting: { intensity: 1.3, warmth: 0.4, contrast: 0.7 },
+    camera: { defaultDistance: 8, autoRotateSpeed: 0.3 }
   },
   {
     id: 'neon-city',
     name: 'Neon City',
     category: 'urban',
-    localUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2048&h=1024&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1024&h=512&fit=crop&q=60',
-    description: 'Cyberpunk cityscape with neon lights',
-    lighting: { intensity: 0.9, warmth: 0.3, contrast: 1.2 },
+    localUrl: 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=2048&h=1024&fit=crop&q=80',
+    fallbackUrl: 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=1024&h=512&fit=crop&q=60',
+    description: 'Blue starry night with cosmic atmosphere',
+    lighting: { intensity: 0.9, warmth: 0.2, contrast: 1.1 },
     camera: { defaultDistance: 8, autoRotateSpeed: 0.4 }
   },
   {
     id: 'modern-studio',
     name: 'Modern Studio',
     category: 'interior',
-    localUrl: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=2048&h=1024&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=1024&h=512&fit=crop&q=60',
-    description: 'Clean, modern studio with perfect lighting',
-    lighting: { intensity: 1.5, warmth: 0.4, contrast: 0.5 },
-    camera: { defaultDistance: 6, autoRotateSpeed: 0.2 }
+    localUrl: 'https://images.unsplash.com/photo-1496307653780-42ee777d4833?w=2048&h=1024&fit=crop&q=80',
+    fallbackUrl: 'https://images.unsplash.com/photo-1496307653780-42ee777d4833?w=1024&h=512&fit=crop&q=60',
+    description: 'Glass building interior with perfect lighting',
+    lighting: { intensity: 1.6, warmth: 0.3, contrast: 0.5 },
+    camera: { defaultDistance: 6, autoRotateSpeed: 0.1 }
   },
   {
     id: 'warehouse-loft',
@@ -92,19 +93,19 @@ export const LOCAL_360_IMAGES: Local360Image[] = [
     id: 'sports-arena',
     name: 'Sports Arena',
     category: 'sports',
-    localUrl: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=2048&h=1024&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1024&h=512&fit=crop&q=60',
-    description: 'Professional sports arena atmosphere',
-    lighting: { intensity: 1.3, warmth: 0.5, contrast: 0.8 },
-    camera: { defaultDistance: 12, autoRotateSpeed: 0.3 }
+    localUrl: 'https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=2048&h=1024&fit=crop&q=80',
+    fallbackUrl: 'https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=1024&h=512&fit=crop&q=60',
+    description: 'Grand architectural space with dramatic perspective',
+    lighting: { intensity: 1.4, warmth: 0.5, contrast: 0.9 },
+    camera: { defaultDistance: 12, autoRotateSpeed: 0.2 }
   },
   {
     id: 'concert-hall',
     name: 'Concert Hall',
     category: 'cultural',
-    localUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=2048&h=1024&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1024&h=512&fit=crop&q=60',
-    description: 'Grand concert hall with ornate architecture',
+    localUrl: 'https://images.unsplash.com/photo-1473177104440-ffee2f376098?w=2048&h=1024&fit=crop&q=80',
+    fallbackUrl: 'https://images.unsplash.com/photo-1473177104440-ffee2f376098?w=1024&h=512&fit=crop&q=60',
+    description: 'Cathedral interior with soaring architecture',
     lighting: { intensity: 1.1, warmth: 0.7, contrast: 0.8 },
     camera: { defaultDistance: 10, autoRotateSpeed: 0.1 }
   },
