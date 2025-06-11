@@ -1,12 +1,11 @@
 
-import React from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
-import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface EnhancedCardContainerProps {
@@ -67,6 +66,9 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     atmosphericDensity: 1.0
   }
 }) => {
+  // Local state for card flip
+  const [localIsFlipped, setLocalIsFlipped] = useState(isFlipped);
+  
   // Use cached effects for better performance only when all required props are available
   const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
     card,
@@ -83,11 +85,11 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     isHovering
   }) : null;
 
-  // Use double-click/tap detection for card flip
-  const handleDoubleClick = useDoubleClick({
-    onDoubleClick: onClick,
-    delay: 300
-  });
+  // Simple double-click flip handler
+  const handleCardFlip = useCallback(() => {
+    setLocalIsFlipped(prev => !prev);
+    onClick();
+  }, [onClick]);
 
   // Use cached styles if available, otherwise fall back to provided styles
   const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
@@ -96,11 +98,11 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
 
   return (
     <div 
-      className={`relative z-20 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      className={`relative z-20 select-none`}
       style={{
         transform: `scale(${zoom})`,
         transition: isDragging ? 'none' : 'transform 0.3s ease',
-        filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`
+        filter: `brightness(${interactiveLighting && isHovering ? 1.1 : 1.0}) contrast(1.05)`
       }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
@@ -113,12 +115,12 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         isDragging={isDragging}
         interactiveLighting={interactiveLighting}
         isHovering={isHovering}
-        onClick={handleDoubleClick}
+        onClick={handleCardFlip}
       >
         {/* Front of Card */}
         <CardFrontContainer
           card={card}
-          isFlipped={isFlipped}
+          isFlipped={localIsFlipped}
           isHovering={isHovering}
           showEffects={showEffects}
           effectValues={effectValues}
@@ -127,12 +129,12 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
-          onClick={handleDoubleClick}
+          onClick={handleCardFlip}
         />
 
         {/* Back of Card */}
         <CardBackContainer
-          isFlipped={isFlipped}
+          isFlipped={localIsFlipped}
           isHovering={isHovering}
           showEffects={showEffects}
           effectValues={effectValues}

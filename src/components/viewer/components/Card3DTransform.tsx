@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 
 interface Card3DTransformProps {
   children: React.ReactNode;
@@ -20,6 +20,29 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
   isHovering,
   onClick
 }) => {
+  const clickCount = useRef(0);
+  const clickTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    clickCount.current += 1;
+    
+    if (clickTimeout.current) {
+      clearTimeout(clickTimeout.current);
+    }
+    
+    clickTimeout.current = setTimeout(() => {
+      if (clickCount.current === 2) {
+        // Double click - flip card
+        onClick();
+      }
+      // Single click does nothing now - just drag to rotate
+      clickCount.current = 0;
+    }, 300);
+  }, [onClick]);
+
   // Calculate dynamic transform
   const getDynamicTransform = () => {
     let baseTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
@@ -27,7 +50,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
     // Add subtle interactive lighting-based depth effect
     if (interactiveLighting && isHovering) {
       const lightDepth = (mousePosition.x - 0.5) * 2; // -1 to 1
-      const additionalRotateY = lightDepth * 2; // Max 2 degrees
+      const additionalRotateY = lightDepth * 1; // Max 1 degree
       baseTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y + additionalRotateY}deg)`;
     }
     
@@ -36,7 +59,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
 
   return (
     <div
-      className="relative"
+      className="relative cursor-grab active:cursor-grabbing"
       style={{
         width: '400px',
         height: '560px',
@@ -45,7 +68,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
         transition: isDragging ? 'none' : 'transform 0.1s ease',
         filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`
       }}
-      onClick={onClick}
+      onClick={handleClick}
     >
       {children}
     </div>
