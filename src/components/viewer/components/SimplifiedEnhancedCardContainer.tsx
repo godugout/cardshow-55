@@ -3,6 +3,7 @@ import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
+import { CardEffectsLayer } from './CardEffectsLayer';
 
 interface SimplifiedEnhancedCardContainerProps {
   card: CardData;
@@ -44,6 +45,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
   frameStyles,
   enhancedEffectStyles,
   SurfaceTexture,
+  interactiveLighting,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
@@ -86,119 +88,165 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
       >
         {/* Card Front */}
         <div 
-          className="absolute inset-0 backface-hidden"
+          className="absolute inset-0 rounded-xl overflow-hidden"
           style={{
-            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-            transition: 'transform 0.6s',
-            ...frameStyles,
-            ...enhancedEffectStyles
+            transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
+            backfaceVisibility: 'hidden',
+            opacity: isFlipped ? 0 : 1,
+            zIndex: isFlipped ? 1 : 10,
+            transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
+            ...frameStyles
           }}
         >
-          {/* Enhanced visual effects background */}
-          <div className="absolute inset-0 rounded-lg overflow-hidden">
-            {SurfaceTexture}
+          {/* Effects Layer - Below Image */}
+          <div className="absolute inset-0 z-10">
+            <CardEffectsLayer
+              showEffects={showEffects}
+              isHovering={isHovering}
+              effectIntensity={[50]}
+              mousePosition={mousePosition}
+              physicalEffectStyles={enhancedEffectStyles}
+              effectValues={effectValues}
+              interactiveLighting={interactiveLighting}
+              applyToFrame={true}
+            />
             
-            {/* Enhanced effect layers */}
-            {showEffects && Object.entries(effectValues).map(([effectId, effect]) => {
-              if (!effect.intensity || effect.intensity === 0) return null;
-              
-              return (
-                <div
-                  key={effectId}
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    opacity: (effect.intensity as number) / 100 * 0.3,
-                    mixBlendMode: 'overlay',
-                    background: getEffectGradient(effectId, mousePosition)
-                  }}
-                />
-              );
-            })}
+            {/* Surface Texture */}
+            <div className="relative">
+              {SurfaceTexture}
+            </div>
           </div>
 
-          {/* Card Content */}
-          <div className="relative h-full p-6 flex flex-col bg-gradient-to-br from-gray-900 to-black rounded-lg border border-gray-700">
-            {/* Card Image */}
-            <div className="flex-1 mb-4 relative overflow-hidden rounded-md">
-              {card.image_url ? (
-                <img 
-                  src={card.image_url} 
-                  alt={card.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    console.error('🚨 Card image failed to load:', card.image_url);
-                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80';
-                  }}
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
-                  <span className="text-white/50 text-sm">No Image</span>
+          {/* Full Bleed Card Image - Top Priority */}
+          <div className="absolute inset-0 z-20">
+            {card.image_url ? (
+              <img 
+                src={card.image_url} 
+                alt={card.title}
+                className="w-full h-full object-cover"
+                style={{
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                  pointerEvents: 'none'
+                }}
+                draggable={false}
+                onError={(e) => {
+                  console.error('🚨 Card image failed to load:', card.image_url);
+                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80';
+                }}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-900">
+                <div className="text-center text-gray-300">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-600 rounded-lg flex items-center justify-center">
+                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-medium">No Image</p>
                 </div>
-              )}
-            </div>
-            
-            {/* Card Details */}
-            <div className="mt-auto bg-black/80 p-4 rounded-md">
-              <h3 className="text-white text-xl font-bold mb-2">{card.title}</h3>
-              {card.description && (
-                <p className="text-gray-300 text-sm mb-2">{card.description}</p>
-              )}
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400 text-xs uppercase">{card.rarity}</span>
-                <span className="text-purple-400 text-xs">★ Collectible</span>
+              </div>
+            )}
+          </div>
+
+          {/* Card Content Overlay */}
+          <div className="absolute inset-0 p-6 flex flex-col z-30" style={{ pointerEvents: 'none' }}>
+            <div className="mt-auto">
+              <div className="bg-black bg-opacity-40 backdrop-filter backdrop-blur-sm rounded-lg p-3 text-white">
+                <h3 className="text-xl font-bold mb-1">{card.title}</h3>
+                {card.description && (
+                  <p className="text-sm mb-1">{card.description}</p>
+                )}
+                {card.rarity && (
+                  <p className="text-xs uppercase tracking-wide opacity-75">{card.rarity}</p>
+                )}
               </div>
             </div>
           </div>
+
+          {/* Interactive Lighting */}
+          {isHovering && interactiveLighting && (
+            <div 
+              className="absolute inset-0 pointer-events-none z-40"
+              style={{
+                background: `radial-gradient(
+                  ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+                  rgba(255, 255, 255, 0.06) 0%,
+                  rgba(255, 255, 255, 0.03) 40%,
+                  transparent 70%
+                )`,
+                mixBlendMode: 'soft-light',
+                opacity: 0.5,
+                transition: 'opacity 0.1s ease'
+              }}
+            />
+          )}
         </div>
 
         {/* Card Back */}
         <div 
-          className="absolute inset-0 backface-hidden"
+          className="absolute inset-0 rounded-xl overflow-hidden"
           style={{
-            transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(-180deg)',
-            transition: 'transform 0.6s',
+            transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
+            backfaceVisibility: 'hidden',
+            opacity: isFlipped ? 1 : 0,
+            zIndex: isFlipped ? 10 : 1,
+            transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
+            background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.4) 0%, rgba(45, 45, 45, 0.6) 50%, rgba(26, 26, 26, 0.4) 100%)',
             ...frameStyles
           }}
         >
-          <div className="h-full bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border border-gray-600 flex items-center justify-center">
-            <div className="text-center text-white p-8">
-              <div className="text-6xl mb-4">🎴</div>
-              <h3 className="text-xl font-bold mb-2">CRD Card</h3>
-              <p className="text-gray-300 text-sm">Collectible Trading Card</p>
-            </div>
+          {/* Back Effects Layer */}
+          <CardEffectsLayer
+            showEffects={showEffects}
+            isHovering={isHovering}
+            effectIntensity={[50]}
+            mousePosition={mousePosition}
+            physicalEffectStyles={enhancedEffectStyles}
+            effectValues={effectValues}
+            interactiveLighting={interactiveLighting}
+          />
+
+          {/* Surface Texture on Back */}
+          <div className="relative z-20">
+            {SurfaceTexture}
           </div>
+
+          {/* CRD Logo */}
+          <div className="relative h-full flex items-center justify-center z-30">
+            <img 
+              src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
+              alt="CRD Logo" 
+              className="w-64 h-auto opacity-60"
+              style={{
+                filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                pointerEvents: 'none'
+              }}
+              draggable={false}
+            />
+          </div>
+
+          {/* Interactive Lighting on Back */}
+          {interactiveLighting && isHovering && (
+            <div className="absolute inset-0 pointer-events-none z-40">
+              <div
+                style={{
+                  background: `radial-gradient(
+                    ellipse 200% 150% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+                    rgba(255, 255, 255, 0.12) 0%,
+                    rgba(255, 255, 255, 0.06) 30%,
+                    transparent 70%
+                  )`,
+                  mixBlendMode: 'overlay',
+                  transition: 'opacity 0.2s ease'
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-};
-
-// Helper function to generate effect gradients
-const getEffectGradient = (effectId: string, mousePosition: { x: number; y: number }) => {
-  const { x, y } = mousePosition;
-  
-  switch (effectId) {
-    case 'holographic':
-      return `linear-gradient(${x * 360}deg, 
-        rgba(255, 0, 255, 0.3) 0%, 
-        rgba(0, 255, 255, 0.3) 50%, 
-        rgba(255, 255, 0, 0.3) 100%)`;
-    case 'chrome':
-      return `radial-gradient(circle at ${x * 100}% ${y * 100}%, 
-        rgba(255, 255, 255, 0.4) 0%, 
-        rgba(192, 192, 192, 0.2) 50%, 
-        transparent 100%)`;
-    case 'prizm':
-      return `linear-gradient(${(x + y) * 180}deg, 
-        rgba(255, 0, 100, 0.3), 
-        rgba(100, 255, 0, 0.3), 
-        rgba(0, 100, 255, 0.3))`;
-    case 'foilspray':
-      return `radial-gradient(circle at ${x * 100}% ${y * 100}%, 
-        rgba(255, 215, 0, 0.4) 0%, 
-        rgba(255, 223, 0, 0.2) 50%, 
-        transparent 100%)`;
-    default:
-      return `linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))`;
-  }
 };
