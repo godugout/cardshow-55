@@ -21,7 +21,7 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  // Background state - Default to 'scene' to ensure card is visible
+  // Background state - Explicitly default to 'scene' to ensure card is visible
   const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
 
   // Advanced settings
@@ -87,11 +87,11 @@ export const useViewerState = () => {
 
   // Safe space setter that ensures we always have a valid space
   const setSelectedSpaceSafe = useCallback((space: SpaceEnvironment | null) => {
-    console.log('useViewerState: Setting selected space to:', space?.name || 'null');
+    console.log('🔄 useViewerState: Setting selected space to:', space?.name || 'null');
     if (space) {
       setSelectedSpace(space);
     } else if (SPACE_ENVIRONMENTS.length > 0) {
-      console.log('useViewerState: Falling back to default space:', SPACE_ENVIRONMENTS[0].name);
+      console.log('🔄 useViewerState: Falling back to default space:', SPACE_ENVIRONMENTS[0].name);
       setSelectedSpace(SPACE_ENVIRONMENTS[0]);
     }
   }, []);

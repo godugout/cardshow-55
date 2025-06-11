@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps } from './types';
 import { 
@@ -153,11 +152,12 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     isHovering
   });
 
-  // Debug logging for background type and rendering
+  // Debug logging for card visibility
   useEffect(() => {
     console.log('🎯 ImmersiveCardViewer: Current background type:', backgroundType);
     console.log('🎯 ImmersiveCardViewer: Selected space:', selectedSpace?.name || 'null');
     console.log('🎯 ImmersiveCardViewer: Card data:', card?.title || 'No card');
+    console.log('🎯 ImmersiveCardViewer: Card should be visible in scene mode');
   }, [backgroundType, selectedSpace, card]);
 
   // Auto-rotation effect
@@ -266,6 +266,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onMouseUp={handleDragEnd}
         onMouseLeave={handleDragEnd}
       >
+        {/* Background Renderer */}
         <BackgroundRenderer
           backgroundType={backgroundType}
           selectedSpace={selectedSpace}
@@ -324,8 +325,15 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           setIsFlipped={setIsFlipped}
         />
 
-        {/* Enhanced Card Container - Always render as fallback */}
-        <div ref={cardContainerRef} className={backgroundType === 'scene' ? 'relative z-10' : 'absolute inset-0 z-10 flex items-center justify-center'}>
+        {/* Enhanced Card Container - ALWAYS RENDER as fallback */}
+        <div 
+          ref={cardContainerRef} 
+          className="relative z-10 flex items-center justify-center"
+          style={{ 
+            position: backgroundType === 'scene' ? 'relative' : 'absolute',
+            inset: backgroundType === 'scene' ? 'auto' : '0'
+          }}
+        >
           <EnhancedCardContainer
             card={card}
             isFlipped={isFlipped}
