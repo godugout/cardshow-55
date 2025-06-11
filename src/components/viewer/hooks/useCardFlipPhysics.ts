@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 interface FlipPhysicsState {
@@ -209,28 +210,14 @@ export const useCardFlipPhysics = (initialFlipped = false, physicsEnabled = true
     };
   }, [physicsState]);
 
-  // Get visibility styles for card faces - ALWAYS return physics-based visibility
+  // Simplified face visibility - let CSS 3D transforms handle visibility naturally
   const getFaceVisibility = useCallback((isFront: boolean) => {
-    const { showingFront, isFlipping } = physicsState;
-    
-    // During animation, use physics-determined visibility
-    if (isFlipping) {
-      const shouldShow = (isFront && showingFront) || (!isFront && !showingFront);
-      return {
-        opacity: shouldShow ? 1 : 0,
-        zIndex: shouldShow ? 30 : 10,
-        backfaceVisibility: 'hidden' as const
-      };
-    }
-    
-    // When not flipping, use current flip state
-    const shouldShow = (isFront && !isFlipped) || (!isFront && isFlipped);
+    // Always return visible styles and let the 3D transforms determine what's seen
     return {
-      opacity: shouldShow ? 1 : 0,
-      zIndex: shouldShow ? 30 : 10,
-      backfaceVisibility: 'hidden' as const
+      opacity: 1,
+      zIndex: 20
     };
-  }, [physicsState, isFlipped]);
+  }, []);
 
   return {
     isFlipped,

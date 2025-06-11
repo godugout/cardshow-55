@@ -33,7 +33,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   onClick,
   getFaceVisibility
 }) => {
-  // Use physics-based visibility when available, otherwise use simple transform
+  // Use physics-based visibility when available
   const faceStyles = getFaceVisibility ? getFaceVisibility(true) : {};
 
   return (
@@ -42,9 +42,8 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       style={{
         ...frameStyles,
         ...faceStyles,
-        transform: getFaceVisibility ? 'rotateY(0deg)' : 'rotateY(0deg)',
-        transformStyle: 'preserve-3d',
-        transition: getFaceVisibility ? 'opacity 0.1s ease' : 'transform 0.3s ease'
+        transform: 'rotateY(0deg)',
+        transformStyle: 'preserve-3d'
       }}
       data-face="front"
     >

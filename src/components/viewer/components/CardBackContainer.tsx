@@ -36,7 +36,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
   
-  // Use physics-based visibility when available, otherwise use simple transform
+  // Use physics-based visibility when available
   const faceStyles = getFaceVisibility ? getFaceVisibility(false) : {};
 
   const handleLogoClick = () => {
