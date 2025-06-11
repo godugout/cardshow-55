@@ -72,6 +72,7 @@ export const SimplifiedDiscover: React.FC = () => {
   );
 
   const handleCardView = (card: any, index: number) => {
+    console.log('🎯 SimplifiedDiscover: Card view clicked', card.title, index);
     if (cards && cards.length > 0) {
       // Use the actual database card for the viewer
       handleCardClick(cards[index], cards.slice(0, 6));
@@ -115,11 +116,13 @@ export const SimplifiedDiscover: React.FC = () => {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-20 pointer-events-auto">
                     <CRDButton 
                       size="sm" 
-                      className="w-full"
+                      className="w-full relative z-30"
                       onClick={(e) => {
+                        console.log('🎯 SimplifiedDiscover: Button clicked', card.title);
+                        e.preventDefault();
                         e.stopPropagation();
                         handleCardView(card, index);
                       }}
