@@ -58,6 +58,60 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
     `
   };
 
+  // Material-aware text styling
+  const getTextStyles = (materialId: string) => {
+    switch (materialId) {
+      case 'chrome':
+      case 'gold':
+        // Etched/embossed metallic effect
+        return {
+          textShadow: `
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            0 1px 2px rgba(0, 0, 0, 0.8),
+            0 0 5px rgba(0, 0, 0, 0.5)
+          `,
+          color: 'rgba(255, 255, 255, 0.7)',
+          fontWeight: '600',
+          letterSpacing: '0.5px'
+        };
+      
+      case 'vintage':
+        // Stamped/pressed paper effect
+        return {
+          textShadow: `
+            0 1px 0 rgba(0, 0, 0, 0.9),
+            0 2px 4px rgba(0, 0, 0, 0.6)
+          `,
+          color: 'rgba(188, 170, 164, 0.8)',
+          fontWeight: '500',
+          letterSpacing: '0.3px'
+        };
+      
+      case 'crystal':
+      case 'ice':
+        // Glass/crystal with holographic overlay
+        return {
+          textShadow: `
+            0 0 10px rgba(148, 163, 184, 0.6),
+            0 1px 2px rgba(0, 0, 0, 0.4)
+          `,
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontWeight: '400',
+          letterSpacing: '0.8px'
+        };
+      
+      default:
+        // Default subtle styling
+        return {
+          textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)',
+          color: 'rgba(255, 255, 255, 0.7)',
+          fontWeight: '500'
+        };
+    }
+  };
+
+  const textStyles = getTextStyles(selectedMaterial.id);
+
   return (
     <div 
       className="absolute inset-0 rounded-xl overflow-hidden"
@@ -119,27 +173,74 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         }}
       />
 
-      {/* Card Back Content */}
+      {/* Card Back Content with Material-Aware Styling */}
       <div className="relative h-full flex flex-col justify-between p-6 z-30">
-        {/* Top Section - Card Info */}
+        {/* Top Section - Card Info with Material Integration */}
         <div className="text-center">
-          <div className="bg-black bg-opacity-60 backdrop-blur-sm rounded-lg p-4 text-white">
-            <h3 className="text-lg font-bold mb-2">Card Details</h3>
+          <div 
+            className="bg-black bg-opacity-20 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-10"
+            style={{
+              background: selectedMaterial.id === 'crystal' || selectedMaterial.id === 'ice' 
+                ? 'rgba(255, 255, 255, 0.05)' 
+                : 'rgba(0, 0, 0, 0.2)'
+            }}
+          >
+            <h3 
+              className="text-sm font-semibold mb-2 opacity-60"
+              style={textStyles}
+            >
+              Card Details
+            </h3>
             {card && (
               <>
-                <p className="text-sm mb-1">Title: {card.title}</p>
+                <p 
+                  className="text-xs mb-1 opacity-50"
+                  style={{...textStyles, fontSize: '0.7rem'}}
+                >
+                  {card.title}
+                </p>
                 {card.rarity && (
-                  <p className="text-sm mb-1">Rarity: <span className="uppercase tracking-wide">{card.rarity}</span></p>
+                  <p 
+                    className="text-xs mb-1 uppercase tracking-wide opacity-40"
+                    style={{...textStyles, fontSize: '0.65rem'}}
+                  >
+                    {card.rarity}
+                  </p>
                 )}
                 {card.creator_attribution?.creator_name && (
-                  <p className="text-xs opacity-75">Created by: {card.creator_attribution.creator_name}</p>
+                  <p 
+                    className="text-xs opacity-30"
+                    style={{...textStyles, fontSize: '0.6rem'}}
+                  >
+                    Created by: {card.creator_attribution.creator_name}
+                  </p>
                 )}
               </>
             )}
           </div>
+
+          {/* Holographic sticker overlay for crystal/glass materials */}
+          {(selectedMaterial.id === 'crystal' || selectedMaterial.id === 'ice') && (
+            <div 
+              className="absolute inset-0 rounded-lg pointer-events-none"
+              style={{
+                background: `
+                  linear-gradient(45deg, 
+                    rgba(255, 107, 107, 0.1) 0%, 
+                    rgba(78, 205, 196, 0.1) 25%, 
+                    rgba(69, 183, 209, 0.1) 50%, 
+                    rgba(150, 206, 180, 0.1) 75%, 
+                    rgba(255, 234, 167, 0.1) 100%
+                  )
+                `,
+                animation: 'holographic-shift 4s ease-in-out infinite',
+                mixBlendMode: 'overlay'
+              }}
+            />
+          )}
         </div>
 
-        {/* Center Section - CRD Logo */}
+        {/* Center Section - CRD Logo (Primary Focus) */}
         <div className="flex-1 flex items-center justify-center">
           <InteractiveLogo
             logoUrl="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png"
@@ -148,11 +249,28 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
           />
         </div>
 
-        {/* Bottom Section - Additional Info */}
+        {/* Bottom Section - Minimal Additional Info */}
         <div className="text-center">
-          <div className="bg-black bg-opacity-60 backdrop-blur-sm rounded-lg p-3 text-white">
-            <p className="text-xs opacity-75">Collectible Trading Card</p>
-            <p className="text-xs opacity-60">CRD Platform © 2024</p>
+          <div 
+            className="bg-black bg-opacity-15 backdrop-blur-sm rounded-lg p-2 border border-white border-opacity-5"
+            style={{
+              background: selectedMaterial.id === 'crystal' || selectedMaterial.id === 'ice' 
+                ? 'rgba(255, 255, 255, 0.03)' 
+                : 'rgba(0, 0, 0, 0.15)'
+            }}
+          >
+            <p 
+              className="text-xs opacity-30"
+              style={{...textStyles, fontSize: '0.6rem'}}
+            >
+              Collectible Trading Card
+            </p>
+            <p 
+              className="text-xs opacity-20"
+              style={{...textStyles, fontSize: '0.55rem'}}
+            >
+              CRD Platform © 2024
+            </p>
           </div>
         </div>
       </div>
@@ -184,6 +302,17 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
           @keyframes noise-shift {
             0% { transform: translate(0, 0); }
             100% { transform: translate(-20px, -20px); }
+          }
+
+          @keyframes holographic-shift {
+            0%, 100% { 
+              background-position: 0% 0%;
+              opacity: 0.3;
+            }
+            50% { 
+              background-position: 100% 100%;
+              opacity: 0.6;
+            }
           }
         `}
       </style>

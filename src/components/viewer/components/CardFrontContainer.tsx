@@ -69,24 +69,22 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         </div>
       </div>
 
-      {/* Card Image - Proper z-index for layering */}
+      {/* Card Image - Use Puff the Magic Dragon */}
       <div className="absolute inset-0 z-30">
-        {card.image_url && (
-          <img 
-            src={card.image_url} 
-            alt={card.title}
-            className="w-full h-full object-cover"
-            style={{
-              userSelect: 'none',
-              WebkitUserSelect: 'none',
-              pointerEvents: 'none'
-            }}
-            draggable={false}
-          />
-        )}
+        <img 
+          src="/lovable-uploads/0642fcd5-3a3f-471b-abd3-81eba9d4d456.png"
+          alt="Puff the Magic Dragon"
+          className="w-full h-full object-cover"
+          style={{
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            pointerEvents: 'none'
+          }}
+          draggable={false}
+        />
       </div>
 
-      {/* Card Content - Overlay - Above image */}
+      {/* Subtle Card Content Overlay */}
       <div 
         className="absolute inset-0 p-6 flex flex-col z-35"
         style={{
@@ -96,13 +94,10 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         }}
       >
         <div className="mt-auto">
-          <div className="bg-black bg-opacity-40 backdrop-filter backdrop-blur-sm rounded-lg p-3 text-white">
-            <h3 className="text-xl font-bold mb-1">{card.title}</h3>
-            {card.description && (
-              <p className="text-sm mb-1">{card.description}</p>
-            )}
+          <div className="bg-black bg-opacity-20 backdrop-filter backdrop-blur-sm rounded-lg p-3 text-white">
+            <h3 className="text-xl font-bold mb-1 opacity-90">{card.title}</h3>
             {card.rarity && (
-              <p className="text-xs uppercase tracking-wide opacity-75">{card.rarity}</p>
+              <p className="text-xs uppercase tracking-wide opacity-60">{card.rarity}</p>
             )}
           </div>
         </div>
