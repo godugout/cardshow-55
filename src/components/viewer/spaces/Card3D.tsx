@@ -3,62 +3,26 @@ import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Group } from 'three';
-import { EnhancedCardContainer } from '../components/EnhancedCardContainer';
-import { useCardEffects } from '../hooks/useCardEffects';
+import { SimpleCard3D } from './SimpleCard3D';
 import type { SpaceControls } from './types';
-import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 
 interface Simple3DCard {
   id: string;
   title: string;
   image_url?: string;
+  rarity?: string;
+  tags?: string[];
 }
 
 interface Card3DProps {
   card: Simple3DCard;
   controls: SpaceControls;
-  effectValues?: EffectValues;
-  selectedScene?: EnvironmentScene;
-  selectedLighting?: LightingPreset;
-  materialSettings?: MaterialSettings;
-  overallBrightness?: number[];
-  interactiveLighting?: boolean;
   onClick?: () => void;
 }
-
-// Helper function to convert simple card to full CardData format
-const adaptCardForViewer = (card: Simple3DCard) => ({
-  id: card.id,
-  title: card.title,
-  description: '',
-  rarity: 'common' as const,
-  tags: [],
-  image_url: card.image_url || '/placeholder-card.jpg',
-  design_metadata: {},
-  visibility: 'public' as const,
-  creator_attribution: {
-    creator_name: 'Unknown',
-    collaboration_type: 'solo' as const
-  },
-  publishing_options: {
-    marketplace_listing: false,
-    crd_catalog_inclusion: false,
-    print_available: false,
-    pricing: { currency: 'USD' },
-    distribution: { limited_edition: false }
-  }
-});
 
 export const Card3D: React.FC<Card3DProps> = ({ 
   card, 
   controls, 
-  effectValues = {},
-  selectedScene,
-  selectedLighting,
-  materialSettings,
-  overallBrightness = [100],
-  interactiveLighting = false,
   onClick 
 }) => {
   const groupRef = useRef<Group>(null);
@@ -66,29 +30,6 @@ export const Card3D: React.FC<Card3DProps> = ({
   // Simple state for 3D card interaction
   const [isFlipped, setIsFlipped] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
-  const [mousePosition, setMousePosition] = React.useState({ x: 0.5, y: 0.5 });
-  const [rotation, setRotation] = React.useState({ x: 0, y: 0 });
-  const zoom = 1;
-  const isDragging = false;
-
-  // Convert simple card to full CardData format for useCardEffects
-  const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
-
-  // Use card effects if we have the required props
-  const cardEffects = (selectedScene && selectedLighting && materialSettings) ? useCardEffects({
-    card: adaptedCard,
-    effectValues,
-    mousePosition,
-    showEffects: true,
-    overallBrightness,
-    interactiveLighting,
-    selectedScene,
-    selectedLighting,
-    materialSettings,
-    zoom,
-    rotation,
-    isHovering
-  }) : null;
 
   useFrame((state) => {
     if (groupRef.current) {
@@ -106,6 +47,11 @@ export const Card3D: React.FC<Card3DProps> = ({
         const gravity = Math.sin(state.clock.elapsedTime * 0.3) * controls.gravityEffect * 0.05;
         groupRef.current.position.y += gravity;
       }
+
+      // Gentle hover animation
+      if (isHovering) {
+        groupRef.current.position.y += 0.1;
+      }
     }
   });
 
@@ -116,12 +62,10 @@ export const Card3D: React.FC<Card3DProps> = ({
 
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
-  const handleMouseDown = () => {};
-  const handleMouseMove = () => {};
 
   return (
     <group ref={groupRef}>
-      {/* Render the enhanced card container with 3D positioning */}
+      {/* Invisible interaction plane */}
       <mesh 
         castShadow 
         receiveShadow
@@ -130,45 +74,32 @@ export const Card3D: React.FC<Card3DProps> = ({
         onPointerLeave={handleMouseLeave}
       >
         <planeGeometry args={[2.5, 3.5]} />
-        <meshBasicMaterial transparent opacity={0} /> {/* Invisible plane for interaction */}
+        <meshBasicMaterial transparent opacity={0} />
       </mesh>
       
-      {/* HTML overlay for the enhanced card - with prioritized image layer */}
+      {/* HTML overlay for the simplified card */}
       <Html
         transform
         occlude
         position={[0, 0, 0.01]}
         distanceFactor={1}
         style={{
-          width: '250px',
-          height: '350px',
+          width: '240px',
+          height: '336px',
           pointerEvents: 'none'
         }}
       >
-        <div style={{ width: '250px', height: '350px', transform: 'scale(0.6)' }}>
-          <EnhancedCardContainer
-            card={adaptedCard}
+        <div style={{ 
+          width: '240px', 
+          height: '336px', 
+          transform: 'scale(1)',
+          filter: isHovering ? 'brightness(1.1)' : 'brightness(1)',
+          transition: 'filter 0.3s ease'
+        }}>
+          <SimpleCard3D
+            card={card}
             isFlipped={isFlipped}
-            isHovering={isHovering}
-            showEffects={true}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={zoom}
-            isDragging={isDragging}
-            frameStyles={cardEffects?.getFrameStyles() || { transition: 'all 0.3s ease' }}
-            enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
-            SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
-            interactiveLighting={interactiveLighting}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            onClick={handleCardClick}
+            onFlip={handleCardClick}
           />
         </div>
       </Html>
