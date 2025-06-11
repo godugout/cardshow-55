@@ -3,7 +3,8 @@ import React, { useRef, useCallback } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Group } from 'three';
-import { EnhancedCardContainer } from '../components/EnhancedCardContainer';
+import { CardFrontContainer } from '../components/CardFrontContainer';
+import { CardBackContainer } from '../components/CardBackContainer';
 import { useCardEffects } from '../hooks/useCardEffects';
 import type { SpaceControls } from './types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -99,6 +100,15 @@ export const Card3D: React.FC<Card3DProps> = ({
 
   useFrame((state) => {
     if (groupRef.current) {
+      // Apply manual rotation from dragging
+      groupRef.current.rotation.x = (rotation.x * Math.PI) / 180 * 0.5; // Reduce sensitivity
+      groupRef.current.rotation.y = (rotation.y * Math.PI) / 180 * 0.5;
+      
+      // Add flip rotation if card is flipped
+      if (isFlipped) {
+        groupRef.current.rotation.y += Math.PI;
+      }
+
       // Floating animation
       const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
       groupRef.current.position.y = floatY;
@@ -123,7 +133,8 @@ export const Card3D: React.FC<Card3DProps> = ({
   }, [onClick]);
 
   // Mouse interaction handlers (matching 2D version behavior)
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleMouseDown = useCallback((e: any) => {
+    e.stopPropagation();
     setIsDragging(true);
     setDragStart({ 
       x: e.clientX - rotation.y, 
@@ -146,11 +157,13 @@ export const Card3D: React.FC<Card3DProps> = ({
     }, 300);
   }, [rotation, handleCardFlip]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    // Update mouse position for effects
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
+  const handleMouseMove = useCallback((e: any) => {
+    e.stopPropagation();
+    
+    // Update mouse position for effects (normalized to 0-1)
+    const rect = e.target.getBoundingClientRect?.() || { left: 0, top: 0, width: 400, height: 560 };
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
     setMousePosition({ x, y });
     
     // Handle dragging rotation
@@ -162,7 +175,8 @@ export const Card3D: React.FC<Card3DProps> = ({
     }
   }, [isDragging, dragStart]);
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback((e: any) => {
+    e.stopPropagation();
     setIsDragging(false);
   }, []);
 
@@ -179,35 +193,25 @@ export const Card3D: React.FC<Card3DProps> = ({
 
   return (
     <group ref={groupRef}>
-      {/* Render the enhanced card container with 3D positioning and proper interaction */}
-      <mesh 
-        castShadow 
-        receiveShadow
-        onPointerEnter={handleMouseEnter}
-        onPointerLeave={handleMouseLeave}
-      >
-        <planeGeometry args={[2.5, 3.5]} />
-        <meshBasicMaterial transparent opacity={0} /> {/* Invisible plane for interaction */}
-      </mesh>
-      
-      {/* HTML overlay for the enhanced card - with enabled pointer events */}
+      {/* Front Face */}
       <Html
         transform
         occlude
         position={[0, 0, 0.01]}
         distanceFactor={1}
         style={{
-          width: '250px',
-          height: '350px',
-          pointerEvents: 'auto' // Enable mouse interactions
+          width: '400px',
+          height: '560px',
+          pointerEvents: 'auto'
         }}
       >
         <div 
           style={{ 
-            width: '250px', 
-            height: '350px', 
-            transform: 'scale(0.6)',
-            cursor: isDragging ? 'grabbing' : 'grab'
+            width: '400px', 
+            height: '560px',
+            cursor: isDragging ? 'grabbing' : 'grab',
+            transform: 'scale(0.8)',
+            transformOrigin: 'center center'
           }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -215,32 +219,73 @@ export const Card3D: React.FC<Card3DProps> = ({
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <EnhancedCardContainer
+          <CardFrontContainer
             card={adaptedCard}
-            isFlipped={isFlipped}
+            isFlipped={false}
             isHovering={isHovering}
             showEffects={true}
             effectValues={effectValues}
             mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={zoom}
-            isDragging={isDragging}
             frameStyles={cardEffects?.getFrameStyles() || { transition: isDragging ? 'none' : 'all 0.3s ease' }}
             enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
             SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
             interactiveLighting={interactiveLighting}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
             onClick={handleCardFlip}
           />
         </div>
       </Html>
+      
+      {/* Back Face */}
+      <Html
+        transform
+        occlude
+        position={[0, 0, -0.01]}
+        rotation={[0, Math.PI, 0]}
+        distanceFactor={1}
+        style={{
+          width: '400px',
+          height: '560px',
+          pointerEvents: 'auto'
+        }}
+      >
+        <div 
+          style={{ 
+            width: '400px', 
+            height: '560px',
+            cursor: isDragging ? 'grabbing' : 'grab',
+            transform: 'scale(0.8)',
+            transformOrigin: 'center center'
+          }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <CardBackContainer
+            isFlipped={false}
+            isHovering={isHovering}
+            showEffects={true}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            frameStyles={cardEffects?.getFrameStyles() || { transition: isDragging ? 'none' : 'all 0.3s ease' }}
+            enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
+            SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
+            interactiveLighting={interactiveLighting}
+          />
+        </div>
+      </Html>
+      
+      {/* Invisible collision mesh for interactions */}
+      <mesh 
+        castShadow 
+        receiveShadow
+        onPointerEnter={handleMouseEnter}
+        onPointerLeave={handleMouseLeave}
+      >
+        <boxGeometry args={[3.2, 4.5, 0.02]} />
+        <meshBasicMaterial transparent opacity={0} />
+      </mesh>
     </group>
   );
 };
