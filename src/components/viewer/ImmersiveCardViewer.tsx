@@ -153,6 +153,13 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     isHovering
   });
 
+  // Debug logging for background type and rendering
+  useEffect(() => {
+    console.log('🎯 ImmersiveCardViewer: Current background type:', backgroundType);
+    console.log('🎯 ImmersiveCardViewer: Selected space:', selectedSpace?.name || 'null');
+    console.log('🎯 ImmersiveCardViewer: Card data:', card?.title || 'No card');
+  }, [backgroundType, selectedSpace, card]);
+
   // Auto-rotation effect
   useEffect(() => {
     if (autoRotate && !isDragging) {
@@ -317,37 +324,35 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           setIsFlipped={setIsFlipped}
         />
 
-        {/* Enhanced Card Container (only for scene background) */}
-        {backgroundType === 'scene' && (
-          <div ref={cardContainerRef}>
-            <EnhancedCardContainer
-              card={card}
-              isFlipped={isFlipped}
-              isHovering={isHovering}
-              showEffects={showEffects}
-              effectValues={effectValues}
-              mousePosition={mousePosition}
-              rotation={rotation}
-              zoom={zoom}
-              isDragging={isDragging}
-              frameStyles={getFrameStyles()}
-              enhancedEffectStyles={getEnhancedEffectStyles()}
-              SurfaceTexture={SurfaceTexture}
-              interactiveLighting={interactiveLighting}
-              selectedScene={selectedScene}
-              selectedLighting={selectedLighting}
-              materialSettings={materialSettings}
-              overallBrightness={overallBrightness}
-              environmentControls={environmentControls}
-              showBackgroundInfo={false}
-              onMouseDown={handleDragStart}
-              onMouseMove={handleDrag}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-              onClick={() => setIsFlipped(!isFlipped)}
-            />
-          </div>
-        )}
+        {/* Enhanced Card Container - Always render as fallback */}
+        <div ref={cardContainerRef} className={backgroundType === 'scene' ? 'relative z-10' : 'absolute inset-0 z-10 flex items-center justify-center'}>
+          <EnhancedCardContainer
+            card={card}
+            isFlipped={isFlipped}
+            isHovering={isHovering}
+            showEffects={showEffects}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            rotation={rotation}
+            zoom={zoom}
+            isDragging={isDragging}
+            frameStyles={getFrameStyles()}
+            enhancedEffectStyles={getEnhancedEffectStyles()}
+            SurfaceTexture={SurfaceTexture}
+            interactiveLighting={interactiveLighting}
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            materialSettings={materialSettings}
+            overallBrightness={overallBrightness}
+            environmentControls={environmentControls}
+            showBackgroundInfo={false}
+            onMouseDown={handleDragStart}
+            onMouseMove={handleDrag}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+            onClick={() => setIsFlipped(!isFlipped)}
+          />
+        </div>
 
         {/* Info Panel - Prevent text selection */}
         <ViewerInfoPanel

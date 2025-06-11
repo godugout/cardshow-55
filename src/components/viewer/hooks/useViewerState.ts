@@ -21,7 +21,7 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  // Background state
+  // Background state - Default to 'scene' to ensure card is visible
   const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
 
   // Advanced settings
@@ -96,6 +96,12 @@ export const useViewerState = () => {
     }
   }, []);
 
+  // Debug logging for background type changes
+  const setBackgroundTypeWithDebug = useCallback((type: BackgroundType) => {
+    console.log('🎯 Background type changing from', backgroundType, 'to', type);
+    setBackgroundType(type);
+  }, [backgroundType]);
+
   return {
     // UI State
     isFullscreen,
@@ -126,7 +132,7 @@ export const useViewerState = () => {
 
     // Background state
     backgroundType,
-    setBackgroundType,
+    setBackgroundType: setBackgroundTypeWithDebug,
 
     // Advanced settings
     selectedScene,
