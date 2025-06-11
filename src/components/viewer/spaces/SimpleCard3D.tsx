@@ -32,18 +32,18 @@ const getRarityColor = (rarity: string = 'common') => {
   }
 };
 
-export const SimpleCard3D: React.FC<SimpleCard3DProps> = ({ card, isFlipped, onFlip }) => {
+export const SimpleCard3D: React.FC<SimpleCard3DProps> = ({ card, isFlipped }) => {
   if (isFlipped) {
     // Card back - enhanced design to match trading card aesthetic
     return (
       <div 
-        className="relative bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-2xl cursor-pointer transform-gpu border border-gray-600"
+        className="relative bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-2xl transform-gpu border border-gray-600"
         style={{ 
           width: CARD_WIDTH, 
           height: CARD_HEIGHT,
-          transform: 'rotateY(180deg)'
+          transform: 'rotateY(180deg)',
+          pointerEvents: 'none' // No interaction on HTML elements
         }}
-        onClick={onFlip}
       >
         {/* Main logo area */}
         <div className="absolute inset-0 flex items-center justify-center">
@@ -71,12 +71,15 @@ export const SimpleCard3D: React.FC<SimpleCard3DProps> = ({ card, isFlipped, onF
     );
   }
 
-  // Card front - matching the 2D CardPreview exactly
+  // Card front - matching the 2D CardPreview exactly, no interactions
   return (
     <div 
-      className="relative bg-[#353945] rounded-2xl overflow-hidden cursor-pointer transform-gpu"
-      style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
-      onClick={onFlip}
+      className="relative bg-[#353945] rounded-2xl overflow-hidden transform-gpu"
+      style={{ 
+        width: CARD_WIDTH, 
+        height: CARD_HEIGHT,
+        pointerEvents: 'none' // No interaction on HTML elements
+      }}
     >
       {/* Tags - matching CardPreview positioning */}
       <div className="absolute top-6 left-6 flex gap-2 z-10">
@@ -96,7 +99,10 @@ export const SimpleCard3D: React.FC<SimpleCard3DProps> = ({ card, isFlipped, onF
           src={card.image_url}
           alt={card.title}
           className="absolute w-full h-full object-cover"
-          style={{ borderRadius: "1rem" }}
+          style={{ 
+            borderRadius: "1rem",
+            pointerEvents: 'none' // No interaction on images
+          }}
           loading="lazy"
         />
       ) : (
@@ -115,8 +121,7 @@ export const SimpleCard3D: React.FC<SimpleCard3DProps> = ({ card, isFlipped, onF
         </h3>
       </div>
 
-      {/* Hover effect overlay */}
-      <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity duration-200 rounded-2xl"></div>
+      {/* Removed hover effect overlay since it's handled by the 3D system */}
     </div>
   );
 };

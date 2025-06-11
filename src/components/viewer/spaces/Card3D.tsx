@@ -48,11 +48,6 @@ export const Card3D: React.FC<Card3DProps> = ({
         baseY += gravity;
       }
 
-      // REMOVED: Hover jump animation that was causing the issue
-      // if (isHovering) {
-      //   baseY += 0.1;
-      // }
-
       // Set the final position without stacking effects
       groupRef.current.position.y = baseY;
 
@@ -78,7 +73,7 @@ export const Card3D: React.FC<Card3DProps> = ({
 
   return (
     <group ref={groupRef}>
-      {/* Invisible interaction plane - properly sized and positioned */}
+      {/* Invisible interaction plane - properly sized and positioned to match visual card */}
       <mesh 
         castShadow 
         receiveShadow
@@ -91,29 +86,29 @@ export const Card3D: React.FC<Card3DProps> = ({
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
       
-      {/* HTML overlay for the simplified card - centered at same position */}
+      {/* HTML overlay - positioned to match the 3D mesh exactly */}
       <Html
         transform
         occlude
-        position={[0, 0, 0.01]}
+        position={[-1.2, -1.68, 0.01]} // Position at top-left to align with mesh center
         distanceFactor={1}
         style={{
           width: '240px',
           height: '336px',
-          pointerEvents: 'none'
+          pointerEvents: 'none' // Prevent HTML from intercepting mouse events
         }}
       >
         <div style={{ 
           width: '240px', 
-          height: '336px', 
-          transform: 'translate(-50%, -50%)', // Center the HTML content
+          height: '336px',
           filter: isHovering ? 'brightness(1.1)' : 'brightness(1)',
-          transition: 'filter 0.3s ease'
+          transition: 'filter 0.3s ease',
+          pointerEvents: 'none' // Ensure no HTML interaction
         }}>
           <SimpleCard3D
             card={card}
             isFlipped={isFlipped}
-            onFlip={handleCardClick}
+            onFlip={() => {}} // Remove click handler - only 3D mesh should handle clicks
           />
         </div>
       </Html>
