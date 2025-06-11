@@ -5,7 +5,6 @@ import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
-import { Card3DTransform } from './Card3DTransform';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface EnhancedCardContainerProps {
@@ -100,51 +99,44 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     <div 
       className={`relative z-20 select-none`}
       style={{
-        transform: `scale(${zoom})`,
+        transform: `scale(${zoom}) rotateX(${rotation.x * 0.5}deg) rotateY(${rotation.y * 0.5}deg)`,
         transition: isDragging ? 'none' : 'transform 0.3s ease',
-        filter: `brightness(${interactiveLighting && isHovering ? 1.1 : 1.0}) contrast(1.05)`
+        filter: `brightness(${interactiveLighting && isHovering ? 1.1 : 1.0}) contrast(1.05)`,
+        transformStyle: 'preserve-3d'
       }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onClick={handleCardFlip}
     >
-      <Card3DTransform
-        rotation={rotation}
-        mousePosition={mousePosition}
-        isDragging={isDragging}
-        interactiveLighting={interactiveLighting}
+      {/* Front of Card */}
+      <CardFrontContainer
+        card={card}
+        isFlipped={localIsFlipped}
         isHovering={isHovering}
+        showEffects={showEffects}
+        effectValues={effectValues}
+        mousePosition={mousePosition}
+        frameStyles={effectiveFrameStyles}
+        enhancedEffectStyles={effectiveEnhancedEffectStyles}
+        SurfaceTexture={effectiveSurfaceTexture}
+        interactiveLighting={interactiveLighting}
         onClick={handleCardFlip}
-      >
-        {/* Front of Card */}
-        <CardFrontContainer
-          card={card}
-          isFlipped={localIsFlipped}
-          isHovering={isHovering}
-          showEffects={showEffects}
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-          frameStyles={effectiveFrameStyles}
-          enhancedEffectStyles={effectiveEnhancedEffectStyles}
-          SurfaceTexture={effectiveSurfaceTexture}
-          interactiveLighting={interactiveLighting}
-          onClick={handleCardFlip}
-        />
+      />
 
-        {/* Back of Card */}
-        <CardBackContainer
-          isFlipped={localIsFlipped}
-          isHovering={isHovering}
-          showEffects={showEffects}
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-          frameStyles={effectiveFrameStyles}
-          enhancedEffectStyles={effectiveEnhancedEffectStyles}
-          SurfaceTexture={effectiveSurfaceTexture}
-          interactiveLighting={interactiveLighting}
-        />
-      </Card3DTransform>
+      {/* Back of Card */}
+      <CardBackContainer
+        isFlipped={localIsFlipped}
+        isHovering={isHovering}
+        showEffects={showEffects}
+        effectValues={effectValues}
+        mousePosition={mousePosition}
+        frameStyles={effectiveFrameStyles}
+        enhancedEffectStyles={effectiveEnhancedEffectStyles}
+        SurfaceTexture={effectiveSurfaceTexture}
+        interactiveLighting={interactiveLighting}
+      />
     </div>
   );
 };

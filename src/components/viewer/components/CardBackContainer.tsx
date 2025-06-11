@@ -35,7 +35,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         opacity: isFlipped ? 1 : 0,
         zIndex: isFlipped ? 10 : 1,
         transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
-        background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)',
+        background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.4) 0%, rgba(45, 45, 45, 0.6) 50%, rgba(26, 26, 26, 0.4) 100%)', // Made more translucent
         ...frameStyles
       }}
     >
@@ -60,7 +60,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         <img 
           src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
           alt="CRD Logo" 
-          className="w-64 h-auto opacity-90"
+          className="w-64 h-auto opacity-60" // Reduced opacity for better effect visibility
           style={{
             filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
             userSelect: 'none',
@@ -78,8 +78,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
             style={{
               background: `radial-gradient(
                 ellipse 200% 150% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-                rgba(255, 255, 255, 0.08) 0%,
-                rgba(255, 255, 255, 0.03) 30%,
+                rgba(255, 255, 255, 0.12) 0%, /* Increased intensity for translucent back */
+                rgba(255, 255, 255, 0.06) 30%,
                 transparent 70%
               )`,
               mixBlendMode: 'overlay',

@@ -39,14 +39,14 @@ export const useViewerState = () => {
   // Preset state
   const [selectedPresetId, setSelectedPresetId] = useState<string>();
 
-  // 3D Space state - Initialize with first available space to prevent null errors
+  // 3D Space state - Initialize with closer camera distance
   const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(
     SPACE_ENVIRONMENTS.length > 0 ? SPACE_ENVIRONMENTS[0] : null
   );
   const [spaceControls, setSpaceControls] = useState<SpaceControls>({
     orbitSpeed: 0.5,
     floatIntensity: 1.0,
-    cameraDistance: 8,
+    cameraDistance: 4.5, // Reduced from 8 to bring card closer
     autoRotate: false,
     gravityEffect: 0.0
   });
@@ -76,7 +76,7 @@ export const useViewerState = () => {
   const handleResetCamera = useCallback(() => {
     setSpaceControls(prev => ({
       ...prev,
-      cameraDistance: 8,
+      cameraDistance: 4.5, // Updated reset value to match new default
       orbitSpeed: 0.5
     }));
   }, []);
