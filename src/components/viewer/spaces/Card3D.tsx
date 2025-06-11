@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Group } from 'three';
@@ -63,13 +63,20 @@ export const Card3D: React.FC<Card3DProps> = ({
 }) => {
   const groupRef = useRef<Group>(null);
   
-  // Simple state for 3D card interaction
+  // Enhanced interaction state to match 2D version
   const [isFlipped, setIsFlipped] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
   const [mousePosition, setMousePosition] = React.useState({ x: 0.5, y: 0.5 });
   const [rotation, setRotation] = React.useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = React.useState(false);
+  const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
+  const [autoRotateEnabled, setAutoRotateEnabled] = React.useState(controls.autoRotate);
+  
+  // Double-click detection (same as 2D version)
+  const clickCount = useRef(0);
+  const clickTimeout = useRef<NodeJS.Timeout | null>(null);
+  
   const zoom = 1;
-  const isDragging = false;
 
   // Convert simple card to full CardData format for useCardEffects
   const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
@@ -96,8 +103,8 @@ export const Card3D: React.FC<Card3DProps> = ({
       const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
       groupRef.current.position.y = floatY;
 
-      // Auto rotation
-      if (controls.autoRotate) {
+      // Auto rotation (only when not dragging)
+      if (autoRotateEnabled && !isDragging) {
         groupRef.current.rotation.y += 0.005 * controls.orbitSpeed;
       }
 
@@ -109,19 +116,70 @@ export const Card3D: React.FC<Card3DProps> = ({
     }
   });
 
-  const handleCardFlip = () => {
-    setIsFlipped(!isFlipped);
+  // Double-click flip handler (same logic as 2D version)
+  const handleCardFlip = useCallback(() => {
+    setIsFlipped(prev => !prev);
     onClick?.();
-  };
+  }, [onClick]);
 
-  const handleMouseEnter = () => setIsHovering(true);
-  const handleMouseLeave = () => setIsHovering(false);
-  const handleMouseDown = () => {};
-  const handleMouseMove = () => {};
+  // Mouse interaction handlers (matching 2D version behavior)
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStart({ 
+      x: e.clientX - rotation.y, 
+      y: e.clientY - rotation.x 
+    });
+    setAutoRotateEnabled(false);
+    
+    // Double-click detection
+    clickCount.current += 1;
+    
+    if (clickTimeout.current) {
+      clearTimeout(clickTimeout.current);
+    }
+    
+    clickTimeout.current = setTimeout(() => {
+      if (clickCount.current === 2) {
+        handleCardFlip();
+      }
+      clickCount.current = 0;
+    }, 300);
+  }, [rotation, handleCardFlip]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    // Update mouse position for effects
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    setMousePosition({ x, y });
+    
+    // Handle dragging rotation
+    if (isDragging) {
+      setRotation({
+        x: Math.max(-90, Math.min(90, e.clientY - dragStart.y)),
+        y: e.clientX - dragStart.x
+      });
+    }
+  }, [isDragging, dragStart]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    setIsHovering(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovering(false);
+    setIsDragging(false);
+    // Re-enable auto rotation when mouse leaves
+    setAutoRotateEnabled(controls.autoRotate);
+  }, [controls.autoRotate]);
 
   return (
     <group ref={groupRef}>
-      {/* Render the enhanced card container with 3D positioning */}
+      {/* Render the enhanced card container with 3D positioning and proper interaction */}
       <mesh 
         castShadow 
         receiveShadow
@@ -132,7 +190,7 @@ export const Card3D: React.FC<Card3DProps> = ({
         <meshBasicMaterial transparent opacity={0} /> {/* Invisible plane for interaction */}
       </mesh>
       
-      {/* HTML overlay for the enhanced card - with prioritized image layer */}
+      {/* HTML overlay for the enhanced card - with enabled pointer events */}
       <Html
         transform
         occlude
@@ -141,10 +199,22 @@ export const Card3D: React.FC<Card3DProps> = ({
         style={{
           width: '250px',
           height: '350px',
-          pointerEvents: 'none'
+          pointerEvents: 'auto' // Enable mouse interactions
         }}
       >
-        <div style={{ width: '250px', height: '350px', transform: 'scale(0.6)' }}>
+        <div 
+          style={{ 
+            width: '250px', 
+            height: '350px', 
+            transform: 'scale(0.6)',
+            cursor: isDragging ? 'grabbing' : 'grab'
+          }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <EnhancedCardContainer
             card={adaptedCard}
             isFlipped={isFlipped}
@@ -155,7 +225,7 @@ export const Card3D: React.FC<Card3DProps> = ({
             rotation={rotation}
             zoom={zoom}
             isDragging={isDragging}
-            frameStyles={cardEffects?.getFrameStyles() || { transition: 'all 0.3s ease' }}
+            frameStyles={cardEffects?.getFrameStyles() || { transition: isDragging ? 'none' : 'all 0.3s ease' }}
             enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
             SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
             interactiveLighting={interactiveLighting}

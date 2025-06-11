@@ -47,14 +47,23 @@ export const useViewerInteractions = ({
     hasNavigation: hasMultipleCards
   });
 
-  // Enhanced mouse handling with safe zones
+  // Enhanced mouse handling with safe zones - but avoid conflicts with card interactions
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return;
     
     const rect = containerRef.current.getBoundingClientRect();
     const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
     
-    if (!isDragging && !inSafeZone) {
+    // Only handle viewer-level interactions if not over the card area and not in safe zones
+    const cardAreaX = rect.left + (rect.width / 2) - 150; // Card area bounds
+    const cardAreaY = rect.top + (rect.height / 2) - 200;
+    const cardAreaWidth = 300;
+    const cardAreaHeight = 400;
+    
+    const isOverCard = e.clientX >= cardAreaX && e.clientX <= cardAreaX + cardAreaWidth &&
+                      e.clientY >= cardAreaY && e.clientY <= cardAreaY + cardAreaHeight;
+    
+    if (!isDragging && !inSafeZone && !isOverCard) {
       const x = (e.clientX - rect.left) / rect.width;
       const y = (e.clientY - rect.top) / rect.height;
       setMousePosition({ x, y });
@@ -71,14 +80,23 @@ export const useViewerInteractions = ({
     }
   }, [isDragging, allowRotation, autoRotate, isInSafeZone, setMousePosition, setIsHoveringControls, setRotation]);
 
-  // Enhanced wheel handling for safe zones
+  // Enhanced wheel handling for safe zones - but allow card interactions
   const handleWheel = useCallback((e: WheelEvent) => {
     if (!containerRef.current) return;
     
     const rect = containerRef.current.getBoundingClientRect();
     const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
     
-    if (!inSafeZone) {
+    // Only handle zoom if not in safe zones and not over card
+    const cardAreaX = rect.left + (rect.width / 2) - 150;
+    const cardAreaY = rect.top + (rect.height / 2) - 200;
+    const cardAreaWidth = 300;
+    const cardAreaHeight = 400;
+    
+    const isOverCard = e.clientX >= cardAreaX && e.clientX <= cardAreaX + cardAreaWidth &&
+                      e.clientY >= cardAreaY && e.clientY <= cardAreaY + cardAreaHeight;
+    
+    if (!inSafeZone && !isOverCard) {
       e.preventDefault();
       const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
       handleZoom(zoomDelta);
@@ -91,7 +109,16 @@ export const useViewerInteractions = ({
     const rect = containerRef.current.getBoundingClientRect();
     const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
     
-    if (allowRotation && !inSafeZone) {
+    // Only start viewer-level dragging if not in safe zones and not over card
+    const cardAreaX = rect.left + (rect.width / 2) - 150;
+    const cardAreaY = rect.top + (rect.height / 2) - 200;
+    const cardAreaWidth = 300;
+    const cardAreaHeight = 400;
+    
+    const isOverCard = e.clientX >= cardAreaX && e.clientX <= cardAreaX + cardAreaWidth &&
+                      e.clientY >= cardAreaY && e.clientY <= cardAreaY + cardAreaHeight;
+    
+    if (allowRotation && !inSafeZone && !isOverCard) {
       setIsDragging(true);
       setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
       setAutoRotate(false);
