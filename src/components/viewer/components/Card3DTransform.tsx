@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCardFlipPhysics } from '../hooks/useCardFlipPhysics';
 
@@ -33,11 +34,11 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
     onClick();
   };
 
-  // Calculate dynamic transform - combine mouse interaction with physics
+  // Calculate dynamic transform - use physics during flip, mouse interaction otherwise
   const getDynamicTransform = () => {
     const physicsTransform = getTransformStyle();
     
-    // If flipping, use physics transform
+    // If flipping, use pure physics transform
     if (physicsState.isFlipping) {
       return physicsTransform.transform;
     }
@@ -70,7 +71,21 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
       }}
       onClick={handleClick}
     >
-      {children}
+      {/* Pass the physics face visibility function to children */}
+      {React.Children.map(children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child, {
+            ...child.props,
+            getFaceVisibility: physicsState.isFlipping ? 
+              (isFront: boolean) => ({
+                opacity: 1,
+                zIndex: isFront ? 30 : 10,
+                backfaceVisibility: 'hidden' as const
+              }) : undefined
+          } as any);
+        }
+        return child;
+      })}
     </div>
   );
 };

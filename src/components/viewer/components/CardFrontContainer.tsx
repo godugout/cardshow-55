@@ -16,6 +16,7 @@ interface CardFrontContainerProps {
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
   onClick: () => void;
+  getFaceVisibility?: (isFront: boolean) => React.CSSProperties;
 }
 
 export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
@@ -29,18 +30,23 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting = false,
-  onClick
+  onClick,
+  getFaceVisibility
 }) => {
+  // Get visibility styles from physics system if available
+  const faceStyles = getFaceVisibility ? getFaceVisibility(true) : {
+    opacity: isFlipped ? 0 : 1,
+    zIndex: isFlipped ? 10 : 30,
+    backfaceVisibility: 'hidden' as const
+  };
+
   return (
     <div 
-      className={`absolute inset-0 rounded-xl overflow-hidden ${
-        isFlipped ? 'opacity-0' : 'opacity-100'
-      }`}
+      className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
-        transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-        transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
-        backfaceVisibility: 'hidden',
-        ...frameStyles
+        ...frameStyles,
+        ...faceStyles,
+        transition: getFaceVisibility ? 'none' : 'opacity 0.3s ease'
       }}
     >
       {/* Base Layer - Card Frame */}

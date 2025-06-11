@@ -10,6 +10,7 @@ interface FlipPhysicsState {
   scale: number;
   shadowIntensity: number;
   zOffset: number;
+  showingFront: boolean; // Track which face should be visible
 }
 
 interface FlipConfig {
@@ -30,7 +31,8 @@ export const useCardFlipPhysics = () => {
     rotationZ: 0,
     scale: 1,
     shadowIntensity: 0.8,
-    zOffset: 0
+    zOffset: 0,
+    showingFront: true
   });
 
   const animationRef = useRef<number>();
@@ -100,29 +102,37 @@ export const useCardFlipPhysics = () => {
     // Z-offset for 3D depth
     const zOffset = Math.sin(progress * Math.PI) * 20;
 
+    // Determine which face should be visible based on rotation
+    // At 90 degrees, switch faces to prevent overlap
+    const currentRotation = isFlipped ? baseRotationY : baseRotationY;
+    const normalizedRotation = Math.abs(currentRotation % 360);
+    const showingFront = normalizedRotation < 90 || normalizedRotation > 270;
+
     setPhysicsState({
       isFlipping: progress < 1,
       progress,
-      rotationY: baseRotationY,
+      rotationY: isFlipped ? 180 + baseRotationY : baseRotationY,
       rotationX: anticipationX,
       rotationZ: randomTiltZ,
       scale: scaleEffect,
       shadowIntensity,
-      zOffset
+      zOffset,
+      showingFront: isFlipped ? !showingFront : showingFront
     });
 
     if (progress < 1) {
       animationRef.current = requestAnimationFrame(animateFlip);
     } else {
-      // Animation complete
+      // Animation complete - ensure clean final state
       setPhysicsState(prev => ({
         ...prev,
         isFlipping: false,
-        rotationY: isFlipped ? 0 : 180,
+        rotationY: isFlipped ? 180 : 0,
         rotationX: 0,
         rotationZ: 0,
         scale: 1,
-        zOffset: 0
+        zOffset: 0,
+        showingFront: !isFlipped
       }));
       startTimeRef.current = undefined;
     }
@@ -155,7 +165,7 @@ export const useCardFlipPhysics = () => {
     };
   }, []);
 
-  // Get transform styles
+  // Get transform styles for the entire card container
   const getTransformStyle = useCallback(() => {
     const { rotationX, rotationY, rotationZ, scale, zOffset } = physicsState;
     
@@ -182,11 +192,33 @@ export const useCardFlipPhysics = () => {
     };
   }, [physicsState]);
 
+  // Get visibility styles for card faces
+  const getFaceVisibility = useCallback((isFront: boolean) => {
+    const { showingFront, isFlipping } = physicsState;
+    
+    if (isFlipping) {
+      // During flip, use z-index to control which face is visible
+      return {
+        opacity: 1,
+        zIndex: (isFront && showingFront) || (!isFront && !showingFront) ? 30 : 10,
+        backfaceVisibility: 'hidden' as const
+      };
+    } else {
+      // When not flipping, clean visibility state
+      return {
+        opacity: (isFront && !isFlipped) || (!isFront && isFlipped) ? 1 : 0,
+        zIndex: (isFront && !isFlipped) || (!isFront && isFlipped) ? 30 : 10,
+        backfaceVisibility: 'hidden' as const
+      };
+    }
+  }, [physicsState, isFlipped]);
+
   return {
     isFlipped,
     physicsState,
     triggerFlip,
     getTransformStyle,
-    getShadowStyle
+    getShadowStyle,
+    getFaceVisibility
   };
 };

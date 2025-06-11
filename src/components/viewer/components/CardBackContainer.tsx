@@ -14,6 +14,7 @@ interface CardBackContainerProps {
   enhancedEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
+  getFaceVisibility?: (isFront: boolean) => React.CSSProperties;
 }
 
 export const CardBackContainer: React.FC<CardBackContainerProps> = ({
@@ -25,10 +26,18 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   frameStyles,
   enhancedEffectStyles,
   SurfaceTexture,
-  interactiveLighting = false
+  interactiveLighting = false,
+  getFaceVisibility
 }) => {
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
+  
+  // Get visibility styles from physics system if available
+  const faceStyles = getFaceVisibility ? getFaceVisibility(false) : {
+    opacity: isFlipped ? 1 : 0,
+    zIndex: isFlipped ? 30 : 10,
+    backfaceVisibility: 'hidden' as const
+  };
   
   // Enhanced logo effects based on mouse position, lighting, and material
   const getLogoEffects = () => {
@@ -74,7 +83,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
     ...(selectedMaterial.blur && {
       backdropFilter: `blur(${selectedMaterial.blur}px)`
     }),
-    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+    transition: getFaceVisibility ? 'none' : 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
     boxShadow: `
       0 0 30px ${selectedMaterial.borderColor},
       inset 0 0 20px rgba(255, 255, 255, 0.1)
@@ -83,14 +92,11 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
 
   return (
     <div 
-      className={`absolute inset-0 rounded-xl overflow-hidden ${
-        isFlipped ? 'opacity-100' : 'opacity-0'
-      }`}
+      className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
-        transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(-180deg)',
-        transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
-        backfaceVisibility: 'hidden',
-        ...dynamicFrameStyles
+        ...dynamicFrameStyles,
+        ...faceStyles,
+        transition: getFaceVisibility ? 'none' : 'opacity 0.3s ease'
       }}
       data-material={selectedMaterial.id}
       data-material-name={selectedMaterial.name}
