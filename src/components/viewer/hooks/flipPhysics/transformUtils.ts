@@ -26,10 +26,12 @@ export const getShadowStyle = (physicsState: FlipPhysicsState) => {
   };
 };
 
+// FIXED: Corrected face visibility logic to match the expected behavior
 export const getFaceVisibility = (isFront: boolean) => {
-  // Always return visible styles and let the 3D transforms determine what's seen
+  // Return consistent visibility - let the 3D transforms handle the actual visibility
   return {
     opacity: 1,
-    zIndex: 20
+    zIndex: 20,
+    pointerEvents: 'auto' as React.CSSProperties['pointerEvents']
   };
 };

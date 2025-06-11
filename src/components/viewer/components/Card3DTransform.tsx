@@ -69,16 +69,16 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
     return finalTransform;
   };
 
-  // Fixed face visibility that ensures proper front/back display
+  // FIXED: Corrected face visibility logic to properly show front vs back
   const getSimplifiedFaceVisibility = (isFront: boolean) => {
     const currentRotationY = physicsState.rotationY;
     
     // Normalize rotation to 0-360 range
     const normalizedRotation = ((currentRotationY % 360) + 360) % 360;
     
-    // CORRECTED LOGIC: Front face should be visible when rotation is close to 0 or 360
-    // Back face should be visible when rotation is close to 180
-    const frontShouldBeVisible = normalizedRotation <= 90 || normalizedRotation >= 270;
+    // CORRECTED: Front face visible when rotation is 0-90 or 270-360 (close to 0)
+    // Back face visible when rotation is 90-270 (close to 180)
+    const frontShouldBeVisible = normalizedRotation < 90 || normalizedRotation > 270;
     
     console.log(`👁️ Face visibility calculation:`, {
       isFront,

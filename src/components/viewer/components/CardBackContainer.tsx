@@ -45,11 +45,12 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
     pointerEvents: (isFlipped ? 'auto' : 'none') as React.CSSProperties['pointerEvents']
   };
 
-  // Debug logging
-  console.log('🎭 CardBackContainer render:', {
+  // Debug logging for back image
+  console.log('🖼️ CardBackContainer - Back Image Setup:', {
     isFlipped,
     faceStyles,
-    selectedMaterial: selectedMaterial.name
+    selectedMaterial: selectedMaterial.name,
+    logoImagePath: '/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png'
   });
 
   // Create dynamic frame styles combining base styles with material properties
@@ -69,35 +70,74 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       data-material={selectedMaterial.id}
       data-material-name={selectedMaterial.name}
     >
-      {/* Back Effects Layer */}
-      <CardEffectsLayer
-        showEffects={showEffects}
-        isHovering={isHovering}
-        effectIntensity={[50]}
-        mousePosition={mousePosition}
-        physicalEffectStyles={enhancedEffectStyles}
-        effectValues={effectValues}
-        interactiveLighting={interactiveLighting}
+      {/* Dark Pattern Background Base */}
+      <div 
+        className="absolute inset-0 z-10"
+        style={{
+          background: `
+            linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)
+          `,
+          backgroundColor: '#0a0a0a'
+        }}
       />
 
-      {/* Surface Texture on Back */}
-      <div className="relative z-20">
-        {SurfaceTexture}
+      {/* Back Effects Layer */}
+      <div className="absolute inset-0 z-20">
+        <CardEffectsLayer
+          showEffects={showEffects}
+          isHovering={isHovering}
+          effectIntensity={[50]}
+          mousePosition={mousePosition}
+          physicalEffectStyles={enhancedEffectStyles}
+          effectValues={effectValues}
+          interactiveLighting={interactiveLighting}
+        />
+
+        {/* Surface Texture on Back */}
+        <div className="relative">
+          {SurfaceTexture}
+        </div>
       </div>
 
       {/* Dynamic texture and material overlays */}
-      <CardBackOverlays
-        selectedMaterial={selectedMaterial}
-        interactiveLighting={interactiveLighting}
-        isHovering={isHovering}
-        mousePosition={mousePosition}
-      />
+      <div className="absolute inset-0 z-30">
+        <CardBackOverlays
+          selectedMaterial={selectedMaterial}
+          interactiveLighting={interactiveLighting}
+          isHovering={isHovering}
+          mousePosition={mousePosition}
+        />
+      </div>
+
+      {/* Centered CRD Logo - HIGHEST Z-INDEX */}
+      <div className="absolute inset-0 flex items-center justify-center z-50">
+        <div className="flex items-center justify-center">
+          <img 
+            src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
+            alt="CRD Logo" 
+            className="w-48 h-auto opacity-90"
+            style={{
+              filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              pointerEvents: 'none'
+            }}
+            draggable={false}
+            onLoad={() => console.log('✅ CRD logo loaded successfully on card back')}
+            onError={(e) => {
+              console.error('❌ Error loading CRD logo on card back:', e);
+            }}
+          />
+        </div>
+      </div>
 
       {/* Card Back Content with Enhanced Material Integration */}
-      <CardBackContent
-        card={card}
-        selectedMaterial={selectedMaterial}
-      />
+      <div className="absolute inset-0 z-40">
+        <CardBackContent
+          card={card}
+          selectedMaterial={selectedMaterial}
+        />
+      </div>
     </div>
   );
 };

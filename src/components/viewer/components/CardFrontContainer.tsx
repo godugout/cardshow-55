@@ -40,11 +40,13 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
     pointerEvents: (isFlipped ? 'none' : 'auto') as React.CSSProperties['pointerEvents']
   };
 
-  // Debug logging
-  console.log('🎭 CardFrontContainer render:', {
-    isFlipped,
+  // Debug logging for image loading
+  console.log('🖼️ CardFrontContainer - Front Image Setup:', {
+    cardTitle: card.title,
+    hasCardImage: !!card.image_url,
+    cardImageUrl: card.image_url,
     faceStyles,
-    cardTitle: card.title
+    isFlipped
   });
 
   return (
@@ -82,32 +84,44 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         </div>
       </div>
 
-      {/* Card Image - Use new uploaded image - HIGHEST Z-INDEX */}
-      <div className="absolute inset-0 z-40">
-        <img 
-          src="/lovable-uploads/bd3d4ab6-d44a-44af-9f5b-f77c05329e1a.png"
-          alt="Card Front Image"
-          className="w-full h-full object-cover"
-          style={{
-            userSelect: 'none',
-            WebkitUserSelect: 'none',
-            pointerEvents: 'none'
-          }}
-          draggable={false}
-          onLoad={() => console.log('✅ New card front image loaded successfully')}
-          onError={(e) => {
-            console.error('❌ Error loading new card front image:', e);
-            // Fallback to card image if available
-            if (card.image_url) {
-              e.currentTarget.src = card.image_url;
-            }
-          }}
-        />
+      {/* Card Image - HIGHEST Z-INDEX for visibility */}
+      <div className="absolute inset-0 z-50">
+        {card.image_url ? (
+          <img 
+            src={card.image_url}
+            alt={card.title || "Card Front"}
+            className="w-full h-full object-cover"
+            style={{
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              pointerEvents: 'none'
+            }}
+            draggable={false}
+            onLoad={() => console.log('✅ Card front image loaded successfully:', card.image_url)}
+            onError={(e) => {
+              console.error('❌ Error loading card front image:', {
+                src: card.image_url,
+                error: e
+              });
+            }}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-900">
+            <div className="text-center text-white">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-600 rounded-lg flex items-center justify-center">
+                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <p className="text-sm font-medium">No Image</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Subtle Card Content Overlay */}
       <div 
-        className="absolute inset-0 p-6 flex flex-col z-50"
+        className="absolute inset-0 p-6 flex flex-col z-60"
         style={{
           userSelect: 'none',
           WebkitUserSelect: 'none',
@@ -127,7 +141,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       {/* Interactive Lighting Overlay */}
       {isHovering && interactiveLighting && (
         <div 
-          className="absolute inset-0 pointer-events-none z-60"
+          className="absolute inset-0 pointer-events-none z-70"
           style={{
             background: `radial-gradient(
               ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
