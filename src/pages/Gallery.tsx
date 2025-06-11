@@ -12,6 +12,10 @@ import { useCardConversion } from './Gallery/hooks/useCardConversion';
 import { useGalleryActions } from './Gallery/hooks/useGalleryActions';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Plus } from 'lucide-react';
+import type { Tables } from '@/integrations/supabase/types';
+
+// Use the database type directly
+type Card = Tables<'cards'>;
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
