@@ -73,6 +73,7 @@ export const SimplifiedDiscover: React.FC = () => {
 
   const handleCardView = (card: any, index: number) => {
     if (cards && cards.length > 0) {
+      // Use the actual database card for the viewer
       handleCardClick(cards[index], cards.slice(0, 6));
     }
   };
@@ -115,7 +116,14 @@ export const SimplifiedDiscover: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <CRDButton size="sm" className="w-full">
+                    <CRDButton 
+                      size="sm" 
+                      className="w-full"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCardView(card, index);
+                      }}
+                    >
                       View in 3D
                     </CRDButton>
                   </div>
