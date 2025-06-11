@@ -2,6 +2,7 @@
 import React from 'react';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { CardEffectsLayer } from './CardEffectsLayer';
+import { CardBackLogo } from './CardBackLogo';
 
 interface CardBackContainerProps {
   isFlipped: boolean;
@@ -28,66 +29,42 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
 }) => {
   return (
     <div 
-      className={`absolute inset-0 rounded-xl overflow-hidden`}
+      className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
         transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
         backfaceVisibility: 'hidden',
         opacity: isFlipped ? 1 : 0,
         zIndex: isFlipped ? 10 : 1,
         transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
-        background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.4) 0%, rgba(45, 45, 45, 0.6) 50%, rgba(26, 26, 26, 0.4) 100%)', // Made more translucent
+        background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.4) 0%, rgba(45, 45, 45, 0.6) 50%, rgba(26, 26, 26, 0.4) 100%)',
         ...frameStyles
       }}
     >
-      {/* Back Effects Layer */}
-      <CardEffectsLayer
-        showEffects={showEffects}
-        isHovering={isHovering}
-        effectIntensity={[50]}
-        mousePosition={mousePosition}
-        physicalEffectStyles={enhancedEffectStyles}
-        effectValues={effectValues}
-        interactiveLighting={interactiveLighting}
-      />
-
-      {/* Surface Texture on Back */}
-      <div className="relative z-20">
+      {/* Surface Texture - Base Layer */}
+      <div className="absolute inset-0 z-10">
         {SurfaceTexture}
       </div>
 
-      {/* CRD Logo */}
-      <div className="relative h-full flex items-center justify-center z-30">
-        <img 
-          src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
-          alt="CRD Logo" 
-          className="w-64 h-auto opacity-60" // Reduced opacity for better effect visibility
-          style={{
-            filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
-            userSelect: 'none',
-            WebkitUserSelect: 'none',
-            pointerEvents: 'none'
-          }}
-          draggable={false}
+      {/* CRD Logo and Interactive Lighting */}
+      <CardBackLogo
+        isHovering={isHovering}
+        mousePosition={mousePosition}
+        interactiveLighting={interactiveLighting}
+      />
+
+      {/* Back Effects Layer - Above Logo */}
+      <div className="absolute inset-0 z-30">
+        <CardEffectsLayer
+          showEffects={showEffects}
+          isHovering={isHovering}
+          effectIntensity={[50]}
+          mousePosition={mousePosition}
+          physicalEffectStyles={enhancedEffectStyles}
+          effectValues={effectValues}
+          interactiveLighting={interactiveLighting}
+          applyToFrame={false}
         />
       </div>
-
-      {/* Interactive Lighting */}
-      {interactiveLighting && isHovering && (
-        <div className="absolute inset-0 pointer-events-none z-40">
-          <div
-            style={{
-              background: `radial-gradient(
-                ellipse 200% 150% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-                rgba(255, 255, 255, 0.12) 0%, /* Increased intensity for translucent back */
-                rgba(255, 255, 255, 0.06) 30%,
-                transparent 70%
-              )`,
-              mixBlendMode: 'overlay',
-              transition: 'opacity 0.2s ease'
-            }}
-          />
-        </div>
-      )}
     </div>
   );
 };
