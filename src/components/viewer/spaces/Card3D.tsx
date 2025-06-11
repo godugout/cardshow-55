@@ -33,24 +33,32 @@ export const Card3D: React.FC<Card3DProps> = ({
 
   useFrame((state) => {
     if (groupRef.current) {
-      // Floating animation
-      const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
-      groupRef.current.position.y = floatY;
+      // Reset base position to prevent jumping
+      let baseY = 0;
 
-      // Auto rotation
-      if (controls.autoRotate) {
-        groupRef.current.rotation.y += 0.005 * controls.orbitSpeed;
+      // Floating animation - isolated from other effects
+      if (controls.floatIntensity > 0) {
+        const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
+        baseY += floatY;
       }
 
-      // Gravity effect simulation
+      // Gravity effect simulation - isolated from other effects
       if (controls.gravityEffect > 0) {
         const gravity = Math.sin(state.clock.elapsedTime * 0.3) * controls.gravityEffect * 0.05;
-        groupRef.current.position.y += gravity;
+        baseY += gravity;
       }
 
-      // Gentle hover animation
+      // Gentle hover animation - isolated from other effects
       if (isHovering) {
-        groupRef.current.position.y += 0.1;
+        baseY += 0.1;
+      }
+
+      // Set the final position without stacking effects
+      groupRef.current.position.y = baseY;
+
+      // Auto rotation - only if enabled
+      if (controls.autoRotate) {
+        groupRef.current.rotation.y += 0.005 * controls.orbitSpeed;
       }
     }
   });
