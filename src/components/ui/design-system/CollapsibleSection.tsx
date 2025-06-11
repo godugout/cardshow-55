@@ -55,17 +55,32 @@ export const CollapsibleSection = React.forwardRef<HTMLDivElement, CollapsibleSe
       }
     };
 
+    // Safe icon rendering with error handling
+    const renderIcon = () => {
+      if (emoji) {
+        return (
+          <span className="text-base" role="img" aria-label={title}>
+            {emoji}
+          </span>
+        );
+      }
+      
+      if (Icon && typeof Icon === 'function') {
+        try {
+          return <Icon className="w-4 h-4 text-crd-green" />;
+        } catch (error) {
+          console.warn('Error rendering icon:', error);
+          return null;
+        }
+      }
+      
+      return null;
+    };
+
     const TriggerContent = (
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center space-x-3">
-          {emoji && (
-            <span className="text-base" role="img" aria-label={title}>
-              {emoji}
-            </span>
-          )}
-          {Icon && (
-            <Icon className="w-4 h-4 text-crd-green" />
-          )}
+          {renderIcon()}
           <div className="flex items-center space-x-2">
             <span className="text-white font-medium text-sm">{title}</span>
             {statusText && (
