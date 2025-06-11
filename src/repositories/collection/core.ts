@@ -6,12 +6,12 @@ export const calculateOffset = (page = 1, pageSize = 10): number => {
 };
 
 export const getCollectionQuery = () => {
-  // Check if collections table exists, otherwise return a mock query
   try {
     return supabase
       .from('collections')
       .select('*, media(*)');
   } catch (error) {
+    console.error('Collection query error:', error);
     // Return a mock query that will fail gracefully
     return {
       eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }),
@@ -26,6 +26,7 @@ export const getCollectionItemsQuery = () => {
     return supabase
       .from('collection_cards');
   } catch (error) {
+    console.error('Collection items query error:', error);
     // Return a mock query that will fail gracefully
     return {
       select: () => ({ eq: () => Promise.resolve({ data: [], error: null }) })

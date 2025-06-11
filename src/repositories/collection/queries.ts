@@ -7,8 +7,9 @@ import type { Visibility } from '@/types/common';
 
 export const getCollectionById = async (id: string): Promise<Collection | null> => {
   try {
-    // Try to use the database first
-    const { data, error } = await getCollectionQuery()
+    const { data, error } = await supabase
+      .from('collections')
+      .select('*')
       .eq('id', id)
       .single();
     
@@ -30,7 +31,7 @@ export const getCollectionById = async (id: string): Promise<Collection | null> 
       cardCount: 0
     };
   } catch (error) {
-    console.error('Database not ready, using fallback:', error);
+    console.error('Database error, using fallback:', error);
     
     // Use localStorage as fallback
     try {
@@ -46,9 +47,9 @@ export const getCollectionById = async (id: string): Promise<Collection | null> 
 
 export const getCollectionItems = async (collectionId: string): Promise<CollectionItem[]> => {
   try {
-    // Try to use the database first
-    const { data, error } = await getCollectionItemsQuery()
-      .select()
+    const { data, error } = await supabase
+      .from('collection_cards')
+      .select('*')
       .eq('collection_id', collectionId);
     
     if (error) {
@@ -57,17 +58,16 @@ export const getCollectionItems = async (collectionId: string): Promise<Collecti
     
     if (!data || data.length === 0) return [];
     
-    // Process the data safely
     return data.map((item: any) => ({
       id: item.id,
       collectionId: item.collection_id,
       memoryId: item.card_id,
-      displayOrder: 0,
-      addedAt: item.created_at,
+      displayOrder: item.display_order || 0,
+      addedAt: item.added_at,
       memory: undefined
     }));
   } catch (error) {
-    console.error('Database not ready, using fallback:', error);
+    console.error('Database error, using fallback:', error);
     
     // Use localStorage as fallback
     try {
@@ -91,8 +91,9 @@ export const getCollectionsByUserId = async (
       search
     } = options;
 
-    // Try to use the database first
-    let query = getCollectionQuery()
+    let query = supabase
+      .from('collections')
+      .select('*', { count: 'exact' })
       .eq('owner_id', userId)
       .order('created_at', { ascending: false });
 
@@ -125,7 +126,7 @@ export const getCollectionsByUserId = async (
       total: count || 0
     };
   } catch (error) {
-    console.error('Database not ready, using fallback:', error);
+    console.error('Database error, using fallback:', error);
     
     // Use localStorage as fallback
     try {
@@ -155,8 +156,9 @@ export const getPublicCollections = async (
       search
     } = options;
 
-    // Try to use the database first
-    let query = getCollectionQuery()
+    let query = supabase
+      .from('collections')
+      .select('*', { count: 'exact' })
       .eq('visibility', 'public')
       .order('created_at', { ascending: false });
 
@@ -189,7 +191,7 @@ export const getPublicCollections = async (
       total: count || 0
     };
   } catch (error) {
-    console.error('Database not ready, using fallback:', error);
+    console.error('Database error, using fallback:', error);
     
     // Use localStorage as fallback
     try {
