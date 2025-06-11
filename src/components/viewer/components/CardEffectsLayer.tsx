@@ -24,7 +24,7 @@ interface CardEffectsLayerProps {
   materialSettings?: MaterialSettings;
   interactiveLighting?: boolean;
   effectValues?: EffectValues;
-  applyToFrame?: boolean;
+  applyToFrame?: boolean; // New prop to control where effects apply
 }
 
 export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
@@ -64,78 +64,88 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
   const auroraIntensity = getEffectParam('aurora', 'intensity', 0);
   const wavesIntensity = getEffectParam('waves', 'intensity', 0);
 
-  // Remove the problematic frame masking - effects should apply to the whole area
+  // Apply effects only to frame borders if applyToFrame is true
+  const effectMaskStyle: React.CSSProperties | undefined = applyToFrame ? {
+    // This creates a mask that only applies effects to the border area
+    // by using a radial gradient mask that creates a "frame only" effect
+    maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 60%, black 80%)',
+    WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 60%, black 80%)'
+  } : undefined;
+  
   return (
     <>
-      {/* Enhanced Interactive Lighting Layer */}
-      {interactiveLighting && (
-        <EnhancedInteractiveLightingLayer
-          lightingData={enhancedLightingData}
+      {/* Apply mask container if effects should only be on frame */}
+      <div style={effectMaskStyle} className="absolute inset-0">
+        {/* Enhanced Interactive Lighting Layer */}
+        {interactiveLighting && (
+          <EnhancedInteractiveLightingLayer
+            lightingData={enhancedLightingData}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+          />
+        )}
+
+        {/* Waves Effect - Base layer for movement and wobble */}
+        <WavesEffect
           effectValues={effectValues}
           mousePosition={mousePosition}
         />
-      )}
 
-      {/* Waves Effect - Base layer for movement and wobble */}
-      <WavesEffect
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
+        {/* Gold Effect */}
+        <GoldEffect
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+        />
 
-      {/* Gold Effect */}
-      <GoldEffect
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
+        {/* Aurora Effect - Enhanced with wave movement */}
+        <AuroraEffect
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+        />
 
-      {/* Aurora Effect - Enhanced with wave movement */}
-      <AuroraEffect
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
+        {/* Crystal Effect - Enhanced with Diamond Glitter */}
+        <CrystalEffect
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+        />
 
-      {/* Crystal Effect - Enhanced with Diamond Glitter */}
-      <CrystalEffect
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
+        {/* Vintage Effect - Realistic Cardstock Paper */}
+        <VintageEffect
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+        />
 
-      {/* Vintage Effect - Realistic Cardstock Paper */}
-      <VintageEffect
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
+        {/* Chrome & Brushed Metal Effects */}
+        <MetallicEffects
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+        />
 
-      {/* Chrome & Brushed Metal Effects */}
-      <MetallicEffects
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
+        {/* Prismatic Effects (Holographic, Interference, Prizm) */}
+        <PrismaticEffects
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          enhancedLightingData={enhancedLightingData}
+        />
 
-      {/* Prismatic Effects (Holographic, Interference, Prizm) */}
-      <PrismaticEffects
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-        enhancedLightingData={enhancedLightingData}
-      />
+        {/* Foil Spray Effect */}
+        <FoilSprayEffect
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+        />
 
-      {/* Foil Spray Effect */}
-      <FoilSprayEffect
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
+        {/* Ice Effect - Natural ice with scratches */}
+        <IceEffect
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+        />
 
-      {/* Ice Effect - Natural ice with scratches */}
-      <IceEffect
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
-
-      {/* Lunar Effect - Moon dust and retro space aesthetic */}
-      <LunarEffect
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-      />
+        {/* Lunar Effect - Moon dust and retro space aesthetic */}
+        <LunarEffect
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+        />
+      </div>
 
       {/* Calculate overall intensity for edge enhancement */}
       {(() => {
@@ -144,16 +154,17 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
                               prizemIntensity + foilsprayIntensity + goldIntensity + auroraIntensity + wavesIntensity;
         const normalizedIntensity = Math.min(totalIntensity / 100, 1);
         
-        // Subtle edge glow - only apply if there are active effects
+        // Subtle edge glow - applied either to frame only or full card based on applyToFrame
         return totalIntensity > 0 ? (
           <div
-            className="absolute inset-0 z-5 rounded-xl pointer-events-none"
+            className="absolute inset-0 z-26 rounded-xl"
             style={{
               boxShadow: `
                 inset 0 0 15px rgba(255, 255, 255, ${normalizedIntensity * (enhancedLightingData ? 0.05 + enhancedLightingData.lightIntensity * 0.1 : 0.05)}),
                 inset 0 0 5px rgba(255, 255, 255, ${normalizedIntensity * (enhancedLightingData ? 0.1 + enhancedLightingData.lightIntensity * 0.15 : 0.1)})
               `,
-              opacity: enhancedLightingData ? 0.3 + enhancedLightingData.lightIntensity * 0.2 : 0.3
+              opacity: enhancedLightingData ? 0.3 + enhancedLightingData.lightIntensity * 0.2 : 0.3,
+              ...(applyToFrame ? effectMaskStyle : {})
             }}
           />
         ) : null;

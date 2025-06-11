@@ -43,9 +43,9 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
         transform: getDynamicTransform(),
         transformStyle: 'preserve-3d',
         transition: isDragging ? 'none' : 'transform 0.1s ease',
-        filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`,
-        pointerEvents: 'none' // Remove click handling from this component
+        filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`
       }}
+      onClick={onClick}
     >
       {children}
     </div>

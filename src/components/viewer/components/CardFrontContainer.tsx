@@ -33,17 +33,40 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
 }) => {
   return (
     <div 
-      className="absolute inset-0 rounded-xl overflow-hidden"
+      className={`absolute inset-0 rounded-xl overflow-hidden ${
+        isFlipped ? 'opacity-0' : 'opacity-100'
+      }`}
       style={{
-        transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
-        transition: 'transform 0.6s ease-in-out',
+        transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+        transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
         backfaceVisibility: 'hidden',
-        transformStyle: 'preserve-3d',
         ...frameStyles
       }}
     >
-      {/* Card Image - Base Layer (z-10) */}
-      <div className="absolute inset-0 z-10">
+      {/* Base Layer - Card Frame */}
+      <div className="absolute inset-0 z-10" style={frameStyles} />
+      
+      {/* Effects Layer - Only on Frame */}
+      <div className="absolute inset-0 z-20">
+        <CardEffectsLayer
+          showEffects={showEffects}
+          isHovering={isHovering}
+          effectIntensity={[50]} // Keep for backward compatibility
+          mousePosition={mousePosition}
+          physicalEffectStyles={enhancedEffectStyles}
+          effectValues={effectValues}
+          interactiveLighting={interactiveLighting}
+          applyToFrame={true}
+        />
+        
+        {/* Surface Texture - Only applied to frame areas */}
+        <div className="relative">
+          {SurfaceTexture}
+        </div>
+      </div>
+
+      {/* Card Image - Always On Top */}
+      <div className="absolute inset-0 z-40">
         {card.image_url && (
           <img 
             src={card.image_url} 
@@ -59,30 +82,13 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         )}
       </div>
 
-      {/* Effects Layer - Under the image (z-5) */}
-      <div className="absolute inset-0 z-5">
-        <CardEffectsLayer
-          showEffects={showEffects}
-          isHovering={isHovering}
-          effectIntensity={[50]}
-          mousePosition={mousePosition}
-          physicalEffectStyles={enhancedEffectStyles}
-          effectValues={effectValues}
-          interactiveLighting={interactiveLighting}
-        />
-        
-        {/* Surface Texture */}
-        <div className="relative">
-          {SurfaceTexture}
-        </div>
-      </div>
-
-      {/* Card Content - Text Overlay (z-20) */}
+      {/* Card Content - Overlay */}
       <div 
-        className="absolute inset-0 p-6 flex flex-col z-20 pointer-events-none"
+        className="absolute inset-0 p-6 flex flex-col z-30"
         style={{
           userSelect: 'none',
-          WebkitUserSelect: 'none'
+          WebkitUserSelect: 'none',
+          pointerEvents: 'none'
         }}
       >
         <div className="mt-auto">
@@ -98,10 +104,10 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         </div>
       </div>
 
-      {/* Interactive Lighting Overlay - Very Subtle (z-25) */}
+      {/* Interactive Lighting Overlay - Very Subtle */}
       {isHovering && interactiveLighting && (
         <div 
-          className="absolute inset-0 pointer-events-none z-25"
+          className="absolute inset-0 pointer-events-none z-50"
           style={{
             background: `radial-gradient(
               ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,

@@ -2,6 +2,7 @@
 import React from 'react';
 import { Save, Share, Download, Settings, Moon, ArrowLeft } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system';
+import { Link } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { toast } from 'sonner';
 
@@ -87,20 +88,17 @@ export const Topbar = ({ cardEditor }: TopbarProps) => {
     }
   };
 
-  const handleBackToCards = () => {
-    // Use window.location to navigate instead of Link component
-    window.location.href = '/';
-  };
-
   const isDirty = cardEditor?.isDirty || false;
   const isSaving = cardEditor?.isSaving || false;
 
   return (
     <div className="flex items-center justify-between h-16 px-4 bg-editor-dark border-b border-editor-border">
       <div className="flex items-center space-x-4">
-        <CRDButton variant="ghost" size="sm" onClick={handleBackToCards}>
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          Back to Cards
+        <CRDButton variant="ghost" size="sm" asChild>
+          <Link to="/cards">
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back to Cards
+          </Link>
         </CRDButton>
         <div className="w-px h-8 bg-editor-border mx-2"></div>
         <h1 className="text-xl font-semibold text-white">Create a Card</h1>

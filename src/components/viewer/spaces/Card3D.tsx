@@ -71,10 +71,6 @@ export const Card3D: React.FC<Card3DProps> = ({
   const zoom = 1;
   const isDragging = false;
 
-  // Double-click detection
-  const lastClickTime = useRef(0);
-  const clickTimeout = useRef<NodeJS.Timeout>();
-
   // Convert simple card to full CardData format for useCardEffects
   const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
 
@@ -113,47 +109,30 @@ export const Card3D: React.FC<Card3DProps> = ({
     }
   });
 
-  const handleCardClick = () => {
-    const now = Date.now();
-    const timeDiff = now - lastClickTime.current;
-    
-    // Clear any existing timeout
-    if (clickTimeout.current) {
-      clearTimeout(clickTimeout.current);
-    }
-    
-    if (timeDiff < 300) {
-      // Double click detected
-      setIsFlipped(!isFlipped);
-      onClick?.();
-      lastClickTime.current = 0; // Reset to prevent triple click
-    } else {
-      // Single click - set timeout to check for double click
-      clickTimeout.current = setTimeout(() => {
-        // Single click action if needed
-      }, 300);
-      lastClickTime.current = now;
-    }
+  const handleCardFlip = () => {
+    setIsFlipped(!isFlipped);
+    onClick?.();
   };
 
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
+  const handleMouseDown = () => {};
+  const handleMouseMove = () => {};
 
   return (
     <group ref={groupRef}>
-      {/* Interactive mesh for click detection */}
+      {/* Render the enhanced card container with 3D positioning */}
       <mesh 
         castShadow 
         receiveShadow
         onPointerEnter={handleMouseEnter}
         onPointerLeave={handleMouseLeave}
-        onClick={handleCardClick}
       >
         <planeGeometry args={[2.5, 3.5]} />
-        <meshBasicMaterial transparent opacity={0} />
+        <meshBasicMaterial transparent opacity={0} /> {/* Invisible plane for interaction */}
       </mesh>
       
-      {/* HTML overlay for the enhanced card - completely non-interactive */}
+      {/* HTML overlay for the enhanced card - with prioritized image layer */}
       <Html
         transform
         occlude
@@ -165,12 +144,7 @@ export const Card3D: React.FC<Card3DProps> = ({
           pointerEvents: 'none'
         }}
       >
-        <div style={{ 
-          width: '250px', 
-          height: '350px', 
-          transform: 'scale(0.6)',
-          pointerEvents: 'none'
-        }}>
+        <div style={{ width: '250px', height: '350px', transform: 'scale(0.6)' }}>
           <EnhancedCardContainer
             card={adaptedCard}
             isFlipped={isFlipped}
@@ -189,11 +163,11 @@ export const Card3D: React.FC<Card3DProps> = ({
             selectedLighting={selectedLighting}
             materialSettings={materialSettings}
             overallBrightness={overallBrightness}
-            onMouseDown={() => {}}
-            onMouseMove={() => {}}
-            onMouseEnter={() => {}}
-            onMouseLeave={() => {}}
-            onClick={() => {}} // Remove click handling from HTML overlay
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={handleCardFlip}
           />
         </div>
       </Html>

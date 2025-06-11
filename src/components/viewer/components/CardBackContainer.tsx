@@ -83,12 +83,13 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
 
   return (
     <div 
-      className="absolute inset-0 rounded-xl overflow-hidden"
+      className={`absolute inset-0 rounded-xl overflow-hidden ${
+        isFlipped ? 'opacity-100' : 'opacity-0'
+      }`}
       style={{
-        transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
-        transition: 'transform 0.6s ease-in-out',
+        transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(-180deg)',
+        transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
         backfaceVisibility: 'hidden',
-        transformStyle: 'preserve-3d',
         ...dynamicFrameStyles
       }}
       data-material={selectedMaterial.id}
