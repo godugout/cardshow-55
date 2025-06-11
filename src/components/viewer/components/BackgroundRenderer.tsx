@@ -34,10 +34,11 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   selectedLighting,
   mousePosition,
   isHovering,
-  effectValues = {},
+  // Remove unused props for 3D space since we simplified the card rendering
+  effectValues,
   materialSettings,
-  overallBrightness = [100],
-  interactiveLighting = false
+  overallBrightness,
+  interactiveLighting
 }) => {
   // Check for '3dSpace' instead of 'space' based on the BackgroundType definition
   if (backgroundType === '3dSpace' && selectedSpace) {
@@ -47,12 +48,6 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           card={adaptedCard}
           environment={selectedSpace}
           controls={spaceControls}
-          effectValues={effectValues}
-          selectedScene={selectedScene}
-          selectedLighting={selectedLighting}
-          materialSettings={materialSettings}
-          overallBrightness={overallBrightness}
-          interactiveLighting={interactiveLighting}
           onCardClick={onCardClick}
           onCameraReset={onCameraReset}
         />
