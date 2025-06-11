@@ -16,7 +16,6 @@ interface CardFrontContainerProps {
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
   onClick: () => void;
-  getFaceVisibility?: (isFront: boolean) => React.CSSProperties;
 }
 
 export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
@@ -30,146 +29,132 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting = false,
-  onClick,
-  getFaceVisibility
+  onClick
 }) => {
-  // Use simplified face visibility
-  const faceStyles = getFaceVisibility ? getFaceVisibility(true) : { 
-    opacity: isFlipped ? 0 : 1, 
-    zIndex: isFlipped ? 10 : 30,
-    pointerEvents: (isFlipped ? 'none' : 'auto') as React.CSSProperties['pointerEvents']
-  };
-
-  // Enhanced debug logging for image loading
-  console.log('🖼️ CardFrontContainer - ENHANCED Front Image Debug:', {
-    cardTitle: card.title,
-    hasCardImage: !!card.image_url,
-    cardImageUrl: card.image_url,
-    faceStyles,
-    isFlipped,
-    expectedImagePath: '/lovable-uploads/bd3d4ab6-d44a-44af-9f5b-f77c05329e1a.png'
-  });
-
   return (
     <div 
-      className="absolute inset-0 rounded-xl overflow-hidden"
+      className={`absolute inset-0 rounded-xl overflow-hidden ${
+        isFlipped ? 'opacity-0' : 'opacity-100'
+      }`}
       style={{
-        ...frameStyles,
-        ...faceStyles,
-        transform: 'rotateY(0deg)', // Front face - no rotation
-        transformStyle: 'preserve-3d',
-        backfaceVisibility: 'hidden'
+        transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+        transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
+        backfaceVisibility: 'hidden',
+        ...frameStyles
       }}
-      data-face="front"
-      data-card-title={card.title}
-      data-visibility={faceStyles.opacity}
     >
-      {/* Base Layer - Card Frame */}
-      <div className="absolute inset-0 z-10" style={frameStyles} />
-      
-      {/* Effects Layer - Only on Frame */}
-      <div className="absolute inset-0 z-20">
-        <CardEffectsLayer
-          showEffects={showEffects}
-          isHovering={isHovering}
-          effectIntensity={[50]}
-          mousePosition={mousePosition}
-          physicalEffectStyles={enhancedEffectStyles}
-          effectValues={effectValues}
-          interactiveLighting={interactiveLighting}
-          applyToFrame={true}
-        />
-        
-        {/* Surface Texture */}
-        <div className="relative">
-          {SurfaceTexture}
-        </div>
+      {/* Enhanced Effects Layer with Individual Effect Values */}
+      <CardEffectsLayer
+        showEffects={showEffects}
+        isHovering={isHovering}
+        effectIntensity={[50]} // Keep for backward compatibility
+        mousePosition={mousePosition}
+        physicalEffectStyles={enhancedEffectStyles}
+        effectValues={effectValues}
+        interactiveLighting={interactiveLighting}
+      />
+
+      {/* Surface Texture - Now layered properly */}
+      <div className="relative z-20">
+        {SurfaceTexture}
       </div>
 
-      {/* Card Image - MAXIMUM Z-INDEX with enhanced error handling */}
-      <div className="absolute inset-0 z-[100]">
-        {card.image_url ? (
-          <>
-            <img 
-              src={card.image_url}
-              alt={card.title || "Card Front - Puff the Magic Dragon"}
-              className="w-full h-full object-cover"
-              style={{
-                userSelect: 'none',
-                WebkitUserSelect: 'none',
-                pointerEvents: 'none',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                zIndex: 1000
-              }}
-              draggable={false}
-              onLoad={() => {
-                console.log('✅ SUCCESS: Card front image loaded successfully:', card.image_url);
-                console.log('✅ This should be Puff the Magic Dragon!');
-              }}
-              onError={(e) => {
-                console.error('❌ CRITICAL ERROR: Failed to load card front image:', {
-                  src: card.image_url,
-                  error: e,
-                  expectedImage: 'Puff the Magic Dragon'
-                });
-              }}
-            />
-            {/* Debug overlay to confirm image is there */}
-            <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded z-[1001]">
-              FRONT: {card.title}
-            </div>
-          </>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-900">
-            <div className="text-center text-white">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gray-600 rounded-lg flex items-center justify-center">
-                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <p className="text-sm font-medium">No Image - Should be Puff!</p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Card Content Overlay - Reduced opacity to show image better */}
+      {/* Card Content - Prevent highlighting and selection */}
       <div 
-        className="absolute inset-0 p-6 flex flex-col z-[90]"
+        className="relative h-full p-6 flex flex-col z-15"
         style={{
           userSelect: 'none',
           WebkitUserSelect: 'none',
           pointerEvents: 'none'
         }}
       >
-        <div className="mt-auto">
-          <div className="bg-black bg-opacity-10 backdrop-filter backdrop-blur-sm rounded-lg p-3 text-white">
-            <h3 className="text-xl font-bold mb-1 opacity-70">{card.title}</h3>
-            {card.rarity && (
-              <p className="text-xs uppercase tracking-wide opacity-50">{card.rarity}</p>
-            )}
+        {/* Image Section */}
+        {card.image_url && (
+          <div className="flex-1 mb-6 relative overflow-hidden rounded-lg">
+            <img 
+              src={card.image_url} 
+              alt={card.title}
+              className="w-full h-full object-cover"
+              style={{
+                filter: isHovering ? 
+                  `brightness(${interactiveLighting ? 1.2 : 1.1}) contrast(${interactiveLighting ? 1.1 : 1.05})` : 
+                  'brightness(1)',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                pointerEvents: 'none'
+              }}
+              draggable={false}
+            />
           </div>
+        )}
+        
+        {/* Details Section */}
+        <div 
+          className="mt-auto p-4 rounded-lg bg-black bg-opacity-60 backdrop-blur-sm"
+          style={{
+            userSelect: 'none',
+            WebkitUserSelect: 'none'
+          }}
+        >
+          <h3 className="text-white text-xl font-bold mb-2">{card.title}</h3>
+          {card.description && (
+            <p className="text-gray-300 text-sm mb-2">{card.description}</p>
+          )}
+          {card.rarity && (
+            <p className="text-gray-400 text-xs uppercase tracking-wide">{card.rarity}</p>
+          )}
         </div>
       </div>
 
-      {/* Interactive Lighting Overlay */}
+      {/* Softer Interactive Lighting Effect - Multi-layered radial system */}
       {isHovering && interactiveLighting && (
-        <div 
-          className="absolute inset-0 pointer-events-none z-[80]"
-          style={{
-            background: `radial-gradient(
-              ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-              rgba(255, 255, 255, 0.06) 0%,
-              rgba(255, 255, 255, 0.03) 40%,
-              transparent 70%
-            )`,
-            mixBlendMode: 'soft-light',
-            opacity: 0.3,
-            transition: 'opacity 0.1s ease'
-          }}
-        />
+        <>
+          {/* Primary soft light center */}
+          <div 
+            className="absolute inset-0 pointer-events-none z-30"
+            style={{
+              background: `radial-gradient(
+                ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+                rgba(255, 255, 255, 0.15) 0%,
+                rgba(255, 255, 255, 0.08) 40%,
+                transparent 80%
+              )`,
+              mixBlendMode: 'overlay',
+              transition: 'background 0.1s ease'
+            }}
+          />
+          
+          {/* Secondary diffusion layer */}
+          <div 
+            className="absolute inset-0 pointer-events-none z-31"
+            style={{
+              background: `radial-gradient(
+                ellipse 180% 120% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+                rgba(255, 255, 255, 0.06) 0%,
+                rgba(255, 255, 255, 0.03) 60%,
+                transparent 90%
+              )`,
+              mixBlendMode: 'soft-light',
+              transition: 'background 0.15s ease'
+            }}
+          />
+          
+          {/* Subtle directional highlight */}
+          <div 
+            className="absolute inset-0 pointer-events-none z-32"
+            style={{
+              background: `linear-gradient(
+                ${Math.atan2(mousePosition.y - 0.5, mousePosition.x - 0.5) * (180 / Math.PI) + 90}deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.04) 50%,
+                transparent 60%
+              )`,
+              mixBlendMode: 'overlay',
+              opacity: Math.max(0.3, 1 - Math.sqrt(Math.pow(mousePosition.x - 0.5, 2) + Math.pow(mousePosition.y - 0.5, 2)) * 2),
+              transition: 'opacity 0.1s ease'
+            }}
+          />
+        </>
       )}
     </div>
   );

@@ -5,7 +5,6 @@ import { Html } from '@react-three/drei';
 import { Group } from 'three';
 import { EnhancedCardContainer } from '../components/EnhancedCardContainer';
 import { useCardEffects } from '../hooks/useCardEffects';
-import { useCardFlipPhysics } from '../hooks/useCardFlipPhysics';
 import type { SpaceControls } from './types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -64,10 +63,8 @@ export const Card3D: React.FC<Card3DProps> = ({
 }) => {
   const groupRef = useRef<Group>(null);
   
-  // Physics-based flip system
-  const { isFlipped, triggerFlip, physicsState } = useCardFlipPhysics();
-  
   // Simple state for 3D card interaction
+  const [isFlipped, setIsFlipped] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
   const [mousePosition, setMousePosition] = React.useState({ x: 0.5, y: 0.5 });
   const [rotation, setRotation] = React.useState({ x: 0, y: 0 });
@@ -94,12 +91,12 @@ export const Card3D: React.FC<Card3DProps> = ({
   }) : null;
 
   useFrame((state) => {
-    if (groupRef.current && !physicsState.isFlipping) {
+    if (groupRef.current) {
       // Floating animation
       const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
       groupRef.current.position.y = floatY;
 
-      // Auto rotation (only when not flipping)
+      // Auto rotation
       if (controls.autoRotate) {
         groupRef.current.rotation.y += 0.005 * controls.orbitSpeed;
       }
@@ -113,7 +110,7 @@ export const Card3D: React.FC<Card3DProps> = ({
   });
 
   const handleCardClick = () => {
-    triggerFlip();
+    setIsFlipped(!isFlipped);
     onClick?.();
   };
 
@@ -136,7 +133,7 @@ export const Card3D: React.FC<Card3DProps> = ({
         <meshBasicMaterial transparent opacity={0} /> {/* Invisible plane for interaction */}
       </mesh>
       
-      {/* HTML overlay for the enhanced card - with physics-based transforms */}
+      {/* HTML overlay for the enhanced card */}
       <Html
         transform
         occlude
@@ -148,12 +145,7 @@ export const Card3D: React.FC<Card3DProps> = ({
           pointerEvents: 'none'
         }}
       >
-        <div style={{ 
-          width: '250px', 
-          height: '350px', 
-          transform: 'scale(0.6)',
-          transformOrigin: 'center center'
-        }}>
+        <div style={{ width: '250px', height: '350px', transform: 'scale(0.6)' }}>
           <EnhancedCardContainer
             card={adaptedCard}
             isFlipped={isFlipped}

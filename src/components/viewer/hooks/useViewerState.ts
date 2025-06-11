@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, BackgroundType } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
@@ -11,7 +12,7 @@ export const useViewerState = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [isFlipped, setIsFlipped] = useState(false); // Start with front face visible (Puff the Magic Dragon)
+  const [isFlipped, setIsFlipped] = useState(false);
   const [autoRotate, setAutoRotate] = useState(false);
   const [showEffects, setShowEffects] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -19,9 +20,6 @@ export const useViewerState = () => {
   const [isHovering, setIsHovering] = useState(false);
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
-
-  // Physics state
-  const [physicsEnabled, setPhysicsEnabled] = useState(true);
 
   // Background state
   const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
@@ -57,10 +55,9 @@ export const useViewerState = () => {
   const handleReset = useCallback(() => {
     setRotation({ x: 0, y: 0 });
     setZoom(1);
-    setIsFlipped(false); // Always reset to front face (unflipped)
+    setIsFlipped(false);
     setAutoRotate(false);
     setSelectedPresetId(undefined);
-    console.log('🔄 Viewer state reset - card should show front face (Puff the Magic Dragon)');
   }, []);
 
   const handleZoom = useCallback((delta: number) => {
@@ -85,12 +82,7 @@ export const useViewerState = () => {
   }, []);
 
   const onCardClick = useCallback(() => {
-    console.log('🎯 Card clicked - flipping from:', isFlipped, 'to:', !isFlipped);
     setIsFlipped(prev => !prev);
-  }, [isFlipped]);
-
-  const handlePhysicsToggle = useCallback(() => {
-    setPhysicsEnabled(prev => !prev);
   }, []);
 
   // Safe space setter that ensures we always have a valid space
@@ -131,11 +123,6 @@ export const useViewerState = () => {
     setIsHoveringControls,
     showExportDialog,
     setShowExportDialog,
-
-    // Physics state
-    physicsEnabled,
-    setPhysicsEnabled,
-    handlePhysicsToggle,
 
     // Background state
     backgroundType,

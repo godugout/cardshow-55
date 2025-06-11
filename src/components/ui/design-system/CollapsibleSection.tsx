@@ -23,7 +23,7 @@ const collapsibleSectionVariants = cva(
 
 export interface CollapsibleSectionProps extends VariantProps<typeof collapsibleSectionVariants> {
   title: string;
-  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  icon?: React.ComponentType<any>;
   emoji?: string;
   statusText?: string;
   statusCount?: number;
@@ -55,35 +55,17 @@ export const CollapsibleSection = React.forwardRef<HTMLDivElement, CollapsibleSe
       }
     };
 
-    // Safe icon rendering with proper error handling
-    const renderIcon = () => {
-      if (emoji) {
-        return (
-          <span className="text-base" role="img" aria-label={title}>
-            {emoji}
-          </span>
-        );
-      }
-      
-      if (Icon) {
-        try {
-          // Ensure Icon is a valid React component
-          if (typeof Icon === 'function') {
-            return <Icon className="w-4 h-4 text-crd-green" />;
-          }
-        } catch (error) {
-          console.warn('Error rendering icon in CollapsibleSection:', error);
-          return null;
-        }
-      }
-      
-      return null;
-    };
-
     const TriggerContent = (
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center space-x-3">
-          {renderIcon()}
+          {emoji && (
+            <span className="text-base" role="img" aria-label={title}>
+              {emoji}
+            </span>
+          )}
+          {Icon && (
+            <Icon className="w-4 h-4 text-crd-green" />
+          )}
           <div className="flex items-center space-x-2">
             <span className="text-white font-medium text-sm">{title}</span>
             {statusText && (

@@ -56,7 +56,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Enhanced 3D Card with Proper Front/Back Separation */}
+      {/* Enhanced 3D Card */}
       <div
         className="relative"
         style={{
@@ -69,34 +69,30 @@ export const CardContainer: React.FC<CardContainerProps> = ({
         }}
         onClick={onClick}
       >
-        {/* Front of Card - With Image Priority */}
-        <div className={`absolute inset-0 ${isFlipped ? '' : 'z-30'}`}>
-          <CardFront
-            card={card}
-            isFlipped={isFlipped}
-            isHovering={isHovering}
-            showEffects={showEffects}
-            effectIntensity={effectIntensity}
-            mousePosition={mousePosition}
-            frameStyles={frameStyles}
-            physicalEffectStyles={physicalEffectStyles}
-            SurfaceTexture={SurfaceTexture}
-          />
-        </div>
+        {/* Front of Card */}
+        <CardFront
+          card={card}
+          isFlipped={isFlipped}
+          isHovering={isHovering}
+          showEffects={showEffects}
+          effectIntensity={effectIntensity}
+          mousePosition={mousePosition}
+          frameStyles={frameStyles}
+          physicalEffectStyles={physicalEffectStyles}
+          SurfaceTexture={SurfaceTexture}
+        />
 
-        {/* Back of Card - Hidden when front is shown */}
-        <div className={`absolute inset-0 ${isFlipped ? 'z-30' : ''}`}>
-          <CardBack
-            card={card}
-            isFlipped={isFlipped}
-            isHovering={isHovering}
-            showEffects={showEffects}
-            effectIntensity={effectIntensity}
-            mousePosition={mousePosition}
-            physicalEffectStyles={physicalEffectStyles}
-            SurfaceTexture={SurfaceTexture}
-          />
-        </div>
+        {/* Back of Card */}
+        <CardBack
+          card={card}
+          isFlipped={isFlipped}
+          isHovering={isHovering}
+          showEffects={showEffects}
+          effectIntensity={effectIntensity}
+          mousePosition={mousePosition}
+          physicalEffectStyles={physicalEffectStyles}
+          SurfaceTexture={SurfaceTexture}
+        />
       </div>
     </div>
   );

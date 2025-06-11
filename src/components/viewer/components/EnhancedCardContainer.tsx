@@ -6,6 +6,7 @@ import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentCon
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface EnhancedCardContainerProps {
@@ -27,7 +28,6 @@ interface EnhancedCardContainerProps {
   materialSettings?: MaterialSettings;
   overallBrightness?: number[];
   showBackgroundInfo?: boolean;
-  physicsEnabled?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
@@ -55,7 +55,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   materialSettings,
   overallBrightness = [100],
   showBackgroundInfo = true,
-  physicsEnabled = true,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
@@ -84,11 +83,11 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     isHovering
   }) : null;
 
-  // Handle flip state change
-  const handleFlip = () => {
-    // This will be called by the physics system
-    // Add any additional flip logic here if needed
-  };
+  // Use double-click/tap detection for card flip
+  const handleDoubleClick = useDoubleClick({
+    onDoubleClick: onClick,
+    delay: 300
+  });
 
   // Use cached styles if available, otherwise fall back to provided styles
   const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
@@ -114,10 +113,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         isDragging={isDragging}
         interactiveLighting={interactiveLighting}
         isHovering={isHovering}
-        isFlipped={isFlipped}
-        onFlip={handleFlip}
-        onClick={onClick}
-        physicsEnabled={physicsEnabled}
+        onClick={handleDoubleClick}
       >
         {/* Front of Card */}
         <CardFrontContainer
@@ -131,7 +127,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
-          onClick={onClick}
+          onClick={handleDoubleClick}
         />
 
         {/* Back of Card */}
@@ -145,7 +141,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
-          card={card}
         />
       </Card3DTransform>
     </div>

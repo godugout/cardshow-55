@@ -1,8 +1,6 @@
 
 import React from 'react';
-import { Sparkles } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import { CollapsibleSection } from '@/components/ui/design-system/CollapsibleSection';
+import { CollapsibleSection } from '@/components/ui/design-system';
 import { CleanEffectsList } from '../../CleanEffectsList';
 import type { EffectValues } from '../../../hooks/useEnhancedCardEffects';
 
@@ -12,8 +10,6 @@ interface EffectsSectionProps {
   onToggle: (isOpen: boolean) => void;
   onEffectChange: (effectId: string, parameterId: string, value: number | boolean | string) => void;
   selectedPresetId?: string;
-  physicsEnabled?: boolean;
-  onPhysicsToggle?: () => void;
 }
 
 export const EffectsSection: React.FC<EffectsSectionProps> = ({
@@ -21,41 +17,27 @@ export const EffectsSection: React.FC<EffectsSectionProps> = ({
   isOpen,
   onToggle,
   onEffectChange,
-  selectedPresetId,
-  physicsEnabled = true,
-  onPhysicsToggle = () => {}
+  selectedPresetId
 }) => {
+  // Count active effects
+  const activeEffectsCount = Object.values(effectValues || {}).filter(effect => {
+    const intensity = effect.intensity;
+    return typeof intensity === 'number' && intensity > 0;
+  }).length;
+
   return (
     <CollapsibleSection
-      title="Visual Effects"
-      icon={Sparkles}
+      title="Effects"
+      emoji="✨"
+      statusCount={activeEffectsCount}
       isOpen={isOpen}
       onToggle={onToggle}
     >
-      <div className="space-y-4">
-        {/* Physics Toggle */}
-        <div className="flex items-center justify-between p-3 bg-surface-light rounded-lg">
-          <div>
-            <label className="text-sm font-medium text-text-primary">
-              Physics Effects
-            </label>
-            <p className="text-xs text-text-secondary mt-1">
-              Enable random wobble and bounce when flipping cards
-            </p>
-          </div>
-          <Switch
-            checked={physicsEnabled}
-            onCheckedChange={onPhysicsToggle}
-          />
-        </div>
-
-        {/* Effects List */}
-        <CleanEffectsList
-          effectValues={effectValues}
-          onEffectChange={onEffectChange}
-          selectedPresetId={selectedPresetId}
-        />
-      </div>
+      <CleanEffectsList
+        effectValues={effectValues}
+        onEffectChange={onEffectChange}
+        selectedPresetId={selectedPresetId}
+      />
     </CollapsibleSection>
   );
 };

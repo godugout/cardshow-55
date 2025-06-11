@@ -34,15 +34,11 @@ interface StudioPanelProps {
   spaceControls?: SpaceControls;
   onSpaceControlsChange?: (controls: SpaceControls) => void;
   onResetCamera?: () => void;
-  physicsEnabled?: boolean;
-  onPhysicsToggle?: () => void;
 }
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({
   isVisible,
   onClose,
-  physicsEnabled,
-  onPhysicsToggle,
   ...studioProps
 }) => {
   if (!isVisible) return null;
@@ -71,11 +67,7 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
         </div>
 
         {/* Studio Content with Scroll Support */}
-        <ScrollableStudioContent 
-          {...studioProps} 
-          physicsEnabled={physicsEnabled}
-          onPhysicsToggle={onPhysicsToggle}
-        />
+        <ScrollableStudioContent {...studioProps} />
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+
 import type { CardData } from '@/hooks/useCardEditor';
 
 export const mockCards: CardData[] = [
@@ -6,7 +7,7 @@ export const mockCards: CardData[] = [
     title: 'Legendary Dragon',
     description: 'A powerful ancient dragon with mystical powers',
     rarity: 'legendary',
-    image_url: '/lovable-uploads/bd3d4ab6-d44a-44af-9f5b-f77c05329e1a.png', // Updated to correct Puff the Magic Dragon image
+    image_url: '/lovable-uploads/25cbcac9-64c0-4969-9baa-7a3fdf9eb00a.png',
     template_id: 'premium',
     tags: ['dragon', 'legendary', 'fire'],
     design_metadata: {

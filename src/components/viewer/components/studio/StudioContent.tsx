@@ -35,8 +35,6 @@ interface StudioContentProps {
   onBackgroundTypeChange?: (type: BackgroundType) => void;
   onSpaceChange?: (space: any) => void;
   selectedSpace?: any;
-  physicsEnabled?: boolean;
-  onPhysicsToggle?: () => void;
 }
 
 export const StudioContent: React.FC<StudioContentProps> = ({
@@ -66,9 +64,7 @@ export const StudioContent: React.FC<StudioContentProps> = ({
   backgroundType = 'scene',
   onBackgroundTypeChange = () => {},
   onSpaceChange = () => {},
-  selectedSpace,
-  physicsEnabled = true,
-  onPhysicsToggle = () => {}
+  selectedSpace
 }) => {
   const { sectionStates, setSectionState } = useSectionManager();
 
@@ -119,8 +115,6 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             onToggle={(isOpen) => setSectionState('effects', isOpen)}
             onEffectChange={onEffectChange}
             selectedPresetId={selectedPresetId}
-            physicsEnabled={physicsEnabled}
-            onPhysicsToggle={onPhysicsToggle}
           />
 
           {/* Unified Spaces & Environment Section */}

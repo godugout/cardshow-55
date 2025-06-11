@@ -85,8 +85,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     setSelectedSpace,
     spaceControls,
     setSpaceControls,
-    physicsEnabled,
-    handlePhysicsToggle,
     handleReset,
     handleZoom,
     handleResetCamera,
@@ -338,7 +336,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
               overallBrightness={overallBrightness}
               environmentControls={environmentControls}
               showBackgroundInfo={false}
-              physicsEnabled={physicsEnabled}
               onMouseDown={handleDragStart}
               onMouseMove={handleDrag}
               onMouseEnter={() => setIsHovering(true)}
@@ -357,7 +354,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         />
       </div>
 
-      {/* Studio Panel with Physics Controls */}
+      {/* Studio Panel with Environment Controls */}
       <StudioPanel
         isVisible={shouldShowPanel}
         onClose={() => setShowCustomizePanel(false)}
@@ -368,7 +365,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         interactiveLighting={interactiveLighting}
         materialSettings={materialSettings}
         environmentControls={environmentControls}
-        physicsEnabled={physicsEnabled}
         onSceneChange={setSelectedScene}
         onLightingChange={setSelectedLighting}
         onEffectChange={handleManualEffectChange}
@@ -386,7 +382,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         spaceControls={spaceControls}
         onSpaceControlsChange={setSpaceControls}
         onResetCamera={handleResetCamera}
-        onPhysicsToggle={handlePhysicsToggle}
       />
 
       {/* Export Options Dialog */}
