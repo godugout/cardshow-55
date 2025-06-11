@@ -48,10 +48,10 @@ export const Card3D: React.FC<Card3DProps> = ({
         baseY += gravity;
       }
 
-      // Gentle hover animation - isolated from other effects
-      if (isHovering) {
-        baseY += 0.1;
-      }
+      // REMOVED: Hover jump animation that was causing the issue
+      // if (isHovering) {
+      //   baseY += 0.1;
+      // }
 
       // Set the final position without stacking effects
       groupRef.current.position.y = baseY;
@@ -71,21 +71,27 @@ export const Card3D: React.FC<Card3DProps> = ({
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
 
+  // Convert pixel dimensions to Three.js units (240px × 336px card)
+  // Using a scale factor of 0.01 (240px = 2.4 units, 336px = 3.36 units)
+  const cardWidth = 2.4;
+  const cardHeight = 3.36;
+
   return (
     <group ref={groupRef}>
-      {/* Invisible interaction plane */}
+      {/* Invisible interaction plane - properly sized and positioned */}
       <mesh 
         castShadow 
         receiveShadow
         onClick={handleCardClick}
         onPointerEnter={handleMouseEnter}
         onPointerLeave={handleMouseLeave}
+        position={[0, 0, 0]}
       >
-        <planeGeometry args={[2.5, 3.5]} />
+        <planeGeometry args={[cardWidth, cardHeight]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
       
-      {/* HTML overlay for the simplified card */}
+      {/* HTML overlay for the simplified card - centered at same position */}
       <Html
         transform
         occlude
@@ -100,7 +106,7 @@ export const Card3D: React.FC<Card3DProps> = ({
         <div style={{ 
           width: '240px', 
           height: '336px', 
-          transform: 'scale(1)',
+          transform: 'translate(-50%, -50%)', // Center the HTML content
           filter: isHovering ? 'brightness(1.1)' : 'brightness(1)',
           transition: 'filter 0.3s ease'
         }}>
