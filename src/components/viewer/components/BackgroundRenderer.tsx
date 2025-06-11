@@ -46,6 +46,12 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     console.log('🎯 BackgroundRenderer: Card:', adaptedCard?.title || 'No card');
   }, [backgroundType, selectedSpace, adaptedCard]);
 
+  // Handle plain background - no rendering needed, just return null
+  if (backgroundType === 'plain') {
+    console.log('🎯 BackgroundRenderer: Plain background - no rendering');
+    return null;
+  }
+
   // Check for '3dSpace' instead of 'space' based on the BackgroundType definition
   if (backgroundType === '3dSpace' && selectedSpace) {
     console.log('🎯 BackgroundRenderer: Rendering 3D space');
