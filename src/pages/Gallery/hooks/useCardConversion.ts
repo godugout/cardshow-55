@@ -1,46 +1,65 @@
 
-import type { CardData, CardRarity, PublishingOptions, CreatorAttribution } from '@/types/card';
+import type { Tables } from '@/integrations/supabase/types';
 
-interface Card {
+// Use the database type directly
+type DbCard = Tables<'cards'>;
+
+export interface CardData {
   id: string;
   title: string;
   description?: string;
-  image_url?: string;
-  thumbnail_url?: string;
-  creator_id: string;
-  rarity: string;
-  tags: string[];
-  design_metadata: Record<string, any>;
-  is_public?: boolean;
-  creator_attribution?: Record<string, any>;
-  publishing_options?: Record<string, any>;
+  imageUrl: string;
+  thumbnailUrl?: string;
+  creator: {
+    id: string;
+    username: string;
+    avatar?: string;
+  };
+  metadata: {
+    rarity?: string;
+    effects?: {
+      holographic: boolean;
+      chrome: boolean;
+      foil: boolean;
+      intensity: number;
+    };
+    template?: {
+      id: string;
+      name: string;
+      category: string;
+    };
+  };
+  createdAt: string;
 }
 
 export const useCardConversion = () => {
-  const convertCardsToCardData = (cards: Card[]): CardData[] => {
-    return cards.map(card => ({
+  const convertCardsToCardData = (dbCards: DbCard[]): CardData[] => {
+    return dbCards.map(card => ({
       id: card.id,
       title: card.title,
-      description: card.description || '',
-      image_url: card.image_url,
-      thumbnail_url: card.thumbnail_url,
-      rarity: (card.rarity as CardRarity) || 'common',
-      tags: card.tags || [],
-      design_metadata: card.design_metadata || {},
-      visibility: card.is_public ? 'public' : 'private',
-      is_public: card.is_public || false,
-      creator_attribution: (card.creator_attribution || {
-        creator_name: '',
-        creator_id: card.creator_id,
-        collaboration_type: 'solo'
-      }) as CreatorAttribution,
-      publishing_options: (card.publishing_options || {
-        marketplace_listing: false,
-        crd_catalog_inclusion: true,
-        print_available: false,
-        pricing: { currency: 'USD' },
-        distribution: { limited_edition: false }
-      }) as PublishingOptions
+      description: card.description || undefined,
+      imageUrl: card.image_url || card.thumbnail_url || '',
+      thumbnailUrl: card.thumbnail_url || undefined,
+      creator: {
+        id: card.creator_id,
+        username: 'Creator', // We'd get this from profiles in a real app
+        avatar: undefined
+      },
+      metadata: {
+        rarity: card.rarity || 'common',
+        effects: {
+          holographic: false,
+          chrome: false,
+          foil: false,
+          intensity: 0.5
+        },
+        template: {
+          id: card.template_id || 'default',
+          name: 'Default Template',
+          category: 'custom'
+        }
+      },
+      createdAt: card.created_at || new Date().toISOString()
     }));
   };
 
