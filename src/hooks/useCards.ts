@@ -3,21 +3,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { toast } from 'sonner';
+import type { Tables } from '@/integrations/supabase/types';
 
-interface Card {
-  id: string;
-  title: string;
-  description?: string;
-  image_url?: string;
-  thumbnail_url?: string;
-  creator_id: string;
-  is_public: boolean;
-  rarity: string;
-  tags: string[];
-  design_metadata: Record<string, any>;
-  created_at: string;
-  updated_at: string;
-}
+// Use the database type directly instead of custom interface
+type Card = Tables<'cards'>;
 
 export const useCards = () => {
   const { user } = useAuth();
