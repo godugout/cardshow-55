@@ -23,7 +23,7 @@ const collapsibleSectionVariants = cva(
 
 export interface CollapsibleSectionProps extends VariantProps<typeof collapsibleSectionVariants> {
   title: string;
-  icon?: React.ComponentType<any>;
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   emoji?: string;
   statusText?: string;
   statusCount?: number;
@@ -55,7 +55,7 @@ export const CollapsibleSection = React.forwardRef<HTMLDivElement, CollapsibleSe
       }
     };
 
-    // Safe icon rendering with error handling
+    // Safe icon rendering with proper error handling
     const renderIcon = () => {
       if (emoji) {
         return (
@@ -65,11 +65,14 @@ export const CollapsibleSection = React.forwardRef<HTMLDivElement, CollapsibleSe
         );
       }
       
-      if (Icon && typeof Icon === 'function') {
+      if (Icon) {
         try {
-          return <Icon className="w-4 h-4 text-crd-green" />;
+          // Ensure Icon is a valid React component
+          if (typeof Icon === 'function') {
+            return <Icon className="w-4 h-4 text-crd-green" />;
+          }
         } catch (error) {
-          console.warn('Error rendering icon:', error);
+          console.warn('Error rendering icon in CollapsibleSection:', error);
           return null;
         }
       }
