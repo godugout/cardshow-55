@@ -27,7 +27,7 @@ export const EnhancedHero: React.FC = () => {
 
   const handleCardPreview = (card: Card, index: number) => {
     setActiveCardIndex(index);
-    handleCardClick(card, showcaseCards);
+    handleCardClick(card, featuredCards); // Pass the full featuredCards array
   };
 
   return (
