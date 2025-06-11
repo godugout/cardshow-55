@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
@@ -51,6 +50,38 @@ const FALLBACK_CARDS = [
   }
 ];
 
+// Utility function to convert fallback cards to CardData format
+const convertFallbackToCardData = (fallbackCard: typeof FALLBACK_CARDS[0]) => ({
+  id: fallbackCard.id,
+  title: fallbackCard.title,
+  description: `A stunning ${fallbackCard.title} card created by ${fallbackCard.creator}`,
+  rarity: 'common' as const,
+  tags: ['featured', 'artwork'],
+  image_url: fallbackCard.image,
+  thumbnail_url: fallbackCard.image,
+  design_metadata: {},
+  visibility: 'public' as const,
+  is_public: true,
+  creator_attribution: {
+    creator_name: fallbackCard.creator,
+    creator_id: 'fallback-creator',
+    collaboration_type: 'solo' as const
+  },
+  publishing_options: {
+    marketplace_listing: false,
+    crd_catalog_inclusion: true,
+    print_available: false,
+    pricing: { currency: 'USD' },
+    distribution: { limited_edition: false }
+  },
+  verification_status: 'approved' as const,
+  print_metadata: {},
+  creator_id: 'fallback-creator',
+  marketplace_listing: false,
+  crd_catalog_inclusion: true,
+  print_available: false
+});
+
 export const SimplifiedDiscover: React.FC = () => {
   const { cards, loading } = useCards();
   const { selectedCardIndex, showImmersiveViewer, handleCardClick, handleCardChange, handleCloseViewer, handleShareCard, handleDownloadCard } = useGalleryActions();
@@ -67,15 +98,56 @@ export const SimplifiedDiscover: React.FC = () => {
     : FALLBACK_CARDS.slice(0, 6);
 
   // Convert cards to CardData format for the viewer
-  const convertedCards = convertCardsToCardData(
-    cards && cards.length > 0 ? cards.slice(0, 6) : []
-  );
+  const convertedCards = cards && cards.length > 0
+    ? convertCardsToCardData(cards.slice(0, 6))
+    : FALLBACK_CARDS.slice(0, 6).map(convertFallbackToCardData);
 
   const handleCardView = (card: any, index: number) => {
     console.log('🎯 SimplifiedDiscover: Card view clicked', card.title, index);
+    
+    // Handle both database cards and fallback cards
     if (cards && cards.length > 0) {
       // Use the actual database card for the viewer
       handleCardClick(cards[index], cards.slice(0, 6));
+    } else {
+      // Convert fallback card to proper format and trigger viewer
+      const fallbackCard = FALLBACK_CARDS[index];
+      const convertedFallback = convertFallbackToCardData(fallbackCard);
+      console.log('🎯 SimplifiedDiscover: Using fallback card', convertedFallback);
+      
+      // Create a mock database card for the gallery actions
+      const mockDbCard = {
+        id: fallbackCard.id,
+        title: fallbackCard.title,
+        image_url: fallbackCard.image,
+        thumbnail_url: fallbackCard.image,
+        description: convertedFallback.description,
+        creator_id: 'fallback-creator',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        rarity: 'common',
+        tags: ['featured'],
+        is_public: true,
+        marketplace_listing: false,
+        verification_status: 'approved',
+        design_metadata: {},
+        print_metadata: {},
+        visibility: 'public',
+        template_id: null,
+        edition_number: null,
+        series: null,
+        price: null,
+        total_supply: null
+      } as DbCard;
+      
+      const mockDbCards = FALLBACK_CARDS.map((fb, idx) => ({
+        ...mockDbCard,
+        id: fb.id,
+        title: fb.title,
+        image_url: fb.image
+      }));
+      
+      handleCardClick(mockDbCard, mockDbCards);
     }
   };
 
