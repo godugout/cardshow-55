@@ -133,7 +133,7 @@ export const Card3D: React.FC<Card3DProps> = ({
         <meshBasicMaterial transparent opacity={0} /> {/* Invisible plane for interaction */}
       </mesh>
       
-      {/* HTML overlay for the enhanced card */}
+      {/* HTML overlay for the enhanced card - with prioritized image layer */}
       <Html
         transform
         occlude
