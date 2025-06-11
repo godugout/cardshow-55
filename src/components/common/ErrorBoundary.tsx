@@ -29,7 +29,8 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     
     // Handle Supabase subscription errors specifically
-    if (error.message.includes('subscribe multiple times')) {
+    const errorMessage = error?.message || '';
+    if (errorMessage.includes('subscribe multiple times')) {
       console.warn('Supabase subscription error detected, attempting recovery...');
       // Force a page reload for subscription errors to reset state
       setTimeout(() => {
@@ -63,7 +64,8 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
 
-      const isSubscriptionError = this.state.error?.message.includes('subscribe multiple times');
+      const errorMessage = this.state.error?.message || '';
+      const isSubscriptionError = errorMessage.includes('subscribe multiple times');
 
       return (
         <div className="min-h-[400px] flex items-center justify-center p-8">
@@ -73,7 +75,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <p className="text-gray-400 mb-6">
               {isSubscriptionError 
                 ? 'Connection issue detected. The page will reload automatically...'
-                : this.state.error?.message || 'An unexpected error occurred'
+                : errorMessage || 'An unexpected error occurred'
               }
             </p>
             {!isSubscriptionError && (
