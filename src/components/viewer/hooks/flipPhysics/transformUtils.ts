@@ -26,12 +26,16 @@ export const getShadowStyle = (physicsState: FlipPhysicsState) => {
   };
 };
 
-// FIXED: Corrected face visibility logic to match the expected behavior
-export const getFaceVisibility = (isFront: boolean) => {
-  // Return consistent visibility - let the 3D transforms handle the actual visibility
+// SIMPLIFIED: Direct face visibility based on isFlipped state
+export const getFaceVisibility = (isFront: boolean, isFlipped: boolean) => {
+  console.log(`👁️ SIMPLIFIED Face visibility:`, { isFront, isFlipped, shouldShow: isFront ? !isFlipped : isFlipped });
+  
+  // Front face visible when NOT flipped, back face visible when flipped
+  const shouldShow = isFront ? !isFlipped : isFlipped;
+  
   return {
-    opacity: 1,
-    zIndex: 20,
-    pointerEvents: 'auto' as React.CSSProperties['pointerEvents']
+    opacity: shouldShow ? 1 : 0,
+    zIndex: shouldShow ? 30 : 10,
+    pointerEvents: (shouldShow ? 'auto' : 'none') as React.CSSProperties['pointerEvents']
   };
 };

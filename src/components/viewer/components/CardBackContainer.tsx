@@ -38,19 +38,20 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
   
-  // Use physics-based visibility when available, otherwise ensure back face is visible when flipped
+  // Use simplified face visibility
   const faceStyles = getFaceVisibility ? getFaceVisibility(false) : { 
     opacity: isFlipped ? 1 : 0, 
     zIndex: isFlipped ? 30 : 10,
     pointerEvents: (isFlipped ? 'auto' : 'none') as React.CSSProperties['pointerEvents']
   };
 
-  // Debug logging for back image
-  console.log('🖼️ CardBackContainer - Back Image Setup:', {
+  // Enhanced debug logging for back image
+  console.log('🖼️ CardBackContainer - ENHANCED Back Logo Debug:', {
     isFlipped,
     faceStyles,
     selectedMaterial: selectedMaterial.name,
-    logoImagePath: '/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png'
+    logoImagePath: '/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png',
+    shouldBeVisible: isFlipped ? 'YES - BACK SHOULD SHOW' : 'NO - FRONT SHOULD SHOW'
   });
 
   // Create dynamic frame styles combining base styles with material properties
@@ -69,6 +70,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       data-face="back"
       data-material={selectedMaterial.id}
       data-material-name={selectedMaterial.name}
+      data-visibility={faceStyles.opacity}
     >
       {/* Dark Pattern Background Base */}
       <div 
@@ -109,8 +111,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         />
       </div>
 
-      {/* Centered CRD Logo - HIGHEST Z-INDEX */}
-      <div className="absolute inset-0 flex items-center justify-center z-50">
+      {/* Centered CRD Logo - MAXIMUM Z-INDEX */}
+      <div className="absolute inset-0 flex items-center justify-center z-[100]">
         <div className="flex items-center justify-center">
           <img 
             src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
@@ -120,14 +122,23 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
               filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
               userSelect: 'none',
               WebkitUserSelect: 'none',
-              pointerEvents: 'none'
+              pointerEvents: 'none',
+              position: 'absolute',
+              zIndex: 1000
             }}
             draggable={false}
-            onLoad={() => console.log('✅ CRD logo loaded successfully on card back')}
+            onLoad={() => {
+              console.log('✅ SUCCESS: CRD logo loaded successfully on card back');
+              console.log('✅ Back face should be visible when isFlipped =', isFlipped);
+            }}
             onError={(e) => {
-              console.error('❌ Error loading CRD logo on card back:', e);
+              console.error('❌ CRITICAL ERROR: Error loading CRD logo on card back:', e);
             }}
           />
+          {/* Debug overlay to confirm back is showing */}
+          <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded z-[1001]">
+            BACK: CRD Logo
+          </div>
         </div>
       </div>
 
