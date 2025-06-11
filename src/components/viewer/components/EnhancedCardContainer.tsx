@@ -83,11 +83,17 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     isHovering
   }) : null;
 
-  // Use double-click/tap detection for card flip
+  // Use double-click/tap detection for card flip (but physics will handle the animation)
   const handleDoubleClick = useDoubleClick({
     onDoubleClick: onClick,
     delay: 300
   });
+
+  // Handle flip state change
+  const handleFlip = () => {
+    // This will be called by the physics system
+    // Add any additional flip logic here if needed
+  };
 
   // Use cached styles if available, otherwise fall back to provided styles
   const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
@@ -113,6 +119,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         isDragging={isDragging}
         interactiveLighting={interactiveLighting}
         isHovering={isHovering}
+        isFlipped={isFlipped}
+        onFlip={handleFlip}
         onClick={handleDoubleClick}
       >
         {/* Front of Card */}
