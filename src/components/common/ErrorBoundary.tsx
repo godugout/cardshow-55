@@ -13,6 +13,7 @@ interface State {
   hasError: boolean;
   error?: Error;
   errorCount: number;
+  errorStack?: string;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -22,11 +23,23 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error, errorCount: 0 };
+    console.error('ErrorBoundary - getDerivedStateFromError:', error);
+    return { 
+      hasError: true, 
+      error, 
+      errorCount: 0,
+      errorStack: error?.stack
+    };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    console.error('ErrorBoundary caught an error:', {
+      error: error,
+      message: error?.message,
+      stack: error?.stack,
+      errorInfo: errorInfo,
+      componentStack: errorInfo?.componentStack
+    });
     
     // Handle Supabase subscription errors specifically
     const errorMessage = error?.message || '';
@@ -45,8 +58,11 @@ export class ErrorBoundary extends Component<Props, State> {
   private handleRetry = () => {
     const newCount = this.state.errorCount + 1;
     
+    console.log('ErrorBoundary retry attempt:', newCount);
+    
     // If we've retried multiple times, suggest a page reload
     if (newCount >= 3) {
+      console.log('Too many retries, forcing page reload');
       window.location.reload();
       return;
     }
@@ -54,7 +70,8 @@ export class ErrorBoundary extends Component<Props, State> {
     this.setState({ 
       hasError: false, 
       error: undefined,
-      errorCount: newCount
+      errorCount: newCount,
+      errorStack: undefined
     });
   };
 
@@ -72,12 +89,20 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="text-center max-w-md">
             <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-white mb-2">Something went wrong</h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-400 mb-4">
               {isSubscriptionError 
                 ? 'Connection issue detected. The page will reload automatically...'
                 : errorMessage || 'An unexpected error occurred'
               }
             </p>
+            {this.state.errorStack && (
+              <details className="text-left mb-4">
+                <summary className="text-sm text-gray-500 cursor-pointer mb-2">Error Details</summary>
+                <pre className="text-xs text-gray-400 bg-gray-800 p-2 rounded overflow-auto max-h-32">
+                  {this.state.errorStack}
+                </pre>
+              </details>
+            )}
             {!isSubscriptionError && (
               <Button onClick={this.handleRetry} className="gap-2">
                 <RefreshCw className="w-4 h-4" />

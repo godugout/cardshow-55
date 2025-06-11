@@ -16,10 +16,15 @@ export const MainLayout = () => {
   useEffect(() => {
     console.log('MainLayout mounted');
     
-    // Quick initialization
+    // Quick initialization with error handling
     const timer = setTimeout(() => {
-      setIsLoading(false);
-      console.log('MainLayout finished loading');
+      try {
+        setIsLoading(false);
+        console.log('MainLayout finished loading');
+      } catch (error) {
+        console.error('MainLayout loading error:', error);
+        setIsLoading(false);
+      }
     }, 50);
     
     return () => {
