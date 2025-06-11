@@ -6,19 +6,25 @@ import { Card3D } from './Card3D';
 import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
 import { ReliableSpaceEnvironment } from './environments/ReliableSpaceEnvironment';
 import type { SpaceEnvironment, SpaceControls } from './types';
+import type { EffectValues } from '../hooks/useEnhancedCardEffects';
+import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 
 interface Simple3DCard {
   id: string;
   title: string;
   image_url?: string;
-  rarity?: string;
-  tags?: string[];
 }
 
 interface SpaceRenderer3DProps {
   card: Simple3DCard;
   environment: SpaceEnvironment;
   controls: SpaceControls;
+  effectValues?: EffectValues;
+  selectedScene?: EnvironmentScene;
+  selectedLighting?: LightingPreset;
+  materialSettings?: MaterialSettings;
+  overallBrightness?: number[];
+  interactiveLighting?: boolean;
   onCardClick?: () => void;
   onCameraReset?: () => void;
 }
@@ -63,6 +69,12 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   card,
   environment,
   controls,
+  effectValues = {},
+  selectedScene,
+  selectedLighting,
+  materialSettings,
+  overallBrightness = [100],
+  interactiveLighting = false,
   onCardClick,
   onCameraReset,
 }) => {
@@ -104,6 +116,12 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
           <Card3D
             card={card}
             controls={controls}
+            effectValues={effectValues}
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            materialSettings={materialSettings}
+            overallBrightness={overallBrightness}
+            interactiveLighting={interactiveLighting}
             onClick={onCardClick}
           />
         </Suspense>
