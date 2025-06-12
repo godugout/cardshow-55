@@ -126,23 +126,23 @@ export const Card3D: React.FC<Card3DProps> = ({
         onPointerEnter={handleMouseEnter}
         onPointerLeave={handleMouseLeave}
       >
-        <planeGeometry args={[2.5, 3.5]} />
+        <planeGeometry args={[4, 5.6]} />
         <meshBasicMaterial transparent opacity={0} /> {/* Invisible plane for interaction */}
       </mesh>
       
-      {/* HTML overlay for the enhanced card - with prioritized image layer - Removed isFlipped prop */}
+      {/* HTML overlay for the enhanced card - Full size to match 2D experience */}
       <Html
         transform
         occlude
         position={[0, 0, 0.01]}
-        distanceFactor={1}
+        distanceFactor={0.625}
         style={{
-          width: '250px',
-          height: '350px',
+          width: '400px',
+          height: '560px',
           pointerEvents: 'none'
         }}
       >
-        <div style={{ width: '250px', height: '350px', transform: 'scale(0.6)' }}>
+        <div style={{ width: '400px', height: '560px' }}>
           <EnhancedCardContainer
             card={adaptedCard}
             isHovering={isHovering}
