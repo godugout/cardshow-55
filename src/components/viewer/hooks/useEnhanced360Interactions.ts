@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAdvancedPhysicsCardInteraction } from './useAdvancedPhysicsCardInteraction';
 
@@ -111,30 +112,16 @@ export const useEnhanced360Interactions = ({
   const handleDragEnd = useCallback(() => {
     console.log('🎯 Ending enhanced 360° physics with smart click detection and improved momentum');
     
-    // Use enhanced physics drag end - handle potential void return
-    const dragResult = physicsDragEnd();
+    // Use enhanced physics drag end - this returns void, so we don't expect a return value
+    physicsDragEnd();
     
-    // Single comprehensive check for valid result with proper type narrowing
-    if (dragResult && typeof dragResult === 'object' && 'isClick' in dragResult && 'dragDistance' in dragResult) {
-      // TypeScript now knows dragResult is definitely not null/undefined and has the required properties
-      if (dragResult.isClick) {
-        // Hide immediately for clicks
-        setRotationIndicator(prev => ({ ...prev, show: false }));
-      } else {
-        // Hide after delay for drags to show final rotation
-        setTimeout(() => {
-          setRotationIndicator(prev => ({ ...prev, show: false }));
-        }, 1200);
-      }
-      return dragResult;
-    }
-    
-    // Fallback for any invalid result
+    // Since we can't get click detection from physicsDragEnd, we'll use a simple approach
+    // Hide the rotation indicator after a brief delay to show the final rotation
     setTimeout(() => {
       setRotationIndicator(prev => ({ ...prev, show: false }));
     }, 1200);
     
-    // Return a safe default result
+    // Return a safe default result for compatibility with existing code
     return { isClick: false, dragDistance: 0 };
   }, [physicsDragEnd]);
 
