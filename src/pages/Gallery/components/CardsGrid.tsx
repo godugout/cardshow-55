@@ -1,21 +1,17 @@
 
-import React from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StandardCardItem } from '@/components/cards/StandardCardItem';
+import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
+import { useCardConversion } from '../hooks/useCardConversion';
+import type { Tables } from '@/integrations/supabase/types';
 
-interface CardItem {
-  id: string;
-  title: string;
-  description?: string;
-  image_url?: string;
-  rarity?: string;
-}
+type DbCard = Tables<'cards'>;
 
 interface CardsGridProps {
-  cards: CardItem[];
+  cards: DbCard[];
   loading: boolean;
-  onCardClick: (card: CardItem) => void;
+  onCardClick: (card: DbCard) => void;
 }
 
 export const CardsGrid: React.FC<CardsGridProps> = ({
@@ -23,11 +19,44 @@ export const CardsGrid: React.FC<CardsGridProps> = ({
   loading,
   onCardClick
 }) => {
+  const [showViewer, setShowViewer] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<DbCard | null>(null);
+  const { convertCardsToCardData } = useCardConversion();
+
+  const handleView3D = (card: DbCard) => {
+    setSelectedCard(card);
+    setShowViewer(true);
+  };
+
+  const handleCloseViewer = () => {
+    setShowViewer(false);
+    setSelectedCard(null);
+  };
+
+  const handleShare = () => {
+    if (selectedCard && navigator.share) {
+      navigator.share({
+        title: selectedCard.title,
+        text: selectedCard.description || 'Check out this card!',
+        url: `${window.location.origin}/card/${selectedCard.id}`
+      });
+    }
+  };
+
+  const handleDownload = () => {
+    // TODO: Implement download functionality
+    console.log('Download card:', selectedCard?.id);
+  };
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {Array(4).fill(0).map((_, i) => (
-          <Skeleton key={i} className="h-64 rounded-lg" />
+          <div key={i} className="space-y-3">
+            <Skeleton className="aspect-[3/4] rounded-lg bg-crd-mediumGray" />
+            <Skeleton className="h-4 bg-crd-mediumGray rounded" />
+            <Skeleton className="h-3 bg-crd-mediumGray rounded w-2/3" />
+          </div>
         ))}
       </div>
     );
@@ -35,53 +64,45 @@ export const CardsGrid: React.FC<CardsGridProps> = ({
 
   if (!cards || cards.length === 0) {
     return (
-      <p className="text-[#777E90] col-span-4 text-center py-8">No featured cards found</p>
+      <p className="text-crd-lightGray col-span-4 text-center py-8">No featured cards found</p>
     );
   }
 
+  const convertedCards = convertCardsToCardData(cards);
+  const currentCardIndex = selectedCard ? cards.findIndex(c => c.id === selectedCard.id) : 0;
+  const convertedSelectedCard = selectedCard ? convertCardsToCardData([selectedCard])[0] : null;
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      {cards.slice(0, 8).map((card) => (
-        <Card 
-          key={card.id} 
-          className="bg-[#23262F] border-[#353945] overflow-hidden cursor-pointer hover:border-[#3772FF] transition-colors group"
-          onClick={() => onCardClick(card)}
-        >
-          <div 
-            className="h-48 bg-cover bg-center group-hover:scale-105 transition-transform"
-            style={{ 
-              backgroundImage: card.image_url 
-                ? `url(${card.image_url})` 
-                : 'url(https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500&q=80)'
-            }}
-          ></div>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-[#FCFCFD] text-lg group-hover:text-[#3772FF] transition-colors">{card.title}</CardTitle>
-          </CardHeader>
-          <CardContent className="pb-2">
-            <p className="text-[#777E90] text-sm line-clamp-2">{card.description}</p>
-            {card.rarity && (
-              <div className="mt-2">
-                <span className="inline-block bg-[#3772FF] text-white text-xs px-2 py-1 rounded">
-                  {card.rarity}
-                </span>
-              </div>
-            )}
-          </CardContent>
-          <CardFooter>
-            <Button 
-              variant="outline" 
-              className="w-full border-[#353945] text-white hover:bg-[#3772FF] hover:border-[#3772FF] transition-colors"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCardClick(card);
-              }}
-            >
-              View in 3D
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {cards.slice(0, 8).map((card) => (
+          <StandardCardItem
+            key={card.id}
+            card={card}
+            onView3D={handleView3D}
+            showPrivacyBadge={true}
+          />
+        ))}
+      </div>
+
+      {/* 3D Viewer Modal */}
+      {showViewer && convertedSelectedCard && (
+        <ImmersiveCardViewer
+          card={convertedSelectedCard}
+          cards={convertedCards}
+          currentCardIndex={currentCardIndex}
+          onCardChange={(index) => {
+            setSelectedCard(cards[index]);
+          }}
+          isOpen={showViewer}
+          onClose={handleCloseViewer}
+          onShare={handleShare}
+          onDownload={handleDownload}
+          allowRotation={true}
+          showStats={true}
+          ambient={true}
+        />
+      )}
+    </>
   );
 };

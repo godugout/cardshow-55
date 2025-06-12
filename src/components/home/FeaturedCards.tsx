@@ -1,52 +1,98 @@
 
-import React from "react";
-import { CardItem } from "../shared/CardItem";
+import React, { useState } from "react";
 import { useCards } from "@/hooks/useCards";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StandardCardItem } from "@/components/cards/StandardCardItem";
+import { ImmersiveCardViewer } from "@/components/viewer/ImmersiveCardViewer";
+import { useCardConversion } from "@/pages/Gallery/hooks/useCardConversion";
 
 export const FeaturedCards: React.FC = () => {
   const { featuredCards, loading } = useCards();
+  const [showViewer, setShowViewer] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<any>(null);
+  const { convertCardsToCardData } = useCardConversion();
+
+  const handleView3D = (card: any) => {
+    setSelectedCard(card);
+    setShowViewer(true);
+  };
+
+  const handleCloseViewer = () => {
+    setShowViewer(false);
+    setSelectedCard(null);
+  };
+
+  const handleShare = () => {
+    if (selectedCard && navigator.share) {
+      navigator.share({
+        title: selectedCard.title,
+        text: selectedCard.description || 'Check out this card!',
+        url: `${window.location.origin}/card/${selectedCard.id}`
+      });
+    }
+  };
+
+  const handleDownload = () => {
+    console.log('Download card:', selectedCard?.id);
+  };
 
   // Fallback data in case the API returns empty
   const fallbackCards = [
     {
+      id: '1',
       title: "Magic Mushroom #3241",
-      price: "1.5 ETH",
-      image: "https://cdn.builder.io/api/v1/image/assets/55d1eea1cc5a43f6bced987c3407a299/d8f82b9c8c741a51de3f5c8f0ec3bfb7a8ce2357?placeholderIfAbsent=true",
-      stock: "3 in stock",
-      highestBid: "0.001 ETH",
+      description: "A mystical card with magical properties",
+      image_url: "https://cdn.builder.io/api/v1/image/assets/55d1eea1cc5a43f6bced987c3407a299/d8f82b9c8c741a51de3f5c8f0ec3bfb7a8ce2357?placeholderIfAbsent=true",
+      rarity: "rare",
+      tags: ["magic", "mystical"],
+      visibility: "public",
+      is_public: true,
+      created_at: new Date().toISOString(),
+      series: "Mystical Collection"
     },
     {
+      id: '2',
       title: "Happy Robot 032",
-      price: "1.5 ETH",
-      image: "https://cdn.builder.io/api/v1/image/assets/55d1eea1cc5a43f6bced987c3407a299/f77e9a2f29b3d6ca3e2ef7eb58bb96f8f61ae2e3?placeholderIfAbsent=true",
-      stock: "3 in stock",
-      highestBid: "0.001 ETH",
+      description: "A cheerful robotic companion card",
+      image_url: "https://cdn.builder.io/api/v1/image/assets/55d1eea1cc5a43f6bced987c3407a299/f77e9a2f29b3d6ca3e2ef7eb58bb96f8f61ae2e3?placeholderIfAbsent=true",
+      rarity: "uncommon",
+      tags: ["robot", "tech"],
+      visibility: "public",
+      is_public: true,
+      created_at: new Date().toISOString(),
+      series: "Robot Collection"
     },
     {
+      id: '3',
       title: "Happy Robot 024",
-      price: "1.5 ETH",
-      image: "https://cdn.builder.io/api/v1/image/assets/55d1eea1cc5a43f6bced987c3407a299/bbddb7b98ca0d36e27c86999c1ba359a0f28d302?placeholderIfAbsent=true",
-      stock: "3 in stock",
-      highestBid: "0.001 ETH",
+      description: "Another cheerful robotic companion",
+      image_url: "https://cdn.builder.io/api/v1/image/assets/55d1eea1cc5a43f6bced987c3407a299/bbddb7b98ca0d36e27c86999c1ba359a0f28d302?placeholderIfAbsent=true",
+      rarity: "common",
+      tags: ["robot", "companion"],
+      visibility: "public",
+      is_public: true,
+      created_at: new Date().toISOString(),
+      series: "Robot Collection"
     },
     {
+      id: '4',
       title: "Happy Robot 029",
-      price: "1.5 ETH",
-      image: "https://cdn.builder.io/api/v1/image/assets/55d1eea1cc5a43f6bced987c3407a299/47ecad8cb0d55baf48a07b5a5ad0aec67e4ab9f9?placeholderIfAbsent=true",
-      stock: "3 in stock",
-      highestBid: "0.001 ETH",
+      description: "The happiest robot in the collection",
+      image_url: "https://cdn.builder.io/api/v1/image/assets/55d1eea1cc5a43f6bced987c3407a299/47ecad8cb0d55baf48a07b5a5ad0aec67e4ab9f9?placeholderIfAbsent=true",
+      rarity: "epic",
+      tags: ["robot", "happy"],
+      visibility: "public",
+      is_public: true,
+      created_at: new Date().toISOString(),
+      series: "Robot Collection"
     },
   ];
 
   // Use real data if available, otherwise fallback to mock data
-  const cards = featuredCards.length > 0 ? featuredCards.map(card => ({
-    title: card.title,
-    price: "1.5 ETH", // Default price since Card interface doesn't have price
-    image: card.image_url || card.thumbnail_url || fallbackCards[0].image,
-    stock: "3 in stock",
-    highestBid: "0.001 ETH",
-  })) : fallbackCards;
+  const displayCards = featuredCards.length > 0 ? featuredCards : fallbackCards;
+  const convertedCards = convertCardsToCardData(displayCards);
+  const currentCardIndex = selectedCard ? displayCards.findIndex(c => c.id === selectedCard.id) : 0;
+  const convertedSelectedCard = selectedCard ? convertCardsToCardData([selectedCard])[0] : null;
 
   return (
     <div className="bg-[#141416] flex flex-col overflow-hidden pt-32 pb-12 px-[352px] max-md:max-w-full max-md:px-5">
@@ -71,6 +117,7 @@ export const FeaturedCards: React.FC = () => {
           </button>
         </div>
       </div>
+      
       <div className="self-stretch flex flex-wrap w-full items-stretch justify-between gap-8 mt-10 max-md:max-w-full">
         {loading ? (
           // Loading state
@@ -84,18 +131,36 @@ export const FeaturedCards: React.FC = () => {
             </div>
           ))
         ) : (
-          cards.map((card, index) => (
-            <CardItem
-              key={index}
-              title={card.title}
-              price={card.price}
-              image={card.image}
-              stock={card.stock}
-              highestBid={card.highestBid}
+          displayCards.map((card) => (
+            <StandardCardItem
+              key={card.id}
+              card={card as any}
+              onView3D={handleView3D}
+              showPrivacyBadge={false}
+              className="w-[270px]"
             />
           ))
         )}
       </div>
+
+      {/* 3D Viewer Modal */}
+      {showViewer && convertedSelectedCard && (
+        <ImmersiveCardViewer
+          card={convertedSelectedCard}
+          cards={convertedCards}
+          currentCardIndex={currentCardIndex}
+          onCardChange={(index) => {
+            setSelectedCard(displayCards[index]);
+          }}
+          isOpen={showViewer}
+          onClose={handleCloseViewer}
+          onShare={handleShare}
+          onDownload={handleDownload}
+          allowRotation={true}
+          showStats={true}
+          ambient={true}
+        />
+      )}
     </div>
   );
 };
