@@ -42,7 +42,7 @@ const Studio = () => {
           isOpen={true}
           onClose={handleClose}
           onShare={() => handleShare(selectedCard)}
-          onDownload={() => handleDownload(selectedCard)}
+          onDownload={handleDownload}
           allowRotation={true}
           showStats={true}
           ambient={true}

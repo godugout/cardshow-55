@@ -148,7 +148,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
           />
         </Canvas>
 
-        {/* Background Renderer - Fixed: Added missing props */}
+        {/* Background Renderer - Fixed: Added missing mousePosition and isHovering props */}
         <div className="absolute inset-0 -z-10">
           <BackgroundRenderer
             backgroundType={viewerState.backgroundType}
@@ -167,6 +167,8 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
             effectValues={effectValues}
             selectedLighting={viewerState.selectedLighting}
             materialSettings={viewerState.materialSettings}
+            mousePosition={viewerState.mousePosition}
+            isHovering={viewerState.isHovering}
           />
         </div>
 
