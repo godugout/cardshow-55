@@ -1,6 +1,34 @@
-
 import { ENHANCED_VISUAL_EFFECTS } from './effectConfigs';
 import type { EffectValues } from './types';
+
+// Physics-based effect calculations using realistic formulas
+export const EFFECT_PHYSICS = {
+  // Fresnel reflection formula: F = F0 + (1 - F0) * (1 - cos(θ))^5
+  fresnel: (cosTheta: number, f0: number = 0.04): number => {
+    return f0 + (1 - f0) * Math.pow(1 - cosTheta, 5);
+  },
+
+  // Realistic metallic reflection based on material properties
+  metallicReflection: (metalness: number, roughness: number, lightAngle: number): number => {
+    const f0 = 0.04 + (0.96 * metalness);
+    const cosTheta = Math.cos(lightAngle * Math.PI / 180);
+    return EFFECT_PHYSICS.fresnel(cosTheta, f0) * (1 - roughness);
+  },
+
+  // Holographic diffraction calculation
+  holographicDiffraction: (viewAngle: number, complexity: number): number => {
+    const wavelength = 550; // Green wavelength in nm
+    const gratingSpacing = 1000 + (complexity * 200); // Variable grating
+    return Math.sin(viewAngle * Math.PI / 180) * (wavelength / gratingSpacing);
+  },
+
+  // Light scattering for foil effects
+  rayleighScattering: (particleSize: number, lightIntensity: number): number => {
+    // Simplified Rayleigh scattering: I ∝ 1/λ^4 * (particle size factor)
+    const scatteringCoeff = Math.pow(particleSize / 100, 4);
+    return lightIntensity * scatteringCoeff * 0.3;
+  }
+};
 
 // Create default effect values with starlight preset emphasis
 export const createDefaultEffectValues = (): EffectValues => {
