@@ -14,82 +14,66 @@ export const ColorEffectsLayers: React.FC<ColorEffectsLayersProps> = ({
 }) => {
   return (
     <>
-      {/* Enhanced Angular Color Effects - More Blue/Gray focused */}
+      {/* Primary Rainbow Spectrum Layer - RESTORED FULL SPECTRUM */}
       <div
         className="absolute inset-0 z-24"
         style={{
           background: `
             conic-gradient(
-              from ${mousePosition.x * 180}deg at ${50 + mousePosition.x * 15}% ${50 + mousePosition.y * 15}%,
-              rgba(100, 150, 255, ${(intensity / 100) * 0.28}) 0deg,
-              rgba(0, 200, 255, ${(intensity / 100) * 0.32}) 60deg,
-              rgba(150, 180, 255, ${(intensity / 100) * 0.25}) 120deg,
-              rgba(80, 120, 200, ${(intensity / 100) * 0.3}) 180deg,
-              rgba(120, 160, 255, ${(intensity / 100) * 0.26}) 240deg,
-              rgba(60, 140, 220, ${(intensity / 100) * 0.3}) 300deg,
-              rgba(100, 150, 255, ${(intensity / 100) * 0.28}) 360deg
+              from ${mousePosition.x * 180}deg at ${50 + mousePosition.x * 25}% ${50 + mousePosition.y * 25}%,
+              rgba(255, 0, 127, ${(intensity / 100) * 0.6}) 0deg,
+              rgba(255, 127, 0, ${(intensity / 100) * 0.65}) 51deg,
+              rgba(255, 255, 0, ${(intensity / 100) * 0.7}) 102deg,
+              rgba(127, 255, 0, ${(intensity / 100) * 0.65}) 153deg,
+              rgba(0, 255, 127, ${(intensity / 100) * 0.6}) 204deg,
+              rgba(0, 127, 255, ${(intensity / 100) * 0.65}) 255deg,
+              rgba(127, 0, 255, ${(intensity / 100) * 0.7}) 306deg,
+              rgba(255, 0, 127, ${(intensity / 100) * 0.6}) 360deg
             )
           `,
-          maskImage: `
-            radial-gradient(
-              ellipse at ${60 + mousePosition.x * 15}% ${40 + mousePosition.y * 20}%,
-              rgba(255, 255, 255, 0.8) 25%,
-              rgba(255, 255, 255, 0.5) 55%,
-              rgba(255, 255, 255, 0.2) 80%,
-              transparent 100%
-            )
-          `,
-          WebkitMaskImage: `
-            radial-gradient(
-              ellipse at ${60 + mousePosition.x * 15}% ${40 + mousePosition.y * 20}%,
-              rgba(255, 255, 255, 0.8) 25%,
-              rgba(255, 255, 255, 0.5) 55%,
-              rgba(255, 255, 255, 0.2) 80%,
-              transparent 100%
-            )
-          `,
-          mixBlendMode: 'color-dodge',
-          opacity: 0.4,
-          filter: `blur(${blur * 0.6}px)`
+          mixBlendMode: 'screen',
+          opacity: 0.9,
+          filter: `blur(${blur * 0.5}px)`
         }}
       />
 
-      {/* 3D Depth Layer - Blue/Gray Offset Colors */}
+      {/* Secondary Prismatic Layer - Enhanced colors */}
       <div
         className="absolute inset-0 z-25"
         style={{
           background: `
             linear-gradient(
-              ${45 + mousePosition.y * 90}deg,
-              rgba(120, 160, 220, ${(intensity / 100) * 0.22}) 0%,
-              rgba(100, 180, 240, ${(intensity / 100) * 0.25}) 25%,
-              rgba(140, 140, 200, ${(intensity / 100) * 0.2}) 50%,
-              rgba(160, 180, 255, ${(intensity / 100) * 0.24}) 75%,
-              rgba(80, 140, 220, ${(intensity / 100) * 0.22}) 100%
+              ${90 + mousePosition.y * 45}deg,
+              rgba(255, 20, 147, ${(intensity / 100) * 0.5}) 0%,
+              rgba(255, 140, 0, ${(intensity / 100) * 0.55}) 20%,
+              rgba(50, 205, 50, ${(intensity / 100) * 0.6}) 40%,
+              rgba(0, 191, 255, ${(intensity / 100) * 0.55}) 60%,
+              rgba(138, 43, 226, ${(intensity / 100) * 0.5}) 80%,
+              rgba(255, 69, 0, ${(intensity / 100) * 0.45}) 100%
             )
           `,
-          maskImage: `
+          mixBlendMode: 'color-dodge',
+          opacity: 0.7,
+          filter: `blur(${blur * 0.8}px)`
+        }}
+      />
+
+      {/* Tertiary Rainbow Burst */}
+      <div
+        className="absolute inset-0 z-26"
+        style={{
+          background: `
             radial-gradient(
-              ellipse at ${45 + mousePosition.x * 20}% ${55 + mousePosition.y * 15}%,
-              rgba(255, 255, 255, 0.7) 30%,
-              rgba(255, 255, 255, 0.4) 65%,
-              rgba(255, 255, 255, 0.1) 85%,
-              transparent 100%
-            )
-          `,
-          WebkitMaskImage: `
-            radial-gradient(
-              ellipse at ${45 + mousePosition.x * 20}% ${55 + mousePosition.y * 15}%,
-              rgba(255, 255, 255, 0.7) 30%,
-              rgba(255, 255, 255, 0.4) 65%,
-              rgba(255, 255, 255, 0.1) 85%,
+              ellipse at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+              rgba(255, 215, 0, ${(intensity / 100) * 0.4}) 0%,
+              rgba(255, 105, 180, ${(intensity / 100) * 0.45}) 25%,
+              rgba(0, 255, 255, ${(intensity / 100) * 0.4}) 50%,
+              rgba(50, 205, 50, ${(intensity / 100) * 0.35}) 75%,
               transparent 100%
             )
           `,
           mixBlendMode: 'overlay',
-          opacity: 0.5,
-          filter: `blur(${blur * 0.4}px)`,
-          transform: 'translateX(1px) translateY(1px)' // Subtle offset for depth
+          opacity: 0.8
         }}
       />
     </>

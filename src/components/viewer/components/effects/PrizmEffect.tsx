@@ -22,28 +22,28 @@ export const PrizmEffect: React.FC<PrizmEffectProps> = ({
 
   if (prizmIntensity <= 0) return null;
 
-  // Enhanced opacity for much more vibrant rainbow colors
-  const baseOpacity = Math.min(0.65, (prizmIntensity / 100) * 0.6);
-  const secondaryOpacity = Math.min(0.45, (prizmIntensity / 100) * 0.4);
+  // ENHANCED opacity for maximum vibrancy - INCREASED FROM PREVIOUS
+  const baseOpacity = Math.min(0.85, (prizmIntensity / 100) * 0.8);
+  const secondaryOpacity = Math.min(0.65, (prizmIntensity / 100) * 0.6);
 
-  // Full spectrum rainbow colors - much more vibrant
+  // ULTRA-VIBRANT rainbow colors - Enhanced from previous version
   const refractionColors = [
-    `rgba(255, 50, 50, ${baseOpacity})`,        // Vibrant red
-    `rgba(255, 165, 0, ${baseOpacity})`,        // Orange
+    `rgba(255, 0, 0, ${baseOpacity})`,           // Pure red
+    `rgba(255, 127, 0, ${baseOpacity})`,        // Orange
     `rgba(255, 255, 0, ${baseOpacity})`,        // Yellow
-    `rgba(50, 255, 50, ${baseOpacity})`,        // Green
-    `rgba(0, 191, 255, ${baseOpacity})`,        // Deep sky blue
+    `rgba(0, 255, 0, ${baseOpacity})`,          // Pure green
+    `rgba(0, 127, 255, ${baseOpacity})`,        // Deep blue
     `rgba(75, 0, 130, ${baseOpacity})`,         // Indigo
-    `rgba(238, 130, 238, ${baseOpacity})`       // Violet
+    `rgba(148, 0, 211, ${baseOpacity})`         // Violet
   ];
 
   // Mouse influence for dynamic directional refraction
   const lightAngle = Math.atan2(mousePosition.y - 0.5, mousePosition.x - 0.5) * (180 / Math.PI);
-  const dispersal = (complexity / 10) * 45; // Increased spread
+  const dispersal = (complexity / 10) * 60; // Increased spread for more dramatic effect
 
   return (
     <>
-      {/* Primary Rainbow Spectrum Layer */}
+      {/* Primary Rainbow Spectrum Layer - MAXIMUM VIBRANCY */}
       <div
         className="absolute inset-0 z-20"
         style={{
@@ -61,7 +61,7 @@ export const PrizmEffect: React.FC<PrizmEffectProps> = ({
             )
           `,
           mixBlendMode: 'screen',
-          opacity: baseOpacity
+          opacity: baseOpacity * 1.1
         }}
       />
 
@@ -72,46 +72,46 @@ export const PrizmEffect: React.FC<PrizmEffectProps> = ({
           background: `
             linear-gradient(
               ${lightAngle + dispersal}deg,
-              transparent 20%,
-              ${refractionColors[0]} 25%,
-              ${refractionColors[1]} 30%,
-              ${refractionColors[2]} 35%,
-              ${refractionColors[3]} 40%,
-              ${refractionColors[4]} 45%,
-              ${refractionColors[5]} 50%,
-              ${refractionColors[6]} 55%,
-              transparent 80%
+              transparent 15%,
+              ${refractionColors[0]} 20%,
+              ${refractionColors[1]} 25%,
+              ${refractionColors[2]} 30%,
+              ${refractionColors[3]} 35%,
+              ${refractionColors[4]} 40%,
+              ${refractionColors[5]} 45%,
+              ${refractionColors[6]} 50%,
+              transparent 85%
             )
           `,
-          opacity: secondaryOpacity * (colorSeparation / 100),
+          opacity: secondaryOpacity * (colorSeparation / 100) * 1.2,
           mixBlendMode: 'color-dodge'
         }}
       />
 
-      {/* Tertiary Layer - Dynamic color bleeding */}
+      {/* Tertiary Layer - Dynamic color bleeding - ENHANCED */}
       <div
         className="absolute inset-0 z-22"
         style={{
           background: `
             radial-gradient(
-              ellipse 60% 40% at ${20 + mousePosition.x * 60}% ${20 + mousePosition.y * 60}%,
+              ellipse 70% 50% at ${15 + mousePosition.x * 70}% ${15 + mousePosition.y * 70}%,
               ${refractionColors[2]} 0%,
               ${refractionColors[4]} 30%,
-              transparent 60%
+              transparent 65%
             ),
             radial-gradient(
-              ellipse 50% 30% at ${80 - mousePosition.x * 40}% ${80 - mousePosition.y * 40}%,
+              ellipse 60% 40% at ${85 - mousePosition.x * 50}% ${85 - mousePosition.y * 50}%,
               ${refractionColors[5]} 0%,
               ${refractionColors[0]} 25%,
-              transparent 50%
+              transparent 55%
             )
           `,
-          opacity: baseOpacity * 0.8,
+          opacity: baseOpacity * 0.9,
           mixBlendMode: 'overlay'
         }}
       />
 
-      {/* Prism Edge Effects - Sharp color separation */}
+      {/* Prism Edge Effects - Sharp color separation - ENHANCED */}
       <div
         className="absolute inset-0 z-23"
         style={{
@@ -119,42 +119,42 @@ export const PrizmEffect: React.FC<PrizmEffectProps> = ({
             repeating-linear-gradient(
               ${lightAngle - dispersal * 0.5}deg,
               transparent 0px,
-              ${refractionColors[0]} 2px,
-              ${refractionColors[2]} 4px,
-              ${refractionColors[4]} 6px,
-              ${refractionColors[6]} 8px,
-              transparent 10px,
-              transparent 15px
+              ${refractionColors[0]} 1px,
+              ${refractionColors[2]} 3px,
+              ${refractionColors[4]} 5px,
+              ${refractionColors[6]} 7px,
+              transparent 9px,
+              transparent 12px
             )
           `,
-          opacity: secondaryOpacity * 0.7,
+          opacity: secondaryOpacity * 0.8,
           mixBlendMode: 'soft-light'
         }}
       />
 
-      {/* Chromatic Aberration Effect */}
+      {/* NEW: Chromatic Aberration Effect - For maximum impact */}
       <div
         className="absolute inset-0 z-24"
         style={{
           background: `
             radial-gradient(
               circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-              ${refractionColors[0]} 0%,
-              transparent 25%
+              rgba(255, 0, 0, ${baseOpacity * 0.4}) 0%,
+              transparent 30%
             ),
             radial-gradient(
-              circle at ${(mousePosition.x * 100) + 2}% ${(mousePosition.y * 100) + 1}%,
-              ${refractionColors[3]} 0%,
-              transparent 25%
+              circle at ${(mousePosition.x * 100) + 3}% ${(mousePosition.y * 100) + 2}%,
+              rgba(0, 255, 0, ${baseOpacity * 0.4}) 0%,
+              transparent 30%
             ),
             radial-gradient(
-              circle at ${(mousePosition.x * 100) - 2}% ${(mousePosition.y * 100) - 1}%,
-              ${refractionColors[4]} 0%,
-              transparent 25%
+              circle at ${(mousePosition.x * 100) - 3}% ${(mousePosition.y * 100) - 2}%,
+              rgba(0, 0, 255, ${baseOpacity * 0.4}) 0%,
+              transparent 30%
             )
           `,
-          opacity: baseOpacity * 0.6,
-          mixBlendMode: 'multiply'
+          opacity: 0.7,
+          mixBlendMode: 'screen'
         }}
       />
     </>
