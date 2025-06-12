@@ -2,8 +2,7 @@
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import { CardFrontContainer } from './CardFrontContainer';
-import { CardBackContainer } from './CardBackContainer';
+import { SimplifiedCardContainer3D } from './SimplifiedCardContainer3D';
 
 interface CardContainer3DProps {
   card: CardData;
@@ -21,59 +20,9 @@ interface CardContainer3DProps {
   onClick: () => void;
 }
 
-export const CardContainer3D: React.FC<CardContainer3DProps> = ({
-  card,
-  isFlipped,
-  isHovering,
-  showEffects,
-  effectValues,
-  mousePosition,
-  rotation,
-  isDragging,
-  frameStyles,
-  enhancedEffectStyles,
-  SurfaceTexture,
-  interactiveLighting,
-  onClick
-}) => {
-  return (
-    <div
-      className="relative"
-      style={{
-        width: '400px',
-        height: '560px',
-        transform: `perspective(1000px) rotateX(${rotation.x * 0.5}deg) rotateY(${rotation.y * 0.5}deg)`,
-        transformStyle: 'preserve-3d',
-        transition: isDragging ? 'none' : 'transform 0.1s ease',
-        filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.8))'
-      }}
-    >
-      {/* Card Front - Always shows card image, positioned normally */}
-      <CardFrontContainer
-        card={card}
-        isFlipped={isFlipped}
-        isHovering={isHovering}
-        showEffects={showEffects}
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-        frameStyles={frameStyles}
-        enhancedEffectStyles={enhancedEffectStyles}
-        SurfaceTexture={SurfaceTexture}
-        interactiveLighting={interactiveLighting}
-      />
-
-      {/* Card Back - Always shows CRD logo, positioned 180deg behind front */}
-      <CardBackContainer
-        isFlipped={isFlipped}
-        isHovering={isHovering}
-        showEffects={showEffects}
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-        frameStyles={frameStyles}
-        enhancedEffectStyles={enhancedEffectStyles}
-        SurfaceTexture={SurfaceTexture}
-        interactiveLighting={interactiveLighting}
-      />
-    </div>
-  );
+export const CardContainer3D: React.FC<CardContainer3DProps> = (props) => {
+  // Remove onClick from props passed to SimplifiedCardContainer3D since it doesn't need it
+  const { onClick, ...containerProps } = props;
+  
+  return <SimplifiedCardContainer3D {...containerProps} />;
 };

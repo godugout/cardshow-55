@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { Html } from '@react-three/drei';
-import { CardFrontContainer } from '../../components/CardFrontContainer';
-import { CardBackContainer } from '../../components/CardBackContainer';
+import { UnifiedCardFace } from '../../components/UnifiedCardFace';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 
 interface Simple3DCard {
@@ -69,7 +68,6 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
 }) => {
   const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
   
-  // FIXED: Simplified positioning since only one face renders at a time
   const position: [number, number, number] = [0, 0, 0];
   const rotation: [number, number, number] = [0, 0, 0];
 
@@ -101,32 +99,18 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
         onMouseLeave={onMouseLeave}
         onDoubleClick={onCardFlip}
       >
-        {isBack ? (
-          <CardBackContainer
-            isFlipped={true}
-            isHovering={isHovering}
-            showEffects={true}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            frameStyles={cardEffects?.getFrameStyles() || { transition: isDragging ? 'none' : 'all 0.3s ease' }}
-            enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
-            SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
-            interactiveLighting={interactiveLighting}
-          />
-        ) : (
-          <CardFrontContainer
-            card={adaptedCard}
-            isFlipped={false}
-            isHovering={isHovering}
-            showEffects={true}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            frameStyles={cardEffects?.getFrameStyles() || { transition: isDragging ? 'none' : 'all 0.3s ease' }}
-            enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
-            SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
-            interactiveLighting={interactiveLighting}
-          />
-        )}
+        <UnifiedCardFace
+          card={adaptedCard}
+          isFlipped={isBack}
+          isHovering={isHovering}
+          showEffects={true}
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          frameStyles={cardEffects?.getFrameStyles() || { transition: isDragging ? 'none' : 'all 0.3s ease' }}
+          enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
+          SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
+          interactiveLighting={interactiveLighting}
+        />
       </div>
     </Html>
   );

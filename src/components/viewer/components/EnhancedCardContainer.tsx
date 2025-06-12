@@ -1,10 +1,9 @@
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
-import { CardFrontContainer } from './CardFrontContainer';
-import { CardBackContainer } from './CardBackContainer';
+import { SimplifiedCardContainer3D } from './SimplifiedCardContainer3D';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface EnhancedCardContainerProps {
@@ -52,18 +51,11 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   selectedLighting,
   materialSettings,
   overallBrightness = [100],
-  showBackgroundInfo = true,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
-  onClick,
-  environmentControls = {
-    depthOfField: 1.0,
-    parallaxIntensity: 1.0,
-    fieldOfView: 75,
-    atmosphericDensity: 1.0
-  }
+  onClick
 }) => {
   // Local state for card flip
   const [localIsFlipped, setLocalIsFlipped] = useState(isFlipped);
@@ -110,27 +102,16 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseLeave={onMouseLeave}
       onClick={handleCardFlip}
     >
-      {/* Front of Card */}
-      <CardFrontContainer
+      {/* Simplified Single Card Container */}
+      <SimplifiedCardContainer3D
         card={card}
         isFlipped={localIsFlipped}
         isHovering={isHovering}
         showEffects={showEffects}
         effectValues={effectValues}
         mousePosition={mousePosition}
-        frameStyles={effectiveFrameStyles}
-        enhancedEffectStyles={effectiveEnhancedEffectStyles}
-        SurfaceTexture={effectiveSurfaceTexture}
-        interactiveLighting={interactiveLighting}
-      />
-
-      {/* Back of Card */}
-      <CardBackContainer
-        isFlipped={localIsFlipped}
-        isHovering={isHovering}
-        showEffects={showEffects}
-        effectValues={effectValues}
-        mousePosition={mousePosition}
+        rotation={rotation}
+        isDragging={isDragging}
         frameStyles={effectiveFrameStyles}
         enhancedEffectStyles={effectiveEnhancedEffectStyles}
         SurfaceTexture={effectiveSurfaceTexture}
