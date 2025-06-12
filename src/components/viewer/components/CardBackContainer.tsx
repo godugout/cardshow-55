@@ -48,7 +48,6 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
             backfaceVisibility: 'hidden',
             background: selectedMaterial.background,
             border: `2px solid ${selectedMaterial.borderColor}`,
-            opacity: selectedMaterial.opacity,
             ...(selectedMaterial.blur && {
               backdropFilter: `blur(${selectedMaterial.blur}px)`
             }),
