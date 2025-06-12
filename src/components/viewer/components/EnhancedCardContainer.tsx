@@ -122,7 +122,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         enhancedEffectStyles={effectiveEnhancedEffectStyles}
         SurfaceTexture={effectiveSurfaceTexture}
         interactiveLighting={interactiveLighting}
-        onClick={handleCardFlip}
       />
 
       {/* Back of Card */}

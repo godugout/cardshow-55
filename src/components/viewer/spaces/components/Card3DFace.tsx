@@ -125,7 +125,6 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
             enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
             SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
             interactiveLighting={interactiveLighting}
-            onClick={onCardFlip}
           />
         )}
       </div>
