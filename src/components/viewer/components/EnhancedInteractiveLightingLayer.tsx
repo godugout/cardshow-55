@@ -22,10 +22,6 @@ export const EnhancedInteractiveLightingLayer: React.FC<EnhancedInteractiveLight
   const crystalIntensity = (effectValues?.crystal?.intensity as number) || 0;
   const holographicIntensity = (effectValues?.holographic?.intensity as number) || 0;
   
-  // Calculate total effect intensity for smart scaling
-  const totalEffectIntensity = goldIntensity + chromeIntensity + crystalIntensity + holographicIntensity;
-  const effectScale = Math.min(totalEffectIntensity / 100, 1);
-  
   // Determine dominant effect for specialized lighting
   const dominantEffect = Math.max(goldIntensity, chromeIntensity, crystalIntensity, holographicIntensity);
   const effectType = goldIntensity === dominantEffect ? 'gold' : 
@@ -34,7 +30,7 @@ export const EnhancedInteractiveLightingLayer: React.FC<EnhancedInteractiveLight
   
   return (
     <>
-      {/* Phase 1: Real-Time Shadow Casting - FURTHER REDUCED */}
+      {/* Phase 1: Real-Time Shadow Casting - SOFTENED */}
       <div
         className="absolute inset-0 z-30 pointer-events-none"
         style={{
@@ -42,32 +38,32 @@ export const EnhancedInteractiveLightingLayer: React.FC<EnhancedInteractiveLight
             radial-gradient(
               ellipse 200% 150% at 
               ${50 + lightingData.shadowX}% ${50 + lightingData.shadowY}%,
-              rgba(0, 0, 0, ${lightingData.shadowOpacity * 0.2 * effectScale}) 0%,
-              rgba(0, 0, 0, ${lightingData.shadowOpacity * 0.1 * effectScale}) 60%,
+              rgba(0, 0, 0, ${lightingData.shadowOpacity * 0.4}) 0%,
+              rgba(0, 0, 0, ${lightingData.shadowOpacity * 0.2}) 60%,
               transparent 90%
             )
           `,
-          transform: `translateX(${lightingData.shadowX * 0.2}px) translateY(${lightingData.shadowY * 0.2}px)`,
+          transform: `translateX(${lightingData.shadowX * 0.3}px) translateY(${lightingData.shadowY * 0.3}px)`,
           transition: 'transform 0.1s ease-out'
         }}
       />
       
-      {/* Multi-layer shadows for depth - MUCH LIGHTER */}
+      {/* Multi-layer shadows for depth - SOFTENED */}
       <div
         className="absolute inset-0 z-31 pointer-events-none"
         style={{
           boxShadow: `
-            inset ${lightingData.shadowX * 0.1}px ${lightingData.shadowY * 0.1}px ${lightingData.shadowBlur * 1.5}px rgba(0, 0, 0, ${lightingData.shadowOpacity * 0.12 * effectScale}),
-            inset ${lightingData.shadowX * 0.2}px ${lightingData.shadowY * 0.2}px ${lightingData.shadowBlur * 3}px rgba(0, 0, 0, ${lightingData.shadowOpacity * 0.08 * effectScale})
+            inset ${lightingData.shadowX * 0.2}px ${lightingData.shadowY * 0.2}px ${lightingData.shadowBlur * 1.5}px rgba(0, 0, 0, ${lightingData.shadowOpacity * 0.25}),
+            inset ${lightingData.shadowX * 0.4}px ${lightingData.shadowY * 0.4}px ${lightingData.shadowBlur * 3}px rgba(0, 0, 0, ${lightingData.shadowOpacity * 0.15})
           `,
           transition: 'box-shadow 0.1s ease-out'
         }}
       />
 
-      {/* Phase 2: Dynamic Reflections - MUCH MORE SUBTLE */}
+      {/* Phase 2: Dynamic Reflections - SOFTENED */}
       {dominantEffect > 0 && (
         <>
-          {/* Metallic streak reflections - HEAVILY REDUCED */}
+          {/* Metallic streak reflections - DIFFUSED */}
           <div
             className="absolute inset-0 z-32 pointer-events-none"
             style={{
@@ -75,80 +71,153 @@ export const EnhancedInteractiveLightingLayer: React.FC<EnhancedInteractiveLight
                 linear-gradient(
                   ${lightingData.reflectionAngle + 90}deg,
                   transparent 0%,
-                  ${effectType === 'gold' ? 'rgba(255, 215, 0, 0.15)' : 
-                    effectType === 'chrome' ? 'rgba(255, 255, 255, 0.2)' :
-                    effectType === 'crystal' ? 'rgba(200, 220, 255, 0.12)' :
-                    'rgba(255, 100, 255, 0.1)'} ${40 - lightingData.reflectionSpread/4}%,
-                  ${effectType === 'gold' ? 'rgba(255, 215, 0, 0.08)' : 
-                    effectType === 'chrome' ? 'rgba(255, 255, 255, 0.1)' :
-                    effectType === 'crystal' ? 'rgba(200, 220, 255, 0.06)' :
-                    'rgba(255, 100, 255, 0.05)'} 50%,
-                  transparent ${60 + lightingData.reflectionSpread/4}%
+                  ${effectType === 'gold' ? 'rgba(255, 215, 0, 0.4)' : 
+                    effectType === 'chrome' ? 'rgba(255, 255, 255, 0.5)' :
+                    effectType === 'crystal' ? 'rgba(200, 220, 255, 0.35)' :
+                    'rgba(255, 100, 255, 0.3)'} ${40 - lightingData.reflectionSpread/3}%,
+                  ${effectType === 'gold' ? 'rgba(255, 215, 0, 0.2)' : 
+                    effectType === 'chrome' ? 'rgba(255, 255, 255, 0.25)' :
+                    effectType === 'crystal' ? 'rgba(200, 220, 255, 0.2)' :
+                    'rgba(255, 100, 255, 0.15)'} 50%,
+                  transparent ${60 + lightingData.reflectionSpread/3}%
                 )
               `,
-              opacity: lightingData.reflectionIntensity * (dominantEffect / 100) * 0.3 * effectScale,
+              opacity: lightingData.reflectionIntensity * (dominantEffect / 100) * 0.7,
               mixBlendMode: 'screen',
-              transform: `translateX(${lightingData.lightX * 3}px) translateY(${lightingData.lightY * 3}px)`,
+              transform: `translateX(${lightingData.lightX * 6}px) translateY(${lightingData.lightY * 6}px)`,
               transition: 'transform 0.1s ease-out, opacity 0.1s ease-out'
             }}
           />
           
-          {/* Surface-specific reflections - MUCH LARGER SPREAD, LOWER OPACITY */}
+          {/* Surface-specific reflections - LARGER SPREAD */}
           <div
             className="absolute inset-0 z-33 pointer-events-none"
             style={{
               background: `
                 radial-gradient(
-                  ellipse 150% 100% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-                  ${effectType === 'gold' ? 'rgba(255, 223, 0, 0.12)' : 
-                    effectType === 'chrome' ? 'rgba(240, 248, 255, 0.15)' :
-                    effectType === 'crystal' ? 'rgba(173, 216, 230, 0.1)' :
-                    'rgba(238, 130, 238, 0.08)'} 0%,
-                  transparent 85%
+                  ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+                  ${effectType === 'gold' ? 'rgba(255, 223, 0, 0.3)' : 
+                    effectType === 'chrome' ? 'rgba(240, 248, 255, 0.4)' :
+                    effectType === 'crystal' ? 'rgba(173, 216, 230, 0.25)' :
+                    'rgba(238, 130, 238, 0.2)'} 0%,
+                  transparent 80%
                 )
               `,
-              opacity: lightingData.lightIntensity * (dominantEffect / 100) * 0.25 * effectScale,
+              opacity: lightingData.lightIntensity * (dominantEffect / 100) * 0.6,
               mixBlendMode: effectType === 'gold' ? 'overlay' : 'screen',
               transition: 'opacity 0.1s ease-out'
+            }}
+          />
+
+          {/* Additional diffusion layer for smoother blending */}
+          <div
+            className="absolute inset-0 z-33 pointer-events-none"
+            style={{
+              background: `
+                radial-gradient(
+                  ellipse 160% 120% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+                  ${effectType === 'gold' ? 'rgba(255, 223, 0, 0.15)' : 
+                    effectType === 'chrome' ? 'rgba(240, 248, 255, 0.2)' :
+                    effectType === 'crystal' ? 'rgba(173, 216, 230, 0.15)' :
+                    'rgba(238, 130, 238, 0.1)'} 0%,
+                  transparent 90%
+                )
+              `,
+              opacity: lightingData.lightIntensity * (dominantEffect / 100) * 0.4,
+              mixBlendMode: 'soft-light',
+              transition: 'opacity 0.15s ease-out'
             }}
           />
         </>
       )}
 
-      {/* Phase 3: Environmental Response - MINIMAL */}
-      {/* Color temperature shifts - VERY SUBTLE */}
+      {/* Phase 3: 3D Lighting Simulation - SOFTENED */}
+      {/* Ambient occlusion in corners - GENTLER */}
+      <div
+        className="absolute inset-0 z-34 pointer-events-none rounded-xl"
+        style={{
+          background: `
+            radial-gradient(ellipse 120% 120% at 0% 0%, rgba(0, 0, 0, ${lightingData.ambientOcclusion * 0.2}) 0%, transparent 50%),
+            radial-gradient(ellipse 120% 120% at 100% 0%, rgba(0, 0, 0, ${lightingData.ambientOcclusion * 0.2}) 0%, transparent 50%),
+            radial-gradient(ellipse 120% 120% at 0% 100%, rgba(0, 0, 0, ${lightingData.ambientOcclusion * 0.2}) 0%, transparent 50%),
+            radial-gradient(ellipse 120% 120% at 100% 100%, rgba(0, 0, 0, ${lightingData.ambientOcclusion * 0.2}) 0%, transparent 50%)
+          `,
+          opacity: 1 - lightingData.lightIntensity * 0.3,
+          transition: 'opacity 0.2s ease-out'
+        }}
+      />
+      
+      {/* Depth-based lighting - SOFTER TRANSITIONS */}
+      <div
+        className="absolute inset-0 z-35 pointer-events-none"
+        style={{
+          background: `
+            linear-gradient(
+              ${lightingData.reflectionAngle}deg,
+              rgba(255, 255, 255, ${lightingData.lightIntensity * 0.06}) 0%,
+              rgba(255, 255, 255, ${lightingData.lightIntensity * 0.03}) 60%,
+              rgba(0, 0, 0, ${lightingData.ambientOcclusion * 0.06}) 100%
+            )
+          `,
+          mixBlendMode: 'overlay',
+          transition: 'background 0.15s ease-out'
+        }}
+      />
+
+      {/* Phase 4: Environmental Response - DIFFUSED */}
+      {/* Color temperature shifts - LARGER SPREAD */}
       <div
         className="absolute inset-0 z-36 pointer-events-none"
         style={{
           background: `
             radial-gradient(
-              ellipse 250% 200% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+              ellipse 200% 150% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
               ${lightingData.colorTemperature > 0.5 ? 
-                `rgba(255, 200, 150, ${lightingData.atmosphericScatter * 0.03 * effectScale})` : 
-                `rgba(150, 200, 255, ${lightingData.atmosphericScatter * 0.03 * effectScale})`} 0%,
-              transparent 90%
+                `rgba(255, 180, 120, ${lightingData.atmosphericScatter * 0.08})` : 
+                `rgba(120, 180, 255, ${lightingData.atmosphericScatter * 0.08})`} 0%,
+              transparent 85%
             )
           `,
           mixBlendMode: 'overlay',
-          opacity: lightingData.directionalBias * 0.2,
+          opacity: lightingData.directionalBias * 0.4,
           transition: 'opacity 0.2s ease-out'
         }}
       />
       
-      {/* Directional lighting indicator - MUCH SMALLER AND SUBTLER */}
+      {/* Atmospheric scattering - GENTLER CONIC */}
+      <div
+        className="absolute inset-0 z-37 pointer-events-none"
+        style={{
+          background: `
+            conic-gradient(
+              from ${lightingData.reflectionAngle}deg at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+              rgba(255, 255, 255, ${lightingData.atmosphericScatter * 0.04}) 0deg,
+              rgba(255, 255, 255, ${lightingData.atmosphericScatter * 0.06}) 90deg,
+              rgba(255, 255, 255, ${lightingData.atmosphericScatter * 0.03}) 180deg,
+              rgba(255, 255, 255, ${lightingData.atmosphericScatter * 0.05}) 270deg,
+              rgba(255, 255, 255, ${lightingData.atmosphericScatter * 0.04}) 360deg
+            )
+          `,
+          mixBlendMode: 'screen',
+          opacity: lightingData.lightIntensity * 0.5,
+          transition: 'opacity 0.15s ease-out'
+        }}
+      />
+      
+      {/* Directional lighting indicator - SOFTER */}
       <div
         className="absolute top-2 left-2 z-40 pointer-events-none"
         style={{
-          width: '2px',
-          height: '2px',
+          width: '4px',
+          height: '4px',
           borderRadius: '50%',
           background: `radial-gradient(circle, 
-            rgba(0, 255, 150, ${lightingData.lightIntensity * 0.3 * effectScale}) 0%, 
-            rgba(0, 255, 150, ${lightingData.lightIntensity * 0.1 * effectScale}) 70%, 
+            rgba(0, 255, 150, ${lightingData.lightIntensity * 0.6}) 0%, 
+            rgba(0, 255, 150, ${lightingData.lightIntensity * 0.2}) 70%, 
             transparent 100%)`,
-          boxShadow: `0 0 4px rgba(0, 255, 150, ${lightingData.lightIntensity * 0.2 * effectScale})`,
-          animation: `pulse ${4000 / lightingData.lightIntensity}ms ease-in-out infinite`,
-          transform: `translate(${lightingData.lightX * 2}px, ${lightingData.lightY * 2}px)`,
+          boxShadow: `0 0 8px rgba(0, 255, 150, ${lightingData.lightIntensity * 0.5})`,
+          animation: `pulse ${3000 / lightingData.lightIntensity}ms ease-in-out infinite`,
+          transform: `translate(${lightingData.lightX * 3}px, ${lightingData.lightY * 3}px)`,
           transition: 'transform 0.1s ease-out'
         }}
       />

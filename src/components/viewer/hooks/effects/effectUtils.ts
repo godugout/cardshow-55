@@ -2,226 +2,49 @@
 import { ENHANCED_VISUAL_EFFECTS } from './effectConfigs';
 import type { EffectValues } from './types';
 
-// Physics-based effect calculations using realistic formulas
-export const EFFECT_PHYSICS = {
-  // Fresnel reflection formula: F = F0 + (1 - F0) * (1 - cos(θ))^5
-  fresnel: (cosTheta: number, f0: number = 0.04): number => {
-    return f0 + (1 - f0) * Math.pow(1 - cosTheta, 5);
-  },
-
-  // Realistic metallic reflection based on material properties
-  metallicReflection: (metalness: number, roughness: number, lightAngle: number): number => {
-    const f0 = 0.04 + (0.96 * metalness);
-    const cosTheta = Math.cos(lightAngle * Math.PI / 180);
-    return EFFECT_PHYSICS.fresnel(cosTheta, f0) * (1 - roughness);
-  },
-
-  // Holographic diffraction calculation
-  holographicDiffraction: (viewAngle: number, complexity: number): number => {
-    const wavelength = 550; // Green wavelength in nm
-    const gratingSpacing = 1000 + (complexity * 200); // Variable grating
-    return Math.sin(viewAngle * Math.PI / 180) * (wavelength / gratingSpacing);
-  },
-
-  // Light scattering for foil effects
-  rayleighScattering: (particleSize: number, lightIntensity: number): number => {
-    // Simplified Rayleigh scattering: I ∝ 1/λ^4 * (particle size factor)
-    const scatteringCoeff = Math.pow(particleSize / 100, 4);
-    return lightIntensity * scatteringCoeff * 0.3;
-  }
-};
-
-// Create default effect values with starlight preset emphasis
+// Create default effect values
 export const createDefaultEffectValues = (): EffectValues => {
   const initialValues: EffectValues = {};
   ENHANCED_VISUAL_EFFECTS.forEach(effect => {
     initialValues[effect.id] = {};
     effect.parameters.forEach(param => {
-      // Enhanced default values for immediate starlight vibrancy
-      let defaultValue = param.defaultValue;
-      
-      // Starlight effect defaults - more prominent
-      if (effect.id === 'foilspray' && param.id === 'intensity') {
-        defaultValue = 35; // Increased starlight particles
-      } else if (effect.id === 'foilspray' && param.id === 'density') {
-        defaultValue = 80; // More dense sparkles
-      } else if (effect.id === 'foilspray' && param.id === 'direction') {
-        defaultValue = 135; // Diagonal flow
-      } else if (effect.id === 'prizm' && param.id === 'intensity') {
-        defaultValue = 25; // Visible rainbow spectrum
-      } else if (effect.id === 'prizm' && param.id === 'complexity') {
-        defaultValue = 4; // Balanced complexity
-      } else if (effect.id === 'prizm' && param.id === 'colorSeparation') {
-        defaultValue = 50; // Good color separation
-      } else if (effect.id === 'holographic' && param.id === 'intensity') {
-        defaultValue = 20; // Subtle holographic by default
-      } else if (effect.id === 'gold' && param.id === 'intensity') {
-        defaultValue = 15; // Subtle gold shimmer by default
-      } else if (effect.id === 'crystal' && param.id === 'intensity') {
-        defaultValue = 18; // Subtle crystal effect by default
-      } else if (effect.id === 'chrome' && param.id === 'intensity') {
-        defaultValue = 10; // Very subtle chrome by default
-      }
-      
-      initialValues[effect.id][param.id] = defaultValue;
+      initialValues[effect.id][param.id] = param.defaultValue;
     });
   });
   return initialValues;
 };
 
-// Enhanced effect intensity calculation with physics
-export const calculateEffectIntensity = (
-  effectId: string, 
-  parameterId: string, 
-  baseValue: number, 
-  mousePosition: { x: number; y: number },
-  materialSettings?: { metalness: number; roughness: number }
-): number => {
-  if (typeof baseValue !== 'number') return baseValue;
-  
-  // Apply physics-based modulation based on mouse position
-  const lightAngle = Math.atan2(mousePosition.y - 0.5, mousePosition.x - 0.5) * (180 / Math.PI);
-  const lightDistance = Math.sqrt(Math.pow(mousePosition.x - 0.5, 2) + Math.pow(mousePosition.y - 0.5, 2));
-  
-  let modulation = 1.0;
-  
-  if (materialSettings && (effectId === 'chrome' || effectId === 'gold')) {
-    // Apply realistic metallic reflection
-    modulation = EFFECT_PHYSICS.metallicReflection(
-      materialSettings.metalness, 
-      materialSettings.roughness, 
-      lightAngle
-    );
-  } else if (effectId === 'holographic' || effectId === 'prizm') {
-    // Apply holographic diffraction
-    modulation = 1.0 + EFFECT_PHYSICS.holographicDiffraction(lightAngle, 3) * 0.3;
-  } else if (effectId === 'foilspray') {
-    // Apply light scattering
-    modulation = 1.0 + EFFECT_PHYSICS.rayleighScattering(50, lightDistance) * 0.5;
-  }
-  
-  return baseValue * Math.max(0.5, Math.min(1.5, modulation));
-};
-
-// Enhanced effect intensity clamping for smooth transitions with starlight optimization
+// Enhanced effect intensity clamping for smooth transitions
 export const clampEffectValue = (effectId: string, parameterId: string, value: number | boolean | string): number | boolean | string => {
   if (typeof value !== 'number') return value;
   
-  // Apply smooth clamping for problematic effects with starlight-friendly limits
+  // Apply smooth clamping for problematic effects
   const clampingRules: Record<string, Record<string, { soft: number; hard: number }>> = {
     prizm: {
-      intensity: { soft: 85, hard: 100 }, // Allow full intensity for starlight
+      intensity: { soft: 75, hard: 85 }, // Soft limit at 75%, hard at 85%
       complexity: { soft: 8, hard: 10 },
-      colorSeparation: { soft: 90, hard: 100 }
-    },
-    foilspray: {
-      intensity: { soft: 90, hard: 100 }, // Allow full intensity for starlight
-      density: { soft: 90, hard: 100 },
-      direction: { soft: 350, hard: 360 }
+      colorSeparation: { soft: 80, hard: 90 }
     },
     crystal: {
-      intensity: { soft: 85, hard: 95 },
-      dispersion: { soft: 90, hard: 100 }
+      intensity: { soft: 80, hard: 90 },
+      dispersion: { soft: 85, hard: 95 }
     },
     holographic: {
-      intensity: { soft: 90, hard: 100 },
-      shiftSpeed: { soft: 200, hard: 250 }
-    },
-    gold: {
-      intensity: { soft: 90, hard: 100 }
-    },
-    chrome: {
-      intensity: { soft: 85, hard: 95 }
+      intensity: { soft: 85, hard: 95 },
+      shiftSpeed: { soft: 180, hard: 200 }
     }
   };
   
   const rule = clampingRules[effectId]?.[parameterId];
   if (rule && value > rule.soft) {
-    // Apply gentle damping above soft limit - very permissive for starlight
+    // Apply smooth damping above soft limit
     const overage = value - rule.soft;
-    const damping = 1 - (overage / (rule.hard - rule.soft)) * 0.2; // Reduced clamping
-    const clampedValue = rule.soft + (overage * Math.max(0.5, damping)); // Higher minimum
+    const damping = 1 - (overage / (rule.hard - rule.soft)) * 0.5;
+    const clampedValue = rule.soft + (overage * Math.max(0.1, damping));
     
-    console.log(`🌟 Starlight clamping ${effectId}.${parameterId}:`, { original: value, clamped: clampedValue });
+    console.log(`🎛️ Clamping ${effectId}.${parameterId}:`, { original: value, clamped: clampedValue });
     return Math.min(clampedValue, rule.hard);
   }
   
   return value;
-};
-
-// Helper function to apply starlight preset
-export const createStarlightPreset = (): EffectValues => {
-  return {
-    foilspray: { 
-      intensity: 65, 
-      density: 80, 
-      direction: 135 
-    },
-    prizm: { 
-      intensity: 35, 
-      complexity: 4, 
-      colorSeparation: 50 
-    }
-  };
-};
-
-// Professional presets for studio panel
-export const createProfessionalPresets = () => {
-  return {
-    studio: {
-      name: "Studio Classic",
-      description: "Professional studio lighting with subtle effects",
-      effects: {
-        foilspray: { intensity: 25, density: 60, direction: 45 },
-        prizm: { intensity: 15, complexity: 3, colorSeparation: 40 }
-      }
-    },
-    dramatic: {
-      name: "Dramatic Gold",
-      description: "High-contrast lighting with gold accents",
-      effects: {
-        gold: { intensity: 45 },
-        chrome: { intensity: 25 }
-      }
-    },
-    holographic: {
-      name: "Holographic Dream",
-      description: "Futuristic holographic effects",
-      effects: {
-        holographic: { intensity: 60 },
-        prizm: { intensity: 40, complexity: 6, colorSeparation: 70 }
-      }
-    },
-    natural: {
-      name: "Natural Light",
-      description: "Soft, natural lighting with minimal effects",
-      effects: {
-        foilspray: { intensity: 10, density: 30, direction: 90 }
-      }
-    }
-  };
-};
-
-// Studio lighting calculations
-export const calculateStudioLighting = (mousePosition: { x: number; y: number }) => {
-  const lightAngle = Math.atan2(mousePosition.y - 0.5, mousePosition.x - 0.5) * (180 / Math.PI);
-  const lightDistance = Math.sqrt(Math.pow(mousePosition.x - 0.5, 2) + Math.pow(mousePosition.y - 0.5, 2));
-  
-  return {
-    keyLight: {
-      intensity: 0.8 + lightDistance * 0.2,
-      angle: lightAngle,
-      color: '#ffffff'
-    },
-    fillLight: {
-      intensity: 0.4 + (1 - lightDistance) * 0.2,
-      angle: lightAngle + 120,
-      color: '#f0f0f0'
-    },
-    rimLight: {
-      intensity: 0.6 + Math.sin(lightAngle * Math.PI / 180) * 0.3,
-      angle: lightAngle + 240,
-      color: '#e0e0ff'
-    }
-  };
 };

@@ -22,102 +22,101 @@ export const PrizmEffect: React.FC<PrizmEffectProps> = ({
 
   if (prizmIntensity <= 0) return null;
 
-  // Realistic prism effect - authentic holographic appearance
-  const baseOpacity = Math.min(0.35, (prizmIntensity / 100) * 0.35); // Max 35% opacity
-  const secondaryOpacity = Math.min(0.25, (prizmIntensity / 100) * 0.25);
+  // Much more subtle opacity for glass refraction look
+  const baseOpacity = Math.min(0.15, (prizmIntensity / 100) * 0.12);
+  const secondaryOpacity = Math.min(0.08, (prizmIntensity / 100) * 0.06);
 
-  // Authentic holographic colors - more subtle and realistic
-  const prismColors = [
-    `rgba(255, 100, 150, ${baseOpacity * 0.7})`,    // Soft pink-red
-    `rgba(255, 180, 100, ${baseOpacity * 0.6})`,    // Warm orange
-    `rgba(255, 240, 120, ${baseOpacity * 0.5})`,    // Golden yellow
-    `rgba(150, 255, 180, ${baseOpacity * 0.6})`,    // Soft green
-    `rgba(120, 200, 255, ${baseOpacity * 0.7})`,    // Sky blue
-    `rgba(180, 150, 255, ${baseOpacity * 0.6})`,    // Soft purple
+  // Subtle refraction colors - like light passing through glass
+  const refractionColors = [
+    `rgba(255, 220, 220, ${baseOpacity * 0.8})`,    // Soft red
+    `rgba(255, 240, 200, ${baseOpacity})`,          // Warm yellow
+    `rgba(220, 255, 220, ${baseOpacity})`,          // Soft green
+    `rgba(200, 240, 255, ${baseOpacity})`,          // Light blue
+    `rgba(230, 220, 255, ${baseOpacity * 0.7})`     // Gentle violet
   ];
 
-  // Realistic light refraction calculation
+  // Mouse influence for subtle directional refraction
   const lightAngle = Math.atan2(mousePosition.y - 0.5, mousePosition.x - 0.5) * (180 / Math.PI);
-  const lightDistance = Math.sqrt(Math.pow(mousePosition.x - 0.5, 2) + Math.pow(mousePosition.y - 0.5, 2));
-  const refractionAngle = lightAngle + (complexity * 5); // Realistic refraction offset
+  const dispersal = (complexity / 10) * 30; // Spread based on complexity
 
   return (
     <>
-      {/* Primary Holographic Layer - Realistic spectrum separation */}
+      {/* Primary Refraction Layer - Soft spectrum dispersal */}
       <div
         className="absolute inset-0 z-20"
         style={{
           background: `
-            conic-gradient(
-              from ${refractionAngle}deg at ${45 + mousePosition.x * 10}% ${45 + mousePosition.y * 10}%,
-              ${prismColors[0]} 0deg,
-              ${prismColors[1]} 60deg,
-              ${prismColors[2]} 120deg,
-              ${prismColors[3]} 180deg,
-              ${prismColors[4]} 240deg,
-              ${prismColors[5]} 300deg,
-              ${prismColors[0]} 360deg
+            radial-gradient(
+              ellipse 80% 60% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+              ${refractionColors[0]} 0%,
+              ${refractionColors[1]} 25%,
+              ${refractionColors[2]} 50%,
+              ${refractionColors[3]} 75%,
+              transparent 100%
             )
           `,
           mixBlendMode: 'overlay',
-          opacity: baseOpacity * (0.7 + lightDistance * 0.3)
+          filter: 'blur(0.5px)'
         }}
       />
 
-      {/* Secondary Refraction Bands */}
+      {/* Secondary Dispersal Layer - Color separation effect */}
       <div
         className="absolute inset-0 z-21"
         style={{
           background: `
             linear-gradient(
-              ${refractionAngle + 30}deg,
-              transparent 20%,
-              ${prismColors[0]} 30%,
-              transparent 35%,
-              ${prismColors[2]} 45%,
-              transparent 50%,
-              ${prismColors[4]} 60%,
+              ${lightAngle + dispersal}deg,
+              transparent 30%,
+              ${refractionColors[1]} 45%,
+              ${refractionColors[2]} 50%,
+              ${refractionColors[3]} 55%,
               transparent 70%
             )
           `,
           opacity: secondaryOpacity * (colorSeparation / 100),
-          mixBlendMode: 'color-dodge'
+          mixBlendMode: 'soft-light'
         }}
       />
 
-      {/* Fresnel Reflection Edge Effect */}
+      {/* Tertiary Layer - Gentle color bleeding */}
       <div
         className="absolute inset-0 z-22"
         style={{
           background: `
             radial-gradient(
-              ellipse 60% 40% at ${30 + mousePosition.x * 40}% ${30 + mousePosition.y * 40}%,
-              ${prismColors[1]} 0%,
-              ${prismColors[3]} 30%,
-              transparent 60%
+              circle at ${30 + mousePosition.x * 40}% ${30 + mousePosition.y * 40}%,
+              ${refractionColors[2]} 0%,
+              transparent 40%
+            ),
+            radial-gradient(
+              circle at ${70 + mousePosition.x * 20}% ${70 + mousePosition.y * 20}%,
+              ${refractionColors[3]} 0%,
+              transparent 35%
             )
           `,
-          opacity: baseOpacity * 0.4 * lightDistance,
-          mixBlendMode: 'soft-light'
+          opacity: baseOpacity * 0.6,
+          mixBlendMode: 'color-dodge',
+          filter: `blur(${Math.max(0.5, (10 - complexity) * 0.3)}px)`
         }}
       />
 
-      {/* Subtle Rainbow Edge Glow */}
+      {/* Subtle Edge Refraction - Like light bending at glass edges */}
       <div
         className="absolute inset-0 z-23"
         style={{
           background: `
             linear-gradient(
-              ${refractionAngle}deg,
+              ${lightAngle - dispersal * 0.5}deg,
               transparent 0%,
-              rgba(255, 255, 255, ${baseOpacity * 0.3}) 45%,
-              transparent 50%,
-              rgba(255, 255, 255, ${baseOpacity * 0.3}) 55%,
-              transparent 100%
+              ${refractionColors[0]} 20%,
+              transparent 25%,
+              ${refractionColors[4]} 75%,
+              transparent 80%
             )
           `,
-          opacity: 0.6,
-          mixBlendMode: 'screen'
+          opacity: secondaryOpacity * 0.8,
+          mixBlendMode: 'multiply'
         }}
       />
     </>

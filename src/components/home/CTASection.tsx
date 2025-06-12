@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 
 export const CTASection: React.FC = () => {
   const { user } = useAuth();

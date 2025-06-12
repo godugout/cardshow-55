@@ -13,7 +13,7 @@ export const InterferencePatternLayers: React.FC<InterferencePatternLayersProps>
   blur
 }) => {
   return (
-    <div className="absolute inset-0 rounded-xl overflow-hidden">
+    <>
       {/* Concentric Circle Interference Pattern */}
       <div
         className="absolute inset-0 z-22"
@@ -61,6 +61,6 @@ export const InterferencePatternLayers: React.FC<InterferencePatternLayersProps>
           filter: `blur(${blur}px)`
         }}
       />
-    </div>
+    </>
   );
 };

@@ -1,10 +1,9 @@
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { ENHANCED_VISUAL_EFFECTS } from './effects/effectConfigs';
 import { usePresetApplication } from './effects/usePresetApplication';
 import { useEffectStateManager } from './effects/useEffectStateManager';
 import { useEffectValidation } from './effects/useEffectValidation';
-import { calculateEffectIntensity, clampEffectValue, createDefaultEffectValues } from './effects/effectUtils';
 import type { EffectValues, VisualEffectConfig, EffectParameter } from './effects/types';
 
 // Re-export types for backward compatibility
@@ -31,27 +30,8 @@ export const useEnhancedCardEffects = () => {
     clearTimeouts 
   } = usePresetApplication();
 
-  // Enhanced handleEffectChange with physics-based calculations
-  const handleEffectChange = useCallback((
-    effectId: string, 
-    parameterId: string, 
-    value: number | boolean | string,
-    mousePosition?: { x: number; y: number },
-    materialSettings?: { metalness: number; roughness: number }
-  ) => {
-    // Apply physics-based clamping and calculations
-    let processedValue = clampEffectValue(effectId, parameterId, value);
-    
-    if (typeof processedValue === 'number' && mousePosition) {
-      processedValue = calculateEffectIntensity(
-        effectId, 
-        parameterId, 
-        processedValue, 
-        mousePosition,
-        materialSettings
-      );
-    }
-    
+  // Enhanced handleEffectChange that also manages preset state
+  const handleEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
     // Clear preset state when manual changes are made (unless locked)
     if (!presetState.isApplying && !presetState.isLocked) {
       setPresetState(prev => ({ 
@@ -61,14 +41,14 @@ export const useEnhancedCardEffects = () => {
       }));
     }
     
-    // Call the base implementation with processed value
-    handleEffectChangeBase(effectId, parameterId, processedValue);
+    // Call the base implementation
+    handleEffectChangeBase(effectId, parameterId, value);
     
   }, [presetState.isApplying, presetState.isLocked, setPresetState, handleEffectChangeBase]);
 
-  // Enhanced resetAllEffects with optimized defaults
+  // Enhanced resetAllEffects that also clears timeouts and preset state
   const resetAllEffects = useCallback(() => {
-    console.log('🔄 Resetting to optimized default effects');
+    console.log('🔄 Resetting all effects with cleanup');
     
     // Clear all timeouts
     clearTimeouts();
@@ -81,25 +61,15 @@ export const useEnhancedCardEffects = () => {
       sequenceId: `reset-${Date.now()}`
     });
     
-    // Apply optimized defaults instead of empty state
-    const optimizedDefaults = createDefaultEffectValues();
-    setEffectValues(optimizedDefaults);
+    // Call the base implementation
+    resetAllEffectsBase();
     
-  }, [clearTimeouts, setPresetState, setEffectValues]);
+  }, [clearTimeouts, setPresetState, resetAllEffectsBase]);
 
   // Wrapper for the applyPreset function with effectValues
   const applyPreset = useCallback((preset: EffectValues, presetId?: string) => {
-    console.log('🎨 Applying optimized preset:', presetId);
     applyPresetBase(preset, setEffectValues, presetId);
   }, [applyPresetBase, setEffectValues]);
-
-  // Initialize with optimized defaults if empty
-  React.useEffect(() => {
-    if (!effectValues || Object.keys(effectValues).length === 0) {
-      const optimizedDefaults = createDefaultEffectValues();
-      setEffectValues(optimizedDefaults);
-    }
-  }, [effectValues, setEffectValues]);
 
   return {
     effectValues,

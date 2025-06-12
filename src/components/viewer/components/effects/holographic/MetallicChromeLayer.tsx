@@ -14,7 +14,7 @@ export const MetallicChromeLayer: React.FC<MetallicChromeLayerProps> = ({
 }) => {
   return (
     <div
-      className="absolute inset-0 z-20 rounded-xl overflow-hidden"
+      className="absolute inset-0 z-20"
       style={{
         background: `
           radial-gradient(

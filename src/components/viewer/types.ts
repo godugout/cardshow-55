@@ -1,4 +1,3 @@
-
 import type { CardData } from '@/hooks/useCardEditor';
 
 export interface EnvironmentScene {
@@ -76,7 +75,7 @@ export interface ImmersiveCardViewerProps {
   ambient?: boolean;
 }
 
-export type BackgroundType = 'plain' | 'scene' | '3dSpace';
+export type BackgroundType = 'scene' | '3dSpace';
 
 export interface UnifiedBackground {
   type: BackgroundType;

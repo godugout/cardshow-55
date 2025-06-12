@@ -26,10 +26,8 @@ export const EnhancedHero: React.FC = () => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
   const handleCardPreview = (card: DbCard, index: number) => {
-    console.log('🎯 EnhancedHero: Card preview clicked', card.title, index);
     setActiveCardIndex(index);
-    // Properly trigger the immersive viewer
-    handleCardClick(card, showcaseCards);
+    handleCardClick(card, featuredCards || []); // Pass the full featuredCards array
   };
 
   return (
@@ -83,18 +81,9 @@ export const EnhancedHero: React.FC = () => {
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-20 pointer-events-auto">
+                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="text-white text-sm font-semibold mb-1">{card.title}</div>
-                        <CRDButton 
-                          size="sm" 
-                          className="w-full relative z-30"
-                          onClick={(e) => {
-                            console.log('🎯 EnhancedHero: Button clicked', card.title);
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleCardPreview(card, index);
-                          }}
-                        >
+                        <CRDButton size="sm" className="w-full">
                           View in 3D
                         </CRDButton>
                       </div>

@@ -21,8 +21,8 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  // Background state - Start with 'plain' to ensure 2D card visibility
-  const [backgroundType, setBackgroundType] = useState<BackgroundType>('plain');
+  // Background state
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
 
   // Advanced settings
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
@@ -39,14 +39,14 @@ export const useViewerState = () => {
   // Preset state
   const [selectedPresetId, setSelectedPresetId] = useState<string>();
 
-  // 3D Space state - Start with closer camera for better visibility
+  // 3D Space state - Initialize with first available space to prevent null errors
   const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(
     SPACE_ENVIRONMENTS.length > 0 ? SPACE_ENVIRONMENTS[0] : null
   );
   const [spaceControls, setSpaceControls] = useState<SpaceControls>({
     orbitSpeed: 0.5,
     floatIntensity: 1.0,
-    cameraDistance: 3.5, // Closer to card for better visibility
+    cameraDistance: 8,
     autoRotate: false,
     gravityEffect: 0.0
   });
@@ -76,31 +76,25 @@ export const useViewerState = () => {
   const handleResetCamera = useCallback(() => {
     setSpaceControls(prev => ({
       ...prev,
-      cameraDistance: 3.5,
+      cameraDistance: 8,
       orbitSpeed: 0.5
     }));
   }, []);
 
   const onCardClick = useCallback(() => {
-    console.log('🎯 Card clicked - flipping card');
     setIsFlipped(prev => !prev);
   }, []);
 
-  // Safe space setter
+  // Safe space setter that ensures we always have a valid space
   const setSelectedSpaceSafe = useCallback((space: SpaceEnvironment | null) => {
-    console.log('🔄 Setting selected space to:', space?.name || 'null');
+    console.log('useViewerState: Setting selected space to:', space?.name || 'null');
     if (space) {
       setSelectedSpace(space);
     } else if (SPACE_ENVIRONMENTS.length > 0) {
+      console.log('useViewerState: Falling back to default space:', SPACE_ENVIRONMENTS[0].name);
       setSelectedSpace(SPACE_ENVIRONMENTS[0]);
     }
   }, []);
-
-  // Debug background type changes
-  const setBackgroundTypeWithDebug = useCallback((type: BackgroundType) => {
-    console.log('🎯 Background type changing from', backgroundType, 'to', type);
-    setBackgroundType(type);
-  }, [backgroundType]);
 
   return {
     // UI State
@@ -132,7 +126,7 @@ export const useViewerState = () => {
 
     // Background state
     backgroundType,
-    setBackgroundType: setBackgroundTypeWithDebug,
+    setBackgroundType,
 
     // Advanced settings
     selectedScene,

@@ -39,22 +39,8 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   overallBrightness = [100],
   interactiveLighting = false
 }) => {
-  // Debug logging for background renderer
-  React.useEffect(() => {
-    console.log('🎯 BackgroundRenderer: Type:', backgroundType);
-    console.log('🎯 BackgroundRenderer: Selected space:', selectedSpace?.name || 'null');
-    console.log('🎯 BackgroundRenderer: Card:', adaptedCard?.title || 'No card');
-  }, [backgroundType, selectedSpace, adaptedCard]);
-
-  // Handle plain background - no rendering needed, just return null
-  if (backgroundType === 'plain') {
-    console.log('🎯 BackgroundRenderer: Plain background - no rendering');
-    return null;
-  }
-
   // Check for '3dSpace' instead of 'space' based on the BackgroundType definition
   if (backgroundType === '3dSpace' && selectedSpace) {
-    console.log('🎯 BackgroundRenderer: Rendering 3D space');
     return (
       <div className="absolute inset-0 z-0">
         <SpaceRenderer3D
@@ -75,7 +61,6 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   }
 
   if (backgroundType === 'scene') {
-    console.log('🎯 BackgroundRenderer: Rendering environment sphere');
     return (
       <div className="absolute inset-0 z-0">
         <EnvironmentSphere
@@ -87,6 +72,5 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     );
   }
 
-  console.log('🎯 BackgroundRenderer: No background rendered for type:', backgroundType);
   return null;
 };
