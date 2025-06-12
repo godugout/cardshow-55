@@ -54,10 +54,10 @@ export const UnifiedCard: React.FC<UnifiedCardProps> = ({
   
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // Card dimensions (standard trading card ratio with thickness)
-  const cardWidth = 3.2;
-  const cardHeight = 4.5;
-  const cardThickness = 0.05;
+  // Enhanced card dimensions for full screen viewing
+  const cardWidth = 5.0;
+  const cardHeight = 7.0;
+  const cardThickness = 0.08;
 
   // Handle card flip
   const handleCardFlip = useCallback(() => {
@@ -81,10 +81,15 @@ export const UnifiedCard: React.FC<UnifiedCardProps> = ({
       const floatY = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
       groupRef.current.position.y = floatY;
 
-      // Scale based on zoom
-      groupRef.current.scale.setScalar(zoom);
+      // Scale based on zoom with enhanced scaling for full screen
+      const scaleFactor = Math.max(0.5, Math.min(2.0, zoom * 1.2));
+      groupRef.current.scale.setScalar(scaleFactor);
     }
   });
+
+  // Enhanced HTML dimensions for full screen
+  const htmlWidth = 600;
+  const htmlHeight = 840;
 
   return (
     <group 
@@ -111,15 +116,15 @@ export const UnifiedCard: React.FC<UnifiedCardProps> = ({
         position={[0, 0, cardThickness / 2 + 0.001]}
         rotation={[0, 0, 0]}
         style={{
-          width: '400px',
-          height: '560px',
+          width: `${htmlWidth}px`,
+          height: `${htmlHeight}px`,
           pointerEvents: 'auto'
         }}
       >
         <div 
           style={{
-            width: '400px',
-            height: '560px',
+            width: `${htmlWidth}px`,
+            height: `${htmlHeight}px`,
             transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
             backfaceVisibility: 'hidden',
             transition: 'transform 0.6s ease'
@@ -148,15 +153,15 @@ export const UnifiedCard: React.FC<UnifiedCardProps> = ({
         position={[0, 0, -cardThickness / 2 - 0.001]}
         rotation={[0, Math.PI, 0]}
         style={{
-          width: '400px',
-          height: '560px',
+          width: `${htmlWidth}px`,
+          height: `${htmlHeight}px`,
           pointerEvents: 'auto'
         }}
       >
         <div 
           style={{
-            width: '400px',
-            height: '560px',
+            width: `${htmlWidth}px`,
+            height: `${htmlHeight}px`,
             transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
             backfaceVisibility: 'hidden',
             transition: 'transform 0.6s ease'

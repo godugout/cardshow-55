@@ -74,11 +74,8 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
   return (
     <div 
       ref={props.containerRef}
-      className={`fixed inset-0 z-50 bg-black/90 flex items-center justify-center select-none ${
-        props.isFullscreen ? 'p-0' : 'p-8'
-      }`}
+      className="fixed inset-0 z-50 bg-black/90 select-none"
       style={{
-        paddingRight: props.shouldShowPanel ? `${props.panelWidth + 32}px` : props.isFullscreen ? '0' : '32px',
         userSelect: 'none',
         WebkitUserSelect: 'none',
         MozUserSelect: 'none',
@@ -90,37 +87,41 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
     >
       {/* Background - Only show when not in plain mode */}
       {props.backgroundType !== 'plain' && (
-        <BackgroundRenderer
-          backgroundType={props.backgroundType}
-          selectedSpace={props.selectedSpace}
-          spaceControls={props.spaceControls}
-          adaptedCard={props.adaptedCard}
-          onCardClick={props.onCardClick}
-          onCameraReset={props.onResetCamera}
-          selectedScene={props.selectedScene}
-          selectedLighting={props.selectedLighting}
-          mousePosition={props.mousePosition}
-          isHovering={props.isHovering}
-          effectValues={props.effectValues}
-          materialSettings={props.materialSettings}
-          overallBrightness={props.overallBrightness}
-          interactiveLighting={props.interactiveLighting}
-        />
+        <div className="absolute inset-0 z-0">
+          <BackgroundRenderer
+            backgroundType={props.backgroundType}
+            selectedSpace={props.selectedSpace}
+            spaceControls={props.spaceControls}
+            adaptedCard={props.adaptedCard}
+            onCardClick={props.onCardClick}
+            onCameraReset={props.onResetCamera}
+            selectedScene={props.selectedScene}
+            selectedLighting={props.selectedLighting}
+            mousePosition={props.mousePosition}
+            isHovering={props.isHovering}
+            effectValues={props.effectValues}
+            materialSettings={props.materialSettings}
+            overallBrightness={props.overallBrightness}
+            interactiveLighting={props.interactiveLighting}
+          />
+        </div>
       )}
 
       {/* Header */}
-      <ViewerHeader
-        onClose={props.onClose}
-        showStudioButton={!props.shouldShowPanel}
-        onOpenStudio={props.onOpenStudio}
-      />
+      <div className="absolute top-0 left-0 right-0 z-30">
+        <ViewerHeader
+          onClose={props.onClose}
+          showStudioButton={!props.shouldShowPanel}
+          onOpenStudio={props.onOpenStudio}
+        />
+      </div>
 
-      {/* Main Card Display - Enhanced with 360° Physics */}
+      {/* Main Card Display - Full Screen */}
       <div 
         ref={props.cardContainerRef} 
-        className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
+        className="absolute inset-0 z-10 pointer-events-none"
       >
-        <div className="pointer-events-auto">
+        <div className="w-full h-full pointer-events-auto">
           <SimplifiedEnhancedCardContainer
             card={props.card}
             isFlipped={props.isFlipped}

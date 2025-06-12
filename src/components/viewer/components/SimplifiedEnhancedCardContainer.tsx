@@ -72,9 +72,6 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
     rotationIndicator
   });
 
-  const containerWidth = 400;
-  const containerHeight = 560;
-
   // Calculate total effect intensity for physics feedback
   const totalEffectIntensity = React.useMemo(() => {
     if (!effectValues) return 0;
@@ -110,14 +107,12 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
 
   return (
     <div 
-      className="relative select-none"
+      className="w-full h-full relative select-none"
       style={{
-        width: `${containerWidth}px`,
-        height: `${containerHeight}px`,
         zIndex: 10
       }}
     >
-      {/* Unified Card Viewer with Three.js */}
+      {/* Unified Card Viewer with Three.js - Full Screen */}
       <UnifiedCardViewer
         card={card}
         effectValues={effectValues}
@@ -146,8 +141,8 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         <GripFeedback
           gripPoint={gripPoint}
           isGripping={physicsState?.isGripping || false}
-          containerWidth={containerWidth}
-          containerHeight={containerHeight}
+          containerWidth={window.innerWidth}
+          containerHeight={window.innerHeight}
         />
       </div>
       
