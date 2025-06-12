@@ -31,30 +31,40 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   interactiveLighting = false,
   onClick
 }) => {
-  // Calculate visibility based on Y rotation angle
+  // Calculate visibility based on Y rotation angle with proper front-face detection
   const getVisibility = () => {
     // Normalize rotation to 0-360 range
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
     
-    // Front is visible from 315° to 45° (spanning 0°)
+    // Front is visible from 315° to 45° (spanning 0°) - expanded range for smoother transitions
     const isFrontVisible = normalizedRotation >= 315 || normalizedRotation <= 45;
     
-    // Calculate opacity with smooth transitions
-    let opacity = 0;
-    if (isFrontVisible) {
-      if (normalizedRotation >= 315) {
-        // From 315° to 360°: fade in
-        opacity = (normalizedRotation - 315) / 45;
-      } else {
-        // From 0° to 45°: fade out
-        opacity = 1 - (normalizedRotation / 45);
-      }
+    if (!isFrontVisible) {
+      return { opacity: 0, display: 'none' };
     }
     
-    return Math.max(0, Math.min(1, opacity));
+    // Calculate opacity with smooth transitions only when visible
+    let opacity = 1;
+    if (normalizedRotation >= 315) {
+      // From 315° to 360°: fade in
+      opacity = Math.min(1, (normalizedRotation - 315) / 30);
+    } else if (normalizedRotation <= 45) {
+      // From 0° to 45°: fade out
+      opacity = Math.max(0, 1 - (normalizedRotation / 30));
+    }
+    
+    return { 
+      opacity: Math.max(0.1, opacity), // Minimum opacity to prevent complete disappearance
+      display: 'block'
+    };
   };
 
-  const frontOpacity = getVisibility();
+  const { opacity: frontOpacity, display } = getVisibility();
+
+  // Don't render at all if not visible to prevent Z-fighting
+  if (display === 'none') {
+    return null;
+  }
 
   return (
     <div 
@@ -62,6 +72,9 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       style={{
         opacity: frontOpacity,
         transition: 'opacity 0.1s ease',
+        backfaceVisibility: 'hidden',
+        transform: 'rotateY(0deg)', // Ensure front face orientation
+        zIndex: frontOpacity > 0.5 ? 20 : 10, // Higher z-index when fully visible
         ...frameStyles
       }}
     >
@@ -97,7 +110,8 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
             style={{
               userSelect: 'none',
               WebkitUserSelect: 'none',
-              pointerEvents: 'none'
+              pointerEvents: 'none',
+              backfaceVisibility: 'hidden'
             }}
             draggable={false}
           />
@@ -110,7 +124,8 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         style={{
           userSelect: 'none',
           WebkitUserSelect: 'none',
-          pointerEvents: 'none'
+          pointerEvents: 'none',
+          backfaceVisibility: 'hidden'
         }}
       >
         <div className="mt-auto">
@@ -139,7 +154,8 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
             )`,
             mixBlendMode: 'soft-light',
             opacity: 0.5,
-            transition: 'opacity 0.1s ease'
+            transition: 'opacity 0.1s ease',
+            backfaceVisibility: 'hidden'
           }}
         />
       )}

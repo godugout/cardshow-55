@@ -30,30 +30,40 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
   
-  // Calculate visibility based on Y rotation angle
+  // Calculate visibility based on Y rotation angle with proper back-face detection
   const getVisibility = () => {
     // Normalize rotation to 0-360 range
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
     
-    // Back is visible from 135° to 225°
+    // Back is visible from 135° to 225° - expanded range for smoother transitions
     const isBackVisible = normalizedRotation >= 135 && normalizedRotation <= 225;
     
-    // Calculate opacity with smooth transitions
-    let opacity = 0;
-    if (isBackVisible) {
-      if (normalizedRotation >= 135 && normalizedRotation <= 180) {
-        // From 135° to 180°: fade in
-        opacity = (normalizedRotation - 135) / 45;
-      } else if (normalizedRotation >= 180 && normalizedRotation <= 225) {
-        // From 180° to 225°: fade out
-        opacity = 1 - ((normalizedRotation - 180) / 45);
-      }
+    if (!isBackVisible) {
+      return { opacity: 0, display: 'none' };
     }
     
-    return Math.max(0, Math.min(1, opacity));
+    // Calculate opacity with smooth transitions only when visible
+    let opacity = 1;
+    if (normalizedRotation >= 135 && normalizedRotation <= 165) {
+      // From 135° to 165°: fade in
+      opacity = Math.min(1, (normalizedRotation - 135) / 30);
+    } else if (normalizedRotation >= 195 && normalizedRotation <= 225) {
+      // From 195° to 225°: fade out
+      opacity = Math.max(0, 1 - ((normalizedRotation - 195) / 30));
+    }
+    
+    return { 
+      opacity: Math.max(0.1, opacity), // Minimum opacity to prevent complete disappearance
+      display: 'block'
+    };
   };
 
-  const backOpacity = getVisibility();
+  const { opacity: backOpacity, display } = getVisibility();
+  
+  // Don't render at all if not visible to prevent Z-fighting
+  if (display === 'none') {
+    return null;
+  }
   
   // Enhanced logo effects based on mouse position, lighting, and material
   const getLogoEffects = () => {
@@ -112,7 +122,9 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       style={{
         opacity: backOpacity,
         transition: 'opacity 0.1s ease',
-        transform: 'rotateY(180deg)',
+        transform: 'rotateY(180deg)', // Ensure back face orientation
+        backfaceVisibility: 'hidden',
+        zIndex: backOpacity > 0.5 ? 20 : 10, // Higher z-index when fully visible
         ...dynamicFrameStyles
       }}
       data-material={selectedMaterial.id}
@@ -130,7 +142,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       />
 
       {/* Surface Texture on Back */}
-      <div className="relative z-20">
+      <div className="relative z-20" style={{ backfaceVisibility: 'hidden' }}>
         {SurfaceTexture}
       </div>
 
@@ -142,7 +154,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
             backgroundSize: '256px 256px',
             animation: 'noise-shift 8s ease-in-out infinite alternate',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            backfaceVisibility: 'hidden'
           }}
         />
       )}
@@ -162,7 +175,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
           )`,
           mixBlendMode: 'overlay',
           opacity: 0.6,
-          pointerEvents: 'none'
+          pointerEvents: 'none',
+          backfaceVisibility: 'hidden'
         }}
       />
 
@@ -172,7 +186,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         style={{
           userSelect: 'none',
           WebkitUserSelect: 'none',
-          pointerEvents: 'none'
+          pointerEvents: 'none',
+          backfaceVisibility: 'hidden'
         }}
       >
         <img 
@@ -183,7 +198,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
             ...getLogoEffects(),
             imageRendering: 'crisp-edges',
             objectFit: 'contain',
-            animation: interactiveLighting && isHovering ? 'logo-glow-pulse 4s ease-in-out infinite' : 'none'
+            animation: interactiveLighting && isHovering ? 'logo-glow-pulse 4s ease-in-out infinite' : 'none',
+            backfaceVisibility: 'hidden'
           }}
           onLoad={() => console.log('✅ Enhanced CRD logo loaded successfully')}
           onError={() => console.log('❌ Error loading enhanced CRD logo')}
@@ -193,7 +209,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
 
       {/* Enhanced Interactive Lighting with Material Awareness */}
       {interactiveLighting && isHovering && (
-        <div className="absolute inset-0 pointer-events-none z-40">
+        <div className="absolute inset-0 pointer-events-none z-40" style={{ backfaceVisibility: 'hidden' }}>
           <div
             className="absolute inset-0"
             style={{
@@ -206,7 +222,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
                 )
               `,
               mixBlendMode: 'overlay',
-              transition: 'opacity 0.2s ease'
+              transition: 'opacity 0.2s ease',
+              backfaceVisibility: 'hidden'
             }}
           />
         </div>
