@@ -47,7 +47,6 @@ export const CardContainer3D: React.FC<CardContainer3DProps> = ({
         transition: isDragging ? 'none' : 'transform 0.1s ease',
         filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.8))'
       }}
-      onClick={onClick}
     >
       {/* Card Front - Always shows card image, positioned normally */}
       <CardFrontContainer
@@ -61,7 +60,6 @@ export const CardContainer3D: React.FC<CardContainer3DProps> = ({
         enhancedEffectStyles={enhancedEffectStyles}
         SurfaceTexture={SurfaceTexture}
         interactiveLighting={interactiveLighting}
-        onClick={onClick}
       />
 
       {/* Card Back - Always shows CRD logo, positioned 180deg behind front */}

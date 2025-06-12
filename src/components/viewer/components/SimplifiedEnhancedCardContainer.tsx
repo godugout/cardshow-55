@@ -93,7 +93,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
     onClick();
   }, [onClick]);
 
-  // Use double-click hook
+  // Use double-click hook with no single-click action
   const handleClick = useDoubleClick({
     onDoubleClick: handleDoubleClick,
     delay: 300
@@ -105,7 +105,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
     onMouseDown(e);
   }, [onMouseDown]);
 
-  // Create a no-parameter version for CardContainer3D
+  // Create a no-parameter version for CardContainer3D (but we removed the onClick from it)
   const handleCardDoubleClick = React.useCallback(() => {
     console.log('🎯 Card double-click detected - flipping card');
     setLocalIsFlipped(prev => !prev);
