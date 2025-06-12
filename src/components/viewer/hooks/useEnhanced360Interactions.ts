@@ -112,11 +112,12 @@ export const useEnhanced360Interactions = ({
   const handleDragEnd = useCallback(() => {
     console.log('🎯 Ending enhanced 360° physics with smart click detection and improved momentum');
     
-    // Use enhanced physics drag end which now returns click detection info
+    // Use enhanced physics drag end - handle potential void return
     const dragResult = physicsDragEnd();
     
-    // Enhanced rotation indicator management - safely handle potential undefined return
-    if (dragResult && typeof dragResult === 'object' && 'isClick' in dragResult) {
+    // Enhanced rotation indicator management - safely handle return value
+    if (dragResult && typeof dragResult === 'object' && 'isClick' in dragResult && 'dragDistance' in dragResult) {
+      // We have a valid result object
       if (dragResult.isClick) {
         // Hide immediately for clicks
         setRotationIndicator(prev => ({ ...prev, show: false }));
@@ -126,14 +127,16 @@ export const useEnhanced360Interactions = ({
           setRotationIndicator(prev => ({ ...prev, show: false }));
         }, 1200);
       }
+      return dragResult;
     } else {
       // Fallback - hide after delay if we can't determine click status
       setTimeout(() => {
         setRotationIndicator(prev => ({ ...prev, show: false }));
       }, 1200);
+      
+      // Return a safe default result
+      return { isClick: false, dragDistance: 0 };
     }
-    
-    return dragResult;
   }, [physicsDragEnd]);
 
   // Enhanced keyboard shortcuts for precise rotation
