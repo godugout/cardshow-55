@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Html } from '@react-three/drei';
-import { UnifiedCardFace } from '../../components/UnifiedCardFace';
+import { True3DCardContainer } from '../../components/True3DCardContainer';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 
 interface Simple3DCard {
@@ -25,6 +25,7 @@ interface Card3DFaceProps {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onCardFlip: () => void;
+  rotation?: { x: number; y: number };
 }
 
 // Helper function to convert simple card to full CardData format
@@ -59,6 +60,7 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
   isDragging,
   interactiveLighting = false,
   cardEffects,
+  rotation = { x: 0, y: 0 },
   onMouseDown,
   onMouseMove,
   onMouseUp,
@@ -69,14 +71,14 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
   const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
   
   const position: [number, number, number] = [0, 0, 0];
-  const rotation: [number, number, number] = [0, 0, 0];
+  const htmlRotation: [number, number, number] = [0, 0, 0];
 
   return (
     <Html
       transform
       occlude
       position={position}
-      rotation={rotation}
+      rotation={htmlRotation}
       distanceFactor={1}
       style={{
         width: '400px',
@@ -99,13 +101,14 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
         onMouseLeave={onMouseLeave}
         onDoubleClick={onCardFlip}
       >
-        <UnifiedCardFace
+        <True3DCardContainer
           card={adaptedCard}
-          isFlipped={isBack}
           isHovering={isHovering}
           showEffects={true}
           effectValues={effectValues}
           mousePosition={mousePosition}
+          rotation={rotation}
+          isDragging={isDragging}
           frameStyles={cardEffects?.getFrameStyles() || { transition: isDragging ? 'none' : 'all 0.3s ease' }}
           enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
           SurfaceTexture={cardEffects?.SurfaceTexture || <div />}

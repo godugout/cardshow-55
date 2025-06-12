@@ -27,7 +27,7 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
 
   useFrame((state) => {
     if (groupRef.current) {
-      // Apply manual rotation from dragging
+      // Apply manual rotation from dragging with full freedom
       groupRef.current.rotation.x = (rotation.x * Math.PI) / 180 * 0.6;
       groupRef.current.rotation.y = (rotation.y * Math.PI) / 180 * 0.6;
 
@@ -37,7 +37,12 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
 
       // Auto rotation (only when not dragging)
       if (autoRotateEnabled && !isDragging) {
-        groupRef.current.rotation.y += 0.005 * controls.orbitSpeed;
+        // Slow, natural rotation that will show both sides
+        groupRef.current.rotation.y += 0.002 * controls.orbitSpeed;
+        
+        // Update our rotation state to match for face detection
+        const currentRotationY = (groupRef.current.rotation.y * 180) / Math.PI;
+        setRotation(prev => ({ ...prev, y: currentRotationY }));
       }
 
       // Gravity effect simulation
@@ -48,14 +53,19 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     }
   });
 
-  // FIXED: Proper flip handler with smooth state management
+  // Enhanced flip handler - smoothly rotate to opposite side
   const handleCardFlip = useCallback(() => {
-    console.log('🎯 Card flip triggered - current state:', isFlipped);
-    setIsFlipped(prev => !prev);
+    console.log('🎯 Manual card flip triggered - rotating to opposite side');
+    
+    // Calculate target rotation (flip to opposite side)
+    const currentY = rotation.y;
+    const targetY = currentY + 180;
+    
+    setRotation(prev => ({ ...prev, y: targetY }));
     onClick?.();
-  }, [isFlipped, onClick]);
+  }, [rotation.y, onClick]);
 
-  // Mouse interaction handlers
+  // Mouse interaction handlers with enhanced rotation
   const handleMouseDown = useCallback((e: any) => {
     e.stopPropagation();
     setIsDragging(true);
@@ -89,14 +99,14 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
     setMousePosition({ x, y });
     
-    // Handle dragging rotation
+    // Handle dragging rotation with FULL 360° freedom
     if (isDragging) {
       const newRotationX = dragStart.y - e.clientY;
       const newRotationY = e.clientX - dragStart.x;
       
       setRotation({
-        x: newRotationX,
-        y: newRotationY
+        x: newRotationX, // Full vertical rotation freedom
+        y: newRotationY  // Full horizontal rotation freedom
       });
     }
   }, [isDragging, dragStart]);
@@ -121,6 +131,7 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     isFlipped,
     isHovering,
     mousePosition,
+    rotation, // Pass rotation to child components for face detection
     isDragging,
     handleMouseDown,
     handleMouseMove,

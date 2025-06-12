@@ -2,7 +2,7 @@
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import { UnifiedCardFace } from './UnifiedCardFace';
+import { True3DCardContainer } from './True3DCardContainer';
 
 interface SimplifiedCardContainer3DProps {
   card: CardData;
@@ -33,31 +33,20 @@ export const SimplifiedCardContainer3D: React.FC<SimplifiedCardContainer3DProps>
   SurfaceTexture,
   interactiveLighting
 }) => {
+  // Note: isFlipped is now ignored as the card automatically shows the correct face based on rotation
   return (
-    <div
-      className="relative"
-      style={{
-        width: '400px',
-        height: '560px',
-        transform: `perspective(1000px) rotateX(${rotation.x * 0.5}deg) rotateY(${rotation.y * 0.5}deg)`,
-        transformStyle: 'preserve-3d',
-        transition: isDragging ? 'none' : 'transform 0.1s ease',
-        filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.8))'
-      }}
-    >
-      {/* Single Unified Card Face */}
-      <UnifiedCardFace
-        card={card}
-        isFlipped={isFlipped}
-        isHovering={isHovering}
-        showEffects={showEffects}
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-        frameStyles={frameStyles}
-        enhancedEffectStyles={enhancedEffectStyles}
-        SurfaceTexture={SurfaceTexture}
-        interactiveLighting={interactiveLighting}
-      />
-    </div>
+    <True3DCardContainer
+      card={card}
+      isHovering={isHovering}
+      showEffects={showEffects}
+      effectValues={effectValues}
+      mousePosition={mousePosition}
+      rotation={rotation}
+      isDragging={isDragging}
+      frameStyles={frameStyles}
+      enhancedEffectStyles={enhancedEffectStyles}
+      SurfaceTexture={SurfaceTexture}
+      interactiveLighting={interactiveLighting}
+    />
   );
 };
