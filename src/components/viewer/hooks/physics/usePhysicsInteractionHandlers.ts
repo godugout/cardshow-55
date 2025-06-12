@@ -1,6 +1,7 @@
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { PHYSICS_CONSTANTS } from './physicsConstants';
+import { useTouchGestures } from '../useTouchGestures';
 import type { PhysicsState, PhysicsHookProps } from './types';
 
 interface UsePhysicsInteractionHandlersProps extends Pick<PhysicsHookProps, 
@@ -32,93 +33,43 @@ export const usePhysicsInteractionHandlers = ({
     GRIP_SENSITIVITY,
     CLICK_THRESHOLD,
     CLICK_TIME_THRESHOLD,
-    MIN_VELOCITY
+    MIN_VELOCITY,
+    TOUCH_SENSITIVITY_MULTIPLIER,
+    SWIPE_VELOCITY_THRESHOLD
   } = PHYSICS_CONSTANTS;
 
-  // Calculate enhanced rotation sensitivity
-  const getRotationSensitivity = useCallback((gripPoint: { x: number; y: number }) => {
+  // Calculate enhanced rotation sensitivity with much higher values
+  const getRotationSensitivity = useCallback((gripPoint: { x: number; y: number }, isTouch: boolean = false) => {
     const centerX = 0.5;
     const centerY = 0.5;
     const distanceFromCenter = Math.sqrt(
       Math.pow(gripPoint.x - centerX, 2) + Math.pow(gripPoint.y - centerY, 2)
     );
-    const baseSensitivity = Math.max(0.7, distanceFromCenter * GRIP_SENSITIVITY);
+    const baseSensitivity = Math.max(1.2, distanceFromCenter * GRIP_SENSITIVITY);
     
     // Add effect intensity bonus for enhanced sensitivity with effects
-    const effectBonus = 1 + (effectIntensity * 0.3);
-    return baseSensitivity * effectBonus;
-  }, [effectIntensity, GRIP_SENSITIVITY]);
-
-  // Enhanced mouse move with improved sensitivity
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!containerRef.current || !allowRotation) return;
+    const effectBonus = 1 + (effectIntensity * 0.4);
     
-    const rect = containerRef.current.getBoundingClientRect();
-    const currentPosition = {
-      x: (e.clientX - rect.left) / rect.width,
-      y: (e.clientY - rect.top) / rect.height
-    };
-
-    if (physicsState.isGripping && physicsState.gripPoint) {
-      const deltaX = (currentPosition.x - physicsState.lastPosition.x) * rect.width;
-      const deltaY = (currentPosition.y - physicsState.lastPosition.y) * rect.height;
-      
-      // Enhanced sensitivity calculation
-      const sensitivity = getRotationSensitivity(physicsState.gripPoint);
-      
-      // Enhanced velocity calculations with better responsiveness
-      const velocity = {
-        x: deltaX * VELOCITY_MULTIPLIER * sensitivity,
-        y: deltaY * VELOCITY_MULTIPLIER * sensitivity
-      };
-
-      const angularVelocity = {
-        x: -velocity.y * ANGULAR_VELOCITY_MULTIPLIER,
-        y: velocity.x * ANGULAR_VELOCITY_MULTIPLIER
-      };
-
-      // Apply immediate rotation for responsive feel with expanded range
-      const newRotation = {
-        x: Math.max(-MAX_ROTATION_X, Math.min(MAX_ROTATION_X, rotation.x + angularVelocity.x * 0.1)),
-        y: rotation.y + angularVelocity.y * 0.1
-      };
-
-      setRotation(newRotation);
-      
-      // Update physics state with enhanced values
-      setPhysicsState(prev => {
-        const newDragDistance = prev.dragDistance + Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        return {
-          ...prev,
-          velocity,
-          angularVelocity,
-          lastPosition: currentPosition,
-          dragDistance: newDragDistance
-        };
-      });
-    }
-  }, [allowRotation, physicsState.isGripping, physicsState.gripPoint, physicsState.lastPosition, rotation, setRotation, getRotationSensitivity, containerRef, setPhysicsState, VELOCITY_MULTIPLIER, ANGULAR_VELOCITY_MULTIPLIER, MAX_ROTATION_X]);
-
-  // Enhanced drag start with smart click detection
-  const handleDragStart = useCallback((e: React.MouseEvent) => {
-    if (!allowRotation || !containerRef.current) return;
+    // Apply touch multiplier for touch devices
+    const touchMultiplier = isTouch ? TOUCH_SENSITIVITY_MULTIPLIER : 1.0;
     
-    const rect = containerRef.current.getBoundingClientRect();
-    const gripPoint = {
-      x: (e.clientX - rect.left) / rect.width,
-      y: (e.clientY - rect.top) / rect.height
-    };
+    return baseSensitivity * effectBonus * touchMultiplier;
+  }, [effectIntensity, GRIP_SENSITIVITY, TOUCH_SENSITIVITY_MULTIPLIER]);
 
-    console.log('🎯 Enhanced physics drag started with expanded vertical range (±75°)');
+  // Enhanced gesture handlers
+  const handleGestureStart = useCallback((position: { x: number; y: number }) => {
+    if (!allowRotation) return;
+    
+    console.log('🎯 Enhanced gesture started with high sensitivity');
     
     setIsDragging(true);
     setAutoRotate(false);
     
     setPhysicsState(prev => ({
       ...prev,
-      gripPoint,
+      gripPoint: position,
       isGripping: true,
-      lastPosition: gripPoint,
+      lastPosition: position,
       velocity: { x: 0, y: 0 },
       angularVelocity: { x: 0, y: 0 },
       momentum: { x: 0, y: 0 },
@@ -126,21 +77,56 @@ export const usePhysicsInteractionHandlers = ({
       dragStartTime: Date.now()
     }));
 
-    onGripPointChange?.(gripPoint);
-  }, [allowRotation, setIsDragging, setAutoRotate, onGripPointChange, containerRef, setPhysicsState]);
+    onGripPointChange?.(position);
+  }, [allowRotation, setIsDragging, setAutoRotate, onGripPointChange, setPhysicsState]);
 
-  // Enhanced drag end with smart click detection
-  const handleDragEnd = useCallback(() => {
+  const handleGestureMove = useCallback((delta: { x: number; y: number }, velocity: { x: number; y: number }) => {
+    if (!allowRotation || !physicsState.isGripping || !physicsState.gripPoint) return;
+    
+    // Calculate enhanced sensitivity
+    const sensitivity = getRotationSensitivity(physicsState.gripPoint, false);
+    
+    // Apply much higher multipliers for immediate response
+    const enhancedVelocity = {
+      x: delta.x * VELOCITY_MULTIPLIER * sensitivity * 100, // Much higher multiplier
+      y: delta.y * VELOCITY_MULTIPLIER * sensitivity * 100
+    };
+
+    const angularVelocity = {
+      x: -enhancedVelocity.y * ANGULAR_VELOCITY_MULTIPLIER,
+      y: enhancedVelocity.x * ANGULAR_VELOCITY_MULTIPLIER
+    };
+
+    // Apply immediate rotation with expanded range and high sensitivity
+    const newRotation = {
+      x: Math.max(-MAX_ROTATION_X, Math.min(MAX_ROTATION_X, rotation.x + angularVelocity.x * 0.15)),
+      y: rotation.y + angularVelocity.y * 0.15
+    };
+
+    setRotation(newRotation);
+    
+    // Update physics state
+    setPhysicsState(prev => {
+      const newDragDistance = prev.dragDistance + Math.sqrt(delta.x * delta.x + delta.y * delta.y) * 1000;
+      return {
+        ...prev,
+        velocity: enhancedVelocity,
+        angularVelocity,
+        dragDistance: newDragDistance
+      };
+    });
+  }, [allowRotation, physicsState.isGripping, physicsState.gripPoint, rotation, setRotation, getRotationSensitivity, setPhysicsState, VELOCITY_MULTIPLIER, ANGULAR_VELOCITY_MULTIPLIER, MAX_ROTATION_X]);
+
+  const handleGestureEnd = useCallback((finalVelocity: { x: number; y: number }) => {
     const dragEndTime = Date.now();
     const dragDuration = dragEndTime - physicsState.dragStartTime;
     const isClick = physicsState.dragDistance < CLICK_THRESHOLD && dragDuration < CLICK_TIME_THRESHOLD;
     
-    console.log('🎯 Enhanced physics drag ended with expanded range:', {
+    console.log('🎯 Enhanced gesture ended:', {
       isClick,
       dragDistance: physicsState.dragDistance,
-      dragDuration,
-      momentum: physicsState.angularVelocity,
-      maxRotationX: MAX_ROTATION_X
+      finalVelocity,
+      hasSwipeMomentum: Math.abs(finalVelocity.x) > SWIPE_VELOCITY_THRESHOLD || Math.abs(finalVelocity.y) > SWIPE_VELOCITY_THRESHOLD
     });
     
     setIsDragging(false);
@@ -148,27 +134,66 @@ export const usePhysicsInteractionHandlers = ({
     setPhysicsState(prev => ({
       ...prev,
       isGripping: false,
-      gripPoint: null
+      gripPoint: null,
+      velocity: finalVelocity,
+      angularVelocity: {
+        x: -finalVelocity.y * ANGULAR_VELOCITY_MULTIPLIER * 0.5,
+        y: finalVelocity.x * ANGULAR_VELOCITY_MULTIPLIER * 0.5
+      }
     }));
 
     onGripPointChange?.(null);
     
-    // Start enhanced momentum animation if there's significant velocity
-    const hasSignificantVelocity = Math.abs(physicsState.angularVelocity.x) > MIN_VELOCITY || 
-                                  Math.abs(physicsState.angularVelocity.y) > MIN_VELOCITY;
+    // Start momentum animation if there's significant velocity
+    const hasSignificantVelocity = Math.abs(finalVelocity.x) > MIN_VELOCITY || Math.abs(finalVelocity.y) > MIN_VELOCITY;
     
     if (hasSignificantVelocity) {
-      const lastFrameTime = performance.now();
       requestAnimationFrame(animatePhysics);
     }
 
-    // Return click detection result
     return { isClick, dragDistance: physicsState.dragDistance };
-  }, [setIsDragging, onGripPointChange, physicsState, animatePhysics, CLICK_THRESHOLD, CLICK_TIME_THRESHOLD, MIN_VELOCITY, MAX_ROTATION_X, setPhysicsState]);
+  }, [setIsDragging, onGripPointChange, physicsState, animatePhysics, CLICK_THRESHOLD, CLICK_TIME_THRESHOLD, MIN_VELOCITY, SWIPE_VELOCITY_THRESHOLD, ANGULAR_VELOCITY_MULTIPLIER, setPhysicsState]);
+
+  // Initialize touch gestures
+  const {
+    touchHandlers,
+    mouseHandlers,
+    wheelHandler
+  } = useTouchGestures({
+    onGestureStart: handleGestureStart,
+    onGestureMove: handleGestureMove,
+    onGestureEnd: handleGestureEnd,
+    containerRef
+  });
+
+  // Add wheel event listener for trackpad support
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container && allowRotation) {
+      container.addEventListener('wheel', wheelHandler, { passive: false });
+      return () => container.removeEventListener('wheel', wheelHandler);
+    }
+  }, [containerRef, allowRotation, wheelHandler]);
+
+  // Legacy mouse handlers for compatibility
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    mouseHandlers.onMouseMove(e);
+  }, [mouseHandlers]);
+
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    mouseHandlers.onMouseDown(e);
+  }, [mouseHandlers]);
+
+  const handleDragEnd = useCallback(() => {
+    mouseHandlers.onMouseUp();
+  }, [mouseHandlers]);
 
   return {
     handleMouseMove,
     handleDragStart,
-    handleDragEnd
+    handleDragEnd,
+    // New touch handlers
+    touchHandlers,
+    wheelHandler
   };
 };
