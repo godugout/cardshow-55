@@ -51,7 +51,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   selectedScene,
   selectedLighting,
   materialSettings,
-  overallBrightness = [100],
+  overallBrightness = [120], // Increased default
   showBackgroundInfo = true,
   onMouseDown,
   onMouseMove,
@@ -65,8 +65,13 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     atmosphericDensity: 1.0
   }
 }) => {
-  // Local state for card flip
-  const [localIsFlipped, setLocalIsFlipped] = useState(isFlipped);
+  // Use internal flip state that tracks the parent's isFlipped prop
+  const [internalIsFlipped, setInternalIsFlipped] = useState(isFlipped);
+  
+  // Sync internal state with parent prop
+  React.useEffect(() => {
+    setInternalIsFlipped(isFlipped);
+  }, [isFlipped]);
   
   // Use cached effects for better performance only when all required props are available
   const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
@@ -84,9 +89,9 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     isHovering
   }) : null;
 
-  // Simple double-click flip handler
+  // Handle card flip - call parent's onClick handler
   const handleCardFlip = useCallback(() => {
-    setLocalIsFlipped(prev => !prev);
+    console.log('🎯 Card flip requested in container');
     onClick();
   }, [onClick]);
 
@@ -101,7 +106,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       style={{
         transform: `scale(${zoom}) rotateX(${rotation.x * 0.5}deg) rotateY(${rotation.y * 0.5}deg)`,
         transition: isDragging ? 'none' : 'transform 0.3s ease',
-        filter: `brightness(${interactiveLighting && isHovering ? 1.1 : 1.0}) contrast(1.05)`,
+        filter: `brightness(${interactiveLighting && isHovering ? 1.2 : 1.0}) contrast(1.05)`, // Increased from 1.1
         transformStyle: 'preserve-3d'
       }}
       onMouseDown={onMouseDown}
@@ -113,7 +118,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       {/* Front of Card */}
       <CardFrontContainer
         card={card}
-        isFlipped={localIsFlipped}
+        isFlipped={internalIsFlipped}
         isHovering={isHovering}
         showEffects={showEffects}
         effectValues={effectValues}
@@ -127,7 +132,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
 
       {/* Back of Card */}
       <CardBackContainer
-        isFlipped={localIsFlipped}
+        isFlipped={internalIsFlipped}
         isHovering={isHovering}
         showEffects={showEffects}
         effectValues={effectValues}
