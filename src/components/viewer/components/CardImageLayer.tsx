@@ -4,9 +4,25 @@ import type { CardData } from '@/hooks/useCardEditor';
 
 interface CardImageLayerProps {
   card: CardData;
+  effectValues?: any;
+  totalEffectIntensity?: number;
 }
 
-export const CardImageLayer: React.FC<CardImageLayerProps> = ({ card }) => {
+export const CardImageLayer: React.FC<CardImageLayerProps> = ({ 
+  card, 
+  effectValues, 
+  totalEffectIntensity = 0 
+}) => {
+  // Dynamic image enhancement when effects are active
+  const imageEnhancement = totalEffectIntensity > 0 ? {
+    filter: `
+      contrast(${1 + (totalEffectIntensity / 100) * 0.15}) 
+      saturate(${1 + (totalEffectIntensity / 100) * 0.1}) 
+      brightness(${1 + (totalEffectIntensity / 100) * 0.05})
+    `,
+    transition: 'filter 0.3s ease'
+  } : {};
+
   return (
     <div className="absolute inset-0 z-20">
       {card.image_url ? (
@@ -17,7 +33,8 @@ export const CardImageLayer: React.FC<CardImageLayerProps> = ({ card }) => {
           style={{
             userSelect: 'none',
             WebkitUserSelect: 'none',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            ...imageEnhancement
           }}
           draggable={false}
           onError={(e) => {

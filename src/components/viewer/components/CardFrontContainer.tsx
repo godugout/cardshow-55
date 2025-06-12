@@ -34,6 +34,15 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   interactiveLighting = false,
   onClick
 }) => {
+  // Calculate total effect intensity for image enhancement
+  const totalEffectIntensity = React.useMemo(() => {
+    if (!effectValues) return 0;
+    return Object.values(effectValues).reduce((total, effect) => {
+      const intensity = effect.intensity as number;
+      return total + (typeof intensity === 'number' ? intensity : 0);
+    }, 0);
+  }, [effectValues]);
+
   return (
     <div 
       className="absolute inset-0 rounded-xl overflow-hidden"
@@ -52,10 +61,14 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         {SurfaceTexture}
       </div>
 
-      {/* Full Bleed Card Image - Above Surface */}
-      <CardImageLayer card={card} />
+      {/* Enhanced Card Image - Above Surface with dynamic enhancement */}
+      <CardImageLayer 
+        card={card} 
+        effectValues={effectValues}
+        totalEffectIntensity={totalEffectIntensity}
+      />
 
-      {/* Effects Layer - Above Image for Full Coverage */}
+      {/* Effects Layer - Above Image for Full Coverage but more subtle */}
       <div className="absolute inset-0 z-30">
         <CardEffectsLayer
           showEffects={showEffects}
@@ -72,7 +85,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       {/* Card Content Overlay - Top Layer */}
       <CardContentOverlay card={card} />
 
-      {/* Interactive Lighting - Top Layer */}
+      {/* Interactive Lighting - Top Layer but much more subtle */}
       <InteractiveLightingLayer
         isHovering={isHovering}
         interactiveLighting={interactiveLighting}
