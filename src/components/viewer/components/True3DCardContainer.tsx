@@ -51,9 +51,8 @@ export const True3DCardContainer: React.FC<True3DCardContainerProps> = ({
       style={{
         width: '400px',
         height: '560px',
-        transform: `perspective(1000px) rotateX(${rotation.x * 0.5}deg) rotateY(${rotation.y * 0.5}deg)`,
         transformStyle: 'preserve-3d',
-        transition: isDragging ? 'none' : 'transform 0.1s ease',
+        // Remove CSS rotation - let Three.js handle it
         filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.8))'
       }}
     >

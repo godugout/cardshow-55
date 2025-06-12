@@ -27,7 +27,7 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
 
   useFrame((state) => {
     if (groupRef.current) {
-      // Apply manual rotation from dragging with full freedom
+      // Apply rotation directly to Three.js group - this is the ONLY rotation applied
       groupRef.current.rotation.x = (rotation.x * Math.PI) / 180 * 0.6;
       groupRef.current.rotation.y = (rotation.y * Math.PI) / 180 * 0.6;
 
@@ -38,11 +38,8 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
       // Auto rotation (only when not dragging)
       if (autoRotateEnabled && !isDragging) {
         // Slow, natural rotation that will show both sides
-        groupRef.current.rotation.y += 0.002 * controls.orbitSpeed;
-        
-        // Update our rotation state to match for face detection
-        const currentRotationY = (groupRef.current.rotation.y * 180) / Math.PI;
-        setRotation(prev => ({ ...prev, y: currentRotationY }));
+        const newRotationY = rotation.y + 0.2 * controls.orbitSpeed;
+        setRotation(prev => ({ ...prev, y: newRotationY }));
       }
 
       // Gravity effect simulation
@@ -131,7 +128,7 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     isFlipped,
     isHovering,
     mousePosition,
-    rotation, // Pass rotation to child components for face detection
+    rotation, // This rotation state is used for face detection and applied in useFrame
     isDragging,
     handleMouseDown,
     handleMouseMove,
