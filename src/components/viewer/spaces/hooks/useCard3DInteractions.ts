@@ -1,3 +1,4 @@
+
 import { useRef, useCallback, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Group } from 'three';
@@ -87,9 +88,9 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
     setMousePosition({ x, y });
     
-    // Handle dragging rotation - FIXED: Free rotation on both axes
+    // Handle dragging rotation - FIXED: Corrected Y-axis calculation for natural movement
     if (isDragging) {
-      const newRotationX = e.clientY - dragStart.y;
+      const newRotationX = dragStart.y - e.clientY; // FIXED: Inverted Y-axis for natural movement
       const newRotationY = e.clientX - dragStart.x;
       
       setRotation({
