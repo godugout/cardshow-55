@@ -53,7 +53,17 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
       data-rotation-x={rotation.x.toFixed(1)}
       data-rotation-y={rotation.y.toFixed(1)}
     >
-      {children}
+      {/* Wrapper with 3D positioning for all card faces */}
+      <div
+        style={{
+          transformStyle: 'preserve-3d',
+          position: 'relative',
+          width: '100%',
+          height: '100%'
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };

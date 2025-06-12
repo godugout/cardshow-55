@@ -82,6 +82,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         zIndex: frontZIndex,
         transition: 'opacity 0.3s ease, z-index 0.1s ease',
         backfaceVisibility: 'hidden',
+        transform: 'translateZ(4px)', // Position front face closer to viewer
         ...frameStyles
       }}
       data-visibility={frontOpacity > 0.1 ? 'visible' : 'hidden'}

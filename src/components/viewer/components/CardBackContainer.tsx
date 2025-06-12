@@ -46,8 +46,9 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
             zIndex,
             transition: 'opacity 0.3s ease, z-index 0.1s ease',
             backfaceVisibility: 'hidden',
+            transform: 'translateZ(-4px) rotateY(180deg)', // Position back face further from viewer and flip
             background: selectedMaterial.background,
-            border: `2px solid ${selectedMaterial.borderColor}`,
+            // Remove the blue border that was causing the line
             ...(selectedMaterial.blur && {
               backdropFilter: `blur(${selectedMaterial.blur}px)`
             }),
