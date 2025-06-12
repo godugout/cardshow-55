@@ -36,23 +36,32 @@ export const CardContainer3D: React.FC<CardContainer3DProps> = ({
   interactiveLighting,
   onClick
 }) => {
+  // FIXED: Improved rotation calculation and visibility logic
+  const normalizedRotationX = ((rotation.x % 360) + 360) % 360;
+  const normalizedRotationY = ((rotation.y % 360) + 360) % 360;
+  
+  // Determine if card should be showing back based on rotation angles
+  const isShowingBack = isFlipped || 
+    (normalizedRotationY > 90 && normalizedRotationY < 270) ||
+    (normalizedRotationX > 90 && normalizedRotationX < 270);
+
   return (
     <div
       className="relative"
       style={{
         width: '400px',
         height: '560px',
-        transform: `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+        transform: `perspective(1000px) rotateX(${rotation.x * 0.5}deg) rotateY(${rotation.y * 0.5}deg)`,
         transformStyle: 'preserve-3d',
         transition: isDragging ? 'none' : 'transform 0.1s ease',
         filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.8))'
       }}
       onClick={onClick}
     >
-      {/* Card Front */}
+      {/* Card Front - FIXED: Use rotation-based visibility */}
       <CardFrontContainer
         card={card}
-        isFlipped={isFlipped}
+        isFlipped={isShowingBack}
         isHovering={isHovering}
         showEffects={showEffects}
         effectValues={effectValues}
@@ -64,9 +73,9 @@ export const CardContainer3D: React.FC<CardContainer3DProps> = ({
         onClick={onClick}
       />
 
-      {/* Card Back */}
+      {/* Card Back - FIXED: Use rotation-based visibility */}
       <CardBackContainer
-        isFlipped={isFlipped}
+        isFlipped={isShowingBack}
         isHovering={isHovering}
         showEffects={showEffects}
         effectValues={effectValues}

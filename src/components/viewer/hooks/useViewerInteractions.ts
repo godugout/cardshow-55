@@ -71,10 +71,11 @@ export const useViewerInteractions = ({
       const isInControlsArea = e.clientX - rect.left < 300 && e.clientY - rect.top > rect.height - 100;
       setIsHoveringControls(isInControlsArea);
       
+      // FIXED: Improved rotation handling for both axes
       if (allowRotation && !autoRotate) {
         setRotation({
-          x: (y - 0.5) * 20,
-          y: (x - 0.5) * -20
+          x: (y - 0.5) * 40, // Increased range for better visibility
+          y: (x - 0.5) * -40
         });
       }
     }
@@ -127,9 +128,13 @@ export const useViewerInteractions = ({
 
   const handleDrag = useCallback((e: React.MouseEvent) => {
     if (isDragging && allowRotation) {
+      // FIXED: Improved drag calculation for both axes
+      const newRotationX = e.clientY - dragStart.y;
+      const newRotationY = e.clientX - dragStart.x;
+      
       setRotation({
-        x: e.clientY - dragStart.y,
-        y: e.clientX - dragStart.x
+        x: newRotationX,
+        y: newRotationY
       });
     }
   }, [isDragging, dragStart, allowRotation, setRotation]);

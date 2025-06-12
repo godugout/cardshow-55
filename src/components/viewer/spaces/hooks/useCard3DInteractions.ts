@@ -27,12 +27,16 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
 
   useFrame((state) => {
     if (groupRef.current) {
-      // Apply manual rotation from dragging
-      groupRef.current.rotation.x = (rotation.x * Math.PI) / 180 * 0.5;
-      groupRef.current.rotation.y = (rotation.y * Math.PI) / 180 * 0.5;
+      // Apply manual rotation from dragging - FIXED: Remove constraints and improve handling
+      const normalizedRotationX = ((rotation.x % 360) + 360) % 360;
+      const normalizedRotationY = ((rotation.y % 360) + 360) % 360;
       
-      // Add flip rotation if card is flipped
-      if (isFlipped) {
+      // Apply smooth rotation without restrictions
+      groupRef.current.rotation.x = (normalizedRotationX * Math.PI) / 180 * 0.6;
+      groupRef.current.rotation.y = (normalizedRotationY * Math.PI) / 180 * 0.6;
+      
+      // Add flip rotation if card is flipped - FIXED: Don't interfere with manual rotation
+      if (isFlipped && !isDragging) {
         groupRef.current.rotation.y += Math.PI;
       }
 
@@ -59,7 +63,7 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     onClick?.();
   }, [onClick]);
 
-  // Mouse interaction handlers
+  // Mouse interaction handlers - FIXED: Improved rotation calculation
   const handleMouseDown = useCallback((e: any) => {
     e.stopPropagation();
     setIsDragging(true);
@@ -93,11 +97,14 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
     setMousePosition({ x, y });
     
-    // Handle dragging rotation
+    // Handle dragging rotation - FIXED: Remove constraints for both axes
     if (isDragging) {
+      const newRotationX = e.clientY - dragStart.y;
+      const newRotationY = e.clientX - dragStart.x;
+      
       setRotation({
-        x: Math.max(-90, Math.min(90, e.clientY - dragStart.y)),
-        y: e.clientX - dragStart.x
+        x: newRotationX,
+        y: newRotationY
       });
     }
   }, [isDragging, dragStart]);
