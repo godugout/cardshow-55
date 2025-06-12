@@ -54,9 +54,9 @@ export const UnifiedCard: React.FC<UnifiedCardProps> = ({
   
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // Enhanced card dimensions for full screen viewing
-  const cardWidth = 5.0;
-  const cardHeight = 7.0;
+  // Reduced card dimensions for better proportions
+  const cardWidth = 3.5; // Reduced from 5.0
+  const cardHeight = 4.9; // Reduced from 7.0 (maintains aspect ratio)
   const cardThickness = 0.08;
 
   // Handle card flip
@@ -81,15 +81,15 @@ export const UnifiedCard: React.FC<UnifiedCardProps> = ({
       const floatY = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
       groupRef.current.position.y = floatY;
 
-      // Scale based on zoom with enhanced scaling for full screen
-      const scaleFactor = Math.max(0.5, Math.min(2.0, zoom * 1.2));
+      // Scale based on zoom with more predictable scaling
+      const scaleFactor = Math.max(0.5, Math.min(2.0, zoom * 1.0)); // Reduced multiplier from 1.2 to 1.0
       groupRef.current.scale.setScalar(scaleFactor);
     }
   });
 
-  // Enhanced HTML dimensions for full screen
-  const htmlWidth = 600;
-  const htmlHeight = 840;
+  // Reduced HTML dimensions proportional to card size
+  const htmlWidth = 420; // Reduced from 600
+  const htmlHeight = 588; // Reduced from 840
 
   return (
     <group 

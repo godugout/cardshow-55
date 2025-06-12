@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, BackgroundType } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
@@ -11,7 +10,7 @@ export const useViewerState = () => {
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0.6); // Reduced from 1 to 0.6 for better initial size
   const [isFlipped, setIsFlipped] = useState(false);
   const [autoRotate, setAutoRotate] = useState(false);
   const [showEffects, setShowEffects] = useState(true);
@@ -54,7 +53,7 @@ export const useViewerState = () => {
   // Action handlers
   const handleReset = useCallback(() => {
     setRotation({ x: 0, y: 0 });
-    setZoom(1);
+    setZoom(0.6); // Reset to new default zoom level
     setIsFlipped(false);
     setAutoRotate(false);
     setSelectedPresetId(undefined);
