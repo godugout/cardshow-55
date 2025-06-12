@@ -43,7 +43,7 @@ export const useSimplifiedViewerInteractions = ({
     // Handle dragging for rotation
     if (isDragging && allowRotation) {
       setRotation({
-        x: Math.max(-90, Math.min(90, e.clientY - dragStart.y)),
+        x: Math.max(-90, Math.min(90, dragStart.y - e.clientY)), // FIXED: Inverted Y-axis for natural movement
         y: e.clientX - dragStart.x
       });
     }
