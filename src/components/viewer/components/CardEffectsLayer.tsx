@@ -73,7 +73,13 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
   const effectScale = totalIntensity > 200 ? 0.7 : totalIntensity > 100 ? 0.85 : 1.0;
   
   return (
-    <>
+    <div 
+      className="absolute inset-0 rounded-xl overflow-hidden"
+      style={{
+        width: '400px',
+        height: '560px'
+      }}
+    >
       {/* Enhanced Interactive Lighting Layer - Now much more subtle */}
       {interactiveLighting && (
         <EnhancedInteractiveLightingLayer
@@ -147,7 +153,7 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
       {/* Enhanced Edge Glow - Reduced intensity and smart scaling */}
       {totalIntensity > 0 && (
         <div
-          className="absolute inset-0 z-50 rounded-xl pointer-events-none"
+          className="absolute inset-0 rounded-xl pointer-events-none"
           style={{
             boxShadow: `
               inset 0 0 15px rgba(255, 255, 255, ${(totalIntensity / 100) * effectScale * (enhancedLightingData ? 0.08 + enhancedLightingData.lightIntensity * 0.1 : 0.06)}),
@@ -157,6 +163,6 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
           }}
         />
       )}
-    </>
+    </div>
   );
 };

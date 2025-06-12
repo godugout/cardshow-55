@@ -115,12 +115,19 @@ export const useEnhanced360Interactions = ({
     // Use enhanced physics drag end which now returns click detection info
     const dragResult = physicsDragEnd();
     
-    // Enhanced rotation indicator management
-    if (dragResult?.isClick) {
-      // Hide immediately for clicks
-      setRotationIndicator(prev => ({ ...prev, show: false }));
+    // Enhanced rotation indicator management - safely handle potential undefined return
+    if (dragResult && typeof dragResult === 'object' && 'isClick' in dragResult) {
+      if (dragResult.isClick) {
+        // Hide immediately for clicks
+        setRotationIndicator(prev => ({ ...prev, show: false }));
+      } else {
+        // Hide after delay for drags to show final rotation
+        setTimeout(() => {
+          setRotationIndicator(prev => ({ ...prev, show: false }));
+        }, 1200);
+      }
     } else {
-      // Hide after delay for drags to show final rotation
+      // Fallback - hide after delay if we can't determine click status
       setTimeout(() => {
         setRotationIndicator(prev => ({ ...prev, show: false }));
       }, 1200);

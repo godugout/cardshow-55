@@ -14,7 +14,7 @@ export const RadialFlareLayer: React.FC<RadialFlareLayerProps> = ({
 }) => {
   return (
     <div
-      className="absolute inset-0 z-21"
+      className="absolute inset-0 z-21 rounded-xl overflow-hidden"
       style={{
         background: `
           conic-gradient(

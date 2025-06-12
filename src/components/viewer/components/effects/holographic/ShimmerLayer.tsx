@@ -14,7 +14,7 @@ export const ShimmerLayer: React.FC<ShimmerLayerProps> = ({
 }) => {
   return (
     <div
-      className="absolute inset-0 z-26"
+      className="absolute inset-0 z-26 rounded-xl overflow-hidden"
       style={{
         background: `
           radial-gradient(

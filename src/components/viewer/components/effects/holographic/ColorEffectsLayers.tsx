@@ -13,7 +13,7 @@ export const ColorEffectsLayers: React.FC<ColorEffectsLayersProps> = ({
   blur
 }) => {
   return (
-    <>
+    <div className="absolute inset-0 rounded-xl overflow-hidden">
       {/* Primary Rainbow Spectrum Layer - RESTORED FULL SPECTRUM */}
       <div
         className="absolute inset-0 z-24"
@@ -76,6 +76,6 @@ export const ColorEffectsLayers: React.FC<ColorEffectsLayersProps> = ({
           opacity: 0.8
         }}
       />
-    </>
+    </div>
   );
 };
