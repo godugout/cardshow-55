@@ -27,7 +27,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   showStats = true,
   ambient = true
 }) => {
-  console.log('🎯 ImmersiveCardViewer: Rendering with enhanced 360° capabilities:', card?.title);
+  console.log('🎯 ImmersiveCardViewer: Rendering with enhanced AR capabilities:', card?.title);
 
   // Use the main state management hook
   const {
@@ -65,6 +65,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     atmosphericDensity: 1.0
   });
 
+  // Calculate AR mode state for studio panel
+  const isCardInARMode = viewerState.zoom > 1.2;
+
   // Enhanced state validation on card change
   useEffect(() => {
     if (card) {
@@ -89,7 +92,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         setRotation={viewerState.setRotation}
       />
 
-      {/* Main Viewer Layout */}
+      {/* Main Viewer Layout with AR capabilities */}
       <ImmersiveViewerLayout
         card={card}
         cards={cards}
@@ -150,7 +153,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         environmentControls={environmentControls}
       />
 
-      {/* Studio Panel */}
+      {/* Enhanced Studio Panel with AR awareness */}
       <StudioPanel
         isVisible={shouldShowPanel}
         onClose={() => viewerState.setShowCustomizePanel(false)}
@@ -178,6 +181,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         spaceControls={viewerState.spaceControls}
         onSpaceControlsChange={viewerState.setSpaceControls}
         onResetCamera={viewerState.handleResetCamera}
+        // AR-specific props
+        isCardInARMode={isCardInARMode}
+        cardZoom={viewerState.zoom}
       />
 
       {/* Export Options Dialog */}

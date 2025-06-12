@@ -71,6 +71,10 @@ interface ImmersiveViewerLayoutProps {
 }
 
 export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (props) => {
+  // Calculate if card is in AR mode for UI adjustments
+  const isCardInARMode = props.zoom > 1.2;
+  const cardTransparencyFactor = isCardInARMode ? Math.max(0.3, 1 - (props.zoom - 1.2) * 0.8) : 1;
+
   return (
     <div 
       ref={props.containerRef}
@@ -88,34 +92,50 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
       onMouseUp={props.handleDragEnd}
       onMouseLeave={props.handleDragEnd}
     >
-      {/* Background - Only show when not in plain mode */}
+      {/* Background - Only show when not in plain mode, with AR transparency */}
       {props.backgroundType !== 'plain' && (
-        <BackgroundRenderer
-          backgroundType={props.backgroundType}
-          selectedSpace={props.selectedSpace}
-          spaceControls={props.spaceControls}
-          adaptedCard={props.adaptedCard}
-          onCardClick={props.onCardClick}
-          onCameraReset={props.onResetCamera}
-          selectedScene={props.selectedScene}
-          selectedLighting={props.selectedLighting}
-          mousePosition={props.mousePosition}
-          isHovering={props.isHovering}
-          effectValues={props.effectValues}
-          materialSettings={props.materialSettings}
-          overallBrightness={props.overallBrightness}
-          interactiveLighting={props.interactiveLighting}
-        />
+        <div 
+          style={{
+            opacity: cardTransparencyFactor,
+            filter: isCardInARMode ? `blur(${(props.zoom - 1.2) * 2}px)` : 'none'
+          }}
+          className="transition-all duration-300"
+        >
+          <BackgroundRenderer
+            backgroundType={props.backgroundType}
+            selectedSpace={props.selectedSpace}
+            spaceControls={props.spaceControls}
+            adaptedCard={props.adaptedCard}
+            onCardClick={props.onCardClick}
+            onCameraReset={props.onResetCamera}
+            selectedScene={props.selectedScene}
+            selectedLighting={props.selectedLighting}
+            mousePosition={props.mousePosition}
+            isHovering={props.isHovering}
+            effectValues={props.effectValues}
+            materialSettings={props.materialSettings}
+            overallBrightness={props.overallBrightness}
+            interactiveLighting={props.interactiveLighting}
+          />
+        </div>
       )}
 
-      {/* Header */}
-      <ViewerHeader
-        onClose={props.onClose}
-        showStudioButton={!props.shouldShowPanel}
-        onOpenStudio={props.onOpenStudio}
-      />
+      {/* Header with AR transparency */}
+      <div 
+        style={{
+          opacity: cardTransparencyFactor,
+          filter: isCardInARMode ? `blur(${Math.min((props.zoom - 1.2) * 1, 2)}px)` : 'none'
+        }}
+        className="transition-all duration-300"
+      >
+        <ViewerHeader
+          onClose={props.onClose}
+          showStudioButton={!props.shouldShowPanel}
+          onOpenStudio={props.onOpenStudio}
+        />
+      </div>
 
-      {/* Main Card Display - Enhanced with 360° Physics */}
+      {/* Main Card Display - Enhanced with AR capabilities */}
       <div 
         ref={props.cardContainerRef} 
         className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
@@ -153,8 +173,15 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
         </div>
       </div>
 
-      {/* Compact Card Details */}
-      <div className="absolute bottom-20 left-4 z-20 select-none pointer-events-auto">
+      {/* Compact Card Details with AR transparency */}
+      <div 
+        className="absolute bottom-20 left-4 z-20 select-none pointer-events-auto transition-all duration-300"
+        style={{
+          opacity: cardTransparencyFactor,
+          filter: isCardInARMode ? `blur(${Math.min((props.zoom - 1.2) * 0.5, 1)}px)` : 'none',
+          transform: isCardInARMode && props.zoom > 1.5 ? 'translateY(-10px)' : 'translateY(0)'
+        }}
+      >
         <CompactCardDetails 
           card={props.card}
           effectValues={props.effectValues}
@@ -166,8 +193,15 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
         />
       </div>
 
-      {/* Basic Controls */}
-      <div className={`absolute bottom-4 left-4 transition-opacity duration-200 z-20 pointer-events-auto ${props.isHoveringControls ? 'opacity-100' : 'opacity-80'}`}>
+      {/* Basic Controls with AR transparency */}
+      <div 
+        className={`absolute bottom-4 left-4 transition-all duration-300 z-20 pointer-events-auto`}
+        style={{
+          opacity: Math.min(cardTransparencyFactor, props.isHoveringControls ? 1 : 0.8),
+          filter: isCardInARMode ? `blur(${Math.min((props.zoom - 1.2) * 0.5, 1)}px)` : 'none',
+          transform: isCardInARMode && props.zoom > 1.5 ? 'translateY(-10px)' : 'translateY(0)'
+        }}
+      >
         <ViewerControls
           showEffects={props.showEffects}
           autoRotate={props.autoRotate}
@@ -179,21 +213,37 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
         />
       </div>
 
-      {/* Card Navigation Controls */}
-      <CardNavigationHandler
-        cards={props.cards}
-        currentCardIndex={props.currentCardIndex}
-        onCardChange={props.onCardChange}
-        setIsFlipped={props.setIsFlipped}
-      />
+      {/* Card Navigation Controls with AR transparency */}
+      <div 
+        style={{
+          opacity: cardTransparencyFactor,
+          filter: isCardInARMode ? `blur(${Math.min((props.zoom - 1.2) * 0.5, 1)}px)` : 'none'
+        }}
+        className="transition-all duration-300"
+      >
+        <CardNavigationHandler
+          cards={props.cards}
+          currentCardIndex={props.currentCardIndex}
+          onCardChange={props.onCardChange}
+          setIsFlipped={props.setIsFlipped}
+        />
+      </div>
 
-      {/* Info Panel */}
-      <ViewerInfoPanel
-        showStats={props.showStats}
-        isFlipped={props.isFlipped}
-        shouldShowPanel={props.shouldShowPanel}
-        hasMultipleCards={props.hasMultipleCards}
-      />
+      {/* Info Panel with AR transparency */}
+      <div 
+        style={{
+          opacity: cardTransparencyFactor,
+          filter: isCardInARMode ? `blur(${Math.min((props.zoom - 1.2) * 0.5, 1)}px)` : 'none'
+        }}
+        className="transition-all duration-300"
+      >
+        <ViewerInfoPanel
+          showStats={props.showStats}
+          isFlipped={props.isFlipped}
+          shouldShowPanel={props.shouldShowPanel}
+          hasMultipleCards={props.hasMultipleCards}
+        />
+      </div>
     </div>
   );
 };
