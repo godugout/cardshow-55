@@ -21,7 +21,6 @@ interface EnhancedCardCanvasProps {
   onMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
-  onCardFlip?: () => void;
   width?: number;
   height?: number;
 }
@@ -40,25 +39,23 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
-  onCardFlip,
   width = 400,
   height = 560
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
   // Use throttled mouse position for smoother performance
   const { mousePosition: throttledMousePosition, updateMousePosition } = useThrottledMousePosition(16);
 
-  console.log('EnhancedCardCanvas rendering with flip handler:', !!onCardFlip);
+  console.log('EnhancedCardCanvas rendering, isFlipped:', isFlipped);
 
-  // Handle card flip on double-click/tap - use parent's flip handler
+  // Handle card flip on double-click/tap
   const handleDoubleClick = useDoubleClick({
     onDoubleClick: () => {
-      console.log('🎯 Double-click detected - calling parent flip handler');
-      if (onCardFlip) {
-        onCardFlip();
-      }
+      setIsFlipped(!isFlipped);
+      console.log('Card flipped to:', !isFlipped);
     },
     delay: 300
   });
@@ -78,27 +75,24 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
   // Use the provided mouse position for immediate updates, throttled for internal calculations
   const effectiveMousePosition = interactiveLighting ? throttledMousePosition : mousePosition;
 
-  // Enhanced frame styles with better vibrancy
+  // Cached frame styles
   const frameStyles: React.CSSProperties = React.useMemo(() => ({
     background: `linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)`,
-    border: '1px solid rgba(255,255,255,0.15)',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+    border: '1px solid rgba(255,255,255,0.1)'
   }), []);
 
-  // Enhanced effect styles with increased vibrancy
+  // Cached enhanced effect styles
   const enhancedEffectStyles: React.CSSProperties = React.useMemo(() => ({
-    filter: `brightness(${Math.max(100, overallBrightness) / 100}) contrast(1.15) saturate(1.2)`,
-    transition: 'filter 0.3s ease'
+    filter: `brightness(${overallBrightness / 100}) contrast(1.1)`
   }), [overallBrightness]);
 
-  // Enhanced surface texture component
+  // Cached surface texture component
   const SurfaceTexture = React.useMemo(() => (
     <div 
-      className="absolute inset-0 opacity-30"
+      className="absolute inset-0 opacity-20"
       style={{
-        backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15) 1px, transparent 1px)',
-        backgroundSize: '20px 20px',
-        mixBlendMode: 'overlay'
+        backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 1px, transparent 1px)',
+        backgroundSize: '20px 20px'
       }}
     />
   ), []);
@@ -131,10 +125,10 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         />
       </div>
 
-      {/* Enhanced Card Container - Remove internal flip state */}
+      {/* Enhanced Card Container with 3D Background Info */}
       <EnhancedCardContainer
         card={card}
-        isFlipped={false} // Let parent handle flip state
+        isFlipped={isFlipped}
         isHovering={isHovering}
         showEffects={true}
         effectValues={effectValues}
@@ -161,7 +155,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         onClick={handleDoubleClick}
       />
 
-      {/* Enhanced interaction hint */}
+      {/* Click instruction updated */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white/60 text-sm">
         Double-click to flip card
       </div>
