@@ -1,15 +1,16 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-interface AdvancedPhysicsState {
-  angularVelocity: { x: number; y: number; z: number };
+interface PhysicsState {
+  velocity: { x: number; y: number };
+  angularVelocity: { x: number; y: number };
+  rotationalInertia: number;
   lastPosition: { x: number; y: number };
   gripPoint: { x: number; y: number } | null;
   isGripping: boolean;
   momentum: { x: number; y: number };
-  rotationalInertia: number;
-  snapTargets: number[];
-  isSnapping: boolean;
+  dragDistance: number;
+  dragStartTime: number;
 }
 
 interface UseAdvancedPhysicsCardInteractionProps {
@@ -20,7 +21,7 @@ interface UseAdvancedPhysicsCardInteractionProps {
   setAutoRotate: (rotate: boolean) => void;
   rotation: { x: number; y: number };
   onGripPointChange?: (point: { x: number; y: number } | null) => void;
-  effectIntensity?: number; // For dynamic inertia based on effects
+  effectIntensity?: number;
 }
 
 export const useAdvancedPhysicsCardInteraction = ({
@@ -37,125 +38,108 @@ export const useAdvancedPhysicsCardInteraction = ({
   const animationRef = useRef<number>();
   const lastFrameTime = useRef<number>(0);
   
-  const [physicsState, setPhysicsState] = useState<AdvancedPhysicsState>({
-    angularVelocity: { x: 0, y: 0, z: 0 },
+  const [physicsState, setPhysicsState] = useState<PhysicsState>({
+    velocity: { x: 0, y: 0 },
+    angularVelocity: { x: 0, y: 0 },
+    rotationalInertia: 1.0,
     lastPosition: { x: 0, y: 0 },
     gripPoint: null,
     isGripping: false,
     momentum: { x: 0, y: 0 },
-    rotationalInertia: 1.0,
-    snapTargets: [0, 90, 180, 270], // Cardinal angles for Y-axis
-    isSnapping: false
+    dragDistance: 0,
+    dragStartTime: 0
   });
 
-  // Enhanced physics constants
-  const DAMPING = 0.94; // Slightly higher for smoother motion
-  const ANGULAR_DAMPING = 0.96; // Separate damping for angular velocity
-  const VELOCITY_MULTIPLIER = 0.8; // Increased sensitivity
-  const MIN_VELOCITY = 0.005; // Lower threshold for longer momentum
-  const SNAP_THRESHOLD = 15; // Degrees within which snapping occurs
-  const SNAP_STRENGTH = 0.3; // How strong the magnetic snap is
-  const GYROSCOPIC_EFFECT = 0.1; // Cross-axis influence
-  const FLICK_THRESHOLD = 5; // Minimum velocity for flick gesture
+  // Enhanced physics constants for better responsiveness
+  const DAMPING = 0.88; // Reduced for more immediate response
+  const ANGULAR_DAMPING = 0.90;
+  const SPRING_STRENGTH = 0.15;
+  const VELOCITY_MULTIPLIER = 1.8; // Increased from 0.8 for much better sensitivity
+  const ANGULAR_VELOCITY_MULTIPLIER = 2.2; // Enhanced angular response
+  const MIN_VELOCITY = 0.008; // Slightly lower threshold
+  const GRIP_SENSITIVITY = 1.4;
+  const MAX_ROTATION_X = 35;
+  const MAX_ROTATION_Y = 180;
+  const CLICK_THRESHOLD = 5; // Pixels - movement below this is considered a click
+  const CLICK_TIME_THRESHOLD = 300; // ms - max time for a click
 
-  // Dynamic inertia based on effect intensity (heavier cards with more effects)
-  const getRotationalInertia = useCallback(() => {
-    return 1.0 + (effectIntensity / 100) * 0.5; // Max 1.5x inertia at 100% effects
+  // Calculate enhanced rotation sensitivity
+  const getRotationSensitivity = useCallback((gripPoint: { x: number; y: number }) => {
+    const centerX = 0.5;
+    const centerY = 0.5;
+    const distanceFromCenter = Math.sqrt(
+      Math.pow(gripPoint.x - centerX, 2) + Math.pow(gripPoint.y - centerY, 2)
+    );
+    const baseSensitivity = Math.max(0.7, distanceFromCenter * GRIP_SENSITIVITY);
+    
+    // Add effect intensity bonus for enhanced sensitivity with effects
+    const effectBonus = 1 + (effectIntensity * 0.3);
+    return baseSensitivity * effectBonus;
   }, [effectIntensity]);
 
-  // Find nearest snap target
-  const findNearestSnapTarget = useCallback((angle: number, targets: number[]) => {
-    let normalizedAngle = ((angle % 360) + 360) % 360; // Normalize to 0-360
-    let minDistance = Infinity;
-    let nearestTarget = null;
-    
-    for (const target of targets) {
-      const distance = Math.abs(normalizedAngle - target);
-      const wrappedDistance = Math.abs(normalizedAngle - (target + 360));
-      const finalDistance = Math.min(distance, wrappedDistance);
-      
-      if (finalDistance < minDistance && finalDistance < SNAP_THRESHOLD) {
-        minDistance = finalDistance;
-        nearestTarget = target;
-      }
-    }
-    
-    return nearestTarget;
-  }, []);
-
-  // Advanced physics animation loop
-  const animateAdvancedPhysics = useCallback(() => {
+  // Enhanced physics animation loop
+  const animatePhysics = useCallback(() => {
     const currentTime = performance.now();
-    const deltaTime = Math.min(currentTime - lastFrameTime.current, 16); // Cap at 16ms
+    const deltaTime = Math.min(currentTime - lastFrameTime.current, 16);
     lastFrameTime.current = currentTime;
 
     setPhysicsState(prev => {
-      if (isDragging) return prev;
+      if (isDragging || (
+        Math.abs(prev.velocity.x) < MIN_VELOCITY && 
+        Math.abs(prev.velocity.y) < MIN_VELOCITY &&
+        Math.abs(prev.angularVelocity.x) < MIN_VELOCITY &&
+        Math.abs(prev.angularVelocity.y) < MIN_VELOCITY
+      )) {
+        return prev;
+      }
 
-      const inertia = getRotationalInertia();
-      
-      // Apply angular damping
+      // Enhanced momentum with angular velocity
+      const newVelocity = {
+        x: prev.velocity.x * DAMPING,
+        y: prev.velocity.y * DAMPING
+      };
+
       const newAngularVelocity = {
         x: prev.angularVelocity.x * ANGULAR_DAMPING,
-        y: prev.angularVelocity.y * ANGULAR_DAMPING,
-        z: prev.angularVelocity.z * ANGULAR_DAMPING
+        y: prev.angularVelocity.y * ANGULAR_DAMPING
       };
 
-      // Gyroscopic effects - rotation on one axis affects the other
-      const gyroInfluenceX = prev.angularVelocity.y * GYROSCOPIC_EFFECT;
-      const gyroInfluenceY = prev.angularVelocity.x * GYROSCOPIC_EFFECT;
-
-      // Check for magnetic snapping on Y-axis
-      const nearestYTarget = findNearestSnapTarget(rotation.y, prev.snapTargets);
-      let finalAngularVelocityY = newAngularVelocity.y;
-      
-      if (nearestYTarget !== null && Math.abs(newAngularVelocity.y) < 1) {
-        const snapForce = (nearestYTarget - rotation.y) * SNAP_STRENGTH;
-        finalAngularVelocityY += snapForce;
-      }
-
-      // Apply angular velocity to rotation with full 360° freedom
+      // Apply enhanced velocity to rotation
       const targetRotation = {
-        x: rotation.x + (newAngularVelocity.x + gyroInfluenceX) * deltaTime / inertia,
-        y: rotation.y + (finalAngularVelocityY + gyroInfluenceY) * deltaTime / inertia
+        x: Math.max(-MAX_ROTATION_X, Math.min(MAX_ROTATION_X, rotation.x + newAngularVelocity.x * deltaTime)),
+        y: rotation.y + newAngularVelocity.y * deltaTime
       };
 
-      // Clamp X rotation to reasonable limits (full flip capability)
-      targetRotation.x = Math.max(-90, Math.min(90, targetRotation.x));
-      
-      // Y rotation is completely free (360°)
-      // No clamping needed - let it spin freely
+      // Enhanced spring back for X-axis
+      const springBackX = -rotation.x * SPRING_STRENGTH * 0.4;
+      const finalRotation = {
+        x: targetRotation.x + springBackX,
+        y: targetRotation.y
+      };
 
-      setRotation(targetRotation);
-
-      // Stop animation when velocity is very low
-      const totalVelocity = Math.abs(newAngularVelocity.x) + Math.abs(newAngularVelocity.y);
-      if (totalVelocity < MIN_VELOCITY) {
-        return {
-          ...prev,
-          angularVelocity: { x: 0, y: 0, z: 0 },
-          momentum: { x: 0, y: 0 }
-        };
-      }
+      setRotation(finalRotation);
 
       return {
         ...prev,
+        velocity: newVelocity,
         angularVelocity: newAngularVelocity,
-        rotationalInertia: inertia
+        momentum: newVelocity
       };
     });
 
-    animationRef.current = requestAnimationFrame(animateAdvancedPhysics);
-  }, [isDragging, rotation, setRotation, getRotationalInertia, findNearestSnapTarget]);
+    animationRef.current = requestAnimationFrame(animatePhysics);
+  }, [isDragging, rotation, setRotation]);
 
-  // Start advanced physics animation
+  // Start enhanced physics animation
   useEffect(() => {
-    const hasVelocity = Math.abs(physicsState.angularVelocity.x) > MIN_VELOCITY || 
-                      Math.abs(physicsState.angularVelocity.y) > MIN_VELOCITY;
-    
-    if (!isDragging && hasVelocity) {
+    const hasSignificantVelocity = Math.abs(physicsState.velocity.x) > MIN_VELOCITY || 
+                                  Math.abs(physicsState.velocity.y) > MIN_VELOCITY ||
+                                  Math.abs(physicsState.angularVelocity.x) > MIN_VELOCITY ||
+                                  Math.abs(physicsState.angularVelocity.y) > MIN_VELOCITY;
+
+    if (!isDragging && hasSignificantVelocity) {
       lastFrameTime.current = performance.now();
-      animationRef.current = requestAnimationFrame(animateAdvancedPhysics);
+      animationRef.current = requestAnimationFrame(animatePhysics);
     } else if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
@@ -165,9 +149,9 @@ export const useAdvancedPhysicsCardInteraction = ({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isDragging, physicsState.angularVelocity, animateAdvancedPhysics]);
+  }, [isDragging, physicsState.velocity, physicsState.angularVelocity, animatePhysics]);
 
-  // Enhanced mouse move with advanced physics
+  // Enhanced mouse move with improved sensitivity
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current || !allowRotation) return;
     
@@ -181,39 +165,43 @@ export const useAdvancedPhysicsCardInteraction = ({
       const deltaX = (currentPosition.x - physicsState.lastPosition.x) * rect.width;
       const deltaY = (currentPosition.y - physicsState.lastPosition.y) * rect.height;
       
-      // Enhanced sensitivity calculation based on grip position
-      const centerDistance = Math.sqrt(
-        Math.pow(physicsState.gripPoint.x - 0.5, 2) + 
-        Math.pow(physicsState.gripPoint.y - 0.5, 2)
-      );
-      const sensitivity = Math.max(0.5, centerDistance * 1.5) * VELOCITY_MULTIPLIER;
+      // Enhanced sensitivity calculation
+      const sensitivity = getRotationSensitivity(physicsState.gripPoint);
       
-      // Calculate angular velocity with enhanced physics
-      const angularVelX = -deltaY * sensitivity * 0.1; // Inverted for natural movement
-      const angularVelY = deltaX * sensitivity * 0.1;
-      
-      // Apply rotation with full 360° freedom
+      // Enhanced velocity calculations with better responsiveness
+      const velocity = {
+        x: deltaX * VELOCITY_MULTIPLIER * sensitivity,
+        y: deltaY * VELOCITY_MULTIPLIER * sensitivity
+      };
+
+      const angularVelocity = {
+        x: -velocity.y * ANGULAR_VELOCITY_MULTIPLIER,
+        y: velocity.x * ANGULAR_VELOCITY_MULTIPLIER
+      };
+
+      // Apply immediate rotation for responsive feel
       const newRotation = {
-        x: Math.max(-90, Math.min(90, rotation.x + angularVelX)), // X limited to flip range
-        y: rotation.y + angularVelY // Y completely unlimited for 360° spin
+        x: Math.max(-MAX_ROTATION_X, Math.min(MAX_ROTATION_X, rotation.x + angularVelocity.x * 0.1)),
+        y: rotation.y + angularVelocity.y * 0.1
       };
 
       setRotation(newRotation);
       
-      // Update angular velocity for momentum
-      setPhysicsState(prev => ({
-        ...prev,
-        angularVelocity: {
-          x: angularVelX * 0.8, // Store velocity for momentum
-          y: angularVelY * 0.8,
-          z: 0
-        },
-        lastPosition: currentPosition
-      }));
+      // Update physics state with enhanced values
+      setPhysicsState(prev => {
+        const newDragDistance = prev.dragDistance + Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        return {
+          ...prev,
+          velocity,
+          angularVelocity,
+          lastPosition: currentPosition,
+          dragDistance: newDragDistance
+        };
+      });
     }
-  }, [allowRotation, isDragging, physicsState.gripPoint, physicsState.lastPosition, rotation, setRotation]);
+  }, [allowRotation, isDragging, physicsState.gripPoint, physicsState.lastPosition, rotation, setRotation, getRotationSensitivity]);
 
-  // Enhanced drag start with advanced grip detection
+  // Enhanced drag start with smart click detection
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     if (!allowRotation || !containerRef.current) return;
     
@@ -223,7 +211,7 @@ export const useAdvancedPhysicsCardInteraction = ({
       y: (e.clientY - rect.top) / rect.height
     };
 
-    console.log('🎯 Advanced physics drag started at:', gripPoint);
+    console.log('🎯 Enhanced physics drag started with improved sensitivity');
     
     setIsDragging(true);
     setAutoRotate(false);
@@ -233,50 +221,51 @@ export const useAdvancedPhysicsCardInteraction = ({
       gripPoint,
       isGripping: true,
       lastPosition: gripPoint,
-      angularVelocity: { x: 0, y: 0, z: 0 }, // Reset velocity on new grip
-      momentum: { x: 0, y: 0 }
+      velocity: { x: 0, y: 0 },
+      angularVelocity: { x: 0, y: 0 },
+      momentum: { x: 0, y: 0 },
+      dragDistance: 0,
+      dragStartTime: Date.now()
     }));
 
     onGripPointChange?.(gripPoint);
   }, [allowRotation, setIsDragging, setAutoRotate, onGripPointChange]);
 
-  // Enhanced drag end with flick gesture detection
+  // Enhanced drag end with smart click detection
   const handleDragEnd = useCallback(() => {
-    console.log('🎯 Advanced physics drag ended with velocity:', physicsState.angularVelocity);
+    const dragEndTime = Date.now();
+    const dragDuration = dragEndTime - physicsState.dragStartTime;
+    const isClick = physicsState.dragDistance < CLICK_THRESHOLD && dragDuration < CLICK_TIME_THRESHOLD;
+    
+    console.log('🎯 Enhanced physics drag ended:', {
+      isClick,
+      dragDistance: physicsState.dragDistance,
+      dragDuration,
+      momentum: physicsState.angularVelocity
+    });
     
     setIsDragging(false);
     
-    // Detect flick gestures for enhanced spinning
-    const totalVelocity = Math.abs(physicsState.angularVelocity.x) + Math.abs(physicsState.angularVelocity.y);
-    if (totalVelocity > FLICK_THRESHOLD) {
-      console.log('🌪️ Flick gesture detected! Enhanced spin activated.');
-      // Boost velocity for dramatic spinning effect
-      setPhysicsState(prev => ({
-        ...prev,
-        angularVelocity: {
-          x: prev.angularVelocity.x * 1.5,
-          y: prev.angularVelocity.y * 1.5,
-          z: 0
-        },
-        isGripping: false,
-        gripPoint: null
-      }));
-    } else {
-      setPhysicsState(prev => ({
-        ...prev,
-        isGripping: false,
-        gripPoint: null
-      }));
-    }
+    setPhysicsState(prev => ({
+      ...prev,
+      isGripping: false,
+      gripPoint: null
+    }));
 
     onGripPointChange?.(null);
     
-    // Start momentum animation
-    if (totalVelocity > MIN_VELOCITY) {
+    // Start enhanced momentum animation if there's significant velocity
+    const hasSignificantVelocity = Math.abs(physicsState.angularVelocity.x) > MIN_VELOCITY || 
+                                  Math.abs(physicsState.angularVelocity.y) > MIN_VELOCITY;
+    
+    if (hasSignificantVelocity) {
       lastFrameTime.current = performance.now();
-      animationRef.current = requestAnimationFrame(animateAdvancedPhysics);
+      animationRef.current = requestAnimationFrame(animatePhysics);
     }
-  }, [setIsDragging, onGripPointChange, physicsState.angularVelocity, animateAdvancedPhysics]);
+
+    // Return click detection result
+    return { isClick, dragDistance: physicsState.dragDistance };
+  }, [setIsDragging, onGripPointChange, physicsState, animatePhysics]);
 
   return {
     containerRef,

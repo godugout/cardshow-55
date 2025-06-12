@@ -60,10 +60,12 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
   physicsState,
   rotationIndicator
 }) => {
-  console.log('🎯 SimplifiedEnhancedCardContainer rendering with 360° capabilities:', {
+  const [localIsFlipped, setLocalIsFlipped] = React.useState(isFlipped);
+
+  console.log('🎯 SimplifiedEnhancedCardContainer rendering with enhanced 360° and smart click detection:', {
     cardTitle: card.title,
     cardImage: card.image_url,
-    isFlipped,
+    isFlipped: localIsFlipped,
     zoom,
     rotation,
     gripPoint,
@@ -83,9 +85,34 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
     }, 0);
   }, [effectValues]);
 
+  // Enhanced mouse down handler with smart click detection preparation
+  const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    onMouseDown(e);
+  }, [onMouseDown]);
+
+  // Enhanced click handler with smart detection
+  const handleClick = React.useCallback((e: React.MouseEvent) => {
+    // Only flip if this was a true click (not a drag)
+    const wasClick = physicsState?.dragDistance < 5;
+    
+    if (wasClick) {
+      console.log('🎯 Smart click detected - flipping card');
+      setLocalIsFlipped(prev => !prev);
+      onClick();
+    }
+  }, [physicsState?.dragDistance, onClick]);
+
+  // Cursor style based on interaction state
+  const getCursorStyle = () => {
+    if (isDragging) return 'cursor-grabbing';
+    if (isHovering) return 'cursor-grab';
+    return 'cursor-pointer';
+  };
+
   return (
     <div 
-      className={`relative select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      className={`relative select-none ${getCursorStyle()}`}
       style={{
         transform: `scale(${zoom})`,
         transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -93,14 +120,15 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         width: `${containerWidth}px`,
         height: `${containerHeight}px`
       }}
-      onMouseDown={onMouseDown}
+      onMouseDown={handleMouseDown}
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onClick={handleClick}
     >
       <CardContainer3D
         card={card}
-        isFlipped={isFlipped}
+        isFlipped={localIsFlipped}
         isHovering={isHovering}
         showEffects={showEffects}
         effectValues={effectValues}
@@ -111,10 +139,10 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         enhancedEffectStyles={enhancedEffectStyles}
         SurfaceTexture={SurfaceTexture}
         interactiveLighting={interactiveLighting}
-        onClick={onClick}
+        onClick={handleClick}
       />
       
-      {/* Enhanced Grip Feedback with 360° support */}
+      {/* Enhanced Grip Feedback with improved 360° support */}
       <GripFeedback
         gripPoint={gripPoint}
         isGripping={physicsState?.isGripping || false}
@@ -122,7 +150,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         containerHeight={containerHeight}
       />
       
-      {/* Rotation Indicator */}
+      {/* Enhanced Rotation Indicator */}
       {rotationIndicator && (
         <RotationIndicator
           show={rotationIndicator.show}
@@ -131,21 +159,28 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         />
       )}
       
-      {/* Advanced Physics Debug Info */}
+      {/* Enhanced Physics Debug Info */}
       {physicsState && isDragging && (
         <div className="absolute bottom-2 left-2 text-xs text-white/60 font-mono bg-black/30 px-2 py-1 rounded backdrop-blur-sm">
           <div>Angular V: {Math.round(physicsState.angularVelocity?.x * 100) || 0}, {Math.round(physicsState.angularVelocity?.y * 100) || 0}</div>
-          <div>Inertia: {physicsState.rotationalInertia?.toFixed(2) || '1.00'}</div>
-          <div>Effects: {Math.round(totalEffectIntensity)}%</div>
+          <div>Sensitivity: {((1 + totalEffectIntensity * 0.3) * 1.8).toFixed(1)}x</div>
+          <div>Drag: {Math.round(physicsState.dragDistance || 0)}px</div>
         </div>
       )}
       
-      {/* Velocity Indicator for Flick Gestures */}
-      {physicsState?.angularVelocity && (Math.abs(physicsState.angularVelocity.x) > 2 || Math.abs(physicsState.angularVelocity.y) > 2) && (
+      {/* Enhanced Velocity Indicator for Flick Gestures */}
+      {physicsState?.angularVelocity && (Math.abs(physicsState.angularVelocity.x) > 3 || Math.abs(physicsState.angularVelocity.y) > 3) && (
         <div className="absolute top-2 left-2 z-40 pointer-events-none">
           <div className="w-3 h-3 bg-crd-primary rounded-full animate-pulse opacity-80">
             <div className="absolute inset-0 bg-crd-primary rounded-full animate-ping"></div>
           </div>
+        </div>
+      )}
+
+      {/* Smart Click Indicator */}
+      {!isDragging && isHovering && (
+        <div className="absolute bottom-2 right-2 text-xs text-white/40 font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
+          Click to flip • Drag to rotate
         </div>
       )}
     </div>

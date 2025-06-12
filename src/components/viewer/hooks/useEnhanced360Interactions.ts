@@ -38,7 +38,7 @@ export const useEnhanced360Interactions = ({
     angle: 0 
   });
 
-  // Use the advanced physics system
+  // Use the enhanced advanced physics system
   const {
     containerRef: physicsContainerRef,
     physicsState,
@@ -56,14 +56,14 @@ export const useEnhanced360Interactions = ({
     effectIntensity
   });
 
-  // Combine refs
+  // Combine refs for compatibility
   useEffect(() => {
     if (physicsContainerRef.current) {
       containerRef.current = physicsContainerRef.current;
     }
   }, [physicsContainerRef]);
 
-  // Enhanced mouse handling with 360° capabilities
+  // Enhanced mouse handling with improved 360° sensitivity
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return;
     
@@ -73,10 +73,10 @@ export const useEnhanced360Interactions = ({
     
     setMousePosition({ x, y });
     
-    // Use advanced physics mouse movement
+    // Use enhanced physics mouse movement with improved sensitivity
     physicsMouseMove(e);
 
-    // Update rotation indicator during dragging
+    // Update rotation indicator during dragging with enhanced feedback
     if (isDragging) {
       setRotationIndicator({
         show: true,
@@ -85,68 +85,84 @@ export const useEnhanced360Interactions = ({
     }
   }, [setMousePosition, physicsMouseMove, isDragging, rotation.y]);
 
-  // Enhanced wheel handling with momentum
+  // Enhanced wheel handling with better momentum
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
-    const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
+    const zoomDelta = e.deltaY > 0 ? -0.12 : 0.12; // Slightly more responsive zoom
     handleZoom(zoomDelta);
   }, [handleZoom]);
 
-  // Enhanced drag start with 360° support
+  // Enhanced drag start with improved sensitivity preparation
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     if (allowRotation) {
-      console.log('🎯 Starting enhanced 360° physics-based drag');
+      console.log('🎯 Starting enhanced 360° physics with improved sensitivity and smart click detection');
       
-      // Use advanced physics drag start
+      // Use enhanced physics drag start
       physicsDragStart(e);
       
-      // Legacy compatibility
+      // Legacy compatibility for existing code
       setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
       
-      // Show rotation indicator
+      // Show enhanced rotation indicator
       setRotationIndicator({ show: true, angle: rotation.y % 360 });
     }
   }, [rotation, allowRotation, physicsDragStart, setDragStart]);
 
-  // Enhanced drag end with momentum and indicator management
+  // Enhanced drag end with smart click detection and improved momentum
   const handleDragEnd = useCallback(() => {
-    console.log('🎯 Ending 360° physics-based drag with advanced momentum');
+    console.log('🎯 Ending enhanced 360° physics with smart click detection and improved momentum');
     
-    // Use advanced physics drag end
-    physicsDragEnd();
+    // Use enhanced physics drag end which now returns click detection info
+    const dragResult = physicsDragEnd();
     
-    // Hide rotation indicator after a delay
-    setTimeout(() => {
+    // Enhanced rotation indicator management
+    if (dragResult?.isClick) {
+      // Hide immediately for clicks
       setRotationIndicator(prev => ({ ...prev, show: false }));
-    }, 1000);
+    } else {
+      // Hide after delay for drags to show final rotation
+      setTimeout(() => {
+        setRotationIndicator(prev => ({ ...prev, show: false }));
+      }, 1200);
+    }
+    
+    return dragResult;
   }, [physicsDragEnd]);
 
-  // Keyboard shortcuts for precise rotation
+  // Enhanced keyboard shortcuts for precise rotation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!allowRotation || isDragging) return;
       
+      const rotationStep = e.shiftKey ? 5 : 15; // Smaller steps with Shift
+      
       switch (e.key) {
         case 'ArrowLeft':
           e.preventDefault();
-          setRotation({ ...rotation, y: rotation.y - 15 });
+          setRotation({ ...rotation, y: rotation.y - rotationStep });
           break;
         case 'ArrowRight':
           e.preventDefault();
-          setRotation({ ...rotation, y: rotation.y + 15 });
+          setRotation({ ...rotation, y: rotation.y + rotationStep });
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setRotation({ ...rotation, x: Math.max(-90, rotation.x - 15) });
+          setRotation({ ...rotation, x: Math.max(-35, rotation.x - rotationStep) });
           break;
         case 'ArrowDown':
           e.preventDefault();
-          setRotation({ ...rotation, x: Math.min(90, rotation.x + 15) });
+          setRotation({ ...rotation, x: Math.min(35, rotation.x + rotationStep) });
           break;
         case 'r':
         case 'R':
           e.preventDefault();
           setRotation({ x: 0, y: 0 });
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          // Optional flip shortcut - can be handled by parent component
+          console.log('🎯 F key pressed - flip shortcut available');
           break;
       }
     };
@@ -155,6 +171,7 @@ export const useEnhanced360Interactions = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [allowRotation, isDragging, rotation, setRotation]);
 
+  // Enhanced wheel event handling
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
