@@ -67,6 +67,7 @@ export const Card3D: React.FC<Card3DProps> = ({
   // Use 3D interactions hook
   const {
     groupRef,
+    isFlipped,
     isHovering,
     mousePosition,
     isDragging,
@@ -98,6 +99,7 @@ export const Card3D: React.FC<Card3DProps> = ({
     <Card3DGroup
       card={card}
       groupRef={groupRef}
+      isFlipped={isFlipped}
       isHovering={isHovering}
       effectValues={effectValues}
       mousePosition={mousePosition}

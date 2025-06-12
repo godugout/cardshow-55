@@ -12,6 +12,7 @@ interface Simple3DCard {
 interface Card3DGroupProps {
   card: Simple3DCard;
   groupRef: React.RefObject<any>;
+  isFlipped: boolean;
   isHovering: boolean;
   effectValues: EffectValues;
   mousePosition: { x: number; y: number };
@@ -29,6 +30,7 @@ interface Card3DGroupProps {
 export const Card3DGroup: React.FC<Card3DGroupProps> = ({
   card,
   groupRef,
+  isFlipped,
   isHovering,
   effectValues,
   mousePosition,
@@ -44,41 +46,44 @@ export const Card3DGroup: React.FC<Card3DGroupProps> = ({
 }) => {
   return (
     <group ref={groupRef}>
-      {/* Front Face */}
-      <Card3DFace
-        card={card}
-        isBack={false}
-        isHovering={isHovering}
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-        isDragging={isDragging}
-        interactiveLighting={interactiveLighting}
-        cardEffects={cardEffects}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        onCardFlip={onCardFlip}
-      />
-      
-      {/* Back Face */}
-      <Card3DFace
-        card={card}
-        isBack={true}
-        isHovering={isHovering}
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-        isDragging={isDragging}
-        interactiveLighting={interactiveLighting}
-        cardEffects={cardEffects}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        onCardFlip={onCardFlip}
-      />
+      {/* FIXED: Only render the currently visible face */}
+      {!isFlipped ? (
+        // Front Face - Shows card image
+        <Card3DFace
+          card={card}
+          isBack={false}
+          isHovering={isHovering}
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          isDragging={isDragging}
+          interactiveLighting={interactiveLighting}
+          cardEffects={cardEffects}
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          onCardFlip={onCardFlip}
+        />
+      ) : (
+        // Back Face - Shows CRD logo
+        <Card3DFace
+          card={card}
+          isBack={true}
+          isHovering={isHovering}
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          isDragging={isDragging}
+          interactiveLighting={interactiveLighting}
+          cardEffects={cardEffects}
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          onCardFlip={onCardFlip}
+        />
+      )}
       
       {/* Invisible collision mesh for interactions */}
       <mesh 

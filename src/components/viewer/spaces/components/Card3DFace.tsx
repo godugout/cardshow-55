@@ -69,8 +69,9 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
 }) => {
   const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
   
-  const position: [number, number, number] = isBack ? [0, 0, -0.01] : [0, 0, 0.01];
-  const rotation: [number, number, number] = isBack ? [0, Math.PI, 0] : [0, 0, 0];
+  // FIXED: Simplified positioning since only one face renders at a time
+  const position: [number, number, number] = [0, 0, 0];
+  const rotation: [number, number, number] = [0, 0, 0];
 
   return (
     <Html
@@ -98,10 +99,11 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
         onMouseUp={onMouseUp}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        onDoubleClick={onCardFlip}
       >
         {isBack ? (
           <CardBackContainer
-            isFlipped={false}
+            isFlipped={true}
             isHovering={isHovering}
             showEffects={true}
             effectValues={effectValues}

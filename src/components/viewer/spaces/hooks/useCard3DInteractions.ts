@@ -27,7 +27,7 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
 
   useFrame((state) => {
     if (groupRef.current) {
-      // FIXED: Only apply manual rotation from dragging - no flip interference
+      // Apply manual rotation from dragging
       groupRef.current.rotation.x = (rotation.x * Math.PI) / 180 * 0.6;
       groupRef.current.rotation.y = (rotation.y * Math.PI) / 180 * 0.6;
 
@@ -48,13 +48,14 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     }
   });
 
-  // Double-click flip handler - FIXED: Only affects isFlipped state, not rotation
+  // FIXED: Proper flip handler with smooth state management
   const handleCardFlip = useCallback(() => {
+    console.log('🎯 Card flip triggered - current state:', isFlipped);
     setIsFlipped(prev => !prev);
     onClick?.();
-  }, [onClick]);
+  }, [isFlipped, onClick]);
 
-  // Mouse interaction handlers - FIXED: Rotation is purely visual, doesn't affect face visibility
+  // Mouse interaction handlers
   const handleMouseDown = useCallback((e: any) => {
     e.stopPropagation();
     setIsDragging(true);
@@ -88,9 +89,9 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
     setMousePosition({ x, y });
     
-    // Handle dragging rotation - FIXED: Corrected Y-axis calculation for natural movement
+    // Handle dragging rotation
     if (isDragging) {
-      const newRotationX = dragStart.y - e.clientY; // FIXED: Inverted Y-axis for natural movement
+      const newRotationX = dragStart.y - e.clientY;
       const newRotationY = e.clientX - dragStart.x;
       
       setRotation({
