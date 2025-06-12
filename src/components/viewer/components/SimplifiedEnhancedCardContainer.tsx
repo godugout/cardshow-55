@@ -6,6 +6,7 @@ import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../type
 import { CardContainer3D } from './CardContainer3D';
 import { GripFeedback } from './GripFeedback';
 import { RotationIndicator } from './RotationIndicator';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
 
 interface SimplifiedEnhancedCardContainerProps {
   card: CardData;
@@ -62,7 +63,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
 }) => {
   const [localIsFlipped, setLocalIsFlipped] = React.useState(isFlipped);
 
-  console.log('🎯 SimplifiedEnhancedCardContainer rendering with enhanced 360° and smart click detection:', {
+  console.log('🎯 SimplifiedEnhancedCardContainer rendering with enhanced 360° and double-click flip:', {
     cardTitle: card.title,
     cardImage: card.image_url,
     isFlipped: localIsFlipped,
@@ -85,35 +86,31 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
     }, 0);
   }, [effectValues]);
 
-  // Enhanced mouse down handler with smart click detection preparation
+  // Double-click handler for card flipping
+  const handleDoubleClick = React.useCallback(() => {
+    console.log('🎯 Double-click detected - flipping card');
+    setLocalIsFlipped(prev => !prev);
+    onClick();
+  }, [onClick]);
+
+  // Use double-click hook
+  const handleClick = useDoubleClick({
+    onDoubleClick: handleDoubleClick,
+    delay: 300
+  });
+
+  // Enhanced mouse down handler
   const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     onMouseDown(e);
   }, [onMouseDown]);
 
-  // Enhanced click handler with smart detection
-  const handleClick = React.useCallback((e: React.MouseEvent) => {
-    // Only flip if this was a true click (not a drag)
-    const wasClick = physicsState?.dragDistance < 5;
-    
-    if (wasClick) {
-      console.log('🎯 Smart click detected - flipping card');
-      setLocalIsFlipped(prev => !prev);
-      onClick();
-    }
-  }, [physicsState?.dragDistance, onClick]);
-
   // Create a no-parameter version for CardContainer3D
-  const handleCardClick = React.useCallback(() => {
-    // Only flip if this was a true click (not a drag)
-    const wasClick = physicsState?.dragDistance < 5;
-    
-    if (wasClick) {
-      console.log('🎯 Smart click detected - flipping card');
-      setLocalIsFlipped(prev => !prev);
-      onClick();
-    }
-  }, [physicsState?.dragDistance, onClick]);
+  const handleCardDoubleClick = React.useCallback(() => {
+    console.log('🎯 Card double-click detected - flipping card');
+    setLocalIsFlipped(prev => !prev);
+    onClick();
+  }, [onClick]);
 
   // Cursor style based on interaction state
   const getCursorStyle = () => {
@@ -151,7 +148,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         enhancedEffectStyles={enhancedEffectStyles}
         SurfaceTexture={SurfaceTexture}
         interactiveLighting={interactiveLighting}
-        onClick={handleCardClick}
+        onClick={handleCardDoubleClick}
       />
       
       {/* Enhanced Grip Feedback with improved 360° support */}
@@ -189,10 +186,10 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         </div>
       )}
 
-      {/* Smart Click Indicator */}
+      {/* Updated Smart Click Indicator */}
       {!isDragging && isHovering && (
         <div className="absolute bottom-2 right-2 text-xs text-white/40 font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
-          Click to flip • Drag to rotate
+          Double-click to flip • Drag to rotate
         </div>
       )}
     </div>
