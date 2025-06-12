@@ -4,6 +4,7 @@ import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 import { CardContainer3D } from './CardContainer3D';
+import { GripFeedback } from './GripFeedback';
 
 interface SimplifiedEnhancedCardContainerProps {
   card: CardData;
@@ -30,6 +31,8 @@ interface SimplifiedEnhancedCardContainerProps {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onClick: () => void;
+  gripPoint?: { x: number; y: number } | null;
+  physicsState?: any;
 }
 
 export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardContainerProps> = ({
@@ -50,23 +53,32 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
-  onClick
+  onClick,
+  gripPoint,
+  physicsState
 }) => {
   console.log('🎯 SimplifiedEnhancedCardContainer rendering:', {
     cardTitle: card.title,
     cardImage: card.image_url,
     isFlipped,
     zoom,
-    rotation
+    rotation,
+    gripPoint,
+    hasPhysics: !!physicsState
   });
+
+  const containerWidth = 400; // Standard card container width
+  const containerHeight = 560; // Standard card container height
 
   return (
     <div 
       className={`relative select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
       style={{
         transform: `scale(${zoom})`,
-        transition: isDragging ? 'none' : 'transform 0.3s ease',
-        zIndex: 10
+        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        zIndex: 10,
+        width: `${containerWidth}px`,
+        height: `${containerHeight}px`
       }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
@@ -88,6 +100,21 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         interactiveLighting={interactiveLighting}
         onClick={onClick}
       />
+      
+      {/* Enhanced Grip Feedback */}
+      <GripFeedback
+        gripPoint={gripPoint}
+        isGripping={physicsState?.isGripping || false}
+        containerWidth={containerWidth}
+        containerHeight={containerHeight}
+      />
+      
+      {/* Physics Debug Info (optional - remove in production) */}
+      {physicsState && isDragging && (
+        <div className="absolute top-2 left-2 text-xs text-white/60 font-mono bg-black/20 px-2 py-1 rounded">
+          V: {Math.round(physicsState.velocity.x * 100)}, {Math.round(physicsState.velocity.y * 100)}
+        </div>
+      )}
     </div>
   );
 };

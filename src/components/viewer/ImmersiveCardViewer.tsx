@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps } from './types';
 import { 
@@ -111,8 +110,15 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   // Navigation logic
   const hasMultipleCards = cards.length > 1;
 
-  // Simplified viewer interactions hook
-  const { containerRef, handleMouseMove, handleDragStart, handleDragEnd } = useSimplifiedViewerInteractions({
+  // Simplified viewer interactions hook with enhanced physics
+  const { 
+    containerRef, 
+    handleMouseMove, 
+    handleDragStart, 
+    handleDragEnd,
+    gripPoint,
+    physicsState
+  } = useSimplifiedViewerInteractions({
     allowRotation,
     autoRotate,
     isDragging,
@@ -287,7 +293,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           onOpenStudio={() => setShowCustomizePanel(true)}
         />
 
-        {/* Main Card Display - ALWAYS VISIBLE */}
+        {/* Main Card Display - ALWAYS VISIBLE with Enhanced Physics */}
         <div 
           ref={cardContainerRef} 
           className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
@@ -318,6 +324,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
               onClick={() => setIsFlipped(!isFlipped)}
+              gripPoint={gripPoint}
+              physicsState={physicsState}
             />
           </div>
         </div>

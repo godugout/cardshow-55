@@ -1,5 +1,6 @@
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePhysicsCardInteraction } from './usePhysicsCardInteraction';
 
 interface UseSimplifiedViewerInteractionsProps {
   allowRotation: boolean;
@@ -29,8 +30,33 @@ export const useSimplifiedViewerInteractions = ({
   handleZoom
 }: UseSimplifiedViewerInteractionsProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [gripPoint, setGripPoint] = useState<{ x: number; y: number } | null>(null);
 
-  // Simplified mouse handling - no safe zones
+  // Use the new physics-based interaction system
+  const {
+    containerRef: physicsContainerRef,
+    physicsState,
+    handleMouseMove: physicsMouseMove,
+    handleDragStart: physicsDragStart,
+    handleDragEnd: physicsDragEnd
+  } = usePhysicsCardInteraction({
+    allowRotation,
+    isDragging,
+    setIsDragging,
+    setRotation,
+    setAutoRotate,
+    rotation,
+    onGripPointChange: setGripPoint
+  });
+
+  // Combine refs
+  useEffect(() => {
+    if (physicsContainerRef.current) {
+      containerRef.current = physicsContainerRef.current;
+    }
+  }, [physicsContainerRef]);
+
+  // Enhanced mouse handling with physics and grip feedback
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return;
     
@@ -40,35 +66,37 @@ export const useSimplifiedViewerInteractions = ({
     
     setMousePosition({ x, y });
     
-    // Handle dragging for rotation
-    if (isDragging && allowRotation) {
-      setRotation({
-        x: Math.max(-90, Math.min(90, dragStart.y - e.clientY)), // FIXED: Inverted Y-axis for natural movement
-        y: e.clientX - dragStart.x
-      });
-    }
-  }, [isDragging, allowRotation, dragStart, setMousePosition, setRotation]);
+    // Use physics-based mouse movement
+    physicsMouseMove(e);
+  }, [setMousePosition, physicsMouseMove]);
 
-  // Simplified wheel handling
+  // Simplified wheel handling with momentum
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
     handleZoom(zoomDelta);
   }, [handleZoom]);
 
+  // Enhanced drag start with physics
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     if (allowRotation) {
-      console.log('🎯 Starting drag for rotation');
-      setIsDragging(true);
+      console.log('🎯 Starting enhanced physics-based drag');
+      
+      // Use physics drag start for enhanced experience
+      physicsDragStart(e);
+      
+      // Legacy compatibility
       setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
-      setAutoRotate(false);
     }
-  }, [rotation, allowRotation, setIsDragging, setDragStart, setAutoRotate]);
+  }, [rotation, allowRotation, physicsDragStart, setDragStart]);
 
+  // Enhanced drag end with momentum
   const handleDragEnd = useCallback(() => {
-    console.log('🎯 Ending drag');
-    setIsDragging(false);
-  }, [setIsDragging]);
+    console.log('🎯 Ending physics-based drag with momentum');
+    
+    // Use physics drag end for momentum
+    physicsDragEnd();
+  }, [physicsDragEnd]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -79,9 +107,11 @@ export const useSimplifiedViewerInteractions = ({
   }, [handleWheel]);
 
   return {
-    containerRef,
+    containerRef: physicsContainerRef,
     handleMouseMove,
     handleDragStart,
-    handleDragEnd
+    handleDragEnd,
+    gripPoint,
+    physicsState
   };
 };
