@@ -39,7 +39,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   showStats = true,
   ambient = true
 }) => {
-  console.log('🎯 ImmersiveCardViewer: Rendering with card:', card?.title);
+  console.log('🎯 ImmersiveCardViewer: Rendering with enhanced 360° capabilities:', card?.title);
 
   // Use the custom state hook
   const viewerState = useViewerState();
@@ -117,7 +117,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     handleDragStart, 
     handleDragEnd,
     gripPoint,
-    physicsState
+    physicsState,
+    rotationIndicator
   } = useSimplifiedViewerInteractions({
     allowRotation,
     autoRotate,
@@ -129,7 +130,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     setMousePosition,
     rotation,
     dragStart,
-    handleZoom
+    handleZoom,
+    effectIntensity: totalEffectIntensity // Pass effect intensity for dynamic physics
   });
 
   // Export functionality
@@ -248,6 +250,15 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   // Adapt card for space renderer
   const adaptedCard = adaptCardForSpaceRenderer(card);
 
+  // Calculate total effect intensity for physics feedback
+  const totalEffectIntensity = React.useMemo(() => {
+    if (!effectValues) return 0;
+    return Object.values(effectValues).reduce((total, effect) => {
+      const intensity = effect.intensity as number;
+      return total + (typeof intensity === 'number' ? intensity : 0);
+    }, 0);
+  }, [effectValues]);
+
   return (
     <>
       <div 
@@ -293,7 +304,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           onOpenStudio={() => setShowCustomizePanel(true)}
         />
 
-        {/* Main Card Display - ALWAYS VISIBLE with Enhanced Physics */}
+        {/* Main Card Display - Enhanced with 360° Physics */}
         <div 
           ref={cardContainerRef} 
           className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
@@ -326,6 +337,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
               onClick={() => setIsFlipped(!isFlipped)}
               gripPoint={gripPoint}
               physicsState={physicsState}
+              rotationIndicator={rotationIndicator}
             />
           </div>
         </div>
