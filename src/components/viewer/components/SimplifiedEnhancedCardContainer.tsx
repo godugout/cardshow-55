@@ -103,6 +103,18 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
     }
   }, [physicsState?.dragDistance, onClick]);
 
+  // Create a no-parameter version for CardContainer3D
+  const handleCardClick = React.useCallback(() => {
+    // Only flip if this was a true click (not a drag)
+    const wasClick = physicsState?.dragDistance < 5;
+    
+    if (wasClick) {
+      console.log('🎯 Smart click detected - flipping card');
+      setLocalIsFlipped(prev => !prev);
+      onClick();
+    }
+  }, [physicsState?.dragDistance, onClick]);
+
   // Cursor style based on interaction state
   const getCursorStyle = () => {
     if (isDragging) return 'cursor-grabbing';
@@ -139,7 +151,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         enhancedEffectStyles={enhancedEffectStyles}
         SurfaceTexture={SurfaceTexture}
         interactiveLighting={interactiveLighting}
-        onClick={handleClick}
+        onClick={handleCardClick}
       />
       
       {/* Enhanced Grip Feedback with improved 360° support */}
