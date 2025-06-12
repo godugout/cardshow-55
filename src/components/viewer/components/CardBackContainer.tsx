@@ -30,34 +30,43 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
   
-  // Calculate visibility based on Y rotation angle with improved back-face detection
+  // Simplified visibility calculation with better angle ranges
   const getVisibility = () => {
     // Normalize rotation to 0-360 range
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
     
-    // Back is visible from 90° to 270° - expanded range for better coverage
-    const isBackVisible = normalizedRotation >= 90 && normalizedRotation <= 270;
+    // Back is visible from 135° to 225° (centered at 180°)
+    const isBackVisible = normalizedRotation >= 135 && normalizedRotation <= 225;
+    
+    // Debug logging
+    console.log('🔄 Card Back - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isBackVisible);
     
     if (!isBackVisible) {
-      return { opacity: 0, display: 'none' };
+      return { opacity: 0, zIndex: 5, display: 'none' as const };
     }
     
-    // Use cosine-based calculation for smooth transitions
-    // At 180° (fully back): cos(0) = 1 (full opacity)
-    // At 90° and 270°: cos(90°) = 0 (fade to transparent)
-    const angleFromBack = Math.abs(normalizedRotation - 180);
-    const radians = (angleFromBack * Math.PI) / 180;
-    const opacity = Math.cos(radians);
+    // Calculate smooth opacity transitions at edges
+    let opacity = 1;
+    const fadeRange = 15; // 15 degrees fade at each edge
+    
+    if (normalizedRotation >= 135 && normalizedRotation <= 135 + fadeRange) {
+      // Fade in from 135° to 150°
+      opacity = (normalizedRotation - 135) / fadeRange;
+    } else if (normalizedRotation >= 225 - fadeRange && normalizedRotation <= 225) {
+      // Fade out from 210° to 225°
+      opacity = (225 - normalizedRotation) / fadeRange;
+    }
     
     return { 
-      opacity: Math.max(0.1, opacity), // Minimum opacity to prevent complete disappearance
-      display: 'block'
+      opacity: Math.max(0.1, opacity),
+      zIndex: opacity > 0.5 ? 25 : 15, // Higher z-index when more visible
+      display: 'block' as const
     };
   };
 
-  const { opacity: backOpacity, display } = getVisibility();
+  const { opacity: backOpacity, zIndex: backZIndex, display } = getVisibility();
   
-  // Don't render at all if not visible to prevent Z-fighting
+  // Don't render at all if not visible
   if (display === 'none') {
     return null;
   }
@@ -118,14 +127,14 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
         opacity: backOpacity,
-        transition: 'opacity 0.2s ease',
-        transform: 'rotateY(180deg)', // Ensure back face orientation
+        zIndex: backZIndex,
+        transition: 'opacity 0.3s ease, z-index 0.1s ease',
         backfaceVisibility: 'hidden',
-        zIndex: backOpacity > 0.5 ? 20 : 10, // Higher z-index when fully visible
         ...dynamicFrameStyles
       }}
       data-material={selectedMaterial.id}
       data-material-name={selectedMaterial.name}
+      data-visibility={backOpacity > 0.1 ? 'visible' : 'hidden'}
     >
       {/* Back Effects Layer */}
       <CardEffectsLayer

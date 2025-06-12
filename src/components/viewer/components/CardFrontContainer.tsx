@@ -31,34 +31,43 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   interactiveLighting = false,
   onClick
 }) => {
-  // Calculate visibility based on Y rotation angle with proper front-face detection
+  // Simplified visibility calculation with clear angle ranges
   const getVisibility = () => {
     // Normalize rotation to 0-360 range
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
     
-    // Front is visible from 270° to 90° (spanning 0°) - complementary to back range
-    const isFrontVisible = normalizedRotation >= 270 || normalizedRotation <= 90;
+    // Front is visible from 315° to 45° (centered at 0°/360°)
+    const isFrontVisible = normalizedRotation >= 315 || normalizedRotation <= 45;
+    
+    // Debug logging
+    console.log('🔄 Card Front - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isFrontVisible);
     
     if (!isFrontVisible) {
-      return { opacity: 0, display: 'none' };
+      return { opacity: 0, zIndex: 5, display: 'none' as const };
     }
     
-    // Use cosine-based calculation for smooth transitions
-    // At 0° (fully front): cos(0) = 1 (full opacity)
-    // At 90° and 270°: cos(90°) = 0 (fade to transparent)
-    const angleFromFront = Math.min(normalizedRotation, 360 - normalizedRotation);
-    const radians = (angleFromFront * Math.PI) / 180;
-    const opacity = Math.cos(radians);
+    // Calculate smooth opacity transitions at edges
+    let opacity = 1;
+    const fadeRange = 15; // 15 degrees fade at each edge
+    
+    if (normalizedRotation >= 315 && normalizedRotation <= 315 + fadeRange) {
+      // Fade in from 315° to 330°
+      opacity = (normalizedRotation - 315) / fadeRange;
+    } else if (normalizedRotation >= 45 - fadeRange && normalizedRotation <= 45) {
+      // Fade out from 30° to 45°
+      opacity = (45 - normalizedRotation) / fadeRange;
+    }
     
     return { 
-      opacity: Math.max(0.1, opacity), // Minimum opacity to prevent complete disappearance
-      display: 'block'
+      opacity: Math.max(0.1, opacity),
+      zIndex: opacity > 0.5 ? 25 : 15, // Higher z-index when more visible
+      display: 'block' as const
     };
   };
 
-  const { opacity: frontOpacity, display } = getVisibility();
+  const { opacity: frontOpacity, zIndex: frontZIndex, display } = getVisibility();
 
-  // Don't render at all if not visible to prevent Z-fighting
+  // Don't render at all if not visible
   if (display === 'none') {
     return null;
   }
@@ -68,12 +77,12 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
         opacity: frontOpacity,
-        transition: 'opacity 0.2s ease',
+        zIndex: frontZIndex,
+        transition: 'opacity 0.3s ease, z-index 0.1s ease',
         backfaceVisibility: 'hidden',
-        transform: 'rotateY(0deg)', // Ensure front face orientation
-        zIndex: frontOpacity > 0.5 ? 20 : 10, // Higher z-index when fully visible
         ...frameStyles
       }}
+      data-visibility={frontOpacity > 0.1 ? 'visible' : 'hidden'}
     >
       {/* Base Layer - Card Frame */}
       <div className="absolute inset-0 z-10" style={frameStyles} />

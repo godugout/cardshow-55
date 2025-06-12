@@ -20,8 +20,11 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
   isHovering,
   onClick
 }) => {
-  // Calculate dynamic transform with expanded Y-axis rotation range
+  // Calculate dynamic transform with full 360° Y-axis rotation support
   const getDynamicTransform = () => {
+    // Debug logging for rotation tracking
+    console.log('🎯 Card3DTransform - Rotation X:', rotation.x.toFixed(1), 'Y:', rotation.y.toFixed(1));
+    
     let baseTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
     
     // Add subtle interactive lighting-based depth effect
@@ -43,9 +46,12 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
         transform: getDynamicTransform(),
         transformStyle: 'preserve-3d',
         transition: isDragging ? 'none' : 'transform 0.1s ease',
-        filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`
+        filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`,
+        cursor: isDragging ? 'grabbing' : 'grab'
       }}
       onClick={onClick}
+      data-rotation-x={rotation.x.toFixed(1)}
+      data-rotation-y={rotation.y.toFixed(1)}
     >
       {children}
     </div>
