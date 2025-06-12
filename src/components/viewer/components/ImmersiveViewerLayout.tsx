@@ -108,11 +108,16 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
         />
       )}
 
-      {/* Header */}
+      {/* Header with Navigation Controls */}
       <ViewerHeader
         onClose={props.onClose}
         showStudioButton={!props.shouldShowPanel}
         onOpenStudio={props.onOpenStudio}
+        hasMultipleCards={props.hasMultipleCards}
+        currentCardIndex={props.currentCardIndex}
+        totalCards={props.cards.length}
+        onCardChange={props.onCardChange}
+        setIsFlipped={props.setIsFlipped}
       />
 
       {/* Main Card Display - Enhanced with 360° Physics */}
@@ -153,8 +158,8 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
         </div>
       </div>
 
-      {/* Compact Card Details */}
-      <div className="absolute bottom-20 left-4 z-20 select-none pointer-events-auto">
+      {/* Card Details and Stats - Side by side in lower left */}
+      <div className="absolute bottom-20 left-4 z-20 flex space-x-4 select-none pointer-events-auto">
         <CompactCardDetails 
           card={props.card}
           effectValues={props.effectValues}
@@ -164,10 +169,50 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
           overallBrightness={props.overallBrightness}
           interactiveLighting={props.interactiveLighting}
         />
+        
+        {/* Card Stats Panel */}
+        <div className="bg-black bg-opacity-90 backdrop-blur-lg rounded-lg p-4 border border-white/10 max-w-sm select-none">
+          <h4 className="text-white font-semibold text-sm mb-3">Card Stats</h4>
+          <div className="space-y-2 text-xs">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <span className="text-gray-400">Rarity:</span>
+                <span className="text-white ml-2">{props.card.rarity}</span>
+              </div>
+              <div>
+                <span className="text-gray-400">Template:</span>
+                <span className="text-white ml-2">{props.card.template_id}</span>
+              </div>
+            </div>
+            
+            {props.card.tags && props.card.tags.length > 0 && (
+              <div>
+                <span className="text-gray-400">Tags:</span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {props.card.tags.slice(0, 3).map((tag, index) => (
+                    <span key={index} className="bg-crd-purple/20 text-crd-purple px-2 py-1 rounded text-xs">
+                      {tag}
+                    </span>
+                  ))}
+                  {props.card.tags.length > 3 && (
+                    <span className="text-gray-500 text-xs">+{props.card.tags.length - 3} more</span>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            <div className="pt-2 border-t border-white/10">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Created:</span>
+                <span className="text-white">{new Date(props.card.created_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Basic Controls */}
-      <div className={`absolute bottom-4 left-4 transition-opacity duration-200 z-20 pointer-events-auto ${props.isHoveringControls ? 'opacity-100' : 'opacity-80'}`}>
+      {/* Card Action Controls - Center bottom above help text */}
+      <div className={`absolute bottom-16 left-1/2 transform -translate-x-1/2 transition-opacity duration-200 z-20 pointer-events-auto ${props.isHoveringControls ? 'opacity-100' : 'opacity-80'}`}>
         <ViewerControls
           showEffects={props.showEffects}
           autoRotate={props.autoRotate}
@@ -179,21 +224,23 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
         />
       </div>
 
-      {/* Card Navigation Controls */}
-      <CardNavigationHandler
-        cards={props.cards}
-        currentCardIndex={props.currentCardIndex}
-        onCardChange={props.onCardChange}
-        setIsFlipped={props.setIsFlipped}
-      />
-
-      {/* Info Panel */}
+      {/* Help Text Info Panel - Bottom center */}
       <ViewerInfoPanel
         showStats={props.showStats}
         isFlipped={props.isFlipped}
         shouldShowPanel={props.shouldShowPanel}
         hasMultipleCards={props.hasMultipleCards}
       />
+
+      {/* Hidden Navigation Handler for Keyboard Controls */}
+      <div className="hidden">
+        <CardNavigationHandler
+          cards={props.cards}
+          currentCardIndex={props.currentCardIndex}
+          onCardChange={props.onCardChange}
+          setIsFlipped={props.setIsFlipped}
+        />
+      </div>
     </div>
   );
 };
