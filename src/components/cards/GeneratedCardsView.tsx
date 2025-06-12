@@ -5,20 +5,12 @@ import { CardGrid } from '@/components/cards/CardGrid';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Sparkles } from 'lucide-react';
+import type { Tables } from '@/integrations/supabase/types';
 
-interface Card {
-  id: string;
-  title: string;
-  description: string;
-  image_url?: string;
-  rarity: string;
-  tags: string[];
-  created_at: string;
-  design_metadata: any;
-}
+type DbCard = Tables<'cards'>;
 
 export const GeneratedCardsView = () => {
-  const [cards, setCards] = useState<Card[]>([]);
+  const [cards, setCards] = useState<DbCard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
