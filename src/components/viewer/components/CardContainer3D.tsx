@@ -36,15 +36,6 @@ export const CardContainer3D: React.FC<CardContainer3DProps> = ({
   interactiveLighting,
   onClick
 }) => {
-  // FIXED: Improved rotation calculation and visibility logic
-  const normalizedRotationX = ((rotation.x % 360) + 360) % 360;
-  const normalizedRotationY = ((rotation.y % 360) + 360) % 360;
-  
-  // Determine if card should be showing back based on rotation angles
-  const isShowingBack = isFlipped || 
-    (normalizedRotationY > 90 && normalizedRotationY < 270) ||
-    (normalizedRotationX > 90 && normalizedRotationX < 270);
-
   return (
     <div
       className="relative"
@@ -58,10 +49,10 @@ export const CardContainer3D: React.FC<CardContainer3DProps> = ({
       }}
       onClick={onClick}
     >
-      {/* Card Front - FIXED: Use rotation-based visibility */}
+      {/* Card Front - Always shows card image, positioned normally */}
       <CardFrontContainer
         card={card}
-        isFlipped={isShowingBack}
+        isFlipped={isFlipped}
         isHovering={isHovering}
         showEffects={showEffects}
         effectValues={effectValues}
@@ -73,9 +64,9 @@ export const CardContainer3D: React.FC<CardContainer3DProps> = ({
         onClick={onClick}
       />
 
-      {/* Card Back - FIXED: Use rotation-based visibility */}
+      {/* Card Back - Always shows CRD logo, positioned 180deg behind front */}
       <CardBackContainer
-        isFlipped={isShowingBack}
+        isFlipped={isFlipped}
         isHovering={isHovering}
         showEffects={showEffects}
         effectValues={effectValues}

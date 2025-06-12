@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useRef } from 'react';
 import { useSafeZones } from './useSafeZones';
 
@@ -47,7 +46,7 @@ export const useViewerInteractions = ({
     hasNavigation: hasMultipleCards
   });
 
-  // Enhanced mouse handling with safe zones - but avoid conflicts with card interactions
+  // Enhanced mouse handling with safe zones - avoid conflicts with card interactions
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return;
     
@@ -55,7 +54,7 @@ export const useViewerInteractions = ({
     const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
     
     // Only handle viewer-level interactions if not over the card area and not in safe zones
-    const cardAreaX = rect.left + (rect.width / 2) - 150; // Card area bounds
+    const cardAreaX = rect.left + (rect.width / 2) - 150;
     const cardAreaY = rect.top + (rect.height / 2) - 200;
     const cardAreaWidth = 300;
     const cardAreaHeight = 400;
@@ -71,10 +70,10 @@ export const useViewerInteractions = ({
       const isInControlsArea = e.clientX - rect.left < 300 && e.clientY - rect.top > rect.height - 100;
       setIsHoveringControls(isInControlsArea);
       
-      // FIXED: Improved rotation handling for both axes
+      // FIXED: Visual rotation only - doesn't affect face assignment
       if (allowRotation && !autoRotate) {
         setRotation({
-          x: (y - 0.5) * 40, // Increased range for better visibility
+          x: (y - 0.5) * 40,
           y: (x - 0.5) * -40
         });
       }

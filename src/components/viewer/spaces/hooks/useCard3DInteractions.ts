@@ -1,4 +1,3 @@
-
 import { useRef, useCallback, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Group } from 'three';
@@ -27,18 +26,9 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
 
   useFrame((state) => {
     if (groupRef.current) {
-      // Apply manual rotation from dragging - FIXED: Remove constraints and improve handling
-      const normalizedRotationX = ((rotation.x % 360) + 360) % 360;
-      const normalizedRotationY = ((rotation.y % 360) + 360) % 360;
-      
-      // Apply smooth rotation without restrictions
-      groupRef.current.rotation.x = (normalizedRotationX * Math.PI) / 180 * 0.6;
-      groupRef.current.rotation.y = (normalizedRotationY * Math.PI) / 180 * 0.6;
-      
-      // Add flip rotation if card is flipped - FIXED: Don't interfere with manual rotation
-      if (isFlipped && !isDragging) {
-        groupRef.current.rotation.y += Math.PI;
-      }
+      // FIXED: Only apply manual rotation from dragging - no flip interference
+      groupRef.current.rotation.x = (rotation.x * Math.PI) / 180 * 0.6;
+      groupRef.current.rotation.y = (rotation.y * Math.PI) / 180 * 0.6;
 
       // Floating animation
       const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
@@ -57,13 +47,13 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     }
   });
 
-  // Double-click flip handler
+  // Double-click flip handler - FIXED: Only affects isFlipped state, not rotation
   const handleCardFlip = useCallback(() => {
     setIsFlipped(prev => !prev);
     onClick?.();
   }, [onClick]);
 
-  // Mouse interaction handlers - FIXED: Improved rotation calculation
+  // Mouse interaction handlers - FIXED: Rotation is purely visual, doesn't affect face visibility
   const handleMouseDown = useCallback((e: any) => {
     e.stopPropagation();
     setIsDragging(true);
@@ -97,7 +87,7 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
     setMousePosition({ x, y });
     
-    // Handle dragging rotation - FIXED: Remove constraints for both axes
+    // Handle dragging rotation - FIXED: Free rotation on both axes
     if (isDragging) {
       const newRotationX = e.clientY - dragStart.y;
       const newRotationY = e.clientX - dragStart.x;

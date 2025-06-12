@@ -31,11 +31,12 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
     <div 
       className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
-        // FIXED: Simplified transform logic - rely on parent rotation
+        // FIXED: Back face is always at rotateY(180deg) - shows CRD logo
+        transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
         backfaceVisibility: 'hidden',
-        opacity: isFlipped ? 1 : 0,
+        transformStyle: 'preserve-3d',
+        transition: 'transform 0.6s ease',
         zIndex: isFlipped ? 10 : 1,
-        transition: 'opacity 0.3s ease',
         background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.4) 0%, rgba(45, 45, 45, 0.6) 50%, rgba(26, 26, 26, 0.4) 100%)',
         ...frameStyles
       }}
