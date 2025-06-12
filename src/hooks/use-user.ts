@@ -1,5 +1,5 @@
 
-import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import type { User } from '@/types/user';
 
