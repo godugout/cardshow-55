@@ -8,53 +8,11 @@ import type { Tables } from '@/integrations/supabase/types';
 
 type DbCard = Tables<'cards'>;
 
-interface CardData {
-  id: string;
-  title: string;
-  description?: string;
-  image_url?: string;
-  thumbnail_url?: string;
-  price?: string;
-  rarity?: string;
-  tags?: string[];
-  visibility?: string;
-  is_public?: boolean;
-  created_at: string;
-  series?: string;
-}
-
 interface CardGridProps {
-  cards: CardData[];
+  cards: DbCard[];
   loading: boolean;
   viewMode: 'grid' | 'masonry' | 'feed';
 }
-
-// Helper function to convert CardData to DbCard format
-const convertToDbCard = (card: CardData): DbCard => {
-  return {
-    id: card.id,
-    title: card.title,
-    description: card.description || '',
-    image_url: card.image_url || '',
-    thumbnail_url: card.thumbnail_url || null,
-    price: card.price ? parseFloat(card.price) : null,
-    rarity: (card.rarity as any) || 'common',
-    tags: card.tags || [],
-    visibility: (card.visibility as any) || 'public',
-    is_public: card.is_public ?? true,
-    created_at: card.created_at,
-    updated_at: card.created_at,
-    series: card.series || null,
-    creator_id: '',
-    design_metadata: {},
-    print_metadata: {},
-    edition_number: null,
-    marketplace_listing: false,
-    template_id: null,
-    total_supply: null,
-    verification_status: 'pending'
-  } as DbCard;
-};
 
 const LoadingSkeleton = () => (
   <div className="space-y-3">
@@ -123,10 +81,8 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) 
     );
   }
 
-  // Convert CardData to DbCard format
-  const dbCards = cards.map(convertToDbCard);
-  const convertedCards = convertCardsToCardData(dbCards);
-  const currentCardIndex = selectedCard ? dbCards.findIndex(c => c.id === selectedCard.id) : 0;
+  const convertedCards = convertCardsToCardData(cards);
+  const currentCardIndex = selectedCard ? cards.findIndex(c => c.id === selectedCard.id) : 0;
   const convertedSelectedCard = selectedCard ? convertCardsToCardData([selectedCard])[0] : null;
 
   return (
@@ -138,7 +94,7 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) 
           ? 'columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6'
           : 'space-y-6'
       }>
-        {dbCards.map((card, index) => (
+        {cards.map((card, index) => (
           <StandardCardItem
             key={`card-${card.id}-${index}`}
             card={card}
@@ -155,7 +111,7 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) 
           cards={convertedCards}
           currentCardIndex={currentCardIndex}
           onCardChange={(index) => {
-            setSelectedCard(dbCards[index]);
+            setSelectedCard(cards[index]);
           }}
           isOpen={showViewer}
           onClose={handleCloseViewer}
