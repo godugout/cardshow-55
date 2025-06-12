@@ -103,6 +103,15 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     validateEffectState
   } = enhancedEffectsHook;
 
+  // Calculate total effect intensity for physics feedback - MOVED HERE BEFORE OTHER HOOKS
+  const totalEffectIntensity = React.useMemo(() => {
+    if (!effectValues) return 0;
+    return Object.values(effectValues).reduce((total, effect) => {
+      const intensity = effect.intensity as number;
+      return total + (typeof intensity === 'number' ? intensity : 0);
+    }, 0);
+  }, [effectValues]);
+
   // Refs
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
@@ -110,7 +119,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   // Navigation logic
   const hasMultipleCards = cards.length > 1;
 
-  // Simplified viewer interactions hook with enhanced physics
+  // Simplified viewer interactions hook with enhanced physics - NOW CAN USE totalEffectIntensity
   const { 
     containerRef, 
     handleMouseMove, 
@@ -131,7 +140,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     rotation,
     dragStart,
     handleZoom,
-    effectIntensity: totalEffectIntensity // Pass effect intensity for dynamic physics
+    effectIntensity: totalEffectIntensity
   });
 
   // Export functionality
@@ -249,15 +258,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 
   // Adapt card for space renderer
   const adaptedCard = adaptCardForSpaceRenderer(card);
-
-  // Calculate total effect intensity for physics feedback
-  const totalEffectIntensity = React.useMemo(() => {
-    if (!effectValues) return 0;
-    return Object.values(effectValues).reduce((total, effect) => {
-      const intensity = effect.intensity as number;
-      return total + (typeof intensity === 'number' ? intensity : 0);
-    }, 0);
-  }, [effectValues]);
 
   return (
     <>
