@@ -317,12 +317,11 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           setIsFlipped={setIsFlipped}
         />
 
-        {/* Enhanced Card Container (only for scene background) */}
+        {/* Enhanced Card Container (only for scene background) - Removed isFlipped prop */}
         {backgroundType === 'scene' && (
           <div ref={cardContainerRef}>
             <EnhancedCardContainer
               card={card}
-              isFlipped={isFlipped}
               isHovering={isHovering}
               showEffects={showEffects}
               effectValues={effectValues}
@@ -344,7 +343,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
               onMouseMove={handleDrag}
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
-              onClick={() => setIsFlipped(!isFlipped)}
+              onClick={() => {}} // Removed flip functionality, now using continuous rotation
             />
           </div>
         )}

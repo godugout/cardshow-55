@@ -64,7 +64,6 @@ export const Card3D: React.FC<Card3DProps> = ({
   const groupRef = useRef<Group>(null);
   
   // Simple state for 3D card interaction
-  const [isFlipped, setIsFlipped] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
   const [mousePosition, setMousePosition] = React.useState({ x: 0.5, y: 0.5 });
   const [rotation, setRotation] = React.useState({ x: 0, y: 0 });
@@ -109,8 +108,7 @@ export const Card3D: React.FC<Card3DProps> = ({
     }
   });
 
-  const handleCardFlip = () => {
-    setIsFlipped(!isFlipped);
+  const handleCardClick = () => {
     onClick?.();
   };
 
@@ -132,7 +130,7 @@ export const Card3D: React.FC<Card3DProps> = ({
         <meshBasicMaterial transparent opacity={0} /> {/* Invisible plane for interaction */}
       </mesh>
       
-      {/* HTML overlay for the enhanced card - with prioritized image layer */}
+      {/* HTML overlay for the enhanced card - with prioritized image layer - Removed isFlipped prop */}
       <Html
         transform
         occlude
@@ -147,7 +145,6 @@ export const Card3D: React.FC<Card3DProps> = ({
         <div style={{ width: '250px', height: '350px', transform: 'scale(0.6)' }}>
           <EnhancedCardContainer
             card={adaptedCard}
-            isFlipped={isFlipped}
             isHovering={isHovering}
             showEffects={true}
             effectValues={effectValues}
@@ -167,7 +164,7 @@ export const Card3D: React.FC<Card3DProps> = ({
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onClick={handleCardFlip}
+            onClick={handleCardClick} // Uses continuous rotation instead of flip
           />
         </div>
       </Html>
