@@ -181,7 +181,7 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
               </div>
               <div>
                 <span className="text-gray-400">Template:</span>
-                <span className="text-white ml-2">{props.card.template_id}</span>
+                <span className="text-white ml-2">{props.card.template_id || 'Custom'}</span>
               </div>
             </div>
             
@@ -203,8 +203,8 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
             
             <div className="pt-2 border-t border-white/10">
               <div className="flex justify-between">
-                <span className="text-gray-400">Created:</span>
-                <span className="text-white">{new Date(props.card.created_at).toLocaleDateString()}</span>
+                <span className="text-gray-400">ID:</span>
+                <span className="text-white text-xs">{props.card.id ? props.card.id.slice(0, 8) + '...' : 'N/A'}</span>
               </div>
             </div>
           </div>
