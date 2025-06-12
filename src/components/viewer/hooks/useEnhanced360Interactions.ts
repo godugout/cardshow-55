@@ -1,5 +1,4 @@
 
-
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAdvancedPhysicsCardInteraction } from './useAdvancedPhysicsCardInteraction';
 
@@ -116,8 +115,19 @@ export const useEnhanced360Interactions = ({
     // Use enhanced physics drag end - handle potential void return
     const dragResult = physicsDragEnd();
     
-    // Check if we have a valid result with proper type narrowing
-    if (dragResult !== undefined && dragResult !== null && typeof dragResult === 'object' && 'isClick' in dragResult && 'dragDistance' in dragResult) {
+    // Check if we have a valid result - separate the checks for better type narrowing
+    if (dragResult === undefined || dragResult === null) {
+      // Fallback - hide after delay if we can't determine click status
+      setTimeout(() => {
+        setRotationIndicator(prev => ({ ...prev, show: false }));
+      }, 1200);
+      
+      // Return a safe default result
+      return { isClick: false, dragDistance: 0 };
+    }
+    
+    // Now check if it's a valid object with the expected properties
+    if (typeof dragResult === 'object' && 'isClick' in dragResult && 'dragDistance' in dragResult) {
       // TypeScript now knows dragResult is a valid object with isClick and dragDistance properties
       if (dragResult.isClick) {
         // Hide immediately for clicks
@@ -131,7 +141,7 @@ export const useEnhanced360Interactions = ({
       return dragResult;
     }
     
-    // Fallback - hide after delay if we can't determine click status
+    // Final fallback - hide after delay
     setTimeout(() => {
       setRotationIndicator(prev => ({ ...prev, show: false }));
     }, 1200);
@@ -201,4 +211,3 @@ export const useEnhanced360Interactions = ({
     rotationIndicator
   };
 };
-
