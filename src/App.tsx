@@ -10,6 +10,7 @@ import Creators from '@/pages/Creators';
 import DebugDetection from '@/pages/DebugDetection';
 import Studio from '@/pages/Studio';
 import Collections from '@/pages/Collections';
+import EditorMockup from '@/pages/EditorMockup';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { CardCreationFlow } from '@/components/editor/CardCreationFlow';
 
@@ -23,6 +24,7 @@ function App() {
             <Route path="studio" element={<Studio />} />
             <Route path="studio/:cardId" element={<Studio />} />
             <Route path="studio/:cardId/preset/:presetId" element={<Studio />} />
+            <Route path="editor" element={<EditorMockup />} />
             <Route path="cards" element={<Navigate to="/cards/create" replace />} />
             <Route path="cards/create" element={<CardCreationFlow />} />
             <Route path="gallery" element={<Gallery />} />
