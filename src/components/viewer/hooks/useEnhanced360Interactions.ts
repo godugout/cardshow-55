@@ -63,7 +63,7 @@ export const useEnhanced360Interactions = ({
     }
   }, [physicsContainerRef]);
 
-  // Enhanced mouse handling with improved 360° sensitivity
+  // Enhanced mouse handling with full 360° sensitivity
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return;
     
@@ -73,7 +73,7 @@ export const useEnhanced360Interactions = ({
     
     setMousePosition({ x, y });
     
-    // Use enhanced physics mouse movement with improved sensitivity
+    // Use enhanced physics mouse movement with full 360° freedom
     physicsMouseMove(e);
 
     // Update rotation indicator during dragging with enhanced feedback
@@ -92,10 +92,10 @@ export const useEnhanced360Interactions = ({
     handleZoom(zoomDelta);
   }, [handleZoom]);
 
-  // Enhanced drag start with improved sensitivity preparation
+  // Enhanced drag start with full 360° freedom
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     if (allowRotation) {
-      console.log('🎯 Starting enhanced 360° physics with improved sensitivity and smart click detection');
+      console.log('🎯 Starting enhanced 360° physics with FULL vertical freedom');
       
       // Use enhanced physics drag start
       physicsDragStart(e);
@@ -108,9 +108,9 @@ export const useEnhanced360Interactions = ({
     }
   }, [rotation, allowRotation, physicsDragStart, setDragStart]);
 
-  // Enhanced drag end with smart click detection and improved momentum
+  // Enhanced drag end with full 360° momentum
   const handleDragEnd = useCallback(() => {
-    console.log('🎯 Ending enhanced 360° physics with smart click detection and improved momentum');
+    console.log('🎯 Ending enhanced 360° physics with full vertical freedom');
     
     // Use enhanced physics drag end which now returns click detection info
     const dragResult = physicsDragEnd();
@@ -129,7 +129,7 @@ export const useEnhanced360Interactions = ({
     return dragResult;
   }, [physicsDragEnd]);
 
-  // Enhanced keyboard shortcuts for precise rotation
+  // Enhanced keyboard shortcuts for full 360° rotation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!allowRotation || isDragging) return;
@@ -147,11 +147,13 @@ export const useEnhanced360Interactions = ({
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setRotation({ ...rotation, x: Math.max(-35, rotation.x - rotationStep) });
+          // NO LIMITS - full vertical freedom
+          setRotation({ ...rotation, x: rotation.x - rotationStep });
           break;
         case 'ArrowDown':
           e.preventDefault();
-          setRotation({ ...rotation, x: Math.min(35, rotation.x + rotationStep) });
+          // NO LIMITS - full vertical freedom
+          setRotation({ ...rotation, x: rotation.x + rotationStep });
           break;
         case 'r':
         case 'R':
@@ -161,8 +163,9 @@ export const useEnhanced360Interactions = ({
         case 'f':
         case 'F':
           e.preventDefault();
-          // Optional flip shortcut - can be handled by parent component
-          console.log('🎯 F key pressed - flip shortcut available');
+          // Full flip shortcut - 180° vertical flip
+          setRotation({ ...rotation, x: rotation.x + 180 });
+          console.log('🎯 F key pressed - performing full vertical flip');
           break;
       }
     };

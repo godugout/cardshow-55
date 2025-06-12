@@ -28,7 +28,6 @@ export const usePhysicsInteractionHandlers = ({
   const {
     VELOCITY_MULTIPLIER,
     ANGULAR_VELOCITY_MULTIPLIER,
-    MAX_ROTATION_X,
     GRIP_SENSITIVITY,
     CLICK_THRESHOLD,
     CLICK_TIME_THRESHOLD,
@@ -49,7 +48,7 @@ export const usePhysicsInteractionHandlers = ({
     return baseSensitivity * effectBonus;
   }, [effectIntensity, GRIP_SENSITIVITY]);
 
-  // Enhanced mouse move with improved sensitivity
+  // Enhanced mouse move with full 360° vertical freedom
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current || !allowRotation) return;
     
@@ -77,10 +76,10 @@ export const usePhysicsInteractionHandlers = ({
         y: velocity.x * ANGULAR_VELOCITY_MULTIPLIER
       };
 
-      // Apply immediate rotation for responsive feel with expanded range
+      // Apply immediate rotation with FULL 360° freedom - NO CLAMPING
       const newRotation = {
-        x: Math.max(-MAX_ROTATION_X, Math.min(MAX_ROTATION_X, rotation.x + angularVelocity.x * 0.1)),
-        y: rotation.y + angularVelocity.y * 0.1
+        x: rotation.x + angularVelocity.x * 0.1, // No limits - full vertical freedom
+        y: rotation.y + angularVelocity.y * 0.1  // No limits - full horizontal freedom
       };
 
       setRotation(newRotation);
@@ -97,9 +96,9 @@ export const usePhysicsInteractionHandlers = ({
         };
       });
     }
-  }, [allowRotation, physicsState.isGripping, physicsState.gripPoint, physicsState.lastPosition, rotation, setRotation, getRotationSensitivity, containerRef, setPhysicsState, VELOCITY_MULTIPLIER, ANGULAR_VELOCITY_MULTIPLIER, MAX_ROTATION_X]);
+  }, [allowRotation, physicsState.isGripping, physicsState.gripPoint, physicsState.lastPosition, rotation, setRotation, getRotationSensitivity, containerRef, setPhysicsState, VELOCITY_MULTIPLIER, ANGULAR_VELOCITY_MULTIPLIER]);
 
-  // Enhanced drag start with smart click detection
+  // Enhanced drag start with full freedom capability
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     if (!allowRotation || !containerRef.current) return;
     
@@ -109,7 +108,7 @@ export const usePhysicsInteractionHandlers = ({
       y: (e.clientY - rect.top) / rect.height
     };
 
-    console.log('🎯 Enhanced physics drag started with expanded vertical range (±75°)');
+    console.log('🎯 Enhanced physics drag started with FULL 360° vertical freedom');
     
     setIsDragging(true);
     setAutoRotate(false);
@@ -129,18 +128,18 @@ export const usePhysicsInteractionHandlers = ({
     onGripPointChange?.(gripPoint);
   }, [allowRotation, setIsDragging, setAutoRotate, onGripPointChange, containerRef, setPhysicsState]);
 
-  // Enhanced drag end with smart click detection
+  // Enhanced drag end with full rotational momentum
   const handleDragEnd = useCallback(() => {
     const dragEndTime = Date.now();
     const dragDuration = dragEndTime - physicsState.dragStartTime;
     const isClick = physicsState.dragDistance < CLICK_THRESHOLD && dragDuration < CLICK_TIME_THRESHOLD;
     
-    console.log('🎯 Enhanced physics drag ended with expanded range:', {
+    console.log('🎯 Enhanced physics drag ended with full 360° freedom:', {
       isClick,
       dragDistance: physicsState.dragDistance,
       dragDuration,
       momentum: physicsState.angularVelocity,
-      maxRotationX: MAX_ROTATION_X
+      fullVerticalFreedom: true
     });
     
     setIsDragging(false);
@@ -158,13 +157,12 @@ export const usePhysicsInteractionHandlers = ({
                                   Math.abs(physicsState.angularVelocity.y) > MIN_VELOCITY;
     
     if (hasSignificantVelocity) {
-      const lastFrameTime = performance.now();
       requestAnimationFrame(animatePhysics);
     }
 
     // Return click detection result
     return { isClick, dragDistance: physicsState.dragDistance };
-  }, [setIsDragging, onGripPointChange, physicsState, animatePhysics, CLICK_THRESHOLD, CLICK_TIME_THRESHOLD, MIN_VELOCITY, MAX_ROTATION_X, setPhysicsState]);
+  }, [setIsDragging, onGripPointChange, physicsState, animatePhysics, CLICK_THRESHOLD, CLICK_TIME_THRESHOLD, MIN_VELOCITY, setPhysicsState]);
 
   return {
     handleMouseMove,
