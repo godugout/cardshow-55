@@ -116,22 +116,19 @@ export const useEnhanced360Interactions = ({
     // Use enhanced physics drag end - handle potential void return
     const dragResult = physicsDragEnd();
     
-    // First check if dragResult is not void/undefined and not null
-    if (dragResult !== undefined && dragResult !== null) {
-      // Now check if it's an object with the expected properties
-      if (typeof dragResult === 'object' && 'isClick' in dragResult && 'dragDistance' in dragResult) {
-        // We have a valid result object with proper typing
-        if (dragResult.isClick) {
-          // Hide immediately for clicks
+    // Check if we have a valid result with proper type narrowing
+    if (dragResult !== undefined && dragResult !== null && typeof dragResult === 'object' && 'isClick' in dragResult && 'dragDistance' in dragResult) {
+      // TypeScript now knows dragResult is a valid object with isClick and dragDistance properties
+      if (dragResult.isClick) {
+        // Hide immediately for clicks
+        setRotationIndicator(prev => ({ ...prev, show: false }));
+      } else {
+        // Hide after delay for drags to show final rotation
+        setTimeout(() => {
           setRotationIndicator(prev => ({ ...prev, show: false }));
-        } else {
-          // Hide after delay for drags to show final rotation
-          setTimeout(() => {
-            setRotationIndicator(prev => ({ ...prev, show: false }));
-          }, 1200);
-        }
-        return dragResult;
+        }, 1200);
       }
+      return dragResult;
     }
     
     // Fallback - hide after delay if we can't determine click status
