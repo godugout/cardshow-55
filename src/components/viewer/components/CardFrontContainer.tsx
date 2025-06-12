@@ -36,22 +36,19 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
     // Normalize rotation to 0-360 range
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
     
-    // Front is visible from 315° to 45° (spanning 0°) - expanded range for smoother transitions
-    const isFrontVisible = normalizedRotation >= 315 || normalizedRotation <= 45;
+    // Front is visible from 270° to 90° (spanning 0°) - complementary to back range
+    const isFrontVisible = normalizedRotation >= 270 || normalizedRotation <= 90;
     
     if (!isFrontVisible) {
       return { opacity: 0, display: 'none' };
     }
     
-    // Calculate opacity with smooth transitions only when visible
-    let opacity = 1;
-    if (normalizedRotation >= 315) {
-      // From 315° to 360°: fade in
-      opacity = Math.min(1, (normalizedRotation - 315) / 30);
-    } else if (normalizedRotation <= 45) {
-      // From 0° to 45°: fade out
-      opacity = Math.max(0, 1 - (normalizedRotation / 30));
-    }
+    // Use cosine-based calculation for smooth transitions
+    // At 0° (fully front): cos(0) = 1 (full opacity)
+    // At 90° and 270°: cos(90°) = 0 (fade to transparent)
+    const angleFromFront = Math.min(normalizedRotation, 360 - normalizedRotation);
+    const radians = (angleFromFront * Math.PI) / 180;
+    const opacity = Math.cos(radians);
     
     return { 
       opacity: Math.max(0.1, opacity), // Minimum opacity to prevent complete disappearance
@@ -71,7 +68,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
         opacity: frontOpacity,
-        transition: 'opacity 0.1s ease',
+        transition: 'opacity 0.2s ease',
         backfaceVisibility: 'hidden',
         transform: 'rotateY(0deg)', // Ensure front face orientation
         zIndex: frontOpacity > 0.5 ? 20 : 10, // Higher z-index when fully visible

@@ -30,27 +30,24 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
   
-  // Calculate visibility based on Y rotation angle with proper back-face detection
+  // Calculate visibility based on Y rotation angle with improved back-face detection
   const getVisibility = () => {
     // Normalize rotation to 0-360 range
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
     
-    // Back is visible from 135° to 225° - expanded range for smoother transitions
-    const isBackVisible = normalizedRotation >= 135 && normalizedRotation <= 225;
+    // Back is visible from 90° to 270° - expanded range for better coverage
+    const isBackVisible = normalizedRotation >= 90 && normalizedRotation <= 270;
     
     if (!isBackVisible) {
       return { opacity: 0, display: 'none' };
     }
     
-    // Calculate opacity with smooth transitions only when visible
-    let opacity = 1;
-    if (normalizedRotation >= 135 && normalizedRotation <= 165) {
-      // From 135° to 165°: fade in
-      opacity = Math.min(1, (normalizedRotation - 135) / 30);
-    } else if (normalizedRotation >= 195 && normalizedRotation <= 225) {
-      // From 195° to 225°: fade out
-      opacity = Math.max(0, 1 - ((normalizedRotation - 195) / 30));
-    }
+    // Use cosine-based calculation for smooth transitions
+    // At 180° (fully back): cos(0) = 1 (full opacity)
+    // At 90° and 270°: cos(90°) = 0 (fade to transparent)
+    const angleFromBack = Math.abs(normalizedRotation - 180);
+    const radians = (angleFromBack * Math.PI) / 180;
+    const opacity = Math.cos(radians);
     
     return { 
       opacity: Math.max(0.1, opacity), // Minimum opacity to prevent complete disappearance
@@ -121,7 +118,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
         opacity: backOpacity,
-        transition: 'opacity 0.1s ease',
+        transition: 'opacity 0.2s ease',
         transform: 'rotateY(180deg)', // Ensure back face orientation
         backfaceVisibility: 'hidden',
         zIndex: backOpacity > 0.5 ? 20 : 10, // Higher z-index when fully visible
