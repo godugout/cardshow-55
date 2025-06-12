@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Html } from '@react-three/drei';
-import { True3DCardContainer } from '../../components/True3DCardContainer';
+import { CardFrontContainer } from '../../components/CardFrontContainer';
+import { CardBackContainer } from '../../components/CardBackContainer';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 
 interface Simple3DCard {
@@ -25,7 +26,6 @@ interface Card3DFaceProps {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onCardFlip: () => void;
-  rotation?: { x: number; y: number };
 }
 
 // Helper function to convert simple card to full CardData format
@@ -53,26 +53,31 @@ const adaptCardForViewer = (card: Simple3DCard) => ({
 
 export const Card3DFace: React.FC<Card3DFaceProps> = ({
   card,
+  isBack = false,
   isHovering,
   effectValues,
   mousePosition,
   isDragging,
   interactiveLighting = false,
   cardEffects,
-  rotation = { x: 0, y: 0 },
   onMouseDown,
   onMouseMove,
   onMouseUp,
   onMouseEnter,
-  onMouseLeave
+  onMouseLeave,
+  onCardFlip
 }) => {
   const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
+  
+  const position: [number, number, number] = isBack ? [0, 0, -0.01] : [0, 0, 0.01];
+  const rotation: [number, number, number] = isBack ? [0, Math.PI, 0] : [0, 0, 0];
 
   return (
     <Html
       transform
       occlude
-      position={[0, 0, 0]}
+      position={position}
+      rotation={rotation}
       distanceFactor={1}
       style={{
         width: '400px',
@@ -85,30 +90,42 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
           width: '400px', 
           height: '560px',
           cursor: isDragging ? 'grabbing' : 'grab',
-          userSelect: 'none'
+          transform: 'scale(0.8)',
+          transformOrigin: 'center center'
         }}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        onTouchStart={onMouseDown}
-        onTouchMove={onMouseMove}
-        onTouchEnd={onMouseUp}
       >
-        <True3DCardContainer
-          card={adaptedCard}
-          isHovering={isHovering}
-          showEffects={true}
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-          rotation={rotation}
-          isDragging={isDragging}
-          frameStyles={cardEffects?.getFrameStyles() || { transition: isDragging ? 'none' : 'all 0.3s ease' }}
-          enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
-          SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
-          interactiveLighting={interactiveLighting}
-        />
+        {isBack ? (
+          <CardBackContainer
+            isFlipped={false}
+            isHovering={isHovering}
+            showEffects={true}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            frameStyles={cardEffects?.getFrameStyles() || { transition: isDragging ? 'none' : 'all 0.3s ease' }}
+            enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
+            SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
+            interactiveLighting={interactiveLighting}
+          />
+        ) : (
+          <CardFrontContainer
+            card={adaptedCard}
+            isFlipped={false}
+            isHovering={isHovering}
+            showEffects={true}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            frameStyles={cardEffects?.getFrameStyles() || { transition: isDragging ? 'none' : 'all 0.3s ease' }}
+            enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
+            SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
+            interactiveLighting={interactiveLighting}
+            onClick={onCardFlip}
+          />
+        )}
       </div>
     </Html>
   );

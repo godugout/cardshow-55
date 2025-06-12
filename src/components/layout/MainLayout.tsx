@@ -12,13 +12,13 @@ const AppFallback = ({ error }: { error?: Error }) => (
     <div className="text-center max-w-md">
       <h1 className="text-2xl font-bold text-white mb-4">Loading Issue</h1>
       <p className="text-gray-400 mb-4">
-        There was a problem loading the application. Please try refreshing the page.
+        There was a problem loading the application. This might be a temporary database connection issue.
       </p>
       {error && (
         <details className="text-left bg-gray-800 p-4 rounded mb-4">
           <summary className="text-white cursor-pointer mb-2">Error Details</summary>
           <pre className="text-red-400 text-sm overflow-auto">
-            {error.message || 'Unknown error'}
+            {error.message}
           </pre>
         </details>
       )}
@@ -46,7 +46,7 @@ export const MainLayout = () => {
     const initializeApp = async () => {
       try {
         // Quick initialization - just enough to get the app running
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         console.log('MainLayout initialization completed successfully');
         setIsLoading(false);

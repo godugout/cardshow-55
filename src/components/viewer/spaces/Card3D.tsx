@@ -64,13 +64,11 @@ export const Card3D: React.FC<Card3DProps> = ({
   // Convert simple card to full CardData format for useCardEffects
   const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
 
-  // Use 3D interactions hook with enhanced rotation tracking
+  // Use 3D interactions hook
   const {
     groupRef,
-    isFlipped,
     isHovering,
     mousePosition,
-    rotation, // Now includes the current rotation state
     isDragging,
     handleMouseDown,
     handleMouseMove,
@@ -92,7 +90,7 @@ export const Card3D: React.FC<Card3DProps> = ({
     selectedLighting,
     materialSettings,
     zoom,
-    rotation, // Pass the actual rotation for proper effect calculations
+    rotation: { x: 0, y: 0 }, // Rotation is handled by Three.js now
     isHovering
   }) : null;
 
@@ -100,11 +98,9 @@ export const Card3D: React.FC<Card3DProps> = ({
     <Card3DGroup
       card={card}
       groupRef={groupRef}
-      isFlipped={isFlipped}
       isHovering={isHovering}
       effectValues={effectValues}
       mousePosition={mousePosition}
-      rotation={rotation} // Pass rotation to group for face detection
       isDragging={isDragging}
       interactiveLighting={interactiveLighting}
       cardEffects={cardEffects}

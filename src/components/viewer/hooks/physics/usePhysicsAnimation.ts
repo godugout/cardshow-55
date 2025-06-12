@@ -24,10 +24,12 @@ export const usePhysicsAnimation = ({
   const {
     DAMPING,
     ANGULAR_DAMPING,
-    MIN_VELOCITY
+    SPRING_STRENGTH,
+    MIN_VELOCITY,
+    MAX_ROTATION_X
   } = PHYSICS_CONSTANTS;
 
-  // Enhanced physics animation loop with full 360° freedom
+  // Enhanced physics animation loop
   const animatePhysics = useCallback(() => {
     const currentTime = performance.now();
     const deltaTime = Math.min(currentTime - lastFrameTime.current, 16);
@@ -54,14 +56,20 @@ export const usePhysicsAnimation = ({
         y: prev.angularVelocity.y * ANGULAR_DAMPING
       };
 
-      // Apply enhanced velocity to rotation with FULL 360° freedom
-      const newRotation = {
-        x: rotation.x + newAngularVelocity.x * deltaTime, // No limits - full vertical freedom
-        y: rotation.y + newAngularVelocity.y * deltaTime  // No limits - full horizontal freedom
+      // Apply enhanced velocity to rotation with expanded range
+      const targetRotation = {
+        x: Math.max(-MAX_ROTATION_X, Math.min(MAX_ROTATION_X, rotation.x + newAngularVelocity.x * deltaTime)),
+        y: rotation.y + newAngularVelocity.y * deltaTime
       };
 
-      // NO SPRING-BACK for full freedom - let the card rotate naturally
-      setRotation(newRotation);
+      // Gentler spring back for X-axis with reduced strength
+      const springBackX = -rotation.x * SPRING_STRENGTH * 0.2; // Reduced from 0.4
+      const finalRotation = {
+        x: targetRotation.x + springBackX,
+        y: targetRotation.y
+      };
+
+      setRotation(finalRotation);
 
       return {
         ...prev,
@@ -72,9 +80,9 @@ export const usePhysicsAnimation = ({
     });
 
     animationRef.current = requestAnimationFrame(animatePhysics);
-  }, [isDragging, rotation, setRotation, setPhysicsState, DAMPING, ANGULAR_DAMPING, MIN_VELOCITY]);
+  }, [isDragging, rotation, setRotation, setPhysicsState, DAMPING, ANGULAR_DAMPING, SPRING_STRENGTH, MIN_VELOCITY, MAX_ROTATION_X]);
 
-  // Start enhanced physics animation with full freedom
+  // Start enhanced physics animation
   useEffect(() => {
     const hasSignificantVelocity = Math.abs(physicsState.velocity.x) > MIN_VELOCITY || 
                                   Math.abs(physicsState.velocity.y) > MIN_VELOCITY ||

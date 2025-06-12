@@ -1,9 +1,10 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
-import { SimplifiedCardContainer3D } from './SimplifiedCardContainer3D';
+import { CardFrontContainer } from './CardFrontContainer';
+import { CardBackContainer } from './CardBackContainer';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface EnhancedCardContainerProps {
@@ -51,11 +52,18 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   selectedLighting,
   materialSettings,
   overallBrightness = [100],
+  showBackgroundInfo = true,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
-  onClick
+  onClick,
+  environmentControls = {
+    depthOfField: 1.0,
+    parallaxIntensity: 1.0,
+    fieldOfView: 75,
+    atmosphericDensity: 1.0
+  }
 }) => {
   // Local state for card flip
   const [localIsFlipped, setLocalIsFlipped] = useState(isFlipped);
@@ -76,9 +84,9 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     isHovering
   }) : null;
 
-  // Simple click flip handler - no double-click detection here to avoid conflicts
-  const handleCardClick = useCallback(() => {
-    console.log('🎯 Enhanced card container click - delegating to parent');
+  // Simple double-click flip handler
+  const handleCardFlip = useCallback(() => {
+    setLocalIsFlipped(prev => !prev);
     onClick();
   }, [onClick]);
 
@@ -91,8 +99,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     <div 
       className={`relative z-20 select-none`}
       style={{
-        // Only apply zoom, let Three.js handle all rotation
-        transform: `scale(${zoom})`,
+        transform: `scale(${zoom}) rotateX(${rotation.x * 0.5}deg) rotateY(${rotation.y * 0.5}deg)`,
         transition: isDragging ? 'none' : 'transform 0.3s ease',
         filter: `brightness(${interactiveLighting && isHovering ? 1.1 : 1.0}) contrast(1.05)`,
         transformStyle: 'preserve-3d'
@@ -101,18 +108,30 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      onClick={handleCardClick}
+      onClick={handleCardFlip}
     >
-      {/* Simplified Single Card Container */}
-      <SimplifiedCardContainer3D
+      {/* Front of Card */}
+      <CardFrontContainer
         card={card}
         isFlipped={localIsFlipped}
         isHovering={isHovering}
         showEffects={showEffects}
         effectValues={effectValues}
         mousePosition={mousePosition}
-        rotation={rotation}
-        isDragging={isDragging}
+        frameStyles={effectiveFrameStyles}
+        enhancedEffectStyles={effectiveEnhancedEffectStyles}
+        SurfaceTexture={effectiveSurfaceTexture}
+        interactiveLighting={interactiveLighting}
+        onClick={handleCardFlip}
+      />
+
+      {/* Back of Card */}
+      <CardBackContainer
+        isFlipped={localIsFlipped}
+        isHovering={isHovering}
+        showEffects={showEffects}
+        effectValues={effectValues}
+        mousePosition={mousePosition}
         frameStyles={effectiveFrameStyles}
         enhancedEffectStyles={effectiveEnhancedEffectStyles}
         SurfaceTexture={effectiveSurfaceTexture}

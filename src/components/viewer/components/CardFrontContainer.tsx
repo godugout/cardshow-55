@@ -18,6 +18,7 @@ interface CardFrontContainerProps {
   enhancedEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
+  onClick: () => void;
 }
 
 export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
@@ -30,7 +31,8 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   frameStyles,
   enhancedEffectStyles,
   SurfaceTexture,
-  interactiveLighting = false
+  interactiveLighting = false,
+  onClick
 }) => {
   // Calculate total effect intensity for image enhancement
   const totalEffectIntensity = React.useMemo(() => {

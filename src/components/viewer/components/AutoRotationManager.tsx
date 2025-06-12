@@ -1,40 +1,39 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface AutoRotationManagerProps {
   autoRotate: boolean;
   isDragging: boolean;
-  setRotation: (fn: (prev: { x: number; y: number }) => { x: number; y: number }) => void;
-  rotationSpeed?: number;
+  setRotation: (rotation: { x: number; y: number }) => void;
 }
 
 export const AutoRotationManager: React.FC<AutoRotationManagerProps> = ({
   autoRotate,
   isDragging,
-  setRotation,
-  rotationSpeed = 0.3
+  setRotation
 }) => {
   const animationRef = useRef<number>();
+  const rotationRef = useRef({ x: 0, y: 0 });
 
+  // Auto-rotation effect
   useEffect(() => {
     if (autoRotate && !isDragging) {
-      console.log('🎯 Starting auto-rotation');
-      
       const animate = () => {
-        setRotation(prev => ({
-          x: prev.x,
-          y: prev.y + rotationSpeed
-        }));
+        // Update the rotation values
+        rotationRef.current = {
+          x: Math.sin(Date.now() * 0.0005) * 10,
+          y: rotationRef.current.y + 0.5
+        };
+        
+        // Pass the direct rotation object
+        setRotation(rotationRef.current);
         
         animationRef.current = requestAnimationFrame(animate);
       };
-      
       animationRef.current = requestAnimationFrame(animate);
     } else {
       if (animationRef.current) {
-        console.log('🎯 Stopping auto-rotation');
         cancelAnimationFrame(animationRef.current);
-        animationRef.current = undefined;
       }
     }
     
@@ -43,7 +42,7 @@ export const AutoRotationManager: React.FC<AutoRotationManagerProps> = ({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [autoRotate, isDragging, setRotation, rotationSpeed]);
+  }, [autoRotate, isDragging, setRotation]);
 
-  return null;
+  return null; // This component doesn't render anything
 };
