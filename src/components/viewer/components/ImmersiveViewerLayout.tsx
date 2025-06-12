@@ -7,8 +7,6 @@ import { ViewerControls } from './ViewerControls';
 import { CardNavigationHandler } from './CardNavigationHandler';
 import { ViewerInfoPanel } from './ViewerInfoPanel';
 import { BackgroundRenderer } from './BackgroundRenderer';
-import { ARBackgroundLayer } from './ARBackgroundLayer';
-import { useAREffects } from '../hooks/useAREffects';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 
@@ -73,18 +71,6 @@ interface ImmersiveViewerLayoutProps {
 }
 
 export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (props) => {
-  // Use AR effects hook to get background effects
-  const {
-    isARMode,
-    backgroundBlurIntensity,
-    parallaxOffset
-  } = useAREffects({
-    zoom: props.zoom,
-    isHovering: props.isHovering,
-    isDragging: props.isDragging,
-    rotation: props.rotation
-  });
-
   return (
     <div 
       ref={props.containerRef}
@@ -102,111 +88,34 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
       onMouseUp={props.handleDragEnd}
       onMouseLeave={props.handleDragEnd}
     >
-      {/* Background with AR Effects */}
-      <ARBackgroundLayer
-        isARMode={isARMode}
-        blurIntensity={backgroundBlurIntensity}
-        parallaxOffset={parallaxOffset}
-      >
-        {/* Background - Only show when not in plain mode */}
-        {props.backgroundType !== 'plain' && (
-          <BackgroundRenderer
-            backgroundType={props.backgroundType}
-            selectedSpace={props.selectedSpace}
-            spaceControls={props.spaceControls}
-            adaptedCard={props.adaptedCard}
-            onCardClick={props.onCardClick}
-            onCameraReset={props.onResetCamera}
-            selectedScene={props.selectedScene}
-            selectedLighting={props.selectedLighting}
-            mousePosition={props.mousePosition}
-            isHovering={props.isHovering}
-            effectValues={props.effectValues}
-            materialSettings={props.materialSettings}
-            overallBrightness={props.overallBrightness}
-            interactiveLighting={props.interactiveLighting}
-          />
-        )}
-
-        {/* Header */}
-        <ViewerHeader
-          onClose={props.onClose}
-          showStudioButton={!props.shouldShowPanel}
-          onOpenStudio={props.onOpenStudio}
+      {/* Background - Only show when not in plain mode */}
+      {props.backgroundType !== 'plain' && (
+        <BackgroundRenderer
+          backgroundType={props.backgroundType}
+          selectedSpace={props.selectedSpace}
+          spaceControls={props.spaceControls}
+          adaptedCard={props.adaptedCard}
+          onCardClick={props.onCardClick}
+          onCameraReset={props.onResetCamera}
+          selectedScene={props.selectedScene}
+          selectedLighting={props.selectedLighting}
+          mousePosition={props.mousePosition}
+          isHovering={props.isHovering}
+          effectValues={props.effectValues}
+          materialSettings={props.materialSettings}
+          overallBrightness={props.overallBrightness}
+          interactiveLighting={props.interactiveLighting}
         />
+      )}
 
-        {/* Compact Card Details with AR-aware styling */}
-        <div 
-          className={`absolute bottom-20 left-4 z-20 select-none pointer-events-auto transition-all duration-300 ${
-            isARMode ? 'opacity-80' : 'opacity-100'
-          }`}
-          style={{
-            filter: isARMode ? `blur(${Math.min(backgroundBlurIntensity * 0.3, 2)}px)` : 'none'
-          }}
-        >
-          <CompactCardDetails 
-            card={props.card}
-            effectValues={props.effectValues}
-            selectedScene={props.selectedScene}
-            selectedLighting={props.selectedLighting}
-            materialSettings={props.materialSettings}
-            overallBrightness={props.overallBrightness}
-            interactiveLighting={props.interactiveLighting}
-          />
-        </div>
+      {/* Header */}
+      <ViewerHeader
+        onClose={props.onClose}
+        showStudioButton={!props.shouldShowPanel}
+        onOpenStudio={props.onOpenStudio}
+      />
 
-        {/* Basic Controls with AR-aware styling */}
-        <div 
-          className={`absolute bottom-4 left-4 transition-all duration-300 z-20 pointer-events-auto ${
-            props.isHoveringControls ? 'opacity-100' : 'opacity-80'
-          } ${isARMode ? 'opacity-75' : ''}`}
-          style={{
-            filter: isARMode ? `blur(${Math.min(backgroundBlurIntensity * 0.2, 1)}px)` : 'none'
-          }}
-        >
-          <ViewerControls
-            showEffects={props.showEffects}
-            autoRotate={props.autoRotate}
-            onToggleEffects={props.onToggleEffects}
-            onToggleAutoRotate={props.onToggleAutoRotate}
-            onReset={props.onResetWithEffects}
-            onZoomIn={props.onZoomIn}
-            onZoomOut={props.onZoomOut}
-          />
-        </div>
-
-        {/* Card Navigation Controls with AR-aware styling */}
-        <div
-          className={`transition-all duration-300 ${isARMode ? 'opacity-75' : 'opacity-100'}`}
-          style={{
-            filter: isARMode ? `blur(${Math.min(backgroundBlurIntensity * 0.2, 1)}px)` : 'none'
-          }}
-        >
-          <CardNavigationHandler
-            cards={props.cards}
-            currentCardIndex={props.currentCardIndex}
-            onCardChange={props.onCardChange}
-            setIsFlipped={props.setIsFlipped}
-          />
-        </div>
-
-        {/* Info Panel with AR-aware styling */}
-        <div
-          className={`transition-all duration-300 ${isARMode ? 'opacity-70' : 'opacity-100'}`}
-          style={{
-            filter: isARMode ? `blur(${Math.min(backgroundBlurIntensity * 0.3, 2)}px)` : 'none'
-          }}
-        >
-          <ViewerInfoPanel
-            showStats={props.showStats}
-            isFlipped={props.isFlipped}
-            shouldShowPanel={props.shouldShowPanel}
-            hasMultipleCards={props.hasMultipleCards}
-          />
-        </div>
-      </ARBackgroundLayer>
-
-      {/* Main Card Display - Enhanced with AR Physics */}
+      {/* Main Card Display - Enhanced with 360° Physics */}
       <div 
         ref={props.cardContainerRef} 
         className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
@@ -243,6 +152,48 @@ export const ImmersiveViewerLayout: React.FC<ImmersiveViewerLayoutProps> = (prop
           />
         </div>
       </div>
+
+      {/* Compact Card Details */}
+      <div className="absolute bottom-20 left-4 z-20 select-none pointer-events-auto">
+        <CompactCardDetails 
+          card={props.card}
+          effectValues={props.effectValues}
+          selectedScene={props.selectedScene}
+          selectedLighting={props.selectedLighting}
+          materialSettings={props.materialSettings}
+          overallBrightness={props.overallBrightness}
+          interactiveLighting={props.interactiveLighting}
+        />
+      </div>
+
+      {/* Basic Controls */}
+      <div className={`absolute bottom-4 left-4 transition-opacity duration-200 z-20 pointer-events-auto ${props.isHoveringControls ? 'opacity-100' : 'opacity-80'}`}>
+        <ViewerControls
+          showEffects={props.showEffects}
+          autoRotate={props.autoRotate}
+          onToggleEffects={props.onToggleEffects}
+          onToggleAutoRotate={props.onToggleAutoRotate}
+          onReset={props.onResetWithEffects}
+          onZoomIn={props.onZoomIn}
+          onZoomOut={props.onZoomOut}
+        />
+      </div>
+
+      {/* Card Navigation Controls */}
+      <CardNavigationHandler
+        cards={props.cards}
+        currentCardIndex={props.currentCardIndex}
+        onCardChange={props.onCardChange}
+        setIsFlipped={props.setIsFlipped}
+      />
+
+      {/* Info Panel */}
+      <ViewerInfoPanel
+        showStats={props.showStats}
+        isFlipped={props.isFlipped}
+        shouldShowPanel={props.shouldShowPanel}
+        hasMultipleCards={props.hasMultipleCards}
+      />
     </div>
   );
 };
