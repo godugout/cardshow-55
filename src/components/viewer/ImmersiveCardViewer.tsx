@@ -9,7 +9,7 @@ import { ViewerControls } from './components/ViewerControls';
 import { StudioFooter } from './components/studio/StudioFooter';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
 import { BackgroundRenderer } from './components/BackgroundRenderer';
-import { ImmersiveViewerLayout } from './components/ImmersiveViewerLayout';
+import { ViewerHeader } from './components/ViewerHeader';
 import { toast } from 'sonner';
 
 interface ImmersiveCardViewerProps {
@@ -19,7 +19,7 @@ interface ImmersiveCardViewerProps {
   onCardChange?: (index: number) => void;
   isOpen: boolean;
   onClose: () => void;
-  onShare?: (card: CardData) => void;
+  onShare?: () => void;
   onDownload?: () => void;
   allowRotation?: boolean;
   showStats?: boolean;
@@ -97,12 +97,16 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <ImmersiveViewerLayout
-      onClose={onClose}
-      showCustomizePanel={viewerState.showCustomizePanel}
-      onToggleCustomizePanel={() => viewerState.setShowCustomizePanel(prev => !prev)}
-      backgroundType={viewerState.backgroundType}
-    >
+    <div className={`fixed inset-0 z-50 bg-black/90 flex items-center justify-center select-none ${
+      isFullscreen ? 'p-0' : 'p-8'
+    }`}>
+      {/* Header */}
+      <ViewerHeader
+        onClose={onClose}
+        showStudioButton={!viewerState.showCustomizePanel}
+        onOpenStudio={() => viewerState.setShowCustomizePanel(true)}
+      />
+
       {/* Main 3D Scene */}
       <div className="relative w-full h-full">
         <Canvas
@@ -144,13 +148,14 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
           />
         </Canvas>
 
-        {/* Background Renderer */}
-        <BackgroundRenderer
-          backgroundType={viewerState.backgroundType}
-          selectedScene={viewerState.selectedScene}
-          overallBrightness={viewerState.overallBrightness}
-          className="absolute inset-0 -z-10"
-        />
+        {/* Background Renderer - Fixed: removed className prop */}
+        <div className="absolute inset-0 -z-10">
+          <BackgroundRenderer
+            backgroundType={viewerState.backgroundType}
+            selectedScene={viewerState.selectedScene}
+            overallBrightness={viewerState.overallBrightness}
+          />
+        </div>
 
         {/* Viewer Controls */}
         <ViewerControls
@@ -174,15 +179,14 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         </div>
       </div>
 
-      {/* Export Dialog */}
+      {/* Export Dialog - Fixed: removed card prop */}
       {viewerState.showExportDialog && (
         <ExportOptionsDialog
           isOpen={viewerState.showExportDialog}
           onClose={() => viewerState.setShowExportDialog(false)}
-          card={card}
           canvasRef={canvasRef}
         />
       )}
-    </ImmersiveViewerLayout>
+    </div>
   );
 };
