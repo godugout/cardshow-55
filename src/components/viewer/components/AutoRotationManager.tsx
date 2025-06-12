@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface AutoRotationManagerProps {
   autoRotate: boolean;
@@ -13,15 +13,21 @@ export const AutoRotationManager: React.FC<AutoRotationManagerProps> = ({
   setRotation
 }) => {
   const animationRef = useRef<number>();
+  const rotationRef = useRef({ x: 0, y: 0 });
 
   // Auto-rotation effect
   useEffect(() => {
     if (autoRotate && !isDragging) {
       const animate = () => {
-        setRotation(prev => ({
+        // Update the rotation values
+        rotationRef.current = {
           x: Math.sin(Date.now() * 0.0005) * 10,
-          y: prev.y + 0.5
-        }));
+          y: rotationRef.current.y + 0.5
+        };
+        
+        // Pass the direct rotation object
+        setRotation(rotationRef.current);
+        
         animationRef.current = requestAnimationFrame(animate);
       };
       animationRef.current = requestAnimationFrame(animate);
