@@ -46,16 +46,18 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   // Use throttled mouse position for smoother performance
   const { mousePosition: throttledMousePosition, updateMousePosition } = useThrottledMousePosition(16);
 
   console.log('EnhancedCardCanvas rendering with flip handler:', !!onCardFlip);
 
-  // Handle card flip on double-click/tap - use parent's flip handler
+  // Handle card flip on double-click/tap with internal state
   const handleDoubleClick = useDoubleClick({
     onDoubleClick: () => {
-      console.log('🎯 Double-click detected - calling parent flip handler');
+      console.log('🎯 Double-click detected - flipping card');
+      setIsFlipped(prev => !prev);
       if (onCardFlip) {
         onCardFlip();
       }
@@ -131,10 +133,10 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         />
       </div>
 
-      {/* Enhanced Card Container - Remove internal flip state */}
+      {/* Enhanced Card Container */}
       <EnhancedCardContainer
         card={card}
-        isFlipped={false} // Let parent handle flip state
+        isFlipped={isFlipped}
         isHovering={isHovering}
         showEffects={true}
         effectValues={effectValues}

@@ -1,5 +1,5 @@
 
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { ENHANCED_VISUAL_EFFECTS } from './effects/effectConfigs';
 import { usePresetApplication } from './effects/usePresetApplication';
 import { useEffectStateManager } from './effects/useEffectStateManager';

@@ -1,3 +1,4 @@
+
 import { ENHANCED_VISUAL_EFFECTS } from './effectConfigs';
 import type { EffectValues } from './types';
 
@@ -68,6 +69,40 @@ export const createDefaultEffectValues = (): EffectValues => {
   return initialValues;
 };
 
+// Enhanced effect intensity calculation with physics
+export const calculateEffectIntensity = (
+  effectId: string, 
+  parameterId: string, 
+  baseValue: number, 
+  mousePosition: { x: number; y: number },
+  materialSettings?: { metalness: number; roughness: number }
+): number => {
+  if (typeof baseValue !== 'number') return baseValue;
+  
+  // Apply physics-based modulation based on mouse position
+  const lightAngle = Math.atan2(mousePosition.y - 0.5, mousePosition.x - 0.5) * (180 / Math.PI);
+  const lightDistance = Math.sqrt(Math.pow(mousePosition.x - 0.5, 2) + Math.pow(mousePosition.y - 0.5, 2));
+  
+  let modulation = 1.0;
+  
+  if (materialSettings && (effectId === 'chrome' || effectId === 'gold')) {
+    // Apply realistic metallic reflection
+    modulation = EFFECT_PHYSICS.metallicReflection(
+      materialSettings.metalness, 
+      materialSettings.roughness, 
+      lightAngle
+    );
+  } else if (effectId === 'holographic' || effectId === 'prizm') {
+    // Apply holographic diffraction
+    modulation = 1.0 + EFFECT_PHYSICS.holographicDiffraction(lightAngle, 3) * 0.3;
+  } else if (effectId === 'foilspray') {
+    // Apply light scattering
+    modulation = 1.0 + EFFECT_PHYSICS.rayleighScattering(50, lightDistance) * 0.5;
+  }
+  
+  return baseValue * Math.max(0.5, Math.min(1.5, modulation));
+};
+
 // Enhanced effect intensity clamping for smooth transitions with starlight optimization
 export const clampEffectValue = (effectId: string, parameterId: string, value: number | boolean | string): number | boolean | string => {
   if (typeof value !== 'number') return value;
@@ -126,6 +161,67 @@ export const createStarlightPreset = (): EffectValues => {
       intensity: 35, 
       complexity: 4, 
       colorSeparation: 50 
+    }
+  };
+};
+
+// Professional presets for studio panel
+export const createProfessionalPresets = () => {
+  return {
+    studio: {
+      name: "Studio Classic",
+      description: "Professional studio lighting with subtle effects",
+      effects: {
+        foilspray: { intensity: 25, density: 60, direction: 45 },
+        prizm: { intensity: 15, complexity: 3, colorSeparation: 40 }
+      }
+    },
+    dramatic: {
+      name: "Dramatic Gold",
+      description: "High-contrast lighting with gold accents",
+      effects: {
+        gold: { intensity: 45 },
+        chrome: { intensity: 25 }
+      }
+    },
+    holographic: {
+      name: "Holographic Dream",
+      description: "Futuristic holographic effects",
+      effects: {
+        holographic: { intensity: 60 },
+        prizm: { intensity: 40, complexity: 6, colorSeparation: 70 }
+      }
+    },
+    natural: {
+      name: "Natural Light",
+      description: "Soft, natural lighting with minimal effects",
+      effects: {
+        foilspray: { intensity: 10, density: 30, direction: 90 }
+      }
+    }
+  };
+};
+
+// Studio lighting calculations
+export const calculateStudioLighting = (mousePosition: { x: number; y: number }) => {
+  const lightAngle = Math.atan2(mousePosition.y - 0.5, mousePosition.x - 0.5) * (180 / Math.PI);
+  const lightDistance = Math.sqrt(Math.pow(mousePosition.x - 0.5, 2) + Math.pow(mousePosition.y - 0.5, 2));
+  
+  return {
+    keyLight: {
+      intensity: 0.8 + lightDistance * 0.2,
+      angle: lightAngle,
+      color: '#ffffff'
+    },
+    fillLight: {
+      intensity: 0.4 + (1 - lightDistance) * 0.2,
+      angle: lightAngle + 120,
+      color: '#f0f0f0'
+    },
+    rimLight: {
+      intensity: 0.6 + Math.sin(lightAngle * Math.PI / 180) * 0.3,
+      angle: lightAngle + 240,
+      color: '#e0e0ff'
     }
   };
 };

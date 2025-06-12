@@ -6,6 +6,7 @@ import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../type
 import { CardContainer3D } from './CardContainer3D';
 import { GripFeedback } from './GripFeedback';
 import { RotationIndicator } from './RotationIndicator';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
 
 interface SimplifiedEnhancedCardContainerProps {
   card: CardData;
@@ -85,33 +86,31 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
     }, 0);
   }, [effectValues]);
 
+  // Enhanced double-click handler for card flip
+  const handleDoubleClick = useDoubleClick({
+    onDoubleClick: () => {
+      console.log('🎯 Double-click detected - flipping card');
+      setLocalIsFlipped(prev => !prev);
+      onClick();
+    },
+    delay: 300
+  });
+
   // Enhanced mouse down handler with smart click detection preparation
   const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     onMouseDown(e);
   }, [onMouseDown]);
 
-  // Enhanced click handler with smart detection
-  const handleClick = React.useCallback((e: React.MouseEvent) => {
-    const wasClick = physicsState?.dragDistance < 5;
-    
-    if (wasClick) {
-      console.log('🎯 Smart click detected - flipping card');
-      setLocalIsFlipped(prev => !prev);
-      onClick();
-    }
-  }, [physicsState?.dragDistance, onClick]);
-
   // Create a no-parameter version for CardContainer3D
   const handleCardClick = React.useCallback(() => {
-    const wasClick = physicsState?.dragDistance < 5;
+    const wasClick = !physicsState || physicsState?.dragDistance < 5;
     
     if (wasClick) {
-      console.log('🎯 Smart click detected - flipping card');
-      setLocalIsFlipped(prev => !prev);
-      onClick();
+      console.log('🎯 Smart click detected - triggering double-click handler');
+      handleDoubleClick();
     }
-  }, [physicsState?.dragDistance, onClick]);
+  }, [physicsState?.dragDistance, handleDoubleClick]);
 
   // Enhanced touch handlers for mobile support
   const handleTouchStart = React.useCallback((e: React.TouchEvent) => {
@@ -172,7 +171,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      onClick={handleClick}
+      onClick={handleDoubleClick}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -231,7 +230,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
       {/* Enhanced interaction hints */}
       {!isDragging && isHovering && (
         <div className="absolute bottom-2 right-2 text-xs text-white/40 font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
-          Click to flip • Drag/Swipe to rotate • High sensitivity enabled
+          Double-click to flip • Drag/Swipe to rotate • High sensitivity enabled
         </div>
       )}
     </div>

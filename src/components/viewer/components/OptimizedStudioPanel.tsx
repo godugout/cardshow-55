@@ -29,6 +29,13 @@ interface OptimizedStudioPanelProps {
   onExport: () => void;
 }
 
+// Type for preset structure
+interface PresetData {
+  name: string;
+  description: string;
+  effects: EffectValues;
+}
+
 export const OptimizedStudioPanel: React.FC<OptimizedStudioPanelProps> = ({
   isVisible,
   onClose,
@@ -57,8 +64,8 @@ export const OptimizedStudioPanel: React.FC<OptimizedStudioPanelProps> = ({
     };
   }, [effectValues]);
 
-  // Professional presets
-  const presets = useMemo(() => createProfessionalPresets(), []);
+  // Professional presets with proper typing
+  const presets = useMemo(() => createProfessionalPresets() as Record<string, PresetData>, []);
 
   // Studio lighting calculation
   const studioLighting = useMemo(() => 
