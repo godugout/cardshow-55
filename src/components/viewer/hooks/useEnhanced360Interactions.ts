@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAdvancedPhysicsCardInteraction } from './useAdvancedPhysicsCardInteraction';
 
@@ -114,19 +115,22 @@ export const useEnhanced360Interactions = ({
     // Use enhanced physics drag end - handle potential void return
     const dragResult = physicsDragEnd();
     
-    // Check if we got a valid result with better type narrowing
-    if (dragResult && typeof dragResult === 'object' && 'isClick' in dragResult && 'dragDistance' in dragResult) {
-      // We have a valid result object with proper typing
-      if (dragResult.isClick) {
-        // Hide immediately for clicks
-        setRotationIndicator(prev => ({ ...prev, show: false }));
-      } else {
-        // Hide after delay for drags to show final rotation
-        setTimeout(() => {
+    // First check if dragResult is not void/undefined
+    if (dragResult !== undefined) {
+      // Now check if it's an object with the expected properties
+      if (typeof dragResult === 'object' && dragResult !== null && 'isClick' in dragResult && 'dragDistance' in dragResult) {
+        // We have a valid result object with proper typing
+        if (dragResult.isClick) {
+          // Hide immediately for clicks
           setRotationIndicator(prev => ({ ...prev, show: false }));
-        }, 1200);
+        } else {
+          // Hide after delay for drags to show final rotation
+          setTimeout(() => {
+            setRotationIndicator(prev => ({ ...prev, show: false }));
+          }, 1200);
+        }
+        return dragResult;
       }
-      return dragResult;
     }
     
     // Fallback - hide after delay if we can't determine click status
