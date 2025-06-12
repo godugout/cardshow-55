@@ -2,55 +2,50 @@
 import React from 'react';
 
 interface Card3DTransformProps {
+  children: React.ReactNode;
   rotation: { x: number; y: number };
   mousePosition: { x: number; y: number };
   isDragging: boolean;
   interactiveLighting?: boolean;
   isHovering: boolean;
   onClick: () => void;
-  children: React.ReactNode;
 }
 
 export const Card3DTransform: React.FC<Card3DTransformProps> = ({
+  children,
   rotation,
   mousePosition,
   isDragging,
   interactiveLighting = false,
   isHovering,
-  onClick,
-  children
+  onClick
 }) => {
-  const handleDoubleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onClick();
+  // Calculate dynamic transform
+  const getDynamicTransform = () => {
+    let baseTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+    
+    // Add subtle interactive lighting-based depth effect
+    if (interactiveLighting && isHovering) {
+      const lightDepth = (mousePosition.x - 0.5) * 2; // -1 to 1
+      const additionalRotateY = lightDepth * 2; // Max 2 degrees
+      baseTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y + additionalRotateY}deg)`;
+    }
+    
+    return baseTransform;
   };
 
-  const transform3D = `
-    perspective(1000px)
-    rotateX(${rotation.x}deg) 
-    rotateY(${rotation.y}deg)
-    translateZ(${isHovering ? '20px' : '0px'})
-  `;
-
   return (
-    <div 
-      className="relative preserve-3d cursor-pointer"
+    <div
+      className="relative"
       style={{
-        transform: transform3D,
-        transition: isDragging ? 'none' : 'transform 0.3s ease-out',
+        width: '400px',
+        height: '560px',
+        transform: getDynamicTransform(),
         transformStyle: 'preserve-3d',
+        transition: isDragging ? 'none' : 'transform 0.1s ease',
+        filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`
       }}
-      onDoubleClick={handleDoubleClick}
-      onClick={(e) => {
-        // Only trigger on single click, not double click
-        if (e.detail === 1) {
-          setTimeout(() => {
-            if (e.detail === 1) {
-              // This was a single click
-            }
-          }, 200);
-        }
-      }}
+      onClick={onClick}
     >
       {children}
     </div>
