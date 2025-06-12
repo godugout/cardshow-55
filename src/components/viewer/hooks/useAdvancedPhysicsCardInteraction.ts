@@ -50,15 +50,15 @@ export const useAdvancedPhysicsCardInteraction = ({
     dragStartTime: 0
   });
 
-  // Enhanced physics constants for better responsiveness
+  // Enhanced physics constants for better responsiveness AND expanded vertical range
   const DAMPING = 0.88; // Reduced for more immediate response
   const ANGULAR_DAMPING = 0.90;
-  const SPRING_STRENGTH = 0.15;
+  const SPRING_STRENGTH = 0.08; // Reduced from 0.15 for less aggressive spring-back
   const VELOCITY_MULTIPLIER = 1.8; // Increased from 0.8 for much better sensitivity
   const ANGULAR_VELOCITY_MULTIPLIER = 2.2; // Enhanced angular response
   const MIN_VELOCITY = 0.008; // Slightly lower threshold
   const GRIP_SENSITIVITY = 1.4;
-  const MAX_ROTATION_X = 35;
+  const MAX_ROTATION_X = 75; // Increased from 35 for much more vertical movement
   const MAX_ROTATION_Y = 180;
   const CLICK_THRESHOLD = 5; // Pixels - movement below this is considered a click
   const CLICK_TIME_THRESHOLD = 300; // ms - max time for a click
@@ -104,14 +104,14 @@ export const useAdvancedPhysicsCardInteraction = ({
         y: prev.angularVelocity.y * ANGULAR_DAMPING
       };
 
-      // Apply enhanced velocity to rotation
+      // Apply enhanced velocity to rotation with expanded range
       const targetRotation = {
         x: Math.max(-MAX_ROTATION_X, Math.min(MAX_ROTATION_X, rotation.x + newAngularVelocity.x * deltaTime)),
         y: rotation.y + newAngularVelocity.y * deltaTime
       };
 
-      // Enhanced spring back for X-axis
-      const springBackX = -rotation.x * SPRING_STRENGTH * 0.4;
+      // Gentler spring back for X-axis with reduced strength
+      const springBackX = -rotation.x * SPRING_STRENGTH * 0.2; // Reduced from 0.4
       const finalRotation = {
         x: targetRotation.x + springBackX,
         y: targetRotation.y
@@ -179,7 +179,7 @@ export const useAdvancedPhysicsCardInteraction = ({
         y: velocity.x * ANGULAR_VELOCITY_MULTIPLIER
       };
 
-      // Apply immediate rotation for responsive feel
+      // Apply immediate rotation for responsive feel with expanded range
       const newRotation = {
         x: Math.max(-MAX_ROTATION_X, Math.min(MAX_ROTATION_X, rotation.x + angularVelocity.x * 0.1)),
         y: rotation.y + angularVelocity.y * 0.1
@@ -211,7 +211,7 @@ export const useAdvancedPhysicsCardInteraction = ({
       y: (e.clientY - rect.top) / rect.height
     };
 
-    console.log('🎯 Enhanced physics drag started with improved sensitivity');
+    console.log('🎯 Enhanced physics drag started with expanded vertical range (±75°)');
     
     setIsDragging(true);
     setAutoRotate(false);
@@ -237,11 +237,12 @@ export const useAdvancedPhysicsCardInteraction = ({
     const dragDuration = dragEndTime - physicsState.dragStartTime;
     const isClick = physicsState.dragDistance < CLICK_THRESHOLD && dragDuration < CLICK_TIME_THRESHOLD;
     
-    console.log('🎯 Enhanced physics drag ended:', {
+    console.log('🎯 Enhanced physics drag ended with expanded range:', {
       isClick,
       dragDistance: physicsState.dragDistance,
       dragDuration,
-      momentum: physicsState.angularVelocity
+      momentum: physicsState.angularVelocity,
+      maxRotationX: MAX_ROTATION_X
     });
     
     setIsDragging(false);
