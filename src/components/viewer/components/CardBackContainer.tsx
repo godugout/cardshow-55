@@ -30,36 +30,38 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
   
-  // Simplified visibility calculation with better angle ranges
+  // Expanded visibility calculation with better angle ranges
   const getVisibility = () => {
     // Normalize rotation to 0-360 range
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
     
-    // Back is visible from 135° to 225° (centered at 180°)
-    const isBackVisible = normalizedRotation >= 135 && normalizedRotation <= 225;
+    // Back is visible from 90° to 270° (expanded range for better coverage)
+    const isBackVisible = normalizedRotation >= 90 && normalizedRotation <= 270;
     
-    // Debug logging
-    console.log('🔄 Card Back - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isBackVisible);
+    // Enhanced debug logging
+    console.log('🔄 Card Back - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isBackVisible, 'Material:', selectedMaterial.name);
     
     if (!isBackVisible) {
       return { opacity: 0, zIndex: 5, display: 'none' as const };
     }
     
-    // Calculate smooth opacity transitions at edges
+    // Calculate smooth opacity transitions with longer fade ranges
     let opacity = 1;
-    const fadeRange = 15; // 15 degrees fade at each edge
+    const fadeRange = 30; // Increased from 15 to 30 degrees for smoother transitions
     
-    if (normalizedRotation >= 135 && normalizedRotation <= 135 + fadeRange) {
-      // Fade in from 135° to 150°
-      opacity = (normalizedRotation - 135) / fadeRange;
-    } else if (normalizedRotation >= 225 - fadeRange && normalizedRotation <= 225) {
-      // Fade out from 210° to 225°
-      opacity = (225 - normalizedRotation) / fadeRange;
+    if (normalizedRotation >= 90 && normalizedRotation <= 90 + fadeRange) {
+      // Fade in from 90° to 120°
+      opacity = (normalizedRotation - 90) / fadeRange;
+      console.log('🔄 Card Back - Fade in:', opacity.toFixed(2));
+    } else if (normalizedRotation >= 270 - fadeRange && normalizedRotation <= 270) {
+      // Fade out from 240° to 270°
+      opacity = (270 - normalizedRotation) / fadeRange;
+      console.log('🔄 Card Back - Fade out:', opacity.toFixed(2));
     }
     
     return { 
       opacity: Math.max(0.1, opacity),
-      zIndex: opacity > 0.5 ? 25 : 15, // Higher z-index when more visible
+      zIndex: opacity > 0.3 ? 25 : 15, // Higher z-index when more visible
       display: 'block' as const
     };
   };
@@ -71,14 +73,18 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
     return null;
   }
   
-  // Enhanced logo effects based on mouse position, lighting, and material
+  // Enhanced logo effects with proper flipping for back face
   const getLogoEffects = () => {
     const baseTreatment = selectedMaterial.logoTreatment;
+    
+    // Always flip the logo horizontally on the back face to correct mirroring
+    const logoFlipTransform = 'scaleX(-1)';
+    console.log('🔄 Logo Transform - Applying flip for back face');
     
     if (!interactiveLighting || !isHovering) {
       return {
         filter: baseTreatment.filter,
-        transform: baseTreatment.transform,
+        transform: `${logoFlipTransform} ${baseTreatment.transform}`,
         opacity: baseTreatment.opacity,
         userSelect: 'none' as const,
         WebkitUserSelect: 'none' as const,
@@ -98,7 +104,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         brightness(${1 + intensity * 0.3})
         contrast(${1.1 + intensity * 0.2})
       `,
-      transform: `${baseTreatment.transform} scale(${1 + intensity * 0.05})`,
+      transform: `${logoFlipTransform} ${baseTreatment.transform} scale(${1 + intensity * 0.05})`,
       opacity: baseTreatment.opacity + intensity * 0.1,
       userSelect: 'none' as const,
       WebkitUserSelect: 'none' as const,
@@ -135,6 +141,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       data-material={selectedMaterial.id}
       data-material-name={selectedMaterial.name}
       data-visibility={backOpacity > 0.1 ? 'visible' : 'hidden'}
+      data-back-rotation={rotation.y.toFixed(1)}
     >
       {/* Back Effects Layer */}
       <CardEffectsLayer
@@ -186,7 +193,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         }}
       />
 
-      {/* Enhanced CRD Logo with Dynamic Material Treatment */}
+      {/* Enhanced CRD Logo with Proper Flipping for Back Face */}
       <div 
         className="relative h-full flex items-center justify-center z-30"
         style={{
@@ -207,8 +214,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
             animation: interactiveLighting && isHovering ? 'logo-glow-pulse 4s ease-in-out infinite' : 'none',
             backfaceVisibility: 'hidden'
           }}
-          onLoad={() => console.log('✅ Enhanced CRD logo loaded successfully')}
-          onError={() => console.log('❌ Error loading enhanced CRD logo')}
+          onLoad={() => console.log('✅ Enhanced CRD logo loaded successfully (back face)')}
+          onError={() => console.log('❌ Error loading enhanced CRD logo (back face)')}
           draggable={false}
         />
       </div>
