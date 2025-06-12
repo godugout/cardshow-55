@@ -115,8 +115,8 @@ export const useEnhanced360Interactions = ({
     // Use enhanced physics drag end - handle potential void return
     const dragResult = physicsDragEnd();
     
-    // Enhanced rotation indicator management - safely handle return value
-    if (dragResult && typeof dragResult === 'object' && 'isClick' in dragResult && 'dragDistance' in dragResult) {
+    // Check if we got a valid result (not void/undefined)
+    if (dragResult !== undefined && dragResult !== null && typeof dragResult === 'object' && 'isClick' in dragResult && 'dragDistance' in dragResult) {
       // We have a valid result object
       if (dragResult.isClick) {
         // Hide immediately for clicks
