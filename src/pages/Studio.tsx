@@ -41,8 +41,8 @@ const Studio = () => {
           onCardChange={handleCardChange}
           isOpen={true}
           onClose={handleClose}
-          onShare={handleShare}
-          onDownload={handleDownload}
+          onShare={() => handleShare(selectedCard)}
+          onDownload={() => handleDownload(selectedCard)}
           allowRotation={true}
           showStats={true}
           ambient={true}

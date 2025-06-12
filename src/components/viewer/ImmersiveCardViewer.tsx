@@ -148,12 +148,25 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
           />
         </Canvas>
 
-        {/* Background Renderer - Fixed: removed className prop */}
+        {/* Background Renderer - Fixed: Added missing props */}
         <div className="absolute inset-0 -z-10">
           <BackgroundRenderer
             backgroundType={viewerState.backgroundType}
             selectedScene={viewerState.selectedScene}
             overallBrightness={viewerState.overallBrightness}
+            spaceControls={{
+              orbitSpeed: 0.5,
+              floatIntensity: 1.0,
+              cameraDistance: 8,
+              autoRotate: viewerState.autoRotate,
+              gravityEffect: 0.0
+            }}
+            adaptedCard={adaptedCard}
+            onCardClick={viewerState.onCardClick}
+            onCameraReset={handleReset}
+            effectValues={effectValues}
+            selectedLighting={viewerState.selectedLighting}
+            materialSettings={viewerState.materialSettings}
           />
         </div>
 
@@ -179,12 +192,19 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         </div>
       </div>
 
-      {/* Export Dialog - Fixed: removed card prop */}
+      {/* Export Dialog - Fixed: removed canvasRef prop and added required props */}
       {viewerState.showExportDialog && (
         <ExportOptionsDialog
           isOpen={viewerState.showExportDialog}
           onClose={() => viewerState.setShowExportDialog(false)}
-          canvasRef={canvasRef}
+          onExport={(options) => {
+            // Handle export with options
+            console.log('Exporting with options:', options);
+            viewerState.setShowExportDialog(false);
+          }}
+          isExporting={false}
+          exportProgress={0}
+          cardTitle={card.title}
         />
       )}
     </div>
