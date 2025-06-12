@@ -4,8 +4,10 @@ import { TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Star, Users } from 'lucide-react';
 import { CardGrid } from './CardGrid';
+import type { Tables } from '@/integrations/supabase/types';
 
 type ViewMode = 'feed' | 'grid' | 'masonry';
+type DbCard = Tables<'cards'>;
 
 interface CardData {
   id: string;
@@ -14,6 +16,12 @@ interface CardData {
   image_url?: string;
   thumbnail_url?: string;
   price?: string;
+  rarity?: string;
+  tags?: string[];
+  visibility?: string;
+  is_public?: boolean;
+  created_at: string;
+  series?: string;
 }
 
 interface CardsTabContentProps {
@@ -25,6 +33,33 @@ interface CardsTabContentProps {
   onClearFilters: () => void;
 }
 
+// Helper function to convert CardData to DbCard format
+const convertToDbCard = (card: CardData): DbCard => {
+  return {
+    id: card.id,
+    title: card.title,
+    description: card.description || '',
+    image_url: card.image_url || '',
+    thumbnail_url: card.thumbnail_url || null,
+    price: card.price ? parseFloat(card.price) : null,
+    rarity: (card.rarity as any) || 'common',
+    tags: card.tags || [],
+    visibility: (card.visibility as any) || 'public',
+    is_public: card.is_public ?? true,
+    created_at: card.created_at,
+    updated_at: card.created_at,
+    series: card.series || null,
+    creator_id: '',
+    design_metadata: {},
+    print_metadata: {},
+    edition_number: null,
+    marketplace_listing: false,
+    template_id: null,
+    total_supply: null,
+    verification_status: 'pending'
+  } as DbCard;
+};
+
 export const CardsTabContent: React.FC<CardsTabContentProps> = ({
   activeTab,
   filteredCards,
@@ -33,11 +68,14 @@ export const CardsTabContent: React.FC<CardsTabContentProps> = ({
   user,
   onClearFilters
 }) => {
+  // Convert CardData to DbCard format for CardGrid
+  const dbCards = filteredCards.map(convertToDbCard);
+
   return (
     <>
       <TabsContent value="forYou">
         <CardGrid 
-          cards={filteredCards} 
+          cards={dbCards} 
           loading={cardsLoading} 
           viewMode={viewMode}
         />

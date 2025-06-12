@@ -7,6 +7,9 @@ import { MemoryCard } from '@/components/memory/MemoryCard';
 import { CardGrid } from '@/components/cards/CardGrid';
 import { Loader, Image } from 'lucide-react';
 import type { Memory } from '@/types/memory';
+import type { Tables } from '@/integrations/supabase/types';
+
+type DbCard = Tables<'cards'>;
 
 interface ProfileTabsProps {
   activeTab: string;
@@ -17,6 +20,33 @@ interface ProfileTabsProps {
   onLoadMore: () => void;
 }
 
+// Helper function to convert Memory with card properties to DbCard format
+const convertMemoryToDbCard = (memory: Memory): DbCard => {
+  return {
+    id: memory.id,
+    title: memory.title,
+    description: memory.description || '',
+    image_url: '',
+    thumbnail_url: null,
+    price: null,
+    rarity: 'common',
+    tags: memory.tags || [],
+    visibility: memory.visibility as any,
+    is_public: memory.visibility === 'public',
+    created_at: memory.createdAt,
+    updated_at: memory.createdAt,
+    series: null,
+    creator_id: memory.userId,
+    design_metadata: memory.metadata || {},
+    print_metadata: {},
+    edition_number: null,
+    marketplace_listing: false,
+    template_id: null,
+    total_supply: null,
+    verification_status: 'pending'
+  } as DbCard;
+};
+
 export const ProfileTabs = ({ 
   activeTab, 
   setActiveTab, 
@@ -26,17 +56,20 @@ export const ProfileTabs = ({
   onLoadMore 
 }: ProfileTabsProps) => {
   // Separate cards from memories based on the presence of card-specific fields
-  const cards = memories.filter(item => 
+  const cardMemories = memories.filter(item => 
     'rarity' in item || 'design_metadata' in item || 'creator_id' in item
   );
   const actualMemories = memories.filter(item => 
     !('rarity' in item) && !('design_metadata' in item) && !('creator_id' in item)
   );
 
+  // Convert card-like memories to DbCard format
+  const dbCards = cardMemories.map(convertMemoryToDbCard);
+
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList className="mb-6">
-        <TabsTrigger value="memories">My Cards ({cards.length})</TabsTrigger>
+        <TabsTrigger value="memories">My Cards ({dbCards.length})</TabsTrigger>
         <TabsTrigger value="collections">Collections</TabsTrigger>
         <TabsTrigger value="liked">Liked</TabsTrigger>
       </TabsList>
@@ -48,7 +81,7 @@ export const ProfileTabs = ({
               <div key={item} className="h-64 animate-pulse bg-gray-100 rounded-lg"></div>
             ))}
           </div>
-        ) : cards.length === 0 ? (
+        ) : dbCards.length === 0 ? (
           <div className="text-center py-16">
             <Image className="h-12 w-12 mx-auto text-gray-300 mb-4" />
             <h3 className="text-xl font-medium mb-2">No cards yet</h3>
@@ -60,7 +93,7 @@ export const ProfileTabs = ({
         ) : (
           <>
             <CardGrid 
-              cards={cards} 
+              cards={dbCards} 
               loading={memoriesLoading} 
               viewMode="grid" 
             />
