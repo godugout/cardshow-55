@@ -6,6 +6,7 @@ import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../type
 import { CardContainer3D } from './CardContainer3D';
 import { GripFeedback } from './GripFeedback';
 import { RotationIndicator } from './RotationIndicator';
+import { useAREffects } from '../hooks/useAREffects';
 
 interface SimplifiedEnhancedCardContainerProps {
   card: CardData;
@@ -62,15 +63,27 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
 }) => {
   const [localIsFlipped, setLocalIsFlipped] = React.useState(isFlipped);
 
-  console.log('🎯 SimplifiedEnhancedCardContainer rendering with enhanced 360° and smart click detection:', {
-    cardTitle: card.title,
-    cardImage: card.image_url,
-    isFlipped: localIsFlipped,
+  // Use AR effects hook
+  const {
+    isARMode,
+    dynamicZIndex,
+    arTransforms,
+    arShadowEffects,
+    backgroundBlurIntensity,
+    parallaxOffset
+  } = useAREffects({
     zoom,
-    rotation,
-    gripPoint,
-    hasPhysics: !!physicsState,
-    rotationIndicator
+    isHovering,
+    isDragging,
+    rotation
+  });
+
+  console.log('🎯 SimplifiedEnhancedCardContainer rendering with AR effects:', {
+    cardTitle: card.title,
+    isARMode,
+    dynamicZIndex,
+    zoom,
+    backgroundBlurIntensity
   });
 
   const containerWidth = 400;
@@ -126,9 +139,10 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
     <div 
       className={`relative select-none ${getCursorStyle()}`}
       style={{
-        transform: `scale(${zoom})`,
-        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        zIndex: 10,
+        ...arTransforms,
+        ...arShadowEffects,
+        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease-out, box-shadow 0.3s ease-out',
+        zIndex: dynamicZIndex,
         width: `${containerWidth}px`,
         height: `${containerHeight}px`
       }}
@@ -154,7 +168,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         onClick={handleCardClick}
       />
       
-      {/* Enhanced Grip Feedback with improved 360° support */}
+      {/* Enhanced Grip Feedback with AR support */}
       <GripFeedback
         gripPoint={gripPoint}
         isGripping={physicsState?.isGripping || false}
@@ -171,12 +185,23 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
         />
       )}
       
+      {/* AR Mode Indicator */}
+      {isARMode && (
+        <div className="absolute top-2 left-2 z-40 pointer-events-none">
+          <div className="flex items-center space-x-2 bg-crd-primary/20 backdrop-blur-md rounded-lg px-3 py-1 border border-crd-primary/30">
+            <div className="w-2 h-2 bg-crd-primary rounded-full animate-pulse"></div>
+            <span className="text-xs text-crd-primary font-mono">AR MODE</span>
+          </div>
+        </div>
+      )}
+      
       {/* Enhanced Physics Debug Info */}
       {physicsState && isDragging && (
         <div className="absolute bottom-2 left-2 text-xs text-white/60 font-mono bg-black/30 px-2 py-1 rounded backdrop-blur-sm">
           <div>Angular V: {Math.round(physicsState.angularVelocity?.x * 100) || 0}, {Math.round(physicsState.angularVelocity?.y * 100) || 0}</div>
           <div>Sensitivity: {((1 + totalEffectIntensity * 0.3) * 1.8).toFixed(1)}x</div>
           <div>Drag: {Math.round(physicsState.dragDistance || 0)}px</div>
+          {isARMode && <div className="text-crd-primary">AR: {zoom.toFixed(1)}x</div>}
         </div>
       )}
       
@@ -190,9 +215,16 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
       )}
 
       {/* Smart Click Indicator */}
-      {!isDragging && isHovering && (
+      {!isDragging && isHovering && !isARMode && (
         <div className="absolute bottom-2 right-2 text-xs text-white/40 font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
           Click to flip • Drag to rotate
+        </div>
+      )}
+
+      {/* AR Click Indicator */}
+      {!isDragging && isHovering && isARMode && (
+        <div className="absolute bottom-2 right-2 text-xs text-crd-primary/60 font-mono bg-black/30 px-2 py-1 rounded backdrop-blur-sm border border-crd-primary/20">
+          AR Mode Active • Enhanced Controls
         </div>
       )}
     </div>
