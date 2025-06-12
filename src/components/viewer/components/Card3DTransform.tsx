@@ -20,7 +20,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
   isHovering,
   onClick
 }) => {
-  // Calculate dynamic transform
+  // Calculate dynamic transform with expanded Y-axis rotation range
   const getDynamicTransform = () => {
     let baseTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
     

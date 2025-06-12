@@ -5,7 +5,7 @@ import { CardEffectsLayer } from './CardEffectsLayer';
 import { useDynamicCardBackMaterials } from '../hooks/useDynamicCardBackMaterials';
 
 interface CardBackContainerProps {
-  isFlipped: boolean;
+  rotation: { x: number; y: number };
   isHovering: boolean;
   showEffects: boolean;
   effectValues: EffectValues;
@@ -17,7 +17,7 @@ interface CardBackContainerProps {
 }
 
 export const CardBackContainer: React.FC<CardBackContainerProps> = ({
-  isFlipped,
+  rotation,
   isHovering,
   showEffects,
   effectValues,
@@ -29,6 +29,31 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
 }) => {
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
+  
+  // Calculate visibility based on Y rotation angle
+  const getVisibility = () => {
+    // Normalize rotation to 0-360 range
+    const normalizedRotation = ((rotation.y % 360) + 360) % 360;
+    
+    // Back is visible from 135° to 225°
+    const isBackVisible = normalizedRotation >= 135 && normalizedRotation <= 225;
+    
+    // Calculate opacity with smooth transitions
+    let opacity = 0;
+    if (isBackVisible) {
+      if (normalizedRotation >= 135 && normalizedRotation <= 180) {
+        // From 135° to 180°: fade in
+        opacity = (normalizedRotation - 135) / 45;
+      } else if (normalizedRotation >= 180 && normalizedRotation <= 225) {
+        // From 180° to 225°: fade out
+        opacity = 1 - ((normalizedRotation - 180) / 45);
+      }
+    }
+    
+    return Math.max(0, Math.min(1, opacity));
+  };
+
+  const backOpacity = getVisibility();
   
   // Enhanced logo effects based on mouse position, lighting, and material
   const getLogoEffects = () => {
@@ -83,13 +108,11 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
 
   return (
     <div 
-      className={`absolute inset-0 rounded-xl overflow-hidden ${
-        isFlipped ? 'opacity-100' : 'opacity-0'
-      }`}
+      className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
-        transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(-180deg)',
-        transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
-        backfaceVisibility: 'hidden',
+        opacity: backOpacity,
+        transition: 'opacity 0.1s ease',
+        transform: 'rotateY(180deg)',
         ...dynamicFrameStyles
       }}
       data-material={selectedMaterial.id}

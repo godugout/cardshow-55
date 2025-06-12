@@ -6,12 +6,10 @@ import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentCon
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
-import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface EnhancedCardContainerProps {
   card: CardData;
-  isFlipped: boolean;
   isHovering: boolean;
   showEffects: boolean;
   effectValues: EffectValues;
@@ -38,7 +36,6 @@ interface EnhancedCardContainerProps {
 
 export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   card,
-  isFlipped,
   isHovering,
   showEffects,
   effectValues,
@@ -83,12 +80,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     isHovering
   }) : null;
 
-  // Use double-click/tap detection for card flip
-  const handleDoubleClick = useDoubleClick({
-    onDoubleClick: onClick,
-    delay: 300
-  });
-
   // Use cached styles if available, otherwise fall back to provided styles
   const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
   const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
@@ -113,12 +104,12 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         isDragging={isDragging}
         interactiveLighting={interactiveLighting}
         isHovering={isHovering}
-        onClick={handleDoubleClick}
+        onClick={onClick}
       >
         {/* Front of Card */}
         <CardFrontContainer
           card={card}
-          isFlipped={isFlipped}
+          rotation={rotation}
           isHovering={isHovering}
           showEffects={showEffects}
           effectValues={effectValues}
@@ -127,12 +118,12 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
-          onClick={handleDoubleClick}
+          onClick={onClick}
         />
 
         {/* Back of Card */}
         <CardBackContainer
-          isFlipped={isFlipped}
+          rotation={rotation}
           isHovering={isHovering}
           showEffects={showEffects}
           effectValues={effectValues}

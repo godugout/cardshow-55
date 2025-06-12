@@ -47,7 +47,7 @@ export const useViewerInteractions = ({
     hasNavigation: hasMultipleCards
   });
 
-  // Enhanced mouse handling with safe zones
+  // Enhanced mouse handling with increased rotation sensitivity for 360° rotation
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return;
     
@@ -63,9 +63,10 @@ export const useViewerInteractions = ({
       setIsHoveringControls(isInControlsArea);
       
       if (allowRotation && !autoRotate) {
+        // Increased sensitivity for full 360° rotation
         setRotation({
-          x: (y - 0.5) * 20,
-          y: (x - 0.5) * -20
+          x: (y - 0.5) * 40, // Increased from 20 to 40 for more responsive X rotation
+          y: (x - 0.5) * -180 // Increased from -20 to -180 for full Y rotation range
         });
       }
     }
@@ -93,6 +94,7 @@ export const useViewerInteractions = ({
     
     if (allowRotation && !inSafeZone) {
       setIsDragging(true);
+      // Adjusted drag start calculation for increased sensitivity
       setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
       setAutoRotate(false);
     }
@@ -100,9 +102,13 @@ export const useViewerInteractions = ({
 
   const handleDrag = useCallback((e: React.MouseEvent) => {
     if (isDragging && allowRotation) {
+      // Enhanced drag rotation with continuous 360° support
+      const newRotationY = e.clientX - dragStart.x;
+      const newRotationX = e.clientY - dragStart.y;
+      
       setRotation({
-        x: e.clientY - dragStart.y,
-        y: e.clientX - dragStart.x
+        x: Math.max(-90, Math.min(90, newRotationX)), // Limit X rotation to prevent flipping
+        y: newRotationY // Allow full 360° Y rotation
       });
     }
   }, [isDragging, dragStart, allowRotation, setRotation]);

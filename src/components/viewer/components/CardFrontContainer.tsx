@@ -6,7 +6,7 @@ import { CardEffectsLayer } from './CardEffectsLayer';
 
 interface CardFrontContainerProps {
   card: CardData;
-  isFlipped: boolean;
+  rotation: { x: number; y: number };
   isHovering: boolean;
   showEffects: boolean;
   effectValues: EffectValues;
@@ -20,7 +20,7 @@ interface CardFrontContainerProps {
 
 export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   card,
-  isFlipped,
+  rotation,
   isHovering,
   showEffects,
   effectValues,
@@ -31,15 +31,37 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   interactiveLighting = false,
   onClick
 }) => {
+  // Calculate visibility based on Y rotation angle
+  const getVisibility = () => {
+    // Normalize rotation to 0-360 range
+    const normalizedRotation = ((rotation.y % 360) + 360) % 360;
+    
+    // Front is visible from 315° to 45° (spanning 0°)
+    const isFrontVisible = normalizedRotation >= 315 || normalizedRotation <= 45;
+    
+    // Calculate opacity with smooth transitions
+    let opacity = 0;
+    if (isFrontVisible) {
+      if (normalizedRotation >= 315) {
+        // From 315° to 360°: fade in
+        opacity = (normalizedRotation - 315) / 45;
+      } else {
+        // From 0° to 45°: fade out
+        opacity = 1 - (normalizedRotation / 45);
+      }
+    }
+    
+    return Math.max(0, Math.min(1, opacity));
+  };
+
+  const frontOpacity = getVisibility();
+
   return (
     <div 
-      className={`absolute inset-0 rounded-xl overflow-hidden ${
-        isFlipped ? 'opacity-0' : 'opacity-100'
-      }`}
+      className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
-        transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-        transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
-        backfaceVisibility: 'hidden',
+        opacity: frontOpacity,
+        transition: 'opacity 0.1s ease',
         ...frameStyles
       }}
     >
