@@ -1,4 +1,5 @@
 
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAdvancedPhysicsCardInteraction } from './useAdvancedPhysicsCardInteraction';
 
@@ -115,10 +116,10 @@ export const useEnhanced360Interactions = ({
     // Use enhanced physics drag end - handle potential void return
     const dragResult = physicsDragEnd();
     
-    // First check if dragResult is not void/undefined
-    if (dragResult !== undefined) {
+    // First check if dragResult is not void/undefined and not null
+    if (dragResult !== undefined && dragResult !== null) {
       // Now check if it's an object with the expected properties
-      if (typeof dragResult === 'object' && dragResult !== null && 'isClick' in dragResult && 'dragDistance' in dragResult) {
+      if (typeof dragResult === 'object' && 'isClick' in dragResult && 'dragDistance' in dragResult) {
         // We have a valid result object with proper typing
         if (dragResult.isClick) {
           // Hide immediately for clicks
@@ -203,3 +204,4 @@ export const useEnhanced360Interactions = ({
     rotationIndicator
   };
 };
+
