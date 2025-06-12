@@ -19,7 +19,7 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
   interactiveLighting = false,
   zoom
 }) => {
-  // Calculate edge visibility based on rotation angle - improved logic
+  // Improved edge visibility calculation for new 3D positioning
   const getEdgeVisibility = () => {
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
     
@@ -28,7 +28,7 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
     const isRightEdgeVisible = normalizedRotation >= 45 && normalizedRotation <= 135;
     const isLeftEdgeVisible = normalizedRotation >= 225 && normalizedRotation <= 315;
     
-    console.log('🔄 Edge Visibility - Rotation:', normalizedRotation.toFixed(1), 'Right:', isRightEdgeVisible, 'Left:', isLeftEdgeVisible);
+    console.log('🔄 Edge Visibility (Fixed) - Rotation:', normalizedRotation.toFixed(1), 'Right:', isRightEdgeVisible, 'Left:', isLeftEdgeVisible);
     
     if (!isRightEdgeVisible && !isLeftEdgeVisible) {
       return { opacity: 0, display: 'none' as const };
@@ -101,18 +101,20 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
         opacity,
         transition: 'opacity 0.3s ease',
         display,
-        transform: 'rotateY(90deg) translateZ(0px)', // Position as side face between front and back
+        // Position as a proper side face between front and back
+        transform: 'rotateY(90deg) translateZ(0px)',
         transformStyle: 'preserve-3d',
         width: `${edgeThickness}px`,
         height: '100%',
         left: '50%',
         marginLeft: `-${edgeThickness / 2}px`, // Center the edge
-        transformOrigin: 'center center'
+        transformOrigin: 'center center',
+        backfaceVisibility: 'hidden'
       }}
       data-edge-visibility={opacity > 0.1 ? 'visible' : 'hidden'}
       data-edge-rotation={rotation.y.toFixed(1)}
     >
-      {/* Main edge surface */}
+      {/* Main edge surface with proper 3D positioning */}
       <div
         className="absolute inset-0"
         style={{
