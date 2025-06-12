@@ -92,12 +92,19 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
           transform: 'scale(0.8)',
           transformOrigin: 'center center'
         }}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
+        onMouseDown={(e) => {
+          console.log('🎯 HTML div mouse down, calling handler');
+          onMouseDown(e);
+        }}
+        onMouseMove={(e) => {
+          onMouseMove(e);
+        }}
+        onMouseUp={(e) => {
+          console.log('🎯 HTML div mouse up, calling handler');
+          onMouseUp(e);
+        }}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        onDoubleClick={onCardFlip}
       >
         <True3DCardContainer
           card={adaptedCard}

@@ -76,9 +76,9 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     isHovering
   }) : null;
 
-  // Simple double-click flip handler
-  const handleCardFlip = useCallback(() => {
-    setLocalIsFlipped(prev => !prev);
+  // Simple click flip handler - no double-click detection here to avoid conflicts
+  const handleCardClick = useCallback(() => {
+    console.log('🎯 Enhanced card container click - delegating to parent');
     onClick();
   }, [onClick]);
 
@@ -91,7 +91,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     <div 
       className={`relative z-20 select-none`}
       style={{
-        transform: `scale(${zoom}) rotateX(${rotation.x * 0.5}deg) rotateY(${rotation.y * 0.5}deg)`,
+        // Only apply zoom, let Three.js handle all rotation
+        transform: `scale(${zoom})`,
         transition: isDragging ? 'none' : 'transform 0.3s ease',
         filter: `brightness(${interactiveLighting && isHovering ? 1.1 : 1.0}) contrast(1.05)`,
         transformStyle: 'preserve-3d'
@@ -100,7 +101,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      onClick={handleCardFlip}
+      onClick={handleCardClick}
     >
       {/* Simplified Single Card Container */}
       <SimplifiedCardContainer3D

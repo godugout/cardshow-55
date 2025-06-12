@@ -21,9 +21,10 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [autoRotateEnabled, setAutoRotateEnabled] = useState(controls.autoRotate);
   
-  // Double-click detection
+  // Enhanced double-click detection with longer timeout
   const clickCount = useRef(0);
   const clickTimeout = useRef<NodeJS.Timeout | null>(null);
+  const lastClickTime = useRef(0);
 
   useFrame((state) => {
     if (groupRef.current) {
@@ -59,12 +60,32 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     const targetY = currentY + 180;
     
     setRotation(prev => ({ ...prev, y: targetY }));
+    setIsFlipped(prev => !prev);
     onClick?.();
   }, [rotation.y, onClick]);
 
-  // Mouse interaction handlers with enhanced rotation
+  // Enhanced mouse interaction handlers
   const handleMouseDown = useCallback((e: any) => {
-    e.stopPropagation();
+    console.log('🎯 Mouse down event received');
+    
+    const currentTime = Date.now();
+    const timeSinceLastClick = currentTime - lastClickTime.current;
+    
+    // Clear any existing timeout
+    if (clickTimeout.current) {
+      clearTimeout(clickTimeout.current);
+      clickTimeout.current = null;
+    }
+    
+    // Check for double-click (within 500ms)
+    if (timeSinceLastClick < 500) {
+      console.log('🎯 Double-click detected, triggering flip');
+      clickCount.current = 0;
+      handleCardFlip();
+      return;
+    }
+    
+    // Start drag operation
     setIsDragging(true);
     setDragStart({ 
       x: e.clientX - rotation.y, 
@@ -72,24 +93,17 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     });
     setAutoRotateEnabled(false);
     
-    // Double-click detection
-    clickCount.current += 1;
+    lastClickTime.current = currentTime;
     
-    if (clickTimeout.current) {
-      clearTimeout(clickTimeout.current);
-    }
-    
-    clickTimeout.current = setTimeout(() => {
-      if (clickCount.current === 2) {
-        handleCardFlip();
-      }
-      clickCount.current = 0;
-    }, 300);
+    console.log('🎯 Drag started:', { 
+      clientX: e.clientX, 
+      clientY: e.clientY,
+      rotationY: rotation.y,
+      rotationX: rotation.x
+    });
   }, [rotation, handleCardFlip]);
 
   const handleMouseMove = useCallback((e: any) => {
-    e.stopPropagation();
-    
     // Update mouse position for effects
     const rect = e.target.getBoundingClientRect?.() || { left: 0, top: 0, width: 400, height: 560 };
     const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
@@ -98,26 +112,42 @@ export const useCard3DInteractions = ({ controls, onClick }: UseCard3DInteractio
     
     // Handle dragging rotation with FULL 360° freedom
     if (isDragging) {
-      const newRotationX = dragStart.y - e.clientY;
       const newRotationY = e.clientX - dragStart.x;
+      const newRotationX = dragStart.y - e.clientY;
+      
+      console.log('🎯 Drag rotation update:', {
+        clientX: e.clientX,
+        clientY: e.clientY,
+        dragStartX: dragStart.x,
+        dragStartY: dragStart.y,
+        newRotationX,
+        newRotationY
+      });
       
       setRotation({
-        x: newRotationX, // Full vertical rotation freedom
-        y: newRotationY  // Full horizontal rotation freedom
+        x: newRotationX * 0.5, // Reduce sensitivity for smoother control
+        y: newRotationY * 0.5  // Reduce sensitivity for smoother control
       });
     }
   }, [isDragging, dragStart]);
 
   const handleMouseUp = useCallback((e: any) => {
-    e.stopPropagation();
-    setIsDragging(false);
-  }, []);
+    console.log('🎯 Mouse up event received, isDragging:', isDragging);
+    
+    if (isDragging) {
+      setIsDragging(false);
+      setAutoRotateEnabled(controls.autoRotate);
+      console.log('🎯 Drag ended');
+    }
+  }, [isDragging, controls.autoRotate]);
 
   const handleMouseEnter = useCallback(() => {
+    console.log('🎯 Mouse enter');
     setIsHovering(true);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
+    console.log('🎯 Mouse leave');
     setIsHovering(false);
     setIsDragging(false);
     setAutoRotateEnabled(controls.autoRotate);
