@@ -5,6 +5,7 @@ import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
+import { CardEdgeContainer } from './CardEdgeContainer';
 import { Card3DTransform } from './Card3DTransform';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
@@ -132,6 +133,16 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
+        />
+
+        {/* Card Edge with Glowing Gas */}
+        <CardEdgeContainer
+          rotation={rotation}
+          isHovering={isHovering}
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          interactiveLighting={interactiveLighting}
+          zoom={zoom}
         />
       </Card3DTransform>
     </div>
