@@ -1,196 +1,188 @@
 
-import React, { useRef, useEffect, useState } from 'react';
-import type { ImmersiveCardViewerProps } from './types';
+import React, { useState, useCallback, useRef } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Environment } from '@react-three/drei';
+import type { CardData } from '@/hooks/useCardEditor';
 import { useImmersiveViewerState } from './hooks/useImmersiveViewerState';
-import { ImmersiveViewerLayout } from './components/ImmersiveViewerLayout';
-import { AutoRotationManager } from './components/AutoRotationManager';
-import { StudioPanel } from './components/StudioPanel';
+import { Card3D } from './spaces/Card3D';
+import { ViewerControls } from './components/ViewerControls';
+import { StudioFooter } from './components/studio/StudioFooter';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
+import { BackgroundRenderer } from './components/BackgroundRenderer';
+import { ImmersiveViewerLayout } from './components/ImmersiveViewerLayout';
+import { toast } from 'sonner';
 
-// Update the interface to support card navigation
-interface ExtendedImmersiveCardViewerProps extends ImmersiveCardViewerProps {
-  cards?: any[];
+interface ImmersiveCardViewerProps {
+  card: CardData;
+  cards?: CardData[];
   currentCardIndex?: number;
   onCardChange?: (index: number) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onShare?: (card: CardData) => void;
+  onDownload?: () => void;
+  allowRotation?: boolean;
+  showStats?: boolean;
+  ambient?: boolean;
 }
 
-export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = ({
+export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   card,
   cards = [],
   currentCardIndex = 0,
   onCardChange,
-  isOpen = true,
+  isOpen,
   onClose,
   onShare,
   onDownload,
   allowRotation = true,
-  showStats = true,
-  ambient = true
+  showStats = false,
+  ambient = false
 }) => {
-  console.log('🎯 ImmersiveCardViewer: Rendering with enhanced 360° capabilities:', card?.title);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Use the main state management hook
   const {
     viewerState,
     effectValues,
-    totalEffectIntensity,
     adaptedCard,
-    viewerInteractions,
-    exportHook,
-    cardEffectsHook,
-    handleComboApplication,
-    handleManualEffectChange,
     handleResetWithEffects,
     handleShareClick,
-    handleDownloadClick,
-    isApplyingPreset,
-    validateEffectState
+    handleDownloadClick
   } = useImmersiveViewerState({
     card,
     allowRotation,
     onShare
   });
 
-  // Refs
-  const cardContainerRef = useRef<HTMLDivElement>(null);
-
-  // Navigation logic
-  const hasMultipleCards = cards.length > 1;
-
-  // Add environment controls state
-  const [environmentControls, setEnvironmentControls] = useState({
-    depthOfField: 1.0,
-    parallaxIntensity: 1.0,
-    fieldOfView: 75,
-    atmosphericDensity: 1.0
-  });
-
-  // Enhanced state validation on card change
-  useEffect(() => {
-    if (card) {
-      validateEffectState();
+  // Handle rotate button - toggle auto rotation
+  const handleRotateToggle = useCallback(() => {
+    console.log('🎯 Rotate button clicked, toggling auto-rotation');
+    viewerState.setAutoRotate(prev => !prev);
+    if (!viewerState.autoRotate) {
+      toast.success('Auto-rotation enabled');
+    } else {
+      toast.success('Auto-rotation disabled');
     }
-  }, [card, validateEffectState]);
+  }, [viewerState]);
 
-  if (!isOpen || !card) {
-    console.log('🎯 ImmersiveCardViewer: Not rendering - isOpen:', isOpen, 'card:', !!card);
-    return null;
-  }
+  // Handle reset button - reset rotation but preserve effects
+  const handleReset = useCallback(() => {
+    console.log('🎯 Reset button clicked');
+    viewerState.setRotation({ x: 0, y: 0 });
+    viewerState.setZoom(1);
+    viewerState.setAutoRotate(false);
+    toast.success('View reset to front');
+  }, [viewerState]);
 
-  const panelWidth = 320;
-  const shouldShowPanel = viewerState.showCustomizePanel;
+  // Handle zoom controls
+  const handleZoomIn = useCallback(() => {
+    viewerState.setZoom(prev => Math.min(3, prev + 0.2));
+  }, [viewerState]);
+
+  const handleZoomOut = useCallback(() => {
+    viewerState.setZoom(prev => Math.max(0.5, prev - 0.2));
+  }, [viewerState]);
+
+  const handleToggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  }, []);
+
+  if (!isOpen) return null;
 
   return (
-    <>
-      {/* Auto-rotation Manager */}
-      <AutoRotationManager
-        autoRotate={viewerState.autoRotate}
-        isDragging={viewerState.isDragging}
-        setRotation={viewerState.setRotation}
-      />
+    <ImmersiveViewerLayout
+      onClose={onClose}
+      showCustomizePanel={viewerState.showCustomizePanel}
+      onToggleCustomizePanel={() => viewerState.setShowCustomizePanel(prev => !prev)}
+      backgroundType={viewerState.backgroundType}
+    >
+      {/* Main 3D Scene */}
+      <div className="relative w-full h-full">
+        <Canvas
+          ref={canvasRef}
+          camera={{ position: [0, 0, 8], fov: 45 }}
+          shadows
+          dpr={[1, 2]}
+          gl={{ antialias: true, alpha: true }}
+          style={{ background: 'transparent' }}
+        >
+          <Environment preset="studio" />
+          
+          <Card3D
+            card={adaptedCard}
+            controls={{
+              orbitSpeed: 0.5,
+              floatIntensity: 1.0,
+              cameraDistance: 8,
+              autoRotate: viewerState.autoRotate,
+              gravityEffect: 0.0
+            }}
+            effectValues={effectValues}
+            selectedScene={viewerState.selectedScene}
+            selectedLighting={viewerState.selectedLighting}
+            materialSettings={viewerState.materialSettings}
+            overallBrightness={viewerState.overallBrightness}
+            interactiveLighting={viewerState.interactiveLighting}
+            onClick={viewerState.onCardClick}
+          />
 
-      {/* Main Viewer Layout */}
-      <ImmersiveViewerLayout
-        card={card}
-        cards={cards}
-        currentCardIndex={currentCardIndex}
-        onCardChange={onCardChange}
-        onClose={onClose}
-        showStats={showStats}
-        isFullscreen={viewerState.isFullscreen}
-        shouldShowPanel={shouldShowPanel}
-        panelWidth={panelWidth}
-        hasMultipleCards={hasMultipleCards}
-        // State props
-        backgroundType={viewerState.backgroundType}
-        selectedSpace={viewerState.selectedSpace}
-        spaceControls={viewerState.spaceControls}
-        adaptedCard={adaptedCard}
-        selectedScene={viewerState.selectedScene}
-        selectedLighting={viewerState.selectedLighting}
-        mousePosition={viewerState.mousePosition}
-        isHovering={viewerState.isHovering}
-        effectValues={effectValues}
-        materialSettings={viewerState.materialSettings}
-        overallBrightness={viewerState.overallBrightness}
-        interactiveLighting={viewerState.interactiveLighting}
-        showEffects={viewerState.showEffects}
-        autoRotate={viewerState.autoRotate}
-        isFlipped={viewerState.isFlipped}
-        zoom={viewerState.zoom}
-        rotation={viewerState.rotation}
-        isDragging={viewerState.isDragging}
-        isHoveringControls={viewerState.isHoveringControls}
-        // Handlers
-        onCardClick={viewerState.onCardClick}
-        onResetCamera={viewerState.handleResetCamera}
-        onOpenStudio={() => viewerState.setShowCustomizePanel(true)}
-        onToggleEffects={() => viewerState.setShowEffects(!viewerState.showEffects)}
-        onToggleAutoRotate={() => viewerState.setAutoRotate(!viewerState.autoRotate)}
-        onResetWithEffects={handleResetWithEffects}
-        onZoomIn={() => viewerState.handleZoom(0.1)}
-        onZoomOut={() => viewerState.handleZoom(-0.1)}
-        setIsFlipped={viewerState.setIsFlipped}
-        setIsHovering={viewerState.setIsHovering}
-        setIsHoveringControls={viewerState.setIsHoveringControls}
-        // Viewer interactions
-        cardContainerRef={cardContainerRef}
-        containerRef={viewerInteractions.containerRef}
-        handleMouseMove={viewerInteractions.handleMouseMove}
-        handleDragStart={viewerInteractions.handleDragStart}
-        handleDragEnd={viewerInteractions.handleDragEnd}
-        gripPoint={viewerInteractions.gripPoint}
-        physicsState={viewerInteractions.physicsState}
-        rotationIndicator={viewerInteractions.rotationIndicator}
-        // Effects
-        frameStyles={cardEffectsHook.getFrameStyles()}
-        enhancedEffectStyles={cardEffectsHook.getEnhancedEffectStyles()}
-        SurfaceTexture={cardEffectsHook.SurfaceTexture}
-        // Environment
-        environmentControls={environmentControls}
-      />
+          {/* Orbit Controls for fallback interaction */}
+          <OrbitControls
+            enablePan={false}
+            enableZoom={true}
+            enableRotate={false} // Let our Card3D handle rotation
+            autoRotate={false}
+            minDistance={4}
+            maxDistance={15}
+          />
+        </Canvas>
 
-      {/* Studio Panel */}
-      <StudioPanel
-        isVisible={shouldShowPanel}
-        onClose={() => viewerState.setShowCustomizePanel(false)}
-        selectedScene={viewerState.selectedScene}
-        selectedLighting={viewerState.selectedLighting}
-        effectValues={effectValues}
-        overallBrightness={viewerState.overallBrightness}
-        interactiveLighting={viewerState.interactiveLighting}
-        materialSettings={viewerState.materialSettings}
-        environmentControls={environmentControls}
-        onSceneChange={viewerState.setSelectedScene}
-        onLightingChange={viewerState.setSelectedLighting}
-        onEffectChange={handleManualEffectChange}
-        onBrightnessChange={viewerState.setOverallBrightness}
-        onInteractiveLightingToggle={() => viewerState.setInteractiveLighting(!viewerState.interactiveLighting)}
-        onMaterialSettingsChange={viewerState.setMaterialSettings}
-        selectedPresetId={viewerState.selectedPresetId}
-        onPresetSelect={viewerState.setSelectedPresetId}
-        onApplyCombo={handleComboApplication}
-        isApplyingPreset={isApplyingPreset}
-        backgroundType={viewerState.backgroundType}
-        onBackgroundTypeChange={viewerState.setBackgroundType}
-        onSpaceChange={viewerState.setSelectedSpace}
-        selectedSpace={viewerState.selectedSpace}
-        spaceControls={viewerState.spaceControls}
-        onSpaceControlsChange={viewerState.setSpaceControls}
-        onResetCamera={viewerState.handleResetCamera}
-      />
+        {/* Background Renderer */}
+        <BackgroundRenderer
+          backgroundType={viewerState.backgroundType}
+          selectedScene={viewerState.selectedScene}
+          overallBrightness={viewerState.overallBrightness}
+          className="absolute inset-0 -z-10"
+        />
 
-      {/* Export Options Dialog */}
-      <ExportOptionsDialog
-        isOpen={viewerState.showExportDialog}
-        onClose={() => viewerState.setShowExportDialog(false)}
-        onExport={exportHook.exportCard}
-        isExporting={exportHook.isExporting}
-        exportProgress={exportHook.exportProgress}
-        cardTitle={card.title}
-      />
-    </>
+        {/* Viewer Controls */}
+        <ViewerControls
+          showEffects={viewerState.showEffects}
+          autoRotate={viewerState.autoRotate}
+          onToggleEffects={() => viewerState.setShowEffects(prev => !prev)}
+          onToggleAutoRotate={handleRotateToggle}
+          onReset={handleReset}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+        />
+
+        {/* Studio Footer */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <StudioFooter
+            isFullscreen={isFullscreen}
+            onToggleFullscreen={handleToggleFullscreen}
+            onDownload={onDownload || handleDownloadClick}
+            onShare={onShare ? () => handleShareClick() : undefined}
+          />
+        </div>
+      </div>
+
+      {/* Export Dialog */}
+      {viewerState.showExportDialog && (
+        <ExportOptionsDialog
+          isOpen={viewerState.showExportDialog}
+          onClose={() => viewerState.setShowExportDialog(false)}
+          card={card}
+          canvasRef={canvasRef}
+        />
+      )}
+    </ImmersiveViewerLayout>
   );
 };
-
-export default ImmersiveCardViewer;

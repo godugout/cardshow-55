@@ -53,7 +53,6 @@ const adaptCardForViewer = (card: Simple3DCard) => ({
 
 export const Card3DFace: React.FC<Card3DFaceProps> = ({
   card,
-  isBack = false,
   isHovering,
   effectValues,
   mousePosition,
@@ -65,18 +64,15 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
   onMouseMove,
   onMouseUp,
   onMouseEnter,
-  onMouseLeave,
-  onCardFlip
+  onMouseLeave
 }) => {
   const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
-  
-  const position: [number, number, number] = [0, 0, 0];
 
   return (
     <Html
       transform
       occlude
-      position={position}
+      position={[0, 0, 0]}
       distanceFactor={1}
       style={{
         width: '400px',
@@ -89,22 +85,16 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
           width: '400px', 
           height: '560px',
           cursor: isDragging ? 'grabbing' : 'grab',
-          transform: 'scale(0.8)',
-          transformOrigin: 'center center'
+          userSelect: 'none'
         }}
-        onMouseDown={(e) => {
-          console.log('🎯 HTML div mouse down, calling handler');
-          onMouseDown(e);
-        }}
-        onMouseMove={(e) => {
-          onMouseMove(e);
-        }}
-        onMouseUp={(e) => {
-          console.log('🎯 HTML div mouse up, calling handler');
-          onMouseUp(e);
-        }}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        onTouchStart={onMouseDown}
+        onTouchMove={onMouseMove}
+        onTouchEnd={onMouseUp}
       >
         <True3DCardContainer
           card={adaptedCard}
