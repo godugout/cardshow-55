@@ -2,7 +2,8 @@
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import { UnifiedCardViewer } from './UnifiedCardViewer';
+import { CardFrontContainer } from './CardFrontContainer';
+import { CardBackContainer } from './CardBackContainer';
 
 interface CardContainer3DProps {
   card: CardData;
@@ -35,63 +36,45 @@ export const CardContainer3D: React.FC<CardContainer3DProps> = ({
   interactiveLighting,
   onClick
 }) => {
-  console.log('🎯 CardContainer3D now using UnifiedCard approach:', {
-    cardTitle: card.title,
-    isFlipped,
-    rotation,
-    showEffects
-  });
-
-  // Convert React mouse events to Three.js compatible format
-  const handleMouseDown = React.useCallback((e: any) => {
-    // Three.js events have different structure
-    console.log('UnifiedCard mouse down');
-  }, []);
-
-  const handleMouseMove = React.useCallback((e: any) => {
-    // Three.js events have different structure
-    console.log('UnifiedCard mouse move');
-  }, []);
-
-  const handleMouseEnter = React.useCallback(() => {
-    console.log('UnifiedCard mouse enter');
-  }, []);
-
-  const handleMouseLeave = React.useCallback(() => {
-    console.log('UnifiedCard mouse leave');
-  }, []);
-
   return (
     <div
       className="relative"
       style={{
         width: '400px',
         height: '560px',
-        transformStyle: 'preserve-3d'
+        transform: `perspective(1000px) rotateX(${rotation.x * 0.5}deg) rotateY(${rotation.y * 0.5}deg)`,
+        transformStyle: 'preserve-3d',
+        transition: isDragging ? 'none' : 'transform 0.1s ease',
+        filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.8))'
       }}
+      onClick={onClick}
     >
-      {/* Unified Card Viewer replaces the old front/back container approach */}
-      <UnifiedCardViewer
+      {/* Card Front - Always shows card image, positioned normally */}
+      <CardFrontContainer
         card={card}
-        effectValues={effectValues}
-        mousePosition={mousePosition}
-        rotation={rotation}
-        zoom={1.0}
-        isDragging={isDragging}
+        isFlipped={isFlipped}
         isHovering={isHovering}
         showEffects={showEffects}
-        interactiveLighting={interactiveLighting}
+        effectValues={effectValues}
+        mousePosition={mousePosition}
         frameStyles={frameStyles}
         enhancedEffectStyles={enhancedEffectStyles}
         SurfaceTexture={SurfaceTexture}
-        environment="studio"
-        autoRotate={false}
-        enableControls={false}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        interactiveLighting={interactiveLighting}
         onClick={onClick}
+      />
+
+      {/* Card Back - Always shows CRD logo, positioned 180deg behind front */}
+      <CardBackContainer
+        isFlipped={isFlipped}
+        isHovering={isHovering}
+        showEffects={showEffects}
+        effectValues={effectValues}
+        mousePosition={mousePosition}
+        frameStyles={frameStyles}
+        enhancedEffectStyles={enhancedEffectStyles}
+        SurfaceTexture={SurfaceTexture}
+        interactiveLighting={interactiveLighting}
       />
     </div>
   );

@@ -3,7 +3,7 @@ import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
-import { UnifiedCardViewer } from './UnifiedCardViewer';
+import { CardContainer3D } from './CardContainer3D';
 import { GripFeedback } from './GripFeedback';
 import { RotationIndicator } from './RotationIndicator';
 
@@ -51,7 +51,6 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting,
-  selectedScene,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
@@ -61,16 +60,21 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
   physicsState,
   rotationIndicator
 }) => {
-  console.log('🎯 SimplifiedEnhancedCardContainer using UnifiedCard approach:', {
+  const [localIsFlipped, setLocalIsFlipped] = React.useState(isFlipped);
+
+  console.log('🎯 SimplifiedEnhancedCardContainer rendering with enhanced 360° and smart click detection:', {
     cardTitle: card.title,
     cardImage: card.image_url,
-    isFlipped,
+    isFlipped: localIsFlipped,
     zoom,
     rotation,
     gripPoint,
     hasPhysics: !!physicsState,
     rotationIndicator
   });
+
+  const containerWidth = 400;
+  const containerHeight = 560;
 
   // Calculate total effect intensity for physics feedback
   const totalEffectIntensity = React.useMemo(() => {
@@ -81,85 +85,95 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
     }, 0);
   }, [effectValues]);
 
-  // Convert mouse events for Three.js compatibility
-  const handleThreeJSMouseDown = React.useCallback((e: any) => {
-    const syntheticEvent = {
-      preventDefault: () => {},
-      clientX: e.point?.x || 0,
-      clientY: e.point?.y || 0,
-      target: e.object
-    };
-    onMouseDown(syntheticEvent as any);
+  // Enhanced mouse down handler with smart click detection preparation
+  const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    onMouseDown(e);
   }, [onMouseDown]);
 
-  const handleThreeJSMouseMove = React.useCallback((e: any) => {
-    const syntheticEvent = {
-      preventDefault: () => {},
-      clientX: e.point?.x || 0,
-      clientY: e.point?.y || 0,
-      target: e.object
-    };
-    onMouseMove(syntheticEvent as any);
-  }, [onMouseMove]);
+  // Enhanced click handler with smart detection
+  const handleClick = React.useCallback((e: React.MouseEvent) => {
+    // Only flip if this was a true click (not a drag)
+    const wasClick = physicsState?.dragDistance < 5;
+    
+    if (wasClick) {
+      console.log('🎯 Smart click detected - flipping card');
+      setLocalIsFlipped(prev => !prev);
+      onClick();
+    }
+  }, [physicsState?.dragDistance, onClick]);
 
-  // Get environment string from selectedScene - use id instead of preset
-  const environmentPreset = selectedScene?.id || 'studio';
+  // Create a no-parameter version for CardContainer3D
+  const handleCardClick = React.useCallback(() => {
+    // Only flip if this was a true click (not a drag)
+    const wasClick = physicsState?.dragDistance < 5;
+    
+    if (wasClick) {
+      console.log('🎯 Smart click detected - flipping card');
+      setLocalIsFlipped(prev => !prev);
+      onClick();
+    }
+  }, [physicsState?.dragDistance, onClick]);
+
+  // Cursor style based on interaction state
+  const getCursorStyle = () => {
+    if (isDragging) return 'cursor-grabbing';
+    if (isHovering) return 'cursor-grab';
+    return 'cursor-pointer';
+  };
 
   return (
     <div 
-      className="w-full h-full relative select-none"
+      className={`relative select-none ${getCursorStyle()}`}
       style={{
-        zIndex: 10
+        transform: `scale(${zoom})`,
+        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        zIndex: 10,
+        width: `${containerWidth}px`,
+        height: `${containerHeight}px`
       }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClick={handleClick}
     >
-      {/* Unified Card Viewer with Three.js - Full Screen */}
-      <UnifiedCardViewer
+      <CardContainer3D
         card={card}
+        isFlipped={localIsFlipped}
+        isHovering={isHovering}
+        showEffects={showEffects}
         effectValues={effectValues}
         mousePosition={mousePosition}
         rotation={rotation}
-        zoom={zoom}
         isDragging={isDragging}
-        isHovering={isHovering}
-        showEffects={showEffects}
-        interactiveLighting={interactiveLighting}
         frameStyles={frameStyles}
         enhancedEffectStyles={enhancedEffectStyles}
         SurfaceTexture={SurfaceTexture}
-        environment={environmentPreset}
-        autoRotate={false}
-        enableControls={false}
-        onMouseDown={handleThreeJSMouseDown}
-        onMouseMove={handleThreeJSMouseMove}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        onClick={onClick}
+        interactiveLighting={interactiveLighting}
+        onClick={handleCardClick}
       />
       
-      {/* Enhanced Grip Feedback */}
-      <div className="absolute inset-0 pointer-events-none">
-        <GripFeedback
-          gripPoint={gripPoint}
-          isGripping={physicsState?.isGripping || false}
-          containerWidth={window.innerWidth}
-          containerHeight={window.innerHeight}
-        />
-      </div>
+      {/* Enhanced Grip Feedback with improved 360° support */}
+      <GripFeedback
+        gripPoint={gripPoint}
+        isGripping={physicsState?.isGripping || false}
+        containerWidth={containerWidth}
+        containerHeight={containerHeight}
+      />
       
       {/* Enhanced Rotation Indicator */}
       {rotationIndicator && (
-        <div className="absolute inset-0 pointer-events-none">
-          <RotationIndicator
-            show={rotationIndicator.show}
-            angle={rotationIndicator.angle}
-            position="top-right"
-          />
-        </div>
+        <RotationIndicator
+          show={rotationIndicator.show}
+          angle={rotationIndicator.angle}
+          position="top-right"
+        />
       )}
       
       {/* Enhanced Physics Debug Info */}
       {physicsState && isDragging && (
-        <div className="absolute bottom-2 left-2 text-xs text-white/60 font-mono bg-black/30 px-2 py-1 rounded backdrop-blur-sm pointer-events-none">
+        <div className="absolute bottom-2 left-2 text-xs text-white/60 font-mono bg-black/30 px-2 py-1 rounded backdrop-blur-sm">
           <div>Angular V: {Math.round(physicsState.angularVelocity?.x * 100) || 0}, {Math.round(physicsState.angularVelocity?.y * 100) || 0}</div>
           <div>Sensitivity: {((1 + totalEffectIntensity * 0.3) * 1.8).toFixed(1)}x</div>
           <div>Drag: {Math.round(physicsState.dragDistance || 0)}px</div>
@@ -177,7 +191,7 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
 
       {/* Smart Click Indicator */}
       {!isDragging && isHovering && (
-        <div className="absolute bottom-2 right-2 text-xs text-white/40 font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm pointer-events-none">
+        <div className="absolute bottom-2 right-2 text-xs text-white/40 font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
           Click to flip • Drag to rotate
         </div>
       )}
