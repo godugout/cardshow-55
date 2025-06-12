@@ -71,14 +71,12 @@ export const Card3DFace: React.FC<Card3DFaceProps> = ({
   const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
   
   const position: [number, number, number] = [0, 0, 0];
-  const htmlRotation: [number, number, number] = [0, 0, 0];
 
   return (
     <Html
       transform
       occlude
       position={position}
-      rotation={htmlRotation}
       distanceFactor={1}
       style={{
         width: '400px',

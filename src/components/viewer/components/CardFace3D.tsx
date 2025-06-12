@@ -43,7 +43,7 @@ export const CardFace3D: React.FC<CardFace3DProps> = ({
     <div 
       className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
-        // Proper 3D positioning for front and back faces
+        // Proper 3D positioning for front and back faces using CSS
         transform: isBack ? 'rotateY(180deg)' : 'rotateY(0deg)',
         backfaceVisibility: 'hidden',
         transformStyle: 'preserve-3d',

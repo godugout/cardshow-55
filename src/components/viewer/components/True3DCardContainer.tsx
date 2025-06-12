@@ -31,17 +31,8 @@ export const True3DCardContainer: React.FC<True3DCardContainerProps> = ({
   SurfaceTexture,
   interactiveLighting
 }) => {
-  // Normalize rotation.y to 0-360 range for consistent face detection
-  const normalizedRotationY = ((rotation.y % 360) + 360) % 360;
-  
-  // Determine if we should show the back face based on Y rotation
-  // Back face is visible when rotated between 90° and 270°
-  const shouldShowBack = normalizedRotationY > 90 && normalizedRotationY < 270;
-
   console.log('🎯 True3D Card rotation:', {
     rotationY: rotation.y,
-    normalizedY: normalizedRotationY,
-    shouldShowBack,
     cardTitle: card.title
   });
 
@@ -52,7 +43,6 @@ export const True3DCardContainer: React.FC<True3DCardContainerProps> = ({
         width: '400px',
         height: '560px',
         transformStyle: 'preserve-3d',
-        // Remove CSS rotation - let Three.js handle it
         filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.8))'
       }}
     >
@@ -88,7 +78,7 @@ export const True3DCardContainer: React.FC<True3DCardContainerProps> = ({
       {isDragging && (
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none">
           <div className="bg-black/70 text-white px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
-            {shouldShowBack ? 'Back Side' : 'Front Side'}
+            Rotation: {Math.round(rotation.y)}°
           </div>
         </div>
       )}
