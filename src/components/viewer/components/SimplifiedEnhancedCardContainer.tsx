@@ -105,8 +105,8 @@ export const SimplifiedEnhancedCardContainer: React.FC<SimplifiedEnhancedCardCon
     onMouseMove(syntheticEvent as any);
   }, [onMouseMove]);
 
-  // Get environment string from selectedScene
-  const environmentPreset = selectedScene?.preset || 'studio';
+  // Get environment string from selectedScene - use id instead of preset
+  const environmentPreset = selectedScene?.id || 'studio';
 
   return (
     <div 
