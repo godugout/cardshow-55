@@ -5,14 +5,44 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { StandardCardItem } from "@/components/cards/StandardCardItem";
 import { ImmersiveCardViewer } from "@/components/viewer/ImmersiveCardViewer";
 import { useCardConversion } from "@/pages/Gallery/hooks/useCardConversion";
+import type { Tables } from '@/integrations/supabase/types';
+
+type DbCard = Tables<'cards'>;
+
+// Helper function to convert fallback card data to DbCard format
+const convertFallbackToDbCard = (card: any): DbCard => {
+  return {
+    id: card.id,
+    title: card.title,
+    description: card.description || '',
+    image_url: card.image_url || '',
+    thumbnail_url: null,
+    price: null,
+    rarity: (card.rarity as any) || 'common',
+    tags: card.tags || [],
+    visibility: (card.visibility as any) || 'public',
+    is_public: card.is_public ?? true,
+    created_at: card.created_at,
+    updated_at: card.created_at,
+    series: card.series || null,
+    creator_id: '',
+    design_metadata: {},
+    print_metadata: {},
+    edition_number: null,
+    marketplace_listing: false,
+    template_id: null,
+    total_supply: null,
+    verification_status: 'pending'
+  } as DbCard;
+};
 
 export const FeaturedCards: React.FC = () => {
   const { featuredCards, loading } = useCards();
   const [showViewer, setShowViewer] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<any>(null);
+  const [selectedCard, setSelectedCard] = useState<DbCard | null>(null);
   const { convertCardsToCardData } = useCardConversion();
 
-  const handleView3D = (card: any) => {
+  const handleView3D = (card: DbCard) => {
     setSelectedCard(card);
     setShowViewer(true);
   };
@@ -89,7 +119,7 @@ export const FeaturedCards: React.FC = () => {
   ];
 
   // Use real data if available, otherwise fallback to mock data
-  const displayCards = featuredCards.length > 0 ? featuredCards : fallbackCards;
+  const displayCards = featuredCards.length > 0 ? featuredCards : fallbackCards.map(convertFallbackToDbCard);
   const convertedCards = convertCardsToCardData(displayCards);
   const currentCardIndex = selectedCard ? displayCards.findIndex(c => c.id === selectedCard.id) : 0;
   const convertedSelectedCard = selectedCard ? convertCardsToCardData([selectedCard])[0] : null;
@@ -134,7 +164,7 @@ export const FeaturedCards: React.FC = () => {
           displayCards.map((card) => (
             <StandardCardItem
               key={card.id}
-              card={card as any}
+              card={card}
               onView3D={handleView3D}
               showPrivacyBadge={false}
               className="w-[270px]"

@@ -4,6 +4,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { StandardCardItem } from './StandardCardItem';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { useCardConversion } from '@/pages/Gallery/hooks/useCardConversion';
+import type { Tables } from '@/integrations/supabase/types';
+
+type DbCard = Tables<'cards'>;
 
 interface CardData {
   id: string;
@@ -26,6 +29,33 @@ interface CardGridProps {
   viewMode: 'grid' | 'masonry' | 'feed';
 }
 
+// Helper function to convert CardData to DbCard format
+const convertToDbCard = (card: CardData): DbCard => {
+  return {
+    id: card.id,
+    title: card.title,
+    description: card.description || '',
+    image_url: card.image_url || '',
+    thumbnail_url: card.thumbnail_url || null,
+    price: card.price ? parseFloat(card.price) : null,
+    rarity: (card.rarity as any) || 'common',
+    tags: card.tags || [],
+    visibility: (card.visibility as any) || 'public',
+    is_public: card.is_public ?? true,
+    created_at: card.created_at,
+    updated_at: card.created_at,
+    series: card.series || null,
+    creator_id: '',
+    design_metadata: {},
+    print_metadata: {},
+    edition_number: null,
+    marketplace_listing: false,
+    template_id: null,
+    total_supply: null,
+    verification_status: 'pending'
+  } as DbCard;
+};
+
 const LoadingSkeleton = () => (
   <div className="space-y-3">
     <Skeleton className="aspect-[3/4] rounded-t-lg bg-crd-mediumGray" />
@@ -42,10 +72,10 @@ const LoadingSkeleton = () => (
 
 export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) => {
   const [showViewer, setShowViewer] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
+  const [selectedCard, setSelectedCard] = useState<DbCard | null>(null);
   const { convertCardsToCardData } = useCardConversion();
 
-  const handleView3D = (card: CardData) => {
+  const handleView3D = (card: DbCard) => {
     setSelectedCard(card);
     setShowViewer(true);
   };
@@ -93,24 +123,11 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) 
     );
   }
 
-  // Convert cards to the format expected by the viewer
-  const convertedCards = convertCardsToCardData(cards.map(card => ({
-    ...card,
-    // Ensure required fields are present
-    creator_id: '',
-    updated_at: card.created_at,
-    design_metadata: {},
-    print_metadata: {}
-  })));
-  
-  const currentCardIndex = selectedCard ? cards.findIndex(c => c.id === selectedCard.id) : 0;
-  const convertedSelectedCard = selectedCard ? convertCardsToCardData([{
-    ...selectedCard,
-    creator_id: '',
-    updated_at: selectedCard.created_at,
-    design_metadata: {},
-    print_metadata: {}
-  }])[0] : null;
+  // Convert CardData to DbCard format
+  const dbCards = cards.map(convertToDbCard);
+  const convertedCards = convertCardsToCardData(dbCards);
+  const currentCardIndex = selectedCard ? dbCards.findIndex(c => c.id === selectedCard.id) : 0;
+  const convertedSelectedCard = selectedCard ? convertCardsToCardData([selectedCard])[0] : null;
 
   return (
     <>
@@ -121,10 +138,10 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) 
           ? 'columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6'
           : 'space-y-6'
       }>
-        {cards.map((card, index) => (
+        {dbCards.map((card, index) => (
           <StandardCardItem
             key={`card-${card.id}-${index}`}
-            card={card as any} // Type assertion for compatibility
+            card={card}
             onView3D={handleView3D}
             showPrivacyBadge={true}
           />
@@ -138,7 +155,7 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) 
           cards={convertedCards}
           currentCardIndex={currentCardIndex}
           onCardChange={(index) => {
-            setSelectedCard(cards[index]);
+            setSelectedCard(dbCards[index]);
           }}
           isOpen={showViewer}
           onClose={handleCloseViewer}
