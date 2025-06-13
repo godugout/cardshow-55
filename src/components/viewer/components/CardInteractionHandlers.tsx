@@ -69,7 +69,14 @@ export const CardInteractionHandlers: React.FC<CardInteractionHandlersProps> = (
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
     setMousePosition({ x, y });
-    interactionHandleMouseMove(e);
+    
+    // Create a synthetic event that matches the expected type
+    const syntheticEvent = {
+      ...e,
+      currentTarget: e.currentTarget as HTMLDivElement
+    } as React.MouseEvent<HTMLDivElement>;
+    
+    interactionHandleMouseMove(syntheticEvent);
   }, [interactionHandleMouseMove]);
 
   const handleMouseEnter = useCallback(() => {
