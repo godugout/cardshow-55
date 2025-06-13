@@ -51,8 +51,14 @@ export const ViewerBackground: React.FC<ViewerBackgroundProps> = ({
     const defaultSpace: SpaceEnvironment = selectedSpace || {
       id: 'studio-default',
       name: 'Studio',
+      description: 'Clean studio environment',
+      previewUrl: '/placeholder.svg',
       type: 'studio',
+      category: 'basic',
+      emoji: '🎬',
       config: {
+        backgroundColor: '#1a1a1a',
+        ambientColor: '#404040',
         lightIntensity: 1.0,
         exposure: 1.0,
         autoRotation: 0

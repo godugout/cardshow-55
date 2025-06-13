@@ -84,8 +84,11 @@ export const Card3D: React.FC<Card3DProps> = ({
     accentIntensity: 0.4
   };
 
-  // Apply brightness multiplier
-  const brightnessMultiplier = overallBrightness[0] / 100;
+  // Apply brightness multiplier - ensure we have a valid number
+  const brightnessValue = Array.isArray(overallBrightness) && overallBrightness.length > 0 
+    ? overallBrightness[0] 
+    : 100;
+  const brightnessMultiplier = typeof brightnessValue === 'number' ? brightnessValue / 100 : 1;
 
   return (
     <group ref={groupRef}>

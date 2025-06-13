@@ -61,8 +61,9 @@ export const CardMesh: React.FC<CardMeshProps> = ({
       frontMaterial.roughness = material3DProps.roughness;
       frontMaterial.emissiveIntensity = material3DProps.emissiveIntensity;
       frontMaterial.emissive = new THREE.Color(material3DProps.emissiveColor);
-      frontMaterial.clearcoat = material3DProps.clearcoat;
-      frontMaterial.clearcoatRoughness = material3DProps.clearcoatRoughness;
+      
+      // Note: clearcoat is available in MeshPhysicalMaterial, not MeshStandardMaterial
+      // We'll use emissive and metalness/roughness for now
       
       // Update edge materials for enhanced reflectivity
       for (let i = 0; i < 4; i++) {
