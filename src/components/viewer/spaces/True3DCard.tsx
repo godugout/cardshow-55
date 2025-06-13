@@ -154,7 +154,7 @@ export const True3DCard: React.FC<True3DCardProps> = ({
     }
   });
 
-  const handleClick = (event: THREE.Event) => {
+  const handleClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     console.log('🎯 True3DCard clicked:', card.title);
     onClick?.();

@@ -2,6 +2,7 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, ContactShadows } from '@react-three/drei';
+import * as THREE from 'three';
 import { Card3D } from './Card3D';
 import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
 import { ReliableSpaceEnvironment } from './environments/ReliableSpaceEnvironment';
@@ -103,17 +104,17 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
           antialias: true, 
           alpha: false,
           premultipliedAlpha: false,
-          powerPreference: 'high-performance',
-          shadowMap: true
+          powerPreference: 'high-performance'
         }}
         style={{ background: 'transparent' }}
         onCreated={({ gl, scene }) => {
           gl.domElement.style.background = 'transparent';
-          // Enable shadows
+          // Enable shadows with proper Three.js API
           gl.shadowMap.enabled = true;
-          gl.shadowMap.type = gl.PCFSoftShadowMap;
+          gl.shadowMap.type = THREE.PCFSoftShadowMap;
           // Better texture filtering
-          gl.getContext().texParameteri(gl.getContext().TEXTURE_2D, gl.getContext().TEXTURE_MIN_FILTER, gl.getContext().LINEAR_MIPMAP_LINEAR);
+          const context = gl.getContext();
+          context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR_MIPMAP_LINEAR);
         }}
         onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}
       >

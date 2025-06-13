@@ -73,13 +73,17 @@ export const Card3D: React.FC<Card3DProps> = ({
     console.log('🎯 True 3D Card hovered:', hovered, card.title);
   };
 
+  // Get lighting colors with fallbacks
+  const lightColor = (selectedLighting as any)?.color || '#ffffff';
+  const accentColor = (selectedLighting as any)?.accentColor || '#4444ff';
+
   return (
     <group ref={groupRef}>
       {/* Enhanced 3D lighting setup */}
       <pointLight
         position={[2, 3, 2]}
         intensity={0.8}
-        color={selectedLighting?.color || '#ffffff'}
+        color={lightColor}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -88,7 +92,7 @@ export const Card3D: React.FC<Card3DProps> = ({
       <pointLight
         position={[-2, 1, 2]}
         intensity={0.4}
-        color={selectedLighting?.accentColor || '#4444ff'}
+        color={accentColor}
       />
 
       {/* True 3D Card with real geometry */}
@@ -103,7 +107,9 @@ export const Card3D: React.FC<Card3DProps> = ({
       />
 
       {/* Enhanced ambient particles for magical effect */}
-      {effectValues.holographic?.intensity && effectValues.holographic.intensity > 0.5 && (
+      {effectValues.holographic && 
+       typeof effectValues.holographic.intensity === 'number' && 
+       effectValues.holographic.intensity > 0.5 && (
         <group>
           {Array.from({ length: 12 }, (_, i) => (
             <mesh
