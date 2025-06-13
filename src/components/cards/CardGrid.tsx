@@ -115,11 +115,6 @@ const CardGridItem = ({ card, index, onCardClick }: { card: DisplayCard; index: 
               {card.price ? `${card.price} ETH` : '1.5 ETH'}
             </Badge>
           </div>
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="bg-black/70 text-white px-4 py-2 rounded-lg text-sm font-medium">
-              Click to view in 3D
-            </div>
-          </div>
         </div>
         <CardContent className="p-4">
           <h3 className="text-crd-white font-semibold mb-1 line-clamp-1">{card.title || 'Untitled Card'}</h3>

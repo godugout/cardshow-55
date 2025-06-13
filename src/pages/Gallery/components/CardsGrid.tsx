@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface CardItem {
@@ -58,7 +57,7 @@ export const CardsGrid: React.FC<CardsGridProps> = ({
           <CardHeader className="pb-2">
             <CardTitle className="text-[#FCFCFD] text-lg group-hover:text-[#3772FF] transition-colors">{card.title}</CardTitle>
           </CardHeader>
-          <CardContent className="pb-2">
+          <CardContent className="pb-4">
             <p className="text-[#777E90] text-sm line-clamp-2">{card.description}</p>
             {card.rarity && (
               <div className="mt-2">
@@ -68,18 +67,6 @@ export const CardsGrid: React.FC<CardsGridProps> = ({
               </div>
             )}
           </CardContent>
-          <CardFooter>
-            <Button 
-              variant="outline" 
-              className="w-full border-[#353945] text-white hover:bg-[#3772FF] hover:border-[#3772FF] transition-colors"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCardClick(card);
-              }}
-            >
-              View in 3D
-            </Button>
-          </CardFooter>
         </Card>
       ))}
     </div>
