@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ViewerHeader } from './ViewerHeader';
 import { ViewerControls } from './ViewerControls';
@@ -87,12 +88,13 @@ interface ViewerLayoutProps {
   // Configuration
   allowRotation: boolean;
   showStats: boolean;
-}
-
-export const ViewerLayout: React.FC<ViewerLayoutProps & {
+  
+  // 3D Toggle props
   enableTrue3D?: boolean;
   onToggle3D?: (enabled: boolean) => void;
-}> = (props) => {
+}
+
+export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
   const {
     card,
     cards,
@@ -112,9 +114,6 @@ export const ViewerLayout: React.FC<ViewerLayoutProps & {
   const hasMultipleCards = cards.length > 1;
   const shouldShowPanel = showCustomizePanel;
   const panelWidth = 320;
-
-  // Default to sophisticated 2D effects system (changed from true to false)
-  const enableTrue3D = false;
 
   // Calculate proper centering styles
   const getCenteringStyles = () => {

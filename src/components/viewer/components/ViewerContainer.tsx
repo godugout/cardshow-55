@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { ViewerStateManager } from './ViewerStateManager';
+import { useViewerContainerState } from '../hooks/useViewerContainerState';
 import { ViewerEffectsManager } from './ViewerEffectsManager';
 import { ViewerLayout } from './ViewerLayout';
 import { RenderModeManager } from './RenderModeManager';
@@ -37,18 +38,7 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
   return (
     <RenderModeManager card={card} effectValues={{}}>
       {({ enableTrue3D, onToggle3D }) => (
-        <ViewerStateManager
-          card={card}
-          cards={cards}
-          currentCardIndex={currentCardIndex}
-          onCardChange={onCardChange}
-          onClose={onClose}
-          onShare={onShare}
-          onDownload={onDownload}
-          allowRotation={allowRotation}
-          showStats={showStats}
-          ambient={ambient}
-        >
+        <useViewerContainerState card={card} onShare={onShare}>
           {(stateProps) => (
             <ViewerEffectsManager
               card={card}
@@ -62,18 +52,8 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
               zoom={stateProps.zoom}
               rotation={stateProps.rotation}
               isHovering={stateProps.isHovering}
-              onEffectValuesChange={(values) => {
-                // Update effect values in state if needed
-              }}
-              onPresetStateChange={(state) => {
-                // Handle preset state changes
-                if (state.selectedScene) stateProps.setSelectedScene(state.selectedScene);
-                if (state.selectedLighting) stateProps.setSelectedLighting(state.selectedLighting);
-                if (state.selectedPresetId !== undefined) stateProps.setSelectedPresetId(state.selectedPresetId);
-                if (state.reset) {
-                  stateProps.handleReset();
-                }
-              }}
+              onEffectValuesChange={stateProps.handleEffectValuesChange}
+              onPresetStateChange={stateProps.handlePresetStateChange}
             >
               {(effectsManager) => (
                 <ViewerLayout
@@ -92,7 +72,7 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
               )}
             </ViewerEffectsManager>
           )}
-        </ViewerStateManager>
+        </useViewerContainerState>
       )}
     </RenderModeManager>
   );
