@@ -18,53 +18,41 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
   
   // Calculate subtle parallax movement without rotation
   const parallaxOffset = useMemo(() => ({
-    x: (mousePosition.x - 0.5) * 15, // Reduced from 30
-    y: (mousePosition.y - 0.5) * 8   // Reduced from 15
+    x: (mousePosition.x - 0.5) * 8, // Reduced further
+    y: (mousePosition.y - 0.5) * 4   // Reduced further
   }), [mousePosition]);
-
-  // Create depth layers for immersion without rotation
-  const depthLayers = useMemo(() => [
-    { depth: 0, opacity: 0.4, scale: 1.1, blur: 2 },
-    { depth: 0, opacity: 0.6, scale: 1.05, blur: 1 },
-  ], []);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Main Environment - Static with subtle parallax */}
+      {/* Main Environment - Single layer with subtle parallax */}
       <div 
         className="absolute inset-0 transition-all duration-1000 ease-out"
         style={{
           backgroundImage: `url(${environmentImage})`,
-          backgroundSize: '120% 100%', // Reduced from 200%
-          backgroundPosition: `${50 + parallaxOffset.x * 0.3}% ${50 + parallaxOffset.y * 0.2}%`,
+          backgroundSize: '110% 110%', // Reduced from 120%
+          backgroundPosition: `${50 + parallaxOffset.x * 0.2}% ${50 + parallaxOffset.y * 0.15}%`,
           backgroundRepeat: 'no-repeat',
-          // REMOVED: All rotation transforms that caused dizziness
           transform: `scale(${isHovering ? 1.02 : 1})`, // Only subtle scaling
           filter: `brightness(${scene.lighting.intensity}) contrast(1.1) saturate(1.2)`,
-          opacity: 0.9
+          opacity: 0.95
         }}
       />
 
-      {/* Static depth layers without rotation */}
-      {depthLayers.map((layer, index) => (
-        <div
-          key={index}
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url(${environmentImage})`,
-            backgroundSize: `${120 * layer.scale}% ${100 * layer.scale}%`,
-            // REMOVED: Rotating parallax, now only subtle position shifts
-            backgroundPosition: `${50 + parallaxOffset.x * (0.1 + index * 0.05)}% ${50 + parallaxOffset.y * (0.1 + index * 0.03)}%`,
-            backgroundRepeat: 'no-repeat',
-            // REMOVED: All rotation and translateZ transforms
-            opacity: layer.opacity * (isHovering ? 1.1 : 1),
-            filter: `blur(${layer.blur}px) brightness(${scene.lighting.intensity * 0.8})`,
-            mixBlendMode: 'screen'
-          }}
-        />
-      ))}
+      {/* Depth effect using gradient overlays instead of duplicate images */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `
+            radial-gradient(ellipse at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
+              transparent 20%, 
+              rgba(0,0,0,0.1) 60%,
+              rgba(0,0,0,0.2) 90%)
+          `,
+          mixBlendMode: 'multiply'
+        }}
+      />
 
-      {/* Static atmospheric overlay */}
+      {/* Atmospheric lighting overlay */}
       <div 
         className="absolute inset-0 pointer-events-none transition-all duration-500"
         style={{
@@ -82,10 +70,10 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `
-              linear-gradient(45deg, transparent 40%, #ff008030 45%, transparent 50%),
-              linear-gradient(-45deg, transparent 60%, #0080ff30 65%, transparent 70%)
+              linear-gradient(45deg, transparent 70%, #ff008020 80%, transparent 90%),
+              linear-gradient(-45deg, transparent 70%, #0080ff20 80%, transparent 90%)
             `,
-            animation: 'pulse 4s ease-in-out infinite', // Kept gentle pulse
+            animation: 'pulse 4s ease-in-out infinite',
             mixBlendMode: 'screen'
           }}
         />
@@ -95,7 +83,7 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: `radial-gradient(circle at 80% 20%, #ffa50040 0%, transparent 50%)`,
+            background: `radial-gradient(circle at 80% 20%, #ffa50030 0%, transparent 50%)`,
             filter: 'blur(40px)',
             mixBlendMode: 'overlay'
           }}
@@ -107,21 +95,34 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `
-              linear-gradient(180deg, #4a5ee815 0%, transparent 30%),
-              radial-gradient(ellipse at 50% 100%, #2c3e5030 0%, transparent 60%)
+              linear-gradient(180deg, #4a5ee810 0%, transparent 30%),
+              radial-gradient(ellipse at 50% 100%, #2c3e5020 0%, transparent 60%)
             `,
             mixBlendMode: 'multiply'
           }}
         />
       )}
 
-      {/* Gentle ambient glow without movement */}
+      {/* Gentle ambient glow for depth perception */}
       <div 
-        className="absolute inset-0 pointer-events-none opacity-10 transition-opacity duration-300"
+        className="absolute inset-0 pointer-events-none opacity-8 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
-            rgba(255,255,255,0.15) 0%, transparent 40%)`,
-          opacity: isHovering ? 0.15 : 0.08
+          background: `
+            radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
+              rgba(255,255,255,0.12) 0%, 
+              rgba(255,255,255,0.06) 30%,
+              transparent 60%)
+          `,
+          opacity: isHovering ? 0.12 : 0.06
+        }}
+      />
+
+      {/* Subtle vignette for focus */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.1) 80%)`,
+          mixBlendMode: 'multiply'
         }}
       />
     </div>
