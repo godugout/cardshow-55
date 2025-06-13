@@ -109,11 +109,34 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
   const shouldShowPanel = showCustomizePanel;
   const panelWidth = 320;
 
+  // Calculate proper centering offsets
+  const getCenteringStyles = () => {
+    if (shouldShowPanel) {
+      // When panel is open, shift card to be centered in the remaining space
+      const availableWidth = `calc(100vw - ${panelWidth}px)`;
+      const centerOffset = panelWidth / 2; // Half the panel width to shift left
+      
+      return {
+        width: availableWidth,
+        transform: `translateX(-${centerOffset}px)`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      };
+    }
+    
+    return {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    };
+  };
+
   return (
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center select-none ${
+      className={`fixed inset-0 z-50 select-none ${
         isFullscreen ? 'p-0' : 'p-8'
-      } ${shouldShowPanel ? `pr-[${panelWidth + 32}px]` : ''}`}
+      }`}
       style={{
         paddingRight: shouldShowPanel ? `${panelWidth + 32}px` : isFullscreen ? '0' : '32px',
         userSelect: 'none',
@@ -199,39 +222,46 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
           hasMultipleCards={hasMultipleCards}
         />
 
-        {/* Card Display */}
-        <ViewerCardDisplay
-          card={card}
-          cards={cards}
-          currentCardIndex={currentCardIndex}
-          onCardChange={onCardChange}
-          isHovering={layoutProps.isHovering}
-          showEffects={layoutProps.showEffects}
-          effectValues={layoutProps.effectValues}
-          mousePosition={layoutProps.mousePosition}
-          rotation={layoutProps.rotation}
-          zoom={layoutProps.zoom}
-          isDragging={layoutProps.isDragging}
-          frameStyles={layoutProps.frameStyles}
-          enhancedEffectStyles={layoutProps.enhancedEffectStyles}
-          SurfaceTexture={layoutProps.SurfaceTexture}
-          interactiveLighting={layoutProps.interactiveLighting}
-          selectedScene={layoutProps.selectedScene}
-          selectedLighting={layoutProps.selectedLighting}
-          materialSettings={layoutProps.materialSettings}
-          overallBrightness={layoutProps.overallBrightness}
-          onMouseDown={(e) => console.log('🎯 Card mouse down:', e.clientX, e.clientY)}
-          onMouseMove={(e) => console.log('🎯 Card mouse move:', e.clientX, e.clientY)}
-          onMouseEnter={() => {
-            console.log('🎯 Card mouse enter');
-            layoutProps.setIsHovering(true);
-          }}
-          onMouseLeave={() => {
-            console.log('🎯 Card mouse leave');
-            layoutProps.setIsHovering(false);
-          }}
-          onClick={() => console.log('🎯 Card clicked')}
-        />
+        {/* Centered Card Display Container */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={getCenteringStyles()}
+        >
+          <div className="pointer-events-auto">
+            <ViewerCardDisplay
+              card={card}
+              cards={cards}
+              currentCardIndex={currentCardIndex}
+              onCardChange={onCardChange}
+              isHovering={layoutProps.isHovering}
+              showEffects={layoutProps.showEffects}
+              effectValues={layoutProps.effectValues}
+              mousePosition={layoutProps.mousePosition}
+              rotation={layoutProps.rotation}
+              zoom={layoutProps.zoom}
+              isDragging={layoutProps.isDragging}
+              frameStyles={layoutProps.frameStyles}
+              enhancedEffectStyles={layoutProps.enhancedEffectStyles}
+              SurfaceTexture={layoutProps.SurfaceTexture}
+              interactiveLighting={layoutProps.interactiveLighting}
+              selectedScene={layoutProps.selectedScene}
+              selectedLighting={layoutProps.selectedLighting}
+              materialSettings={layoutProps.materialSettings}
+              overallBrightness={layoutProps.overallBrightness}
+              onMouseDown={(e) => console.log('🎯 Card mouse down:', e.clientX, e.clientY)}
+              onMouseMove={(e) => console.log('🎯 Card mouse move:', e.clientX, e.clientY)}
+              onMouseEnter={() => {
+                console.log('🎯 Card mouse enter');
+                layoutProps.setIsHovering(true);
+              }}
+              onMouseLeave={() => {
+                console.log('🎯 Card mouse leave');
+                layoutProps.setIsHovering(false);
+              }}
+              onClick={() => console.log('🎯 Card clicked')}
+            />
+          </div>
+        </div>
       </ViewerInteractionLayer>
 
       {/* Studio Panel */}

@@ -1,8 +1,6 @@
 
 import React from 'react';
-import { useTextureLoader } from './hooks/useTextureLoader';
-import { useSceneBackground } from './hooks/useSceneBackground';
-import { EnvironmentLighting } from './components/EnvironmentLighting';
+import { OptimizedPanoramicEnvironment } from './OptimizedPanoramicEnvironment';
 
 interface ReliableSpaceEnvironmentProps {
   imageId: string;
@@ -13,7 +11,7 @@ interface ReliableSpaceEnvironmentProps {
   onLoadError?: (error: Error) => void;
 }
 
-export const ReliableSpaceEnvironment: React.FC<ReliableSpaceEnvironmentProps> = ({
+export const ReliableSpaceEnvironment: React.FC<ReliableSpaceEnvironmentProps> = ({ 
   imageId,
   rotation = 0,
   exposure = 1.0,
@@ -21,33 +19,16 @@ export const ReliableSpaceEnvironment: React.FC<ReliableSpaceEnvironmentProps> =
   onLoadComplete,
   onLoadError
 }) => {
-  console.log('🌍 ReliableSpaceEnvironment loading:', imageId);
-
-  const { texture, isLoading, hasError } = useTextureLoader({
-    imageId,
-    onLoadComplete,
-    onLoadError
-  });
-
-  useSceneBackground({
-    texture,
-    hasError,
-    exposure
-  });
-
-  // Show minimal loading without interfering with background
-  if (isLoading && !texture) {
-    return (
-      <>
-        <ambientLight intensity={0.4 * brightness} />
-        <directionalLight
-          position={[10, 15, 10]}
-          intensity={0.6 * brightness}
-          castShadow
-        />
-      </>
-    );
-  }
-
-  return <EnvironmentLighting brightness={brightness} />;
+  console.log('🎪 ReliableSpaceEnvironment using imageId:', imageId);
+  
+  return (
+    <OptimizedPanoramicEnvironment
+      imageUrl={imageId}
+      rotation={rotation}
+      exposure={exposure}
+      brightness={brightness}
+      onLoadComplete={onLoadComplete}
+      onLoadError={onLoadError}
+    />
+  );
 };

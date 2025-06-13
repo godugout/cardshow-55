@@ -27,7 +27,7 @@ interface SpaceRenderer3DProps {
   interactiveLighting?: boolean;
   onCardClick?: () => void;
   onCameraReset?: () => void;
-  renderCard?: boolean; // New prop to control card rendering
+  renderCard?: boolean;
 }
 
 const LoadingFallback: React.FC = () => (
@@ -37,32 +37,38 @@ const LoadingFallback: React.FC = () => (
   </>
 );
 
-// Map environment types to reliable image IDs
-const getEnvironmentImageId = (environment: SpaceEnvironment): string => {
+// Optimized image URLs with proper sizing
+const getOptimizedEnvironmentImageId = (environment: SpaceEnvironment): string => {
   if (environment.config.panoramicPhotoId) {
     return environment.config.panoramicPhotoId;
   }
   
+  // Use properly sized image URLs from Unsplash
+  const baseUrl = 'https://images.unsplash.com/';
+  const params = '?w=1024&h=512&fit=crop&crop=center&auto=format&q=85'; // Optimized params
+  
   switch (environment.type) {
     case 'forest':
-      return 'forest-clearing';
+      return `${baseUrl}photo-1441974231531-c6227db76b6e${params}`; // Forest path
     case 'ocean':
-      return 'ocean-sunset';
+      return `${baseUrl}photo-1505142468610-359e7d316be0${params}`; // Ocean sunset
     case 'neon':
-      return 'neon-city';
+      return `${baseUrl}photo-1518709268805-4e9042af2176${params}`; // Neon city
     case 'cosmic':
-      return 'cosmic-void';
+      return `${baseUrl}photo-1446776877081-d282a0f896e2${params}`; // Cosmic space
     case 'sports':
-      return 'sports-arena';
+      return `${baseUrl}photo-1461896836934-ffe607ba8211${params}`; // Sports stadium
     case 'cultural':
-      return 'concert-hall';
+      return `${baseUrl}photo-1493225457124-a3eb161ffa5f${params}`; // Concert hall
     case 'studio':
     case 'void':
-      return 'modern-studio';
+      return `${baseUrl}photo-1586953208448-b95a79798f07${params}`; // Modern studio
     case 'panoramic':
-      return environment.config.panoramicPhotoId || 'modern-studio';
+      return environment.config.panoramicPhotoId ? 
+        `${baseUrl}${environment.config.panoramicPhotoId}${params}` :
+        `${baseUrl}photo-1586953208448-b95a79798f07${params}`;
     default:
-      return 'modern-studio';
+      return `${baseUrl}photo-1586953208448-b95a79798f07${params}`;
   }
 };
 
@@ -78,11 +84,11 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   interactiveLighting = false,
   onCardClick,
   onCameraReset,
-  renderCard = true // Default to true for backward compatibility
+  renderCard = true
 }) => {
   console.log('🎬 SpaceRenderer3D: Rendering environment:', environment.type, environment.name, 'renderCard:', renderCard);
 
-  const imageId = getEnvironmentImageId(environment);
+  const imageUrl = getOptimizedEnvironmentImageId(environment);
   const exposure = environment.config.exposure || 1.0;
   const brightness = environment.config.lightIntensity || 1.0;
 
@@ -95,22 +101,25 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
         gl={{ 
           antialias: true, 
           alpha: false,
-          premultipliedAlpha: false
+          premultipliedAlpha: false,
+          powerPreference: 'high-performance' // Better performance for complex scenes
         }}
         style={{ background: 'transparent' }}
         onCreated={({ gl }) => {
           gl.domElement.style.background = 'transparent';
+          // Enable better texture filtering
+          gl.getContext().texParameteri(gl.getContext().TEXTURE_2D,  gl.getContext().TEXTURE_MIN_FILTER, gl.getContext().LINEAR_MIPMAP_LINEAR);
         }}
         onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}
       >
         <Suspense fallback={<LoadingFallback />}>
           <SpaceErrorBoundary spaceName={environment.name} fallback={<LoadingFallback />}>
             <ReliableSpaceEnvironment
-              imageId={imageId}
+              imageId={imageUrl}
               rotation={environment.config.autoRotation || 0}
               exposure={exposure}
               brightness={brightness}
-              onLoadComplete={() => console.log('✅ Environment loaded:', imageId)}
+              onLoadComplete={() => console.log('✅ Environment loaded:', imageUrl)}
               onLoadError={(error) => console.error('❌ Environment error:', error)}
             />
           </SpaceErrorBoundary>
