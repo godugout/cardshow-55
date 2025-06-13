@@ -33,46 +33,45 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
   showStats = false,
   ambient = true
 }) => {
+  // Call the hook at component level
+  const stateProps = useViewerContainerState({ card, onShare });
+
   if (!isOpen) return null;
 
   return (
     <RenderModeManager card={card} effectValues={{}}>
       {({ enableTrue3D, onToggle3D }) => (
-        <useViewerContainerState card={card} onShare={onShare}>
-          {(stateProps) => (
-            <ViewerEffectsManager
+        <ViewerEffectsManager
+          card={card}
+          mousePosition={stateProps.mousePosition}
+          showEffects={stateProps.showEffects}
+          overallBrightness={stateProps.overallBrightness}
+          interactiveLighting={stateProps.interactiveLighting}
+          selectedScene={stateProps.selectedScene}
+          selectedLighting={stateProps.selectedLighting}
+          materialSettings={stateProps.materialSettings}
+          zoom={stateProps.zoom}
+          rotation={stateProps.rotation}
+          isHovering={stateProps.isHovering}
+          onEffectValuesChange={stateProps.handleEffectValuesChange}
+          onPresetStateChange={stateProps.handlePresetStateChange}
+        >
+          {(effectsManager) => (
+            <ViewerLayout
+              {...stateProps}
               card={card}
-              mousePosition={stateProps.mousePosition}
-              showEffects={stateProps.showEffects}
-              overallBrightness={stateProps.overallBrightness}
-              interactiveLighting={stateProps.interactiveLighting}
-              selectedScene={stateProps.selectedScene}
-              selectedLighting={stateProps.selectedLighting}
-              materialSettings={stateProps.materialSettings}
-              zoom={stateProps.zoom}
-              rotation={stateProps.rotation}
-              isHovering={stateProps.isHovering}
-              onEffectValuesChange={stateProps.handleEffectValuesChange}
-              onPresetStateChange={stateProps.handlePresetStateChange}
-            >
-              {(effectsManager) => (
-                <ViewerLayout
-                  {...stateProps}
-                  card={card}
-                  cards={cards}
-                  currentCardIndex={currentCardIndex}
-                  onCardChange={onCardChange}
-                  onClose={onClose}
-                  allowRotation={allowRotation}
-                  showStats={showStats}
-                  {...effectsManager}
-                  enableTrue3D={enableTrue3D}
-                  onToggle3D={onToggle3D}
-                />
-              )}
-            </ViewerEffectsManager>
+              cards={cards}
+              currentCardIndex={currentCardIndex}
+              onCardChange={onCardChange}
+              onClose={onClose}
+              allowRotation={allowRotation}
+              showStats={showStats}
+              {...effectsManager}
+              enableTrue3D={enableTrue3D}
+              onToggle3D={onToggle3D}
+            />
           )}
-        </useViewerContainerState>
+        </ViewerEffectsManager>
       )}
     </RenderModeManager>
   );
