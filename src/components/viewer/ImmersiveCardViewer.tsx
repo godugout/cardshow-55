@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { StudioPanel } from './components/StudioPanel';
 import { ViewerHeader } from './components/ViewerHeader';
@@ -47,6 +48,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>(undefined);
   const [isApplyingPreset, setIsApplyingPreset] = useState(false);
   const [showBackgroundInfo, setShowBackgroundInfo] = useState(true);
+  const [showEffects, setShowEffects] = useState(true);
 
   const {
     backgroundType,
@@ -71,35 +73,83 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
 
   const {
     effectValues,
-    frameStyles,
-    enhancedEffectStyles,
-    SurfaceTexture,
     handleEffectChange,
-    handleApplyCombo,
-    handleResetAllEffects
+    resetAllEffects,
+    applyPreset,
+    presetState,
+    isApplyingPreset: hookIsApplyingPreset
   } = useEnhancedCardEffects();
 
-  const {
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-    handleMouseEnter,
-    handleMouseLeave,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-    handleCardClick,
-    handleCameraReset
-  } = useEnhancedCardInteraction({
-    allowRotation,
-    setRotation,
-    setIsDragging,
-    setMousePosition,
-    setShowBackgroundInfo,
-    setZoom
-  });
+  // Create mock frame styles and enhanced effect styles
+  const frameStyles = useMemo(() => ({}), []);
+  const enhancedEffectStyles = useMemo(() => ({}), []);
+  const SurfaceTexture = useMemo(() => null, []);
 
-  const { handleShare, handleDownload } = useCardExport({ card });
+  const handleApplyCombo = useCallback((combo: any) => {
+    applyPreset(combo.effects);
+  }, [applyPreset]);
+
+  const handleResetAllEffects = useCallback(() => {
+    resetAllEffects();
+  }, [resetAllEffects]);
+
+  // Create interaction handlers
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    setIsDragging(true);
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    setMousePosition({ x, y });
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    setIsHovering(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovering(false);
+  }, []);
+
+  const handleTouchStart = useCallback(() => {
+    setIsDragging(true);
+  }, []);
+
+  const handleTouchMove = useCallback(() => {
+    // Touch move logic
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleCardClick = useCallback(() => {
+    // Card click logic
+  }, []);
+
+  const handleCameraReset = useCallback(() => {
+    setRotation({ x: 0, y: 0 });
+    setZoom(1.0);
+  }, []);
+
+  // Create simplified export handlers
+  const handleShare = useCallback(() => {
+    if (onShare) {
+      onShare();
+    }
+  }, [onShare]);
+
+  const handleDownload = useCallback(() => {
+    if (onDownload) {
+      onDownload();
+    }
+  }, [onDownload]);
 
   const handleCloseStudio = useCallback(() => {
     setIsStudioVisible(false);
@@ -158,16 +208,9 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
 
       {/* Header - z-30 */}
       <ViewerHeader
-        card={card}
-        cards={cards}
-        currentCardIndex={currentCardIndex}
-        onCardChange={onCardChange}
         onClose={onClose}
-        onShare={onShare}
-        onDownload={onDownload}
-        onToggleStudio={() => setIsStudioVisible(!isStudioVisible)}
-        isStudioVisible={isStudioVisible}
-        showStats={showStats}
+        showStudioButton={!isStudioVisible}
+        onOpenStudio={() => setIsStudioVisible(true)}
       />
 
       {/* Studio Panel - z-50 */}
@@ -189,7 +232,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         selectedPresetId={selectedPresetId}
         onPresetSelect={setSelectedPresetId}
         onApplyCombo={handleApplyCombo}
-        isApplyingPreset={isApplyingPreset}
+        isApplyingPreset={hookIsApplyingPreset}
         environmentControls={environmentControls}
         onEnvironmentControlsChange={setEnvironmentControls}
         backgroundType={backgroundType}

@@ -7,6 +7,14 @@ export interface Simple3DCard {
   image_url?: string;
 }
 
+export const cardAdapter = (card: CardData): Simple3DCard => {
+  return {
+    id: card.id || `card_${Date.now()}`,
+    title: card.title,
+    image_url: card.image_url
+  };
+};
+
 export const adaptCardForSpaceRenderer = (card: CardData): Simple3DCard => {
   return {
     id: card.id || `card_${Date.now()}`,

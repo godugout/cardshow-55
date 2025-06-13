@@ -27,6 +27,19 @@ const Studio = () => {
     return <NoCardSelected />;
   }
 
+  // Create wrapper functions that don't require parameters
+  const handleShareWrapper = () => {
+    if (selectedCard) {
+      handleShare(selectedCard);
+    }
+  };
+
+  const handleDownloadWrapper = () => {
+    if (selectedCard) {
+      handleDownload(selectedCard);
+    }
+  };
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-crd-darkest">
@@ -41,8 +54,8 @@ const Studio = () => {
           onCardChange={handleCardChange}
           isOpen={true}
           onClose={handleClose}
-          onShare={handleShare}
-          onDownload={handleDownload}
+          onShare={handleShareWrapper}
+          onDownload={handleDownloadWrapper}
           allowRotation={true}
           showStats={true}
           ambient={true}
