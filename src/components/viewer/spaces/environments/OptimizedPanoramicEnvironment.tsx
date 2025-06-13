@@ -2,7 +2,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { enhancedImageLoader } from './EnhancedImageLoader';
 import { PanoramicLighting } from './components/PanoramicLighting';
 import { PanoramicLoadingIndicator } from './components/PanoramicLoadingIndicator';
 
@@ -34,7 +33,7 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<Error | null>(null);
   
-  console.log('🌍 OptimizedPanoramicEnvironment loading:', imageUrl);
+  console.log('🌍 OptimizedPanoramicEnvironment loading URL:', imageUrl);
 
   useEffect(() => {
     let isMounted = true;
@@ -45,26 +44,42 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
         setLoadError(null);
         onLoadStart?.();
         
-        console.log('🔄 Loading optimized panoramic texture:', imageUrl);
+        console.log('🔄 Loading panoramic texture from URL:', imageUrl);
         
-        // Use enhanced image loader with proper quality settings
-        const optimizedTexture = await enhancedImageLoader.loadOptimizedTexture(imageUrl, {
-          baseSize: { width: 1024, height: 512 },
-          highQualitySize: { width: 1536, height: 768 },
-          compressionQuality: 0.85
+        // Create a simple texture loader
+        const loader = new THREE.TextureLoader();
+        
+        const loadedTexture = await new Promise<THREE.Texture>((resolve, reject) => {
+          loader.load(
+            imageUrl,
+            (texture) => {
+              console.log('✅ Texture loaded successfully');
+              resolve(texture);
+            },
+            undefined,
+            (error) => {
+              console.error('❌ Texture loading failed:', error);
+              reject(error);
+            }
+          );
         });
         
         if (!isMounted) return;
         
-        // Configure texture for panoramic mapping - FIXED
-        optimizedTexture.mapping = THREE.EquirectangularReflectionMapping;
-        optimizedTexture.wrapS = THREE.RepeatWrapping;
-        optimizedTexture.wrapT = THREE.ClampToEdgeWrapping;
-        optimizedTexture.flipY = false; // Critical for proper orientation
-        optimizedTexture.colorSpace = THREE.SRGBColorSpace;
+        // Configure texture for panoramic mapping
+        loadedTexture.mapping = THREE.EquirectangularReflectionMapping;
+        loadedTexture.wrapS = THREE.RepeatWrapping;
+        loadedTexture.wrapT = THREE.ClampToEdgeWrapping;
+        loadedTexture.flipY = false;
+        loadedTexture.colorSpace = THREE.SRGBColorSpace;
         
-        console.log('✅ Optimized panoramic texture loaded and configured');
-        setTexture(optimizedTexture);
+        // Enhanced filtering
+        loadedTexture.magFilter = THREE.LinearFilter;
+        loadedTexture.minFilter = THREE.LinearMipmapLinearFilter;
+        loadedTexture.generateMipmaps = true;
+        
+        console.log('✅ Panoramic texture configured successfully');
+        setTexture(loadedTexture);
         setIsLoading(false);
         setLoadError(null);
         onLoadComplete?.();
@@ -121,9 +136,9 @@ export const OptimizedPanoramicEnvironment: React.FC<OptimizedPanoramicEnvironme
 
   return (
     <>
-      {/* Environment Sphere with FIXED scale - much smaller for proper visibility */}
+      {/* Environment Sphere - Fixed scale for proper visibility */}
       {texture && (
-        <mesh ref={sphereRef} scale={[-50, 50, 50]} position={[0, 0, 0]}>
+        <mesh ref={sphereRef} scale={[-100, 100, 100]} position={[0, 0, 0]}>
           <sphereGeometry args={[1, 60, 40]} />
           <meshBasicMaterial 
             map={texture}

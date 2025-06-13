@@ -41,17 +41,33 @@ const LoadingFallback: React.FC = () => (
   </>
 );
 
-// Optimized image URLs with proper sizing
-const getOptimizedEnvironmentImageId = (environment: SpaceEnvironment): string => {
+// Fixed image URL generation with proper full URLs
+const getOptimizedEnvironmentImageUrl = (environment: SpaceEnvironment): string => {
   console.log('🖼️ Getting environment image for:', environment.name, environment.type);
   
+  // If we have a panoramicPhotoId, convert it to a proper Unsplash URL
   if (environment.config.panoramicPhotoId) {
-    console.log('📸 Using panoramicPhotoId:', environment.config.panoramicPhotoId);
-    return environment.config.panoramicPhotoId;
+    console.log('📸 Converting panoramicPhotoId to URL:', environment.config.panoramicPhotoId);
+    
+    // Map common IDs to actual Unsplash photos
+    const photoIdMap: Record<string, string> = {
+      'forest-clearing': 'photo-1441974231531-c6227db76b6e',
+      'mountain-peak': 'photo-1506905925346-21bda4d32df4',
+      'ocean-sunset': 'photo-1505142468610-359e7d316be0',
+      'desert-dunes': 'photo-1509316975850-ff9c5deb0cd9',
+      'aurora-sky': 'photo-1531366936337-7c912a4589a7',
+      'city-night': 'photo-1487958449943-2429e8be8625'
+    };
+    
+    const mappedPhotoId = photoIdMap[environment.config.panoramicPhotoId] || 'photo-1441974231531-c6227db76b6e';
+    const fullUrl = `https://images.unsplash.com/${mappedPhotoId}?w=2048&h=1024&fit=crop&crop=center&auto=format&q=85`;
+    console.log('🌐 Generated full URL:', fullUrl);
+    return fullUrl;
   }
   
+  // Fallback to type-based image selection
   const baseUrl = 'https://images.unsplash.com/';
-  const params = '?w=1024&h=512&fit=crop&crop=center&auto=format&q=85';
+  const params = '?w=2048&h=1024&fit=crop&crop=center&auto=format&q=85';
   
   let imageId = '';
   switch (environment.type) {
@@ -75,18 +91,14 @@ const getOptimizedEnvironmentImageId = (environment: SpaceEnvironment): string =
       break;
     case 'studio':
     case 'void':
-      imageId = `${baseUrl}photo-1586953208448-b95a79798f07${params}`;
-      break;
     case 'panoramic':
-      imageId = environment.config.panoramicPhotoId ? 
-        `${baseUrl}${environment.config.panoramicPhotoId}${params}` :
-        `${baseUrl}photo-1586953208448-b95a79798f07${params}`;
+      imageId = `${baseUrl}photo-1586953208448-b95a79798f07${params}`;
       break;
     default:
-      imageId = `${baseUrl}photo-1586953208448-b95a79798f07${params}`;
+      imageId = `${baseUrl}photo-1441974231531-c6227db76b6e${params}`;
   }
   
-  console.log('🌐 Generated image URL:', imageId);
+  console.log('🌐 Generated fallback URL:', imageId);
   return imageId;
 };
 
@@ -106,7 +118,7 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
 }) => {
   console.log('🎬 SpaceRenderer3D: Rendering 3D environment:', environment.type, environment.name, 'renderCard:', renderCard);
 
-  const imageUrl = getOptimizedEnvironmentImageId(environment);
+  const imageUrl = getOptimizedEnvironmentImageUrl(environment);
   const exposure = environment.config.exposure || 1.0;
   const brightness = environment.config.lightIntensity || 1.0;
 
@@ -114,7 +126,7 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
     <div className="w-full h-full">
       <Canvas
         camera={{ 
-          position: [0, 0, 6], // Reduced from 8 to 6 for better environment visibility
+          position: [0, 0, 6],
           fov: controls.fieldOfView || 45,
           near: 0.1,
           far: 1000
@@ -134,7 +146,6 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
           gl.shadowMap.enabled = true;
           gl.shadowMap.type = THREE.PCFSoftShadowMap;
           
-          // Better texture filtering
           const context = gl.getContext();
           context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR_MIPMAP_LINEAR);
           
@@ -143,7 +154,6 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
         onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}
       >
         <Suspense fallback={<LoadingFallback />}>
-          {/* Reduced ambient lighting to not wash out environment */}
           <ambientLight intensity={brightness * 0.2} />
           <directionalLight
             position={[10, 10, 5]}
@@ -169,7 +179,6 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
             />
           </SpaceErrorBoundary>
           
-          {/* Render the 3D card if requested */}
           {renderCard && (
             <Card3D
               card={card}
@@ -184,7 +193,6 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
             />
           )}
 
-          {/* Enhanced Contact Shadows for 3D realism */}
           <ContactShadows
             opacity={0.3}
             scale={12}
@@ -201,8 +209,8 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
           enableZoom={true}
           autoRotate={controls.autoRotate}
           autoRotateSpeed={controls.orbitSpeed || 0.5}
-          minDistance={3} // Reduced from 4
-          maxDistance={15} // Reduced from 20
+          minDistance={3}
+          maxDistance={15}
           minPolarAngle={Math.PI / 6}
           maxPolarAngle={Math.PI - Math.PI / 6}
           enableDamping={true}
