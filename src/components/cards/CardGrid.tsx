@@ -5,15 +5,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import type { CardData } from '@/hooks/useCardEditor';
 
-interface CardData {
-  id: string;
-  title: string;
-  description?: string;
-  image_url?: string;
-  thumbnail_url?: string;
-  price?: string;
-}
-
 interface CardGridProps {
   cards: CardData[];
   loading: boolean;
@@ -56,12 +47,10 @@ const CardGridItem = ({ card, index, onCardClick }: { card: CardData; index: num
     if (onCardClick) {
       onCardClick(card);
     } else {
-      // Convert to CardData format for viewer
-      const cardData: CardData = {
-        id: card.id,
-        title: card.title,
-        description: card.description,
-        imageUrl: displayImage,
+      // Convert to viewer-compatible format
+      const viewerCard = {
+        ...card,
+        image_url: displayImage,
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -119,10 +108,8 @@ const CardGridItem = ({ card, index, onCardClick }: { card: CardData; index: num
       {showViewer && (
         <ImmersiveCardViewer
           card={{
-            id: card.id,
-            title: card.title,
-            description: card.description,
-            imageUrl: displayImage,
+            ...card,
+            image_url: displayImage,
             createdAt: new Date(),
             updatedAt: new Date()
           }}
