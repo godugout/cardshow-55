@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 
@@ -92,12 +91,12 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
 
   return (
     <>
-      {/* Right Edge Glow - positioned on the actual right edge */}
+      {/* Right Edge Glow - Enhanced to work with physical thickness */}
       {rightOpacity > 0.1 && (
         <div 
           className="absolute top-0 h-full pointer-events-none z-15"
           style={{
-            right: '-2px', // Position on the actual right edge, slightly outside
+            right: '-8px', // Position slightly further out to account for thickness
             opacity: rightOpacity,
             transition: 'opacity 0.3s ease',
             width: `${edgeThickness * 4}px`
@@ -105,7 +104,7 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
           data-edge="right"
           data-opacity={rightOpacity.toFixed(2)}
         >
-          {/* Main edge thickness */}
+          {/* Main edge glow - now enhanced for 3D thickness */}
           <div
             className="absolute top-0 left-0 h-full"
             style={{
@@ -120,7 +119,7 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
             }}
           />
           
-          {/* Outer glow layers extending from the edge */}
+          {/* Extended glow for 3D effect */}
           <div
             className="absolute top-0 left-0 h-full"
             style={{
@@ -133,12 +132,12 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
         </div>
       )}
 
-      {/* Left Edge Glow - positioned on the actual left edge */}
+      {/* Left Edge Glow - Enhanced to work with physical thickness */}
       {leftOpacity > 0.1 && (
         <div 
           className="absolute top-0 h-full pointer-events-none z-15"
           style={{
-            left: '-2px', // Position on the actual left edge, slightly outside
+            left: '-8px', // Position slightly further out to account for thickness
             opacity: leftOpacity,
             transition: 'opacity 0.3s ease',
             width: `${edgeThickness * 4}px`
@@ -146,7 +145,7 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
           data-edge="left"
           data-opacity={leftOpacity.toFixed(2)}
         >
-          {/* Main edge thickness */}
+          {/* Main edge glow - now enhanced for 3D thickness */}
           <div
             className="absolute top-0 right-0 h-full"
             style={{
@@ -161,7 +160,7 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
             }}
           />
           
-          {/* Outer glow layers extending from the edge */}
+          {/* Extended glow for 3D effect */}
           <div
             className="absolute top-0 right-0 h-full"
             style={{

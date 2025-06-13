@@ -105,6 +105,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         isDragging={isDragging}
         interactiveLighting={interactiveLighting}
         isHovering={isHovering}
+        showEffects={showEffects}
         onClick={onClick}
       >
         {/* Front of Card */}
@@ -135,7 +136,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           interactiveLighting={interactiveLighting}
         />
 
-        {/* Card Edge with Glowing Gas */}
+        {/* Card Edge with Enhanced Glowing Gas */}
         <CardEdgeContainer
           rotation={rotation}
           isHovering={isHovering}

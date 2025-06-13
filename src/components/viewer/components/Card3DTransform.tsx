@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { CardThicknessContainer } from './CardThicknessContainer';
 
 interface Card3DTransformProps {
   children: React.ReactNode;
@@ -8,6 +9,7 @@ interface Card3DTransformProps {
   isDragging: boolean;
   interactiveLighting?: boolean;
   isHovering: boolean;
+  showEffects?: boolean;
   onClick: () => void;
 }
 
@@ -18,6 +20,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
   isDragging,
   interactiveLighting = false,
   isHovering,
+  showEffects = true,
   onClick
 }) => {
   // Calculate dynamic transform with full 360° Y-axis rotation support
@@ -37,12 +40,16 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
     return baseTransform;
   };
 
+  const cardWidth = 400;
+  const cardHeight = 560;
+  const cardThickness = 6; // Realistic card thickness
+
   return (
     <div
       className="relative"
       style={{
-        width: '400px',
-        height: '560px',
+        width: `${cardWidth}px`,
+        height: `${cardHeight}px`,
         transform: getDynamicTransform(),
         transformStyle: 'preserve-3d',
         transition: isDragging ? 'none' : 'transform 0.1s ease',
@@ -53,6 +60,17 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
       data-rotation-x={rotation.x.toFixed(1)}
       data-rotation-y={rotation.y.toFixed(1)}
     >
+      {/* Card Thickness - Side faces */}
+      <CardThicknessContainer
+        cardWidth={cardWidth}
+        cardHeight={cardHeight}
+        thickness={cardThickness}
+        isHovering={isHovering}
+        showEffects={showEffects}
+        rotation={rotation}
+      />
+
+      {/* Front and Back faces (children) */}
       {children}
     </div>
   );
