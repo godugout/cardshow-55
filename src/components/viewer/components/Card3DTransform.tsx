@@ -23,18 +23,19 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
   showEffects = true,
   onClick
 }) => {
-  // Calculate dynamic transform with full 360° Y-axis rotation support
+  // Calculate dynamic transform with enhanced perspective for better 3D effect
   const getDynamicTransform = () => {
     // Debug logging for rotation tracking
     console.log('🎯 Card3DTransform - Rotation X:', rotation.x.toFixed(1), 'Y:', rotation.y.toFixed(1));
     
-    let baseTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+    // Enhanced perspective for better 3D visibility
+    let baseTransform = `perspective(1200px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
     
     // Add subtle interactive lighting-based depth effect
     if (interactiveLighting && isHovering) {
       const lightDepth = (mousePosition.x - 0.5) * 2; // -1 to 1
-      const additionalRotateY = lightDepth * 2; // Max 2 degrees
-      baseTransform = `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y + additionalRotateY}deg)`;
+      const additionalRotateY = lightDepth * 3; // Increased to 3 degrees for more pronounced effect
+      baseTransform = `perspective(1200px) rotateX(${rotation.x}deg) rotateY(${rotation.y + additionalRotateY}deg)`;
     }
     
     return baseTransform;
@@ -42,7 +43,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
 
   const cardWidth = 400;
   const cardHeight = 560;
-  const cardThickness = 6; // Realistic card thickness
+  const cardThickness = 8; // Increased from 6 to 8 pixels for better visibility
 
   return (
     <div
@@ -52,7 +53,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
         height: `${cardHeight}px`,
         transform: getDynamicTransform(),
         transformStyle: 'preserve-3d',
-        transition: isDragging ? 'none' : 'transform 0.1s ease',
+        transition: isDragging ? 'none' : 'transform 0.15s ease-out', // Slightly faster transition
         filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`,
         cursor: isDragging ? 'grabbing' : 'grab'
       }}
@@ -60,7 +61,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
       data-rotation-x={rotation.x.toFixed(1)}
       data-rotation-y={rotation.y.toFixed(1)}
     >
-      {/* Card Thickness - Side faces */}
+      {/* Card Thickness - Side faces with enhanced visibility */}
       <CardThicknessContainer
         cardWidth={cardWidth}
         cardHeight={cardHeight}
@@ -71,7 +72,14 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
       />
 
       {/* Front and Back faces (children) */}
-      {children}
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        transformStyle: 'preserve-3d'
+      }}>
+        {children}
+      </div>
     </div>
   );
 };

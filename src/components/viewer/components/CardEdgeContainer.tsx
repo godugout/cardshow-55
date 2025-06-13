@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 
@@ -91,80 +92,39 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
 
   return (
     <>
-      {/* Right Edge Glow - Enhanced to work with physical thickness */}
+      {/* Right Edge Glow - Contained within card boundaries */}
       {rightOpacity > 0.1 && (
         <div 
           className="absolute top-0 h-full pointer-events-none z-15"
           style={{
-            right: '-8px', // Position slightly further out to account for thickness
+            right: '0px', // Changed from '-8px' to stay within boundaries
             opacity: rightOpacity,
             transition: 'opacity 0.3s ease',
-            width: `${edgeThickness * 4}px`
+            width: `${edgeThickness}px`
           }}
           data-edge="right"
           data-opacity={rightOpacity.toFixed(2)}
         >
-          {/* Main edge glow - now enhanced for 3D thickness */}
-          <div
-            className="absolute top-0 left-0 h-full"
-            style={{
-              width: `${edgeThickness}px`,
-              background: gasColor,
-              boxShadow: `
-                0 0 ${edgeThickness * 2}px ${gasColor},
-                inset 0 0 ${edgeThickness / 2}px rgba(255, 255, 255, 0.2)
-              `,
-              filter: `brightness(${intensity}) blur(0.5px)`,
-              borderRadius: '2px'
-            }}
-          />
-          
-          {/* Extended glow for 3D effect */}
-          <div
-            className="absolute top-0 left-0 h-full"
-            style={{
-              width: `${edgeThickness * 4}px`,
-              background: `linear-gradient(to right, ${gasColor} 0%, transparent 100%)`,
-              animation: isHovering ? 'gas-pulse 2s ease-in-out infinite alternate' : 'gas-gentle 4s ease-in-out infinite alternate',
-              filter: `brightness(${intensity * 0.8})`
-            }}
-          />
-        </div>
-      )}
-
-      {/* Left Edge Glow - Enhanced to work with physical thickness */}
-      {leftOpacity > 0.1 && (
-        <div 
-          className="absolute top-0 h-full pointer-events-none z-15"
-          style={{
-            left: '-8px', // Position slightly further out to account for thickness
-            opacity: leftOpacity,
-            transition: 'opacity 0.3s ease',
-            width: `${edgeThickness * 4}px`
-          }}
-          data-edge="left"
-          data-opacity={leftOpacity.toFixed(2)}
-        >
-          {/* Main edge glow - now enhanced for 3D thickness */}
+          {/* Inner glow using box-shadow instead of extending outside */}
           <div
             className="absolute top-0 right-0 h-full"
             style={{
               width: `${edgeThickness}px`,
               background: gasColor,
               boxShadow: `
-                0 0 ${edgeThickness * 2}px ${gasColor},
-                inset 0 0 ${edgeThickness / 2}px rgba(255, 255, 255, 0.2)
+                inset -2px 0 ${edgeThickness}px ${gasColor},
+                inset 0 0 ${edgeThickness / 2}px rgba(255, 255, 255, 0.3)
               `,
               filter: `brightness(${intensity}) blur(0.5px)`,
-              borderRadius: '2px'
+              borderRadius: '0 2px 2px 0'
             }}
           />
           
-          {/* Extended glow for 3D effect */}
+          {/* Subtle outer glow within card bounds */}
           <div
             className="absolute top-0 right-0 h-full"
             style={{
-              width: `${edgeThickness * 4}px`,
+              width: `${edgeThickness / 2}px`,
               background: `linear-gradient(to left, ${gasColor} 0%, transparent 100%)`,
               animation: isHovering ? 'gas-pulse 2s ease-in-out infinite alternate' : 'gas-gentle 4s ease-in-out infinite alternate',
               filter: `brightness(${intensity * 0.8})`
@@ -172,8 +132,49 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
           />
         </div>
       )}
+
+      {/* Left Edge Glow - Contained within card boundaries */}
+      {leftOpacity > 0.1 && (
+        <div 
+          className="absolute top-0 h-full pointer-events-none z-15"
+          style={{
+            left: '0px', // Changed from '-8px' to stay within boundaries
+            opacity: leftOpacity,
+            transition: 'opacity 0.3s ease',
+            width: `${edgeThickness}px`
+          }}
+          data-edge="left"
+          data-opacity={leftOpacity.toFixed(2)}
+        >
+          {/* Inner glow using box-shadow instead of extending outside */}
+          <div
+            className="absolute top-0 left-0 h-full"
+            style={{
+              width: `${edgeThickness}px`,
+              background: gasColor,
+              boxShadow: `
+                inset 2px 0 ${edgeThickness}px ${gasColor},
+                inset 0 0 ${edgeThickness / 2}px rgba(255, 255, 255, 0.3)
+              `,
+              filter: `brightness(${intensity}) blur(0.5px)`,
+              borderRadius: '2px 0 0 2px'
+            }}
+          />
+          
+          {/* Subtle outer glow within card bounds */}
+          <div
+            className="absolute top-0 left-0 h-full"
+            style={{
+              width: `${edgeThickness / 2}px`,
+              background: `linear-gradient(to right, ${gasColor} 0%, transparent 100%)`,
+              animation: isHovering ? 'gas-pulse 2s ease-in-out infinite alternate' : 'gas-gentle 4s ease-in-out infinite alternate',
+              filter: `brightness(${intensity * 0.8})`
+            }}
+          />
+        </div>
+      )}
       
-      {/* Particle-like sparkles for magical effects */}
+      {/* Enhanced sparkles for magical effects - contained within bounds */}
       {(effectValues.holographic?.intensity as number > 20 || 
         effectValues.crystal?.intensity as number > 20 ||
         effectValues.prizm?.intensity as number > 20) && (
@@ -182,8 +183,8 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
             <div
               className="absolute top-0 h-full pointer-events-none"
               style={{
-                right: '0px',
-                width: `${edgeThickness}px`,
+                right: '2px', // Slightly inset from edge
+                width: `${edgeThickness - 4}px`,
                 background: `
                   radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
                   radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.6) 1px, transparent 2px),
@@ -200,8 +201,8 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
             <div
               className="absolute top-0 h-full pointer-events-none"
               style={{
-                left: '0px',
-                width: `${edgeThickness}px`,
+                left: '2px', // Slightly inset from edge
+                width: `${edgeThickness - 4}px`,
                 background: `
                   radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
                   radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.6) 1px, transparent 2px),

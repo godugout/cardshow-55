@@ -14,28 +14,14 @@ interface CardThicknessContainerProps {
 export const CardThicknessContainer: React.FC<CardThicknessContainerProps> = ({
   cardWidth = 400,
   cardHeight = 560,
-  thickness = 6,
+  thickness = 8, // Increased from 6 to 8 for better visibility
   isHovering,
   showEffects,
   rotation
 }) => {
-  // Calculate which sides are visible based on rotation
-  const getVisibleSides = () => {
-    const normalizedRotationY = ((rotation.y % 360) + 360) % 360;
-    const normalizedRotationX = ((rotation.x % 360) + 360) % 360;
-    
-    const sides = {
-      top: normalizedRotationX > 0 && normalizedRotationX < 180,
-      bottom: normalizedRotationX > 180 || normalizedRotationX < 0,
-      left: normalizedRotationY > 90 && normalizedRotationY < 270,
-      right: normalizedRotationY > 270 || normalizedRotationY < 90
-    };
-
-    return sides;
-  };
-
-  const visibleSides = getVisibleSides();
-
+  // Always show all sides for better 3D effect - removed conditional rendering
+  // This ensures the 3D effect is always visible when rotating
+  
   return (
     <div 
       className="card-thickness-container"
@@ -46,53 +32,51 @@ export const CardThicknessContainer: React.FC<CardThicknessContainerProps> = ({
         transformStyle: 'preserve-3d'
       }}
     >
+      {/* Always render all side faces for consistent 3D appearance */}
+      
       {/* Top Edge */}
-      {visibleSides.top && (
-        <CardSideFace
-          position="top"
-          cardWidth={cardWidth}
-          cardHeight={cardHeight}
-          thickness={thickness}
-          isHovering={isHovering}
-          showEffects={showEffects}
-        />
-      )}
+      <CardSideFace
+        position="top"
+        cardWidth={cardWidth}
+        cardHeight={cardHeight}
+        thickness={thickness}
+        isHovering={isHovering}
+        showEffects={showEffects}
+        rotation={rotation}
+      />
 
       {/* Bottom Edge */}
-      {visibleSides.bottom && (
-        <CardSideFace
-          position="bottom"
-          cardWidth={cardWidth}
-          cardHeight={cardHeight}
-          thickness={thickness}
-          isHovering={isHovering}
-          showEffects={showEffects}
-        />
-      )}
+      <CardSideFace
+        position="bottom"
+        cardWidth={cardWidth}
+        cardHeight={cardHeight}
+        thickness={thickness}
+        isHovering={isHovering}
+        showEffects={showEffects}
+        rotation={rotation}
+      />
 
       {/* Left Edge */}
-      {visibleSides.left && (
-        <CardSideFace
-          position="left"
-          cardWidth={cardWidth}
-          cardHeight={cardHeight}
-          thickness={thickness}
-          isHovering={isHovering}
-          showEffects={showEffects}
-        />
-      )}
+      <CardSideFace
+        position="left"
+        cardWidth={cardWidth}
+        cardHeight={cardHeight}
+        thickness={thickness}
+        isHovering={isHovering}
+        showEffects={showEffects}
+        rotation={rotation}
+      />
 
       {/* Right Edge */}
-      {visibleSides.right && (
-        <CardSideFace
-          position="right"
-          cardWidth={cardWidth}
-          cardHeight={cardHeight}
-          thickness={thickness}
-          isHovering={isHovering}
-          showEffects={showEffects}
-        />
-      )}
+      <CardSideFace
+        position="right"
+        cardWidth={cardWidth}
+        cardHeight={cardHeight}
+        thickness={thickness}
+        isHovering={isHovering}
+        showEffects={showEffects}
+        rotation={rotation}
+      />
     </div>
   );
 };
