@@ -19,23 +19,21 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
   interactiveLighting = false,
   zoom
 }) => {
-  // Improved edge visibility calculation for new 3D positioning
+  // Calculate edge visibility based on rotation angle
   const getEdgeVisibility = () => {
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
     
-    // Edge is most visible when card is sideways (around 90° and 270°)
-    // Show edges when card is between 45°-135° or 225°-315°
+    // Show edges when card is sideways (45°-135° and 225°-315°)
     const isRightEdgeVisible = normalizedRotation >= 45 && normalizedRotation <= 135;
     const isLeftEdgeVisible = normalizedRotation >= 225 && normalizedRotation <= 315;
     
-    console.log('🔄 Edge Visibility (Fixed) - Rotation:', normalizedRotation.toFixed(1), 'Right:', isRightEdgeVisible, 'Left:', isLeftEdgeVisible);
-    
     if (!isRightEdgeVisible && !isLeftEdgeVisible) {
-      return { opacity: 0, display: 'none' as const };
+      return { opacity: 0, width: 0, display: 'none' as const };
     }
     
     // Calculate opacity based on angle - most visible at 90° and 270°
     let opacity = 0;
+    let edgeWidth = 8; // Base thickness in pixels
     
     if (isRightEdgeVisible) {
       // Peak visibility at 90°
@@ -47,8 +45,12 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
       opacity = Math.max(0, 1 - (angleFromPeak / 45));
     }
     
+    // Adjust width based on zoom
+    edgeWidth *= zoom;
+    
     return { 
       opacity: Math.max(0.1, opacity), 
+      width: edgeWidth,
       display: 'block' as const
     };
   };
@@ -84,7 +86,7 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
     return colorMap[dominantEffect[0]] || 'rgba(100, 150, 255, 0.6)';
   };
 
-  const { opacity, display } = getEdgeVisibility();
+  const { opacity, width, display } = getEdgeVisibility();
   
   if (display === 'none') {
     return null;
@@ -92,51 +94,40 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
 
   const gasColor = getGasColor();
   const intensity = isHovering && interactiveLighting ? 1.3 : 1;
-  const edgeThickness = 8; // 8px gap between front and back faces
 
   return (
     <div 
-      className="absolute inset-0 pointer-events-none"
+      className="absolute inset-0 pointer-events-none z-15"
       style={{
         opacity,
         transition: 'opacity 0.3s ease',
-        display,
-        // Position as a proper side face between front and back
-        transform: 'rotateY(90deg) translateZ(0px)',
-        transformStyle: 'preserve-3d',
-        width: `${edgeThickness}px`,
-        height: '100%',
-        left: '50%',
-        marginLeft: `-${edgeThickness / 2}px`, // Center the edge
-        transformOrigin: 'center center',
-        backfaceVisibility: 'hidden'
+        display
       }}
       data-edge-visibility={opacity > 0.1 ? 'visible' : 'hidden'}
       data-edge-rotation={rotation.y.toFixed(1)}
     >
-      {/* Main edge surface with proper 3D positioning */}
+      {/* Main edge thickness */}
       <div
-        className="absolute inset-0"
+        className="absolute top-0 left-1/2 h-full"
         style={{
-          width: '100%',
-          height: '100%',
+          width: `${width}px`,
+          transform: 'translateX(-50%)',
           background: gasColor,
           boxShadow: `
-            0 0 ${edgeThickness * 2}px ${gasColor},
-            inset 0 0 ${edgeThickness}px rgba(255, 255, 255, 0.2)
+            0 0 ${width * 2}px ${gasColor},
+            inset 0 0 ${width}px rgba(255, 255, 255, 0.2)
           `,
           filter: `brightness(${intensity}) blur(0.5px)`,
           borderRadius: '2px'
         }}
       />
       
-      {/* Glowing gas layers extending outward */}
+      {/* Glowing gas layers */}
       <div
-        className="absolute inset-0"
+        className="absolute top-0 left-1/2 h-full"
         style={{
-          width: `${edgeThickness * 3}px`,
-          height: '100%',
-          left: `-${edgeThickness}px`, // Extend beyond the edge surface
+          width: `${width * 3}px`,
+          transform: 'translateX(-50%)',
           background: `radial-gradient(ellipse, ${gasColor} 0%, transparent 70%)`,
           animation: isHovering ? 'gas-pulse 2s ease-in-out infinite alternate' : 'gas-gentle 4s ease-in-out infinite alternate',
           filter: `brightness(${intensity * 0.8})`
@@ -148,11 +139,10 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
         effectValues.crystal?.intensity as number > 20 ||
         effectValues.prizm?.intensity as number > 20) && (
         <div
-          className="absolute inset-0"
+          className="absolute top-0 left-1/2 h-full"
           style={{
-            width: `${edgeThickness * 2}px`,
-            height: '100%',
-            left: `-${edgeThickness / 2}px`,
+            width: `${width * 2}px`,
+            transform: 'translateX(-50%)',
             background: `
               radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
               radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.6) 1px, transparent 2px),
@@ -168,13 +158,13 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
       <style>
         {`
           @keyframes gas-pulse {
-            0% { opacity: 0.6; transform: scaleY(1); }
-            100% { opacity: 0.9; transform: scaleY(1.05); }
+            0% { opacity: 0.6; transform: translateX(-50%) scaleY(1); }
+            100% { opacity: 0.9; transform: translateX(-50%) scaleY(1.05); }
           }
           
           @keyframes gas-gentle {
-            0% { opacity: 0.4; transform: scaleY(0.98); }
-            100% { opacity: 0.7; transform: scaleY(1.02); }
+            0% { opacity: 0.4; transform: translateX(-50%) scaleY(0.98); }
+            100% { opacity: 0.7; transform: translateX(-50%) scaleY(1.02); }
           }
           
           @keyframes sparkle-dance {
