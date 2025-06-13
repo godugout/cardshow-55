@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ViewerHeader } from './ViewerHeader';
 import { ViewerControls } from './ViewerControls';
@@ -90,7 +89,10 @@ interface ViewerLayoutProps {
   showStats: boolean;
 }
 
-export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
+export const ViewerLayout: React.FC<ViewerLayoutProps & {
+  enableTrue3D?: boolean;
+  onToggle3D?: (enabled: boolean) => void;
+}> = (props) => {
   const {
     card,
     cards,
@@ -101,6 +103,8 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
     showCustomizePanel,
     showStats,
     allowRotation,
+    enableTrue3D = false,
+    onToggle3D,
     // All other props passed through
     ...layoutProps
   } = props;
@@ -109,8 +113,8 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
   const shouldShowPanel = showCustomizePanel;
   const panelWidth = 320;
 
-  // Enable true 3D rendering by default
-  const enableTrue3D = true;
+  // Default to sophisticated 2D effects system (changed from true to false)
+  const enableTrue3D = false;
 
   // Calculate proper centering styles
   const getCenteringStyles = () => {
@@ -148,24 +152,26 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
         msUserSelect: 'none'
       }}
     >
-      {/* Background Renderer with True3D enabled */}
-      <ViewerBackground
-        backgroundType={layoutProps.backgroundType}
-        selectedSpace={layoutProps.selectedSpace}
-        spaceControls={layoutProps.spaceControls}
-        card={card}
-        onCardClick={layoutProps.onCardClick}
-        onCameraReset={layoutProps.handleResetCamera}
-        selectedScene={layoutProps.selectedScene}
-        selectedLighting={layoutProps.selectedLighting}
-        mousePosition={layoutProps.mousePosition}
-        isHovering={layoutProps.isHovering}
-        effectValues={layoutProps.effectValues}
-        materialSettings={layoutProps.materialSettings}
-        overallBrightness={layoutProps.overallBrightness}
-        interactiveLighting={layoutProps.interactiveLighting}
-        enableTrue3D={enableTrue3D}
-      />
+      {/* Background Renderer - only show 3D when enabled */}
+      {enableTrue3D && (
+        <ViewerBackground
+          backgroundType={layoutProps.backgroundType}
+          selectedSpace={layoutProps.selectedSpace}
+          spaceControls={layoutProps.spaceControls}
+          card={card}
+          onCardClick={layoutProps.onCardClick}
+          onCameraReset={layoutProps.handleResetCamera}
+          selectedScene={layoutProps.selectedScene}
+          selectedLighting={layoutProps.selectedLighting}
+          mousePosition={layoutProps.mousePosition}
+          isHovering={layoutProps.isHovering}
+          effectValues={layoutProps.effectValues}
+          materialSettings={layoutProps.materialSettings}
+          overallBrightness={layoutProps.overallBrightness}
+          interactiveLighting={layoutProps.interactiveLighting}
+          enableTrue3D={enableTrue3D}
+        />
+      )}
 
       {/* Interaction Layer */}
       <ViewerInteractionLayer
@@ -226,7 +232,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
           hasMultipleCards={hasMultipleCards}
         />
 
-        {/* Only show 2D card display when 3D is disabled */}
+        {/* Enhanced 2D Card Display - show unless 3D is enabled */}
         {!enableTrue3D && (
           <div 
             className="absolute inset-0 pointer-events-none"
@@ -270,7 +276,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
         )}
       </ViewerInteractionLayer>
 
-      {/* Studio Panel */}
+      {/* Studio Panel with 3D toggle */}
       <StudioPanel
         isVisible={shouldShowPanel}
         onClose={() => layoutProps.setShowCustomizePanel(false)}
@@ -297,6 +303,8 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
         spaceControls={layoutProps.spaceControls}
         onSpaceControlsChange={layoutProps.setSpaceControls}
         onResetCamera={layoutProps.handleResetCamera}
+        enableTrue3D={enableTrue3D}
+        onToggle3D={onToggle3D}
       />
 
       {/* Export Options Dialog */}

@@ -34,11 +34,15 @@ interface StudioPanelProps {
   spaceControls?: SpaceControls;
   onSpaceControlsChange?: (controls: SpaceControls) => void;
   onResetCamera?: () => void;
+  enableTrue3D?: boolean;
+  onToggle3D?: (enabled: boolean) => void;
 }
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({
   isVisible,
   onClose,
+  enableTrue3D = false,
+  onToggle3D,
   ...studioProps
 }) => {
   if (!isVisible) return null;
@@ -65,6 +69,30 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* 3D Mode Toggle */}
+        {onToggle3D && (
+          <div className="px-4 py-2 border-b border-white/10">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-300">3D Mode</span>
+              <button
+                onClick={() => onToggle3D(!enableTrue3D)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  enableTrue3D ? 'bg-crd-green' : 'bg-gray-600'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    enableTrue3D ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">
+              {enableTrue3D ? 'True 3D volumetric rendering' : 'Enhanced 2D effects system'}
+            </p>
+          </div>
+        )}
 
         {/* Studio Content with Scroll Support */}
         <ScrollableStudioContent {...studioProps} />

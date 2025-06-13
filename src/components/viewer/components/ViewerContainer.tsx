@@ -1,8 +1,8 @@
-
 import React from 'react';
-import { ViewerLayout } from './ViewerLayout';
+import { ViewerStateManager } from './ViewerStateManager';
 import { ViewerEffectsManager } from './ViewerEffectsManager';
-import { useViewerContainerState } from '../hooks/useViewerContainerState';
+import { ViewerLayout } from './ViewerLayout';
+import { RenderModeManager } from './RenderModeManager';
 import type { CardData } from '@/hooks/useCardEditor';
 
 interface ViewerContainerProps {
@@ -27,55 +27,73 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
   isOpen = true,
   onClose,
   onShare,
+  onDownload,
   allowRotation = true,
-  showStats = true
+  showStats = false,
+  ambient = true
 }) => {
-  const containerState = useViewerContainerState({ card, onShare });
-
   if (!isOpen) return null;
 
   return (
-    <ViewerEffectsManager
-      card={card}
-      mousePosition={containerState.mousePosition}
-      showEffects={containerState.showEffects}
-      overallBrightness={containerState.overallBrightness}
-      interactiveLighting={containerState.interactiveLighting}
-      selectedScene={containerState.selectedScene}
-      selectedLighting={containerState.selectedLighting}
-      materialSettings={containerState.materialSettings}
-      zoom={containerState.zoom}
-      rotation={containerState.rotation}
-      isHovering={containerState.isHovering}
-      onEffectValuesChange={containerState.handleEffectValuesChange}
-      onPresetStateChange={containerState.handlePresetStateChange}
-    >
-      {(effectsManager) => (
-        <ViewerLayout
-          // Card and navigation props
+    <RenderModeManager card={card} effectValues={{}}>
+      {({ enableTrue3D, onToggle3D }) => (
+        <ViewerStateManager
           card={card}
           cards={cards}
           currentCardIndex={currentCardIndex}
           onCardChange={onCardChange}
           onClose={onClose}
-          
-          // All container state
-          {...containerState}
-          
-          // Effects manager props
-          effectValues={effectsManager.effectValues}
-          frameStyles={effectsManager.frameStyles}
-          enhancedEffectStyles={effectsManager.enhancedEffectStyles}
-          SurfaceTexture={effectsManager.SurfaceTexture}
-          handleEffectChange={effectsManager.handleEffectChange}
-          handleComboApplication={effectsManager.handleComboApplication}
-          isApplyingPreset={effectsManager.isApplyingPreset}
-          
-          // Configuration
+          onShare={onShare}
+          onDownload={onDownload}
           allowRotation={allowRotation}
           showStats={showStats}
-        />
+          ambient={ambient}
+        >
+          {(stateProps) => (
+            <ViewerEffectsManager
+              card={card}
+              mousePosition={stateProps.mousePosition}
+              showEffects={stateProps.showEffects}
+              overallBrightness={stateProps.overallBrightness}
+              interactiveLighting={stateProps.interactiveLighting}
+              selectedScene={stateProps.selectedScene}
+              selectedLighting={stateProps.selectedLighting}
+              materialSettings={stateProps.materialSettings}
+              zoom={stateProps.zoom}
+              rotation={stateProps.rotation}
+              isHovering={stateProps.isHovering}
+              onEffectValuesChange={(values) => {
+                // Update effect values in state if needed
+              }}
+              onPresetStateChange={(state) => {
+                // Handle preset state changes
+                if (state.selectedScene) stateProps.setSelectedScene(state.selectedScene);
+                if (state.selectedLighting) stateProps.setSelectedLighting(state.selectedLighting);
+                if (state.selectedPresetId !== undefined) stateProps.setSelectedPresetId(state.selectedPresetId);
+                if (state.reset) {
+                  stateProps.handleReset();
+                }
+              }}
+            >
+              {(effectsManager) => (
+                <ViewerLayout
+                  {...stateProps}
+                  card={card}
+                  cards={cards}
+                  currentCardIndex={currentCardIndex}
+                  onCardChange={onCardChange}
+                  onClose={onClose}
+                  allowRotation={allowRotation}
+                  showStats={showStats}
+                  {...effectsManager}
+                  enableTrue3D={enableTrue3D}
+                  onToggle3D={onToggle3D}
+                />
+              )}
+            </ViewerEffectsManager>
+          )}
+        </ViewerStateManager>
       )}
-    </ViewerEffectsManager>
+    </RenderModeManager>
   );
 };
