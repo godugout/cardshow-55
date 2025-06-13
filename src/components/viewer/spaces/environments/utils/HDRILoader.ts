@@ -14,7 +14,7 @@ export class HDRILoader {
   private static loader = new THREE.TextureLoader();
 
   static async loadHDRI(options: HDRILoadOptions): Promise<THREE.Texture> {
-    const { url, fallback, onProgress, onLoad, onError } = options;
+    const { url, fallbackUrl, onProgress, onLoad, onError } = options;
     
     // Check cache first
     if (this.cache.has(url)) {
@@ -46,9 +46,9 @@ export class HDRILoader {
           (error) => {
             console.error(`❌ ${isFallback ? 'Fallback' : 'HDRI'} loading failed:`, error);
             
-            if (!isFallback && options.fallbackUrl) {
+            if (!isFallback && fallbackUrl) {
               console.log('🔄 Trying fallback URL...');
-              loadTexture(options.fallbackUrl, true);
+              loadTexture(fallbackUrl, true);
             } else {
               const errorMsg = new Error(`Failed to load ${isFallback ? 'fallback' : 'HDRI'} texture`);
               onError?.(errorMsg);

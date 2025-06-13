@@ -161,10 +161,9 @@ export const EnhancedHDRIEnvironment: React.FC<EnhancedHDRIEnvironmentProps> = (
         shadow-camera-bottom={-10}
       />
       
-      {/* Additional fill light for card visibility */}
+      {/* Fixed HemisphereLight props - use args array instead of individual props */}
       <hemisphereLight
-        skyColor={0xffffff}
-        groundColor={0x444444}
+        args={[0xffffff, 0x444444]}
         intensity={0.3 * environment.lighting.intensity}
       />
     </Suspense>
