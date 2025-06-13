@@ -3,6 +3,7 @@ import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Group } from 'three';
 import { True3DCard } from './True3DCard';
+import { mapLightingTo3D } from './utils/effectsTo3DMapper';
 import type { SpaceControls } from './types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -65,25 +66,34 @@ export const Card3D: React.FC<Card3DProps> = ({
   });
 
   const handleCardClick = () => {
-    console.log('🎯 True 3D Card clicked:', card.title);
+    console.log('🎯 Enhanced 3D Card clicked:', card.title, 'Effects:', effectValues);
     onClick?.();
   };
 
   const handleCardHover = (hovered: boolean) => {
-    console.log('🎯 True 3D Card hovered:', hovered, card.title);
+    console.log('🎯 Enhanced 3D Card hovered:', hovered, card.title);
   };
 
-  // Get lighting colors with fallbacks
-  const lightColor = (selectedLighting as any)?.color || '#ffffff';
-  const accentColor = (selectedLighting as any)?.accentColor || '#4444ff';
+  // Get enhanced lighting properties
+  const lightingProps = selectedLighting ? mapLightingTo3D(selectedLighting) : {
+    mainLightColor: '#ffffff',
+    mainLightIntensity: 0.8,
+    ambientColor: '#404040',
+    ambientIntensity: 0.3,
+    accentColor: '#4444ff',
+    accentIntensity: 0.4
+  };
+
+  // Apply brightness multiplier
+  const brightnessMultiplier = overallBrightness[0] / 100;
 
   return (
     <group ref={groupRef}>
-      {/* Enhanced 3D lighting setup */}
+      {/* Enhanced 3D lighting setup with effect-driven colors */}
       <pointLight
         position={[2, 3, 2]}
-        intensity={0.8}
-        color={lightColor}
+        intensity={lightingProps.mainLightIntensity * brightnessMultiplier}
+        color={lightingProps.mainLightColor}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -91,11 +101,17 @@ export const Card3D: React.FC<Card3DProps> = ({
       
       <pointLight
         position={[-2, 1, 2]}
-        intensity={0.4}
-        color={accentColor}
+        intensity={lightingProps.accentIntensity * brightnessMultiplier}
+        color={lightingProps.accentColor}
       />
 
-      {/* True 3D Card with real geometry */}
+      {/* Enhanced ambient light */}
+      <ambientLight 
+        intensity={lightingProps.ambientIntensity * brightnessMultiplier}
+        color={lightingProps.ambientColor}
+      />
+
+      {/* True 3D Card with enhanced effects integration */}
       <True3DCard
         card={card}
         position={[0, 0, 0]}
@@ -104,6 +120,9 @@ export const Card3D: React.FC<Card3DProps> = ({
         onHover={handleCardHover}
         autoRotate={controls.autoRotate}
         floatIntensity={controls.floatIntensity}
+        effectValues={effectValues}
+        selectedLighting={selectedLighting}
+        materialSettings={materialSettings}
       />
 
       {/* Enhanced ambient particles for magical effect */}
@@ -124,7 +143,7 @@ export const Card3D: React.FC<Card3DProps> = ({
               <meshBasicMaterial 
                 color={`hsl(${i * 30}, 70%, 60%)`}
                 transparent
-                opacity={0.6}
+                opacity={0.6 * effectValues.holographic.intensity}
               />
             </mesh>
           ))}

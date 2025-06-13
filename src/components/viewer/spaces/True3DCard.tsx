@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import { useCardTextures } from './hooks/useCardTextures';
 import { CardMesh } from './components/CardMesh';
 import { CardText } from './components/CardText';
+import type { EffectValues } from '../hooks/useEnhancedCardEffects';
+import type { LightingPreset, MaterialSettings } from '../types';
 
 interface Simple3DCard {
   id: string;
@@ -23,6 +25,9 @@ interface True3DCardProps {
   onHover?: (hovered: boolean) => void;
   autoRotate?: boolean;
   floatIntensity?: number;
+  effectValues?: EffectValues;
+  selectedLighting?: LightingPreset;
+  materialSettings?: MaterialSettings;
 }
 
 export const True3DCard: React.FC<True3DCardProps> = ({
@@ -33,7 +38,10 @@ export const True3DCard: React.FC<True3DCardProps> = ({
   onClick,
   onHover,
   autoRotate = false,
-  floatIntensity = 0.1
+  floatIntensity = 0.1,
+  effectValues = {},
+  selectedLighting,
+  materialSettings
 }) => {
   const groupRef = useRef<THREE.Group>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -47,19 +55,37 @@ export const True3DCard: React.FC<True3DCardProps> = ({
     cardImageUrl: card.image_url
   });
 
-  // Enhanced animation loop
+  // Enhanced animation loop with effect-based modifications
   useFrame((state) => {
     if (groupRef.current) {
-      // Floating animation
-      if (floatIntensity > 0) {
-        const floatY = Math.sin(state.clock.elapsedTime * 0.8) * floatIntensity;
+      // Enhanced floating animation with effect intensity
+      let effectiveFloatIntensity = floatIntensity;
+      
+      // Increase float intensity for holographic effects
+      if (effectValues.holographic && typeof effectValues.holographic.intensity === 'number') {
+        effectiveFloatIntensity *= (1 + effectValues.holographic.intensity * 0.5);
+      }
+      
+      if (effectiveFloatIntensity > 0) {
+        const floatY = Math.sin(state.clock.elapsedTime * 0.8) * effectiveFloatIntensity * 0.2;
         groupRef.current.position.y = position[1] + floatY;
+      }
+
+      // Enhanced auto rotation with chrome effect speed boost
+      if (autoRotate) {
+        let rotationSpeed = 0.008;
+        
+        if (effectValues.chrome && typeof effectValues.chrome.intensity === 'number') {
+          rotationSpeed *= (1 + effectValues.chrome.intensity * 0.3);
+        }
+        
+        groupRef.current.rotation.y += rotationSpeed;
       }
     }
   });
 
   const handleClick = () => {
-    console.log('🎯 True3DCard clicked:', card.title);
+    console.log('🎯 Enhanced True3DCard clicked:', card.title, 'Effects:', effectValues);
     onClick?.();
   };
 
@@ -96,6 +122,9 @@ export const True3DCard: React.FC<True3DCardProps> = ({
         onClick={handleClick}
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
+        effectValues={effectValues}
+        selectedLighting={selectedLighting}
+        materialSettings={materialSettings}
       />
 
       <CardText

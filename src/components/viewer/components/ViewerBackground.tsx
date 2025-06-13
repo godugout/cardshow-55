@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { BackgroundRenderer } from './BackgroundRenderer';
+import { SpaceRenderer3D } from '../spaces/SpaceRenderer3D';
+import { EnvironmentSphere } from './EnvironmentSphere';
 import { adaptCardForSpaceRenderer } from '../utils/cardAdapter';
 import type { BackgroundType, EnvironmentScene, LightingPreset } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
@@ -21,6 +22,7 @@ interface ViewerBackgroundProps {
   materialSettings: any;
   overallBrightness: number[];
   interactiveLighting: boolean;
+  enableTrue3D?: boolean; // New prop to control 3D rendering
 }
 
 export const ViewerBackground: React.FC<ViewerBackgroundProps> = ({
@@ -37,28 +39,79 @@ export const ViewerBackground: React.FC<ViewerBackgroundProps> = ({
   effectValues,
   materialSettings,
   overallBrightness,
-  interactiveLighting
+  interactiveLighting,
+  enableTrue3D = true // Default to true for new 3D experience
 }) => {
   // Adapt card for space renderer
   const adaptedCard = adaptCardForSpaceRenderer(card);
 
-  return (
-    <BackgroundRenderer
-      backgroundType={backgroundType}
-      selectedSpace={selectedSpace}
-      spaceControls={spaceControls}
-      adaptedCard={adaptedCard}
-      onCardClick={onCardClick}
-      onCameraReset={onCameraReset}
-      selectedScene={selectedScene}
-      selectedLighting={selectedLighting}
-      mousePosition={mousePosition}
-      isHovering={isHovering}
-      effectValues={effectValues}
-      materialSettings={materialSettings}
-      overallBrightness={overallBrightness}
-      interactiveLighting={interactiveLighting}
-      renderCard={false}
-    />
-  );
+  // Always use 3D space rendering for the enhanced experience
+  if (enableTrue3D) {
+    // Create a default space environment if none selected
+    const defaultSpace: SpaceEnvironment = selectedSpace || {
+      id: 'studio-default',
+      name: 'Studio',
+      type: 'studio',
+      config: {
+        lightIntensity: 1.0,
+        exposure: 1.0,
+        autoRotation: 0
+      }
+    };
+
+    return (
+      <div className="absolute inset-0 z-0">
+        <SpaceRenderer3D
+          card={adaptedCard}
+          environment={defaultSpace}
+          controls={spaceControls}
+          effectValues={effectValues}
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
+          overallBrightness={overallBrightness}
+          interactiveLighting={interactiveLighting}
+          onCardClick={onCardClick}
+          onCameraReset={onCameraReset}
+          renderCard={true} // Always render the 3D card
+        />
+      </div>
+    );
+  }
+
+  // Fallback to legacy 2D rendering
+  if (backgroundType === '3dSpace' && selectedSpace) {
+    return (
+      <div className="absolute inset-0 z-0">
+        <SpaceRenderer3D
+          card={adaptedCard}
+          environment={selectedSpace}
+          controls={spaceControls}
+          effectValues={effectValues}
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
+          overallBrightness={overallBrightness}
+          interactiveLighting={interactiveLighting}
+          onCardClick={onCardClick}
+          onCameraReset={onCameraReset}
+          renderCard={false}
+        />
+      </div>
+    );
+  }
+
+  if (backgroundType === 'scene') {
+    return (
+      <div className="absolute inset-0 z-0">
+        <EnvironmentSphere
+          scene={selectedScene}
+          mousePosition={mousePosition}
+          isHovering={isHovering}
+        />
+      </div>
+    );
+  }
+
+  return null;
 };
