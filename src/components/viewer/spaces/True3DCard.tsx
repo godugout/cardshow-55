@@ -1,6 +1,5 @@
-
 import React, { useRef, useMemo, useState, useEffect } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Text } from '@react-three/drei';
 import { textureManager } from './utils/TextureManager';
@@ -154,7 +153,7 @@ export const True3DCard: React.FC<True3DCardProps> = ({
     }
   });
 
-  const handleClick = (event: React.MouseEvent) => {
+  const handleClick = (event: ThreeEvent<MouseEvent>) => {
     event.stopPropagation();
     console.log('🎯 True3DCard clicked:', card.title);
     onClick?.();
