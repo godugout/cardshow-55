@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 
@@ -24,31 +23,38 @@ export const Card3DThickness: React.FC<Card3DThicknessProps> = ({
     const normalizedRotationY = ((rotation.y % 360) + 360) % 360;
     const normalizedRotationX = ((rotation.x % 360) + 360) % 360;
     
+    // Enhanced debug logging
+    console.log('🎯 Card3DThickness - Y Rotation:', normalizedRotationY.toFixed(1), 'X Rotation:', normalizedRotationX.toFixed(1));
+    
     // Right wall visible when card shows right side (45° to 135°)
     const rightWallVisible = normalizedRotationY >= 45 && normalizedRotationY <= 135;
     const rightOpacity = rightWallVisible ? 
-      Math.max(0.1, 1 - Math.abs(normalizedRotationY - 90) / 45) : 0;
+      Math.max(0.2, 1 - Math.abs(normalizedRotationY - 90) / 45) : 0;
     
     // Left wall visible when card shows left side (225° to 315°)
     const leftWallVisible = normalizedRotationY >= 225 && normalizedRotationY <= 315;
     const leftOpacity = leftWallVisible ? 
-      Math.max(0.1, 1 - Math.abs(normalizedRotationY - 270) / 45) : 0;
+      Math.max(0.2, 1 - Math.abs(normalizedRotationY - 270) / 45) : 0;
     
-    // Top/bottom walls for X rotation (simplified for now)
+    // Top/bottom walls for X rotation
     const topWallVisible = normalizedRotationX >= 315 || normalizedRotationX <= 45;
     const topOpacity = topWallVisible ? 
-      Math.max(0.1, 1 - Math.min(normalizedRotationX, 360 - normalizedRotationX) / 45) : 0;
+      Math.max(0.2, 1 - Math.min(normalizedRotationX, 360 - normalizedRotationX) / 45) : 0;
     
     const bottomWallVisible = normalizedRotationX >= 135 && normalizedRotationX <= 225;
     const bottomOpacity = bottomWallVisible ? 
-      Math.max(0.1, 1 - Math.abs(normalizedRotationX - 180) / 45) : 0;
+      Math.max(0.2, 1 - Math.abs(normalizedRotationX - 180) / 45) : 0;
+    
+    const anyVisible = rightOpacity > 0.1 || leftOpacity > 0.1 || topOpacity > 0.1 || bottomOpacity > 0.1;
+    
+    console.log('🔥 Walls Visibility:', { rightOpacity: rightOpacity.toFixed(2), leftOpacity: leftOpacity.toFixed(2), anyVisible });
     
     return { 
       rightOpacity, 
       leftOpacity, 
       topOpacity, 
       bottomOpacity,
-      anyVisible: rightOpacity > 0.1 || leftOpacity > 0.1 || topOpacity > 0.1 || bottomOpacity > 0.1
+      anyVisible
     };
   };
 
@@ -85,12 +91,15 @@ export const Card3DThickness: React.FC<Card3DThicknessProps> = ({
   const { rightOpacity, leftOpacity, topOpacity, bottomOpacity, anyVisible } = getSideWallVisibility();
   
   if (!anyVisible) {
+    console.log('❌ No walls visible, not rendering Card3DThickness');
     return null;
   }
 
   const gasColor = getGasColor();
   const intensity = isHovering && interactiveLighting ? 1.4 : 1.1;
   const thickness = 4; // 4px thick walls
+
+  console.log('✅ Rendering Card3DThickness with walls:', { rightOpacity, leftOpacity, topOpacity, bottomOpacity });
 
   const wallStyle = {
     position: 'absolute' as const,
@@ -118,18 +127,27 @@ export const Card3DThickness: React.FC<Card3DThicknessProps> = ({
       {/* Right Side Wall */}
       {rightOpacity > 0.1 && (
         <div 
+          className="absolute top-0 right-0 w-full h-full pointer-events-none z-20"
           style={{
-            ...wallStyle,
             opacity: rightOpacity,
-            transform: `translateX(200px) rotateY(90deg) translateZ(-${thickness/2}px)`,
-            transformOrigin: 'left center'
+            transform: `translateX(200px) rotateY(90deg) translateZ(-2px)`,
+            transformOrigin: 'left center',
+            transformStyle: 'preserve-3d'
           }}
+          data-wall="right"
         >
           <div 
             style={{
-              ...glowStyle,
-              width: `${thickness}px`,
-              background: `linear-gradient(to bottom, ${gasColor} 0%, ${gasColor} 100%)`
+              width: '4px',
+              height: '100%',
+              background: gasColor,
+              boxShadow: `
+                0 0 8px ${gasColor},
+                0 0 16px ${gasColor},
+                inset 0 0 2px rgba(255, 255, 255, 0.3)
+              `,
+              filter: `brightness(${intensity}) blur(1px)`,
+              animation: isHovering ? 'gas-pulse-3d 2s ease-in-out infinite alternate' : 'gas-gentle-3d 4s ease-in-out infinite alternate'
             }}
           />
         </div>
@@ -138,18 +156,27 @@ export const Card3DThickness: React.FC<Card3DThicknessProps> = ({
       {/* Left Side Wall */}
       {leftOpacity > 0.1 && (
         <div 
+          className="absolute top-0 left-0 w-full h-full pointer-events-none z-20"
           style={{
-            ...wallStyle,
             opacity: leftOpacity,
-            transform: `translateX(-200px) rotateY(-90deg) translateZ(-${thickness/2}px)`,
-            transformOrigin: 'right center'
+            transform: `translateX(-200px) rotateY(-90deg) translateZ(-2px)`,
+            transformOrigin: 'right center',
+            transformStyle: 'preserve-3d'
           }}
+          data-wall="left"
         >
           <div 
             style={{
-              ...glowStyle,
-              width: `${thickness}px`,
-              background: `linear-gradient(to bottom, ${gasColor} 0%, ${gasColor} 100%)`
+              width: '4px',
+              height: '100%',
+              background: gasColor,
+              boxShadow: `
+                0 0 8px ${gasColor},
+                0 0 16px ${gasColor},
+                inset 0 0 2px rgba(255, 255, 255, 0.3)
+              `,
+              filter: `brightness(${intensity}) blur(1px)`,
+              animation: isHovering ? 'gas-pulse-3d 2s ease-in-out infinite alternate' : 'gas-gentle-3d 4s ease-in-out infinite alternate'
             }}
           />
         </div>
@@ -158,18 +185,27 @@ export const Card3DThickness: React.FC<Card3DThicknessProps> = ({
       {/* Top Side Wall */}
       {topOpacity > 0.1 && (
         <div 
+          className="absolute top-0 left-0 w-full h-full pointer-events-none z-20"
           style={{
-            ...wallStyle,
             opacity: topOpacity,
-            transform: `translateY(-280px) rotateX(90deg) translateZ(-${thickness/2}px)`,
-            transformOrigin: 'center bottom'
+            transform: `translateY(-280px) rotateX(90deg) translateZ(-2px)`,
+            transformOrigin: 'center bottom',
+            transformStyle: 'preserve-3d'
           }}
+          data-wall="top"
         >
           <div 
             style={{
-              ...glowStyle,
-              height: `${thickness}px`,
-              background: `linear-gradient(to right, ${gasColor} 0%, ${gasColor} 100%)`
+              width: '100%',
+              height: '4px',
+              background: gasColor,
+              boxShadow: `
+                0 0 8px ${gasColor},
+                0 0 16px ${gasColor},
+                inset 0 0 2px rgba(255, 255, 255, 0.3)
+              `,
+              filter: `brightness(${intensity}) blur(1px)`,
+              animation: isHovering ? 'gas-pulse-3d 2s ease-in-out infinite alternate' : 'gas-gentle-3d 4s ease-in-out infinite alternate'
             }}
           />
         </div>
@@ -178,18 +214,27 @@ export const Card3DThickness: React.FC<Card3DThicknessProps> = ({
       {/* Bottom Side Wall */}
       {bottomOpacity > 0.1 && (
         <div 
+          className="absolute top-0 left-0 w-full h-full pointer-events-none z-20"
           style={{
-            ...wallStyle,
             opacity: bottomOpacity,
-            transform: `translateY(280px) rotateX(-90deg) translateZ(-${thickness/2}px)`,
-            transformOrigin: 'center top'
+            transform: `translateY(280px) rotateX(-90deg) translateZ(-2px)`,
+            transformOrigin: 'center top',
+            transformStyle: 'preserve-3d'
           }}
+          data-wall="bottom"
         >
           <div 
             style={{
-              ...glowStyle,
-              height: `${thickness}px`,
-              background: `linear-gradient(to right, ${gasColor} 0%, ${gasColor} 100%)`
+              width: '100%',
+              height: '4px',
+              background: gasColor,
+              boxShadow: `
+                0 0 8px ${gasColor},
+                0 0 16px ${gasColor},
+                inset 0 0 2px rgba(255, 255, 255, 0.3)
+              `,
+              filter: `brightness(${intensity}) blur(1px)`,
+              animation: isHovering ? 'gas-pulse-3d 2s ease-in-out infinite alternate' : 'gas-gentle-3d 4s ease-in-out infinite alternate'
             }}
           />
         </div>
@@ -201,11 +246,11 @@ export const Card3DThickness: React.FC<Card3DThicknessProps> = ({
           @keyframes gas-pulse-3d {
             0% { 
               opacity: 0.7; 
-              filter: brightness(${intensity}) blur(1px) drop-shadow(0 0 ${thickness * 2}px ${gasColor});
+              filter: brightness(${intensity}) blur(1px) drop-shadow(0 0 8px ${gasColor});
             }
             100% { 
               opacity: 1; 
-              filter: brightness(${intensity * 1.2}) blur(0.5px) drop-shadow(0 0 ${thickness * 4}px ${gasColor});
+              filter: brightness(${intensity * 1.2}) blur(0.5px) drop-shadow(0 0 16px ${gasColor});
             }
           }
           
