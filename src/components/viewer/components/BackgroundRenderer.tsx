@@ -39,10 +39,10 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   overallBrightness = [100],
   interactiveLighting = false
 }) => {
-  // Render 3D Space background (background only, no card)
+  // Check for '3dSpace' instead of 'space' based on the BackgroundType definition
   if (backgroundType === '3dSpace' && selectedSpace) {
     return (
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      <div className="absolute inset-0 z-0">
         <SpaceRenderer3D
           card={adaptedCard}
           environment={selectedSpace}
@@ -60,10 +60,9 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     );
   }
 
-  // Render Environment Sphere background
   if (backgroundType === 'scene') {
     return (
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      <div className="absolute inset-0 z-0">
         <EnvironmentSphere
           scene={selectedScene}
           mousePosition={mousePosition}
@@ -73,8 +72,5 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     );
   }
 
-  // Default dark background
-  return (
-    <div className="absolute inset-0 z-0 bg-crd-darkest" />
-  );
+  return null;
 };

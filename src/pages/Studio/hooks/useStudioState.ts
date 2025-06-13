@@ -53,18 +53,16 @@ export const useStudioState = () => {
     }
   };
 
-  // Handle sharing - generates shareable URL (no parameters needed)
-  const handleShare = () => {
-    if (selectedCard) {
-      const shareUrl = `${window.location.origin}/studio/${selectedCard.id}`;
-      
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(shareUrl)
-          .then(() => toast.success('Studio link copied to clipboard!'))
-          .catch(() => toast.error('Failed to copy link'));
-      } else {
-        toast.error('Sharing not supported in this browser');
-      }
+  // Handle sharing - generates shareable URL
+  const handleShare = (card: CardData) => {
+    const shareUrl = `${window.location.origin}/studio/${card.id}`;
+    
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => toast.success('Studio link copied to clipboard!'))
+        .catch(() => toast.error('Failed to copy link'));
+    } else {
+      toast.error('Sharing not supported in this browser');
     }
   };
 
