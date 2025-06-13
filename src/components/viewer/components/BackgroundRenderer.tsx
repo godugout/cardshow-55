@@ -50,7 +50,8 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     backgroundType,
     enableTrue3D,
     hasSpace: !!selectedSpace,
-    renderCard
+    renderCard,
+    spaceName: selectedSpace?.name
   });
 
   // In True 3D mode, always use 3D space rendering
@@ -71,6 +72,8 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
         autoRotation: 0
       }
     };
+
+    console.log('🎬 Rendering True 3D background with space:', defaultSpace.name);
 
     return (
       <div className="absolute inset-0 z-0">
@@ -94,6 +97,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
 
   // In Enhanced 2D mode, render backgrounds based on type
   if (backgroundType === '3dSpace' && selectedSpace) {
+    console.log('🌌 Rendering Enhanced 2D background with 3D space:', selectedSpace.name);
     return (
       <div className="absolute inset-0 z-0">
         <SpaceRenderer3D
@@ -115,6 +119,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   }
 
   if (backgroundType === 'scene') {
+    console.log('🎭 Rendering Enhanced 2D background with scene:', selectedScene.name);
     return (
       <div className="absolute inset-0 z-0">
         <EnvironmentSphere
@@ -126,5 +131,6 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     );
   }
 
+  console.log('⚫ No background to render');
   return null;
 };

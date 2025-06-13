@@ -19,7 +19,22 @@ export const ReliableSpaceEnvironment: React.FC<ReliableSpaceEnvironmentProps> =
   onLoadComplete,
   onLoadError
 }) => {
-  console.log('🎪 ReliableSpaceEnvironment using imageId:', imageId);
+  console.log('🎪 ReliableSpaceEnvironment rendering with imageId:', imageId);
+  
+  // Enhanced debugging
+  const handleLoadStart = () => {
+    console.log('🔄 Environment loading started for:', imageId);
+  };
+  
+  const handleLoadComplete = () => {
+    console.log('✅ Environment loaded successfully for:', imageId);
+    onLoadComplete?.();
+  };
+  
+  const handleLoadError = (error: Error) => {
+    console.error('❌ Environment load failed for:', imageId, error);
+    onLoadError?.(error);
+  };
   
   return (
     <OptimizedPanoramicEnvironment
@@ -27,8 +42,9 @@ export const ReliableSpaceEnvironment: React.FC<ReliableSpaceEnvironmentProps> =
       rotation={rotation}
       exposure={exposure}
       brightness={brightness}
-      onLoadComplete={onLoadComplete}
-      onLoadError={onLoadError}
+      onLoadStart={handleLoadStart}
+      onLoadComplete={handleLoadComplete}
+      onLoadError={handleLoadError}
     />
   );
 };
