@@ -20,38 +20,19 @@ export const CardSideFace: React.FC<CardSideFaceProps> = ({
   showEffects,
   rotation
 }) => {
-  // Calculate visibility based on rotation for better performance
-  const getVisibility = () => {
-    const normalizedRotationY = ((rotation.y % 360) + 360) % 360;
-    const normalizedRotationX = ((rotation.x % 360) + 360) % 360;
-    
-    switch (position) {
-      case 'top':
-        return normalizedRotationX > 15 && normalizedRotationX < 165;
-      case 'bottom':
-        return normalizedRotationX > 195 && normalizedRotationX < 345;
-      case 'left':
-        return normalizedRotationY > 105 && normalizedRotationY < 255;
-      case 'right':
-        return normalizedRotationY > 285 || normalizedRotationY < 75;
-      default:
-        return true;
-    }
-  };
-
-  const isVisible = getVisibility();
+  // Always show sides for better 3D effect - removed visibility calculation
   
   // Calculate dimensions and positioning for each side face
   const getSideFaceStyle = () => {
     const baseStyle: React.CSSProperties = {
       position: 'absolute',
-      background: 'linear-gradient(135deg, #2a2a2a 0%, #404040 30%, #2a2a2a 70%, #1a1a1a 100%)',
-      border: '1px solid rgba(255, 255, 255, 0.15)',
+      background: 'linear-gradient(135deg, #3a3a3a 0%, #505050 30%, #3a3a3a 70%, #2a2a2a 100%)',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
       boxShadow: showEffects && isHovering 
-        ? 'inset 0 0 6px rgba(255, 255, 255, 0.3), 0 0 4px rgba(0, 0, 0, 0.8)' 
-        : 'inset 0 0 3px rgba(255, 255, 255, 0.2), 0 0 2px rgba(0, 0, 0, 0.6)',
+        ? 'inset 0 0 8px rgba(255, 255, 255, 0.4), 0 0 6px rgba(0, 0, 0, 0.9)' 
+        : 'inset 0 0 4px rgba(255, 255, 255, 0.3), 0 0 3px rgba(0, 0, 0, 0.7)',
       transition: 'all 0.3s ease',
-      opacity: isVisible ? 1 : 0,
+      opacity: 1, // Always visible
       zIndex: 5
     };
 
@@ -106,7 +87,6 @@ export const CardSideFace: React.FC<CardSideFaceProps> = ({
       className="card-side-face"
       style={getSideFaceStyle()}
       data-side={position}
-      data-visible={isVisible}
     >
       {/* Enhanced texture overlay for better realism */}
       <div
@@ -115,18 +95,18 @@ export const CardSideFace: React.FC<CardSideFaceProps> = ({
           background: `
             linear-gradient(
               ${position === 'top' || position === 'bottom' ? '90deg' : '0deg'},
-              rgba(255, 255, 255, 0.08) 0%,
-              rgba(255, 255, 255, 0.03) 25%,
-              rgba(255, 255, 255, 0.06) 50%,
-              rgba(255, 255, 255, 0.03) 75%,
-              rgba(255, 255, 255, 0.08) 100%
+              rgba(255, 255, 255, 0.12) 0%,
+              rgba(255, 255, 255, 0.06) 25%,
+              rgba(255, 255, 255, 0.09) 50%,
+              rgba(255, 255, 255, 0.06) 75%,
+              rgba(255, 255, 255, 0.12) 100%
             )
           `,
           mixBlendMode: 'soft-light'
         }}
       />
       
-      {/* Subtle metallic reflection for enhanced 3D effect */}
+      {/* Enhanced metallic reflection for better 3D effect */}
       {showEffects && (
         <div
           className="absolute inset-0"
@@ -135,9 +115,9 @@ export const CardSideFace: React.FC<CardSideFaceProps> = ({
               linear-gradient(
                 ${position === 'left' || position === 'right' ? '0deg' : '90deg'},
                 transparent 0%,
-                rgba(255, 255, 255, 0.1) 20%,
+                rgba(255, 255, 255, 0.15) 20%,
                 transparent 40%,
-                rgba(255, 255, 255, 0.05) 60%,
+                rgba(255, 255, 255, 0.08) 60%,
                 transparent 100%
               )
             `,
@@ -145,15 +125,6 @@ export const CardSideFace: React.FC<CardSideFaceProps> = ({
           }}
         />
       )}
-      
-      <style>
-        {`
-          @keyframes metallic-shimmer {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.6; }
-          }
-        `}
-      </style>
     </div>
   );
 };

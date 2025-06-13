@@ -95,6 +95,7 @@ export const ViewerInteractionLayer: React.FC<ViewerInteractionLayerProps> = ({
         msUserSelect: 'none'
       }}
       onMouseMove={handleMouseMove}
+      onMouseDown={handleDragStart}
       onMouseUp={handleDragEnd}
       onMouseLeave={handleDragEnd}
     >

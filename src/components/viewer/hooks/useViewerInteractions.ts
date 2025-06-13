@@ -54,23 +54,30 @@ export const useViewerInteractions = ({
     const rect = containerRef.current.getBoundingClientRect();
     const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
     
-    if (!isDragging && !inSafeZone) {
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-      setMousePosition({ x, y });
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    setMousePosition({ x, y });
+    
+    const isInControlsArea = e.clientX - rect.left < 300 && e.clientY - rect.top > rect.height - 100;
+    setIsHoveringControls(isInControlsArea);
+    
+    if (isDragging && allowRotation) {
+      // Enhanced drag rotation with continuous 360° support
+      const deltaX = e.clientX - dragStart.x;
+      const deltaY = e.clientY - dragStart.y;
       
-      const isInControlsArea = e.clientX - rect.left < 300 && e.clientY - rect.top > rect.height - 100;
-      setIsHoveringControls(isInControlsArea);
-      
-      if (allowRotation && !autoRotate) {
-        // Increased sensitivity for full 360° rotation
-        setRotation({
-          x: (y - 0.5) * 40, // Increased from 20 to 40 for more responsive X rotation
-          y: (x - 0.5) * -180 // Increased from -20 to -180 for full Y rotation range
-        });
-      }
+      setRotation({
+        x: Math.max(-90, Math.min(90, deltaY * 0.5)), // Limit X rotation to prevent flipping
+        y: deltaX * 0.8 // Allow full 360° Y rotation with smooth movement
+      });
+    } else if (!isDragging && !inSafeZone && allowRotation && !autoRotate) {
+      // Passive rotation on hover
+      setRotation({
+        x: (y - 0.5) * 30,
+        y: (x - 0.5) * -60
+      });
     }
-  }, [isDragging, allowRotation, autoRotate, isInSafeZone, setMousePosition, setIsHoveringControls, setRotation]);
+  }, [isDragging, allowRotation, autoRotate, isInSafeZone, setMousePosition, setIsHoveringControls, setRotation, dragStart]);
 
   // Enhanced wheel handling for safe zones
   const handleWheel = useCallback((e: WheelEvent) => {
@@ -94,28 +101,22 @@ export const useViewerInteractions = ({
     
     if (allowRotation && !inSafeZone) {
       setIsDragging(true);
-      // Adjusted drag start calculation for increased sensitivity
-      setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
+      setDragStart({ x: e.clientX, y: e.clientY });
       setAutoRotate(false);
+      console.log('🎯 Drag started at:', e.clientX, e.clientY);
     }
-  }, [rotation, allowRotation, isInSafeZone, setIsDragging, setDragStart, setAutoRotate]);
+  }, [allowRotation, isInSafeZone, setIsDragging, setDragStart, setAutoRotate]);
 
   const handleDrag = useCallback((e: React.MouseEvent) => {
-    if (isDragging && allowRotation) {
-      // Enhanced drag rotation with continuous 360° support
-      const newRotationY = e.clientX - dragStart.x;
-      const newRotationX = e.clientY - dragStart.y;
-      
-      setRotation({
-        x: Math.max(-90, Math.min(90, newRotationX)), // Limit X rotation to prevent flipping
-        y: newRotationY // Allow full 360° Y rotation
-      });
-    }
-  }, [isDragging, dragStart, allowRotation, setRotation]);
+    // This is handled in handleMouseMove now for better performance
+  }, []);
 
   const handleDragEnd = useCallback(() => {
-    setIsDragging(false);
-  }, [setIsDragging]);
+    if (isDragging) {
+      setIsDragging(false);
+      console.log('🎯 Drag ended');
+    }
+  }, [isDragging, setIsDragging]);
 
   useEffect(() => {
     const container = containerRef.current;

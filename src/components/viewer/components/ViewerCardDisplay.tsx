@@ -70,6 +70,17 @@ export const ViewerCardDisplay: React.FC<ViewerCardDisplayProps> = ({
     atmosphericDensity: 1.0
   });
 
+  // Handle card click for flipping
+  const handleCardClick = () => {
+    setIsFlipped(prev => !prev);
+    onClick();
+  };
+
+  // Handle double click for flipping
+  const handleDoubleClick = () => {
+    setIsFlipped(prev => !prev);
+  };
+
   return (
     <>
       {/* Card Navigation Controls */}
@@ -80,33 +91,48 @@ export const ViewerCardDisplay: React.FC<ViewerCardDisplayProps> = ({
         setIsFlipped={setIsFlipped}
       />
 
-      {/* Enhanced Card Container with thickness */}
-      <div ref={cardContainerRef} className="relative z-20">
-        <EnhancedCardContainer
-          card={card}
-          isHovering={isHovering}
-          showEffects={showEffects}
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-          rotation={rotation}
-          zoom={zoom}
-          isDragging={isDragging}
-          frameStyles={frameStyles}
-          enhancedEffectStyles={enhancedEffectStyles}
-          SurfaceTexture={SurfaceTexture}
-          interactiveLighting={interactiveLighting}
-          selectedScene={selectedScene}
-          selectedLighting={selectedLighting}
-          materialSettings={materialSettings}
-          overallBrightness={overallBrightness}
-          environmentControls={environmentControls}
-          showBackgroundInfo={false}
+      {/* Enhanced Card Container with proper event handling */}
+      <div 
+        ref={cardContainerRef} 
+        className="relative z-20 pointer-events-none"
+        style={{ pointerEvents: 'none' }}
+      >
+        <div
+          className="pointer-events-auto"
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          onClick={onClick}
-        />
+          onClick={handleCardClick}
+          onDoubleClick={handleDoubleClick}
+          style={{ pointerEvents: 'auto' }}
+        >
+          <EnhancedCardContainer
+            card={card}
+            isHovering={isHovering}
+            showEffects={showEffects}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            rotation={rotation}
+            zoom={zoom}
+            isDragging={isDragging}
+            frameStyles={frameStyles}
+            enhancedEffectStyles={enhancedEffectStyles}
+            SurfaceTexture={SurfaceTexture}
+            interactiveLighting={interactiveLighting}
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            materialSettings={materialSettings}
+            overallBrightness={overallBrightness}
+            environmentControls={environmentControls}
+            showBackgroundInfo={false}
+            onMouseDown={() => {}} // Remove duplicate handlers
+            onMouseMove={() => {}} // Remove duplicate handlers
+            onMouseEnter={() => {}} // Remove duplicate handlers
+            onMouseLeave={() => {}} // Remove duplicate handlers
+            onClick={() => {}} // Remove duplicate handlers
+          />
+        </div>
       </div>
     </>
   );
