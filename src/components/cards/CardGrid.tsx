@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import type { DisplayCard } from './types/DisplayCard';
+import type { CardData } from '@/hooks/useCardEditor';
 
 interface CardGridProps {
   cards: DisplayCard[];
@@ -47,19 +48,46 @@ const CardGridItem = ({ card, index, onCardClick }: { card: DisplayCard; index: 
     if (onCardClick) {
       onCardClick(card);
     } else {
-      // Convert to viewer-compatible format
-      const viewerCard = {
-        ...card,
-        image_url: displayImage,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
       setShowViewer(true);
     }
   };
 
   const handleCloseViewer = () => {
     setShowViewer(false);
+  };
+
+  // Convert DisplayCard to CardData format for the viewer
+  const convertToCardData = (displayCard: DisplayCard): CardData => {
+    return {
+      id: displayCard.id,
+      title: displayCard.title,
+      description: displayCard.description || '',
+      rarity: (displayCard.rarity as any) || 'common',
+      tags: displayCard.tags || [],
+      image_url: displayImage,
+      thumbnail_url: displayCard.thumbnail_url,
+      design_metadata: {},
+      visibility: 'public',
+      is_public: true,
+      creator_attribution: {
+        creator_name: 'Unknown',
+        creator_id: displayCard.creator_id,
+        collaboration_type: 'solo'
+      },
+      publishing_options: {
+        marketplace_listing: false,
+        crd_catalog_inclusion: true,
+        print_available: false,
+        pricing: {
+          currency: 'USD'
+        },
+        distribution: {
+          limited_edition: false
+        }
+      },
+      creator_id: displayCard.creator_id,
+      price: displayCard.price
+    };
   };
 
   return (
@@ -107,10 +135,7 @@ const CardGridItem = ({ card, index, onCardClick }: { card: DisplayCard; index: 
       {/* Immersive Card Viewer */}
       {showViewer && (
         <ImmersiveCardViewer
-          card={{
-            ...card,
-            image_url: displayImage
-          }}
+          card={convertToCardData(card)}
           isOpen={showViewer}
           onClose={handleCloseViewer}
           allowRotation={true}

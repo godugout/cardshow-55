@@ -36,7 +36,7 @@ export const ProfileTabs = ({
       // Add card-specific properties with safe defaults
       rarity: 'rarity' in item ? (item as any).rarity : 'common',
       tags: item.tags || [],
-      created_at: item.created_at,
+      created_at: item.createdAt, // Use createdAt instead of created_at
       creator_id: 'creator_id' in item ? (item as any).creator_id : undefined
     }));
 
