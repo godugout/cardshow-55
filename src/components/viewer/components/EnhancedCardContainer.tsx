@@ -5,7 +5,6 @@ import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
-import { CardEdgeContainer } from './CardEdgeContainer';
 import { Card3DTransform } from './Card3DTransform';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
@@ -139,15 +138,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           interactiveLighting={interactiveLighting}
         />
 
-        {/* Card Edge with Enhanced Glowing Gas */}
-        <CardEdgeContainer
-          rotation={rotation}
-          isHovering={isHovering}
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-          interactiveLighting={interactiveLighting}
-          zoom={zoom}
-        />
+        {/* Card Edge with Enhanced Glowing Gas - REMOVED */}
+        {/* CardEdgeContainer component removed to eliminate blue transparent strip on edges */}
       </Card3DTransform>
     </div>
   );
