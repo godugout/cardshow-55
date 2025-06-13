@@ -41,65 +41,80 @@ const LoadingFallback: React.FC = () => (
   </>
 );
 
-// Fixed image URL generation with proper full URLs
+// Complete mapping of space environments to high-quality background images
 const getOptimizedEnvironmentImageUrl = (environment: SpaceEnvironment): string => {
-  console.log('🖼️ Getting environment image for:', environment.name, environment.type);
+  console.log('🖼️ Getting environment image for:', environment.name, environment.type, environment.id);
   
-  // If we have a panoramicPhotoId, convert it to a proper Unsplash URL
-  if (environment.config.panoramicPhotoId) {
-    console.log('📸 Converting panoramicPhotoId to URL:', environment.config.panoramicPhotoId);
+  // Primary mapping based on space environment ID
+  const spaceIdToImageMap: Record<string, string> = {
+    // Natural environments
+    'forest-clearing': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=2048&h=1024&fit=crop&q=80',
+    'mountain-vista': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=2048&h=1024&fit=crop&q=80',
+    'ocean-sunset': 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=2048&h=1024&fit=crop&q=80',
     
-    // Map common IDs to actual Unsplash photos
-    const photoIdMap: Record<string, string> = {
-      'forest-clearing': 'photo-1441974231531-c6227db76b6e',
-      'mountain-peak': 'photo-1506905925346-21bda4d32df4',
-      'ocean-sunset': 'photo-1505142468610-359e7d316be0',
-      'desert-dunes': 'photo-1509316975850-ff9c5deb0cd9',
-      'aurora-sky': 'photo-1531366936337-7c912a4589a7',
-      'city-night': 'photo-1487958449943-2429e8be8625'
-    };
+    // Urban/Modern environments
+    'city-rooftop': 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=2048&h=1024&fit=crop&q=80',
+    'neon-city': 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=2048&h=1024&fit=crop&q=80',
+    'cyberpunk-alley': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2048&h=1024&fit=crop&q=80',
     
-    const mappedPhotoId = photoIdMap[environment.config.panoramicPhotoId] || 'photo-1441974231531-c6227db76b6e';
-    const fullUrl = `https://images.unsplash.com/${mappedPhotoId}?w=2048&h=1024&fit=crop&crop=center&auto=format&q=85`;
-    console.log('🌐 Generated full URL:', fullUrl);
-    return fullUrl;
+    // Interior environments
+    'modern-studio': 'https://images.unsplash.com/photo-1496307653780-42ee777d4833?w=2048&h=1024&fit=crop&q=80',
+    'warehouse-loft': 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=2048&h=1024&fit=crop&q=80',
+    'luxury-lounge': 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=2048&h=1024&fit=crop&q=80',
+    
+    // Sports environments
+    'sports-arena': 'https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=2048&h=1024&fit=crop&q=80',
+    'basketball-court': 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=2048&h=1024&fit=crop&q=80',
+    'stadium-field': 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=2048&h=1024&fit=crop&q=80',
+    
+    // Cultural environments
+    'concert-hall': 'https://images.unsplash.com/photo-1473177104440-ffee2f376098?w=2048&h=1024&fit=crop&q=80',
+    'art-gallery': 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=2048&h=1024&fit=crop&q=80',
+    'theater-stage': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=2048&h=1024&fit=crop&q=80',
+    
+    // Fantasy/Cosmic environments
+    'cosmic-void': 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=2048&h=1024&fit=crop&q=80',
+    'crystal-cave': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=2048&h=1024&fit=crop&q=80',
+    'aurora-sky': 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=2048&h=1024&fit=crop&q=80',
+    
+    // Default spaces
+    'studio-default': 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=2048&h=1024&fit=crop&q=80',
+    'void-space': 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=2048&h=1024&fit=crop&q=80'
+  };
+  
+  // Check for direct space ID match first
+  if (environment.id && spaceIdToImageMap[environment.id]) {
+    const imageUrl = spaceIdToImageMap[environment.id];
+    console.log('✅ Found direct ID match:', environment.id, '→', imageUrl);
+    return imageUrl;
   }
   
-  // Fallback to type-based image selection
-  const baseUrl = 'https://images.unsplash.com/';
-  const params = '?w=2048&h=1024&fit=crop&crop=center&auto=format&q=85';
-  
-  let imageId = '';
-  switch (environment.type) {
-    case 'forest':
-      imageId = `${baseUrl}photo-1441974231531-c6227db76b6e${params}`;
-      break;
-    case 'ocean':
-      imageId = `${baseUrl}photo-1505142468610-359e7d316be0${params}`;
-      break;
-    case 'neon':
-      imageId = `${baseUrl}photo-1518709268805-4e9042af2176${params}`;
-      break;
-    case 'cosmic':
-      imageId = `${baseUrl}photo-1446776877081-d282a0f896e2${params}`;
-      break;
-    case 'sports':
-      imageId = `${baseUrl}photo-1461896836934-ffe607ba8211${params}`;
-      break;
-    case 'cultural':
-      imageId = `${baseUrl}photo-1493225457124-a3eb161ffa5f${params}`;
-      break;
-    case 'studio':
-    case 'void':
-    case 'panoramic':
-      imageId = `${baseUrl}photo-1586953208448-b95a79798f07${params}`;
-      break;
-    default:
-      imageId = `${baseUrl}photo-1441974231531-c6227db76b6e${params}`;
+  // Check for panoramicPhotoId mapping
+  if (environment.config.panoramicPhotoId && spaceIdToImageMap[environment.config.panoramicPhotoId]) {
+    const imageUrl = spaceIdToImageMap[environment.config.panoramicPhotoId];
+    console.log('✅ Found panoramicPhotoId match:', environment.config.panoramicPhotoId, '→', imageUrl);
+    return imageUrl;
   }
   
-  console.log('🌐 Generated fallback URL:', imageId);
-  return imageId;
+  // Fallback based on environment type with unique images
+  const typeToImageMap: Record<string, string> = {
+    'forest': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=2048&h=1024&fit=crop&q=80',
+    'mountain': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=2048&h=1024&fit=crop&q=80',
+    'ocean': 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=2048&h=1024&fit=crop&q=80',
+    'city': 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=2048&h=1024&fit=crop&q=80',
+    'neon': 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=2048&h=1024&fit=crop&q=80',
+    'cosmic': 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=2048&h=1024&fit=crop&q=80',
+    'sports': 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=2048&h=1024&fit=crop&q=80',
+    'cultural': 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=2048&h=1024&fit=crop&q=80',
+    'studio': 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=2048&h=1024&fit=crop&q=80',
+    'void': 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=2048&h=1024&fit=crop&q=80',
+    'panoramic': 'https://images.unsplash.com/photo-1496307653780-42ee777d4833?w=2048&h=1024&fit=crop&q=80'
+  };
+  
+  const fallbackImageUrl = typeToImageMap[environment.type] || typeToImageMap['studio'];
+  console.log('⚠️ Using type-based fallback:', environment.type, '→', fallbackImageUrl);
+  
+  return fallbackImageUrl;
 };
 
 export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
@@ -116,11 +131,18 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   onCameraReset,
   renderCard = true
 }) => {
-  console.log('🎬 SpaceRenderer3D: Rendering 3D environment:', environment.type, environment.name, 'renderCard:', renderCard);
+  console.log('🎬 SpaceRenderer3D: Rendering environment:', {
+    id: environment.id,
+    name: environment.name,
+    type: environment.type,
+    renderCard
+  });
 
   const imageUrl = getOptimizedEnvironmentImageUrl(environment);
   const exposure = environment.config.exposure || 1.0;
   const brightness = environment.config.lightIntensity || 1.0;
+
+  console.log('🖼️ Final image URL for rendering:', imageUrl);
 
   return (
     <div className="w-full h-full">
