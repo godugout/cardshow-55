@@ -85,8 +85,7 @@ const CardGridItem = ({ card, index, onCardClick }: { card: DisplayCard; index: 
           limited_edition: false
         }
       },
-      creator_id: displayCard.creator_id,
-      price: displayCard.price
+      creator_id: displayCard.creator_id
     };
   };
 
