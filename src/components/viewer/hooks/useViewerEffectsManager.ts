@@ -1,13 +1,13 @@
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { 
   useEnhancedCardEffects, 
   type EffectValues 
-} from '../hooks/useEnhancedCardEffects';
-import { useCardEffects } from '../hooks/useCardEffects';
+} from './useEnhancedCardEffects';
+import { useCardEffects } from './useCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 
-interface ViewerEffectsManagerProps {
+interface UseViewerEffectsManagerParams {
   card: any;
   mousePosition: { x: number; y: number };
   showEffects: boolean;
@@ -23,21 +23,23 @@ interface ViewerEffectsManagerProps {
   onPresetStateChange: (state: any) => void;
 }
 
-export const ViewerEffectsManager: React.FC<ViewerEffectsManagerProps> = ({
-  card,
-  mousePosition,
-  showEffects,
-  overallBrightness,
-  interactiveLighting,
-  selectedScene,
-  selectedLighting,
-  materialSettings,
-  zoom,
-  rotation,
-  isHovering,
-  onEffectValuesChange,
-  onPresetStateChange
-}) => {
+export const useViewerEffectsManager = (params: UseViewerEffectsManagerParams) => {
+  const {
+    card,
+    mousePosition,
+    showEffects,
+    overallBrightness,
+    interactiveLighting,
+    selectedScene,
+    selectedLighting,
+    materialSettings,
+    zoom,
+    rotation,
+    isHovering,
+    onEffectValuesChange,
+    onPresetStateChange
+  } = params;
+
   // Enhanced effects hook
   const enhancedEffectsHook = useEnhancedCardEffects();
   const {

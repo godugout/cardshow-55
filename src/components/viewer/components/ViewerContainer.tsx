@@ -9,7 +9,7 @@ import { ExportOptionsDialog } from './ExportOptionsDialog';
 import { ViewerBackground } from './ViewerBackground';
 import { ViewerCardDisplay } from './ViewerCardDisplay';
 import { ViewerInteractionLayer } from './ViewerInteractionLayer';
-import { ViewerEffectsManager } from './ViewerEffectsManager';
+import { useViewerEffectsManager } from '../hooks/useViewerEffectsManager';
 import { useViewerState } from '../hooks/useViewerState';
 import { useCardExport } from '../hooks/useCardExport';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -130,6 +130,23 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
     setPresetState(prev => ({ ...prev, ...state }));
   }, [setSelectedScene, setSelectedLighting, setSelectedPresetId, handleReset]);
 
+  // Use the effects manager hook
+  const effectsManager = useViewerEffectsManager({
+    card,
+    mousePosition,
+    showEffects,
+    overallBrightness,
+    interactiveLighting,
+    selectedScene,
+    selectedLighting,
+    materialSettings,
+    zoom,
+    rotation,
+    isHovering,
+    onEffectValuesChange: handleEffectValuesChange,
+    onPresetStateChange: handlePresetStateChange
+  });
+
   if (!isOpen) return null;
 
   const panelWidth = 320;
@@ -160,7 +177,7 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
         selectedLighting={selectedLighting}
         mousePosition={mousePosition}
         isHovering={isHovering}
-        effectValues={effectValues}
+        effectValues={effectsManager.effectValues}
         materialSettings={materialSettings}
         overallBrightness={overallBrightness}
         interactiveLighting={interactiveLighting}
@@ -195,7 +212,7 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
         <div className="absolute bottom-20 left-4 z-20 select-none">
           <CompactCardDetails 
             card={card}
-            effectValues={effectValues}
+            effectValues={effectsManager.effectValues}
             selectedScene={selectedScene}
             selectedLighting={selectedLighting}
             materialSettings={materialSettings}
@@ -226,92 +243,62 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
         />
       </ViewerInteractionLayer>
 
-      {/* Effects Manager and Card Display */}
-      <ViewerEffectsManager
+      {/* Card Display */}
+      <ViewerCardDisplay
         card={card}
-        mousePosition={mousePosition}
+        cards={cards}
+        currentCardIndex={currentCardIndex}
+        onCardChange={onCardChange}
+        isHovering={isHovering}
         showEffects={showEffects}
-        overallBrightness={overallBrightness}
+        effectValues={effectsManager.effectValues}
+        mousePosition={mousePosition}
+        rotation={rotation}
+        zoom={zoom}
+        isDragging={isDragging}
+        frameStyles={effectsManager.frameStyles}
+        enhancedEffectStyles={effectsManager.enhancedEffectStyles}
+        SurfaceTexture={effectsManager.SurfaceTexture}
         interactiveLighting={interactiveLighting}
         selectedScene={selectedScene}
         selectedLighting={selectedLighting}
         materialSettings={materialSettings}
-        zoom={zoom}
-        rotation={rotation}
-        isHovering={isHovering}
-        onEffectValuesChange={handleEffectValuesChange}
-        onPresetStateChange={handlePresetStateChange}
-      >
-        {({ 
-          effectValues: managedEffectValues, 
-          handleEffectChange, 
-          resetAllEffects, 
-          applyPreset, 
-          isApplyingPreset, 
-          handleComboApplication, 
-          frameStyles, 
-          enhancedEffectStyles, 
-          SurfaceTexture 
-        }) => (
-          <>
-            <ViewerCardDisplay
-              card={card}
-              cards={cards}
-              currentCardIndex={currentCardIndex}
-              onCardChange={onCardChange}
-              isHovering={isHovering}
-              showEffects={showEffects}
-              effectValues={managedEffectValues}
-              mousePosition={mousePosition}
-              rotation={rotation}
-              zoom={zoom}
-              isDragging={isDragging}
-              frameStyles={frameStyles}
-              enhancedEffectStyles={enhancedEffectStyles}
-              SurfaceTexture={SurfaceTexture}
-              interactiveLighting={interactiveLighting}
-              selectedScene={selectedScene}
-              selectedLighting={selectedLighting}
-              materialSettings={materialSettings}
-              overallBrightness={overallBrightness}
-              onMouseDown={() => {}}
-              onMouseMove={() => {}}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-              onClick={() => {}}
-            />
+        overallBrightness={overallBrightness}
+        onMouseDown={() => {}}
+        onMouseMove={() => {}}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        onClick={() => {}}
+      />
 
-            {/* Studio Panel */}
-            <StudioPanel
-              isVisible={shouldShowPanel}
-              onClose={() => setShowCustomizePanel(false)}
-              selectedScene={selectedScene}
-              selectedLighting={selectedLighting}
-              effectValues={managedEffectValues}
-              overallBrightness={overallBrightness}
-              interactiveLighting={interactiveLighting}
-              materialSettings={materialSettings}
-              onSceneChange={setSelectedScene}
-              onLightingChange={setSelectedLighting}
-              onEffectChange={handleEffectChange}
-              onBrightnessChange={setOverallBrightness}
-              onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
-              onMaterialSettingsChange={setMaterialSettings}
-              selectedPresetId={selectedPresetId}
-              onPresetSelect={setSelectedPresetId}
-              onApplyCombo={handleComboApplication}
-              isApplyingPreset={isApplyingPreset}
-              backgroundType={backgroundType}
-              onBackgroundTypeChange={setBackgroundType}
-              onSpaceChange={setSelectedSpace}
-              selectedSpace={selectedSpace}
-              spaceControls={spaceControls}
-              onSpaceControlsChange={setSpaceControls}
-              onResetCamera={handleResetCamera}
-            />
-          </>
-        )}
-      </ViewerEffectsManager>
+      {/* Studio Panel */}
+      <StudioPanel
+        isVisible={shouldShowPanel}
+        onClose={() => setShowCustomizePanel(false)}
+        selectedScene={selectedScene}
+        selectedLighting={selectedLighting}
+        effectValues={effectsManager.effectValues}
+        overallBrightness={overallBrightness}
+        interactiveLighting={interactiveLighting}
+        materialSettings={materialSettings}
+        onSceneChange={setSelectedScene}
+        onLightingChange={setSelectedLighting}
+        onEffectChange={effectsManager.handleEffectChange}
+        onBrightnessChange={setOverallBrightness}
+        onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
+        onMaterialSettingsChange={setMaterialSettings}
+        selectedPresetId={selectedPresetId}
+        onPresetSelect={setSelectedPresetId}
+        onApplyCombo={effectsManager.handleComboApplication}
+        isApplyingPreset={effectsManager.isApplyingPreset}
+        backgroundType={backgroundType}
+        onBackgroundTypeChange={setBackgroundType}
+        onSpaceChange={setSelectedSpace}
+        selectedSpace={selectedSpace}
+        spaceControls={spaceControls}
+        onSpaceControlsChange={setSpaceControls}
+        onResetCamera={handleResetCamera}
+      />
 
       {/* Export Options Dialog */}
       <ExportOptionsDialog
