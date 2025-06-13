@@ -4,6 +4,7 @@ import { ViewerHeader } from './ViewerHeader';
 import { StudioPanel } from './StudioPanel';
 import { BackgroundRenderer } from './BackgroundRenderer';
 import { EnhancedCardContainer } from './EnhancedCardContainer';
+import { ViewerControls } from './ViewerControls';
 import { cardAdapter, simpleCardToCardData } from '../utils/cardAdapter';
 import type { BackgroundType, EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
@@ -40,15 +41,21 @@ interface ViewerLayoutProps {
   mousePosition: { x: number; y: number };
   isHovering: boolean;
   showEffects: boolean;
+  autoRotate: boolean;
   showBackgroundInfo: boolean;
   selectedPresetId?: string;
   setSelectedPresetId: (id?: string) => void;
   handleMouseDown: (e: React.MouseEvent) => void;
   handleMouseMove: (e: React.MouseEvent) => void;
+  handleMouseUp: (e: React.MouseEvent) => void;
   handleMouseEnter: () => void;
   handleMouseLeave: () => void;
   handleCardClick: () => void;
   handleCameraReset: () => void;
+  handleZoomIn: () => void;
+  handleZoomOut: () => void;
+  handleToggleEffects: () => void;
+  handleToggleAutoRotate: () => void;
   handleApplyCombo: (combo: any) => void;
   isApplyingPreset: boolean;
 }
@@ -85,15 +92,21 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
   mousePosition,
   isHovering,
   showEffects,
+  autoRotate,
   showBackgroundInfo,
   selectedPresetId,
   setSelectedPresetId,
   handleMouseDown,
   handleMouseMove,
+  handleMouseUp,
   handleMouseEnter,
   handleMouseLeave,
   handleCardClick,
   handleCameraReset,
+  handleZoomIn,
+  handleZoomOut,
+  handleToggleEffects,
+  handleToggleAutoRotate,
   handleApplyCombo,
   isApplyingPreset
 }) => {
@@ -106,7 +119,10 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
   const SurfaceTexture = useMemo(() => null, []);
 
   return (
-    <div className="fixed inset-0 bg-crd-darkest z-40 flex">
+    <div 
+      className="fixed inset-0 bg-crd-darkest z-40 flex"
+      onMouseUp={handleMouseUp}
+    >
       {/* Background Layer - Always at z-0 */}
       <BackgroundRenderer
         backgroundType={backgroundType}
@@ -153,6 +169,17 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
           environmentControls={environmentControls}
         />
       </div>
+
+      {/* Viewer Controls - z-20 */}
+      <ViewerControls
+        showEffects={showEffects}
+        autoRotate={autoRotate}
+        onToggleEffects={handleToggleEffects}
+        onToggleAutoRotate={handleToggleAutoRotate}
+        onReset={handleCameraReset}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+      />
 
       {/* Header - z-30 */}
       <ViewerHeader
