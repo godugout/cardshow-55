@@ -6,7 +6,7 @@ import { CompactCardDetails } from './CompactCardDetails';
 import { ViewerInfoPanel } from './ViewerInfoPanel';
 import { StudioPanel } from './StudioPanel';
 import { ExportOptionsDialog } from './ExportOptionsDialog';
-import { ViewerBackground } from './ViewerBackground';
+import { BackgroundRenderer } from './BackgroundRenderer';
 import { ViewerCardDisplay } from './ViewerCardDisplay';
 import { ViewerInteractionLayer } from './ViewerInteractionLayer';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -151,26 +151,25 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = (props) => {
         msUserSelect: 'none'
       }}
     >
-      {/* Background Renderer - only show 3D when enabled */}
-      {enableTrue3D && (
-        <ViewerBackground
-          backgroundType={layoutProps.backgroundType}
-          selectedSpace={layoutProps.selectedSpace}
-          spaceControls={layoutProps.spaceControls}
-          card={card}
-          onCardClick={layoutProps.onCardClick}
-          onCameraReset={layoutProps.handleResetCamera}
-          selectedScene={layoutProps.selectedScene}
-          selectedLighting={layoutProps.selectedLighting}
-          mousePosition={layoutProps.mousePosition}
-          isHovering={layoutProps.isHovering}
-          effectValues={layoutProps.effectValues}
-          materialSettings={layoutProps.materialSettings}
-          overallBrightness={layoutProps.overallBrightness}
-          interactiveLighting={layoutProps.interactiveLighting}
-          enableTrue3D={enableTrue3D}
-        />
-      )}
+      {/* Background Renderer - works in both 2D and 3D modes */}
+      <BackgroundRenderer
+        backgroundType={layoutProps.backgroundType}
+        selectedSpace={layoutProps.selectedSpace}
+        spaceControls={layoutProps.spaceControls}
+        card={card}
+        onCardClick={layoutProps.onCardClick}
+        onCameraReset={layoutProps.handleResetCamera}
+        selectedScene={layoutProps.selectedScene}
+        selectedLighting={layoutProps.selectedLighting}
+        mousePosition={layoutProps.mousePosition}
+        isHovering={layoutProps.isHovering}
+        effectValues={layoutProps.effectValues}
+        materialSettings={layoutProps.materialSettings}
+        overallBrightness={layoutProps.overallBrightness}
+        interactiveLighting={layoutProps.interactiveLighting}
+        enableTrue3D={enableTrue3D}
+        renderCard={enableTrue3D} // Only render 3D card in True 3D mode
+      />
 
       {/* Interaction Layer */}
       <ViewerInteractionLayer

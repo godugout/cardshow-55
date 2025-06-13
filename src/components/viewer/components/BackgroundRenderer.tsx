@@ -2,6 +2,7 @@
 import React from 'react';
 import { SpaceRenderer3D } from '../spaces/SpaceRenderer3D';
 import { EnvironmentSphere } from './EnvironmentSphere';
+import { adaptCardForSpaceRenderer } from '../utils/cardAdapter';
 import type { BackgroundType, EnvironmentScene, LightingPreset } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -10,7 +11,7 @@ interface BackgroundRendererProps {
   backgroundType: BackgroundType;
   selectedSpace?: SpaceEnvironment | null;
   spaceControls: SpaceControls;
-  adaptedCard: any;
+  card: any;
   onCardClick: () => void;
   onCameraReset: () => void;
   selectedScene: EnvironmentScene;
@@ -21,14 +22,15 @@ interface BackgroundRendererProps {
   materialSettings?: any;
   overallBrightness?: number[];
   interactiveLighting?: boolean;
-  renderCard?: boolean; // New prop to control card rendering
+  enableTrue3D?: boolean;
+  renderCard?: boolean;
 }
 
 export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   backgroundType,
   selectedSpace,
   spaceControls,
-  adaptedCard,
+  card,
   onCardClick,
   onCameraReset,
   selectedScene,
@@ -39,9 +41,58 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   materialSettings,
   overallBrightness = [100],
   interactiveLighting = false,
-  renderCard = true // Default to true for backward compatibility
+  enableTrue3D = false,
+  renderCard = false
 }) => {
-  // Check for '3dSpace' instead of 'space' based on the BackgroundType definition
+  const adaptedCard = adaptCardForSpaceRenderer(card);
+
+  console.log('🎨 BackgroundRenderer:', {
+    backgroundType,
+    enableTrue3D,
+    hasSpace: !!selectedSpace,
+    renderCard
+  });
+
+  // In True 3D mode, always use 3D space rendering
+  if (enableTrue3D) {
+    const defaultSpace: SpaceEnvironment = selectedSpace || {
+      id: 'studio-default',
+      name: 'Studio',
+      description: 'Clean studio environment',
+      previewUrl: '/placeholder.svg',
+      type: 'studio',
+      category: 'basic',
+      emoji: '🎬',
+      config: {
+        backgroundColor: '#1a1a1a',
+        ambientColor: '#404040',
+        lightIntensity: 1.0,
+        exposure: 1.0,
+        autoRotation: 0
+      }
+    };
+
+    return (
+      <div className="absolute inset-0 z-0">
+        <SpaceRenderer3D
+          card={adaptedCard}
+          environment={defaultSpace}
+          controls={spaceControls}
+          effectValues={effectValues}
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
+          overallBrightness={overallBrightness}
+          interactiveLighting={interactiveLighting}
+          onCardClick={onCardClick}
+          onCameraReset={onCameraReset}
+          renderCard={renderCard}
+        />
+      </div>
+    );
+  }
+
+  // In Enhanced 2D mode, render backgrounds based on type
   if (backgroundType === '3dSpace' && selectedSpace) {
     return (
       <div className="absolute inset-0 z-0">
@@ -57,7 +108,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           interactiveLighting={interactiveLighting}
           onCardClick={onCardClick}
           onCameraReset={onCameraReset}
-          renderCard={renderCard} // Pass through the renderCard prop
+          renderCard={false} // Don't render card in 2D mode
         />
       </div>
     );
