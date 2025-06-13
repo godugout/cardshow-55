@@ -92,7 +92,10 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       style={{
         transform: `scale(${zoom})`,
         transition: isDragging ? 'none' : 'transform 0.3s ease',
-        filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`
+        filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`,
+        // Ensure no unwanted borders or outlines
+        border: 'none',
+        outline: 'none'
       }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
