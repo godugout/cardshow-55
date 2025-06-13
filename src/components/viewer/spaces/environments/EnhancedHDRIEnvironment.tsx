@@ -1,8 +1,8 @@
 
-import React, { useRef, useEffect, Suspense, useState } from 'react';
-import { useFrame, useThree, useLoader } from '@react-three/fiber';
-import { Environment, Sphere } from '@react-three/drei';
+import React, { useEffect, useState, Suspense } from 'react';
+import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { HDRILoader } from './utils/HDRILoader';
 import type { HDRIEnvironment } from './HDRILibrary';
 
 interface EnhancedHDRIEnvironmentProps {
@@ -11,135 +11,140 @@ interface EnhancedHDRIEnvironmentProps {
   onLoadError?: (error: Error) => void;
 }
 
-const HDRITexture: React.FC<{ 
+const HDRISceneEnvironment: React.FC<{ 
   environment: HDRIEnvironment; 
   onLoad?: () => void;
   onError?: (error: Error) => void;
 }> = ({ environment, onLoad, onError }) => {
-  const sphereRef = useRef<THREE.Mesh>(null);
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  const { gl, scene } = useThree();
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<Error | null>(null);
   
   useEffect(() => {
-    const loadHDRI = async () => {
+    let isMounted = true;
+    
+    const loadEnvironment = async () => {
       try {
         setIsLoading(true);
-        console.log('🌍 Loading HDRI environment:', environment.hdriUrl);
+        setLoadError(null);
+        console.log('🌍 Loading HDRI environment:', environment.name, environment.hdriUrl);
         
-        // Try to load HDRI first, fallback to regular image
-        const loader = new THREE.TextureLoader();
-        
-        const loadedTexture = await new Promise<THREE.Texture>((resolve, reject) => {
-          // First try HDRI URL
-          loader.load(
-            environment.hdriUrl,
-            (hdriTexture) => {
-              console.log('✅ HDRI loaded successfully');
-              resolve(hdriTexture);
-            },
-            undefined,
-            (hdriError) => {
-              console.warn('⚠️ HDRI failed, trying fallback:', hdriError);
-              // Fallback to regular image
-              loader.load(
-                environment.fallbackUrl,
-                (fallbackTexture) => {
-                  console.log('✅ Fallback texture loaded');
-                  resolve(fallbackTexture);
-                },
-                undefined,
-                (fallbackError) => {
-                  console.error('❌ Both HDRI and fallback failed:', fallbackError);
-                  reject(fallbackError);
-                }
-              );
-            }
-          );
+        const texture = await HDRILoader.loadHDRI({
+          url: environment.hdriUrl,
+          fallbackUrl: environment.fallbackUrl,
+          onProgress: (progress) => {
+            console.log(`📊 Loading progress: ${progress.toFixed(1)}%`);
+          },
+          onLoad: (loadedTexture) => {
+            if (!isMounted) return;
+            
+            console.log('✅ HDRI texture loaded, applying to scene');
+            
+            // Apply texture to scene background and environment
+            scene.background = loadedTexture;
+            scene.environment = loadedTexture;
+            
+            // Configure tone mapping and render settings
+            gl.toneMapping = THREE.ACESFilmicToneMapping;
+            gl.toneMappingExposure = environment.lighting.exposure;
+            gl.shadowMap.enabled = true;
+            gl.shadowMap.type = THREE.PCFSoftShadowMap;
+            
+            setIsLoading(false);
+            onLoad?.();
+            
+            console.log('✨ HDRI environment applied successfully');
+          },
+          onError: (error) => {
+            if (!isMounted) return;
+            console.error('❌ HDRI loading failed:', error);
+            setLoadError(error);
+            setIsLoading(false);
+            onError?.(error);
+          }
         });
         
-        // Configure texture for 360° mapping
-        loadedTexture.mapping = THREE.EquirectangularReflectionMapping;
-        loadedTexture.wrapS = THREE.RepeatWrapping;
-        loadedTexture.wrapT = THREE.ClampToEdgeWrapping;
-        loadedTexture.flipY = false;
-        loadedTexture.colorSpace = THREE.SRGBColorSpace;
-        
-        // Enhanced filtering
-        loadedTexture.magFilter = THREE.LinearFilter;
-        loadedTexture.minFilter = THREE.LinearMipmapLinearFilter;
-        loadedTexture.generateMipmaps = true;
-        
-        setTexture(loadedTexture);
-        setIsLoading(false);
-        onLoad?.();
-        
       } catch (error) {
-        console.error('❌ HDRI loading failed completely:', error);
+        if (!isMounted) return;
+        console.error('❌ HDRI environment setup failed:', error);
+        setLoadError(error as Error);
         setIsLoading(false);
         onError?.(error as Error);
       }
     };
 
-    loadHDRI();
-  }, [environment.hdriUrl, environment.fallbackUrl, onLoad, onError]);
+    loadEnvironment();
+    
+    return () => {
+      isMounted = false;
+      // Clean up scene on unmount
+      if (scene.background) {
+        scene.background = null;
+      }
+      if (scene.environment) {
+        scene.environment = null;
+      }
+    };
+  }, [environment.hdriUrl, environment.fallbackUrl, environment.name, gl, scene, onLoad, onError]);
 
-  useFrame(() => {
-    if (sphereRef.current && environment.rotation !== 0) {
-      sphereRef.current.rotation.y += environment.rotation * 0.001;
-    }
-  });
-
-  if (isLoading || !texture) {
-    return null;
-  }
-
-  return (
-    <Sphere ref={sphereRef} args={[100]} scale={[-1, 1, 1]} position={[0, 0, 0]}>
-      <meshBasicMaterial 
-        map={texture}
-        side={THREE.BackSide}
-        toneMapped={false}
-        transparent={false}
-      />
-    </Sphere>
-  );
+  // Don't render anything - we're applying directly to the scene
+  return null;
 };
 
-const HDRIFallback: React.FC<{ environmentIntensity: number }> = ({ environmentIntensity }) => (
-  <>
-    <Environment preset="studio" />
-    <ambientLight intensity={0.3 * environmentIntensity} />
-    <directionalLight
-      position={[10, 10, 5]}
-      intensity={0.5 * environmentIntensity}
-      castShadow
-    />
-  </>
-);
+const HDRIFallback: React.FC<{ environmentIntensity: number }> = ({ environmentIntensity }) => {
+  const { scene } = useThree();
+  
+  useEffect(() => {
+    // Create a simple gradient background as fallback
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d')!;
+    
+    const gradient = ctx.createLinearGradient(0, 0, 0, 256);
+    gradient.addColorStop(0, '#87CEEB'); // Sky blue
+    gradient.addColorStop(0.7, '#98FB98'); // Pale green
+    gradient.addColorStop(1, '#228B22'); // Forest green
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 512, 256);
+    
+    const fallbackTexture = new THREE.CanvasTexture(canvas);
+    fallbackTexture.mapping = THREE.EquirectangularReflectionMapping;
+    fallbackTexture.colorSpace = THREE.SRGBColorSpace;
+    
+    scene.background = fallbackTexture;
+    scene.environment = fallbackTexture;
+    
+    console.log('🎨 Applied fallback environment');
+    
+    return () => {
+      fallbackTexture.dispose();
+    };
+  }, [scene]);
+
+  return (
+    <>
+      <ambientLight intensity={0.3 * environmentIntensity} />
+      <directionalLight
+        position={[10, 10, 5]}
+        intensity={0.5 * environmentIntensity}
+        castShadow
+      />
+    </>
+  );
+};
 
 export const EnhancedHDRIEnvironment: React.FC<EnhancedHDRIEnvironmentProps> = ({
   environment,
   onLoadComplete,
   onLoadError
 }) => {
-  const { gl } = useThree();
-
-  useEffect(() => {
-    console.log('🎨 Configuring HDRI environment:', environment.name);
-    
-    // Configure tone mapping and exposure
-    gl.toneMapping = THREE.ACESFilmicToneMapping;
-    gl.toneMappingExposure = environment.lighting.exposure;
-    
-    // Enable shadows
-    gl.shadowMap.enabled = true;
-    gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    
-  }, [gl, environment]);
+  console.log('🎨 Setting up HDRI environment:', environment.name);
 
   return (
     <Suspense fallback={<HDRIFallback environmentIntensity={environment.lighting.environmentIntensity} />}>
-      <HDRITexture 
+      <HDRISceneEnvironment 
         environment={environment}
         onLoad={onLoadComplete}
         onError={onLoadError}

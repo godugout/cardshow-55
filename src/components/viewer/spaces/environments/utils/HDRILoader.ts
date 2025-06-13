@@ -1,5 +1,6 @@
 
 import * as THREE from 'three';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 export interface HDRILoadOptions {
   url: string;
@@ -11,7 +12,8 @@ export interface HDRILoadOptions {
 
 export class HDRILoader {
   private static cache = new Map<string, THREE.Texture>();
-  private static loader = new THREE.TextureLoader();
+  private static rgbeLoader = new RGBELoader();
+  private static textureLoader = new THREE.TextureLoader();
 
   static async loadHDRI(options: HDRILoadOptions): Promise<THREE.Texture> {
     const { url, fallbackUrl, onProgress, onLoad, onError } = options;
@@ -25,7 +27,13 @@ export class HDRILoader {
 
     return new Promise((resolve, reject) => {
       const loadTexture = (textureUrl: string, isFallback = false) => {
-        this.loader.load(
+        // Determine if this is an HDRI file or regular texture
+        const isHDRIFile = textureUrl.includes('.hdr') || textureUrl.includes('.exr');
+        const loader = isHDRIFile ? this.rgbeLoader : this.textureLoader;
+        
+        console.log(`🔄 Loading ${isHDRIFile ? 'HDRI' : 'texture'}: ${textureUrl}`);
+        
+        loader.load(
           textureUrl,
           (texture) => {
             console.log(`✅ ${isFallback ? 'Fallback' : 'HDRI'} texture loaded:`, textureUrl);
@@ -40,8 +48,10 @@ export class HDRILoader {
             resolve(texture);
           },
           (progress) => {
-            const percent = (progress.loaded / progress.total) * 100;
-            onProgress?.(percent);
+            if (progress.total > 0) {
+              const percent = (progress.loaded / progress.total) * 100;
+              onProgress?.(percent);
+            }
           },
           (error) => {
             console.error(`❌ ${isFallback ? 'Fallback' : 'HDRI'} loading failed:`, error);
