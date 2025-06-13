@@ -1,7 +1,7 @@
 
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, ContactShadows } from '@react-three/drei';
 import { Card3D } from './Card3D';
 import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
 import { ReliableSpaceEnvironment } from './environments/ReliableSpaceEnvironment';
@@ -13,6 +13,8 @@ interface Simple3DCard {
   id: string;
   title: string;
   image_url?: string;
+  description?: string;
+  rarity?: string;
 }
 
 interface SpaceRenderer3DProps {
@@ -43,26 +45,25 @@ const getOptimizedEnvironmentImageId = (environment: SpaceEnvironment): string =
     return environment.config.panoramicPhotoId;
   }
   
-  // Use properly sized image URLs from Unsplash
   const baseUrl = 'https://images.unsplash.com/';
-  const params = '?w=1024&h=512&fit=crop&crop=center&auto=format&q=85'; // Optimized params
+  const params = '?w=1024&h=512&fit=crop&crop=center&auto=format&q=85';
   
   switch (environment.type) {
     case 'forest':
-      return `${baseUrl}photo-1441974231531-c6227db76b6e${params}`; // Forest path
+      return `${baseUrl}photo-1441974231531-c6227db76b6e${params}`;
     case 'ocean':
-      return `${baseUrl}photo-1505142468610-359e7d316be0${params}`; // Ocean sunset
+      return `${baseUrl}photo-1505142468610-359e7d316be0${params}`;
     case 'neon':
-      return `${baseUrl}photo-1518709268805-4e9042af2176${params}`; // Neon city
+      return `${baseUrl}photo-1518709268805-4e9042af2176${params}`;
     case 'cosmic':
-      return `${baseUrl}photo-1446776877081-d282a0f896e2${params}`; // Cosmic space
+      return `${baseUrl}photo-1446776877081-d282a0f896e2${params}`;
     case 'sports':
-      return `${baseUrl}photo-1461896836934-ffe607ba8211${params}`; // Sports stadium
+      return `${baseUrl}photo-1461896836934-ffe607ba8211${params}`;
     case 'cultural':
-      return `${baseUrl}photo-1493225457124-a3eb161ffa5f${params}`; // Concert hall
+      return `${baseUrl}photo-1493225457124-a3eb161ffa5f${params}`;
     case 'studio':
     case 'void':
-      return `${baseUrl}photo-1586953208448-b95a79798f07${params}`; // Modern studio
+      return `${baseUrl}photo-1586953208448-b95a79798f07${params}`;
     case 'panoramic':
       return environment.config.panoramicPhotoId ? 
         `${baseUrl}${environment.config.panoramicPhotoId}${params}` :
@@ -86,7 +87,7 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   onCameraReset,
   renderCard = true
 }) => {
-  console.log('🎬 SpaceRenderer3D: Rendering environment:', environment.type, environment.name, 'renderCard:', renderCard);
+  console.log('🎬 SpaceRenderer3D: Rendering TRUE 3D environment:', environment.type, environment.name, 'renderCard:', renderCard);
 
   const imageUrl = getOptimizedEnvironmentImageId(environment);
   const exposure = environment.config.exposure || 1.0;
@@ -102,17 +103,36 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
           antialias: true, 
           alpha: false,
           premultipliedAlpha: false,
-          powerPreference: 'high-performance' // Better performance for complex scenes
+          powerPreference: 'high-performance',
+          shadowMap: true
         }}
         style={{ background: 'transparent' }}
-        onCreated={({ gl }) => {
+        onCreated={({ gl, scene }) => {
           gl.domElement.style.background = 'transparent';
-          // Enable better texture filtering
-          gl.getContext().texParameteri(gl.getContext().TEXTURE_2D,  gl.getContext().TEXTURE_MIN_FILTER, gl.getContext().LINEAR_MIPMAP_LINEAR);
+          // Enable shadows
+          gl.shadowMap.enabled = true;
+          gl.shadowMap.type = gl.PCFSoftShadowMap;
+          // Better texture filtering
+          gl.getContext().texParameteri(gl.getContext().TEXTURE_2D, gl.getContext().TEXTURE_MIN_FILTER, gl.getContext().LINEAR_MIPMAP_LINEAR);
         }}
         onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}
       >
         <Suspense fallback={<LoadingFallback />}>
+          {/* Enhanced Environment Lighting */}
+          <ambientLight intensity={brightness * 0.3} />
+          <directionalLight
+            position={[10, 10, 5]}
+            intensity={brightness * 0.8}
+            castShadow
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+            shadow-camera-far={50}
+            shadow-camera-left={-10}
+            shadow-camera-right={10}
+            shadow-camera-top={10}
+            shadow-camera-bottom={-10}
+          />
+
           <SpaceErrorBoundary spaceName={environment.name} fallback={<LoadingFallback />}>
             <ReliableSpaceEnvironment
               imageId={imageUrl}
@@ -124,7 +144,7 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
             />
           </SpaceErrorBoundary>
           
-          {/* Only render the 3D card if renderCard is true */}
+          {/* Render the TRUE 3D card with real geometry */}
           {renderCard && (
             <Card3D
               card={card}
@@ -138,6 +158,17 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
               onClick={onCardClick}
             />
           )}
+
+          {/* Enhanced Contact Shadows for 3D realism */}
+          <ContactShadows
+            opacity={0.4}
+            scale={15}
+            blur={2}
+            far={20}
+            resolution={512}
+            color="#000000"
+            position={[0, -2, 0]}
+          />
         </Suspense>
 
         <OrbitControls
@@ -145,8 +176,8 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
           enableZoom={true}
           autoRotate={controls.autoRotate}
           autoRotateSpeed={controls.orbitSpeed || 0.5}
-          minDistance={3}
-          maxDistance={15}
+          minDistance={4}
+          maxDistance={20}
           minPolarAngle={Math.PI / 6}
           maxPolarAngle={Math.PI - Math.PI / 6}
           enableDamping={true}

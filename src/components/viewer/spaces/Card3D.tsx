@@ -1,10 +1,8 @@
 
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
 import { Group } from 'three';
-import { EnhancedCardContainer } from '../components/EnhancedCardContainer';
-import { useCardEffects } from '../hooks/useCardEffects';
+import { True3DCard } from './True3DCard';
 import type { SpaceControls } from './types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -13,6 +11,8 @@ interface Simple3DCard {
   id: string;
   title: string;
   image_url?: string;
+  description?: string;
+  rarity?: string;
 }
 
 interface Card3DProps {
@@ -27,29 +27,6 @@ interface Card3DProps {
   onClick?: () => void;
 }
 
-// Helper function to convert simple card to full CardData format
-const adaptCardForViewer = (card: Simple3DCard) => ({
-  id: card.id,
-  title: card.title,
-  description: '',
-  rarity: 'common' as const,
-  tags: [],
-  image_url: card.image_url || '/placeholder-card.jpg',
-  design_metadata: {},
-  visibility: 'public' as const,
-  creator_attribution: {
-    creator_name: 'Unknown',
-    collaboration_type: 'solo' as const
-  },
-  publishing_options: {
-    marketplace_listing: false,
-    crd_catalog_inclusion: false,
-    print_available: false,
-    pricing: { currency: 'USD' },
-    distribution: { limited_edition: false }
-  }
-});
-
 export const Card3D: React.FC<Card3DProps> = ({ 
   card, 
   controls, 
@@ -62,112 +39,91 @@ export const Card3D: React.FC<Card3DProps> = ({
   onClick 
 }) => {
   const groupRef = useRef<Group>(null);
-  
-  // Simple state for 3D card interaction
-  const [isHovering, setIsHovering] = React.useState(false);
-  const [mousePosition, setMousePosition] = React.useState({ x: 0.5, y: 0.5 });
-  const [rotation, setRotation] = React.useState({ x: 0, y: 0 });
-  const zoom = 1;
-  const isDragging = false;
 
-  // Convert simple card to full CardData format for useCardEffects
-  const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
-
-  // Use card effects if we have the required props
-  const cardEffects = (selectedScene && selectedLighting && materialSettings) ? useCardEffects({
-    card: adaptedCard,
-    effectValues,
-    mousePosition,
-    showEffects: true,
-    overallBrightness,
-    interactiveLighting,
-    selectedScene,
-    selectedLighting,
-    materialSettings,
-    zoom,
-    rotation,
-    isHovering
-  }) : null;
-
+  // Enhanced animation with controls
   useFrame((state) => {
     if (groupRef.current) {
-      // Floating animation
-      const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
+      // Enhanced floating animation
+      const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.2;
       groupRef.current.position.y = floatY;
 
-      // Auto rotation
+      // Auto rotation with enhanced control
       if (controls.autoRotate) {
-        groupRef.current.rotation.y += 0.005 * controls.orbitSpeed;
+        groupRef.current.rotation.y += 0.008 * controls.orbitSpeed;
       }
 
-      // Gravity effect simulation
+      // Gravity effect simulation with enhanced physics
       if (controls.gravityEffect > 0) {
-        const gravity = Math.sin(state.clock.elapsedTime * 0.3) * controls.gravityEffect * 0.05;
+        const gravity = Math.sin(state.clock.elapsedTime * 0.3) * controls.gravityEffect * 0.08;
         groupRef.current.position.y += gravity;
       }
+
+      // Breathing scale effect for enhanced presence
+      const breatheScale = 1 + Math.sin(state.clock.elapsedTime * 0.4) * 0.02;
+      groupRef.current.scale.setScalar(breatheScale);
     }
   });
 
   const handleCardClick = () => {
+    console.log('🎯 True 3D Card clicked:', card.title);
     onClick?.();
   };
 
-  const handleMouseEnter = () => setIsHovering(true);
-  const handleMouseLeave = () => setIsHovering(false);
-  const handleMouseDown = () => {};
-  const handleMouseMove = () => {};
+  const handleCardHover = (hovered: boolean) => {
+    console.log('🎯 True 3D Card hovered:', hovered, card.title);
+  };
 
   return (
     <group ref={groupRef}>
-      {/* Render the enhanced card container with 3D positioning */}
-      <mesh 
-        castShadow 
-        receiveShadow
-        onPointerEnter={handleMouseEnter}
-        onPointerLeave={handleMouseLeave}
-      >
-        <planeGeometry args={[4, 5.6]} />
-        <meshBasicMaterial transparent opacity={0} /> {/* Invisible plane for interaction */}
-      </mesh>
+      {/* Enhanced 3D lighting setup */}
+      <pointLight
+        position={[2, 3, 2]}
+        intensity={0.8}
+        color={selectedLighting?.color || '#ffffff'}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />
       
-      {/* HTML overlay for the enhanced card - Full size to match 2D experience */}
-      <Html
-        transform
-        occlude
-        position={[0, 0, 0.01]}
-        distanceFactor={0.625}
-        style={{
-          width: '400px',
-          height: '560px',
-          pointerEvents: 'none'
-        }}
-      >
-        <div style={{ width: '400px', height: '560px' }}>
-          <EnhancedCardContainer
-            card={adaptedCard}
-            isHovering={isHovering}
-            showEffects={true}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={zoom}
-            isDragging={isDragging}
-            frameStyles={cardEffects?.getFrameStyles() || { transition: 'all 0.3s ease' }}
-            enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
-            SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
-            interactiveLighting={interactiveLighting}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            onClick={handleCardClick} // Uses continuous rotation instead of flip
-          />
-        </div>
-      </Html>
+      <pointLight
+        position={[-2, 1, 2]}
+        intensity={0.4}
+        color={selectedLighting?.accentColor || '#4444ff'}
+      />
+
+      {/* True 3D Card with real geometry */}
+      <True3DCard
+        card={card}
+        position={[0, 0, 0]}
+        scale={1.2}
+        onClick={handleCardClick}
+        onHover={handleCardHover}
+        autoRotate={controls.autoRotate}
+        floatIntensity={controls.floatIntensity}
+      />
+
+      {/* Enhanced ambient particles for magical effect */}
+      {effectValues.holographic?.intensity && effectValues.holographic.intensity > 0.5 && (
+        <group>
+          {Array.from({ length: 12 }, (_, i) => (
+            <mesh
+              key={i}
+              position={[
+                (Math.random() - 0.5) * 6,
+                (Math.random() - 0.5) * 6,
+                (Math.random() - 0.5) * 3
+              ]}
+            >
+              <sphereGeometry args={[0.02, 8, 8]} />
+              <meshBasicMaterial 
+                color={`hsl(${i * 30}, 70%, 60%)`}
+                transparent
+                opacity={0.6}
+              />
+            </mesh>
+          ))}
+        </group>
+      )}
     </group>
   );
 };
