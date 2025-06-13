@@ -1,0 +1,327 @@
+
+import React, { useState, useCallback } from 'react';
+import { ViewerHeader } from './ViewerHeader';
+import { ViewerControls } from './ViewerControls';
+import { CompactCardDetails } from './CompactCardDetails';
+import { ViewerInfoPanel } from './ViewerInfoPanel';
+import { StudioPanel } from './StudioPanel';
+import { ExportOptionsDialog } from './ExportOptionsDialog';
+import { ViewerBackground } from './ViewerBackground';
+import { ViewerCardDisplay } from './ViewerCardDisplay';
+import { ViewerInteractionLayer } from './ViewerInteractionLayer';
+import { ViewerEffectsManager } from './ViewerEffectsManager';
+import { useViewerState } from '../hooks/useViewerState';
+import { useCardExport } from '../hooks/useCardExport';
+import type { CardData } from '@/hooks/useCardEditor';
+import type { EffectValues } from '../hooks/useEnhancedCardEffects';
+
+interface ViewerContainerProps {
+  card: CardData;
+  cards: any[];
+  currentCardIndex: number;
+  onCardChange?: (index: number) => void;
+  isOpen: boolean;
+  onClose?: () => void;
+  onShare?: (card: CardData) => void;
+  onDownload?: (card: CardData) => void;
+  allowRotation: boolean;
+  showStats: boolean;
+  ambient: boolean;
+}
+
+export const ViewerContainer: React.FC<ViewerContainerProps> = ({
+  card,
+  cards = [],
+  currentCardIndex = 0,
+  onCardChange,
+  isOpen = true,
+  onClose,
+  onShare,
+  allowRotation = true,
+  showStats = true
+}) => {
+  const viewerState = useViewerState();
+  const {
+    isFullscreen,
+    rotation,
+    setRotation,
+    isDragging,
+    setIsDragging,
+    dragStart,
+    setDragStart,
+    zoom,
+    isFlipped,
+    setIsFlipped,
+    autoRotate,
+    setAutoRotate,
+    showEffects,
+    setShowEffects,
+    mousePosition,
+    setMousePosition,
+    showCustomizePanel,
+    setShowCustomizePanel,
+    isHovering,
+    setIsHovering,
+    isHoveringControls,
+    setIsHoveringControls,
+    showExportDialog,
+    setShowExportDialog,
+    backgroundType,
+    setBackgroundType,
+    selectedScene,
+    setSelectedScene,
+    selectedLighting,
+    setSelectedLighting,
+    overallBrightness,
+    setOverallBrightness,
+    interactiveLighting,
+    setInteractiveLighting,
+    materialSettings,
+    setMaterialSettings,
+    selectedPresetId,
+    setSelectedPresetId,
+    selectedSpace,
+    setSelectedSpace,
+    spaceControls,
+    setSpaceControls,
+    handleReset,
+    handleZoom,
+    handleResetCamera,
+    onCardClick
+  } = viewerState;
+
+  // Local state for effects management
+  const [effectValues, setEffectValues] = useState<EffectValues>({});
+  const [presetState, setPresetState] = useState<any>({});
+
+  // Navigation logic
+  const hasMultipleCards = cards.length > 1;
+
+  // Export functionality
+  const { exportCard, isExporting, exportProgress } = useCardExport({
+    cardRef: { current: null },
+    card,
+    onRotationChange: setRotation,
+    onEffectChange: () => {},
+    effectValues
+  });
+
+  const handleDownloadClick = useCallback(() => {
+    setShowExportDialog(true);
+  }, [setShowExportDialog]);
+
+  const handleShareClick = useCallback(() => {
+    if (onShare) {
+      onShare(card);
+    }
+  }, [onShare, card]);
+
+  const handleEffectValuesChange = useCallback((values: EffectValues) => {
+    setEffectValues(values);
+  }, []);
+
+  const handlePresetStateChange = useCallback((state: any) => {
+    if (state.selectedScene) setSelectedScene(state.selectedScene);
+    if (state.selectedLighting) setSelectedLighting(state.selectedLighting);
+    if (state.selectedPresetId !== undefined) setSelectedPresetId(state.selectedPresetId);
+    if (state.reset) {
+      handleReset();
+    }
+    setPresetState(prev => ({ ...prev, ...state }));
+  }, [setSelectedScene, setSelectedLighting, setSelectedPresetId, handleReset]);
+
+  if (!isOpen) return null;
+
+  const panelWidth = 320;
+  const shouldShowPanel = showCustomizePanel;
+
+  return (
+    <div 
+      className={`fixed inset-0 z-50 flex items-center justify-center select-none ${
+        isFullscreen ? 'p-0' : 'p-8'
+      } ${shouldShowPanel ? `pr-[${panelWidth + 32}px]` : ''}`}
+      style={{
+        paddingRight: shouldShowPanel ? `${panelWidth + 32}px` : isFullscreen ? '0' : '32px',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none'
+      }}
+    >
+      {/* Background Renderer */}
+      <ViewerBackground
+        backgroundType={backgroundType}
+        selectedSpace={selectedSpace}
+        spaceControls={spaceControls}
+        card={card}
+        onCardClick={onCardClick}
+        onCameraReset={handleResetCamera}
+        selectedScene={selectedScene}
+        selectedLighting={selectedLighting}
+        mousePosition={mousePosition}
+        isHovering={isHovering}
+        effectValues={effectValues}
+        materialSettings={materialSettings}
+        overallBrightness={overallBrightness}
+        interactiveLighting={interactiveLighting}
+      />
+
+      {/* Interaction Layer */}
+      <ViewerInteractionLayer
+        allowRotation={allowRotation}
+        autoRotate={autoRotate}
+        isDragging={isDragging}
+        setIsDragging={setIsDragging}
+        setDragStart={setDragStart}
+        setAutoRotate={setAutoRotate}
+        setRotation={setRotation}
+        setMousePosition={setMousePosition}
+        setIsHoveringControls={setIsHoveringControls}
+        rotation={rotation}
+        dragStart={dragStart}
+        handleZoom={handleZoom}
+        showCustomizePanel={showCustomizePanel}
+        showStats={showStats}
+        hasMultipleCards={hasMultipleCards}
+      >
+        {/* Header */}
+        <ViewerHeader
+          onClose={onClose}
+          showStudioButton={!shouldShowPanel}
+          onOpenStudio={() => setShowCustomizePanel(true)}
+        />
+
+        {/* Compact Card Details */}
+        <div className="absolute bottom-20 left-4 z-20 select-none">
+          <CompactCardDetails 
+            card={card}
+            effectValues={effectValues}
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            materialSettings={materialSettings}
+            overallBrightness={overallBrightness}
+            interactiveLighting={interactiveLighting}
+          />
+        </div>
+
+        {/* Basic Controls */}
+        <div className={`transition-opacity duration-200 ${isHoveringControls ? 'opacity-100 z-20' : 'opacity-100 z-10'}`}>
+          <ViewerControls
+            showEffects={showEffects}
+            autoRotate={autoRotate}
+            onToggleEffects={() => setShowEffects(!showEffects)}
+            onToggleAutoRotate={() => setAutoRotate(!autoRotate)}
+            onReset={handleReset}
+            onZoomIn={() => handleZoom(0.1)}
+            onZoomOut={() => handleZoom(-0.1)}
+          />
+        </div>
+
+        {/* Info Panel */}
+        <ViewerInfoPanel
+          showStats={showStats}
+          isFlipped={isFlipped}
+          shouldShowPanel={shouldShowPanel}
+          hasMultipleCards={hasMultipleCards}
+        />
+      </ViewerInteractionLayer>
+
+      {/* Effects Manager and Card Display */}
+      <ViewerEffectsManager
+        card={card}
+        mousePosition={mousePosition}
+        showEffects={showEffects}
+        overallBrightness={overallBrightness}
+        interactiveLighting={interactiveLighting}
+        selectedScene={selectedScene}
+        selectedLighting={selectedLighting}
+        materialSettings={materialSettings}
+        zoom={zoom}
+        rotation={rotation}
+        isHovering={isHovering}
+        onEffectValuesChange={handleEffectValuesChange}
+        onPresetStateChange={handlePresetStateChange}
+      >
+        {({ 
+          effectValues: managedEffectValues, 
+          handleEffectChange, 
+          resetAllEffects, 
+          applyPreset, 
+          isApplyingPreset, 
+          handleComboApplication, 
+          frameStyles, 
+          enhancedEffectStyles, 
+          SurfaceTexture 
+        }) => (
+          <>
+            <ViewerCardDisplay
+              card={card}
+              cards={cards}
+              currentCardIndex={currentCardIndex}
+              onCardChange={onCardChange}
+              isHovering={isHovering}
+              showEffects={showEffects}
+              effectValues={managedEffectValues}
+              mousePosition={mousePosition}
+              rotation={rotation}
+              zoom={zoom}
+              isDragging={isDragging}
+              frameStyles={frameStyles}
+              enhancedEffectStyles={enhancedEffectStyles}
+              SurfaceTexture={SurfaceTexture}
+              interactiveLighting={interactiveLighting}
+              selectedScene={selectedScene}
+              selectedLighting={selectedLighting}
+              materialSettings={materialSettings}
+              overallBrightness={overallBrightness}
+              onMouseDown={() => {}}
+              onMouseMove={() => {}}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+              onClick={() => {}}
+            />
+
+            {/* Studio Panel */}
+            <StudioPanel
+              isVisible={shouldShowPanel}
+              onClose={() => setShowCustomizePanel(false)}
+              selectedScene={selectedScene}
+              selectedLighting={selectedLighting}
+              effectValues={managedEffectValues}
+              overallBrightness={overallBrightness}
+              interactiveLighting={interactiveLighting}
+              materialSettings={materialSettings}
+              onSceneChange={setSelectedScene}
+              onLightingChange={setSelectedLighting}
+              onEffectChange={handleEffectChange}
+              onBrightnessChange={setOverallBrightness}
+              onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
+              onMaterialSettingsChange={setMaterialSettings}
+              selectedPresetId={selectedPresetId}
+              onPresetSelect={setSelectedPresetId}
+              onApplyCombo={handleComboApplication}
+              isApplyingPreset={isApplyingPreset}
+              backgroundType={backgroundType}
+              onBackgroundTypeChange={setBackgroundType}
+              onSpaceChange={setSelectedSpace}
+              selectedSpace={selectedSpace}
+              spaceControls={spaceControls}
+              onSpaceControlsChange={setSpaceControls}
+              onResetCamera={handleResetCamera}
+            />
+          </>
+        )}
+      </ViewerEffectsManager>
+
+      {/* Export Options Dialog */}
+      <ExportOptionsDialog
+        isOpen={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        onExport={exportCard}
+        isExporting={isExporting}
+        exportProgress={exportProgress}
+        cardTitle={card.title}
+      />
+    </div>
+  );
+};
