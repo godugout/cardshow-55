@@ -183,7 +183,7 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
         interactiveLighting={interactiveLighting}
       />
 
-      {/* Interaction Layer */}
+      {/* Interaction Layer - This handles ALL mouse events */}
       <ViewerInteractionLayer
         allowRotation={allowRotation}
         autoRotate={autoRotate}
@@ -241,35 +241,41 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
           shouldShowPanel={shouldShowPanel}
           hasMultipleCards={hasMultipleCards}
         />
-      </ViewerInteractionLayer>
 
-      {/* Card Display */}
-      <ViewerCardDisplay
-        card={card}
-        cards={cards}
-        currentCardIndex={currentCardIndex}
-        onCardChange={onCardChange}
-        isHovering={isHovering}
-        showEffects={showEffects}
-        effectValues={effectsManager.effectValues}
-        mousePosition={mousePosition}
-        rotation={rotation}
-        zoom={zoom}
-        isDragging={isDragging}
-        frameStyles={effectsManager.frameStyles}
-        enhancedEffectStyles={effectsManager.enhancedEffectStyles}
-        SurfaceTexture={effectsManager.SurfaceTexture}
-        interactiveLighting={interactiveLighting}
-        selectedScene={selectedScene}
-        selectedLighting={selectedLighting}
-        materialSettings={materialSettings}
-        overallBrightness={overallBrightness}
-        onMouseDown={() => {}}
-        onMouseMove={() => {}}
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-        onClick={() => {}}
-      />
+        {/* Card Display - Events handled by ViewerInteractionLayer */}
+        <ViewerCardDisplay
+          card={card}
+          cards={cards}
+          currentCardIndex={currentCardIndex}
+          onCardChange={onCardChange}
+          isHovering={isHovering}
+          showEffects={showEffects}
+          effectValues={effectsManager.effectValues}
+          mousePosition={mousePosition}
+          rotation={rotation}
+          zoom={zoom}
+          isDragging={isDragging}
+          frameStyles={effectsManager.frameStyles}
+          enhancedEffectStyles={effectsManager.enhancedEffectStyles}
+          SurfaceTexture={effectsManager.SurfaceTexture}
+          interactiveLighting={interactiveLighting}
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
+          overallBrightness={overallBrightness}
+          onMouseDown={(e) => console.log('🎯 Card mouse down:', e.clientX, e.clientY)}
+          onMouseMove={(e) => console.log('🎯 Card mouse move:', e.clientX, e.clientY)}
+          onMouseEnter={() => {
+            console.log('🎯 Card mouse enter');
+            setIsHovering(true);
+          }}
+          onMouseLeave={() => {
+            console.log('🎯 Card mouse leave');
+            setIsHovering(false);
+          }}
+          onClick={() => console.log('🎯 Card clicked')}
+        />
+      </ViewerInteractionLayer>
 
       {/* Studio Panel */}
       <StudioPanel

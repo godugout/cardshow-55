@@ -26,6 +26,7 @@ interface ViewerCardDisplayProps {
   selectedLighting: LightingPreset;
   materialSettings: MaterialSettings;
   overallBrightness: number[];
+  // Required event handlers - no more empty functions allowed
   onMouseDown: (e: React.MouseEvent) => void;
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
@@ -72,12 +73,14 @@ export const ViewerCardDisplay: React.FC<ViewerCardDisplayProps> = ({
 
   // Handle card click for flipping
   const handleCardClick = () => {
+    console.log('🎯 Card clicked - flipping state');
     setIsFlipped(prev => !prev);
-    onClick();
+    onClick(); // Call the passed onClick handler
   };
 
   // Handle double click for flipping
   const handleDoubleClick = () => {
+    console.log('🎯 Card double-clicked - flipping state');
     setIsFlipped(prev => !prev);
   };
 
@@ -94,45 +97,43 @@ export const ViewerCardDisplay: React.FC<ViewerCardDisplayProps> = ({
       {/* Enhanced Card Container with proper event handling */}
       <div 
         ref={cardContainerRef} 
-        className="relative z-20 pointer-events-none"
-        style={{ pointerEvents: 'none' }}
+        className="relative z-20"
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onClick={handleCardClick}
+        onDoubleClick={handleDoubleClick}
+        style={{ 
+          pointerEvents: 'auto',
+          cursor: isDragging ? 'grabbing' : 'grab'
+        }}
       >
-        <div
-          className="pointer-events-auto"
-          onMouseDown={onMouseDown}
-          onMouseMove={onMouseMove}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-          onClick={handleCardClick}
-          onDoubleClick={handleDoubleClick}
-          style={{ pointerEvents: 'auto' }}
-        >
-          <EnhancedCardContainer
-            card={card}
-            isHovering={isHovering}
-            showEffects={showEffects}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={zoom}
-            isDragging={isDragging}
-            frameStyles={frameStyles}
-            enhancedEffectStyles={enhancedEffectStyles}
-            SurfaceTexture={SurfaceTexture}
-            interactiveLighting={interactiveLighting}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            environmentControls={environmentControls}
-            showBackgroundInfo={false}
-            onMouseDown={() => {}} // Remove duplicate handlers
-            onMouseMove={() => {}} // Remove duplicate handlers
-            onMouseEnter={() => {}} // Remove duplicate handlers
-            onMouseLeave={() => {}} // Remove duplicate handlers
-            onClick={() => {}} // Remove duplicate handlers
-          />
-        </div>
+        <EnhancedCardContainer
+          card={card}
+          isHovering={isHovering}
+          showEffects={showEffects}
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          rotation={rotation}
+          zoom={zoom}
+          isDragging={isDragging}
+          frameStyles={frameStyles}
+          enhancedEffectStyles={enhancedEffectStyles}
+          SurfaceTexture={SurfaceTexture}
+          interactiveLighting={interactiveLighting}
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
+          overallBrightness={overallBrightness}
+          environmentControls={environmentControls}
+          showBackgroundInfo={false}
+          onMouseDown={() => {}} // Empty - handled by parent
+          onMouseMove={() => {}} // Empty - handled by parent
+          onMouseEnter={() => {}} // Empty - handled by parent
+          onMouseLeave={() => {}} // Empty - handled by parent
+          onClick={() => {}} // Empty - handled by parent
+        />
       </div>
     </>
   );

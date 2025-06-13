@@ -28,14 +28,14 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
     // Debug logging for rotation tracking
     console.log('🎯 Card3DTransform - Rotation X:', rotation.x.toFixed(1), 'Y:', rotation.y.toFixed(1));
     
-    // Enhanced perspective for better 3D visibility - increased from 1200px to 1500px
-    let baseTransform = `perspective(1500px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+    // Enhanced perspective for better 3D visibility - increased from 1200px to 1800px
+    let baseTransform = `perspective(1800px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
     
     // Add subtle interactive lighting-based depth effect
     if (interactiveLighting && isHovering) {
       const lightDepth = (mousePosition.x - 0.5) * 2; // -1 to 1
-      const additionalRotateY = lightDepth * 5; // Increased to 5 degrees for more pronounced effect
-      baseTransform = `perspective(1500px) rotateX(${rotation.x}deg) rotateY(${rotation.y + additionalRotateY}deg)`;
+      const additionalRotateY = lightDepth * 3; // Reduced to 3 degrees for smoother effect
+      baseTransform = `perspective(1800px) rotateX(${rotation.x}deg) rotateY(${rotation.y + additionalRotateY}deg)`;
     }
     
     return baseTransform;
@@ -43,7 +43,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
 
   const cardWidth = 400;
   const cardHeight = 560;
-  const cardThickness = 12; // Increased from 8 to 12 pixels for better visibility
+  const cardThickness = 16; // Increased from 12 to 16 pixels for maximum visibility
 
   return (
     <div
@@ -54,14 +54,14 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
         transform: getDynamicTransform(),
         transformStyle: 'preserve-3d',
         transition: isDragging ? 'none' : 'transform 0.2s ease-out',
-        filter: `drop-shadow(0 30px 60px rgba(0,0,0,${interactiveLighting && isHovering ? 1.0 : 0.9}))`,
+        filter: `drop-shadow(0 40px 80px rgba(0,0,0,${interactiveLighting && isHovering ? 1.2 : 1.0}))`,
         cursor: isDragging ? 'grabbing' : 'grab'
       }}
       onClick={onClick}
       data-rotation-x={rotation.x.toFixed(1)}
       data-rotation-y={rotation.y.toFixed(1)}
     >
-      {/* Card Thickness - Side faces with enhanced visibility */}
+      {/* Card Thickness - Side faces with maximum visibility */}
       <CardThicknessContainer
         cardWidth={cardWidth}
         cardHeight={cardHeight}
