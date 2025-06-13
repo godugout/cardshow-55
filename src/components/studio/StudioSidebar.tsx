@@ -17,7 +17,7 @@ const sampleCards: CardData[] = [
     id: 'sample-1',
     title: 'Cyber Knight',
     description: 'A futuristic warrior with advanced armor',
-    rarity: 'ultra_rare',
+    rarity: 'epic',
     tags: ['Cyberpunk', 'Warrior'],
     image_url: 'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=400&q=80',
     thumbnail_url: 'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=200&q=80',
