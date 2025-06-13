@@ -90,6 +90,14 @@ export const Card3D: React.FC<Card3DProps> = ({
     : 100;
   const brightnessMultiplier = typeof brightnessValue === 'number' ? brightnessValue / 100 : 1;
 
+  // Helper function to safely get effect intensity as number
+  const getEffectIntensity = (effect: any): number => {
+    if (effect && typeof effect.intensity === 'number') {
+      return effect.intensity;
+    }
+    return 0;
+  };
+
   return (
     <group ref={groupRef}>
       {/* Enhanced 3D lighting setup with effect-driven colors */}
@@ -129,9 +137,7 @@ export const Card3D: React.FC<Card3DProps> = ({
       />
 
       {/* Enhanced ambient particles for magical effect */}
-      {effectValues.holographic && 
-       typeof effectValues.holographic.intensity === 'number' && 
-       effectValues.holographic.intensity > 0.5 && (
+      {effectValues.holographic && getEffectIntensity(effectValues.holographic) > 0.5 && (
         <group>
           {Array.from({ length: 12 }, (_, i) => (
             <mesh
@@ -146,7 +152,7 @@ export const Card3D: React.FC<Card3DProps> = ({
               <meshBasicMaterial 
                 color={`hsl(${i * 30}, 70%, 60%)`}
                 transparent
-                opacity={0.6 * effectValues.holographic.intensity}
+                opacity={0.6 * getEffectIntensity(effectValues.holographic)}
               />
             </mesh>
           ))}
