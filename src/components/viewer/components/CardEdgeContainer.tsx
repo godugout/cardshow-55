@@ -92,24 +92,25 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
 
   return (
     <>
-      {/* Right Edge Glow - positioned on the actual right edge */}
+      {/* Right Edge Glow */}
       {rightOpacity > 0.1 && (
         <div 
-          className="absolute top-0 h-full pointer-events-none z-15"
+          className="absolute top-0 right-0 h-full pointer-events-none z-15"
           style={{
-            right: '-2px', // Position on the actual right edge, slightly outside
             opacity: rightOpacity,
             transition: 'opacity 0.3s ease',
-            width: `${edgeThickness * 4}px`
+            width: `${edgeThickness * 3}px`,
+            transform: 'translateX(50%)'
           }}
           data-edge="right"
           data-opacity={rightOpacity.toFixed(2)}
         >
           {/* Main edge thickness */}
           <div
-            className="absolute top-0 left-0 h-full"
+            className="absolute top-0 left-1/2 h-full"
             style={{
               width: `${edgeThickness}px`,
+              transform: 'translateX(-50%)',
               background: gasColor,
               boxShadow: `
                 0 0 ${edgeThickness * 2}px ${gasColor},
@@ -120,12 +121,13 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
             }}
           />
           
-          {/* Outer glow layers extending from the edge */}
+          {/* Outer glow layers */}
           <div
-            className="absolute top-0 left-0 h-full"
+            className="absolute top-0 left-1/2 h-full"
             style={{
               width: `${edgeThickness * 4}px`,
-              background: `linear-gradient(to right, ${gasColor} 0%, transparent 100%)`,
+              transform: 'translateX(-50%)',
+              background: `radial-gradient(ellipse closest-side, ${gasColor} 0%, transparent 70%)`,
               animation: isHovering ? 'gas-pulse 2s ease-in-out infinite alternate' : 'gas-gentle 4s ease-in-out infinite alternate',
               filter: `brightness(${intensity * 0.8})`
             }}
@@ -133,24 +135,25 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
         </div>
       )}
 
-      {/* Left Edge Glow - positioned on the actual left edge */}
+      {/* Left Edge Glow */}
       {leftOpacity > 0.1 && (
         <div 
-          className="absolute top-0 h-full pointer-events-none z-15"
+          className="absolute top-0 left-0 h-full pointer-events-none z-15"
           style={{
-            left: '-2px', // Position on the actual left edge, slightly outside
             opacity: leftOpacity,
             transition: 'opacity 0.3s ease',
-            width: `${edgeThickness * 4}px`
+            width: `${edgeThickness * 3}px`,
+            transform: 'translateX(-50%)'
           }}
           data-edge="left"
           data-opacity={leftOpacity.toFixed(2)}
         >
           {/* Main edge thickness */}
           <div
-            className="absolute top-0 right-0 h-full"
+            className="absolute top-0 left-1/2 h-full"
             style={{
               width: `${edgeThickness}px`,
+              transform: 'translateX(-50%)',
               background: gasColor,
               boxShadow: `
                 0 0 ${edgeThickness * 2}px ${gasColor},
@@ -161,12 +164,13 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
             }}
           />
           
-          {/* Outer glow layers extending from the edge */}
+          {/* Outer glow layers */}
           <div
-            className="absolute top-0 right-0 h-full"
+            className="absolute top-0 left-1/2 h-full"
             style={{
               width: `${edgeThickness * 4}px`,
-              background: `linear-gradient(to left, ${gasColor} 0%, transparent 100%)`,
+              transform: 'translateX(-50%)',
+              background: `radial-gradient(ellipse closest-side, ${gasColor} 0%, transparent 70%)`,
               animation: isHovering ? 'gas-pulse 2s ease-in-out infinite alternate' : 'gas-gentle 4s ease-in-out infinite alternate',
               filter: `brightness(${intensity * 0.8})`
             }}
@@ -181,10 +185,10 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
         <>
           {rightOpacity > 0.1 && (
             <div
-              className="absolute top-0 h-full pointer-events-none"
+              className="absolute top-0 right-0 h-full pointer-events-none"
               style={{
-                right: '0px',
-                width: `${edgeThickness}px`,
+                width: `${edgeThickness * 2}px`,
+                transform: 'translateX(25%)',
                 background: `
                   radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
                   radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.6) 1px, transparent 2px),
@@ -199,10 +203,10 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
           
           {leftOpacity > 0.1 && (
             <div
-              className="absolute top-0 h-full pointer-events-none"
+              className="absolute top-0 left-0 h-full pointer-events-none"
               style={{
-                left: '0px',
-                width: `${edgeThickness}px`,
+                width: `${edgeThickness * 2}px`,
+                transform: 'translateX(-25%)',
                 background: `
                   radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
                   radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.6) 1px, transparent 2px),
@@ -221,13 +225,13 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
       <style>
         {`
           @keyframes gas-pulse {
-            0% { opacity: 0.6; transform: scaleY(1); }
-            100% { opacity: 0.9; transform: scaleY(1.05); }
+            0% { opacity: 0.6; transform: translateX(-50%) scaleY(1); }
+            100% { opacity: 0.9; transform: translateX(-50%) scaleY(1.05); }
           }
           
           @keyframes gas-gentle {
-            0% { opacity: 0.4; transform: scaleY(0.98); }
-            100% { opacity: 0.7; transform: scaleY(1.02); }
+            0% { opacity: 0.4; transform: translateX(-50%) scaleY(0.98); }
+            100% { opacity: 0.7; transform: translateX(-50%) scaleY(1.02); }
           }
           
           @keyframes sparkle-dance {
