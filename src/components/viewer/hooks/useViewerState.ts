@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import type { EnvironmentScene, LightingPreset, MaterialSettings, BackgroundType } from '../types';
+import type { EnvironmentScene, LightingPreset, MaterialSettings, BackgroundType, EnvironmentControls } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
 import { SPACE_ENVIRONMENTS } from '../components/studio/sections/spaces/constants';
@@ -34,6 +34,14 @@ export const useViewerState = () => {
     metalness: 0.45,
     clearcoat: 0.60,
     reflectivity: 0.40
+  });
+
+  // Environment Controls
+  const [environmentControls, setEnvironmentControls] = useState<EnvironmentControls>({
+    depthOfField: 1.0,
+    parallaxIntensity: 1.0,
+    fieldOfView: 75,
+    atmosphericDensity: 1.0
   });
 
   // Preset state
@@ -139,6 +147,10 @@ export const useViewerState = () => {
     setInteractiveLighting,
     materialSettings,
     setMaterialSettings,
+
+    // Environment Controls
+    environmentControls,
+    setEnvironmentControls,
 
     // Preset state
     selectedPresetId,

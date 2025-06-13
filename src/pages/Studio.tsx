@@ -30,13 +30,13 @@ const Studio = () => {
   // Create wrapper functions that don't require parameters
   const handleShareWrapper = () => {
     if (selectedCard) {
-      handleShare(selectedCard);
+      handleShare();
     }
   };
 
   const handleDownloadWrapper = () => {
     if (selectedCard) {
-      handleDownload(selectedCard);
+      handleDownload();
     }
   };
 

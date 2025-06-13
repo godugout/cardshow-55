@@ -8,7 +8,7 @@ import { useEnhancedCardEffects } from './hooks/useEnhancedCardEffects';
 import { useEnhancedCardInteraction } from './hooks/useEnhancedCardInteraction';
 import { useViewerState } from './hooks/useViewerState';
 import { useCardExport } from './hooks/useCardExport';
-import { cardAdapter } from './utils/cardAdapter';
+import { cardAdapter, simpleCardToCardData } from './utils/cardAdapter';
 import type { BackgroundType, EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from './types';
 import type { SpaceEnvironment, SpaceControls } from './spaces/types';
 
@@ -80,6 +80,18 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     isApplyingPreset: hookIsApplyingPreset
   } = useEnhancedCardEffects();
 
+  // Convert card to proper CardData format for components that need it
+  const fullCardData = useMemo(() => simpleCardToCardData(cardAdapter(card)), [card]);
+
+  const {
+    mousePosition: interactionMousePosition,
+    isHovering: interactionIsHovering,
+    rotation: interactionRotation,
+    handleMouseMove,
+    handleMouseEnter,
+    handleMouseLeave
+  } = useEnhancedCardInteraction(cardAdapter(card));
+
   // Create mock frame styles and enhanced effect styles
   const frameStyles = useMemo(() => ({}), []);
   const enhancedEffectStyles = useMemo(() => ({}), []);
@@ -98,36 +110,27 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     setIsDragging(true);
   }, []);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+  const handleMouseMoveLocal = useCallback((e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
     setMousePosition({ x, y });
-  }, []);
+    handleMouseMove(e);
+  }, [handleMouseMove]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
 
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnterLocal = useCallback(() => {
     setIsHovering(true);
-  }, []);
+    handleMouseEnter();
+  }, [handleMouseEnter]);
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeaveLocal = useCallback(() => {
     setIsHovering(false);
-  }, []);
-
-  const handleTouchStart = useCallback(() => {
-    setIsDragging(true);
-  }, []);
-
-  const handleTouchMove = useCallback(() => {
-    // Touch move logic
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+    handleMouseLeave();
+  }, [handleMouseLeave]);
 
   const handleCardClick = useCallback(() => {
     // Card click logic
@@ -139,13 +142,13 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   }, []);
 
   // Create simplified export handlers
-  const handleShare = useCallback(() => {
+  const handleShareWrapper = useCallback(() => {
     if (onShare) {
       onShare();
     }
   }, [onShare]);
 
-  const handleDownload = useCallback(() => {
+  const handleDownloadWrapper = useCallback(() => {
     if (onDownload) {
       onDownload();
     }
@@ -180,7 +183,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
       {/* Main 3D Card Layer - Always rendered at z-10 */}
       <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-auto">
         <EnhancedCardContainer
-          card={adaptedCard}
+          card={fullCardData}
           isHovering={isHovering}
           showEffects={showEffects}
           effectValues={effectValues}
@@ -198,9 +201,9 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
           overallBrightness={overallBrightness}
           showBackgroundInfo={showBackgroundInfo}
           onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseMove={handleMouseMoveLocal}
+          onMouseEnter={handleMouseEnterLocal}
+          onMouseLeave={handleMouseLeaveLocal}
           onClick={handleCardClick}
           environmentControls={environmentControls}
         />
