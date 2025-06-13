@@ -23,35 +23,29 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
   const getEdgeVisibility = () => {
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
     
-    // Show edges when card is sideways (45°-135° and 225°-315°)
-    const isRightEdgeVisible = normalizedRotation >= 45 && normalizedRotation <= 135;
-    const isLeftEdgeVisible = normalizedRotation >= 225 && normalizedRotation <= 315;
+    // Determine which edges are visible based on rotation
+    const rightEdgeVisible = normalizedRotation >= 45 && normalizedRotation <= 135;
+    const leftEdgeVisible = normalizedRotation >= 225 && normalizedRotation <= 315;
     
-    if (!isRightEdgeVisible && !isLeftEdgeVisible) {
-      return { opacity: 0, width: 0, display: 'none' as const };
-    }
+    let rightOpacity = 0;
+    let leftOpacity = 0;
     
-    // Calculate opacity based on angle - most visible at 90° and 270°
-    let opacity = 0;
-    let edgeWidth = 8; // Base thickness in pixels
-    
-    if (isRightEdgeVisible) {
-      // Peak visibility at 90°
+    if (rightEdgeVisible) {
+      // Peak visibility at 90° for right edge
       const angleFromPeak = Math.abs(normalizedRotation - 90);
-      opacity = Math.max(0, 1 - (angleFromPeak / 45));
-    } else if (isLeftEdgeVisible) {
-      // Peak visibility at 270°
-      const angleFromPeak = Math.abs(normalizedRotation - 270);
-      opacity = Math.max(0, 1 - (angleFromPeak / 45));
+      rightOpacity = Math.max(0, 1 - (angleFromPeak / 45));
     }
     
-    // Adjust width based on zoom
-    edgeWidth *= zoom;
+    if (leftEdgeVisible) {
+      // Peak visibility at 270° for left edge
+      const angleFromPeak = Math.abs(normalizedRotation - 270);
+      leftOpacity = Math.max(0, 1 - (angleFromPeak / 45));
+    }
     
     return { 
-      opacity: Math.max(0.1, opacity), 
-      width: edgeWidth,
-      display: 'block' as const
+      rightOpacity: Math.max(0.1, rightOpacity),
+      leftOpacity: Math.max(0.1, leftOpacity),
+      isVisible: rightOpacity > 0.1 || leftOpacity > 0.1
     };
   };
 
@@ -71,14 +65,14 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
     );
     
     const colorMap: Record<string, string> = {
-      holographic: 'linear-gradient(45deg, rgba(255, 107, 107, 0.8), rgba(78, 205, 196, 0.8), rgba(69, 183, 209, 0.8), rgba(150, 206, 180, 0.8))',
+      holographic: 'linear-gradient(90deg, rgba(255, 107, 107, 0.8), rgba(78, 205, 196, 0.8), rgba(69, 183, 209, 0.8), rgba(150, 206, 180, 0.8))',
       gold: 'rgba(255, 215, 0, 0.8)',
       chrome: 'rgba(174, 182, 191, 0.7)',
       crystal: 'rgba(255, 255, 255, 0.6)',
-      prizm: 'linear-gradient(45deg, rgba(255, 60, 60, 0.7), rgba(255, 120, 40, 0.7), rgba(255, 200, 40, 0.7), rgba(120, 255, 60, 0.7))',
+      prizm: 'linear-gradient(90deg, rgba(255, 60, 60, 0.7), rgba(255, 120, 40, 0.7), rgba(255, 200, 40, 0.7), rgba(120, 255, 60, 0.7))',
       vintage: 'rgba(188, 170, 164, 0.6)',
       ice: 'rgba(14, 165, 233, 0.7)',
-      aurora: 'linear-gradient(45deg, rgba(138, 43, 226, 0.7), rgba(20, 184, 166, 0.7), rgba(59, 130, 246, 0.7))',
+      aurora: 'linear-gradient(90deg, rgba(138, 43, 226, 0.7), rgba(20, 184, 166, 0.7), rgba(59, 130, 246, 0.7))',
       interference: 'rgba(156, 163, 175, 0.6)',
       foilspray: 'rgba(243, 156, 18, 0.7)'
     };
@@ -86,72 +80,145 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
     return colorMap[dominantEffect[0]] || 'rgba(100, 150, 255, 0.6)';
   };
 
-  const { opacity, width, display } = getEdgeVisibility();
+  const { rightOpacity, leftOpacity, isVisible } = getEdgeVisibility();
   
-  if (display === 'none') {
+  if (!isVisible) {
     return null;
   }
 
   const gasColor = getGasColor();
   const intensity = isHovering && interactiveLighting ? 1.3 : 1;
+  const edgeThickness = Math.max(4, 8 * zoom); // Minimum thickness with zoom scaling
 
   return (
-    <div 
-      className="absolute inset-0 pointer-events-none z-15"
-      style={{
-        opacity,
-        transition: 'opacity 0.3s ease',
-        display
-      }}
-      data-edge-visibility={opacity > 0.1 ? 'visible' : 'hidden'}
-      data-edge-rotation={rotation.y.toFixed(1)}
-    >
-      {/* Main edge thickness */}
-      <div
-        className="absolute top-0 left-1/2 h-full"
-        style={{
-          width: `${width}px`,
-          transform: 'translateX(-50%)',
-          background: gasColor,
-          boxShadow: `
-            0 0 ${width * 2}px ${gasColor},
-            inset 0 0 ${width}px rgba(255, 255, 255, 0.2)
-          `,
-          filter: `brightness(${intensity}) blur(0.5px)`,
-          borderRadius: '2px'
-        }}
-      />
-      
-      {/* Glowing gas layers */}
-      <div
-        className="absolute top-0 left-1/2 h-full"
-        style={{
-          width: `${width * 3}px`,
-          transform: 'translateX(-50%)',
-          background: `radial-gradient(ellipse, ${gasColor} 0%, transparent 70%)`,
-          animation: isHovering ? 'gas-pulse 2s ease-in-out infinite alternate' : 'gas-gentle 4s ease-in-out infinite alternate',
-          filter: `brightness(${intensity * 0.8})`
-        }}
-      />
+    <>
+      {/* Right Edge Glow */}
+      {rightOpacity > 0.1 && (
+        <div 
+          className="absolute top-0 right-0 h-full pointer-events-none z-15"
+          style={{
+            opacity: rightOpacity,
+            transition: 'opacity 0.3s ease',
+            width: `${edgeThickness * 3}px`,
+            transform: 'translateX(50%)'
+          }}
+          data-edge="right"
+          data-opacity={rightOpacity.toFixed(2)}
+        >
+          {/* Main edge thickness */}
+          <div
+            className="absolute top-0 left-1/2 h-full"
+            style={{
+              width: `${edgeThickness}px`,
+              transform: 'translateX(-50%)',
+              background: gasColor,
+              boxShadow: `
+                0 0 ${edgeThickness * 2}px ${gasColor},
+                inset 0 0 ${edgeThickness / 2}px rgba(255, 255, 255, 0.2)
+              `,
+              filter: `brightness(${intensity}) blur(0.5px)`,
+              borderRadius: '2px'
+            }}
+          />
+          
+          {/* Outer glow layers */}
+          <div
+            className="absolute top-0 left-1/2 h-full"
+            style={{
+              width: `${edgeThickness * 4}px`,
+              transform: 'translateX(-50%)',
+              background: `radial-gradient(ellipse closest-side, ${gasColor} 0%, transparent 70%)`,
+              animation: isHovering ? 'gas-pulse 2s ease-in-out infinite alternate' : 'gas-gentle 4s ease-in-out infinite alternate',
+              filter: `brightness(${intensity * 0.8})`
+            }}
+          />
+        </div>
+      )}
+
+      {/* Left Edge Glow */}
+      {leftOpacity > 0.1 && (
+        <div 
+          className="absolute top-0 left-0 h-full pointer-events-none z-15"
+          style={{
+            opacity: leftOpacity,
+            transition: 'opacity 0.3s ease',
+            width: `${edgeThickness * 3}px`,
+            transform: 'translateX(-50%)'
+          }}
+          data-edge="left"
+          data-opacity={leftOpacity.toFixed(2)}
+        >
+          {/* Main edge thickness */}
+          <div
+            className="absolute top-0 left-1/2 h-full"
+            style={{
+              width: `${edgeThickness}px`,
+              transform: 'translateX(-50%)',
+              background: gasColor,
+              boxShadow: `
+                0 0 ${edgeThickness * 2}px ${gasColor},
+                inset 0 0 ${edgeThickness / 2}px rgba(255, 255, 255, 0.2)
+              `,
+              filter: `brightness(${intensity}) blur(0.5px)`,
+              borderRadius: '2px'
+            }}
+          />
+          
+          {/* Outer glow layers */}
+          <div
+            className="absolute top-0 left-1/2 h-full"
+            style={{
+              width: `${edgeThickness * 4}px`,
+              transform: 'translateX(-50%)',
+              background: `radial-gradient(ellipse closest-side, ${gasColor} 0%, transparent 70%)`,
+              animation: isHovering ? 'gas-pulse 2s ease-in-out infinite alternate' : 'gas-gentle 4s ease-in-out infinite alternate',
+              filter: `brightness(${intensity * 0.8})`
+            }}
+          />
+        </div>
+      )}
       
       {/* Particle-like sparkles for magical effects */}
       {(effectValues.holographic?.intensity as number > 20 || 
         effectValues.crystal?.intensity as number > 20 ||
         effectValues.prizm?.intensity as number > 20) && (
-        <div
-          className="absolute top-0 left-1/2 h-full"
-          style={{
-            width: `${width * 2}px`,
-            transform: 'translateX(-50%)',
-            background: `
-              radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
-              radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.6) 1px, transparent 2px),
-              radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.7) 1px, transparent 2px)
-            `,
-            animation: 'sparkle-dance 3s ease-in-out infinite',
-            filter: `brightness(${intensity})`
-          }}
-        />
+        <>
+          {rightOpacity > 0.1 && (
+            <div
+              className="absolute top-0 right-0 h-full pointer-events-none"
+              style={{
+                width: `${edgeThickness * 2}px`,
+                transform: 'translateX(25%)',
+                background: `
+                  radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
+                  radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.6) 1px, transparent 2px),
+                  radial-gradient(circle at 50% 85%, rgba(255, 255, 255, 0.7) 1px, transparent 2px)
+                `,
+                animation: 'sparkle-dance 3s ease-in-out infinite',
+                filter: `brightness(${intensity})`,
+                opacity: rightOpacity
+              }}
+            />
+          )}
+          
+          {leftOpacity > 0.1 && (
+            <div
+              className="absolute top-0 left-0 h-full pointer-events-none"
+              style={{
+                width: `${edgeThickness * 2}px`,
+                transform: 'translateX(-25%)',
+                background: `
+                  radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
+                  radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.6) 1px, transparent 2px),
+                  radial-gradient(circle at 50% 85%, rgba(255, 255, 255, 0.7) 1px, transparent 2px)
+                `,
+                animation: 'sparkle-dance 3s ease-in-out infinite',
+                filter: `brightness(${intensity})`,
+                opacity: leftOpacity
+              }}
+            />
+          )}
+        </>
       )}
 
       {/* CSS animations */}
@@ -174,6 +241,6 @@ export const CardEdgeContainer: React.FC<CardEdgeContainerProps> = ({
           }
         `}
       </style>
-    </div>
+    </>
   );
 };
