@@ -21,6 +21,7 @@ interface BackgroundRendererProps {
   materialSettings?: any;
   overallBrightness?: number[];
   interactiveLighting?: boolean;
+  renderCard?: boolean; // New prop to control card rendering
 }
 
 export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
@@ -37,7 +38,8 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   effectValues = {},
   materialSettings,
   overallBrightness = [100],
-  interactiveLighting = false
+  interactiveLighting = false,
+  renderCard = true // Default to true for backward compatibility
 }) => {
   // Check for '3dSpace' instead of 'space' based on the BackgroundType definition
   if (backgroundType === '3dSpace' && selectedSpace) {
@@ -55,6 +57,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           interactiveLighting={interactiveLighting}
           onCardClick={onCardClick}
           onCameraReset={onCameraReset}
+          renderCard={renderCard} // Pass through the renderCard prop
         />
       </div>
     );

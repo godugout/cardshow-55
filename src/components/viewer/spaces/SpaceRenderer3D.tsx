@@ -27,6 +27,7 @@ interface SpaceRenderer3DProps {
   interactiveLighting?: boolean;
   onCardClick?: () => void;
   onCameraReset?: () => void;
+  renderCard?: boolean; // New prop to control card rendering
 }
 
 const LoadingFallback: React.FC = () => (
@@ -77,8 +78,9 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   interactiveLighting = false,
   onCardClick,
   onCameraReset,
+  renderCard = true // Default to true for backward compatibility
 }) => {
-  console.log('🎬 SpaceRenderer3D: Rendering environment:', environment.type, environment.name);
+  console.log('🎬 SpaceRenderer3D: Rendering environment:', environment.type, environment.name, 'renderCard:', renderCard);
 
   const imageId = getEnvironmentImageId(environment);
   const exposure = environment.config.exposure || 1.0;
@@ -113,17 +115,20 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
             />
           </SpaceErrorBoundary>
           
-          <Card3D
-            card={card}
-            controls={controls}
-            effectValues={effectValues}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            interactiveLighting={interactiveLighting}
-            onClick={onCardClick}
-          />
+          {/* Only render the 3D card if renderCard is true */}
+          {renderCard && (
+            <Card3D
+              card={card}
+              controls={controls}
+              effectValues={effectValues}
+              selectedScene={selectedScene}
+              selectedLighting={selectedLighting}
+              materialSettings={materialSettings}
+              overallBrightness={overallBrightness}
+              interactiveLighting={interactiveLighting}
+              onClick={onCardClick}
+            />
+          )}
         </Suspense>
 
         <OrbitControls
