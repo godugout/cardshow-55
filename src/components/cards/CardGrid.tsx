@@ -3,13 +3,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { DisplayCard } from './types/DisplayCard';
 
 interface CardGridProps {
-  cards: CardData[];
+  cards: DisplayCard[];
   loading: boolean;
   viewMode: 'grid' | 'masonry' | 'feed';
-  onCardClick?: (card: CardData) => void;
+  onCardClick?: (card: DisplayCard) => void;
 }
 
 const UNSPLASH_IMAGES = [
@@ -23,7 +23,7 @@ const UNSPLASH_IMAGES = [
   'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400&q=80', // Abstract colorful
 ];
 
-const CardGridItem = ({ card, index, onCardClick }: { card: CardData; index: number; onCardClick?: (card: CardData) => void }) => {
+const CardGridItem = ({ card, index, onCardClick }: { card: DisplayCard; index: number; onCardClick?: (card: DisplayCard) => void }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [showViewer, setShowViewer] = useState(false);
@@ -109,9 +109,7 @@ const CardGridItem = ({ card, index, onCardClick }: { card: CardData; index: num
         <ImmersiveCardViewer
           card={{
             ...card,
-            image_url: displayImage,
-            createdAt: new Date(),
-            updatedAt: new Date()
+            image_url: displayImage
           }}
           isOpen={showViewer}
           onClose={handleCloseViewer}
