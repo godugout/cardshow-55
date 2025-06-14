@@ -36,17 +36,17 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   
-  // Environment and effects
-  const [backgroundType, setBackgroundType] = useState<BackgroundType>('space');
+  // Environment and effects - Fix: use correct BackgroundType
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>('3dSpace');
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene | undefined>();
   const [selectedLighting, setSelectedLighting] = useState<LightingPreset | undefined>();
   const [overallBrightness, setOverallBrightness] = useState([100]);
   const [interactiveLighting, setInteractiveLighting] = useState(false);
+  // Fix: remove opacity property as it doesn't exist in MaterialSettings
   const [materialSettings, setMaterialSettings] = useState<MaterialSettings>({
     roughness: 0.3,
     metalness: 0.8,
-    clearcoat: 0.5,
-    opacity: 1.0
+    clearcoat: 0.5
   });
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>();
   
