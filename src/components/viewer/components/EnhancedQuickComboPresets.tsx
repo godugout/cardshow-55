@@ -76,23 +76,7 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
         {ENHANCED_COMBO_PRESETS.map((preset) => {
           const isSelected = selectedPresetId === preset.id;
           const isLoading = isApplyingPreset && isSelected;
-          
-          // Safe style color retrieval with comprehensive error handling
-          const styleColor = React.useMemo(() => {
-            if (!preset.id || typeof preset.id !== 'string') {
-              console.warn('🎨 EnhancedQuickComboPresets: Invalid preset ID:', preset.id);
-              return null;
-            }
-            
-            try {
-              const color = getStyleColor(preset.id);
-              console.log('🎨 EnhancedQuickComboPresets: Retrieved style color for preset:', preset.id, color);
-              return color;
-            } catch (error) {
-              console.error('🎨 EnhancedQuickComboPresets: Error getting style color for preset:', preset.id, error);
-              return null;
-            }
-          }, [preset.id]);
+          const styleColor = getStyleColor(preset.id);
           
           return (
             <PresetCard
@@ -105,7 +89,7 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
               onSelect={() => handlePresetClick(preset)}
               size="sm"
               styleColor={styleColor}
-              className="h-auto"
+              className="min-h-[80px]"
             />
           );
         })}

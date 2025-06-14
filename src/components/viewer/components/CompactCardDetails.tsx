@@ -54,7 +54,7 @@ export const CompactCardDetails: React.FC<CompactCardDetailsProps> = ({
     .sort((a, b) => b.intensity - a.intensity) : [];
 
   return (
-    <div className="bg-black bg-opacity-90 backdrop-blur-lg rounded-lg p-4 border border-white/10 max-w-sm">
+    <div className="bg-black bg-opacity-90 backdrop-blur-lg rounded-lg p-4 border border-white/10 max-w-sm select-none" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
       {/* Card Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-white font-semibold text-sm truncate max-w-[160px]">

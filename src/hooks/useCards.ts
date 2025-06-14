@@ -1,23 +1,12 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase-client';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { toast } from 'sonner';
+import type { Tables } from '@/integrations/supabase/types';
 
-interface Card {
-  id: string;
-  title: string;
-  description?: string;
-  image_url?: string;
-  thumbnail_url?: string;
-  creator_id: string;
-  is_public: boolean;
-  rarity: string;
-  tags: string[];
-  design_metadata: Record<string, any>;
-  created_at: string;
-  updated_at: string;
-}
+// Use the database type directly instead of custom interface
+type Card = Tables<'cards'>;
 
 export const useCards = () => {
   const { user } = useAuth();
@@ -28,35 +17,50 @@ export const useCards = () => {
 
   const fetchPublicCards = async () => {
     try {
+      console.log('Fetching public cards...');
       const { data, error } = await supabase
         .from('cards')
         .select('*')
         .eq('is_public', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching public cards:', error);
+        throw error;
+      }
       
+      console.log('Fetched public cards:', data?.length || 0);
       setCards(data || []);
       setFeaturedCards(data?.slice(0, 8) || []);
     } catch (error) {
       console.error('Error fetching public cards:', error);
-      toast.error('Failed to load cards');
+      // Don't show error toast immediately, might be expected during app initialization
+      setCards([]);
+      setFeaturedCards([]);
     }
   };
 
   const fetchUserCards = async (userId?: string) => {
     const targetUserId = userId || user?.id;
-    if (!targetUserId) return [];
+    if (!targetUserId) {
+      console.log('No user ID available for fetching user cards');
+      return [];
+    }
     
     try {
+      console.log('Fetching user cards for:', targetUserId);
       const { data, error } = await supabase
         .from('cards')
         .select('*')
         .eq('creator_id', targetUserId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching user cards:', error);
+        throw error;
+      }
       
+      console.log('Fetched user cards:', data?.length || 0);
       const userCardsData = data || [];
       if (!userId || userId === user?.id) {
         setUserCards(userCardsData);
@@ -69,34 +73,58 @@ export const useCards = () => {
   };
 
   const fetchCards = async () => {
+    console.log('Starting card fetch process...');
     setLoading(true);
-    await Promise.all([fetchPublicCards(), fetchUserCards()]);
-    setLoading(false);
+    
+    try {
+      await Promise.all([
+        fetchPublicCards(),
+        fetchUserCards()
+      ]);
+    } catch (error) {
+      console.error('Error in fetchCards:', error);
+    } finally {
+      setLoading(false);
+      console.log('Card fetch process completed');
+    }
   };
 
   useEffect(() => {
+    console.log('useCards effect triggered, user:', user?.id);
     fetchCards();
 
-    // Set up real-time subscription for new cards
-    const subscription = supabase
-      .channel('cards-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'cards'
-        },
-        () => {
-          fetchCards(); // Refresh cards when changes occur
-        }
-      )
-      .subscribe();
+    // Only set up real-time subscription if we have a user
+    let subscription: any = null;
+    
+    try {
+      subscription = supabase
+        .channel('cards-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'cards'
+          },
+          (payload) => {
+            console.log('Real-time card change:', payload);
+            fetchCards(); // Refresh cards when changes occur
+          }
+        )
+        .subscribe();
+        
+      console.log('Real-time subscription created');
+    } catch (error) {
+      console.error('Error setting up real-time subscription:', error);
+    }
 
     return () => {
-      supabase.removeChannel(subscription);
+      if (subscription) {
+        console.log('Cleaning up real-time subscription');
+        supabase.removeChannel(subscription);
+      }
     };
-  }, [user]);
+  }, [user?.id]);
 
   return {
     cards,

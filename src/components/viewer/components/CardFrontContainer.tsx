@@ -6,7 +6,7 @@ import { CardEffectsLayer } from './CardEffectsLayer';
 
 interface CardFrontContainerProps {
   card: CardData;
-  isFlipped: boolean;
+  rotation: { x: number; y: number };
   isHovering: boolean;
   showEffects: boolean;
   effectValues: EffectValues;
@@ -20,7 +20,7 @@ interface CardFrontContainerProps {
 
 export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   card,
-  isFlipped,
+  rotation,
   isHovering,
   showEffects,
   effectValues,
@@ -31,130 +31,142 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   interactiveLighting = false,
   onClick
 }) => {
+  // Improved visibility calculation with clearer angle ranges
+  const getVisibility = () => {
+    // Normalize rotation to 0-360 range
+    const normalizedRotation = ((rotation.y % 360) + 360) % 360;
+    
+    // Front is visible from 270° to 90° (crossing 0°/360°)
+    const isFrontVisible = normalizedRotation >= 270 || normalizedRotation <= 90;
+    
+    // Enhanced debug logging
+    console.log('🔄 Card Front - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isFrontVisible);
+    
+    if (!isFrontVisible) {
+      return { opacity: 0, zIndex: 5, display: 'none' as const };
+    }
+    
+    // Calculate smooth opacity transitions with longer fade ranges
+    let opacity = 1;
+    const fadeRange = 30; // Increased from 15 to 30 degrees for smoother transitions
+    
+    if (normalizedRotation >= 270 && normalizedRotation <= 270 + fadeRange) {
+      // Fade in from 270° to 300°
+      opacity = (normalizedRotation - 270) / fadeRange;
+      console.log('🔄 Card Front - Fade in (270°+):', opacity.toFixed(2));
+    } else if (normalizedRotation >= 90 - fadeRange && normalizedRotation <= 90) {
+      // Fade out from 60° to 90°
+      opacity = (90 - normalizedRotation) / fadeRange;
+      console.log('🔄 Card Front - Fade out (90°-):', opacity.toFixed(2));
+    }
+    
+    return { 
+      opacity: Math.max(0.1, opacity),
+      zIndex: opacity > 0.3 ? 25 : 15, // Higher z-index when more visible
+      display: 'block' as const
+    };
+  };
+
+  const { opacity: frontOpacity, zIndex: frontZIndex, display } = getVisibility();
+
+  // Don't render at all if not visible
+  if (display === 'none') {
+    return null;
+  }
+
   return (
     <div 
-      className={`absolute inset-0 rounded-xl overflow-hidden ${
-        isFlipped ? 'opacity-0' : 'opacity-100'
-      }`}
+      className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
-        transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-        transition: 'transform 0.6s ease-in-out, opacity 0.3s ease',
+        opacity: frontOpacity,
+        zIndex: frontZIndex,
+        transition: 'opacity 0.3s ease, z-index 0.1s ease',
         backfaceVisibility: 'hidden',
         ...frameStyles
       }}
+      data-visibility={frontOpacity > 0.1 ? 'visible' : 'hidden'}
+      data-front-rotation={rotation.y.toFixed(1)}
     >
-      {/* Enhanced Effects Layer with Individual Effect Values */}
-      <CardEffectsLayer
-        showEffects={showEffects}
-        isHovering={isHovering}
-        effectIntensity={[50]} // Keep for backward compatibility
-        mousePosition={mousePosition}
-        physicalEffectStyles={enhancedEffectStyles}
-        effectValues={effectValues}
-        interactiveLighting={interactiveLighting}
-      />
-
-      {/* Surface Texture - Now layered properly */}
-      <div className="relative z-20">
-        {SurfaceTexture}
-      </div>
-
-      {/* Card Content - Prevent highlighting and selection */}
-      <div 
-        className="relative h-full p-6 flex flex-col z-15"
-        style={{
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
-          pointerEvents: 'none'
-        }}
-      >
-        {/* Image Section */}
-        {card.image_url && (
-          <div className="flex-1 mb-6 relative overflow-hidden rounded-lg">
-            <img 
-              src={card.image_url} 
-              alt={card.title}
-              className="w-full h-full object-cover"
-              style={{
-                filter: isHovering ? 
-                  `brightness(${interactiveLighting ? 1.2 : 1.1}) contrast(${interactiveLighting ? 1.1 : 1.05})` : 
-                  'brightness(1)',
-                userSelect: 'none',
-                WebkitUserSelect: 'none',
-                pointerEvents: 'none'
-              }}
-              draggable={false}
-            />
-          </div>
-        )}
+      {/* Base Layer - Card Frame */}
+      <div className="absolute inset-0 z-10" style={frameStyles} />
+      
+      {/* Effects Layer - Only on Frame */}
+      <div className="absolute inset-0 z-20">
+        <CardEffectsLayer
+          showEffects={showEffects}
+          isHovering={isHovering}
+          effectIntensity={[50]} // Keep for backward compatibility
+          mousePosition={mousePosition}
+          physicalEffectStyles={enhancedEffectStyles}
+          effectValues={effectValues}
+          interactiveLighting={interactiveLighting}
+          applyToFrame={true}
+        />
         
-        {/* Details Section */}
-        <div 
-          className="mt-auto p-4 rounded-lg bg-black bg-opacity-60 backdrop-blur-sm"
-          style={{
-            userSelect: 'none',
-            WebkitUserSelect: 'none'
-          }}
-        >
-          <h3 className="text-white text-xl font-bold mb-2">{card.title}</h3>
-          {card.description && (
-            <p className="text-gray-300 text-sm mb-2">{card.description}</p>
-          )}
-          {card.rarity && (
-            <p className="text-gray-400 text-xs uppercase tracking-wide">{card.rarity}</p>
-          )}
+        {/* Surface Texture - Only applied to frame areas */}
+        <div className="relative">
+          {SurfaceTexture}
         </div>
       </div>
 
-      {/* Softer Interactive Lighting Effect - Multi-layered radial system */}
+      {/* Card Image - Always On Top */}
+      <div className="absolute inset-0 z-40">
+        {card.image_url && (
+          <img 
+            src={card.image_url} 
+            alt={card.title}
+            className="w-full h-full object-cover"
+            style={{
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              pointerEvents: 'none',
+              backfaceVisibility: 'hidden'
+            }}
+            draggable={false}
+          />
+        )}
+      </div>
+
+      {/* Card Content - Overlay */}
+      <div 
+        className="absolute inset-0 p-6 flex flex-col z-30"
+        style={{
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          pointerEvents: 'none',
+          backfaceVisibility: 'hidden'
+        }}
+      >
+        <div className="mt-auto">
+          <div className="bg-black bg-opacity-40 backdrop-filter backdrop-blur-sm rounded-lg p-3 text-white">
+            <h3 className="text-xl font-bold mb-1">{card.title}</h3>
+            {card.description && (
+              <p className="text-sm mb-1">{card.description}</p>
+            )}
+            {card.rarity && (
+              <p className="text-xs uppercase tracking-wide opacity-75">{card.rarity}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Lighting Overlay - Very Subtle */}
       {isHovering && interactiveLighting && (
-        <>
-          {/* Primary soft light center */}
-          <div 
-            className="absolute inset-0 pointer-events-none z-30"
-            style={{
-              background: `radial-gradient(
-                ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-                rgba(255, 255, 255, 0.15) 0%,
-                rgba(255, 255, 255, 0.08) 40%,
-                transparent 80%
-              )`,
-              mixBlendMode: 'overlay',
-              transition: 'background 0.1s ease'
-            }}
-          />
-          
-          {/* Secondary diffusion layer */}
-          <div 
-            className="absolute inset-0 pointer-events-none z-31"
-            style={{
-              background: `radial-gradient(
-                ellipse 180% 120% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-                rgba(255, 255, 255, 0.06) 0%,
-                rgba(255, 255, 255, 0.03) 60%,
-                transparent 90%
-              )`,
-              mixBlendMode: 'soft-light',
-              transition: 'background 0.15s ease'
-            }}
-          />
-          
-          {/* Subtle directional highlight */}
-          <div 
-            className="absolute inset-0 pointer-events-none z-32"
-            style={{
-              background: `linear-gradient(
-                ${Math.atan2(mousePosition.y - 0.5, mousePosition.x - 0.5) * (180 / Math.PI) + 90}deg,
-                transparent 40%,
-                rgba(255, 255, 255, 0.04) 50%,
-                transparent 60%
-              )`,
-              mixBlendMode: 'overlay',
-              opacity: Math.max(0.3, 1 - Math.sqrt(Math.pow(mousePosition.x - 0.5, 2) + Math.pow(mousePosition.y - 0.5, 2)) * 2),
-              transition: 'opacity 0.1s ease'
-            }}
-          />
-        </>
+        <div 
+          className="absolute inset-0 pointer-events-none z-50"
+          style={{
+            background: `radial-gradient(
+              ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+              rgba(255, 255, 255, 0.06) 0%,
+              rgba(255, 255, 255, 0.03) 40%,
+              transparent 70%
+            )`,
+            mixBlendMode: 'soft-light',
+            opacity: 0.5,
+            transition: 'opacity 0.1s ease',
+            backfaceVisibility: 'hidden'
+          }}
+        />
       )}
     </div>
   );

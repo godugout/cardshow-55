@@ -72,11 +72,11 @@ export class CustomAuthService {
     console.log('🔧 Attempting sign in with username:', username);
     
     try {
-      // For now, simulate authentication without RPC functions
-      // In a real implementation, you'd use proper authentication
+      // For now, simulate authentication without database
+      // In a real app, you'd validate against database
       if (username && passcode) {
         const user: CustomUser = {
-          id: `user_${Date.now()}`,
+          id: `user_${username}`,
           username: username
         };
         
@@ -97,11 +97,11 @@ export class CustomAuthService {
     console.log('🔧 Attempting sign up with username:', username);
     
     try {
-      // For now, simulate registration without RPC functions
-      // In a real implementation, you'd use proper user registration
+      // For now, simulate registration without database
+      // In a real app, you'd save to database
       if (username && passcode) {
         const user: CustomUser = {
-          id: `user_${Date.now()}`,
+          id: `user_${username}`,
           username: username
         };
         
@@ -109,7 +109,7 @@ export class CustomAuthService {
         this.storeSession(user);
         return { user, error: null };
       } else {
-        console.log('🔧 Sign up failed: missing credentials');
+        console.log('🔧 Sign up failed: missing username or passcode');
         return { user: null, error: 'Username and passcode are required' };
       }
     } catch (err) {

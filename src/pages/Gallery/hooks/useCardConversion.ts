@@ -1,48 +1,50 @@
 
-import type { CardData, CardRarity, PublishingOptions, CreatorAttribution } from '@/types/card';
 
-interface Card {
-  id: string;
-  title: string;
-  description?: string;
-  image_url?: string;
-  thumbnail_url?: string;
-  creator_id: string;
-  rarity: string;
-  tags: string[];
-  design_metadata: Record<string, any>;
-  is_public?: boolean;
-  creator_attribution?: Record<string, any>;
-  publishing_options?: Record<string, any>;
-}
+import type { Tables } from '@/integrations/supabase/types';
+import type { CardData } from '@/hooks/useCardEditor';
+
+// Use the database type directly
+type DbCard = Tables<'cards'>;
 
 export const useCardConversion = () => {
-  const convertCardsToCardData = (cards: Card[]): CardData[] => {
-    return cards.map(card => ({
+  const convertCardsToCardData = (dbCards: DbCard[]): CardData[] => {
+    return dbCards.map(card => ({
       id: card.id,
       title: card.title,
-      description: card.description || '',
-      image_url: card.image_url,
-      thumbnail_url: card.thumbnail_url,
-      rarity: (card.rarity as CardRarity) || 'common',
+      description: card.description || undefined,
+      rarity: (card.rarity as any) || 'common',
       tags: card.tags || [],
-      design_metadata: card.design_metadata || {},
+      image_url: card.image_url || card.thumbnail_url || '',
+      thumbnail_url: card.thumbnail_url || undefined,
+      design_metadata: typeof card.design_metadata === 'object' ? card.design_metadata as Record<string, any> : {},
       visibility: card.is_public ? 'public' : 'private',
       is_public: card.is_public || false,
-      creator_attribution: (card.creator_attribution || {
-        creator_name: '',
+      template_id: card.template_id || undefined,
+      collection_id: undefined,
+      team_id: undefined,
+      creator_attribution: {
+        creator_name: 'Creator',
         creator_id: card.creator_id,
         collaboration_type: 'solo'
-      }) as CreatorAttribution,
-      publishing_options: (card.publishing_options || {
-        marketplace_listing: false,
+      },
+      publishing_options: {
+        marketplace_listing: card.marketplace_listing || false,
         crd_catalog_inclusion: true,
         print_available: false,
         pricing: { currency: 'USD' },
         distribution: { limited_edition: false }
-      }) as PublishingOptions
+      },
+      verification_status: card.verification_status as any || 'pending',
+      print_metadata: typeof card.print_metadata === 'object' ? card.print_metadata as Record<string, any> : {},
+      creator_id: card.creator_id,
+      price: card.price ? Number(card.price) : undefined,
+      edition_size: card.edition_number || undefined,
+      marketplace_listing: card.marketplace_listing || false,
+      crd_catalog_inclusion: true,
+      print_available: false
     }));
   };
 
   return { convertCardsToCardData };
 };
+

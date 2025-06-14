@@ -1,8 +1,8 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import type { User } from '@/types/user';
 
 interface ProfileData {
   username?: string;
@@ -35,37 +35,16 @@ export const useProfile = (userId?: string) => {
       if (!userId) return null;
       
       try {
-        // Fetch the profile data
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
-          
-        if (error) {
-          // If the error is a "not found" error, we'll create a profile
-          if (error.code === 'PGRST116') {
-            console.log('Profile not found, you might want to create one');
-            return null;
-          }
-          throw error;
-        }
-        
-        // Load preferences from localStorage as fallback
-        const storedPrefs = localStorage.getItem(`user_preferences_${userId}`);
-        let preferences = {};
-        
-        if (storedPrefs) {
-          try {
-            preferences = JSON.parse(storedPrefs);
-          } catch (err) {
-            console.error('Error parsing stored preferences:', err);
-          }
-        }
-        
-        return {
-          ...data,
-          preferences
+        // For now, return mock profile data from localStorage
+        // Once database tables are set up, this will fetch from Supabase
+        const stored = localStorage.getItem(`profile_${userId}`);
+        return stored ? JSON.parse(stored) : {
+          id: userId,
+          username: `user_${userId}`,
+          full_name: '',
+          bio: '',
+          avatar_url: '',
+          preferences: {}
         };
       } catch (err) {
         console.error('Error in useProfile hook:', err);
@@ -82,24 +61,15 @@ export const useProfile = (userId?: string) => {
       if (!userId) throw new Error('User ID is required');
       
       try {
-        // Update the profile
-        const { error } = await supabase
-          .from('profiles')
-          .update({
-            username: profileData.username,
-            full_name: profileData.full_name,
-            bio: profileData.bio,
-            avatar_url: profileData.avatar_url
-          })
-          .eq('id', userId);
-          
-        if (error) throw error;
-        
-        // Store preferences in localStorage
-        if (preferences) {
-          localStorage.setItem(`user_preferences_${userId}`, JSON.stringify(preferences));
-        }
-        
+        // For now, save to localStorage
+        // Once database tables are set up, this will save to Supabase
+        const current = profile || {};
+        const updated = {
+          ...current,
+          ...profileData,
+          preferences: preferences || current.preferences || {}
+        };
+        localStorage.setItem(`profile_${userId}`, JSON.stringify(updated));
         return true;
       } catch (err) {
         console.error('Error updating profile:', err);

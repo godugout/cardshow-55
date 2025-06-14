@@ -71,76 +71,9 @@ export const STYLE_COLORS = {
     border: '#475569',
     bg: 'rgba(100, 116, 139, 0.1)',
     gradient: 'linear-gradient(135deg, #64748B, #94A3B8)'
-  },
-  // Add lighting preset color mappings to prevent undefined errors
-  'warm': {
-    primary: '#F59E0B',
-    border: '#EAB308',
-    bg: 'rgba(245, 158, 11, 0.1)',
-    gradient: 'linear-gradient(90deg, #F59E0B, #EAB308, #FCD34D)'
-  },
-  'cool': {
-    primary: '#0EA5E9',
-    border: '#06B6D4',
-    bg: 'rgba(14, 165, 233, 0.1)',
-    gradient: 'linear-gradient(90deg, #0EA5E9, #06B6D4, #7DD3FC)'
-  },
-  'neutral': {
-    primary: '#6B7280',
-    border: '#9CA3AF',
-    bg: 'rgba(107, 114, 128, 0.1)',
-    gradient: 'linear-gradient(90deg, #6B7280, #9CA3AF, #D1D5DB)'
-  },
-  'dramatic': {
-    primary: '#8B5CF6',
-    border: '#A855F7',
-    bg: 'rgba(139, 92, 246, 0.1)',
-    gradient: 'linear-gradient(90deg, #8B5CF6, #A855F7, #C084FC)'
   }
 } as const;
 
-// Enhanced default fallback color with complete properties
-const DEFAULT_STYLE_COLOR = {
-  primary: '#45B26B',
-  border: '#4ADE80',
-  bg: 'rgba(69, 178, 107, 0.1)',
-  gradient: 'linear-gradient(135deg, #45B26B, #4ADE80)'
-} as const;
-
-// Type definition for style color object
-export type StyleColor = {
-  primary: string;
-  border: string;
-  bg: string;
-  gradient: string;
-};
-
-export const getStyleColor = (styleId: string | undefined | null): StyleColor => {
-  console.log('🎨 getStyleColor called with:', styleId);
-  
-  // Handle null, undefined, or empty string inputs
-  if (!styleId || typeof styleId !== 'string') {
-    console.warn('⚠️ Invalid styleId provided (null/undefined/empty):', styleId, 'using default');
-    return { ...DEFAULT_STYLE_COLOR };
-  }
-  
-  // Attempt to get the color from the mapping
-  const color = STYLE_COLORS[styleId as keyof typeof STYLE_COLORS];
-  
-  if (!color) {
-    console.warn(`⚠️ Style color not found for: "${styleId}", using default. Available styles:`, Object.keys(STYLE_COLORS));
-    return { ...DEFAULT_STYLE_COLOR };
-  }
-  
-  // Validate that the returned color has all required properties
-  const requiredProps = ['primary', 'border', 'bg', 'gradient'];
-  const missingProps = requiredProps.filter(prop => !color[prop as keyof typeof color]);
-  
-  if (missingProps.length > 0) {
-    console.warn(`⚠️ Incomplete style color for: "${styleId}", missing properties:`, missingProps, 'using default');
-    return { ...DEFAULT_STYLE_COLOR };
-  }
-  
-  console.log('✅ Successfully retrieved style color for:', styleId, color);
-  return { ...color };
+export const getStyleColor = (styleId: string) => {
+  return STYLE_COLORS[styleId as keyof typeof STYLE_COLORS] || STYLE_COLORS['custom-style'];
 };

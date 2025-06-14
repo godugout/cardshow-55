@@ -7,6 +7,10 @@ import { useCards } from "@/hooks/useCards";
 import { ImmersiveCardViewer } from "@/components/viewer/ImmersiveCardViewer";
 import { useGalleryActions } from "@/pages/Gallery/hooks/useGalleryActions";
 import { useCardConversion } from "@/pages/Gallery/hooks/useCardConversion";
+import type { Tables } from '@/integrations/supabase/types';
+
+// Use the database type directly
+type DbCard = Tables<'cards'>;
 
 export const EnhancedHero: React.FC = () => {
   const { containerPadding, isMobile } = useResponsiveLayout();
@@ -15,15 +19,15 @@ export const EnhancedHero: React.FC = () => {
   const { convertCardsToCardData } = useCardConversion();
   
   // Convert cards to CardData format
-  const convertedCards = convertCardsToCardData(featuredCards);
+  const convertedCards = convertCardsToCardData(featuredCards || []);
   
   // Get top 3 featured cards for showcase
-  const showcaseCards = featuredCards.slice(0, 3);
+  const showcaseCards = (featuredCards || []).slice(0, 3);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
-  const handleCardPreview = (card: any, index: number) => {
+  const handleCardPreview = (card: DbCard, index: number) => {
     setActiveCardIndex(index);
-    handleCardClick(card, showcaseCards);
+    handleCardClick(card, featuredCards || []); // Pass the full featuredCards array
   };
 
   return (

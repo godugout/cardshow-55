@@ -48,32 +48,7 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
   };
 
   const activeEffects = getActiveEffects();
-  
-  // Safe style color lookup with comprehensive null checks and error handling
-  const styleColor = React.useMemo(() => {
-    if (!selectedPresetId) {
-      console.log('🎨 CleanEffectsList: No selectedPresetId, using default styling');
-      return null;
-    }
-    
-    try {
-      const color = getStyleColor(selectedPresetId);
-      console.log('🎨 CleanEffectsList: Retrieved style color for preset:', selectedPresetId, color);
-      return color;
-    } catch (error) {
-      console.error('🎨 CleanEffectsList: Error getting style color:', error);
-      return null;
-    }
-  }, [selectedPresetId]);
-  
-  // Safe primary color extraction with fallback
-  const primaryColor = React.useMemo(() => {
-    if (styleColor?.primary && typeof styleColor.primary === 'string') {
-      return styleColor.primary;
-    }
-    console.log('🎨 CleanEffectsList: Using fallback primary color');
-    return '#45B26B';
-  }, [styleColor]);
+  const styleColor = selectedPresetId ? getStyleColor(selectedPresetId) : null;
 
   return (
     <div className="space-y-2">
@@ -90,13 +65,13 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
             className={cn(
               "border rounded-lg p-3 transition-all",
               isActive && styleColor ? 
-                "" : // Will be styled with inline styles below
+                `border-[${styleColor.border}] bg-gradient-to-r from-transparent to-[${styleColor.bg}]` :
                 "border-white/10 bg-white/5",
               isDisabled && "opacity-60"
             )}
             style={isActive && styleColor ? {
-              borderColor: styleColor.border || 'rgba(255, 255, 255, 0.2)',
-              background: `linear-gradient(90deg, transparent, ${styleColor.bg || 'rgba(255, 255, 255, 0.05)'})`
+              borderColor: styleColor.border,
+              background: `linear-gradient(90deg, transparent, ${styleColor.bg})`
             } : {}}
           >
             {/* Main effect row */}
@@ -124,7 +99,7 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
                     max={100}
                     step={1}
                     isActive={isActive}
-                    styleColor={primaryColor}
+                    styleColor={styleColor?.primary}
                     effectName={effectConfig.name}
                     disabled={isDisabled}
                   />
@@ -185,7 +160,7 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
                               max={param.max || 100}
                               step={param.step || 1}
                               isActive={true}
-                              styleColor={primaryColor}
+                              styleColor={styleColor?.primary}
                               effectName={param.name}
                             />
                           </div>

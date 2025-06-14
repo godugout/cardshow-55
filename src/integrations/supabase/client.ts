@@ -3,17 +3,15 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://wxlwhqlbxyuyujhqeyur.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4bHdocWxieHl1eXVqaHFleXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgyMjAyNTMsImV4cCI6MjA1Mzc5NjI1M30.6TlBEqXOPZRgwhPrHQBYjMMVzmCTmCb-Q1-sNnFhVrc";
+const SUPABASE_URL = "https://kwxsnkckyjkmpdzrsyxi.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3eHNua2NreWprbXBkenJzeXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1OTQ3NDQsImV4cCI6MjA2NTE3MDc0NH0.s4nuV8CnLnHhfTFUlMQVg5XFV4VluJtJaxAyc3hWBPU";
 
-// The app key that identifies this specific app instance
-export const APP_KEY = 'crd_main_app';
+// Import the supabase client like this:
+// import { supabase } from "@/integrations/supabase/client";
 
-// Create the Supabase client with app context
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-// Helper function to get the app ID - simplified to return a static value since RPC doesn't exist
-export const getAppId = async (): Promise<string | null> => {
-  // For now, return a static app ID since the RPC function doesn't exist
-  return APP_KEY;
+// Helper function to get app ID from project
+export const getAppId = async (): Promise<string> => {
+  return "kwxsnkckyjkmpdzrsyxi";
 };

@@ -7,6 +7,7 @@ import type { Visibility } from '@/types/common';
 
 export const getCollectionById = async (id: string): Promise<Collection | null> => {
   try {
+    // Try to use the database first
     const { data, error } = await getCollectionQuery()
       .eq('id', id)
       .single();
@@ -26,18 +27,18 @@ export const getCollectionById = async (id: string): Promise<Collection | null> 
       coverImageUrl: data.cover_image_url,
       visibility: data.visibility as Visibility,
       createdAt: data.created_at,
-      cardCount: 0 // Default to 0 since card_count doesn't exist
+      cardCount: 0
     };
   } catch (error) {
-    console.error('Error in getCollectionById:', error);
+    console.error('Database not ready, using fallback:', error);
     
-    // Try using the mock API as a fallback
+    // Use localStorage as fallback
     try {
-      const response = await fetch(`/api/decks/${id}`);
-      if (!response.ok) return null;
-      return await response.json();
+      const stored = localStorage.getItem(`collection_${id}`);
+      if (!stored) return null;
+      return JSON.parse(stored);
     } catch (e) {
-      console.error('Mock API fallback failed:', e);
+      console.error('Fallback failed:', e);
       return null;
     }
   }
@@ -45,7 +46,7 @@ export const getCollectionById = async (id: string): Promise<Collection | null> 
 
 export const getCollectionItems = async (collectionId: string): Promise<CollectionItem[]> => {
   try {
-    // Use collection_cards table instead of collection_items
+    // Try to use the database first
     const { data, error } = await getCollectionItemsQuery()
       .select()
       .eq('collection_id', collectionId);
@@ -56,53 +57,24 @@ export const getCollectionItems = async (collectionId: string): Promise<Collecti
     
     if (!data || data.length === 0) return [];
     
-    // Get memories for these cards
-    const cardIds = data.map(item => item.card_id);
-    const { data: memoriesData, error: memoriesError } = await supabase
-      .from('memories')
-      .select('*, media(*)')
-      .in('id', cardIds);
-      
-    if (memoriesError) {
-      throw new Error(`Failed to fetch memories: ${memoriesError.message}`);
-    }
-    
-    // Map the data to our expected format
-    return data.map(item => {
-      const memory = memoriesData?.find(m => m.id === item.card_id);
-      return {
-        id: item.id,
-        collectionId: item.collection_id,
-        memoryId: item.card_id,
-        displayOrder: item.display_order || 0, // Use display_order from collection_cards
-        addedAt: item.added_at, // Use added_at instead of created_at
-        memory: memory ? {
-          id: memory.id,
-          userId: memory.user_id,
-          title: memory.title,
-          description: memory.description,
-          teamId: memory.team_id,
-          gameId: memory.game_id,
-          location: memory.location,
-          visibility: memory.visibility,
-          createdAt: memory.created_at,
-          tags: memory.tags,
-          metadata: memory.metadata,
-          media: memory.media
-        } : undefined
-      };
-    });
+    // Process the data safely
+    return data.map((item: any) => ({
+      id: item.id,
+      collectionId: item.collection_id,
+      memoryId: item.card_id,
+      displayOrder: 0,
+      addedAt: item.created_at,
+      memory: undefined
+    }));
   } catch (error) {
-    console.error('Error in getCollectionItems:', error);
+    console.error('Database not ready, using fallback:', error);
     
-    // Try using the mock API as a fallback
+    // Use localStorage as fallback
     try {
-      const response = await fetch(`/api/decks/${collectionId}/items`);
-      if (!response.ok) return [];
-      const data = await response.json();
-      return data.items || [];
+      const stored = localStorage.getItem(`collection_items_${collectionId}`);
+      return stored ? JSON.parse(stored) : [];
     } catch (e) {
-      console.error('Mock API fallback failed:', e);
+      console.error('Fallback failed:', e);
       return [];
     }
   }
@@ -119,18 +91,16 @@ export const getCollectionsByUserId = async (
       search
     } = options;
 
-    // Simplified query without complex type instantiation
-    const query = supabase
-      .from('collections')
-      .select('*', { count: 'exact' })
+    // Try to use the database first
+    let query = getCollectionQuery()
       .eq('owner_id', userId)
       .order('created_at', { ascending: false });
-    
+
     if (search) {
-      query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     }
     
-    query.range(
+    query = query.range(
       calculateOffset(page, pageSize),
       calculateOffset(page, pageSize) + pageSize - 1
     );
@@ -139,7 +109,7 @@ export const getCollectionsByUserId = async (
 
     if (error) throw new Error(`Failed to fetch collections: ${error.message}`);
     
-    const collections: Collection[] = (data || []).map(collection => ({
+    const collections: Collection[] = (data || []).map((collection: any) => ({
       id: collection.id,
       title: collection.title,
       description: collection.description,
@@ -147,7 +117,7 @@ export const getCollectionsByUserId = async (
       coverImageUrl: collection.cover_image_url,
       visibility: collection.visibility as Visibility,
       createdAt: collection.created_at,
-      cardCount: 0 // Default to 0 since card_count doesn't exist
+      cardCount: 0
     }));
     
     return {
@@ -155,25 +125,18 @@ export const getCollectionsByUserId = async (
       total: count || 0
     };
   } catch (error) {
-    console.error('Error in getCollectionsByUserId:', error);
+    console.error('Database not ready, using fallback:', error);
     
-    // Try using the mock API as a fallback
+    // Use localStorage as fallback
     try {
-      const queryParams = new URLSearchParams();
-      queryParams.append('userId', userId);
-      queryParams.append('page', options.page?.toString() || '1');
-      queryParams.append('limit', options.pageSize?.toString() || '10');
-      if (options.search) queryParams.append('search', options.search);
-      
-      const response = await fetch(`/api/decks?${queryParams.toString()}`);
-      const data = await response.json();
-      
+      const stored = localStorage.getItem(`collections_${userId}`);
+      const collections = stored ? JSON.parse(stored) : [];
       return {
-        collections: data.items || [],
-        total: data.total || 0
+        collections,
+        total: collections.length
       };
     } catch (e) {
-      console.error('Mock API fallback failed:', e);
+      console.error('Fallback failed:', e);
       return {
         collections: [],
         total: 0
@@ -192,18 +155,16 @@ export const getPublicCollections = async (
       search
     } = options;
 
-    // Simplified query without complex type instantiation
-    const query = supabase
-      .from('collections')
-      .select('*', { count: 'exact' })
+    // Try to use the database first
+    let query = getCollectionQuery()
       .eq('visibility', 'public')
       .order('created_at', { ascending: false });
 
     if (search) {
-      query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     }
 
-    query.range(
+    query = query.range(
       calculateOffset(page, pageSize),
       calculateOffset(page, pageSize) + pageSize - 1
     );
@@ -212,7 +173,7 @@ export const getPublicCollections = async (
 
     if (error) throw new Error(`Failed to fetch public collections: ${error.message}`);
     
-    const collections: Collection[] = (data || []).map(collection => ({
+    const collections: Collection[] = (data || []).map((collection: any) => ({
       id: collection.id,
       title: collection.title,
       description: collection.description,
@@ -220,7 +181,7 @@ export const getPublicCollections = async (
       coverImageUrl: collection.cover_image_url,
       visibility: collection.visibility as Visibility,
       createdAt: collection.created_at,
-      cardCount: 0 // Default to 0 since card_count doesn't exist
+      cardCount: 0
     }));
     
     return {
@@ -228,25 +189,18 @@ export const getPublicCollections = async (
       total: count || 0
     };
   } catch (error) {
-    console.error('Error in getPublicCollections:', error);
+    console.error('Database not ready, using fallback:', error);
     
-    // Try using the mock API as a fallback
+    // Use localStorage as fallback
     try {
-      const queryParams = new URLSearchParams();
-      queryParams.append('visibility', 'public');
-      queryParams.append('page', options.page?.toString() || '1');
-      queryParams.append('limit', options.pageSize?.toString() || '10');
-      if (options.search) queryParams.append('search', options.search);
-      
-      const response = await fetch(`/api/decks?${queryParams.toString()}`);
-      const data = await response.json();
-      
+      const stored = localStorage.getItem('public_collections');
+      const collections = stored ? JSON.parse(stored) : [];
       return {
-        collections: data.items || [],
-        total: data.total || 0
+        collections,
+        total: collections.length
       };
     } catch (e) {
-      console.error('Mock API fallback failed:', e);
+      console.error('Fallback failed:', e);
       return {
         collections: [],
         total: 0
