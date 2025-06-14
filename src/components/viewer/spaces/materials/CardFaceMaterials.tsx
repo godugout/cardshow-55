@@ -20,13 +20,13 @@ interface CardFaceMaterialsProps {
 
 // Utility function to create edge glow properties
 export const createEdgeGlowProps = (
-  effectValues: EffectValues,
+  effectValues: EffectValues = {},
   isHovering: boolean = false,
   interactiveLighting: boolean = false
 ): { emissiveColor: THREE.Color; emissiveIntensity: number } => {
   // Get the dominant effect to determine glow color
-  const activeEffects = Object.entries(effectValues).filter(([_, effect]) => 
-    effect.intensity && typeof effect.intensity === 'number' && effect.intensity > 10
+  const activeEffects = Object.entries(effectValues || {}).filter(([_, effect]) => 
+    effect?.intensity && typeof effect.intensity === 'number' && effect.intensity > 10
   );
   
   if (activeEffects.length === 0) {
@@ -38,11 +38,11 @@ export const createEdgeGlowProps = (
   
   // Find the effect with highest intensity
   const dominantEffect = activeEffects.reduce((max, current) => 
-    (current[1].intensity as number) > (max[1].intensity as number) ? current : max
+    ((current[1]?.intensity as number) || 0) > ((max[1]?.intensity as number) || 0) ? current : max
   );
   
   const [effectId, effect] = dominantEffect;
-  const intensity = (effect.intensity as number) / 100;
+  const intensity = ((effect?.intensity as number) || 0) / 100;
   
   // Color mapping for different effects
   const colorMap: Record<string, number> = {
@@ -77,20 +77,20 @@ export const createEdgeGlowProps = (
   };
 };
 
-// Hook to create materials for card faces
+// Hook to create materials for card faces with null safety
 export const useCardFaceMaterials = (
-  card: Simple3DCard,
-  effectValues: EffectValues,
+  card: Simple3DCard | null,
+  effectValues: EffectValues = {},
   isHovering: boolean = false,
   interactiveLighting: boolean = false
 ): THREE.Material[] => {
-  // Get specialized materials for front and back
-  const frontMaterial = useCardFrontMaterial(card, effectValues, isHovering, interactiveLighting);
+  // Get specialized materials for front and back with null safety
+  const frontMaterial = useCardFrontMaterial(card || { id: 'default', title: 'Default' }, effectValues, isHovering, interactiveLighting);
   const backMaterial = useCardBackMaterial(effectValues, isHovering, interactiveLighting);
   
-  // Get edge glow properties
+  // Get edge glow properties with null safety
   const edgeGlowProps = useMemo(() => 
-    createEdgeGlowProps(effectValues, isHovering, interactiveLighting),
+    createEdgeGlowProps(effectValues || {}, isHovering, interactiveLighting),
     [effectValues, isHovering, interactiveLighting]
   );
 
