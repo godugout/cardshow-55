@@ -45,7 +45,7 @@ export interface PresetCardProps extends React.ButtonHTMLAttributes<HTMLButtonEl
     border: string;
     bg: string;
     gradient: string;
-  };
+  } | null;
 }
 
 export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
@@ -75,27 +75,29 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
       if (onClick) onClick(e);
     };
 
-    // Safe style calculation with null checks
+    // Safe style calculation with comprehensive null checks
     const cardStyle = React.useMemo(() => {
-      if (!styleColor) return {};
+      if (!styleColor || !styleColor.primary || !styleColor.border || !styleColor.bg) {
+        return {};
+      }
       
       if (isSelected) {
         return {
-          borderColor: styleColor.border || '#45B26B',
-          backgroundColor: styleColor.bg || 'rgba(69, 178, 107, 0.1)',
-          boxShadow: `0 0 20px ${styleColor.primary || '#45B26B'}40, 0 4px 12px rgba(0,0,0,0.2)`,
-          '--ring-color': styleColor.primary || '#45B26B'
+          borderColor: styleColor.border,
+          backgroundColor: styleColor.bg,
+          boxShadow: `0 0 20px ${styleColor.primary}40, 0 4px 12px rgba(0,0,0,0.2)`,
+          '--ring-color': styleColor.primary
         } as React.CSSProperties;
       }
       
       return {
         borderColor: 'rgba(255, 255, 255, 0.2)',
-        '--hover-border': styleColor.border || '#45B26B',
-        '--hover-bg': styleColor.bg || 'rgba(69, 178, 107, 0.1)'
+        '--hover-border': styleColor.border,
+        '--hover-bg': styleColor.bg
       } as React.CSSProperties;
     }, [styleColor, isSelected]);
     
-    // Safe color extraction for indicators
+    // Safe color extraction for indicators with fallback
     const primaryColor = styleColor?.primary || '#45B26B';
     
     const CardContent = (

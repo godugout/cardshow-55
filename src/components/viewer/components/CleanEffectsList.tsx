@@ -49,8 +49,9 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
 
   const activeEffects = getActiveEffects();
   
-  // Safe style color lookup with null check
+  // Safe style color lookup with comprehensive null checks
   const styleColor = selectedPresetId ? getStyleColor(selectedPresetId) : null;
+  const primaryColor = styleColor?.primary || '#45B26B';
 
   return (
     <div className="space-y-2">
@@ -101,7 +102,7 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
                     max={100}
                     step={1}
                     isActive={isActive}
-                    styleColor={styleColor?.primary}
+                    styleColor={primaryColor}
                     effectName={effectConfig.name}
                     disabled={isDisabled}
                   />
@@ -162,7 +163,7 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
                               max={param.max || 100}
                               step={param.step || 1}
                               isActive={true}
-                              styleColor={styleColor?.primary}
+                              styleColor={primaryColor}
                               effectName={param.name}
                             />
                           </div>

@@ -107,17 +107,24 @@ const DEFAULT_STYLE_COLOR = {
   gradient: 'linear-gradient(135deg, #45B26B, #4ADE80)'
 };
 
-export const getStyleColor = (styleId: string) => {
+export const getStyleColor = (styleId: string | undefined | null) => {
   console.log('Getting style color for:', styleId);
   
-  if (!styleId) {
-    console.warn('No styleId provided, using default');
+  // Handle null, undefined, or empty string inputs
+  if (!styleId || typeof styleId !== 'string') {
+    console.warn('Invalid styleId provided (null/undefined/empty):', styleId, 'using default');
     return DEFAULT_STYLE_COLOR;
   }
   
   const color = STYLE_COLORS[styleId as keyof typeof STYLE_COLORS];
   if (!color) {
     console.warn(`Style color not found for: ${styleId}, using default`);
+    return DEFAULT_STYLE_COLOR;
+  }
+  
+  // Ensure the returned color has all required properties
+  if (!color.primary || !color.border || !color.bg || !color.gradient) {
+    console.warn(`Incomplete style color for: ${styleId}, using default`);
     return DEFAULT_STYLE_COLOR;
   }
   
