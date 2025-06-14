@@ -2,6 +2,7 @@
 import React, { Suspense, useCallback, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
+import * as THREE from 'three';
 import { Card3D } from './Card3D';
 import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
 import { ReliableSpaceEnvironment } from './environments/ReliableSpaceEnvironment';
