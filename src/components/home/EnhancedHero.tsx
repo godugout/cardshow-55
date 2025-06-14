@@ -30,6 +30,10 @@ export const EnhancedHero: React.FC = () => {
     handleCardClick(card, featuredCards || []); // Pass the full featuredCards array
   };
 
+  const handleCardChangeWrapper = (card: any, index: number) => {
+    handleCardChange(index);
+  };
+
   return (
     <>
       <div className={`items-center bg-crd-darkest flex w-full flex-col overflow-hidden text-center pt-32 ${isMobile ? 'px-5' : 'px-[352px]'} max-md:max-w-full max-md:pt-[100px]`}>
@@ -113,7 +117,7 @@ export const EnhancedHero: React.FC = () => {
           card={convertedCards[selectedCardIndex]}
           cards={convertedCards}
           currentCardIndex={selectedCardIndex}
-          onCardChange={handleCardChange}
+          onCardChange={handleCardChangeWrapper}
           isOpen={showImmersiveViewer}
           onClose={handleCloseViewer}
           onShare={() => handleShareCard(convertedCards)}
