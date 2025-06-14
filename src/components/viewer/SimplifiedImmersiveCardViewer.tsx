@@ -13,6 +13,7 @@ import { Card3DTransform } from './components/Card3DTransform';
 import type { LightingPreset } from './types';
 import type { SpaceControls } from './spaces/types';
 import { LIGHTING_PRESETS } from './constants/lightingPresets';
+import { ENVIRONMENT_SCENES } from './constants/environmentScenes';
 
 interface SimplifiedImmersiveCardViewerProps {
   card: CardData;
@@ -104,6 +105,9 @@ export const SimplifiedImmersiveCardViewer: React.FC<SimplifiedImmersiveCardView
     gravityEffect: 0.1
   }), [autoRotate]);
 
+  // Use a proper default environment scene
+  const defaultScene = useMemo(() => ENVIRONMENT_SCENES[0], []); // Use first environment scene as default
+
   if (!isOpen || !card) return null;
 
   return (
@@ -116,7 +120,7 @@ export const SimplifiedImmersiveCardViewer: React.FC<SimplifiedImmersiveCardView
         adaptedCard={adaptedCard}
         onCardClick={() => {}}
         onCameraReset={handleReset}
-        selectedScene={{ id: 'studio', name: 'Studio' } as any}
+        selectedScene={defaultScene}
         selectedLighting={selectedLighting}
         mousePosition={mousePosition}
         isHovering={isHovering}
