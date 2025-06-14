@@ -19,14 +19,14 @@ export interface HDRIEnvironment {
   rotation: number;
 }
 
-// High-quality 360° panoramic environments - using web-compatible formats
+// High-quality 360° panoramic environments - using proper equirectangular sources
 export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
   {
     id: 'forest-clearing',
     name: 'Forest Clearing',
     category: 'natural',
-    hdriUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=4096&h=2048&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=2048&h=1024&fit=crop&q=80',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/forest_slope_2k.hdr',
+    fallbackUrl: 'https://polyhaven.com/files/hdris/tonemapped/forest_slope.jpg',
     description: 'Sunlit forest with natural lighting and depth',
     lighting: {
       exposure: 1.2,
@@ -41,8 +41,8 @@ export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
     id: 'mountain-vista',
     name: 'Mountain Vista',
     category: 'natural',
-    hdriUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=4096&h=2048&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=2048&h=1024&fit=crop&q=80',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/kloppenheim_06_2k.hdr',
+    fallbackUrl: 'https://polyhaven.com/files/hdris/tonemapped/kloppenheim_06.jpg',
     description: 'Dramatic mountain landscape with golden hour lighting',
     lighting: {
       exposure: 1.6,
@@ -57,8 +57,8 @@ export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
     id: 'ocean-sunset',
     name: 'Ocean Sunset',
     category: 'natural',
-    hdriUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=4096&h=2048&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=2048&h=1024&fit=crop&q=80',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/venice_sunset_2k.hdr',
+    fallbackUrl: 'https://polyhaven.com/files/hdris/tonemapped/venice_sunset.jpg',
     description: 'Warm ocean sunset with golden reflections',
     lighting: {
       exposure: 1.8,
@@ -73,8 +73,8 @@ export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
     id: 'urban-skyline',
     name: 'Urban Skyline',
     category: 'urban',
-    hdriUrl: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=4096&h=2048&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=2048&h=1024&fit=crop&q=80',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/quattro_canti_2k.hdr',
+    fallbackUrl: 'https://polyhaven.com/files/hdris/tonemapped/quattro_canti.jpg',
     description: 'Modern city environment with architectural lighting',
     lighting: {
       exposure: 1.0,
@@ -89,8 +89,8 @@ export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
     id: 'neon-city',
     name: 'Neon City',
     category: 'urban',
-    hdriUrl: 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=4096&h=2048&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=2048&h=1024&fit=crop&q=80',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/dancing_hall_2k.hdr',
+    fallbackUrl: 'https://polyhaven.com/files/hdris/tonemapped/dancing_hall.jpg',
     description: 'Atmospheric night city with neon lighting',
     lighting: {
       exposure: 0.8,
@@ -105,8 +105,8 @@ export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
     id: 'modern-studio',
     name: 'Modern Studio',
     category: 'interior',
-    hdriUrl: 'https://images.unsplash.com/photo-1496307653780-42ee777d4833?w=4096&h=2048&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1496307653780-42ee777d4833?w=2048&h=1024&fit=crop&q=80',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/studio_small_03_2k.hdr',
+    fallbackUrl: 'https://polyhaven.com/files/hdris/tonemapped/studio_small_03.jpg',
     description: 'Clean studio environment with professional lighting',
     lighting: {
       exposure: 1.4,
@@ -121,8 +121,8 @@ export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
     id: 'warehouse-loft',
     name: 'Warehouse Loft',
     category: 'interior',
-    hdriUrl: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=4096&h=2048&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=2048&h=1024&fit=crop&q=80',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/industrial_workshop_foundry_2k.hdr',
+    fallbackUrl: 'https://polyhaven.com/files/hdris/tonemapped/industrial_workshop_foundry.jpg',
     description: 'Industrial loft with dramatic window lighting',
     lighting: {
       exposure: 1.1,
@@ -137,8 +137,8 @@ export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
     id: 'sports-arena',
     name: 'Sports Arena',
     category: 'sports',
-    hdriUrl: 'https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=4096&h=2048&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=2048&h=1024&fit=crop&q=80',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/sports_hall_2k.hdr',
+    fallbackUrl: 'https://polyhaven.com/files/hdris/tonemapped/sports_hall.jpg',
     description: 'Large sports arena with stadium lighting',
     lighting: {
       exposure: 1.3,
@@ -153,8 +153,8 @@ export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
     id: 'concert-hall',
     name: 'Concert Hall',
     category: 'cultural',
-    hdriUrl: 'https://images.unsplash.com/photo-1473177104440-ffee2f376098?w=4096&h=2048&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1473177104440-ffee2f376098?w=2048&h=1024&fit=crop&q=80',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/concert_hall_02_2k.hdr',
+    fallbackUrl: 'https://polyhaven.com/files/hdris/tonemapped/concert_hall_02.jpg',
     description: 'Grand concert hall with architectural beauty',
     lighting: {
       exposure: 1.0,
@@ -169,8 +169,8 @@ export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
     id: 'cosmic-void',
     name: 'Cosmic Void',
     category: 'fantasy',
-    hdriUrl: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=4096&h=2048&fit=crop&q=80',
-    fallbackUrl: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=2048&h=1024&fit=crop&q=80',
+    hdriUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/starmap_2k.hdr',
+    fallbackUrl: 'https://polyhaven.com/files/hdris/tonemapped/starmap.jpg',
     description: 'Deep space environment with stars and nebula',
     lighting: {
       exposure: 0.6,
@@ -184,7 +184,9 @@ export const HDRI_ENVIRONMENTS: HDRIEnvironment[] = [
 ];
 
 export const getHDRIEnvironmentById = (id: string): HDRIEnvironment | null => {
-  return HDRI_ENVIRONMENTS.find(env => env.id === id) || null;
+  const env = HDRI_ENVIRONMENTS.find(env => env.id === id);
+  console.log(`🔍 HDRI lookup for "${id}":`, env ? `Found ${env.name}` : 'NOT FOUND');
+  return env;
 };
 
 export const getHDRIEnvironmentsByCategory = (category: HDRIEnvironment['category']) => {
@@ -192,5 +194,6 @@ export const getHDRIEnvironmentsByCategory = (category: HDRIEnvironment['categor
 };
 
 export const getDefaultHDRIEnvironment = (): HDRIEnvironment => {
+  console.log('🎯 Using default HDRI environment: Modern Studio');
   return HDRI_ENVIRONMENTS[5]; // Modern studio as default
 };
