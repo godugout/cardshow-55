@@ -24,7 +24,7 @@ interface CardEffectsLayerProps {
   materialSettings?: MaterialSettings;
   interactiveLighting?: boolean;
   effectValues?: EffectValues;
-  applyToFrame?: boolean; // New prop to control where effects apply
+  applyToFrame?: boolean;
 }
 
 export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
@@ -44,11 +44,22 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
     interactiveLighting
   );
 
-  if (!showEffects || !effectValues) return null;
+  // Add debugging for effect values
+  console.log('🎨 CardEffectsLayer - showEffects:', showEffects);
+  console.log('🎨 CardEffectsLayer - effectValues:', effectValues);
+
+  if (!showEffects || !effectValues) {
+    console.log('🎨 CardEffectsLayer - No effects to show');
+    return null;
+  }
 
   // Helper function to safely get effect parameter values
   const getEffectParam = (effectId: string, paramId: string, defaultValue: any = 0) => {
-    return effectValues?.[effectId]?.[paramId] ?? defaultValue;
+    const value = effectValues?.[effectId]?.[paramId] ?? defaultValue;
+    if (paramId === 'intensity' && value > 0) {
+      console.log(`🎨 Effect ${effectId} has intensity:`, value);
+    }
+    return value;
   };
   
   // Get individual effect intensities from effectValues
@@ -66,8 +77,6 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
 
   // Apply effects only to frame borders if applyToFrame is true
   const effectMaskStyle: React.CSSProperties | undefined = applyToFrame ? {
-    // This creates a mask that only applies effects to the border area
-    // by using a radial gradient mask that creates a "frame only" effect
     maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 60%, black 80%)',
     WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 60%, black 80%)'
   } : undefined;
@@ -97,11 +106,13 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
           mousePosition={mousePosition}
         />
 
-        {/* Aurora Effect - Enhanced with wave movement */}
-        <AuroraEffect
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-        />
+        {/* Aurora Effect - Enhanced with wave movement - THIS IS STARLIGHT! */}
+        {auroraIntensity > 0 && (
+          <AuroraEffect
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+          />
+        )}
 
         {/* Crystal Effect - Enhanced with Diamond Glitter */}
         <CrystalEffect
@@ -153,6 +164,8 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
                               crystalIntensity + vintageIntensity + interferenceIntensity + 
                               prizemIntensity + foilsprayIntensity + goldIntensity + auroraIntensity + wavesIntensity;
         const normalizedIntensity = Math.min(totalIntensity / 100, 1);
+        
+        console.log('🎨 Total effect intensity:', totalIntensity);
         
         // Subtle edge glow - applied either to frame only or full card based on applyToFrame
         return totalIntensity > 0 ? (

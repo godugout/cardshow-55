@@ -28,9 +28,12 @@ interface ImmersiveCardViewerProps {
   ambient?: boolean;
 }
 
-// Helper function to convert MaterialSettings to EffectValues with null safety
+// Enhanced function to convert MaterialSettings to EffectValues with proper debugging
 const convertMaterialSettingsToEffectValues = (materialSettings: MaterialSettings | undefined): EffectValues => {
+  console.log('🎨 Converting MaterialSettings to EffectValues:', materialSettings);
+  
   if (!materialSettings || typeof materialSettings !== 'object') {
+    console.log('🎨 No material settings provided, using defaults');
     return {
       holographic: { intensity: 0 },
       crystal: { intensity: 0 },
@@ -48,21 +51,82 @@ const convertMaterialSettingsToEffectValues = (materialSettings: MaterialSetting
     };
   }
 
-  return {
-    holographic: { intensity: 0 },
-    crystal: { intensity: 0 },
-    chrome: { intensity: 0 },
-    brushedmetal: { intensity: 0 },
-    gold: { intensity: 0, goldTone: 'classic' },
-    vintage: { intensity: 0 },
-    prizm: { intensity: 0 },
-    interference: { intensity: 0 },
-    foilspray: { intensity: 0 },
-    aurora: { intensity: 0 },
-    ice: { intensity: 0 },
-    lunar: { intensity: 0 },
-    waves: { intensity: 0 }
+  // Map MaterialSettings properties to EffectValues
+  const effectValues: EffectValues = {
+    holographic: { 
+      intensity: materialSettings.holographic || 0,
+      shiftSpeed: 150,
+      rainbowSpread: 280,
+      prismaticDepth: 70
+    },
+    crystal: { 
+      intensity: materialSettings.crystal || 0,
+      clarity: 80,
+      refraction: 60
+    },
+    chrome: { 
+      intensity: materialSettings.chrome || 0,
+      reflectivity: 90
+    },
+    brushedmetal: { 
+      intensity: materialSettings.brushedmetal || 0,
+      texture: 75
+    },
+    gold: { 
+      intensity: materialSettings.gold || 0, 
+      goldTone: 'classic',
+      brilliance: 85
+    },
+    vintage: { 
+      intensity: materialSettings.vintage || 0,
+      aging: 60,
+      sepia: 40
+    },
+    prizm: { 
+      intensity: materialSettings.prizm || 0,
+      spectrum: 90,
+      shift: 120
+    },
+    interference: { 
+      intensity: materialSettings.interference || 0,
+      pattern: 80
+    },
+    foilspray: { 
+      intensity: materialSettings.foilspray || 0,
+      density: 70,
+      sparkle: 85
+    },
+    aurora: { 
+      intensity: materialSettings.starlight || materialSettings.aurora || 0, // Map Starlight to Aurora
+      waveSpeed: 80,
+      colorShift: 120
+    },
+    ice: { 
+      intensity: materialSettings.ice || 0,
+      frost: 60,
+      crystalline: 80
+    },
+    lunar: { 
+      intensity: materialSettings.lunar || 0,
+      dust: 50,
+      glow: 70
+    },
+    waves: { 
+      intensity: materialSettings.waves || 0,
+      frequency: 100,
+      amplitude: 60
+    }
   };
+
+  console.log('🎨 Converted EffectValues:', effectValues);
+  
+  // Log specific effects that have intensity > 0
+  const activeEffects = Object.entries(effectValues).filter(([_, effect]) => 
+    effect.intensity && effect.intensity > 0
+  );
+  console.log('🎨 Active effects (intensity > 0):', activeEffects);
+
+  return effectValues;
 };
 
 export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
@@ -144,11 +208,12 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   // Performance monitoring with reduced impact
   const performanceMetrics = usePerformanceMonitor();
 
-  // Convert MaterialSettings to EffectValues with null safety
-  const effectValues = useMemo(() => 
-    convertMaterialSettingsToEffectValues(materialSettings), 
-    [materialSettings]
-  );
+  // Convert MaterialSettings to EffectValues with enhanced debugging
+  const effectValues = useMemo(() => {
+    const converted = convertMaterialSettingsToEffectValues(materialSettings);
+    console.log('🎨 Memoized EffectValues:', converted);
+    return converted;
+  }, [materialSettings]);
 
   // Memoize adapted card to prevent unnecessary re-renders
   const adaptedCard = useMemo(() => ({
@@ -343,17 +408,18 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         onSceneChange={setSelectedScene}
         onLightingChange={setSelectedLighting}
         onEffectChange={(effectId, parameterId, value) => {
+          console.log('🎨 Effect change:', effectId, parameterId, value);
           setMaterialSettings(prev => ({
             ...prev,
-            [effectId]: {
-              ...prev[effectId],
-              [parameterId]: value
-            }
+            [effectId]: value
           }));
         }}
         onBrightnessChange={setOverallBrightness}
         onInteractiveLightingToggle={() => setInteractiveLighting(prev => !prev)}
-        onMaterialSettingsChange={setMaterialSettings}
+        onMaterialSettingsChange={(settings) => {
+          console.log('🎨 Material settings change:', settings);
+          setMaterialSettings(settings);
+        }}
         selectedPresetId={selectedPresetId}
         onPresetSelect={setSelectedPresetId}
         onApplyCombo={() => {}}
