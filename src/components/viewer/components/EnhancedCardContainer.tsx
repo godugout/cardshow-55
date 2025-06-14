@@ -2,14 +2,17 @@
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
+import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
+import { CanvasBackgroundInfo } from './CanvasBackgroundInfo';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface EnhancedCardContainerProps {
   card: CardData;
+  isFlipped: boolean;
   isHovering: boolean;
   showEffects: boolean;
   effectValues: EffectValues;
@@ -31,11 +34,11 @@ interface EnhancedCardContainerProps {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onClick: () => void;
-  environmentControls?: EnvironmentControls;
 }
 
 export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   card,
+  isFlipped,
   isHovering,
   showEffects,
   effectValues,
@@ -56,13 +59,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
-  onClick,
-  environmentControls = {
-    depthOfField: 1.0,
-    parallaxIntensity: 1.0,
-    fieldOfView: 75,
-    atmosphericDensity: 1.0
-  }
+  onClick
 }) => {
   // Use cached effects for better performance only when all required props are available
   const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
@@ -80,6 +77,12 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     isHovering
   }) : null;
 
+  // Use double-click/tap detection for card flip
+  const handleDoubleClick = useDoubleClick({
+    onDoubleClick: onClick,
+    delay: 300
+  });
+
   // Use cached styles if available, otherwise fall back to provided styles
   const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
   const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
@@ -91,29 +94,39 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       style={{
         transform: `scale(${zoom})`,
         transition: isDragging ? 'none' : 'transform 0.3s ease',
-        filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`,
-        // Ensure no unwanted borders or outlines
-        border: 'none',
-        outline: 'none'
+        filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`
       }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
+      {/* 3D Background Configuration Info */}
+      {showBackgroundInfo && selectedScene && selectedLighting && materialSettings && (
+        <CanvasBackgroundInfo
+          effectValues={effectValues}
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
+          overallBrightness={overallBrightness}
+          interactiveLighting={interactiveLighting}
+          mousePosition={mousePosition}
+          isHovering={isHovering}
+        />
+      )}
+
       <Card3DTransform
         rotation={rotation}
         mousePosition={mousePosition}
         isDragging={isDragging}
         interactiveLighting={interactiveLighting}
         isHovering={isHovering}
-        showEffects={showEffects}
-        onClick={onClick}
+        onClick={handleDoubleClick}
       >
         {/* Front of Card */}
         <CardFrontContainer
           card={card}
-          rotation={rotation}
+          isFlipped={isFlipped}
           isHovering={isHovering}
           showEffects={showEffects}
           effectValues={effectValues}
@@ -122,12 +135,12 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
-          onClick={onClick}
+          onClick={handleDoubleClick}
         />
 
         {/* Back of Card */}
         <CardBackContainer
-          rotation={rotation}
+          isFlipped={isFlipped}
           isHovering={isHovering}
           showEffects={showEffects}
           effectValues={effectValues}
@@ -137,9 +150,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
         />
-
-        {/* Card Edge with Enhanced Glowing Gas - REMOVED */}
-        {/* CardEdgeContainer component removed to eliminate blue transparent strip on edges */}
       </Card3DTransform>
     </div>
   );

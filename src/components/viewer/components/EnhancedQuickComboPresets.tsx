@@ -89,7 +89,7 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
               onSelect={() => handlePresetClick(preset)}
               size="sm"
               styleColor={styleColor}
-              className="min-h-[80px]"
+              className="h-auto"
             />
           );
         })}

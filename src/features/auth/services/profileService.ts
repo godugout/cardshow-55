@@ -5,24 +5,38 @@ import { User } from '@supabase/supabase-js';
 export class ProfileService {
   async ensureProfile(user: User) {
     try {
-      // For now, just log that we would create a profile
-      // Once database tables are set up, this will work
-      console.log('Profile would be created for user:', user.id);
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      if (!existingProfile) {
+        const { error } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            username: user.user_metadata?.username || user.email?.split('@')[0],
+            full_name: user.user_metadata?.full_name || '',
+            avatar_url: user.user_metadata?.avatar_url,
+          });
+
+        if (error) {
+          console.error('Error creating profile:', error);
+        }
+      }
     } catch (error) {
       console.error('Error in ensureProfile:', error);
     }
   }
 
   async updateProfile(userId: string, updates: Record<string, any>) {
-    try {
-      // For now, just log the update
-      // Once database tables are set up, this will work
-      console.log('Profile would be updated for user:', userId, updates);
-      return { error: null };
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      return { error };
-    }
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', userId);
+
+    return { error };
   }
 }
 

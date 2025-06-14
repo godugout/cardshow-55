@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export type CardRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
@@ -169,21 +170,46 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
 
     setIsSaving(true);
     try {
-      // For now, save to localStorage
-      // Once database tables are set up, this will save to Supabase
-      const cardsKey = `cards_${user.id}`;
-      const existingCards = JSON.parse(localStorage.getItem(cardsKey) || '[]');
-      const cardIndex = existingCards.findIndex((card: CardData) => card.id === finalCardData.id);
-      
-      if (cardIndex >= 0) {
-        existingCards[cardIndex] = finalCardData;
-      } else {
-        existingCards.push(finalCardData);
-      }
-      
-      localStorage.setItem(cardsKey, JSON.stringify(existingCards));
+      // Convert to database format with proper JSON fields - removing category field
+      const cardToSave = {
+        id: finalCardData.id,
+        title: finalCardData.title,
+        description: finalCardData.description || null,
+        type: finalCardData.type || null,
+        series: finalCardData.series || null,
+        rarity: finalCardData.rarity,
+        tags: finalCardData.tags,
+        image_url: finalCardData.image_url || null,
+        thumbnail_url: finalCardData.thumbnail_url || null,
+        design_metadata: finalCardData.design_metadata as any,
+        visibility: finalCardData.visibility,
+        is_public: finalCardData.visibility === 'public',
+        shop_id: finalCardData.shop_id || null,
+        template_id: finalCardData.template_id || null,
+        collection_id: finalCardData.collection_id || null,
+        team_id: finalCardData.team_id || null,
+        creator_attribution: finalCardData.creator_attribution as any,
+        publishing_options: finalCardData.publishing_options as any,
+        verification_status: finalCardData.verification_status || 'pending',
+        print_metadata: finalCardData.print_metadata as any,
+        creator_id: user.id
+      };
 
-      console.log('Card saved successfully:', finalCardData);
+      console.log('Attempting to save card:', cardToSave);
+
+      const { data, error } = await supabase
+        .from('cards')
+        .upsert(cardToSave, { onConflict: 'id' })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase error saving card:', error);
+        toast.error(`Failed to save card: ${error.message}`);
+        return false;
+      }
+
+      console.log('Card saved successfully:', data);
       setLastSaved(new Date());
       setIsDirty(false);
       toast.success('Card saved successfully');
@@ -202,6 +228,17 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
     if (!saved) return false;
 
     try {
+      const { error } = await supabase
+        .from('cards')
+        .update({ is_public: true, visibility: 'public' })
+        .eq('id', cardData.id);
+
+      if (error) {
+        console.error('Error publishing card:', error);
+        toast.error('Failed to publish card');
+        return false;
+      }
+
       updateCardField('is_public', true);
       updateCardField('visibility', 'public');
       toast.success('Card published successfully');

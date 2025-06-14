@@ -1,31 +1,54 @@
-import React, { useState } from 'react';
-import { StudioLayout } from '@/components/studio/StudioLayout';
-import { DemoCardViewer } from '@/components/studio/DemoCardViewer';
-import type { CardData } from '@/hooks/useCardEditor';
 
-export const Studio = () => {
-  const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
+import React from 'react';
+import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
+import { LoadingState } from '@/components/common/LoadingState';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { StudioHeader } from './Studio/components/StudioHeader';
+import { NoCardSelected } from './Studio/components/NoCardSelected';
+import { useStudioState } from './Studio/hooks/useStudioState';
 
-  // Always show the demo viewer instead of the "No card selected" state
-  const handleCardSelect = (card: CardData) => {
-    setSelectedCard(card);
-  };
+const Studio = () => {
+  const {
+    selectedCard,
+    currentCardIndex,
+    isLoading,
+    mockCards,
+    handleCardChange,
+    handleShare,
+    handleDownload,
+    handleClose
+  } = useStudioState();
 
-  const handleCloseDemoViewer = () => {
-    // Keep the demo viewer open, but could allow closing in the future
-    console.log('Demo viewer close requested');
-  };
+  if (isLoading) {
+    return <LoadingState message="Loading studio..." fullPage />;
+  }
+
+  if (!selectedCard) {
+    return <NoCardSelected />;
+  }
 
   return (
-    <div className="min-h-screen bg-crd-dark">
-      <StudioLayout
-        selectedCard={selectedCard}
-        onCardSelect={handleCardSelect}
-        renderViewer={() => (
-          <DemoCardViewer onClose={handleCloseDemoViewer} />
-        )}
-      />
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-crd-darkest">
+        {/* Studio Header */}
+        <StudioHeader />
+
+        {/* Immersive Card Viewer */}
+        <ImmersiveCardViewer
+          card={selectedCard}
+          cards={mockCards}
+          currentCardIndex={currentCardIndex}
+          onCardChange={handleCardChange}
+          isOpen={true}
+          onClose={handleClose}
+          onShare={handleShare}
+          onDownload={handleDownload}
+          allowRotation={true}
+          showStats={true}
+          ambient={true}
+        />
+      </div>
+    </ErrorBoundary>
   );
 };
 

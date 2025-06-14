@@ -19,22 +19,13 @@ export const NavActions = () => {
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <Link to="/auth?mode=signin">
+    <div className="flex items-center gap-4">
+      <Link to="/auth">
         <CRDButton
-          variant="ghost"
+          variant="outline"
           size="sm"
         >
           Sign In
-        </CRDButton>
-      </Link>
-      <Link to="/auth?mode=signup">
-        <CRDButton
-          variant="primary"
-          size="sm"
-          className="bg-crd-green hover:bg-crd-green/90 font-semibold"
-        >
-          Sign Up Free
         </CRDButton>
       </Link>
     </div>

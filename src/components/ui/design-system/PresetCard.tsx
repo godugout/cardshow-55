@@ -75,24 +75,28 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
       if (onClick) onClick(e);
     };
 
+    // Safe style calculation with null checks
     const cardStyle = React.useMemo(() => {
       if (!styleColor) return {};
       
       if (isSelected) {
         return {
-          borderColor: styleColor.border,
-          backgroundColor: styleColor.bg,
-          boxShadow: `0 0 20px ${styleColor.primary}40, 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 ${styleColor.border}40`,
-          '--ring-color': styleColor.primary
+          borderColor: styleColor.border || '#45B26B',
+          backgroundColor: styleColor.bg || 'rgba(69, 178, 107, 0.1)',
+          boxShadow: `0 0 20px ${styleColor.primary || '#45B26B'}40, 0 4px 12px rgba(0,0,0,0.2)`,
+          '--ring-color': styleColor.primary || '#45B26B'
         } as React.CSSProperties;
       }
       
       return {
         borderColor: 'rgba(255, 255, 255, 0.2)',
-        '--hover-border': styleColor.border,
-        '--hover-bg': styleColor.bg
+        '--hover-border': styleColor.border || '#45B26B',
+        '--hover-bg': styleColor.bg || 'rgba(69, 178, 107, 0.1)'
       } as React.CSSProperties;
     }, [styleColor, isSelected]);
+    
+    // Safe color extraction for indicators
+    const primaryColor = styleColor?.primary || '#45B26B';
     
     const CardContent = (
       <Button
@@ -105,7 +109,6 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
           "w-full h-auto text-left p-0 min-h-[80px] hover:scale-[1.02] transition-all duration-200",
           !styleColor && isSelected && "border-crd-green bg-crd-green/10 shadow-lg shadow-crd-green/20",
           styleColor && "hover:border-[var(--hover-border)] hover:bg-[var(--hover-bg)]",
-          styleColor && isSelected && "border-2",
           isDisabled && "opacity-50 cursor-not-allowed",
           className
         )}
@@ -115,8 +118,8 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
         {/* Status Indicators */}
         {isSelected && (
           <div 
-            className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center border border-white/20"
-            style={{ backgroundColor: styleColor?.primary || '#45B26B' }}
+            className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: primaryColor }}
           >
             <Check className="w-2.5 h-2.5 text-white" />
           </div>
@@ -126,7 +129,7 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
           <div className="absolute top-2 left-2">
             <Loader2 
               className="w-3 h-3 animate-spin" 
-              style={{ color: styleColor?.primary || '#45B26B' }}
+              style={{ color: primaryColor }}
             />
           </div>
         )}

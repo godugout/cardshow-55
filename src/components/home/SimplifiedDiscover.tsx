@@ -1,205 +1,168 @@
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Sparkles, Trophy, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
-import type { CardData } from '@/hooks/useCardEditor';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { CRDButton, Typography } from "@/components/ui/design-system";
+import { useCards } from "@/hooks/useCards";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGalleryActions } from "@/pages/Gallery/hooks/useGalleryActions";
+import { useCardConversion } from "@/pages/Gallery/hooks/useCardConversion";
+import { ImmersiveCardViewer } from "@/components/viewer/ImmersiveCardViewer";
 
-const featuredCards = [
+const FALLBACK_CARDS = [
   {
-    id: 'featured-1',
-    title: 'Golden Warrior',
-    price: '2.5 ETH',
-    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80',
-    rarity: 'Legendary',
-    category: 'Sports'
+    id: 'fallback-1',
+    title: "Mystic Dragon",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80",
+    creator: "ArtistOne"
   },
   {
-    id: 'featured-2',
-    title: 'Cyber Knight',
-    price: '1.8 ETH',
-    image: 'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=400&q=80',
-    rarity: 'Ultra Rare',
-    category: 'Gaming'
+    id: 'fallback-2',
+    title: "Cyber Warrior",
+    image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=400&q=80",
+    creator: "DigitalMaster"
   },
   {
-    id: 'featured-3',
-    title: 'Mystic Dragon',
-    price: '3.2 ETH',
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80',
-    rarity: 'Legendary',
-    category: 'Fantasy'
+    id: 'fallback-3',
+    title: "Forest Guardian",
+    image: "https://images.unsplash.com/photo-1614854262318-831574f15f1f?w=400&q=80",
+    creator: "NatureLover"
   },
   {
-    id: 'featured-4',
-    title: 'Storm Elemental',
-    price: '2.1 ETH',
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&q=80',
-    rarity: 'Rare',
-    category: 'Magic'
+    id: 'fallback-4',
+    title: "Space Explorer",
+    image: "https://images.unsplash.com/photo-1635372722656-389f87a941b7?w=400&q=80",
+    creator: "CosmicArt"
+  },
+  {
+    id: 'fallback-5',
+    title: "Ancient Rune",
+    image: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400&q=80",
+    creator: "RuneCaster"
+  },
+  {
+    id: 'fallback-6',
+    title: "Fire Phoenix",
+    image: "https://images.unsplash.com/photo-1563089145-599997674d42?w=400&q=80",
+    creator: "FlameForge"
   }
 ];
 
-const DiscoverCard = ({ card }: { card: any }) => {
-  const [showViewer, setShowViewer] = useState(false);
+export const SimplifiedDiscover: React.FC = () => {
+  const { cards, loading } = useCards();
+  const { selectedCardIndex, showImmersiveViewer, handleCardClick, handleCardChange, handleCloseViewer, handleShareCard, handleDownloadCard } = useGalleryActions();
+  const { convertCardsToCardData } = useCardConversion();
   
-  const handleCardClick = () => {
-    setShowViewer(true);
-  };
+  // Use real cards if available, otherwise use fallback
+  const displayCards = cards && cards.length > 0 
+    ? cards.slice(0, 6).map(card => ({
+        id: card.id,
+        title: card.title,
+        image: card.image_url || card.thumbnail_url,
+        creator: "Creator" // We'd get this from profiles later
+      }))
+    : FALLBACK_CARDS.slice(0, 6);
 
-  const handleCloseViewer = () => {
-    setShowViewer(false);
-  };
+  // Convert cards to CardData format for the viewer
+  const convertedCards = convertCardsToCardData(
+    cards && cards.length > 0 ? cards.slice(0, 6) : []
+  );
 
-  // Convert to CardData format for the viewer
-  const convertToCardData = (): CardData => {
-    return {
-      id: card.id,
-      title: card.title,
-      description: `Premium ${card.rarity} card from the ${card.category} collection`,
-      rarity: card.rarity.toLowerCase().replace(' ', '_') as any,
-      tags: [card.category, 'Trading Card', card.rarity],
-      image_url: card.image,
-      thumbnail_url: card.image,
-      design_metadata: {},
-      visibility: 'public',
-      is_public: true,
-      creator_attribution: {
-        creator_name: 'CRD Studio',
-        creator_id: 'crd-studio',
-        collaboration_type: 'solo'
-      },
-      publishing_options: {
-        marketplace_listing: true,
-        crd_catalog_inclusion: true,
-        print_available: false,
-        pricing: {
-          currency: 'ETH'
-        },
-        distribution: {
-          limited_edition: true
-        }
-      },
-      creator_id: 'crd-studio'
-    };
+  const handleCardView = (card: any, index: number) => {
+    if (cards && cards.length > 0) {
+      handleCardClick(cards[index], cards.slice(0, 6));
+    }
   };
 
   return (
     <>
-      <div 
-        className="group relative bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer hover:scale-105"
-        onClick={handleCardClick}
-      >
-        <div className="aspect-[3/4] relative overflow-hidden">
-          <img
-            src={card.image}
-            alt={card.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          
-          {/* Rarity Badge */}
-          <div className="absolute top-3 left-3">
-            <Badge variant="secondary" className="bg-white/90 text-gray-800 border-0">
-              {card.rarity}
-            </Badge>
-          </div>
-          
-          {/* Price Badge */}
-          <div className="absolute top-3 right-3">
-            <Badge className="bg-green-500 text-white border-0">
-              {card.price}
-            </Badge>
-          </div>
-          
-          {/* Card Info Overlay */}
-          <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-            <h3 className="text-white font-bold text-xl mb-1">{card.title}</h3>
-            <p className="text-white/80 text-sm">{card.category} Collection</p>
-          </div>
+      <div className="bg-[#141416] flex flex-col overflow-hidden pt-32 pb-16 px-4 md:px-8 lg:px-[352px] max-md:max-w-full">
+        <div className="text-center mb-12">
+          <Typography as="h2" variant="h1" className="mb-4">
+            Discover Amazing Cards
+          </Typography>
+          <Typography variant="body" className="text-crd-lightGray text-lg max-w-2xl mx-auto">
+            Explore stunning card art created by our community of talented artists and creators
+          </Typography>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+          {loading ? (
+            Array(6).fill(0).map((_, index) => (
+              <div key={index} className="w-full">
+                <Skeleton className="w-full aspect-[3/4] rounded-xl bg-[#353945]" />
+                <div className="mt-3 space-y-2">
+                  <Skeleton className="w-3/4 h-5 bg-[#353945]" />
+                  <Skeleton className="w-1/2 h-4 bg-[#353945]" />
+                </div>
+              </div>
+            ))
+          ) : (
+            displayCards.map((card, index) => (
+              <div
+                key={card.id}
+                className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                onClick={() => handleCardView(card, index)}
+              >
+                <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-xl overflow-hidden relative">
+                  <img
+                    src={card.image || FALLBACK_CARDS[index % FALLBACK_CARDS.length].image}
+                    alt={card.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <CRDButton size="sm" className="w-full">
+                      View in 3D
+                    </CRDButton>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <h3 className="text-crd-white font-semibold text-lg">{card.title}</h3>
+                  <p className="text-crd-lightGray text-sm">by {card.creator}</p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        
+        <div className="text-center">
+          <Link to="/editor">
+            <CRDButton 
+              variant="secondary" 
+              size="lg"
+              className="px-8 py-4 rounded-[90px] mr-4"
+            >
+              Browse All Cards
+            </CRDButton>
+          </Link>
+          <Link to="/editor">
+            <CRDButton 
+              variant="primary" 
+              size="lg"
+              className="px-8 py-4 rounded-[90px]"
+            >
+              Start Creating
+            </CRDButton>
+          </Link>
         </div>
       </div>
 
-      {/* Immersive Card Viewer */}
-      {showViewer && (
+      {/* Immersive Viewer */}
+      {showImmersiveViewer && convertedCards.length > 0 && (
         <ImmersiveCardViewer
-          card={convertToCardData()}
-          isOpen={showViewer}
+          card={convertedCards[selectedCardIndex]}
+          cards={convertedCards}
+          currentCardIndex={selectedCardIndex}
+          onCardChange={handleCardChange}
+          isOpen={showImmersiveViewer}
           onClose={handleCloseViewer}
+          onShare={() => handleShareCard(convertedCards)}
+          onDownload={() => handleDownloadCard(convertedCards)}
           allowRotation={true}
           showStats={true}
           ambient={true}
         />
       )}
     </>
-  );
-};
-
-export const SimplifiedDiscover = () => {
-  return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-2 bg-blue-100 rounded-full px-4 py-2 text-blue-700 mb-4">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-sm font-medium">Featured Collection</span>
-          </div>
-          
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Discover Amazing Cards
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Explore our curated collection of premium trading cards with stunning visual effects and collectible value.
-          </p>
-        </div>
-
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {featuredCards.map((card) => (
-            <DiscoverCard key={card.id} card={card} />
-          ))}
-        </div>
-
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <div className="text-center p-6">
-            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Zap className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Advanced Effects</h3>
-            <p className="text-gray-600">Create cards with holographic, chrome, and prismatic effects that bring your designs to life.</p>
-          </div>
-          
-          <div className="text-center p-6">
-            <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Trophy className="w-8 h-8 text-purple-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Collectible Value</h3>
-            <p className="text-gray-600">Each card is unique and verifiable, with rarity levels that determine their collectible worth.</p>
-          </div>
-          
-          <div className="text-center p-6">
-            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-8 h-8 text-green-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">3D Experience</h3>
-            <p className="text-gray-600">View and interact with cards in immersive 3D environments with realistic lighting.</p>
-          </div>
-        </div>
-
-        {/* CTA */}
-        <div className="text-center">
-          <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-            <Link to="/gallery">
-              View Full Gallery
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-          </Button>
-        </div>
-      </div>
-    </section>
   );
 };

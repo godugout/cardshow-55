@@ -5,9 +5,8 @@ import { CardGrid } from '@/components/cards/CardGrid';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Sparkles } from 'lucide-react';
-import type { DisplayCard } from './types/DisplayCard';
 
-interface DbCard {
+interface Card {
   id: string;
   title: string;
   description: string;
@@ -16,12 +15,10 @@ interface DbCard {
   tags: string[];
   created_at: string;
   design_metadata: any;
-  price?: number;
-  creator_id?: string;
 }
 
 export const GeneratedCardsView = () => {
-  const [cards, setCards] = useState<DisplayCard[]>([]);
+  const [cards, setCards] = useState<Card[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -39,21 +36,7 @@ export const GeneratedCardsView = () => {
         .limit(101);
 
       if (error) throw error;
-      
-      // Convert database cards to DisplayCard format
-      const displayCards: DisplayCard[] = (data || []).map((dbCard: DbCard) => ({
-        id: dbCard.id,
-        title: dbCard.title,
-        description: dbCard.description,
-        image_url: dbCard.image_url,
-        rarity: dbCard.rarity,
-        tags: dbCard.tags,
-        created_at: dbCard.created_at,
-        price: dbCard.price,
-        creator_id: dbCard.creator_id
-      }));
-      
-      setCards(displayCards);
+      setCards(data || []);
     } catch (error) {
       console.error('Error fetching cards:', error);
     } finally {

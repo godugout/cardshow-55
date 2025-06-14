@@ -12,16 +12,12 @@ import { useCards } from '@/hooks/useCards';
 import { useUserMemories } from '@/hooks/useUserMemories';
 import { Edit, Settings } from 'lucide-react';
 import type { Memory } from '@/types/memory';
-import type { Tables } from '@/integrations/supabase/types';
 
-// Use the database type directly
-type CardType = Tables<'cards'>;
-
-// Create a unified card interface that extends Memory with card properties
+// Create a unified card interface that matches both Memory and Card types
 interface UnifiedCard extends Memory {
   // Add card-specific properties as optional
   rarity?: string;
-  design_metadata?: any; // Use any to handle Json type compatibility
+  design_metadata?: Record<string, any>;
   creator_id?: string;
   image_url?: string;
   thumbnail_url?: string;
@@ -67,7 +63,7 @@ const Profile = () => {
   const bioText = profile?.bio_extended || '';
   const avatarUrl = profile?.avatar_url || '';
 
-  // Convert cards to unified format with proper type handling
+  // Convert cards to unified format
   const unifiedCards: UnifiedCard[] = userCards.map(card => ({
     id: card.id,
     userId: card.creator_id,
@@ -77,7 +73,7 @@ const Profile = () => {
     visibility: 'public' as const,
     createdAt: card.created_at,
     tags: card.tags || [],
-    metadata: typeof card.design_metadata === 'object' ? card.design_metadata : {},
+    metadata: card.design_metadata || {},
     // Card-specific properties
     rarity: card.rarity,
     design_metadata: card.design_metadata,

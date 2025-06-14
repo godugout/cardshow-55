@@ -4,30 +4,16 @@ export interface EnvironmentScene {
   id: string;
   name: string;
   icon: string;
-  category: 'natural' | 'fantasy' | 'futuristic' | 'architectural';
+  gradient: string;
   description: string;
-  panoramicUrl: string;
-  previewUrl: string;
-  // Legacy properties for backward compatibility
-  backgroundImage?: string;
-  gradient?: string;
   lighting: {
     color: string;
     intensity: number;
     elevation: number;
     azimuth: number;
   };
-  atmosphere: {
-    fog: boolean;
-    fogColor: string;
-    fogDensity: number;
-    particles: boolean;
-  };
-  depth: {
-    layers: number;
-    parallaxIntensity: number;
-    fieldOfView: number;
-  };
+  backgroundImage: string;
+  reflections: 'soft' | 'sharp' | 'warm' | 'cold' | 'sparkle' | 'vivid';
 }
 
 export interface LightingPreset {
@@ -57,13 +43,6 @@ export interface MaterialSettings {
   clearcoat: number;
 }
 
-export interface EnvironmentControls {
-  depthOfField: number;
-  parallaxIntensity: number;
-  fieldOfView: number;
-  atmosphericDensity: number;
-}
-
 export interface ImmersiveCardViewerProps {
   card: CardData;
   isOpen?: boolean;
@@ -73,12 +52,4 @@ export interface ImmersiveCardViewerProps {
   allowRotation?: boolean;
   showStats?: boolean;
   ambient?: boolean;
-}
-
-export type BackgroundType = 'scene' | '3dSpace';
-
-export interface UnifiedBackground {
-  type: BackgroundType;
-  scene?: EnvironmentScene;
-  space?: any; // Will be properly typed when 3D spaces are fully implemented
 }

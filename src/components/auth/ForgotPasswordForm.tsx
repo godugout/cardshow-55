@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system';
-import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { useAuth } from '@/contexts/AuthContext';
 import { Mail, ArrowLeft } from 'lucide-react';
 import { EmailField } from './components/EmailField';
 import { useAuthForm } from './hooks/useAuthForm';

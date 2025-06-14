@@ -1,6 +1,7 @@
 
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase-client';
 import type { User } from '@/types/user';
 
 export const useUser = () => {
@@ -11,19 +12,28 @@ export const useUser = () => {
     queryFn: async () => {
       if (!authUser) return null;
       
-      // For now, return mock user data based on the auth user
-      // Once database tables are set up, this will fetch from Supabase
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', authUser.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+
       return {
         id: authUser.id,
         email: authUser.email || '',
-        username: authUser.email?.split('@')[0] || '', // Extract username from email
-        full_name: '',
-        avatar_url: '',
-        bio: '',
-        team_id: '',
-        createdAt: new Date().toISOString(),
+        username: data.username || '',
+        full_name: data.full_name,
+        avatar_url: data.avatar_url,
+        bio: data.bio,
+        team_id: data.team_id,
+        createdAt: authUser.created_at,
         preferences: null,
-        profileImage: '',
+        profileImage: data.avatar_url,
       } as User;
     },
     enabled: !!authUser,

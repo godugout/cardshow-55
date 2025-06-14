@@ -1,16 +1,22 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
-import type { DisplayCard } from './types/DisplayCard';
-import type { CardData } from '@/hooks/useCardEditor';
+
+interface CardData {
+  id: string;
+  title: string;
+  description?: string;
+  image_url?: string;
+  thumbnail_url?: string;
+  price?: string;
+}
 
 interface CardGridProps {
-  cards: DisplayCard[];
+  cards: CardData[];
   loading: boolean;
   viewMode: 'grid' | 'masonry' | 'feed';
-  onCardClick?: (card: DisplayCard) => void;
 }
 
 const UNSPLASH_IMAGES = [
@@ -24,10 +30,9 @@ const UNSPLASH_IMAGES = [
   'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400&q=80', // Abstract colorful
 ];
 
-const CardGridItem = ({ card, index, onCardClick }: { card: DisplayCard; index: number; onCardClick?: (card: DisplayCard) => void }) => {
+const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
-  const [showViewer, setShowViewer] = useState(false);
   
   // Use consistent fallback image based on card ID to prevent flickering
   const fallbackImage = UNSPLASH_IMAGES[index % UNSPLASH_IMAGES.length];
@@ -44,100 +49,38 @@ const CardGridItem = ({ card, index, onCardClick }: { card: DisplayCard; index: 
     setImageLoading(false);
   };
 
-  const handleCardClick = () => {
-    if (onCardClick) {
-      onCardClick(card);
-    } else {
-      setShowViewer(true);
-    }
-  };
-
-  const handleCloseViewer = () => {
-    setShowViewer(false);
-  };
-
-  // Convert DisplayCard to CardData format for the viewer
-  const convertToCardData = (displayCard: DisplayCard): CardData => {
-    return {
-      id: displayCard.id,
-      title: displayCard.title,
-      description: displayCard.description || '',
-      rarity: (displayCard.rarity as any) || 'common',
-      tags: displayCard.tags || [],
-      image_url: displayImage,
-      thumbnail_url: displayCard.thumbnail_url,
-      design_metadata: {},
-      visibility: 'public',
-      is_public: true,
-      creator_attribution: {
-        creator_name: 'Unknown',
-        creator_id: displayCard.creator_id,
-        collaboration_type: 'solo'
-      },
-      publishing_options: {
-        marketplace_listing: false,
-        crd_catalog_inclusion: true,
-        print_available: false,
-        pricing: {
-          currency: 'USD'
-        },
-        distribution: {
-          limited_edition: false
-        }
-      },
-      creator_id: displayCard.creator_id
-    };
-  };
-
   return (
-    <>
-      <Card 
-        className="group bg-crd-dark border-crd-mediumGray hover:border-crd-blue transition-all duration-300 overflow-hidden cursor-pointer hover:scale-105"
-        onClick={handleCardClick}
-      >
-        <div className="aspect-[3/4] relative overflow-hidden bg-crd-mediumGray">
-          {imageLoading && (
-            <Skeleton className="absolute inset-0 bg-crd-mediumGray" />
-          )}
-          <img
-            src={displayImage}
-            alt={card.title || 'Card'}
-            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
-              imageLoading ? 'opacity-0' : 'opacity-100'
-            }`}
-            loading="lazy"
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Badge variant="secondary" className="bg-crd-green/20 text-crd-green">
-              {card.price ? `${card.price} ETH` : '1.5 ETH'}
-            </Badge>
-          </div>
-        </div>
-        <CardContent className="p-4">
-          <h3 className="text-crd-white font-semibold mb-1 line-clamp-1">{card.title || 'Untitled Card'}</h3>
-          <p className="text-crd-lightGray text-sm line-clamp-2">{card.description || 'Digital collectible card'}</p>
-          <div className="flex items-center justify-between mt-3">
-            <span className="text-xs text-crd-lightGray">3 in stock</span>
-            <span className="text-xs text-crd-orange">0.001 ETH bid</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Immersive Card Viewer */}
-      {showViewer && (
-        <ImmersiveCardViewer
-          card={convertToCardData(card)}
-          isOpen={showViewer}
-          onClose={handleCloseViewer}
-          allowRotation={true}
-          showStats={true}
-          ambient={true}
+    <Card className="group bg-crd-dark border-crd-mediumGray hover:border-crd-blue transition-all duration-300 overflow-hidden">
+      <div className="aspect-[3/4] relative overflow-hidden bg-crd-mediumGray">
+        {imageLoading && (
+          <Skeleton className="absolute inset-0 bg-crd-mediumGray" />
+        )}
+        <img
+          src={displayImage}
+          alt={card.title || 'Card'}
+          className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+            imageLoading ? 'opacity-0' : 'opacity-100'
+          }`}
+          loading="lazy"
+          onLoad={handleImageLoad}
+          onError={handleImageError}
         />
-      )}
-    </>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Badge variant="secondary" className="bg-crd-green/20 text-crd-green">
+            {card.price ? `${card.price} ETH` : '1.5 ETH'}
+          </Badge>
+        </div>
+      </div>
+      <CardContent className="p-4">
+        <h3 className="text-crd-white font-semibold mb-1 line-clamp-1">{card.title || 'Untitled Card'}</h3>
+        <p className="text-crd-lightGray text-sm line-clamp-2">{card.description || 'Digital collectible card'}</p>
+        <div className="flex items-center justify-between mt-3">
+          <span className="text-xs text-crd-lightGray">3 in stock</span>
+          <span className="text-xs text-crd-orange">0.001 ETH bid</span>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -155,7 +98,7 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode, onCardClick }) => {
+export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) => {
   if (loading) {
     return (
       <div className={
@@ -189,12 +132,7 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode, on
         : 'space-y-6'
     }>
       {cards.map((card, index) => (
-        <CardGridItem 
-          key={`card-${card.id}-${index}`} 
-          card={card} 
-          index={index} 
-          onCardClick={onCardClick}
-        />
+        <CardGridItem key={`card-${card.id}-${index}`} card={card} index={index} />
       ))}
     </div>
   );

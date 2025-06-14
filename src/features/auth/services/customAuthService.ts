@@ -72,12 +72,21 @@ export class CustomAuthService {
     console.log('🔧 Attempting sign in with username:', username);
     
     try {
-      // For now, simulate authentication without database
-      // In a real app, you'd validate against database
-      if (username && passcode) {
+      const { data, error } = await supabase.rpc('authenticate_user', {
+        username_input: username,
+        passcode_input: passcode
+      });
+
+      if (error) {
+        console.error('🔧 Sign in error:', error);
+        return { user: null, error: error.message };
+      }
+
+      const result = data[0];
+      if (result?.success) {
         const user: CustomUser = {
-          id: `user_${username}`,
-          username: username
+          id: result.user_id,
+          username: result.username
         };
         
         console.log('🔧 Sign in successful for:', user.username);
@@ -97,20 +106,29 @@ export class CustomAuthService {
     console.log('🔧 Attempting sign up with username:', username);
     
     try {
-      // For now, simulate registration without database
-      // In a real app, you'd save to database
-      if (username && passcode) {
+      const { data, error } = await supabase.rpc('register_user', {
+        username_input: username,
+        passcode_input: passcode
+      });
+
+      if (error) {
+        console.error('🔧 Sign up error:', error);
+        return { user: null, error: error.message };
+      }
+
+      const result = data[0];
+      if (result?.success) {
         const user: CustomUser = {
-          id: `user_${username}`,
-          username: username
+          id: result.user_id,
+          username: result.username
         };
         
         console.log('🔧 Sign up successful for:', user.username);
         this.storeSession(user);
         return { user, error: null };
       } else {
-        console.log('🔧 Sign up failed: missing username or passcode');
-        return { user: null, error: 'Username and passcode are required' };
+        console.log('🔧 Sign up failed:', result?.error_message);
+        return { user: null, error: result?.error_message || 'Registration failed' };
       }
     } catch (err) {
       console.error('🔧 Sign up exception:', err);

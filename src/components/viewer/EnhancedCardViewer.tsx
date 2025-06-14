@@ -1,8 +1,8 @@
-
 import React, { useState, useCallback } from 'react';
 import { useEnhancedCardEffects } from './hooks/useEnhancedCardEffects';
 import { useEnhancedCardInteraction } from './hooks/useEnhancedCardInteraction';
 import { EnhancedCardCanvas } from './components/EnhancedCardCanvas';
+import { ComboStudioPanel } from './components/ComboStudioPanel';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from './types';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from './constants';
@@ -93,15 +93,29 @@ export const EnhancedCardViewer: React.FC<EnhancedCardViewerProps> = ({
         />
       </div>
 
-      {/* Close button - simple implementation */}
-      {onClose && (
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-50 bg-black bg-opacity-50 text-white p-2 rounded-lg hover:bg-opacity-70 transition-colors"
-        >
-          ×
-        </button>
-      )}
+      {/* Combo Studio Panel */}
+      <ComboStudioPanel
+        selectedScene={selectedScene}
+        selectedLighting={selectedLighting}
+        effectValues={effectValues}
+        overallBrightness={overallBrightness}
+        interactiveLighting={interactiveLighting}
+        materialSettings={materialSettings}
+        isFullscreen={isFullscreen}
+        onSceneChange={setSelectedScene}
+        onLightingChange={setSelectedLighting}
+        onEffectChange={handleEffectChange}
+        onResetEffect={resetEffect}
+        onResetAllEffects={resetAllEffects}
+        onBrightnessChange={setOverallBrightness}
+        onInteractiveLightingToggle={handleInteractiveLightingToggle}
+        onMaterialSettingsChange={setMaterialSettings}
+        onToggleFullscreen={handleToggleFullscreen}
+        onDownload={onDownload}
+        onShare={onShare}
+        onClose={onClose}
+        card={card}
+      />
     </div>
   );
 };

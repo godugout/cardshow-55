@@ -1,9 +1,10 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { EnhancedCardContainer } from './EnhancedCardContainer';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { useThrottledMousePosition } from '../hooks/useThrottledMousePosition';
 
 interface EnhancedCardCanvasProps {
@@ -42,10 +43,22 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
   height = 560
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
   // Use throttled mouse position for smoother performance
   const { mousePosition: throttledMousePosition, updateMousePosition } = useThrottledMousePosition(16);
+
+  console.log('EnhancedCardCanvas rendering, isFlipped:', isFlipped);
+
+  // Handle card flip on double-click/tap
+  const handleDoubleClick = useDoubleClick({
+    onDoubleClick: () => {
+      setIsFlipped(!isFlipped);
+      console.log('Card flipped to:', !isFlipped);
+    },
+    delay: 300
+  });
 
   // Handle mouse move with throttling
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -96,6 +109,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
       onMouseMove={handleMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onClick={handleDoubleClick}
     >
       {/* CRD Logo Branding - Upper Right */}
       <div className="absolute top-4 right-4 z-50">
@@ -111,9 +125,10 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
         />
       </div>
 
-      {/* Enhanced Card Container with continuous rotation */}
+      {/* Enhanced Card Container with 3D Background Info */}
       <EnhancedCardContainer
         card={card}
+        isFlipped={isFlipped}
         isHovering={isHovering}
         showEffects={true}
         effectValues={effectValues}
@@ -137,12 +152,12 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
           setIsDragging(false);
           onMouseLeave();
         }}
-        onClick={() => {}} // Remove flip functionality
+        onClick={handleDoubleClick}
       />
 
-      {/* Updated instruction */}
+      {/* Click instruction updated */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white/60 text-sm">
-        Drag to rotate card in 3D
+        Double-click to flip card
       </div>
     </div>
   );
