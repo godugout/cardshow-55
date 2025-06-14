@@ -43,10 +43,6 @@ const Gallery = () => {
     console.log('Create collection clicked');
   };
 
-  const handleCardChangeWrapper = (card: any, index: number) => {
-    handleCardChange(index);
-  };
-
   return (
     <div className="container mx-auto p-6 max-w-7xl bg-[#121212]">
       <GalleryHeader activeTab={activeTab} onTabChange={setActiveTab} />
@@ -113,7 +109,7 @@ const Gallery = () => {
           card={currentCard}
           cards={convertedCards}
           currentCardIndex={selectedCardIndex}
-          onCardChange={handleCardChangeWrapper}
+          onCardChange={handleCardChange}
           isOpen={showImmersiveViewer}
           onClose={handleCloseViewer}
           onShare={() => handleShareCard(convertedCards)}

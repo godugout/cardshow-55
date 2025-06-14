@@ -1,8 +1,7 @@
 
-import React, { Suspense, useCallback, useMemo } from 'react';
+import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import * as THREE from 'three';
 import { Card3D } from './Card3D';
 import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
 import { ReliableSpaceEnvironment } from './environments/ReliableSpaceEnvironment';
@@ -30,21 +29,20 @@ interface SpaceRenderer3DProps {
   onCameraReset?: () => void;
 }
 
-const LoadingFallback: React.FC = React.memo(() => (
+const LoadingFallback: React.FC = () => (
   <>
     <ambientLight intensity={0.6} />
     <directionalLight position={[5, 10, 5]} intensity={0.8} />
   </>
-));
-LoadingFallback.displayName = 'LoadingFallback';
+);
 
 // Map environment types to reliable image IDs
 const getEnvironmentImageId = (environment: SpaceEnvironment): string => {
-  if (environment?.config?.panoramicPhotoId) {
+  if (environment.config.panoramicPhotoId) {
     return environment.config.panoramicPhotoId;
   }
   
-  switch (environment?.type) {
+  switch (environment.type) {
     case 'forest':
       return 'forest-clearing';
     case 'ocean':
@@ -61,13 +59,13 @@ const getEnvironmentImageId = (environment: SpaceEnvironment): string => {
     case 'void':
       return 'modern-studio';
     case 'panoramic':
-      return environment?.config?.panoramicPhotoId || 'modern-studio';
+      return environment.config.panoramicPhotoId || 'modern-studio';
     default:
       return 'modern-studio';
   }
 };
 
-export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = React.memo(({
+export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   card,
   environment,
   controls,
@@ -80,88 +78,41 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = React.memo(({
   onCardClick,
   onCameraReset,
 }) => {
-  // Memoize environment configuration to prevent unnecessary re-renders
-  const environmentConfig = useMemo(() => {
-    if (!environment) {
-      return {
-        imageId: 'modern-studio',
-        exposure: 1.0,
-        brightness: 1.0
-      };
-    }
+  console.log('🎬 SpaceRenderer3D: Rendering environment:', environment.type, environment.name);
 
-    return {
-      imageId: getEnvironmentImageId(environment),
-      exposure: environment.config?.exposure || 1.0,
-      brightness: environment.config?.lightIntensity || 1.0
-    };
-  }, [environment]);
-
-  // Memoize camera settings
-  const cameraConfig = useMemo(() => ({
-    position: [2, 1, 6] as [number, number, number],
-    fov: controls?.fieldOfView || 45
-  }), [controls?.fieldOfView]);
-
-  // Memoize OrbitControls settings
-  const controlsConfig = useMemo(() => ({
-    enablePan: false,
-    enableZoom: true,
-    autoRotate: controls?.autoRotate || false,
-    autoRotateSpeed: controls?.orbitSpeed || 0.5,
-    minDistance: 4,
-    maxDistance: 12,
-    minPolarAngle: Math.PI / 8,
-    maxPolarAngle: Math.PI - Math.PI / 8,
-    enableDamping: true,
-    dampingFactor: 0.05,
-    target: [0, 0, 0] as [number, number, number]
-  }), [controls?.autoRotate, controls?.orbitSpeed]);
-
-  // Stable callbacks
-  const handleLoadComplete = useCallback(() => {
-    console.log('✅ 3D Environment loaded:', environmentConfig.imageId);
-  }, [environmentConfig.imageId]);
-
-  const handleLoadError = useCallback((error: Error) => {
-    console.error('❌ 3D Environment error:', error);
-  }, []);
-
-  // Early return if no card
-  if (!card) {
-    return null;
-  }
+  const imageId = getEnvironmentImageId(environment);
+  const exposure = environment.config.exposure || 1.0;
+  const brightness = environment.config.lightIntensity || 1.0;
 
   return (
     <div className="w-full h-full">
       <Canvas
-        camera={cameraConfig}
+        camera={{ 
+          position: [2, 1, 6], // Adjusted camera position to better show card edges
+          fov: controls.fieldOfView || 45 
+        }}
         shadows
         dpr={[1, 2]}
         gl={{ 
           antialias: true, 
           alpha: false,
-          premultipliedAlpha: false,
-          powerPreference: 'high-performance'
+          premultipliedAlpha: false
         }}
         style={{ background: 'transparent' }}
         onCreated={({ gl }) => {
           gl.domElement.style.background = 'transparent';
-          // Optimize WebGL settings
-          gl.shadowMap.enabled = true;
-          gl.shadowMap.type = THREE.PCFSoftShadowMap;
         }}
         onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}
       >
         <Suspense fallback={<LoadingFallback />}>
-          <SpaceErrorBoundary spaceName={environment?.name || 'Unknown'} fallback={<LoadingFallback />}>
+          <SpaceErrorBoundary spaceName={environment.name} fallback={<LoadingFallback />}>
             <ReliableSpaceEnvironment
-              imageId={environmentConfig.imageId}
-              rotation={environment?.config?.autoRotation || 0}
-              exposure={environmentConfig.exposure}
-              brightness={environmentConfig.brightness}
-              onLoadComplete={handleLoadComplete}
-              onLoadError={handleLoadError}
+              imageId={imageId}
+              rotation={environment.config.autoRotation || 0}
+              exposure={exposure}
+              brightness={brightness}
+              onLoadComplete={() => console.log('✅ Environment loaded:', imageId)}
+              onLoadError={(error) => console.error('❌ Environment error:', error)}
             />
           </SpaceErrorBoundary>
           
@@ -178,10 +129,20 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = React.memo(({
           />
         </Suspense>
 
-        <OrbitControls {...controlsConfig} />
+        <OrbitControls
+          enablePan={false}
+          enableZoom={true}
+          autoRotate={controls.autoRotate}
+          autoRotateSpeed={controls.orbitSpeed || 0.5}
+          minDistance={4} // Adjusted for better edge viewing
+          maxDistance={12} // Adjusted for better edge viewing
+          minPolarAngle={Math.PI / 8} // Allow more extreme angles
+          maxPolarAngle={Math.PI - Math.PI / 8}
+          enableDamping={true}
+          dampingFactor={0.05}
+          target={[0, 0, 0]}
+        />
       </Canvas>
     </div>
   );
-});
-
-SpaceRenderer3D.displayName = 'SpaceRenderer3D';
+};

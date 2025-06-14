@@ -77,10 +77,6 @@ export const SimplifiedDiscover: React.FC = () => {
     }
   };
 
-  const handleCardChangeWrapper = (card: any, index: number) => {
-    handleCardChange(index);
-  };
-
   return (
     <>
       <div className="bg-[#141416] flex flex-col overflow-hidden pt-32 pb-16 px-4 md:px-8 lg:px-[352px] max-md:max-w-full">
@@ -161,7 +157,7 @@ export const SimplifiedDiscover: React.FC = () => {
           card={convertedCards[selectedCardIndex]}
           cards={convertedCards}
           currentCardIndex={selectedCardIndex}
-          onCardChange={handleCardChangeWrapper}
+          onCardChange={handleCardChange}
           isOpen={showImmersiveViewer}
           onClose={handleCloseViewer}
           onShare={() => handleShareCard(convertedCards)}
