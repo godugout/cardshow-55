@@ -15,8 +15,14 @@ export const useCardBackMaterial = (
   isHovering: boolean = false,
   interactiveLighting: boolean = false
 ): THREE.Material => {
-  // Load the CRD logo texture
-  const crdLogoTexture = useTexture('/crd-logo-gradient.png');
+  // Load the CRD logo texture with error handling
+  let crdLogoTexture;
+  try {
+    crdLogoTexture = useTexture('/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png');
+  } catch (error) {
+    console.warn('Failed to load CRD logo texture:', error);
+    crdLogoTexture = null;
+  }
 
   return useMemo(() => {
     // Get the dominant effect to determine back material
@@ -90,8 +96,7 @@ export const useCardBackMaterial = (
       }
     }
 
-    const material = new THREE.MeshStandardMaterial({
-      map: crdLogoTexture,
+    const materialConfig: THREE.MeshStandardMaterialParameters = {
       color: baseColor,
       emissive: new THREE.Color(emissiveColor),
       emissiveIntensity: Math.min(emissiveIntensity, 1.0),
@@ -100,7 +105,14 @@ export const useCardBackMaterial = (
       transparent: true,
       opacity: 0.9,
       side: THREE.FrontSide
-    });
+    };
+
+    // Only add the texture map if it loaded successfully
+    if (crdLogoTexture) {
+      materialConfig.map = crdLogoTexture;
+    }
+
+    const material = new THREE.MeshStandardMaterial(materialConfig);
 
     return material;
   }, [effectValues, isHovering, interactiveLighting, crdLogoTexture]);
