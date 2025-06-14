@@ -1,10 +1,13 @@
+
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import { ViewerUI } from './components/ViewerUI';
 import { StudioPanel } from './components/StudioPanel';
+import { StudioToggleButton } from './components/StudioToggleButton';
 import { BackgroundRenderer } from './components/BackgroundRenderer';
 import { useViewerState } from '@/hooks/useViewerState';
 import { ViewerControls } from './components/ViewerControls';
+import { usePerformanceMonitor } from './hooks/usePerformanceMonitor';
 import type { EffectValues } from './hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls, BackgroundType } from './types';
 import type { SpaceEnvironment, SpaceControls } from './spaces/types';
@@ -116,6 +119,9 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     atmosphericDensity: 1.0
   });
 
+  // Performance monitoring
+  const performanceMetrics = usePerformanceMonitor();
+
   // Convert MaterialSettings to EffectValues for compatibility
   const effectValues = React.useMemo(() => 
     convertMaterialSettingsToEffectValues(materialSettings), 
@@ -147,8 +153,10 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
       handleNext();
     } else if (event.key === 'ArrowLeft') {
       handlePrev();
+    } else if (event.key === 'Escape') {
+      onClose();
     }
-  }, [handleNext, handlePrev]);
+  }, [handleNext, handlePrev, onClose]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -175,18 +183,21 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   }, [setIsDragging, setDragStart]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || !allowRotation) return;
 
     const deltaX = e.clientX - dragStart.x;
     const deltaY = e.clientY - dragStart.y;
 
-    setRotation(prev => ({
-      x: prev.x + deltaY * 0.2,
-      y: prev.y + deltaX * 0.2,
-    }));
+    // Optimize rotation updates with throttling
+    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+      setRotation(prev => ({
+        x: prev.x + deltaY * 0.2,
+        y: prev.y + deltaX * 0.2,
+      }));
 
-    setDragStart({ x: e.clientX, y: e.clientY });
-  }, [isDragging, dragStart, setRotation]);
+      setDragStart({ x: e.clientX, y: e.clientY });
+    }
+  }, [isDragging, dragStart, setRotation, allowRotation]);
 
   const handleMouseEnter = useCallback(() => {
     setIsHovering(true);
@@ -307,13 +318,32 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         showStats={showStats}
       />
 
+      {/* Studio Toggle Button - Prominent placement */}
+      <div className="absolute top-4 right-4 z-40">
+        <StudioToggleButton
+          isVisible={showCustomizePanel}
+          onToggle={() => setShowCustomizePanel(prev => !prev)}
+        />
+      </div>
+
+      {/* Performance Indicator - Only show if low performance */}
+      {performanceMetrics.isLowPerformance && (
+        <div className="absolute top-16 right-4 z-40">
+          <div className="bg-yellow-600/80 text-white text-xs px-3 py-2 rounded-lg backdrop-blur-md">
+            Performance: {performanceMetrics.fps} FPS
+          </div>
+        </div>
+      )}
+
       {/* Bottom Controls */}
       <ViewerControls
         showEffects={showEffects}
         showBackgroundInfo={showBackgroundInfo}
         interactiveLighting={interactiveLighting}
+        autoRotate={autoRotate}
         onToggleEffects={handleToggleEffects}
         onToggleBackgroundInfo={handleToggleBackgroundInfo}
+        onToggleAutoRotate={() => setAutoRotate(prev => !prev)}
         onZoomIn={() => handleZoom(0.1)}
         onZoomOut={() => handleZoom(-0.1)}
         onResetCamera={handleResetCamera}

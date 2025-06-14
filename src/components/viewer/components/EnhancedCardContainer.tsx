@@ -57,7 +57,11 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   // Use default values to prevent undefined errors
   const effectValues = useDefaultEffectValues(rawEffectValues);
   
-  console.log('🎨 Enhanced Card Container - Effect Values:', effectValues);
+  // Reduce console logging for better performance
+  const debugMode = process.env.NODE_ENV === 'development' && window.location.search.includes('debug=true');
+  if (debugMode) {
+    console.log('🎨 Enhanced Card Container - Effect Values:', effectValues);
+  }
 
   return (
     <div 
