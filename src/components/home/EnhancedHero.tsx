@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import type { CardData } from '@/hooks/useCardEditor';
 
@@ -123,6 +124,8 @@ const HeroCard = ({ card, index }: { card: any; index: number }) => {
 };
 
 export const EnhancedHero = () => {
+  const { user } = useAuth();
+
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
       {/* Background Elements */}
@@ -151,20 +154,58 @@ export const EnhancedHero = () => {
               </p>
             </div>
             
+            {/* Dynamic CTAs based on authentication status */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0">
-                <Link to="/editor">
-                  Start Creating
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-              </Button>
-              
-              <Button asChild variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/10">
-                <Link to="/gallery">
-                  Explore Gallery
-                </Link>
-              </Button>
+              {user ? (
+                <>
+                  <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0">
+                    <Link to="/editor">
+                      Start Creating
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Link>
+                  </Button>
+                  
+                  <Button asChild variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/10">
+                    <Link to="/gallery">
+                      Browse Gallery
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button asChild size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0 shadow-lg">
+                    <Link to="/auth?mode=signup">
+                      Join Free Today
+                      <Users className="ml-2 w-5 h-5" />
+                    </Link>
+                  </Button>
+                  
+                  <Button asChild variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/10">
+                    <Link to="/gallery">
+                      Explore Gallery
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
+            
+            {/* Quick Benefits for New Users */}
+            {!user && (
+              <div className="flex flex-wrap gap-4 text-sm text-white/70">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span>Free to start</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span>No credit card required</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <span>Start creating instantly</span>
+                </div>
+              </div>
+            )}
             
             {/* Stats */}
             <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/10">

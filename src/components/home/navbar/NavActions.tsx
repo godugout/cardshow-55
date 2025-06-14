@@ -19,13 +19,21 @@ export const NavActions = () => {
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <Link to="/auth">
+    <div className="flex items-center gap-3">
+      <Link to="/auth?mode=signin">
         <CRDButton
-          variant="outline"
+          variant="ghost"
           size="sm"
         >
           Sign In
+        </CRDButton>
+      </Link>
+      <Link to="/auth?mode=signup">
+        <CRDButton
+          variant="primary"
+          size="sm"
+        >
+          Sign Up
         </CRDButton>
       </Link>
     </div>
