@@ -7,7 +7,7 @@ import { Card3D } from './Card3D';
 import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
 import { Simple360Environment } from './environments/Simple360Environment';
 import { PANORAMIC_360_ENVIRONMENTS, getPanoramic360EnvironmentById, getDefaultPanoramic360Environment } from './environments/Panoramic360Library';
-import { adaptCardForSpaceRenderer } from '../utils/cardAdapter';
+import { adaptCardForSpaceRenderer, expandSimpleCardToCardData } from '../utils/cardAdapter';
 import type { SpaceEnvironment, SpaceControls } from './types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -65,9 +65,12 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   
   if (is360Environment) {
     console.log('🌍 Using CSS-based 360° environment system');
+    // Convert back to CardData format for Simple360Environment
+    const expandedCard = expandSimpleCardToCardData(adaptedCard);
+    
     return (
       <Simple360Environment
-        card={adaptedCard}
+        card={expandedCard}
         environmentId={environment.id}
         autoRotate={controls.autoRotate}
         onCardClick={onCardClick}
