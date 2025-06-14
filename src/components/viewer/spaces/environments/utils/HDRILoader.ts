@@ -71,9 +71,10 @@ export class HDRILoader {
             }
           },
           (error) => {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             console.error(`❌ ${isFallback ? 'Fallback' : 'HDRI'} loading failed:`, {
               url: textureUrl,
-              error: error.message || error,
+              error: errorMessage,
               isFallback
             });
             
