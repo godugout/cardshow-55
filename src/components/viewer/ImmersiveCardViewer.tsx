@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import { ViewerUI } from './components/ViewerUI';
@@ -7,10 +8,10 @@ import { BackgroundRenderer } from './components/BackgroundRenderer';
 import { useViewerState } from '@/hooks/useViewerState';
 import { ViewerControls } from './components/ViewerControls';
 import { usePerformanceMonitor } from './hooks/usePerformanceMonitor';
+import { useUnifiedCardInteraction } from './hooks/useUnifiedCardInteraction';
 import type { EffectValues } from './hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls, BackgroundType } from './types';
 import type { SpaceEnvironment, SpaceControls } from './spaces/types';
-import { useThrottledMousePosition } from './hooks/useThrottledMousePosition';
 import { EnhancedCardContainer } from './components/EnhancedCardContainer';
 
 interface ImmersiveCardViewerProps {
@@ -80,26 +81,12 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   const {
     isFullscreen,
     setIsFullscreen,
-    rotation,
-    setRotation,
-    isDragging,
-    setIsDragging,
-    dragStart,
-    setDragStart,
-    zoom,
-    setZoom,
-    isFlipped,
-    setIsFlipped,
     autoRotate,
     setAutoRotate,
     showEffects,
     setShowEffects,
-    mousePosition,
-    setMousePosition,
     showCustomizePanel,
     setShowCustomizePanel,
-    isHovering,
-    setIsHovering,
     isHoveringControls,
     setIsHoveringControls,
     showExportDialog,
@@ -122,11 +109,29 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     setSelectedSpace,
     spaceControls,
     setSpaceControls,
-    handleReset,
-    handleZoom,
     handleResetCamera,
     onCardClick
   } = useViewerState();
+
+  // Use unified interaction system
+  const {
+    mousePosition,
+    isHovering,
+    rotation,
+    isDragging,
+    zoom,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    handleMouseEnter,
+    handleMouseLeave,
+    handleZoom,
+    handleReset
+  } = useUnifiedCardInteraction({
+    allowRotation,
+    autoRotate,
+    interactiveLighting
+  });
 
   const [showBackgroundInfo, setShowBackgroundInfo] = useState(true);
   const [environmentControls, setEnvironmentControls] = useState<EnvironmentControls>({
@@ -183,10 +188,6 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     };
   }, [handleKeyDown]);
 
-  const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen(prev => !prev);
-  }, [setIsFullscreen]);
-
   const handleToggleEffects = useCallback(() => {
     setShowEffects(prev => !prev);
   }, [setShowEffects]);
@@ -194,41 +195,6 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   const handleToggleBackgroundInfo = useCallback(() => {
     setShowBackgroundInfo(prev => !prev);
   }, [setShowBackgroundInfo]);
-
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    setIsDragging(true);
-    setDragStart({ x: e.clientX, y: e.clientY });
-  }, [setIsDragging, setDragStart]);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging || !allowRotation) return;
-
-    const deltaX = e.clientX - dragStart.x;
-    const deltaY = e.clientY - dragStart.y;
-
-    // Optimize rotation updates with throttling
-    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-      setRotation(prev => ({
-        x: prev.x + deltaY * 0.2,
-        y: prev.y + deltaX * 0.2,
-      }));
-
-      setDragStart({ x: e.clientX, y: e.clientY });
-    }
-  }, [isDragging, dragStart, setRotation, allowRotation]);
-
-  const handleMouseEnter = useCallback(() => {
-    setIsHovering(true);
-  }, [setIsHovering]);
-
-  const handleMouseLeave = useCallback(() => {
-    setIsHovering(false);
-    setIsDragging(false);
-  }, [setIsHovering, setIsDragging]);
-
-  const { mousePosition: throttledMousePosition, updateMousePosition } = useThrottledMousePosition(32);
-
-  const effectiveMousePosition = interactiveLighting ? throttledMousePosition : mousePosition;
 
   // Memoized styles to prevent re-renders
   const frameStyles: React.CSSProperties = useMemo(() => ({
@@ -249,11 +215,6 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
       }}
     />
   ), []);
-
-  // Lazy load CardFlipControls
-  const CardFlipControls = React.lazy(() => 
-    import('./components/CardFlipControls').then(module => ({ default: module.CardFlipControls }))
-  );
 
   if (!isOpen || !card) return null;
 
@@ -279,7 +240,13 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
 
       {/* Main Card Display - ONLY FOR 2D MODE */}
       {backgroundType !== '3dSpace' && (
-        <div className="relative h-full flex items-center justify-center">
+        <div 
+          className="relative h-full flex items-center justify-center"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
           <div 
             className="relative"
             style={{
@@ -287,7 +254,6 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
               height: '560px',
               perspective: '1000px'
             }}
-            onMouseMove={allowRotation ? handleMouseMove : undefined}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
@@ -309,26 +275,15 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
               materialSettings={materialSettings}
               overallBrightness={overallBrightness}
               showBackgroundInfo={showBackgroundInfo}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+              onMouseDown={() => {}}
+              onMouseMove={() => {}}
+              onMouseEnter={() => {}}
+              onMouseLeave={() => {}}
               onClick={onCardClick}
               environmentControls={environmentControls}
             />
           </div>
         </div>
-      )}
-
-      {/* Card Flip Controls - ONLY FOR 2D MODE */}
-      {backgroundType !== '3dSpace' && (
-        <React.Suspense fallback={null}>
-          <CardFlipControls
-            rotation={rotation}
-            onRotationChange={setRotation}
-            className="absolute bottom-20 left-1/2 transform -translate-x-1/2"
-          />
-        </React.Suspense>
       )}
 
       {/* Top UI Controls */}
@@ -342,7 +297,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         showStats={showStats}
       />
 
-      {/* Studio Toggle Button - Prominent placement with proper spacing */}
+      {/* Studio Toggle Button */}
       <div className="absolute top-4 right-4 z-40">
         <StudioToggleButton
           isVisible={showCustomizePanel}
@@ -370,7 +325,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         onToggleAutoRotate={() => setAutoRotate(prev => !prev)}
         onZoomIn={() => handleZoom(0.1)}
         onZoomOut={() => handleZoom(-0.1)}
-        onResetCamera={handleResetCamera}
+        onResetCamera={handleReset}
         onMouseEnter={() => setIsHoveringControls(true)}
         onMouseLeave={() => setIsHoveringControls(false)}
       />
@@ -410,7 +365,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         selectedSpace={selectedSpace}
         spaceControls={spaceControls}
         onSpaceControlsChange={setSpaceControls}
-        onResetCamera={handleResetCamera}
+        onResetCamera={handleReset}
       />
     </div>
   );

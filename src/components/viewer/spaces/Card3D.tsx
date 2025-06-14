@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Group, Mesh } from 'three';
 import { useCardFaceMaterials } from './materials/CardFaceMaterials';
@@ -38,29 +38,45 @@ export const Card3D: React.FC<Card3DProps> = ({
   // State for 3D card interaction
   const [isHovering, setIsHovering] = React.useState(false);
 
-  // Use the hook to get materials
+  // Use the hook to get materials - memoize to prevent excessive recalculation
   const materials = useCardFaceMaterials(card, effectValues, isHovering, interactiveLighting);
+
+  // Memoize card dimensions
+  const cardDimensions = useMemo(() => ({
+    width: 4,
+    height: 5.6,
+    depth: 0.2
+  }), []);
+
+  // Check if effects are active to optimize animations
+  const hasActiveEffects = useMemo(() => 
+    Object.values(effectValues).some(effect => 
+      effect.intensity && typeof effect.intensity === 'number' && effect.intensity > 0
+    ), [effectValues]
+  );
 
   useFrame((state) => {
     if (groupRef.current) {
-      // Floating animation
-      const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
-      groupRef.current.position.y = floatY;
+      // Floating animation - only if enabled
+      if (controls.floatIntensity > 0) {
+        const floatY = Math.sin(state.clock.elapsedTime * 0.5) * controls.floatIntensity * 0.1;
+        groupRef.current.position.y = floatY;
+      }
 
-      // Auto rotation
+      // Auto rotation - only if enabled
       if (controls.autoRotate) {
         groupRef.current.rotation.y += 0.005 * controls.orbitSpeed;
       }
 
-      // Gravity effect simulation
+      // Gravity effect simulation - only if enabled
       if (controls.gravityEffect > 0) {
         const gravity = Math.sin(state.clock.elapsedTime * 0.3) * controls.gravityEffect * 0.05;
         groupRef.current.position.y += gravity;
       }
     }
 
-    // Add subtle effect-based pulsing
-    if (cardMeshRef.current && effectValues && Object.keys(effectValues).length > 0) {
+    // Add subtle effect-based pulsing - only if effects are active
+    if (cardMeshRef.current && hasActiveEffects) {
       const pulseIntensity = 1 + Math.sin(state.clock.elapsedTime * 2) * 0.02;
       cardMeshRef.current.scale.setScalar(pulseIntensity * 0.015 + 0.985);
     }
@@ -72,11 +88,6 @@ export const Card3D: React.FC<Card3DProps> = ({
 
   const handlePointerEnter = () => setIsHovering(true);
   const handlePointerLeave = () => setIsHovering(false);
-
-  // Card dimensions - Thick for visible edges
-  const cardWidth = 4;
-  const cardHeight = 5.6;
-  const cardDepth = 0.2; // Thick enough for visible edges
 
   return (
     <group ref={groupRef}>
@@ -90,10 +101,10 @@ export const Card3D: React.FC<Card3DProps> = ({
         onPointerLeave={handlePointerLeave}
         onClick={handleCardClick}
       >
-        <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
+        <boxGeometry args={[cardDimensions.width, cardDimensions.height, cardDimensions.depth]} />
       </mesh>
       
-      {/* Enhanced lighting for edge visibility and effects */}
+      {/* Enhanced lighting for edge visibility and effects - only when hovering */}
       {isHovering && (
         <>
           <pointLight
@@ -127,8 +138,8 @@ export const Card3D: React.FC<Card3DProps> = ({
         </>
       )}
       
-      {/* Ambient enhancement for card effects */}
-      {Object.keys(effectValues).length > 0 && (
+      {/* Ambient enhancement for card effects - only when effects are active */}
+      {hasActiveEffects && (
         <pointLight
           position={[0, 0, 3]}
           intensity={0.8}

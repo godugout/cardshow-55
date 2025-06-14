@@ -56,14 +56,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
 }) => {
   // Use default values to prevent undefined errors
   const effectValues = useDefaultEffectValues(rawEffectValues);
-  
-  // Only log in development mode and when debug flag is set
-  const shouldDebug = process.env.NODE_ENV === 'development' && 
-                     window.location.search.includes('debug=effects');
-  
-  if (shouldDebug) {
-    console.log('🎨 Enhanced Card Container - Effect Values:', effectValues);
-  }
 
   return (
     <div 
@@ -73,7 +65,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       style={{
         transform: `scale(${zoom})`,
         transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        filter: `brightness(${interactiveLighting && isHovering ? 1.15 : 1.05}) contrast(1.03)` // Reduced values
+        filter: `brightness(${interactiveLighting && isHovering ? 1.15 : 1.05}) contrast(1.03)`
       }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}

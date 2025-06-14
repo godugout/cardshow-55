@@ -3,7 +3,7 @@
 
 /* CRD Color Utilities */
 @layer utilities {
-  /* Button text color utilities */
+  /* Button text color utilities with higher specificity */
   .btn-text-dark {
     color: #121212 !important;
   }
@@ -18,19 +18,19 @@
 
   /* CRD Color Classes */
   .bg-crd-green {
-    background-color: #45B26B;
+    background-color: #45B26B !important;
   }
   
   .text-crd-green {
-    color: #45B26B;
+    color: #45B26B !important;
   }
   
   .border-crd-green {
-    border-color: #45B26B;
+    border-color: #45B26B !important;
   }
   
   .shadow-crd-green {
-    box-shadow: 0 4px 6px -1px rgba(69, 178, 107, 0.1), 0 2px 4px -1px rgba(69, 178, 107, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(69, 178, 107, 0.1), 0 2px 4px -1px rgba(69, 178, 107, 0.06) !important;
   }
 
   /* Performance optimization utilities */
@@ -64,19 +64,28 @@
   --crd-green-light: #55c27a;
 }
 
-/* Ensure green variants work with Tailwind */
-.bg-green-500 {
-  background-color: var(--crd-green);
+/* Override Tailwind green classes to use CRD green */
+.bg-green-500,
+.bg-green-600 {
+  background-color: var(--crd-green) !important;
 }
 
-.hover\:bg-green-400:hover {
-  background-color: var(--crd-green-light);
+.hover\:bg-green-400:hover,
+.hover\:bg-green-500:hover {
+  background-color: var(--crd-green-light) !important;
 }
 
-.text-green-500 {
-  color: var(--crd-green);
+.text-green-500,
+.text-green-600 {
+  color: var(--crd-green) !important;
 }
 
-.border-green-500 {
-  border-color: var(--crd-green);
+.border-green-500,
+.border-green-600 {
+  border-color: var(--crd-green) !important;
+}
+
+/* Focus states for green elements */
+.focus\:ring-green-500:focus {
+  --tw-ring-color: rgba(69, 178, 107, 0.5) !important;
 }
