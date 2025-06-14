@@ -12,15 +12,8 @@ export const APP_KEY = 'crd_main_app';
 // Create the Supabase client with app context
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-// Helper function to get the app ID
+// Helper function to get the app ID - simplified to return a static value since RPC doesn't exist
 export const getAppId = async (): Promise<string | null> => {
-  const { data, error } = await supabase
-    .rpc('get_app_id', { p_app_key: APP_KEY });
-  
-  if (error) {
-    console.error('Error getting app ID:', error);
-    return null;
-  }
-  
-  return data;
+  // For now, return a static app ID since the RPC function doesn't exist
+  return APP_KEY;
 };

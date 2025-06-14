@@ -74,8 +74,8 @@ export const getCollectionItems = async (collectionId: string): Promise<Collecti
         id: item.id,
         collectionId: item.collection_id,
         memoryId: item.card_id,
-        displayOrder: 0, // Default value since we don't have display_order
-        addedAt: item.created_at,
+        displayOrder: item.display_order || 0, // Use display_order from collection_cards
+        addedAt: item.added_at, // Use added_at instead of created_at
         memory: memory ? {
           id: memory.id,
           userId: memory.user_id,
@@ -119,19 +119,18 @@ export const getCollectionsByUserId = async (
       search
     } = options;
 
-    let query = getCollectionQuery()
+    // Simplified query without complex type instantiation
+    const query = supabase
+      .from('collections')
+      .select('*', { count: 'exact' })
       .eq('owner_id', userId)
       .order('created_at', { ascending: false });
-
-    // Add app_id filter
-    const appId = await getAppId();
-    if (appId) query = query.eq('app_id', appId);
     
     if (search) {
-      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+      query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     }
     
-    query = query.range(
+    query.range(
       calculateOffset(page, pageSize),
       calculateOffset(page, pageSize) + pageSize - 1
     );
@@ -193,19 +192,18 @@ export const getPublicCollections = async (
       search
     } = options;
 
-    let query = getCollectionQuery()
+    // Simplified query without complex type instantiation
+    const query = supabase
+      .from('collections')
+      .select('*', { count: 'exact' })
       .eq('visibility', 'public')
       .order('created_at', { ascending: false });
 
-    // Add app_id filter if available  
-    const appId = await getAppId();
-    if (appId) query = query.eq('app_id', appId);
-
     if (search) {
-      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+      query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     }
 
-    query = query.range(
+    query.range(
       calculateOffset(page, pageSize),
       calculateOffset(page, pageSize) + pageSize - 1
     );
