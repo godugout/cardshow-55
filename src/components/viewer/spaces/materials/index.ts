@@ -1,3 +1,3 @@
 
 export { EdgeGlowMaterial } from './EdgeGlowMaterial';
-export { CardFaceMaterials } from './CardFaceMaterials';
+export { useCardFaceMaterials, createEdgeGlowProps } from './CardFaceMaterials';

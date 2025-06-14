@@ -21,7 +21,7 @@ export const useViewerState = () => {
   const [showExportDialog, setShowExportDialog] = useState(false);
 
   // Environment and effects state
-  const [backgroundType, setBackgroundType] = useState<BackgroundType>('3dSpace'); // Changed from 'scene' to '3dSpace'
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>('3dSpace');
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
   const [selectedLighting, setSelectedLighting] = useState<LightingPreset>(LIGHTING_PRESETS[0]);
   const [overallBrightness, setOverallBrightness] = useState([100]);
@@ -30,7 +30,7 @@ export const useViewerState = () => {
     roughness: 0.3,
     metalness: 0.1,
     clearcoat: 0.0,
-    clearcoatRoughness: 0.0
+    reflectivity: 0.5
   });
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>();
 
@@ -41,7 +41,8 @@ export const useViewerState = () => {
     orbitSpeed: 0.5,
     floatIntensity: 1.0,
     gravityEffect: 0.0,
-    fieldOfView: 45
+    fieldOfView: 45,
+    cameraDistance: 8
   });
 
   // Action handlers

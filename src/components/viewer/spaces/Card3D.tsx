@@ -5,7 +5,7 @@ import { Html } from '@react-three/drei';
 import { Group, Mesh } from 'three';
 import { EnhancedCardContainer } from '../components/EnhancedCardContainer';
 import { useCardEffects } from '../hooks/useCardEffects';
-import { CardFaceMaterials } from './materials/CardFaceMaterials';
+import { useCardFaceMaterials } from './materials/CardFaceMaterials';
 import type { SpaceControls } from './types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -75,6 +75,9 @@ export const Card3D: React.FC<Card3DProps> = ({
   // Convert simple card to full CardData format for useCardEffects
   const adaptedCard = React.useMemo(() => adaptCardForViewer(card), [card]);
 
+  // Use the hook to get materials
+  const materials = useCardFaceMaterials(card, effectValues, isHovering, interactiveLighting);
+
   // Use card effects if we have the required props
   const cardEffects = (selectedScene && selectedLighting && materialSettings) ? useCardEffects({
     card: adaptedCard,
@@ -137,17 +140,12 @@ export const Card3D: React.FC<Card3DProps> = ({
         ref={cardMeshRef}
         castShadow 
         receiveShadow
+        material={materials}
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
         onClick={handleCardClick}
       >
         <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
-        <CardFaceMaterials
-          card={card}
-          effectValues={effectValues}
-          isHovering={isHovering}
-          interactiveLighting={interactiveLighting}
-        />
       </mesh>
       
       {/* Enhanced lighting for edge visibility */}
@@ -155,28 +153,28 @@ export const Card3D: React.FC<Card3DProps> = ({
         <>
           <pointLight
             position={[3, 0, 2]}
-            intensity={1.0}
+            intensity={1.5}
             color={0x4a90e2}
             distance={12}
             decay={2}
           />
           <pointLight
             position={[-3, 0, 2]}
-            intensity={1.0}
+            intensity={1.5}
             color={0x4a90e2}
             distance={12}
             decay={2}
           />
           <pointLight
             position={[0, 3, 1]}
-            intensity={0.8}
+            intensity={1.2}
             color={0x4a90e2}
             distance={10}
             decay={2}
           />
           <pointLight
             position={[0, -3, 1]}
-            intensity={0.8}
+            intensity={1.2}
             color={0x4a90e2}
             distance={10}
             decay={2}
