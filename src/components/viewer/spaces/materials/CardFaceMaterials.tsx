@@ -11,27 +11,32 @@ interface Simple3DCard {
   image_url?: string;
 }
 
-interface CardFaceMaterialsProps {
-  card: Simple3DCard;
-  effectValues: EffectValues;
-  isHovering?: boolean;
-  interactiveLighting?: boolean;
-}
-
-// Utility function to create edge glow properties
+// Utility function to create edge glow properties with null safety
 export const createEdgeGlowProps = (
   effectValues: EffectValues = {},
   isHovering: boolean = false,
   interactiveLighting: boolean = false
 ): { emissiveColor: THREE.Color; emissiveIntensity: number } => {
-  // Get the dominant effect to determine glow color
-  const activeEffects = Object.entries(effectValues || {}).filter(([_, effect]) => 
-    effect?.intensity && typeof effect.intensity === 'number' && effect.intensity > 10
+  // Ensure effectValues is valid and has proper structure
+  if (!effectValues || typeof effectValues !== 'object') {
+    return {
+      emissiveColor: new THREE.Color(0x4a90e2),
+      emissiveIntensity: 0.5
+    };
+  }
+
+  // Get the dominant effect to determine glow color with null safety
+  const activeEffects = Object.entries(effectValues).filter(([_, effect]) => 
+    effect && 
+    typeof effect === 'object' && 
+    effect.intensity && 
+    typeof effect.intensity === 'number' && 
+    effect.intensity > 10
   );
   
   if (activeEffects.length === 0) {
     return {
-      emissiveColor: new THREE.Color(0x4a90e2), // Default blue
+      emissiveColor: new THREE.Color(0x4a90e2),
       emissiveIntensity: 0.5
     };
   }
@@ -62,7 +67,7 @@ export const createEdgeGlowProps = (
   };
   
   const baseColor = colorMap[effectId] || 0x4a90e2;
-  let finalIntensity = intensity * 1.5; // Increased base intensity
+  let finalIntensity = intensity * 1.5;
   
   // Boost intensity for hovering and interactive lighting
   if (isHovering && interactiveLighting) {
@@ -73,32 +78,37 @@ export const createEdgeGlowProps = (
   
   return {
     emissiveColor: new THREE.Color(baseColor),
-    emissiveIntensity: Math.min(finalIntensity, 3.0) // Increased max intensity
+    emissiveIntensity: Math.min(finalIntensity, 3.0)
   };
 };
 
-// Hook to create materials for card faces with null safety
+// Hook to create materials for card faces with comprehensive null safety
 export const useCardFaceMaterials = (
   card: Simple3DCard | null,
   effectValues: EffectValues = {},
   isHovering: boolean = false,
   interactiveLighting: boolean = false
 ): THREE.Material[] => {
-  // Get specialized materials for front and back with null safety
-  const frontMaterial = useCardFrontMaterial(card || { id: 'default', title: 'Default' }, effectValues, isHovering, interactiveLighting);
-  const backMaterial = useCardBackMaterial(effectValues, isHovering, interactiveLighting);
+  // Ensure card has valid structure
+  const safeCard = card || { id: 'default', title: 'Default Card' };
   
-  // Get edge glow properties with null safety
+  // Ensure effectValues is properly structured
+  const safeEffectValues = effectValues && typeof effectValues === 'object' ? effectValues : {};
+
+  // Get specialized materials for front and back with null safety
+  const frontMaterial = useCardFrontMaterial(safeCard, safeEffectValues, isHovering, interactiveLighting);
+  const backMaterial = useCardBackMaterial(safeEffectValues, isHovering, interactiveLighting);
+  
+  // Get edge glow properties with null safety - using useMemo with proper dependency array
   const edgeGlowProps = useMemo(() => 
-    createEdgeGlowProps(effectValues || {}, isHovering, interactiveLighting),
-    [effectValues, isHovering, interactiveLighting]
+    createEdgeGlowProps(safeEffectValues, isHovering, interactiveLighting),
+    [safeEffectValues, isHovering, interactiveLighting]
   );
 
-  // Create materials array for box geometry faces
-  // Order: [+X, -X, +Y, -Y, +Z, -Z] = [right, left, top, bottom, front, back]
-  const materials: THREE.Material[] = useMemo(() => [
-    // Right side (+X) - Edge glow material
-    new THREE.MeshStandardMaterial({
+  // Create materials array for box geometry faces with useMemo for performance
+  const materials: THREE.Material[] = useMemo(() => {
+    // Create edge material
+    const edgeMaterial = new THREE.MeshStandardMaterial({
       color: 0x1a1a1a,
       emissive: edgeGlowProps.emissiveColor,
       emissiveIntensity: edgeGlowProps.emissiveIntensity,
@@ -106,42 +116,18 @@ export const useCardFaceMaterials = (
       roughness: 0.6,
       transparent: true,
       opacity: 0.95
-    }),
-    // Left side (-X) - Edge glow material
-    new THREE.MeshStandardMaterial({
-      color: 0x1a1a1a,
-      emissive: edgeGlowProps.emissiveColor,
-      emissiveIntensity: edgeGlowProps.emissiveIntensity,
-      metalness: 0.4,
-      roughness: 0.6,
-      transparent: true,
-      opacity: 0.95
-    }),
-    // Top side (+Y) - Edge glow material
-    new THREE.MeshStandardMaterial({
-      color: 0x1a1a1a,
-      emissive: edgeGlowProps.emissiveColor,
-      emissiveIntensity: edgeGlowProps.emissiveIntensity,
-      metalness: 0.4,
-      roughness: 0.6,
-      transparent: true,
-      opacity: 0.95
-    }),
-    // Bottom side (-Y) - Edge glow material
-    new THREE.MeshStandardMaterial({
-      color: 0x1a1a1a,
-      emissive: edgeGlowProps.emissiveColor,
-      emissiveIntensity: edgeGlowProps.emissiveIntensity,
-      metalness: 0.4,
-      roughness: 0.6,
-      transparent: true,
-      opacity: 0.95
-    }),
-    // Front face (+Z) - Card image
-    frontMaterial,
-    // Back face (-Z) - CRD back
-    backMaterial
-  ], [frontMaterial, backMaterial, edgeGlowProps]);
+    });
+
+    // Order: [+X, -X, +Y, -Y, +Z, -Z] = [right, left, top, bottom, front, back]
+    return [
+      edgeMaterial, // Right side (+X)
+      edgeMaterial.clone(), // Left side (-X)
+      edgeMaterial.clone(), // Top side (+Y)
+      edgeMaterial.clone(), // Bottom side (-Y)
+      frontMaterial, // Front face (+Z)
+      backMaterial // Back face (-Z)
+    ];
+  }, [frontMaterial, backMaterial, edgeGlowProps]);
 
   return materials;
 };

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import { ViewerUI } from './components/ViewerUI';
 import { StudioPanel } from './components/StudioPanel';
@@ -27,8 +27,26 @@ interface ImmersiveCardViewerProps {
   ambient?: boolean;
 }
 
-// Helper function to convert MaterialSettings to EffectValues
-const convertMaterialSettingsToEffectValues = (materialSettings: MaterialSettings): EffectValues => {
+// Helper function to convert MaterialSettings to EffectValues with null safety
+const convertMaterialSettingsToEffectValues = (materialSettings: MaterialSettings | undefined): EffectValues => {
+  if (!materialSettings || typeof materialSettings !== 'object') {
+    return {
+      holographic: { intensity: 0 },
+      crystal: { intensity: 0 },
+      chrome: { intensity: 0 },
+      brushedmetal: { intensity: 0 },
+      gold: { intensity: 0, goldTone: 'classic' },
+      vintage: { intensity: 0 },
+      prizm: { intensity: 0 },
+      interference: { intensity: 0 },
+      foilspray: { intensity: 0 },
+      aurora: { intensity: 0 },
+      ice: { intensity: 0 },
+      lunar: { intensity: 0 },
+      waves: { intensity: 0 }
+    };
+  }
+
   return {
     holographic: { intensity: 0 },
     crystal: { intensity: 0 },
@@ -121,17 +139,18 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   // Performance monitoring with reduced impact
   const performanceMetrics = usePerformanceMonitor();
 
-  // Convert MaterialSettings to EffectValues for compatibility
-  const effectValues = React.useMemo(() => 
+  // Convert MaterialSettings to EffectValues with null safety
+  const effectValues = useMemo(() => 
     convertMaterialSettingsToEffectValues(materialSettings), 
     [materialSettings]
   );
 
-  const adaptedCard = {
-    id: card.id,
-    title: card.title,
-    image_url: card.image_url
-  };
+  // Memoize adapted card to prevent unnecessary re-renders
+  const adaptedCard = useMemo(() => ({
+    id: card?.id || 'default',
+    title: card?.title || 'Default Card',
+    image_url: card?.image_url
+  }), [card?.id, card?.title, card?.image_url]);
 
   const handleNext = useCallback(() => {
     if (currentCardIndex < cards.length - 1 && onCardChange) {
@@ -207,22 +226,23 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     setIsDragging(false);
   }, [setIsHovering, setIsDragging]);
 
-  const { mousePosition: throttledMousePosition, updateMousePosition } = useThrottledMousePosition(32); // Reduced frequency
+  const { mousePosition: throttledMousePosition, updateMousePosition } = useThrottledMousePosition(32);
 
   const effectiveMousePosition = interactiveLighting ? throttledMousePosition : mousePosition;
 
-  const frameStyles: React.CSSProperties = React.useMemo(() => ({
+  // Memoized styles to prevent re-renders
+  const frameStyles: React.CSSProperties = useMemo(() => ({
     background: `linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)`,
     border: '1px solid rgba(255,255,255,0.1)'
   }), []);
 
-  const enhancedEffectStyles: React.CSSProperties = React.useMemo(() => ({
-    filter: `brightness(${overallBrightness[0] / 100}) contrast(1.05)` // Reduced contrast
+  const enhancedEffectStyles: React.CSSProperties = useMemo(() => ({
+    filter: `brightness(${(overallBrightness?.[0] || 100) / 100}) contrast(1.05)`
   }), [overallBrightness]);
 
-  const SurfaceTexture = React.useMemo(() => (
+  const SurfaceTexture = useMemo(() => (
     <div 
-      className="absolute inset-0 opacity-10" // Reduced opacity
+      className="absolute inset-0 opacity-10"
       style={{
         backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 1px, transparent 1px)',
         backgroundSize: '20px 20px'
@@ -230,6 +250,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     />
   ), []);
 
+  // Lazy load CardFlipControls
   const CardFlipControls = React.lazy(() => 
     import('./components/CardFlipControls').then(module => ({ default: module.CardFlipControls }))
   );
@@ -238,7 +259,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black">
-      {/* Background Renderer */}
+      {/* Background Renderer - SINGLE RENDER MODE ONLY */}
       <BackgroundRenderer
         backgroundType={backgroundType}
         selectedSpace={selectedSpace}
@@ -256,47 +277,51 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         interactiveLighting={interactiveLighting}
       />
 
-      {/* Main Card Display */}
-      <div className="relative h-full flex items-center justify-center">
-        <div 
-          className="relative"
-          style={{
-            width: '400px',
-            height: '560px',
-            perspective: '1000px'
-          }}
-          onMouseMove={allowRotation ? handleMouseMove : undefined}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <EnhancedCardContainer
-            card={card}
-            isHovering={isHovering}
-            showEffects={showEffects}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={zoom}
-            isDragging={isDragging}
-            frameStyles={frameStyles}
-            enhancedEffectStyles={enhancedEffectStyles}
-            SurfaceTexture={SurfaceTexture}
-            interactiveLighting={interactiveLighting}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            showBackgroundInfo={showBackgroundInfo}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
+      {/* Main Card Display - ONLY FOR 2D MODE */}
+      {backgroundType !== '3dSpace' && (
+        <div className="relative h-full flex items-center justify-center">
+          <div 
+            className="relative"
+            style={{
+              width: '400px',
+              height: '560px',
+              perspective: '1000px'
+            }}
+            onMouseMove={allowRotation ? handleMouseMove : undefined}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onClick={onCardClick}
-            environmentControls={environmentControls}
-          />
+          >
+            <EnhancedCardContainer
+              card={card}
+              isHovering={isHovering}
+              showEffects={showEffects}
+              effectValues={effectValues}
+              mousePosition={mousePosition}
+              rotation={rotation}
+              zoom={zoom}
+              isDragging={isDragging}
+              frameStyles={frameStyles}
+              enhancedEffectStyles={enhancedEffectStyles}
+              SurfaceTexture={SurfaceTexture}
+              interactiveLighting={interactiveLighting}
+              selectedScene={selectedScene}
+              selectedLighting={selectedLighting}
+              materialSettings={materialSettings}
+              overallBrightness={overallBrightness}
+              showBackgroundInfo={showBackgroundInfo}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onClick={onCardClick}
+              environmentControls={environmentControls}
+            />
+          </div>
         </div>
+      )}
 
-        {/* Card Flip Controls */}
+      {/* Card Flip Controls - ONLY FOR 2D MODE */}
+      {backgroundType !== '3dSpace' && (
         <React.Suspense fallback={null}>
           <CardFlipControls
             rotation={rotation}
@@ -304,7 +329,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
             className="absolute bottom-20 left-1/2 transform -translate-x-1/2"
           />
         </React.Suspense>
-      </div>
+      )}
 
       {/* Top UI Controls */}
       <ViewerUI

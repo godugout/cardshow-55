@@ -24,7 +24,7 @@ interface BackgroundRendererProps {
   interactiveLighting?: boolean;
 }
 
-export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
+export const BackgroundRenderer: React.FC<BackgroundRendererProps> = React.memo(({
   backgroundType,
   selectedSpace,
   spaceControls,
@@ -40,10 +40,13 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   overallBrightness = [100],
   interactiveLighting = false
 }) => {
+  // CRITICAL: Only render ONE mode at a time to prevent dual rendering
+  
   // For 3D space mode, use default space if none selected
   if (backgroundType === '3dSpace') {
     const spaceToUse = selectedSpace || BASIC_SPACE_ENVIRONMENTS[0];
     
+    // Only render 3D space - no 2D background
     return (
       <div className="absolute inset-0 z-0">
         <SpaceRenderer3D
@@ -63,7 +66,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
     );
   }
 
-  // Default to 2D scene background
+  // For 2D scene mode - only render 2D background
   return (
     <div className="absolute inset-0 z-0">
       <EnvironmentSphere
@@ -73,4 +76,6 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
       />
     </div>
   );
-};
+});
+
+BackgroundRenderer.displayName = 'BackgroundRenderer';
