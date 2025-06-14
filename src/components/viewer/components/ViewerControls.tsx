@@ -1,29 +1,35 @@
 
 import React from 'react';
-import { Eye, EyeOff, ZoomIn, ZoomOut, RotateCcw, Sun, Info } from 'lucide-react';
+import { Eye, EyeOff, ZoomIn, ZoomOut, RotateCcw, Sun, Info, RotateCw } from 'lucide-react';
 
 interface ViewerControlsProps {
   showEffects: boolean;
-  showBackgroundInfo: boolean;
-  interactiveLighting: boolean;
+  showBackgroundInfo?: boolean;
+  interactiveLighting?: boolean;
+  autoRotate?: boolean;
   onToggleEffects: () => void;
-  onToggleBackgroundInfo: () => void;
+  onToggleBackgroundInfo?: () => void;
+  onToggleAutoRotate?: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
-  onResetCamera: () => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
+  onResetCamera?: () => void;
+  onReset?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 export const ViewerControls: React.FC<ViewerControlsProps> = ({
   showEffects,
   showBackgroundInfo,
   interactiveLighting,
+  autoRotate,
   onToggleEffects,
   onToggleBackgroundInfo,
+  onToggleAutoRotate,
   onZoomIn,
   onZoomOut,
   onResetCamera,
+  onReset,
   onMouseEnter,
   onMouseLeave
 }) => {
@@ -47,18 +53,35 @@ export const ViewerControls: React.FC<ViewerControlsProps> = ({
           {showEffects ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
         </button>
 
+        {/* Auto Rotate Toggle */}
+        {onToggleAutoRotate && (
+          <button
+            onClick={onToggleAutoRotate}
+            className={`p-2 rounded-md transition-colors ${
+              autoRotate 
+                ? 'bg-white/20 text-white' 
+                : 'text-white/60 hover:text-white hover:bg-white/10'
+            }`}
+            title={autoRotate ? "Stop Auto Rotation" : "Start Auto Rotation"}
+          >
+            <RotateCw className="w-4 h-4" />
+          </button>
+        )}
+
         {/* Background Info Toggle */}
-        <button
-          onClick={onToggleBackgroundInfo}
-          className={`p-2 rounded-md transition-colors ${
-            showBackgroundInfo 
-              ? 'bg-white/20 text-white' 
-              : 'text-white/60 hover:text-white hover:bg-white/10'
-          }`}
-          title={showBackgroundInfo ? "Hide Background Info" : "Show Background Info"}
-        >
-          <Info className="w-4 h-4" />
-        </button>
+        {onToggleBackgroundInfo && (
+          <button
+            onClick={onToggleBackgroundInfo}
+            className={`p-2 rounded-md transition-colors ${
+              showBackgroundInfo 
+                ? 'bg-white/20 text-white' 
+                : 'text-white/60 hover:text-white hover:bg-white/10'
+            }`}
+            title={showBackgroundInfo ? "Hide Background Info" : "Show Background Info"}
+          >
+            <Info className="w-4 h-4" />
+          </button>
+        )}
 
         {/* Interactive Lighting Indicator */}
         {interactiveLighting && (
@@ -89,7 +112,7 @@ export const ViewerControls: React.FC<ViewerControlsProps> = ({
 
         {/* Reset Camera */}
         <button
-          onClick={onResetCamera}
+          onClick={onResetCamera || onReset}
           className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-md transition-colors"
           title="Reset Camera"
         >
