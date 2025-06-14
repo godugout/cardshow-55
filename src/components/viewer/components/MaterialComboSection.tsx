@@ -48,10 +48,22 @@ export const MaterialComboSection: React.FC<MaterialComboSectionProps> = ({
     }
   ];
 
+  // Helper function to safely get numeric value
+  const getNumericValue = (value: string | number | boolean | undefined): number => {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+    if (typeof value === 'boolean') return value ? 1 : 0;
+    return 0;
+  };
+
   return (
     <div className="space-y-3">
       {materials.map(({ key, label, description, icon: Icon, color, dotColor }) => {
-        const value = materialSettings[key as keyof MaterialSettings];
+        const rawValue = materialSettings[key as keyof MaterialSettings];
+        const value = getNumericValue(rawValue);
         
         return (
           <div key={key} className="p-4 rounded-lg bg-white/5 border border-white/10">
