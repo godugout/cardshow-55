@@ -2,7 +2,7 @@
 import React from 'react';
 import { SpaceRenderer3D } from '../spaces/SpaceRenderer3D';
 import { EnvironmentSphere } from './EnvironmentSphere';
-import { adaptCardForSpaceRenderer } from '../utils/cardAdapter';
+import { expandSimpleCardToCardData } from '../utils/cardAdapter';
 import type { BackgroundType, EnvironmentScene, LightingPreset } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -42,8 +42,8 @@ export const ViewerBackground: React.FC<ViewerBackgroundProps> = ({
   interactiveLighting,
   enableTrue3D = true // Default to true for new 3D experience
 }) => {
-  // Adapt card for space renderer
-  const adaptedCard = adaptCardForSpaceRenderer(card);
+  // Convert card to CardData format for components that need it
+  const cardData = expandSimpleCardToCardData(card);
 
   // Always use 3D space rendering for the enhanced experience
   if (enableTrue3D) {
@@ -68,7 +68,7 @@ export const ViewerBackground: React.FC<ViewerBackgroundProps> = ({
     return (
       <div className="absolute inset-0 z-0">
         <SpaceRenderer3D
-          card={adaptedCard}
+          card={cardData}
           environment={defaultSpace}
           controls={spaceControls}
           effectValues={effectValues}
@@ -90,7 +90,7 @@ export const ViewerBackground: React.FC<ViewerBackgroundProps> = ({
     return (
       <div className="absolute inset-0 z-0">
         <SpaceRenderer3D
-          card={adaptedCard}
+          card={cardData}
           environment={selectedSpace}
           controls={spaceControls}
           effectValues={effectValues}
