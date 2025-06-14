@@ -47,7 +47,7 @@ export const Hero: React.FC = () => {
               <CRDButton 
                 variant="primary"
                 size="lg"
-                className="gap-3 text-lg font-extrabold px-8 py-4 rounded-[90px] max-md:px-5"
+                className="gap-3 text-lg font-extrabold px-8 py-4 rounded-[90px] max-md:px-5 bg-crd-green hover:bg-crd-green/90"
               >
                 Join Free Today
               </CRDButton>

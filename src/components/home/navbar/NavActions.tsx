@@ -32,8 +32,9 @@ export const NavActions = () => {
         <CRDButton
           variant="primary"
           size="sm"
+          className="bg-crd-green hover:bg-crd-green/90 font-semibold"
         >
-          Sign Up
+          Sign Up Free
         </CRDButton>
       </Link>
     </div>
