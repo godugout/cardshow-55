@@ -34,7 +34,7 @@ export const useViewerState = () => {
   });
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>();
 
-  // Space-specific state
+  // Space-specific state with default space
   const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(null);
   const [spaceControls, setSpaceControls] = useState<SpaceControls>({
     autoRotate: true,

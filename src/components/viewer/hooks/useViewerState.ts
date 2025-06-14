@@ -1,6 +1,7 @@
 
 import { useState, useCallback } from 'react';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
+import { BASIC_SPACE_ENVIRONMENTS } from '../spaces/environments/basicSpaceEnvironments';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, BackgroundType } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
 
@@ -20,8 +21,8 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  // Environment and effects state
-  const [backgroundType, setBackgroundType] = useState<BackgroundType>('3dSpace');
+  // Environment and effects state - Initialize with 2D scene
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
   const [selectedLighting, setSelectedLighting] = useState<LightingPreset>(LIGHTING_PRESETS[0]);
   const [overallBrightness, setOverallBrightness] = useState([100]);
@@ -34,8 +35,8 @@ export const useViewerState = () => {
   });
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>();
 
-  // Space-specific state
-  const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(null);
+  // Space-specific state - Initialize with first basic environment
+  const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(BASIC_SPACE_ENVIRONMENTS[0]);
   const [spaceControls, setSpaceControls] = useState<SpaceControls>({
     autoRotate: true,
     orbitSpeed: 0.5,
@@ -63,7 +64,6 @@ export const useViewerState = () => {
   }, []);
 
   const onCardClick = useCallback(() => {
-    // Card click handler - can be customized
     console.log('Card clicked in 3D space');
   }, []);
 
