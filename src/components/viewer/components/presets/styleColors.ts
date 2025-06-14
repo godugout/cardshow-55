@@ -99,34 +99,48 @@ export const STYLE_COLORS = {
   }
 } as const;
 
-// Default fallback color to prevent undefined errors
+// Enhanced default fallback color with complete properties
 const DEFAULT_STYLE_COLOR = {
   primary: '#45B26B',
   border: '#4ADE80',
   bg: 'rgba(69, 178, 107, 0.1)',
   gradient: 'linear-gradient(135deg, #45B26B, #4ADE80)'
+} as const;
+
+// Type definition for style color object
+export type StyleColor = {
+  primary: string;
+  border: string;
+  bg: string;
+  gradient: string;
 };
 
-export const getStyleColor = (styleId: string | undefined | null) => {
-  console.log('Getting style color for:', styleId);
+export const getStyleColor = (styleId: string | undefined | null): StyleColor => {
+  console.log('🎨 getStyleColor called with:', styleId);
   
   // Handle null, undefined, or empty string inputs
   if (!styleId || typeof styleId !== 'string') {
-    console.warn('Invalid styleId provided (null/undefined/empty):', styleId, 'using default');
-    return DEFAULT_STYLE_COLOR;
+    console.warn('⚠️ Invalid styleId provided (null/undefined/empty):', styleId, 'using default');
+    return { ...DEFAULT_STYLE_COLOR };
   }
   
+  // Attempt to get the color from the mapping
   const color = STYLE_COLORS[styleId as keyof typeof STYLE_COLORS];
+  
   if (!color) {
-    console.warn(`Style color not found for: ${styleId}, using default`);
-    return DEFAULT_STYLE_COLOR;
+    console.warn(`⚠️ Style color not found for: "${styleId}", using default. Available styles:`, Object.keys(STYLE_COLORS));
+    return { ...DEFAULT_STYLE_COLOR };
   }
   
-  // Ensure the returned color has all required properties
-  if (!color.primary || !color.border || !color.bg || !color.gradient) {
-    console.warn(`Incomplete style color for: ${styleId}, using default`);
-    return DEFAULT_STYLE_COLOR;
+  // Validate that the returned color has all required properties
+  const requiredProps = ['primary', 'border', 'bg', 'gradient'];
+  const missingProps = requiredProps.filter(prop => !color[prop as keyof typeof color]);
+  
+  if (missingProps.length > 0) {
+    console.warn(`⚠️ Incomplete style color for: "${styleId}", missing properties:`, missingProps, 'using default');
+    return { ...DEFAULT_STYLE_COLOR };
   }
   
-  return color;
+  console.log('✅ Successfully retrieved style color for:', styleId, color);
+  return { ...color };
 };

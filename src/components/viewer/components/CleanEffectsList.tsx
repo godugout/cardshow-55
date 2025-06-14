@@ -49,9 +49,31 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
 
   const activeEffects = getActiveEffects();
   
-  // Safe style color lookup with comprehensive null checks
-  const styleColor = selectedPresetId ? getStyleColor(selectedPresetId) : null;
-  const primaryColor = styleColor?.primary || '#45B26B';
+  // Safe style color lookup with comprehensive null checks and error handling
+  const styleColor = React.useMemo(() => {
+    if (!selectedPresetId) {
+      console.log('🎨 CleanEffectsList: No selectedPresetId, using default styling');
+      return null;
+    }
+    
+    try {
+      const color = getStyleColor(selectedPresetId);
+      console.log('🎨 CleanEffectsList: Retrieved style color for preset:', selectedPresetId, color);
+      return color;
+    } catch (error) {
+      console.error('🎨 CleanEffectsList: Error getting style color:', error);
+      return null;
+    }
+  }, [selectedPresetId]);
+  
+  // Safe primary color extraction with fallback
+  const primaryColor = React.useMemo(() => {
+    if (styleColor?.primary && typeof styleColor.primary === 'string') {
+      return styleColor.primary;
+    }
+    console.log('🎨 CleanEffectsList: Using fallback primary color');
+    return '#45B26B';
+  }, [styleColor]);
 
   return (
     <div className="space-y-2">
@@ -73,8 +95,8 @@ export const CleanEffectsList: React.FC<CleanEffectsListProps> = ({
               isDisabled && "opacity-60"
             )}
             style={isActive && styleColor ? {
-              borderColor: styleColor.border,
-              background: `linear-gradient(90deg, transparent, ${styleColor.bg})`
+              borderColor: styleColor.border || 'rgba(255, 255, 255, 0.2)',
+              background: `linear-gradient(90deg, transparent, ${styleColor.bg || 'rgba(255, 255, 255, 0.05)'})`
             } : {}}
           >
             {/* Main effect row */}

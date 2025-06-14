@@ -77,14 +77,22 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
           const isSelected = selectedPresetId === preset.id;
           const isLoading = isApplyingPreset && isSelected;
           
-          // Safe style color retrieval with null check
-          let styleColor = null;
-          try {
-            styleColor = getStyleColor(preset.id);
-          } catch (error) {
-            console.warn(`Failed to get style color for preset ${preset.id}:`, error);
-            styleColor = null;
-          }
+          // Safe style color retrieval with comprehensive error handling
+          const styleColor = React.useMemo(() => {
+            if (!preset.id || typeof preset.id !== 'string') {
+              console.warn('🎨 EnhancedQuickComboPresets: Invalid preset ID:', preset.id);
+              return null;
+            }
+            
+            try {
+              const color = getStyleColor(preset.id);
+              console.log('🎨 EnhancedQuickComboPresets: Retrieved style color for preset:', preset.id, color);
+              return color;
+            } catch (error) {
+              console.error('🎨 EnhancedQuickComboPresets: Error getting style color for preset:', preset.id, error);
+              return null;
+            }
+          }, [preset.id]);
           
           return (
             <PresetCard

@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
+import type { StyleColor } from '@/components/viewer/components/presets/styleColors';
 
 const presetCardVariants = cva(
   "relative overflow-hidden rounded-lg transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-2",
@@ -40,12 +41,7 @@ export interface PresetCardProps extends React.ButtonHTMLAttributes<HTMLButtonEl
   badge?: string;
   tooltipContent?: React.ReactNode;
   onSelect?: () => void;
-  styleColor?: {
-    primary: string;
-    border: string;
-    bg: string;
-    gradient: string;
-  } | null;
+  styleColor?: StyleColor | null;
 }
 
 export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
@@ -75,30 +71,49 @@ export const PresetCard = React.forwardRef<HTMLButtonElement, PresetCardProps>(
       if (onClick) onClick(e);
     };
 
-    // Safe style calculation with comprehensive null checks
+    // Safe style calculation with comprehensive null checks and fallbacks
     const cardStyle = React.useMemo(() => {
-      if (!styleColor || !styleColor.primary || !styleColor.border || !styleColor.bg) {
+      // Early return for null/undefined styleColor
+      if (!styleColor) {
+        console.log('🎨 PresetCard: No styleColor provided, using default styling');
         return {};
       }
       
-      if (isSelected) {
-        return {
-          borderColor: styleColor.border,
-          backgroundColor: styleColor.bg,
-          boxShadow: `0 0 20px ${styleColor.primary}40, 0 4px 12px rgba(0,0,0,0.2)`,
-          '--ring-color': styleColor.primary
-        } as React.CSSProperties;
+      // Validate styleColor has required properties
+      if (!styleColor.primary || !styleColor.border || !styleColor.bg) {
+        console.warn('🎨 PresetCard: Invalid styleColor object:', styleColor);
+        return {};
       }
       
-      return {
-        borderColor: 'rgba(255, 255, 255, 0.2)',
-        '--hover-border': styleColor.border,
-        '--hover-bg': styleColor.bg
-      } as React.CSSProperties;
+      try {
+        if (isSelected) {
+          return {
+            borderColor: styleColor.border,
+            backgroundColor: styleColor.bg,
+            boxShadow: `0 0 20px ${styleColor.primary}40, 0 4px 12px rgba(0,0,0,0.2)`,
+            '--ring-color': styleColor.primary
+          } as React.CSSProperties;
+        }
+        
+        return {
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          '--hover-border': styleColor.border,
+          '--hover-bg': styleColor.bg
+        } as React.CSSProperties;
+      } catch (error) {
+        console.error('🎨 PresetCard: Error calculating card style:', error);
+        return {};
+      }
     }, [styleColor, isSelected]);
     
-    // Safe color extraction for indicators with fallback
-    const primaryColor = styleColor?.primary || '#45B26B';
+    // Safe color extraction for indicators with comprehensive fallback
+    const primaryColor = React.useMemo(() => {
+      if (styleColor?.primary && typeof styleColor.primary === 'string') {
+        return styleColor.primary;
+      }
+      console.log('🎨 PresetCard: Using fallback primary color');
+      return '#45B26B'; // Default fallback
+    }, [styleColor]);
     
     const CardContent = (
       <Button
