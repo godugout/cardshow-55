@@ -9,9 +9,11 @@ import {
   handleSpecialEffectCases 
 } from './materialMapping';
 
-export const useMaterialSelector = (effectValues: EffectValues): CardBackMaterial => {
+export const useMaterialSelector = (effectValues: EffectValues = {}): CardBackMaterial => {
   return useMemo(() => {
-    if (!effectValues) {
+    console.log('🎨 Material Selection: Effect values received:', effectValues);
+    
+    if (!effectValues || Object.keys(effectValues).length === 0) {
       console.log('🎨 Material Selection: No effect values, using default');
       return CARD_BACK_MATERIALS.default;
     }

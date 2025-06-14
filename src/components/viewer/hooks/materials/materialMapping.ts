@@ -19,8 +19,8 @@ export const getMaterialForEffect = (effectId: string): CardBackMaterial => {
   return CARD_BACK_MATERIALS[materialId];
 };
 
-export const calculateEffectIntensities = (effectValues: EffectValues) => {
-  if (!effectValues) {
+export const calculateEffectIntensities = (effectValues: EffectValues = {}) => {
+  if (!effectValues || Object.keys(effectValues).length === 0) {
     return [];
   }
   
@@ -40,7 +40,7 @@ export const findDominantEffect = (effectIntensities: Array<{ effectId: string; 
   );
 };
 
-export const handleSpecialEffectCases = (dominantEffect: { effectId: string; intensity: number }, effectValues: EffectValues): string | null => {
+export const handleSpecialEffectCases = (dominantEffect: { effectId: string; intensity: number }, effectValues: EffectValues = {}): string | null => {
   // Check for solar tone in gold effect
   if (dominantEffect.effectId === 'gold') {
     const goldTone = effectValues.gold?.goldTone;

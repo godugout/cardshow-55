@@ -15,12 +15,17 @@ export const useCardBackMaterial = (
   isHovering: boolean = false,
   interactiveLighting: boolean = false
 ): THREE.Material => {
-  // Load the CRD logo texture
-  const crdLogoTexture = useTexture('/crd-logo-gradient.png');
+  // Try to load the CRD logo texture with error handling
+  let crdLogoTexture = null;
+  try {
+    crdLogoTexture = useTexture('/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png');
+  } catch (error) {
+    console.warn('Could not load CRD logo texture:', error);
+  }
 
   return useMemo(() => {
     // Get the dominant effect to determine back material
-    const activeEffects = Object.entries(effectValues).filter(([_, effect]) => 
+    const activeEffects = Object.entries(effectValues || {}).filter(([_, effect]) => 
       effect.intensity && typeof effect.intensity === 'number' && effect.intensity > 10
     );
 

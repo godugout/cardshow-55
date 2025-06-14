@@ -1,3 +1,4 @@
+
 import { useCallback } from 'react';
 import type { EffectValues } from './useEnhancedCardEffects';
 import { CARD_BACK_MATERIALS, type CardBackMaterial } from './materials/materialConstants';
@@ -8,8 +9,8 @@ import { useMaterialSelector } from './materials/useMaterialSelector';
 export type { CardBackMaterial };
 export { CARD_BACK_MATERIALS };
 
-export const useDynamicCardBackMaterials = (effectValues: EffectValues) => {
-  // Use the material selector hook
+export const useDynamicCardBackMaterials = (effectValues: EffectValues = {}) => {
+  // Use the material selector hook with proper default
   const selectedMaterial = useMaterialSelector(effectValues);
   
   // Keep the getMaterialForEffect function for external use
