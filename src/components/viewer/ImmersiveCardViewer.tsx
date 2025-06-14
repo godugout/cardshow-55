@@ -9,7 +9,6 @@ import type { EffectValues } from './hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls, BackgroundType } from './types';
 import type { SpaceEnvironment, SpaceControls } from './spaces/types';
 import { useThrottledMousePosition } from './hooks/useThrottledMousePosition';
-import { Card3DTransform } from './components/Card3DTransform';
 import { EnhancedCardContainer } from './components/EnhancedCardContainer';
 
 interface ImmersiveCardViewerProps {
@@ -25,6 +24,25 @@ interface ImmersiveCardViewerProps {
   showStats?: boolean;
   ambient?: boolean;
 }
+
+// Helper function to convert MaterialSettings to EffectValues
+const convertMaterialSettingsToEffectValues = (materialSettings: MaterialSettings): EffectValues => {
+  return {
+    holographic: { intensity: 0 },
+    crystal: { intensity: 0 },
+    chrome: { intensity: 0 },
+    brushedmetal: { intensity: 0 },
+    gold: { intensity: 0, goldTone: 'classic' },
+    vintage: { intensity: 0 },
+    prizm: { intensity: 0 },
+    interference: { intensity: 0 },
+    foilspray: { intensity: 0 },
+    aurora: { intensity: 0 },
+    ice: { intensity: 0 },
+    lunar: { intensity: 0 },
+    waves: { intensity: 0 }
+  };
+};
 
 export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   card,
@@ -98,6 +116,12 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     atmosphericDensity: 1.0
   });
 
+  // Convert MaterialSettings to EffectValues for compatibility
+  const effectValues = React.useMemo(() => 
+    convertMaterialSettingsToEffectValues(materialSettings), 
+    [materialSettings]
+  );
+
   const adaptedCard = {
     id: card.id,
     title: card.title,
@@ -150,17 +174,12 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     setDragStart({ x: e.clientX, y: e.clientY });
   }, [setIsDragging, setDragStart]);
 
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, [setIsDragging]);
-
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging) return;
 
     const deltaX = e.clientX - dragStart.x;
     const deltaY = e.clientY - dragStart.y;
 
-    // Adjust rotation speed as needed
     setRotation(prev => ({
       x: prev.x + deltaY * 0.2,
       y: prev.y + deltaX * 0.2,
@@ -179,16 +198,6 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   }, [setIsHovering, setIsDragging]);
 
   const { mousePosition: throttledMousePosition, updateMousePosition } = useThrottledMousePosition(16);
-
-  const handleCanvasMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target instanceof HTMLDivElement) {
-      const rect = event.target.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = (event.clientY - rect.top) / rect.height;
-      updateMousePosition(x, y);
-      setMousePosition({ x, y });
-    }
-  }, [setMousePosition, updateMousePosition]);
 
   const effectiveMousePosition = interactiveLighting ? throttledMousePosition : mousePosition;
 
@@ -231,7 +240,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         selectedLighting={selectedLighting}
         mousePosition={mousePosition}
         isHovering={isHovering}
-        effectValues={materialSettings}
+        effectValues={effectValues}
         materialSettings={materialSettings}
         overallBrightness={overallBrightness}
         interactiveLighting={interactiveLighting}
@@ -254,7 +263,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
             card={card}
             isHovering={isHovering}
             showEffects={showEffects}
-            effectValues={materialSettings}
+            effectValues={effectValues}
             mousePosition={mousePosition}
             rotation={rotation}
             zoom={zoom}
@@ -300,17 +309,14 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
 
       {/* Bottom Controls */}
       <ViewerControls
-        isFullscreen={isFullscreen}
         showEffects={showEffects}
         showBackgroundInfo={showBackgroundInfo}
         interactiveLighting={interactiveLighting}
-        onToggleFullscreen={handleToggleFullscreen}
         onToggleEffects={handleToggleEffects}
         onToggleBackgroundInfo={handleToggleBackgroundInfo}
         onZoomIn={() => handleZoom(0.1)}
         onZoomOut={() => handleZoom(-0.1)}
         onResetCamera={handleResetCamera}
-        isHoveringControls={isHoveringControls}
         onMouseEnter={() => setIsHoveringControls(true)}
         onMouseLeave={() => setIsHoveringControls(false)}
       />
@@ -321,7 +327,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         onClose={() => setShowCustomizePanel(false)}
         selectedScene={selectedScene}
         selectedLighting={selectedLighting}
-        effectValues={materialSettings}
+        effectValues={effectValues}
         overallBrightness={overallBrightness}
         interactiveLighting={interactiveLighting}
         materialSettings={materialSettings}
