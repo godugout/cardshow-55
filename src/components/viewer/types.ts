@@ -5,20 +5,20 @@ export interface MaterialSettings {
   reflectivity?: number;
   clearcoat?: number;
   // Effect intensities
-  holographic?: number;
-  crystal?: number;
-  chrome?: number;
-  brushedmetal?: number;
-  gold?: number;
-  vintage?: number;
-  prizm?: number;
-  interference?: number;
-  foilspray?: number;
-  aurora?: number;
-  starlight?: number; // Add Starlight as a specific property
-  ice?: number;
-  lunar?: number;
-  waves?: number;
+  holographic?: number | string | boolean;
+  crystal?: number | string | boolean;
+  chrome?: number | string | boolean;
+  brushedmetal?: number | string | boolean;
+  gold?: number | string | boolean;
+  vintage?: number | string | boolean;
+  prizm?: number | string | boolean;
+  interference?: number | string | boolean;
+  foilspray?: number | string | boolean;
+  aurora?: number | string | boolean;
+  starlight?: number | string | boolean; // Add Starlight as a specific property
+  ice?: number | string | boolean;
+  lunar?: number | string | boolean;
+  waves?: number | string | boolean;
 }
 
 export interface EnvironmentScene {
@@ -90,6 +90,7 @@ export interface VisualEffect {
   id: string;
   name: string;
   description: string;
+  category: string;
   intensity: number;
   parameters: Record<string, any>;
 }
