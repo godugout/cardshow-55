@@ -13,16 +13,8 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
   mousePosition,
   isHovering
 }) => {
-  // Defensive programming: provide fallback lighting values
-  const lighting = useMemo(() => ({
-    color: scene?.lighting?.color || '#ffffff',
-    intensity: scene?.lighting?.intensity || 1.0,
-    elevation: scene?.lighting?.elevation || 30,
-    azimuth: scene?.lighting?.azimuth || 45
-  }), [scene?.lighting]);
-
   // Use the scene's configured background image directly
-  const environmentImage = scene?.backgroundImage || scene?.panoramicUrl || '';
+  const environmentImage = scene.backgroundImage || scene.panoramicUrl;
   
   // Calculate parallax movement based on mouse position
   const parallaxOffset = useMemo(() => ({
@@ -37,13 +29,6 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
     { depth: -50, opacity: 0.7, scale: 1.05 }
   ], []);
 
-  // Early return if no scene or image
-  if (!scene || !environmentImage) {
-    return (
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black" />
-    );
-  }
-
   return (
     <div className="absolute inset-0 overflow-hidden">
       {/* Main Environment Sphere */}
@@ -55,7 +40,7 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
           backgroundPosition: `${50 + parallaxOffset.x * 0.5}% ${50 + parallaxOffset.y * 0.3}%`,
           backgroundRepeat: 'no-repeat',
           transform: `scale(${isHovering ? 1.02 : 1}) perspective(1000px) rotateY(${parallaxOffset.x * 0.1}deg) rotateX(${parallaxOffset.y * 0.05}deg)`,
-          filter: `brightness(${lighting.intensity}) contrast(1.1) saturate(1.2)`,
+          filter: `brightness(${scene.lighting.intensity}) contrast(1.1) saturate(1.2)`,
           opacity: 0.8
         }}
       />
@@ -72,7 +57,7 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
             backgroundRepeat: 'no-repeat',
             transform: `translateZ(${layer.depth}px) scale(${layer.scale})`,
             opacity: layer.opacity * (isHovering ? 1.2 : 1),
-            filter: `blur(${index + 1}px) brightness(${lighting.intensity * 0.8})`,
+            filter: `blur(${index + 1}px) brightness(${scene.lighting.intensity * 0.8})`,
             mixBlendMode: 'screen'
           }}
         />
@@ -83,15 +68,15 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
         className="absolute inset-0 pointer-events-none transition-all duration-500"
         style={{
           background: `radial-gradient(ellipse at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
-            ${lighting.color}20 0%, 
-            ${lighting.color}10 40%,
+            ${scene.lighting.color}20 0%, 
+            ${scene.lighting.color}10 40%,
             transparent 80%)`,
           mixBlendMode: 'overlay'
         }}
       />
 
       {/* Scene-specific environmental effects */}
-      {scene?.id === 'cyberpunk-city' && (
+      {scene.id === 'cyberpunk-city' && (
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -105,7 +90,7 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
         />
       )}
 
-      {scene?.id === 'mountain' && (
+      {scene.id === 'mountain' && (
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -116,7 +101,7 @@ export const EnvironmentSphere: React.FC<EnvironmentSphereProps> = ({
         />
       )}
 
-      {scene?.id === 'crystal-cave' && (
+      {scene.id === 'crystal-cave' && (
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
