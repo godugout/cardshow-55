@@ -2,9 +2,10 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
-import { Group } from 'three';
+import { Group, Mesh } from 'three';
 import { EnhancedCardContainer } from '../components/EnhancedCardContainer';
 import { useCardEffects } from '../hooks/useCardEffects';
+import { CardFaceMaterials } from './materials/CardFaceMaterials';
 import type { SpaceControls } from './types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -62,6 +63,7 @@ export const Card3D: React.FC<Card3DProps> = ({
   onClick 
 }) => {
   const groupRef = useRef<Group>(null);
+  const cardMeshRef = useRef<Mesh>(null);
   
   // Simple state for 3D card interaction
   const [isHovering, setIsHovering] = React.useState(false);
@@ -106,35 +108,73 @@ export const Card3D: React.FC<Card3DProps> = ({
         groupRef.current.position.y += gravity;
       }
     }
+
+    // Add subtle edge glow pulsing
+    if (cardMeshRef.current && effectValues && Object.keys(effectValues).length > 0) {
+      const pulseIntensity = 1 + Math.sin(state.clock.elapsedTime * 2) * 0.1;
+      cardMeshRef.current.scale.setScalar(pulseIntensity * 0.02 + 0.98);
+    }
   });
 
   const handleCardClick = () => {
     onClick?.();
   };
 
-  const handleMouseEnter = () => setIsHovering(true);
-  const handleMouseLeave = () => setIsHovering(false);
+  const handlePointerEnter = () => setIsHovering(true);
+  const handlePointerLeave = () => setIsHovering(false);
   const handleMouseDown = () => {};
   const handleMouseMove = () => {};
 
+  // Card dimensions - 4 pixel thick as requested
+  const cardWidth = 4;
+  const cardHeight = 5.6;
+  const cardDepth = 0.04; // 4 pixels thick in 3D space
+
   return (
     <group ref={groupRef}>
-      {/* Render the enhanced card container with 3D positioning */}
+      {/* 3D Card with Box Geometry for True Thickness */}
       <mesh 
+        ref={cardMeshRef}
         castShadow 
         receiveShadow
-        onPointerEnter={handleMouseEnter}
-        onPointerLeave={handleMouseLeave}
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
+        onClick={handleCardClick}
       >
-        <planeGeometry args={[4, 5.6]} />
-        <meshBasicMaterial transparent opacity={0} /> {/* Invisible plane for interaction */}
+        <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
+        <CardFaceMaterials
+          card={card}
+          effectValues={effectValues}
+          isHovering={isHovering}
+          interactiveLighting={interactiveLighting}
+        />
       </mesh>
       
-      {/* HTML overlay for the enhanced card - Full size to match 2D experience */}
+      {/* Enhanced lighting for edge visibility */}
+      {isHovering && (
+        <>
+          <pointLight
+            position={[2, 0, 2]}
+            intensity={0.5}
+            color={0x4a90e2}
+            distance={10}
+            decay={2}
+          />
+          <pointLight
+            position={[-2, 0, 2]}
+            intensity={0.5}
+            color={0x4a90e2}
+            distance={10}
+            decay={2}
+          />
+        </>
+      )}
+      
+      {/* HTML overlay for the enhanced card - Positioned further out for proper layering */}
       <Html
         transform
         occlude
-        position={[0, 0, 0.01]}
+        position={[0, 0, cardDepth + 0.01]}
         distanceFactor={0.625}
         style={{
           width: '400px',
@@ -162,9 +202,9 @@ export const Card3D: React.FC<Card3DProps> = ({
             overallBrightness={overallBrightness}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            onClick={handleCardClick} // Uses continuous rotation instead of flip
+            onMouseEnter={handlePointerEnter}
+            onMouseLeave={handlePointerLeave}
+            onClick={handleCardClick}
           />
         </div>
       </Html>
