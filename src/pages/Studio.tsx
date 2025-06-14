@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
+import { SimplifiedImmersiveCardViewer } from '@/components/viewer/SimplifiedImmersiveCardViewer';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { StudioHeader } from './Studio/components/StudioHeader';
@@ -37,8 +37,8 @@ const Studio = () => {
         {/* Studio Header */}
         <StudioHeader />
 
-        {/* Immersive Card Viewer */}
-        <ImmersiveCardViewer
+        {/* Simplified Immersive Card Viewer */}
+        <SimplifiedImmersiveCardViewer
           card={selectedCard}
           cards={mockCards}
           currentCardIndex={currentCardIndex}
