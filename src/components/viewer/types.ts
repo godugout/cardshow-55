@@ -27,6 +27,27 @@ export interface EnvironmentScene {
   description: string;
   icon: string;
   gradient: string;
+  category: 'natural' | 'fantasy' | 'futuristic' | 'architectural';
+  panoramicUrl: string;
+  previewUrl: string;
+  backgroundImage: string;
+  lighting: {
+    color: string;
+    intensity: number;
+    elevation: number;
+    azimuth: number;
+  };
+  atmosphere?: {
+    fog: boolean;
+    fogColor: string;
+    fogDensity: number;
+    particles: boolean;
+  };
+  depth?: {
+    layers: number;
+    parallaxIntensity: number;
+    fieldOfView: number;
+  };
   config?: {
     skybox?: string;
     lighting?: {
@@ -45,6 +66,13 @@ export interface LightingPreset {
   id: string;
   name: string;
   description: string;
+  brightness: number;
+  contrast: number;
+  shadows: number;
+  highlights: number;
+  temperature: number;
+  position: { x: number; y: number; z: number };
+  shadowSoftness: number;
   ambient: number;
   directional: number;
   color: string;
@@ -58,4 +86,12 @@ export interface EnvironmentControls {
   atmosphericDensity: number;
 }
 
-export type BackgroundType = '2dEnvironment' | '3dSpace';
+export interface VisualEffect {
+  id: string;
+  name: string;
+  description: string;
+  intensity: number;
+  parameters: Record<string, any>;
+}
+
+export type BackgroundType = '2dEnvironment' | '3dSpace' | 'scene';

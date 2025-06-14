@@ -51,68 +51,79 @@ const convertMaterialSettingsToEffectValues = (materialSettings: MaterialSetting
     };
   }
 
-  // Map MaterialSettings properties to EffectValues
+  // Helper function to safely get numeric value
+  const getNumericValue = (value: string | number | boolean | undefined): number => {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+    if (typeof value === 'boolean') return value ? 100 : 0;
+    return 0;
+  };
+
+  // Map MaterialSettings properties to EffectValues with proper type conversion
   const effectValues: EffectValues = {
     holographic: { 
-      intensity: materialSettings.holographic || 0,
+      intensity: getNumericValue(materialSettings.holographic),
       shiftSpeed: 150,
       rainbowSpread: 280,
       prismaticDepth: 70
     },
     crystal: { 
-      intensity: materialSettings.crystal || 0,
+      intensity: getNumericValue(materialSettings.crystal),
       clarity: 80,
       refraction: 60
     },
     chrome: { 
-      intensity: materialSettings.chrome || 0,
+      intensity: getNumericValue(materialSettings.chrome),
       reflectivity: 90
     },
     brushedmetal: { 
-      intensity: materialSettings.brushedmetal || 0,
+      intensity: getNumericValue(materialSettings.brushedmetal),
       texture: 75
     },
     gold: { 
-      intensity: materialSettings.gold || 0, 
+      intensity: getNumericValue(materialSettings.gold), 
       goldTone: 'classic',
       brilliance: 85
     },
     vintage: { 
-      intensity: materialSettings.vintage || 0,
+      intensity: getNumericValue(materialSettings.vintage),
       aging: 60,
       sepia: 40
     },
     prizm: { 
-      intensity: materialSettings.prizm || 0,
+      intensity: getNumericValue(materialSettings.prizm),
       spectrum: 90,
       shift: 120
     },
     interference: { 
-      intensity: materialSettings.interference || 0,
+      intensity: getNumericValue(materialSettings.interference),
       pattern: 80
     },
     foilspray: { 
-      intensity: materialSettings.foilspray || 0,
+      intensity: getNumericValue(materialSettings.foilspray),
       density: 70,
       sparkle: 85
     },
     aurora: { 
-      intensity: materialSettings.starlight || materialSettings.aurora || 0, // Map Starlight to Aurora
+      intensity: getNumericValue(materialSettings.starlight) || getNumericValue(materialSettings.aurora), // Map Starlight to Aurora
       waveSpeed: 80,
       colorShift: 120
     },
     ice: { 
-      intensity: materialSettings.ice || 0,
+      intensity: getNumericValue(materialSettings.ice),
       frost: 60,
       crystalline: 80
     },
     lunar: { 
-      intensity: materialSettings.lunar || 0,
+      intensity: getNumericValue(materialSettings.lunar),
       dust: 50,
       glow: 70
     },
     waves: { 
-      intensity: materialSettings.waves || 0,
+      intensity: getNumericValue(materialSettings.waves),
       frequency: 100,
       amplitude: 60
     }
@@ -122,7 +133,7 @@ const convertMaterialSettingsToEffectValues = (materialSettings: MaterialSetting
   
   // Log specific effects that have intensity > 0
   const activeEffects = Object.entries(effectValues).filter(([_, effect]) => 
-    effect.intensity && effect.intensity > 0
+    effect.intensity && typeof effect.intensity === 'number' && effect.intensity > 0
   );
   console.log('🎨 Active effects (intensity > 0):', activeEffects);
 
