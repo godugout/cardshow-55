@@ -42,11 +42,12 @@ export const useViewerState = () => {
   const [selectedLighting, setSelectedLighting] = useState<LightingPreset | undefined>();
   const [overallBrightness, setOverallBrightness] = useState([100]);
   const [interactiveLighting, setInteractiveLighting] = useState(false);
-  // Fix: remove opacity property as it doesn't exist in MaterialSettings
+  // Fix: add missing reflectivity property to MaterialSettings
   const [materialSettings, setMaterialSettings] = useState<MaterialSettings>({
     roughness: 0.3,
     metalness: 0.8,
-    clearcoat: 0.5
+    clearcoat: 0.5,
+    reflectivity: 0.5
   });
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>();
   
