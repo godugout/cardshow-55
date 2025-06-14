@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import type { User } from '@/types/user';
 
 interface ProfileData {
   username?: string;
@@ -52,20 +51,21 @@ export const useProfile = (userId?: string) => {
           throw error;
         }
         
-        // Try to get user preferences
-        const { data: prefsData, error: prefsError } = await supabase
-          .from('ui_preferences')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
-          
-        if (prefsError && prefsError.code !== 'PGRST116') {
-          console.error('Error fetching preferences:', prefsError);
+        // Load preferences from localStorage as fallback
+        const storedPrefs = localStorage.getItem(`user_preferences_${userId}`);
+        let preferences = {};
+        
+        if (storedPrefs) {
+          try {
+            preferences = JSON.parse(storedPrefs);
+          } catch (err) {
+            console.error('Error parsing stored preferences:', err);
+          }
         }
         
         return {
           ...data,
-          preferences: prefsData || {}
+          preferences
         };
       } catch (err) {
         console.error('Error in useProfile hook:', err);
@@ -95,32 +95,9 @@ export const useProfile = (userId?: string) => {
           
         if (error) throw error;
         
-        // Update preferences if provided
+        // Store preferences in localStorage
         if (preferences) {
-          const uiPrefs = {
-            theme_variant: preferences.darkMode ? 'dark' : 'default',
-            reduced_motion: preferences.compactView || false
-          };
-          
-          const { data: existingPrefs } = await supabase
-            .from('ui_preferences')
-            .select('id')
-            .eq('user_id', userId)
-            .single();
-            
-          if (existingPrefs) {
-            await supabase
-              .from('ui_preferences')
-              .update(uiPrefs)
-              .eq('id', existingPrefs.id);
-          } else {
-            await supabase
-              .from('ui_preferences')
-              .insert({
-                user_id: userId,
-                ...uiPrefs
-              });
-          }
+          localStorage.setItem(`user_preferences_${userId}`, JSON.stringify(preferences));
         }
         
         return true;
