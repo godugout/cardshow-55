@@ -57,19 +57,23 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   // Use default values to prevent undefined errors
   const effectValues = useDefaultEffectValues(rawEffectValues);
   
-  // Reduce console logging for better performance
-  const debugMode = process.env.NODE_ENV === 'development' && window.location.search.includes('debug=true');
-  if (debugMode) {
+  // Only log in development mode and when debug flag is set
+  const shouldDebug = process.env.NODE_ENV === 'development' && 
+                     window.location.search.includes('debug=effects');
+  
+  if (shouldDebug) {
     console.log('🎨 Enhanced Card Container - Effect Values:', effectValues);
   }
 
   return (
     <div 
-      className={`relative z-20 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      className={`relative z-20 transition-all duration-300 ${
+        isDragging ? 'cursor-grabbing' : 'cursor-grab'
+      }`}
       style={{
         transform: `scale(${zoom})`,
-        transition: isDragging ? 'none' : 'transform 0.3s ease',
-        filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`
+        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        filter: `brightness(${interactiveLighting && isHovering ? 1.15 : 1.05}) contrast(1.03)` // Reduced values
       }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}

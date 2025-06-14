@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import { ViewerUI } from './components/ViewerUI';
@@ -119,7 +118,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     atmosphericDensity: 1.0
   });
 
-  // Performance monitoring
+  // Performance monitoring with reduced impact
   const performanceMetrics = usePerformanceMonitor();
 
   // Convert MaterialSettings to EffectValues for compatibility
@@ -208,7 +207,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     setIsDragging(false);
   }, [setIsHovering, setIsDragging]);
 
-  const { mousePosition: throttledMousePosition, updateMousePosition } = useThrottledMousePosition(16);
+  const { mousePosition: throttledMousePosition, updateMousePosition } = useThrottledMousePosition(32); // Reduced frequency
 
   const effectiveMousePosition = interactiveLighting ? throttledMousePosition : mousePosition;
 
@@ -218,14 +217,14 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   }), []);
 
   const enhancedEffectStyles: React.CSSProperties = React.useMemo(() => ({
-    filter: `brightness(${overallBrightness[0] / 100}) contrast(1.1)`
+    filter: `brightness(${overallBrightness[0] / 100}) contrast(1.05)` // Reduced contrast
   }), [overallBrightness]);
 
   const SurfaceTexture = React.useMemo(() => (
     <div 
-      className="absolute inset-0 opacity-20"
+      className="absolute inset-0 opacity-10" // Reduced opacity
       style={{
-        backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 1px, transparent 1px)',
         backgroundSize: '20px 20px'
       }}
     />
@@ -318,7 +317,7 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         showStats={showStats}
       />
 
-      {/* Studio Toggle Button - Prominent placement */}
+      {/* Studio Toggle Button - Prominent placement with proper spacing */}
       <div className="absolute top-4 right-4 z-40">
         <StudioToggleButton
           isVisible={showCustomizePanel}
@@ -326,11 +325,11 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         />
       </div>
 
-      {/* Performance Indicator - Only show if low performance */}
-      {performanceMetrics.isLowPerformance && (
+      {/* Performance Indicator - Only show if critically low performance */}
+      {performanceMetrics.isLowPerformance && performanceMetrics.fps < 20 && (
         <div className="absolute top-16 right-4 z-40">
-          <div className="bg-yellow-600/80 text-white text-xs px-3 py-2 rounded-lg backdrop-blur-md">
-            Performance: {performanceMetrics.fps} FPS
+          <div className="bg-red-600/80 text-white text-xs px-3 py-2 rounded-lg backdrop-blur-md border border-red-500/30">
+            Low Performance: {performanceMetrics.fps} FPS
           </div>
         </div>
       )}
