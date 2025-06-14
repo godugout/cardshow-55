@@ -5,6 +5,7 @@ import { Slider } from '@/components/ui/slider';
 import { Sun, Lightbulb, Grid3X3, List } from 'lucide-react';
 import type { LightingPreset } from '../types';
 import { LIGHTING_PRESETS } from '../constants';
+import { getLightingColor } from './presets/lightingColors';
 import { cn } from '@/lib/utils';
 
 interface EnhancedLightingSectionProps {
@@ -15,29 +16,6 @@ interface EnhancedLightingSectionProps {
   onBrightnessChange: (value: number[]) => void;
   onInteractiveLightingToggle: () => void;
 }
-
-const LIGHTING_COLORS = {
-  warm: {
-    primary: '#F59E0B',
-    secondary: '#EAB308',
-    gradient: 'linear-gradient(90deg, #F59E0B, #EAB308, #FCD34D)'
-  },
-  cool: {
-    primary: '#0EA5E9',
-    secondary: '#06B6D4',
-    gradient: 'linear-gradient(90deg, #0EA5E9, #06B6D4, #7DD3FC)'
-  },
-  neutral: {
-    primary: '#6B7280',
-    secondary: '#9CA3AF',
-    gradient: 'linear-gradient(90deg, #6B7280, #9CA3AF, #D1D5DB)'
-  },
-  dramatic: {
-    primary: '#8B5CF6',
-    secondary: '#A855F7',
-    gradient: 'linear-gradient(90deg, #8B5CF6, #A855F7, #C084FC)'
-  }
-};
 
 export const EnhancedLightingSection: React.FC<EnhancedLightingSectionProps> = ({
   selectedLighting,
@@ -53,7 +31,7 @@ export const EnhancedLightingSection: React.FC<EnhancedLightingSectionProps> = (
     <div className="grid grid-cols-2 gap-3">
       {LIGHTING_PRESETS.map((preset) => {
         const isSelected = selectedLighting.id === preset.id;
-        const colors = LIGHTING_COLORS[preset.id as keyof typeof LIGHTING_COLORS];
+        const colors = getLightingColor(preset.id);
         
         return (
           <Button
@@ -101,7 +79,7 @@ export const EnhancedLightingSection: React.FC<EnhancedLightingSectionProps> = (
     <div className="space-y-2">
       {LIGHTING_PRESETS.map((preset) => {
         const isSelected = selectedLighting.id === preset.id;
-        const colors = LIGHTING_COLORS[preset.id as keyof typeof LIGHTING_COLORS];
+        const colors = getLightingColor(preset.id);
         
         return (
           <div
