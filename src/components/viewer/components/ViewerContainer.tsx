@@ -1,5 +1,6 @@
 
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useViewerContainerState } from '../hooks/useViewerContainerState';
 import { ViewerEffectsManager } from './ViewerEffectsManager';
 import { ViewerLayout } from './ViewerLayout';
@@ -76,9 +77,10 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  // Render the viewer using a portal to break free from parent constraints
+  return createPortal(
     <div 
-      className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
       <div className="absolute inset-0">
@@ -118,6 +120,7 @@ export const ViewerContainer: React.FC<ViewerContainerProps> = ({
           )}
         </RenderModeManager>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
