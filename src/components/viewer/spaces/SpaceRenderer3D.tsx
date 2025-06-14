@@ -5,8 +5,8 @@ import { OrbitControls, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { Card3D } from './Card3D';
 import { SpaceErrorBoundary } from './components/SpaceErrorBoundary';
-import { EnhancedHDRIEnvironment } from './environments/EnhancedHDRIEnvironment';
-import { HDRI_ENVIRONMENTS, getHDRIEnvironmentById, getDefaultHDRIEnvironment } from './environments/HDRILibrary';
+import { Simple360Environment } from './environments/Simple360Environment';
+import { PANORAMIC_360_ENVIRONMENTS, getPanoramic360EnvironmentById, getDefaultPanoramic360Environment } from './environments/Panoramic360Library';
 import type { SpaceEnvironment, SpaceControls } from './types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -56,23 +56,38 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   onCameraReset,
   renderCard = true
 }) => {
-  console.log('🎬 SpaceRenderer3D: Rendering HDRI environment:', {
+  console.log('🎬 SpaceRenderer3D: Rendering 360° environment:', {
     id: environment.id,
     name: environment.name,
     type: environment.type,
     renderCard
   });
 
-  // Get HDRI environment based on space ID or fallback to default
-  const hdriEnvironment = getHDRIEnvironmentById(environment.id) || getDefaultHDRIEnvironment();
+  // Check if this is a 360° environment request
+  const is360Environment = environment.type === '360' || environment.category === 'panoramic';
   
-  console.log('🌍 Using HDRI environment:', hdriEnvironment.name, hdriEnvironment.hdriUrl);
+  if (is360Environment) {
+    console.log('🌍 Using CSS-based 360° environment system');
+    return (
+      <Simple360Environment
+        card={card}
+        environmentId={environment.id}
+        autoRotate={controls.autoRotate}
+        onCardClick={onCardClick}
+      />
+    );
+  }
+
+  // Fallback to basic Three.js scene for non-360 environments
+  const panoramicEnvironment = getDefaultPanoramic360Environment();
+  
+  console.log('🎨 Using fallback Three.js environment');
 
   return (
     <div className="w-full h-full">
       <Canvas
         camera={{ 
-          position: [0, 0, hdriEnvironment.camera.defaultDistance],
+          position: [0, 0, 8],
           fov: controls.fieldOfView || 45,
           near: 0.1,
           far: 1000
@@ -87,20 +102,20 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
         }}
         style={{ background: 'transparent' }}
         onCreated={({ gl, scene }) => {
-          console.log('🎨 Canvas created, configuring for HDRI...');
+          console.log('🎨 Canvas created for fallback Three.js scene');
           gl.domElement.style.background = 'transparent';
-          
-          console.log('✅ HDRI Canvas configuration complete');
         }}
         onError={(error) => console.error('SpaceRenderer3D Canvas error:', error)}
       >
         <Suspense fallback={<LoadingFallback />}>
-          <SpaceErrorBoundary spaceName={hdriEnvironment.name} fallback={<LoadingFallback />}>
-            <EnhancedHDRIEnvironment
-              environment={hdriEnvironment}
-              onLoadComplete={() => console.log('✅ HDRI Environment loaded:', hdriEnvironment.name)}
-              onLoadError={(error) => console.error('❌ HDRI Environment error:', error)}
-            />
+          <SpaceErrorBoundary spaceName="Fallback Environment" fallback={<LoadingFallback />}>
+            {/* Basic lighting setup */}
+            <ambientLight intensity={0.6} />
+            <directionalLight position={[5, 10, 5]} intensity={0.8} castShadow />
+            <pointLight position={[-5, 5, 5]} intensity={0.4} />
+            
+            {/* Simple gradient background */}
+            <color attach="background" args={['#1a1a2e']} />
           </SpaceErrorBoundary>
           
           {renderCard && (
@@ -132,7 +147,7 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
           enablePan={false}
           enableZoom={true}
           autoRotate={controls.autoRotate}
-          autoRotateSpeed={hdriEnvironment.camera.autoRotateSpeed}
+          autoRotateSpeed={0.5}
           minDistance={3}
           maxDistance={20}
           minPolarAngle={Math.PI / 6}
