@@ -111,7 +111,7 @@ export const Card3D: React.FC<Card3DProps> = ({
 
     // Add subtle edge glow pulsing
     if (cardMeshRef.current && effectValues && Object.keys(effectValues).length > 0) {
-      const pulseIntensity = 1 + Math.sin(state.clock.elapsedTime * 2) * 0.1;
+      const pulseIntensity = 1 + Math.sin(state.clock.elapsedTime * 2) * 0.05;
       cardMeshRef.current.scale.setScalar(pulseIntensity * 0.02 + 0.98);
     }
   });
@@ -125,14 +125,14 @@ export const Card3D: React.FC<Card3DProps> = ({
   const handleMouseDown = () => {};
   const handleMouseMove = () => {};
 
-  // Card dimensions - 4 pixel thick as requested
+  // Card dimensions - Much thicker for visible edges (0.2 units = about 20 "pixels")
   const cardWidth = 4;
   const cardHeight = 5.6;
-  const cardDepth = 0.04; // 4 pixels thick in 3D space
+  const cardDepth = 0.2; // Increased from 0.04 to 0.2 for visible thickness
 
   return (
     <group ref={groupRef}>
-      {/* 3D Card with Box Geometry for True Thickness */}
+      {/* 3D Card with Box Geometry and Multi-Material Setup */}
       <mesh 
         ref={cardMeshRef}
         castShadow 
@@ -154,15 +154,29 @@ export const Card3D: React.FC<Card3DProps> = ({
       {isHovering && (
         <>
           <pointLight
-            position={[2, 0, 2]}
-            intensity={0.5}
+            position={[3, 0, 2]}
+            intensity={1.0}
+            color={0x4a90e2}
+            distance={12}
+            decay={2}
+          />
+          <pointLight
+            position={[-3, 0, 2]}
+            intensity={1.0}
+            color={0x4a90e2}
+            distance={12}
+            decay={2}
+          />
+          <pointLight
+            position={[0, 3, 1]}
+            intensity={0.8}
             color={0x4a90e2}
             distance={10}
             decay={2}
           />
           <pointLight
-            position={[-2, 0, 2]}
-            intensity={0.5}
+            position={[0, -3, 1]}
+            intensity={0.8}
             color={0x4a90e2}
             distance={10}
             decay={2}
@@ -174,7 +188,7 @@ export const Card3D: React.FC<Card3DProps> = ({
       <Html
         transform
         occlude
-        position={[0, 0, cardDepth + 0.01]}
+        position={[0, 0, cardDepth + 0.02]}
         distanceFactor={0.625}
         style={{
           width: '400px',

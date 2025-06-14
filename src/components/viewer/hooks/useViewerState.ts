@@ -1,12 +1,11 @@
 
 import { useState, useCallback } from 'react';
+import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, BackgroundType } from '../types';
 import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
-import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
-import { SPACE_ENVIRONMENTS } from '../components/studio/sections/spaces/constants';
 
 export const useViewerState = () => {
-  // UI State
+  // Basic viewer state
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -15,40 +14,34 @@ export const useViewerState = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [autoRotate, setAutoRotate] = useState(false);
   const [showEffects, setShowEffects] = useState(true);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
   const [showCustomizePanel, setShowCustomizePanel] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  // Background state
-  const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
-
-  // Advanced settings
+  // Environment and effects state
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>('3dSpace'); // Changed from 'scene' to '3dSpace'
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
   const [selectedLighting, setSelectedLighting] = useState<LightingPreset>(LIGHTING_PRESETS[0]);
   const [overallBrightness, setOverallBrightness] = useState([100]);
-  const [interactiveLighting, setInteractiveLighting] = useState(true);
+  const [interactiveLighting, setInteractiveLighting] = useState(false);
   const [materialSettings, setMaterialSettings] = useState<MaterialSettings>({
-    roughness: 0.40,
-    metalness: 0.45,
-    clearcoat: 0.60,
-    reflectivity: 0.40
+    roughness: 0.3,
+    metalness: 0.1,
+    clearcoat: 0.0,
+    clearcoatRoughness: 0.0
   });
+  const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>();
 
-  // Preset state
-  const [selectedPresetId, setSelectedPresetId] = useState<string>();
-
-  // 3D Space state - Initialize with first available space to prevent null errors
-  const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(
-    SPACE_ENVIRONMENTS.length > 0 ? SPACE_ENVIRONMENTS[0] : null
-  );
+  // Space-specific state
+  const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(null);
   const [spaceControls, setSpaceControls] = useState<SpaceControls>({
+    autoRotate: true,
     orbitSpeed: 0.5,
     floatIntensity: 1.0,
-    cameraDistance: 8,
-    autoRotate: false,
-    gravityEffect: 0.0
+    gravityEffect: 0.0,
+    fieldOfView: 45
   });
 
   // Action handlers
@@ -57,48 +50,26 @@ export const useViewerState = () => {
     setZoom(1);
     setIsFlipped(false);
     setAutoRotate(false);
-    setSelectedPresetId(undefined);
   }, []);
 
   const handleZoom = useCallback((delta: number) => {
     setZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
   }, []);
 
-  const toggleFullscreen = useCallback(() => {
-    if (!document.fullscreenElement) {
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-  }, []);
-
   const handleResetCamera = useCallback(() => {
-    setSpaceControls(prev => ({
-      ...prev,
-      cameraDistance: 8,
-      orbitSpeed: 0.5
-    }));
+    setRotation({ x: 0, y: 0 });
+    setZoom(1);
   }, []);
 
   const onCardClick = useCallback(() => {
-    setIsFlipped(prev => !prev);
-  }, []);
-
-  // Safe space setter that ensures we always have a valid space
-  const setSelectedSpaceSafe = useCallback((space: SpaceEnvironment | null) => {
-    console.log('useViewerState: Setting selected space to:', space?.name || 'null');
-    if (space) {
-      setSelectedSpace(space);
-    } else if (SPACE_ENVIRONMENTS.length > 0) {
-      console.log('useViewerState: Falling back to default space:', SPACE_ENVIRONMENTS[0].name);
-      setSelectedSpace(SPACE_ENVIRONMENTS[0]);
-    }
+    // Card click handler - can be customized
+    console.log('Card clicked in 3D space');
   }, []);
 
   return {
-    // UI State
+    // Basic state
     isFullscreen,
+    setIsFullscreen,
     rotation,
     setRotation,
     isDragging,
@@ -124,11 +95,9 @@ export const useViewerState = () => {
     showExportDialog,
     setShowExportDialog,
 
-    // Background state
+    // Environment state
     backgroundType,
     setBackgroundType,
-
-    // Advanced settings
     selectedScene,
     setSelectedScene,
     selectedLighting,
@@ -139,21 +108,18 @@ export const useViewerState = () => {
     setInteractiveLighting,
     materialSettings,
     setMaterialSettings,
-
-    // Preset state
     selectedPresetId,
     setSelectedPresetId,
 
-    // 3D Space state
+    // Space state
     selectedSpace,
-    setSelectedSpace: setSelectedSpaceSafe,
+    setSelectedSpace,
     spaceControls,
     setSpaceControls,
 
-    // Action handlers
+    // Actions
     handleReset,
     handleZoom,
-    toggleFullscreen,
     handleResetCamera,
     onCardClick
   };

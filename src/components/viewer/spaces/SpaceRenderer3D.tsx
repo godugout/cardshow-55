@@ -31,8 +31,8 @@ interface SpaceRenderer3DProps {
 
 const LoadingFallback: React.FC = () => (
   <>
-    <ambientLight intensity={0.4} />
-    <directionalLight position={[5, 10, 5]} intensity={0.6} />
+    <ambientLight intensity={0.6} />
+    <directionalLight position={[5, 10, 5]} intensity={0.8} />
   </>
 );
 
@@ -87,7 +87,10 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
   return (
     <div className="w-full h-full">
       <Canvas
-        camera={{ position: [0, 0, 8], fov: controls.fieldOfView || 45 }}
+        camera={{ 
+          position: [2, 1, 6], // Adjusted camera position to better show card edges
+          fov: controls.fieldOfView || 45 
+        }}
         shadows
         dpr={[1, 2]}
         gl={{ 
@@ -131,10 +134,10 @@ export const SpaceRenderer3D: React.FC<SpaceRenderer3DProps> = ({
           enableZoom={true}
           autoRotate={controls.autoRotate}
           autoRotateSpeed={controls.orbitSpeed || 0.5}
-          minDistance={3}
-          maxDistance={15}
-          minPolarAngle={Math.PI / 6}
-          maxPolarAngle={Math.PI - Math.PI / 6}
+          minDistance={4} // Adjusted for better edge viewing
+          maxDistance={12} // Adjusted for better edge viewing
+          minPolarAngle={Math.PI / 8} // Allow more extreme angles
+          maxPolarAngle={Math.PI - Math.PI / 8}
           enableDamping={true}
           dampingFactor={0.05}
           target={[0, 0, 0]}
