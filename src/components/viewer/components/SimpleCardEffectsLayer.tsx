@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { SimpleEffectValues } from '../hooks/useSimpleCardEffects';
 
@@ -75,7 +76,7 @@ export const SimpleCardEffectsLayer: React.FC<SimpleCardEffectsLayerProps> = ({
       {/* Aurora/Starlight Effect */}
       {effectValues.aurora > 0 && (
         <div
-          className="absolute inset-0 z-17"
+          className="absolute inset-0 z-17 aurora-effect"
           style={{
             background: `
               radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, ${(effectValues.aurora / 100) * 0.8}), transparent),
@@ -85,7 +86,6 @@ export const SimpleCardEffectsLayer: React.FC<SimpleCardEffectsLayerProps> = ({
               radial-gradient(2px 2px at 80% 80%, rgba(255, 255, 255, ${(effectValues.aurora / 100) * 0.8}), transparent)
             `,
             backgroundSize: '200px 200px, 150px 150px, 100px 100px, 180px 180px, 120px 120px',
-            animation: `twinkle 3s ease-in-out infinite`,
             mixBlendMode: 'screen'
           }}
         />
@@ -171,8 +171,12 @@ export const SimpleCardEffectsLayer: React.FC<SimpleCardEffectsLayerProps> = ({
         />
       )}
 
-      {/* Twinkle Animation Keyframes */}
-      <style jsx>{`
+      {/* CSS Animation */}
+      <style>{`
+        .aurora-effect {
+          animation: twinkle 3s ease-in-out infinite;
+        }
+        
         @keyframes twinkle {
           0%, 100% { opacity: 0.7; }
           50% { opacity: 1; }

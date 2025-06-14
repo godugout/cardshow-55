@@ -11,6 +11,7 @@ import { SimpleCustomizePanel } from './components/SimpleCustomizePanel';
 import { SimpleCardEffectsLayer } from './components/SimpleCardEffectsLayer';
 import { Card3DTransform } from './components/Card3DTransform';
 import type { LightingPreset } from './types';
+import type { SpaceControls } from './spaces/types';
 import { LIGHTING_PRESETS } from './constants/lightingPresets';
 
 interface SimplifiedImmersiveCardViewerProps {
@@ -94,6 +95,15 @@ export const SimplifiedImmersiveCardViewer: React.FC<SimplifiedImmersiveCardView
     image_url: card?.image_url
   }), [card?.id, card?.title, card?.image_url]);
 
+  // Default space controls
+  const defaultSpaceControls: SpaceControls = useMemo(() => ({
+    orbitSpeed: 1,
+    floatIntensity: 0.5,
+    cameraDistance: 5,
+    autoRotate: autoRotate,
+    gravityEffect: 0.1
+  }), [autoRotate]);
+
   if (!isOpen || !card) return null;
 
   return (
@@ -102,7 +112,7 @@ export const SimplifiedImmersiveCardViewer: React.FC<SimplifiedImmersiveCardView
       <BackgroundRenderer
         backgroundType="scene"
         selectedSpace={null}
-        spaceControls={{}}
+        spaceControls={defaultSpaceControls}
         adaptedCard={adaptedCard}
         onCardClick={() => {}}
         onCameraReset={handleReset}
