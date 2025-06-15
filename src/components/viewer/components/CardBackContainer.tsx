@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { CardEffectsLayer } from './CardEffectsLayer';
@@ -33,14 +32,18 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
 
+  // Add console log for clarity
+  if (SurfaceTexture) {
+    console.warn('[CardBackContainer] SurfaceTexture was passed to the back, which is unintended. Back ignores images.');
+  }
+
   return (
     <div 
       className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
         opacity: 1,
         zIndex: 15,
-        backfaceVisibility: 'hidden', // hides when facing away in 3D
-        // Removed explicit transform: 'rotateY(180deg)', flip is handled by parent container
+        backfaceVisibility: 'hidden',
         background: selectedMaterial.background,
         border: `2px solid ${selectedMaterial.borderColor}`,
         ...(selectedMaterial.blur && {
@@ -69,10 +72,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         interactiveLighting={interactiveLighting}
       />
 
-      {/* Surface Texture on Back */}
-      <div className="relative z-20" style={{ backfaceVisibility: 'hidden' }}>
-        {SurfaceTexture}
-      </div>
+      {/* CRD Back Face does NOT show the card image! Only material overlays, logo, etc. */}
 
       {/* Material Overlays */}
       <CardBackMaterialOverlay selectedMaterial={selectedMaterial} />

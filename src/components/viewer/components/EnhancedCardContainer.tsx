@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -87,7 +86,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   // Use cached styles if available, otherwise fall back to provided styles
   const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
   const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
-  const effectiveSurfaceTexture = cachedEffects?.SurfaceTexture || SurfaceTexture;
+  const effectiveSurfaceTextureFront = cachedEffects?.SurfaceTexture || SurfaceTexture;
+  const effectiveSurfaceTextureBack = undefined;
 
   // Calculate the final rotation including the flip
   const finalRotation = {
@@ -138,7 +138,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             mousePosition={mousePosition}
             frameStyles={effectiveFrameStyles}
             enhancedEffectStyles={effectiveEnhancedEffectStyles}
-            SurfaceTexture={effectiveSurfaceTexture}
+            SurfaceTexture={effectiveSurfaceTextureFront}
             interactiveLighting={interactiveLighting}
           />
         </div>
@@ -158,7 +158,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             mousePosition={mousePosition}
             frameStyles={effectiveFrameStyles}
             enhancedEffectStyles={effectiveEnhancedEffectStyles}
-            SurfaceTexture={effectiveSurfaceTexture}
+            SurfaceTexture={effectiveSurfaceTextureBack}
             interactiveLighting={interactiveLighting}
           />
         </div>
