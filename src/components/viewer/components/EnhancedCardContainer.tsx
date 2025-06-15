@@ -3,9 +3,8 @@ import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
-import { Card3DTransform } from './Card3DTransform';
 import { UnifiedCardRenderer } from './UnifiedCardRenderer';
-import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
+import { useEnhancedCachedEffects } from '../hooks/useEnhancedCachedEffects';
 
 interface EnhancedCardContainerProps {
   card: CardData;
@@ -67,8 +66,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   },
   solidCardTransition
 }) => {
-  // Use cached effects for better performance only when all required props are available
-  const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
+  // Use enhanced cached effects when all required props are available
+  const enhancedCachedEffects = selectedScene && selectedLighting && materialSettings ? useEnhancedCachedEffects({
     card,
     effectValues,
     mousePosition,
@@ -83,53 +82,46 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     isHovering
   }) : null;
 
-  // Use cached styles if available, otherwise fall back to provided styles
-  const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
-  const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
-  const effectiveSurfaceTexture = cachedEffects?.SurfaceTexture || SurfaceTexture;
-
-  // Calculate the final rotation including the flip
-  const finalRotation = {
-    x: rotation.x,
-    y: rotation.y + (isFlipped ? 180 : 0),
-  };
+  // Use enhanced cached styles if available, otherwise fall back to provided styles
+  const effectiveFrameStyles = enhancedCachedEffects?.frameStyles || frameStyles;
+  const effectiveEnhancedEffectStyles = enhancedCachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
+  
+  // Create SurfaceTexture component from cached styles if available
+  const effectiveSurfaceTexture = enhancedCachedEffects ? (
+    <div 
+      className="absolute inset-0 opacity-10 bg-gradient-to-br from-white/5 to-transparent"
+      style={enhancedCachedEffects.surfaceTextureStyles}
+    />
+  ) : SurfaceTexture;
 
   return (
-    <div 
-      className={`relative z-20 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-      style={{
-        transform: `scale(${zoom})`,
-        transition: isDragging ? 'none' : 'transform 0.3s ease',
-        filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`
-      }}
+    <UnifiedCardRenderer
+      card={card}
+      isFlipped={isFlipped}
+      isHovering={isHovering}
+      showEffects={showEffects}
+      effectValues={effectValues}
+      mousePosition={mousePosition}
+      rotation={rotation}
+      zoom={zoom}
+      isDragging={isDragging}
+      frameStyles={effectiveFrameStyles}
+      enhancedEffectStyles={effectiveEnhancedEffectStyles}
+      SurfaceTexture={effectiveSurfaceTexture}
+      interactiveLighting={interactiveLighting}
+      selectedScene={selectedScene}
+      selectedLighting={selectedLighting}
+      materialSettings={materialSettings}
+      overallBrightness={overallBrightness}
+      showBackgroundInfo={showBackgroundInfo}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={onClick}
-    >
-      <Card3DTransform
-        rotation={finalRotation}
-        mousePosition={mousePosition}
-        isDragging={isDragging}
-        interactiveLighting={interactiveLighting}
-        isHovering={isHovering}
-      >
-        {/* Unified Card Renderer - Both sides pre-loaded */}
-        <UnifiedCardRenderer
-          card={card}
-          rotation={finalRotation}
-          isHovering={isHovering}
-          showEffects={showEffects}
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-          frameStyles={effectiveFrameStyles}
-          enhancedEffectStyles={effectiveEnhancedEffectStyles}
-          SurfaceTexture={effectiveSurfaceTexture}
-          interactiveLighting={interactiveLighting}
-        />
-      </Card3DTransform>
-    </div>
+      environmentControls={environmentControls}
+      solidCardTransition={true} // Enable solid transitions for smoother flipping
+    />
   );
 };
 

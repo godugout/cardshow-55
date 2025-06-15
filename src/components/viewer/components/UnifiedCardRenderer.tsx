@@ -1,170 +1,186 @@
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useMemo, useRef, useEffect, useState } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
+import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
+import { CardFrontContainer } from './CardFrontContainer';
+import { CardBackContainer } from './CardBackContainer';
+import { Card3DTransform } from './Card3DTransform';
+import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface UnifiedCardRendererProps {
   card: CardData;
-  rotation: { x: number; y: number };
+  isFlipped: boolean;
   isHovering: boolean;
   showEffects: boolean;
   effectValues: EffectValues;
   mousePosition: { x: number; y: number };
+  rotation: { x: number; y: number };
+  zoom: number;
+  isDragging: boolean;
   frameStyles: React.CSSProperties;
   enhancedEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
+  selectedScene?: EnvironmentScene;
+  selectedLighting?: LightingPreset;
+  materialSettings?: MaterialSettings;
+  overallBrightness?: number[];
+  showBackgroundInfo?: boolean;
+  onMouseDown: (e: React.MouseEvent) => void;
+  onMouseMove: (e: React.MouseEvent) => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  onClick: (event: React.MouseEvent) => void;
+  environmentControls?: EnvironmentControls;
+  solidCardTransition?: boolean;
 }
-
-// Pre-load and cache card image
-const useImagePreloader = (imageUrl: string) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [cachedImage, setCachedImage] = useState<HTMLImageElement | null>(null);
-
-  useEffect(() => {
-    if (!imageUrl) return;
-
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      setCachedImage(img);
-      setIsLoaded(true);
-    };
-    img.src = imageUrl;
-
-    return () => {
-      img.onload = null;
-    };
-  }, [imageUrl]);
-
-  return { isLoaded, cachedImage };
-};
 
 export const UnifiedCardRenderer: React.FC<UnifiedCardRendererProps> = ({
   card,
-  rotation,
+  isFlipped,
   isHovering,
   showEffects,
   effectValues,
   mousePosition,
+  rotation,
+  zoom,
+  isDragging,
   frameStyles,
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting = false,
+  selectedScene,
+  selectedLighting,
+  materialSettings,
+  overallBrightness = [100],
+  showBackgroundInfo = true,
+  onMouseDown,
+  onMouseMove,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
+  environmentControls = {
+    depthOfField: 1.0,
+    parallaxIntensity: 1.0,
+    fieldOfView: 75,
+    atmosphericDensity: 1.0
+  },
+  solidCardTransition = true // Enable solid transitions for smoother flipping
 }) => {
-  // Pre-load the card image
-  const { isLoaded: imageLoaded, cachedImage } = useImagePreloader(card.image_url || '');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isPreloaded, setIsPreloaded] = useState(false);
 
-  // Calculate which side should be visible based on Y rotation
-  const normalizedY = ((rotation.y % 360) + 360) % 360;
-  const isBackVisible = normalizedY > 90 && normalizedY < 270;
+  // Pre-load card image to eliminate loading delay
+  useEffect(() => {
+    if (card.image_url) {
+      const img = new Image();
+      img.onload = () => setIsPreloaded(true);
+      img.src = card.image_url;
+    } else {
+      setIsPreloaded(true);
+    }
+  }, [card.image_url]);
 
-  // Memoize the card content to avoid re-renders
-  const cardContent = useMemo(() => ({
-    front: (
-      <div className="absolute inset-0 w-full h-full" style={{ backfaceVisibility: 'hidden' }}>
-        {/* Card Image - Pre-loaded */}
-        {imageLoaded && cachedImage && (
-          <img 
-            src={cachedImage.src}
-            alt={card.title}
-            className="w-full h-full object-cover rounded-xl"
-            style={{
-              userSelect: 'none',
-              WebkitUserSelect: 'none',
-              pointerEvents: 'none',
-            }}
-            draggable={false}
-          />
-        )}
-        
-        {/* Card Content Overlay */}
-        <div className="absolute inset-0 p-6 flex flex-col z-30 pointer-events-none">
-          <div className="mt-auto">
-            <div className="bg-black bg-opacity-40 backdrop-filter backdrop-blur-sm rounded-lg p-3 text-white">
-              <h3 className="text-xl font-bold mb-1">{card.title}</h3>
-              {card.description && (
-                <p className="text-sm mb-1">{card.description}</p>
-              )}
-              {card.rarity && (
-                <p className="text-xs uppercase tracking-wide opacity-75">{card.rarity}</p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    ),
-    back: (
+  // Use cached effects for better performance
+  const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
+    card,
+    effectValues,
+    mousePosition,
+    showEffects,
+    overallBrightness,
+    interactiveLighting,
+    selectedScene,
+    selectedLighting,
+    materialSettings,
+    zoom,
+    rotation,
+    isHovering
+  }) : null;
+
+  // Use cached styles if available, otherwise fall back to provided styles
+  const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
+  const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
+  const effectiveSurfaceTexture = cachedEffects?.SurfaceTexture || SurfaceTexture;
+
+  // Calculate the final rotation including the flip - NO LONGER ADDING 180 degrees here
+  // The flip is now handled by the visibility managers
+  const finalRotation = {
+    x: rotation.x,
+    y: rotation.y, // Remove the automatic flip offset
+  };
+
+  // Optimize container styles with hardware acceleration
+  const containerStyles = useMemo(() => ({
+    transform: `scale(${zoom})`,
+    transition: isDragging ? 'none' : 'transform 0.3s ease',
+    filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`,
+    willChange: isDragging ? 'transform' : 'auto',
+    backfaceVisibility: 'hidden' as const,
+    transformStyle: 'preserve-3d' as const
+  }), [zoom, isDragging, interactiveLighting, isHovering]);
+
+  // Show loading state if image isn't preloaded yet
+  if (!isPreloaded) {
+    return (
       <div 
-        className="absolute inset-0 w-full h-full" 
-        style={{ 
-          backfaceVisibility: 'hidden',
-          transform: 'rotateY(180deg)',
-          background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)',
-          border: '2px solid rgba(0, 255, 200, 0.3)',
-          boxShadow: '0 0 30px rgba(0, 255, 200, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.1)'
-        }}
+        className="relative z-20 flex items-center justify-center w-[300px] h-[420px] bg-gray-900 rounded-xl border border-gray-600"
+        style={containerStyles}
       >
-        {/* CRD Logo */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <img 
-              src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
-              alt="CRD Logo" 
-              className="w-24 h-auto mx-auto mb-4 opacity-80"
-              style={{
-                filter: 'drop-shadow(0 0 10px rgba(0, 255, 200, 0.3))',
-              }}
-            />
-            <div className="text-white/60 text-sm font-light tracking-widest">
-              COLLECTIBLE RARE DIGITALS
-            </div>
-          </div>
-        </div>
+        <div className="text-white/60 text-sm">Loading card...</div>
       </div>
-    )
-  }), [card, imageLoaded, cachedImage]);
+    );
+  }
 
   return (
     <div 
-      className="relative w-full h-full rounded-xl overflow-hidden"
-      style={{
-        transformStyle: 'preserve-3d',
-        transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-        transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
-        ...frameStyles,
-      }}
+      ref={containerRef}
+      className={`relative z-20 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      style={containerStyles}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClick={onClick}
     >
-      {/* Effects Layer - Applied to both sides */}
-      {showEffects && (
-        <div className="absolute inset-0 z-10 pointer-events-none rounded-xl overflow-hidden">
-          {SurfaceTexture}
-          
-          {/* Interactive Lighting */}
-          {isHovering && interactiveLighting && (
-            <div 
-              className="absolute inset-0"
-              style={{
-                background: `radial-gradient(
-                  ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-                  rgba(255, 255, 255, 0.08) 0%,
-                  rgba(255, 255, 255, 0.04) 40%,
-                  transparent 70%
-                )`,
-                mixBlendMode: 'soft-light',
-                opacity: 0.6,
-                transition: 'opacity 0.1s ease',
-              }}
-            />
-          )}
-        </div>
-      )}
+      <Card3DTransform
+        rotation={finalRotation}
+        mousePosition={mousePosition}
+        isDragging={isDragging}
+        interactiveLighting={interactiveLighting}
+        isHovering={isHovering}
+      >
+        {/* Front of Card */}
+        <CardFrontContainer
+          card={card}
+          rotation={finalRotation}
+          isHovering={isHovering}
+          showEffects={showEffects}
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          frameStyles={effectiveFrameStyles}
+          enhancedEffectStyles={effectiveEnhancedEffectStyles}
+          SurfaceTexture={effectiveSurfaceTexture}
+          interactiveLighting={interactiveLighting}
+          solidCardTransition={solidCardTransition}
+        />
 
-      {/* Front Side */}
-      {cardContent.front}
-      
-      {/* Back Side */}
-      {cardContent.back}
+        {/* Back of Card */}
+        <CardBackContainer
+          rotation={finalRotation}
+          isHovering={isHovering}
+          showEffects={showEffects}
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          frameStyles={effectiveFrameStyles}
+          enhancedEffectStyles={effectiveEnhancedEffectStyles}
+          SurfaceTexture={effectiveSurfaceTexture}
+          interactiveLighting={interactiveLighting}
+          solidCardTransition={solidCardTransition}
+        />
+      </Card3DTransform>
     </div>
   );
 };
+
+UnifiedCardRenderer.displayName = 'UnifiedCardRenderer';
