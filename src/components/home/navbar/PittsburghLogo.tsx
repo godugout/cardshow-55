@@ -8,9 +8,8 @@ export const PittsburghLogo = ({ className }: { className?: string }) => {
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 349.76 79.02" 
       className={className}
-      style={{ color: '#ffb855' }}
     >
-      <defs><style>{`.cls-1{fill:#ffb855;}`}</style></defs>
+      <defs><style>{`.cls-1{fill:#ffb855 !important;}`}</style></defs>
       <path className="cls-1" d="M24.01,22.43v-13.08l-.79-.79h-9.13l-.79.79v59.97l.78.79h9.14l.79-.79v-13.08h8.68v17.92l-4.62,4.62H9.24l-4.62-4.62v-30.1l-4.62-4.62,4.62-4.62V4.73L9.24.11h18.82l4.62,4.62v17.92l-8.68-.23Z"/>
       <path className="cls-1" d="M75.86,39.45l-4.62,4.62v34.83h-8.68v-35.06h-10.71v35.06h-8.68v-34.83l-4.62-4.62,4.62-4.62V4.73L47.79.11h18.82l4.62,4.62v30.1l4.62,4.62ZM62.56,9.58l-.79-.79h-9.24l-.79.79v25.59h10.71l.11-25.59Z"/>
       <path className="cls-1" d="M118.92,39.68l-4.62,4.62v3.61l-4.56,4.62h-2.78l7.34,26.49h-8.57l-7.47-26.49h-3.24v26.49h-8.79v-34.83l-4.62-4.62,4.62-4.62V.11h23.46l4.61,4.62v30.1l4.62,4.85ZM105.62,9.58l-.78-.79h-9.93v35.17h9.92l.79-.79V9.58Z"/>

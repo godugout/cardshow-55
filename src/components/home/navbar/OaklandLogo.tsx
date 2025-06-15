@@ -8,9 +8,8 @@ export const OaklandLogo = ({ className }: { className?: string }) => {
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 423.34 62.5" 
       className={className}
-      style={{ color: '#4cbb18' }}
     >
-      <defs><style>{`.cls-1{fill:#4cbb18;}`}</style></defs>
+      <defs><style>{`.cls-1{fill:#4cbb18 !important;}`}</style></defs>
       <polygon className="cls-1" points="75.56 35.12 86.98 35.12 81.31 19.65 75.56 35.12"/>
       <path className="cls-1" d="M128.27,14.19h-6.38v11.78h6.38c4.04,0,6.31-2.77,6.31-5.82s-2.27-5.96-6.31-5.96Z"/>
       <path className="cls-1" d="M173.75,14.19h-7.16v29.09h7.16c8.44,0,12.7-7.59,12.7-14.97s-4.26-14.12-12.7-14.12ZM177.01,39.52c-.99.35-2.06.57-3.26.57h-3.97v-17.67c5.68.78,8.44,5.46,8.44,10.93,0,2.27-.43,4.4-1.21,6.17Z"/>

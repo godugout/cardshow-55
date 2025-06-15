@@ -30,7 +30,7 @@ export const LogoSelector = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 focus:ring-crd-primary focus:ring-offset-[#141416] rounded-md">
-          <div className="logo-container [&_svg]:!text-current [&_svg_path]:!fill-current">
+          <div className="logo-container">
             <SelectedLogoComponent className="h-12 w-32 object-contain" />
           </div>
           <ChevronDown className="h-4 w-4 text-gray-400" />
@@ -43,21 +43,13 @@ export const LogoSelector = () => {
             onSelect={() => setSelectedLogo(logo)}
             className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center gap-4 py-2 px-3"
           >
-            <div className="logo-container grayscale group-hover:grayscale-0 transition-all duration-300 [&_svg]:!text-current [&_svg_path]:!fill-current">
+            <div className="logo-container grayscale group-hover:grayscale-0 transition-all duration-300">
               <logo.component className="h-12 w-32 object-contain" />
             </div>
             <span className="font-semibold">{logo.name}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
-      <style>{`
-        .logo-container svg {
-          color: inherit !important;
-        }
-        .logo-container svg path {
-          fill: currentColor !important;
-        }
-      `}</style>
     </DropdownMenu>
   );
 };
