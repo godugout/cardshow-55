@@ -18,6 +18,23 @@ interface CardFrontContainerProps {
   solidCardTransition?: boolean;
 }
 
+const getAxisFrontOpacity = (normalizedRotation: number): number => {
+  const fadeRange = 30;
+  const isFrontVisible = normalizedRotation <= 90 || normalizedRotation >= 270;
+  if (!isFrontVisible) return 0;
+
+  let opacity = 1;
+  // Fading out from 60° to 90°
+  if (normalizedRotation > 90 - fadeRange && normalizedRotation <= 90) {
+    opacity = (90 - normalizedRotation) / fadeRange;
+  }
+  // Fading in from 270° to 300°
+  else if (normalizedRotation >= 270 && normalizedRotation < 270 + fadeRange) {
+    opacity = (normalizedRotation - 270) / fadeRange;
+  }
+  return opacity;
+};
+
 export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   card,
   rotation,
@@ -31,45 +48,38 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   interactiveLighting = false,
   solidCardTransition = false,
 }) => {
-  // Improved visibility calculation with clearer angle ranges
+  // Improved visibility calculation for both X and Y axes
   const getVisibility = () => {
-    // Normalize rotation to 0-360 range
-    const normalizedRotation = ((rotation.y % 360) + 360) % 360;
-    
-    // Front is visible from 270° to 90° (crossing 0°/360°)
-    const isFrontVisible = normalizedRotation >= 270 || normalizedRotation <= 90;
+    // Normalize rotations to 0-360 range
+    const normalizedY = ((rotation.y % 360) + 360) % 360;
+    const normalizedX = ((rotation.x % 360) + 360) % 360;
+
+    const isStrictlyFrontVisible = (normalizedY <= 90 || normalizedY >= 270) && (normalizedX <= 90 || normalizedX >= 270);
 
     if (solidCardTransition) {
       return {
-        opacity: isFrontVisible ? 1 : 0,
-        zIndex: isFrontVisible ? 25 : 5,
-        display: isFrontVisible ? 'block' as const : 'none' as const
+        opacity: isStrictlyFrontVisible ? 1 : 0,
+        zIndex: isStrictlyFrontVisible ? 25 : 5,
+        display: isStrictlyFrontVisible ? 'block' as const : 'none' as const
       };
     }
     
-    // Enhanced debug logging
-    console.log('🔄 Card Front - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isFrontVisible);
+    const opacityY = getAxisFrontOpacity(normalizedY);
+    const opacityX = getAxisFrontOpacity(normalizedX);
     
-    if (!isFrontVisible) {
+    // Final opacity is the product of opacities from each axis.
+    // This ensures the front is only visible when both axes are front-facing.
+    const opacity = opacityY * opacityX;
+
+    console.log('🔄 Card Front - Rotation X:', normalizedX.toFixed(1), 'Y:', normalizedY.toFixed(1), 'Opacity:', opacity.toFixed(2));
+    
+    const display = opacity > 0.01 ? 'block' as const : 'none' as const;
+    if (display === 'none') {
       return { opacity: 0, zIndex: 5, display: 'none' as const };
     }
     
-    // Calculate smooth opacity transitions with longer fade ranges
-    let opacity = 1;
-    const fadeRange = 30; // Increased from 15 to 30 degrees for smoother transitions
-    
-    if (normalizedRotation >= 270 && normalizedRotation <= 270 + fadeRange) {
-      // Fade in from 270° to 300°
-      opacity = (normalizedRotation - 270) / fadeRange;
-      console.log('🔄 Card Front - Fade in (270°+):', opacity.toFixed(2));
-    } else if (normalizedRotation >= 90 - fadeRange && normalizedRotation <= 90) {
-      // Fade out from 60° to 90°
-      opacity = (90 - normalizedRotation) / fadeRange;
-      console.log('🔄 Card Front - Fade out (90°-):', opacity.toFixed(2));
-    }
-    
     return { 
-      opacity: Math.max(0.1, opacity),
+      opacity: Math.max(0, opacity),
       zIndex: opacity > 0.3 ? 25 : 15, // Higher z-index when more visible
       display: 'block' as const
     };

@@ -13,18 +13,38 @@ interface CardBackVisibilityManagerProps {
   solidCardTransition?: boolean;
 }
 
+const getAxisBackOpacity = (normalizedRotation: number): number => {
+  const fadeRange = 30;
+  const isBackVisible = normalizedRotation >= 90 && normalizedRotation <= 270;
+  if (!isBackVisible) return 0;
+
+  let opacity = 1;
+  // Fade in from 90° to 120°
+  if (normalizedRotation >= 90 && normalizedRotation <= 90 + fadeRange) {
+    opacity = (normalizedRotation - 90) / fadeRange;
+  } 
+  // Fade out from 240° to 270°
+  else if (normalizedRotation >= 270 - fadeRange && normalizedRotation <= 270) {
+    opacity = (270 - normalizedRotation) / fadeRange;
+  }
+  return opacity;
+};
+
+
 export const CardBackVisibilityManager: React.FC<CardBackVisibilityManagerProps> = ({
   rotation,
   children,
   solidCardTransition = false,
 }) => {
-  // Expanded visibility calculation with better angle ranges
+  // Visibility calculation for both X and Y axes
   const getVisibility = (): CardBackVisibilityData => {
-    // Normalize rotation to 0-360 range
-    const normalizedRotation = ((rotation.y % 360) + 360) % 360;
+    // Normalize rotations to 0-360 range
+    const normalizedY = ((rotation.y % 360) + 360) % 360;
+    const normalizedX = ((rotation.x % 360) + 360) % 360;
     
-    // Back is visible from 90° to 270° (expanded range for better coverage)
-    const isBackVisible = normalizedRotation >= 90 && normalizedRotation <= 270;
+    const isBackVisibleOnY = normalizedY >= 90 && normalizedY <= 270;
+    const isBackVisibleOnX = normalizedX >= 90 && normalizedX <= 270;
+    const isBackVisible = isBackVisibleOnY || isBackVisibleOnX;
 
     if (solidCardTransition) {
       return {
@@ -34,29 +54,21 @@ export const CardBackVisibilityManager: React.FC<CardBackVisibilityManagerProps>
       };
     }
     
-    // Enhanced debug logging
-    console.log('🔄 Card Back - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isBackVisible);
-    
     if (!isBackVisible) {
       return { opacity: 0, zIndex: 5, display: 'none' };
     }
     
-    // Calculate smooth opacity transitions with longer fade ranges
-    let opacity = 1;
-    const fadeRange = 30; // Increased from 15 to 30 degrees for smoother transitions
+    const opacityY = getAxisBackOpacity(normalizedY);
+    const opacityX = getAxisBackOpacity(normalizedX);
     
-    if (normalizedRotation >= 90 && normalizedRotation <= 90 + fadeRange) {
-      // Fade in from 90° to 120°
-      opacity = (normalizedRotation - 90) / fadeRange;
-      console.log('🔄 Card Back - Fade in:', opacity.toFixed(2));
-    } else if (normalizedRotation >= 270 - fadeRange && normalizedRotation <= 270) {
-      // Fade out from 240° to 270°
-      opacity = (270 - normalizedRotation) / fadeRange;
-      console.log('🔄 Card Back - Fade out:', opacity.toFixed(2));
-    }
+    // Final opacity is the maximum of the two axes.
+    // This ensures the back is shown if either axis is flipped.
+    const opacity = Math.max(opacityY, opacityX);
+    
+    console.log('🔄 Card Back - Rotation X:', normalizedX.toFixed(1), 'Y:', normalizedY.toFixed(1), 'Opacity:', opacity.toFixed(2));
     
     return { 
-      opacity: Math.max(0.1, opacity),
+      opacity: Math.max(0, opacity),
       zIndex: opacity > 0.3 ? 25 : 15, // Higher z-index when more visible
       display: 'block'
     };
