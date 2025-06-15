@@ -41,7 +41,7 @@ export const LogoSelector = () => {
             onSelect={() => setSelectedLogo(logo)}
             className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center gap-4 py-2 px-3"
           >
-            <logo.component className="h-12 w-32 object-contain opacity-75 group-hover:opacity-100 transition-opacity" />
+            <logo.component className="h-12 w-32 object-contain grayscale group-hover:grayscale-0 transition-all duration-300" />
             <span className="font-semibold">{logo.name}</span>
           </DropdownMenuItem>
         ))}
