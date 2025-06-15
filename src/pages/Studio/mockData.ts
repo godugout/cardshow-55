@@ -1,48 +1,7 @@
+
 import type { CardData } from '@/hooks/useCardEditor';
 
 export const mockCards: CardData[] = [
-  {
-    id: 'default-card',
-    title: 'Default Card',
-    description: 'A plain card with no effects. Start creating!',
-    rarity: 'common',
-    image_url: '/lovable-uploads/25cbcac9-64c0-4969-9baa-7a3fdf9eb00a.png', // plain placeholder
-    template_id: 'default',
-    tags: [],
-    design_metadata: {
-      effects: {
-        // All effects set to 0 for a clean look (matches Editor's built-in effects)
-        holographic: 0,
-        gold: 0,
-        chrome: 0,
-        refractor: 0,
-        foil: 0,
-        prizm: 0,
-        rainbow: 0,
-        black: 0,
-        brushedmetal: 0,
-        vintage: 0,
-        interference: 0,
-        foilspray: 0,
-        crystal: 0,
-        ice: 0,
-        waves: 0,
-        aurora: 0,
-        lunar: 0,
-      },
-    },
-    visibility: 'public',
-    creator_attribution: {
-      collaboration_type: 'solo'
-    },
-    publishing_options: {
-      marketplace_listing: false,
-      crd_catalog_inclusion: true,
-      print_available: false,
-      pricing: { currency: 'USD' },
-      distribution: { limited_edition: false }
-    }
-  },
   {
     id: 'card-1',
     title: 'Legendary Dragon',

@@ -1,41 +1,62 @@
 
 import { useState, useEffect } from 'react';
-import { useResolveStudioCard } from './useResolveStudioCard';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
 import { mockCards } from '../mockData';
 
-// Core studio state management
 export const useStudioState = () => {
-  const resolveCard = useResolveStudioCard();
+  const { cardId } = useParams<{ cardId?: string }>();
+  const navigate = useNavigate();
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  // On mount and when params change, resolve the card
+  // Load card data based on URL params
   useEffect(() => {
-    setIsLoading(true);
-    const [card, idx] = resolveCard();
-    setSelectedCard(card);
-    setCurrentCardIndex(idx);
-    setIsLoading(false);
-    // Log to debug card selection logic
-    console.log('[Studio] Loaded card:', card?.id, idx);
-  }, [resolveCard]);
+    const loadCard = async () => {
+      setIsLoading(true);
+      
+      if (cardId) {
+        // Find the specific card
+        const card = mockCards.find(c => c.id === cardId);
+        if (card) {
+          setSelectedCard(card);
+          const index = mockCards.findIndex(c => c.id === cardId);
+          setCurrentCardIndex(index);
+        } else {
+          toast.error('Card not found');
+          navigate('/studio');
+          return;
+        }
+      } else {
+        // Default to first card if no ID specified
+        setSelectedCard(mockCards[0]);
+        setCurrentCardIndex(0);
+      }
+      
+      setIsLoading(false);
+    };
 
-  // Handle navigation (next/prev) by index.
+    loadCard();
+  }, [cardId, navigate]);
+
+  // Handle card navigation
   const handleCardChange = (index: number) => {
     const newCard = mockCards[index];
     if (newCard) {
       setSelectedCard(newCard);
       setCurrentCardIndex(index);
-      window.history.replaceState(null, '', `/studio/${newCard.id}`);
+      
+      // Update URL without preset if we're changing cards
+      navigate(`/studio/${newCard.id}`, { replace: true });
     }
   };
 
   // Handle sharing - generates shareable URL
   const handleShare = (card: CardData) => {
     const shareUrl = `${window.location.origin}/studio/${card.id}`;
+    
     if (navigator.clipboard) {
       navigator.clipboard.writeText(shareUrl)
         .then(() => toast.success('Studio link copied to clipboard!'))
@@ -45,16 +66,16 @@ export const useStudioState = () => {
     }
   };
 
-  // Fake download (could expand later)
+  // Handle download/export
   const handleDownload = () => {
     if (selectedCard) {
       toast.success(`Exporting ${selectedCard.title}...`);
     }
   };
 
-  // On studio close, return to gallery
+  // Handle closing studio
   const handleClose = () => {
-    window.location.href = '/gallery';
+    navigate('/gallery');
   };
 
   return {

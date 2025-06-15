@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, BackgroundType } from '../types';
@@ -20,7 +21,7 @@ export const useViewerState = () => {
   const [showExportDialog, setShowExportDialog] = useState(false);
 
   // Environment and effects state
-  const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>('3dSpace');
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
   const [selectedLighting, setSelectedLighting] = useState<LightingPreset>(LIGHTING_PRESETS[0]);
   const [overallBrightness, setOverallBrightness] = useState([100]);
