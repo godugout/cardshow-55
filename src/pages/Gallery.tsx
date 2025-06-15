@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { useAllCollections } from '@/hooks/useCollections';
@@ -26,7 +25,6 @@ const Gallery = () => {
   const { convertCardsToCardData } = useCardConversion();
   const {
     selectedCardIndex,
-    showImmersiveViewer,
     handleCardClick,
     handleCardChange,
     handleCloseViewer,
@@ -102,23 +100,6 @@ const Gallery = () => {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* Enhanced Immersive Card Viewer with Navigation */}
-      {showImmersiveViewer && currentCard && convertedCards.length > 0 && (
-        <ImmersiveCardViewer
-          card={currentCard}
-          cards={convertedCards}
-          currentCardIndex={selectedCardIndex}
-          onCardChange={handleCardChange}
-          isOpen={showImmersiveViewer}
-          onClose={handleCloseViewer}
-          onShare={() => handleShareCard(convertedCards)}
-          onDownload={() => handleDownloadCard(convertedCards)}
-          allowRotation={true}
-          showStats={true}
-          ambient={true}
-        />
-      )}
     </div>
   );
 };
