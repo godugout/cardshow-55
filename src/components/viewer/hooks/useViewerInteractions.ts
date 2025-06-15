@@ -1,4 +1,3 @@
-
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSafeZones } from './useSafeZones';
 
@@ -54,12 +53,15 @@ export const useViewerInteractions = ({
     hasNavigation: hasMultipleCards
   });
 
-  // Minimal hover effect - only update mouse position for lighting effects
+  // Enhanced mouse handling with hover effect only on card
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!containerRef.current) return;
+    // Do not run hover effect if mouse is down for a potential drag OR if momentum is active
+    if (!containerRef.current || initialDragPosition.current || isMomentumActive) return;
     
     const rect = containerRef.current.getBoundingClientRect();
     const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
+    const targetElement = e.target as HTMLElement;
+    const cardElement = targetElement.closest('[class*="cursor-grab"]');
     
     if (!isDragging && !inSafeZone) {
       const x = (e.clientX - rect.left) / rect.width;
@@ -69,10 +71,23 @@ export const useViewerInteractions = ({
       const isInControlsArea = e.clientX - rect.left < 300 && e.clientY - rect.top > rect.height - 100;
       setIsHoveringControls(isInControlsArea);
       
-      // Removed hover rotation effect - only track mouse position for lighting
-      // Card rotation is now only controlled by dragging or auto-rotate
+      if (allowRotation && !autoRotate) {
+        if (cardElement) {
+          const cardRect = cardElement.getBoundingClientRect();
+          const cardX = (e.clientX - cardRect.left) / cardRect.width;
+          const cardY = (e.clientY - cardRect.top) / cardRect.height;
+          
+          setRotation({
+            x: restingRotationRef.current.x + (cardY - 0.5) * 15, // Subtle hover effect
+            y: restingRotationRef.current.y + (cardX - 0.5) * -30,
+          });
+        } else {
+          // When not hovering card, return to resting rotation
+          setRotation(restingRotationRef.current);
+        }
+      }
     }
-  }, [isDragging, isInSafeZone, setMousePosition, setIsHoveringControls, isMomentumActive]);
+  }, [isDragging, allowRotation, autoRotate, isInSafeZone, setMousePosition, setIsHoveringControls, setRotation, isMomentumActive]);
 
   // Enhanced wheel handling for safe zones
   const handleWheel = useCallback((e: WheelEvent) => {
@@ -99,8 +114,8 @@ export const useViewerInteractions = ({
     
     if (allowRotation && !inSafeZone) {
       initialDragPosition.current = { x: e.clientX, y: e.clientY };
-      // Enhanced sensitivity for more responsive dragging
-      setDragStart({ x: e.clientX - rotation.y * 2, y: e.clientY - rotation.x * 2 });
+      // Adjusted drag start calculation for increased sensitivity
+      setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
       lastDragPositionRef.current = { x: e.clientX, y: e.clientY };
       setAutoRotate(false);
     }
@@ -109,30 +124,31 @@ export const useViewerInteractions = ({
   const handleDrag = useCallback((e: React.MouseEvent) => {
     if (allowRotation && initialDragPosition.current) {
       if (isDragging) {
-        // Enhanced drag sensitivity for better control
-        const newRotationY = (e.clientX - dragStart.x) * 0.8;
-        const newRotationX = (e.clientY - dragStart.y) * 0.8;
+        // Already dragging, just update rotation
+        const newRotationY = e.clientX - dragStart.x;
+        const newRotationX = e.clientY - dragStart.y;
         
         const newRotation = {
-          x: newRotationX,
-          y: newRotationY
+          x: newRotationX, // Allow full 360° X rotation
+          y: newRotationY // Allow full 360° Y rotation
         };
         setRotation(newRotation);
-        restingRotationRef.current = newRotation;
+        restingRotationRef.current = newRotation; // Update resting rotation during drag
 
         // Calculate velocity for momentum
         velocityRef.current = {
-          x: (e.clientX - lastDragPositionRef.current.x) * 0.8,
-          y: (e.clientY - lastDragPositionRef.current.y) * 0.8
+          x: e.clientX - lastDragPositionRef.current.x,
+          y: e.clientY - lastDragPositionRef.current.y
         };
         lastDragPositionRef.current = { x: e.clientX, y: e.clientY };
 
       } else {
-        // Check threshold to start dragging
+        // Not dragging yet, check threshold
         const dx = e.clientX - initialDragPosition.current.x;
         const dy = e.clientY - initialDragPosition.current.y;
         if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
           setIsDragging(true);
+          // Set initial last drag position when drag starts
           lastDragPositionRef.current = { x: e.clientX, y: e.clientY };
         }
       }
@@ -143,7 +159,7 @@ export const useViewerInteractions = ({
     if (isDragging) {
       setIsDragging(false);
       
-      const hasMomentum = Math.abs(velocityRef.current.x) > 0.5 || Math.abs(velocityRef.current.y) > 0.5;
+      const hasMomentum = Math.abs(velocityRef.current.x) > 0.1 || Math.abs(velocityRef.current.y) > 0.1;
 
       if (!autoRotate && hasMomentum) {
         setIsMomentumActive(true);
@@ -158,12 +174,12 @@ export const useViewerInteractions = ({
               x: prev.x + velocityRef.current.y,
               y: prev.y + velocityRef.current.x,
             };
-            restingRotationRef.current = newRotation;
+            restingRotationRef.current = newRotation; // Update resting rotation during momentum
             return newRotation;
           });
 
-          velocityRef.current.x *= 0.92; // Slightly less damping for better momentum
-          velocityRef.current.y *= 0.92;
+          velocityRef.current.x *= 0.95; // Damping factor
+          velocityRef.current.y *= 0.95;
 
           animationFrameRef.current = requestAnimationFrame(animateMomentum);
         };
