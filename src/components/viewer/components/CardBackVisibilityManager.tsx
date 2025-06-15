@@ -10,11 +10,13 @@ interface CardBackVisibilityData {
 interface CardBackVisibilityManagerProps {
   rotation: { x: number; y: number };
   children: (visibilityData: CardBackVisibilityData) => React.ReactNode;
+  solidCardTransition?: boolean;
 }
 
 export const CardBackVisibilityManager: React.FC<CardBackVisibilityManagerProps> = ({
   rotation,
-  children
+  children,
+  solidCardTransition = false,
 }) => {
   // Expanded visibility calculation with better angle ranges
   const getVisibility = (): CardBackVisibilityData => {
@@ -23,6 +25,14 @@ export const CardBackVisibilityManager: React.FC<CardBackVisibilityManagerProps>
     
     // Back is visible from 90° to 270° (expanded range for better coverage)
     const isBackVisible = normalizedRotation >= 90 && normalizedRotation <= 270;
+
+    if (solidCardTransition) {
+      return {
+        opacity: isBackVisible ? 1 : 0,
+        zIndex: isBackVisible ? 25 : 5,
+        display: isBackVisible ? 'block' : 'none'
+      };
+    }
     
     // Enhanced debug logging
     console.log('🔄 Card Back - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isBackVisible);

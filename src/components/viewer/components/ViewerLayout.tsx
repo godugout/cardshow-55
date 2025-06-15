@@ -56,6 +56,7 @@ interface ViewerLayoutProps {
   handleResetCamera: () => void;
   onCardClick: (event: React.MouseEvent) => void;
   hasMultipleCards: boolean;
+  solidCardTransition?: boolean;
 }
 
 export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
@@ -101,7 +102,8 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
   handleResetWithEffects,
   handleResetCamera,
   onCardClick,
-  hasMultipleCards
+  hasMultipleCards,
+  solidCardTransition
 }) => {
   const panelWidth = 320;
   const shouldShowPanel = showCustomizePanel;
@@ -225,6 +227,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
           onClick={onCardClick}
+          solidCardTransition={solidCardTransition}
         />
       </div>
 

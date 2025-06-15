@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -14,6 +15,7 @@ interface CardFrontContainerProps {
   enhancedEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
+  solidCardTransition?: boolean;
 }
 
 export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
@@ -27,6 +29,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting = false,
+  solidCardTransition = false,
 }) => {
   // Improved visibility calculation with clearer angle ranges
   const getVisibility = () => {
@@ -35,6 +38,14 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
     
     // Front is visible from 270° to 90° (crossing 0°/360°)
     const isFrontVisible = normalizedRotation >= 270 || normalizedRotation <= 90;
+
+    if (solidCardTransition) {
+      return {
+        opacity: isFrontVisible ? 1 : 0,
+        zIndex: isFrontVisible ? 25 : 5,
+        display: isFrontVisible ? 'block' as const : 'none' as const
+      };
+    }
     
     // Enhanced debug logging
     console.log('🔄 Card Front - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isFrontVisible);

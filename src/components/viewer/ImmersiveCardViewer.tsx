@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps, MaterialSettings } from './types';
 import { 
@@ -36,6 +35,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 }) => {
   // Use the custom state hook
   const viewerState = useViewerState();
+  const [solidCardTransition, setSolidCardTransition] = useState(false);
   const {
     isFullscreen,
     rotation,
@@ -251,6 +251,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           handleResetCamera={handleResetCamera}
           onCardClick={onCardClick}
           hasMultipleCards={hasMultipleCards}
+          solidCardTransition={solidCardTransition}
         />
       </ViewerActionsManager>
 
@@ -276,6 +277,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onApplyCombo={handleApplyCombo}
         isApplyingPreset={isApplyingPreset}
         onResetCamera={handleResetCamera}
+        solidCardTransition={solidCardTransition}
+        onSolidCardTransitionChange={setSolidCardTransition}
       />
 
       {/* Export Options Dialog */}

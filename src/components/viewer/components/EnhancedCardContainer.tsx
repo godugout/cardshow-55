@@ -32,6 +32,7 @@ interface EnhancedCardContainerProps {
   onMouseLeave: () => void;
   onClick: (event: React.MouseEvent) => void;
   environmentControls?: EnvironmentControls;
+  solidCardTransition?: boolean;
 }
 
 export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
@@ -63,7 +64,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
     parallaxIntensity: 1.0,
     fieldOfView: 75,
     atmosphericDensity: 1.0
-  }
+  },
+  solidCardTransition
 }) => {
   // Use cached effects for better performance only when all required props are available
   const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
@@ -125,6 +127,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
+          solidCardTransition={solidCardTransition}
         />
 
         {/* Back of Card */}
@@ -138,6 +141,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
+          solidCardTransition={solidCardTransition}
         />
       </Card3DTransform>
     </div>

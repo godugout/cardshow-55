@@ -1,8 +1,11 @@
+
 import React from 'react';
 import { Sparkles, X } from 'lucide-react';
 import { ScrollableStudioContent } from './studio/ScrollableStudioContent';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface StudioPanelProps {
   isVisible: boolean;
@@ -26,11 +29,15 @@ interface StudioPanelProps {
   environmentControls?: EnvironmentControls;
   onEnvironmentControlsChange?: (controls: EnvironmentControls) => void;
   onResetCamera?: () => void;
+  solidCardTransition: boolean;
+  onSolidCardTransitionChange: (value: boolean) => void;
 }
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({
   isVisible,
   onClose,
+  solidCardTransition,
+  onSolidCardTransitionChange,
   ...studioProps
 }) => {
   if (!isVisible) return null;
@@ -56,6 +63,24 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
           >
             <X className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* Transition Settings Section */}
+        <div className="p-4 border-b border-white/10">
+          <h3 className="text-sm font-semibold text-white mb-3">Transition Style</h3>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="solid-transition" className="text-white cursor-pointer">
+              Solid Card Flip
+            </Label>
+            <Switch
+              id="solid-transition"
+              checked={solidCardTransition}
+              onCheckedChange={onSolidCardTransitionChange}
+            />
+          </div>
+          <p className="text-xs text-gray-400 mt-2">
+            Disables the fade effect when rotating the card horizontally.
+          </p>
         </div>
 
         {/* Studio Content with Scroll Support */}

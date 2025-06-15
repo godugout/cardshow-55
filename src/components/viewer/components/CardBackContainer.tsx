@@ -18,6 +18,7 @@ interface CardBackContainerProps {
   enhancedEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
+  solidCardTransition?: boolean;
 }
 
 export const CardBackContainer: React.FC<CardBackContainerProps> = ({
@@ -29,7 +30,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   frameStyles,
   enhancedEffectStyles,
   SurfaceTexture,
-  interactiveLighting = false
+  interactiveLighting = false,
+  solidCardTransition = false,
 }) => {
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
@@ -37,7 +39,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   console.log('🎨 Card Back - Material:', selectedMaterial.name);
 
   return (
-    <CardBackVisibilityManager rotation={rotation}>
+    <CardBackVisibilityManager rotation={rotation} solidCardTransition={solidCardTransition}>
       {({ opacity, zIndex }) => (
         <div 
           className="absolute inset-0 rounded-xl overflow-hidden"
