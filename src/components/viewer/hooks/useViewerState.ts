@@ -19,20 +19,9 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  // --- NEW: Default minimal custom-back effect values for card initialization with the correct object shape
-  const [effectValues, setEffectValues] = useState({
-    holographic: { intensity: 0.15 },
-    refractor: { intensity: 0.15 },
-    foil: { intensity: 0.15 },
-    prizm: { intensity: 0.15 },
-    rainbow: { intensity: 0.15 },
-    chrome: { intensity: 0.15 },
-    gold: { intensity: 0.15 },
-    black: { intensity: 0.15 },
-    // Add any other effect needed for your selector defaults, always as { intensity: number }
-  });
-
-  // --- END NEW
+  // --- REMOVED: Redundant effectValues state.
+  // This state is now managed exclusively by the `useEnhancedCardEffects` hook to prevent conflicts
+  // and resolve the card back rendering issue.
 
   // Environment and effects state - Simplified to only handle 2D scenes
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
@@ -48,7 +37,6 @@ export const useViewerState = () => {
 
   // --- NEW: Preset state initialized to "custom-init"
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>("custom-init");
-  // --- END NEW
 
   // Action handlers
   const handleReset = useCallback(() => {
@@ -103,9 +91,7 @@ export const useViewerState = () => {
     showExportDialog,
     setShowExportDialog,
 
-    // NEW: expose effectValues/setEffectValues for use as initial for child hooks (if needed)
-    effectValues,
-    setEffectValues,
+    // --- REMOVED: effectValues and setEffectValues are no longer exposed by this hook.
 
     // Environment state
     selectedScene,
