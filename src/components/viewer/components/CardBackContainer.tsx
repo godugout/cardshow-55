@@ -32,7 +32,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
 
-  // Add console log for clarity
+  // SurfaceTexture is never rendered on the back. Add a debug warning ONLY if present.
   if (SurfaceTexture) {
     console.warn('[CardBackContainer] SurfaceTexture was passed to the back, which is unintended. Back ignores images.');
   }
@@ -61,7 +61,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       data-visibility={'visible'}
       data-back-rotation={rotation.y.toFixed(1)}
     >
-      {/* Back Effects Layer */}
+      {/* Effects, overlays, and logo only! */}
       <CardEffectsLayer
         showEffects={showEffects}
         isHovering={isHovering}
@@ -72,12 +72,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         interactiveLighting={interactiveLighting}
       />
 
-      {/* CRD Back Face does NOT show the card image! Only material overlays, logo, etc. */}
-
-      {/* Material Overlays */}
       <CardBackMaterialOverlay selectedMaterial={selectedMaterial} />
 
-      {/* Enhanced CRD Logo */}
       <CardBackLogo
         selectedMaterial={selectedMaterial}
         isHovering={isHovering}
@@ -85,7 +81,6 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         interactiveLighting={interactiveLighting}
       />
 
-      {/* Interactive Lighting */}
       <CardBackInteractiveLighting
         selectedMaterial={selectedMaterial}
         mousePosition={mousePosition}
