@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -5,11 +6,13 @@ import type { CardData } from '@/hooks/useCardEditor';
 export const useGalleryActions = () => {
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const [showImmersiveViewer, setShowImmersiveViewer] = useState(false);
+  const [isStudioInitiallyOpen, setIsStudioInitiallyOpen] = useState(false);
 
   const handleCardClick = (card: any, featuredCards: any[]) => {
     const cardIndex = featuredCards.findIndex(c => c.id === card.id);
     setSelectedCardIndex(cardIndex >= 0 ? cardIndex : 0);
     setShowImmersiveViewer(true);
+    setIsStudioInitiallyOpen(false); // Ensure studio is closed when opening from grid
   };
 
   const handleCardChange = (newIndex: number) => {
@@ -42,6 +45,7 @@ export const useGalleryActions = () => {
   return {
     selectedCardIndex,
     showImmersiveViewer,
+    isStudioInitiallyOpen,
     handleCardClick,
     handleCardChange,
     handleCloseViewer,
