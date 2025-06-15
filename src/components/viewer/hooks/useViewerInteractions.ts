@@ -1,4 +1,3 @@
-
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSafeZones } from './useSafeZones';
 
@@ -55,8 +54,8 @@ export const useViewerInteractions = ({
 
   // Enhanced mouse handling with increased rotation sensitivity for 360° rotation
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    // Do not run hover effect if mouse is down for a potential drag
-    if (!containerRef.current || initialDragPosition.current) return;
+    // Do not run hover effect if mouse is down for a potential drag OR if momentum is active
+    if (!containerRef.current || initialDragPosition.current || isMomentumActive) return;
     
     const rect = containerRef.current.getBoundingClientRect();
     const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
@@ -77,7 +76,7 @@ export const useViewerInteractions = ({
         });
       }
     }
-  }, [isDragging, allowRotation, autoRotate, isInSafeZone, setMousePosition, setIsHoveringControls, setRotation]);
+  }, [isDragging, allowRotation, autoRotate, isInSafeZone, setMousePosition, setIsHoveringControls, setRotation, isMomentumActive]);
 
   // Enhanced wheel handling for safe zones
   const handleWheel = useCallback((e: WheelEvent) => {
