@@ -54,7 +54,7 @@ interface ViewerLayoutProps {
   handleZoom: (delta: number) => void;
   handleResetWithEffects: () => void;
   handleResetCamera: () => void;
-  onCardClick: () => void;
+  onCardClick: (event: React.MouseEvent) => void;
   hasMultipleCards: boolean;
 }
 
