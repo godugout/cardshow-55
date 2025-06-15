@@ -115,7 +115,12 @@ function useCardBackCanvasTexture(
             const color = parts[1];
             // SAFER percent parse: ensure parsed is a finite number
             let parsed = parseFloat(parts[2]);
-            percent = Number.isFinite(parsed) ? parsed / 100 : 0;
+            // Ensure parsed is a finite number; otherwise, percent = 0.
+            if (typeof parsed === "number" && isFinite(parsed)) {
+              percent = parsed / 100;
+            } else {
+              percent = 0;
+            }
             gradient!.addColorStop(percent, color);
           } else if (stop.startsWith('#') || stop.startsWith('rgb')) {
             // Support for stops without explicit percent (fallback)
