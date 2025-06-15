@@ -3,6 +3,7 @@ import React from "react";
 import { Logo } from "./navbar/Logo";
 import { NavLinks } from "./navbar/NavLinks";
 import { NavActions } from "./navbar/NavActions";
+import { CardshowLogo } from "./navbar/CardshowLogo";
 
 export const Navbar: React.FC = () => {
   return (
@@ -11,11 +12,7 @@ export const Navbar: React.FC = () => {
         <div className="self-stretch flex min-w-60 items-center gap-8 flex-wrap my-auto max-md:max-w-full">
           <Logo />
           <div className="bg-[#353945] self-stretch flex w-0.5 shrink-0 h-10 my-auto rounded-sm" />
-          <img
-            src="/lovable-uploads/203d3a77-a451-4217-9d28-04016167fa88.png"
-            alt="Cardshow Logo"
-            className="h-10 object-contain"
-          />
+          <CardshowLogo className="h-10 object-contain" />
           <NavLinks />
         </div>
         <NavActions />
