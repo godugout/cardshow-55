@@ -1,10 +1,10 @@
+
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
-import { CardFrontContainer } from './CardFrontContainer';
-import { CardBackContainer } from './CardBackContainer';
 import { Card3DTransform } from './Card3DTransform';
+import { UnifiedCardRenderer } from './UnifiedCardRenderer';
 import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface EnhancedCardContainerProps {
@@ -115,8 +115,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         interactiveLighting={interactiveLighting}
         isHovering={isHovering}
       >
-        {/* Front of Card */}
-        <CardFrontContainer
+        {/* Unified Card Renderer - Both sides pre-loaded */}
+        <UnifiedCardRenderer
           card={card}
           rotation={finalRotation}
           isHovering={isHovering}
@@ -127,21 +127,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
-          solidCardTransition={solidCardTransition}
-        />
-
-        {/* Back of Card */}
-        <CardBackContainer
-          rotation={finalRotation}
-          isHovering={isHovering}
-          showEffects={showEffects}
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-          frameStyles={effectiveFrameStyles}
-          enhancedEffectStyles={effectiveEnhancedEffectStyles}
-          SurfaceTexture={effectiveSurfaceTexture}
-          interactiveLighting={interactiveLighting}
-          solidCardTransition={solidCardTransition}
         />
       </Card3DTransform>
     </div>
