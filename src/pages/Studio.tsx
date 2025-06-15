@@ -12,7 +12,7 @@ import { EnhancedCardCanvas } from '@/components/viewer/components/EnhancedCardC
 import { SpaceRenderer3D } from '@/components/viewer/spaces/SpaceRenderer3D';
 import { StudioFooter } from '@/components/viewer/components/studio/StudioFooter';
 import type { CardData } from '@/hooks/useCardEditor';
-import { StudioPanel } from '@/components/viewer/components/StudioPanel';
+import { ProgressiveCustomizePanel } from '@/components/viewer/components/ProgressiveCustomizePanel';
 
 const Studio = () => {
   const {
@@ -153,36 +153,37 @@ const Studio = () => {
           />
         </div>
 
-        <StudioPanel
-          isVisible={showCustomizePanel}
-          onClose={() => setShowCustomizePanel(false)}
-          selectedScene={viewerState.selectedScene}
-          selectedLighting={viewerState.selectedLighting}
-          effectValues={effectValues}
-          overallBrightness={viewerState.overallBrightness}
-          interactiveLighting={viewerState.interactiveLighting}
-          materialSettings={viewerState.materialSettings}
-          onSceneChange={viewerState.setSelectedScene}
-          onLightingChange={viewerState.setSelectedLighting}
-          onEffectChange={handleManualEffectChange}
-          onBrightnessChange={viewerState.setOverallBrightness}
-          onInteractiveLightingToggle={() => viewerState.setInteractiveLighting(!viewerState.interactiveLighting)}
-          onMaterialSettingsChange={viewerState.setMaterialSettings}
-          selectedPresetId={viewerState.selectedPresetId}
-          onPresetSelect={viewerState.setSelectedPresetId}
-          onApplyCombo={handleComboApplication}
-          isApplyingPreset={isApplyingPreset}
-          backgroundType={viewerState.backgroundType}
-          onBackgroundTypeChange={viewerState.setBackgroundType}
-          onSpaceChange={viewerState.setSelectedSpace}
-          selectedSpace={viewerState.selectedSpace}
-          spaceControls={viewerState.spaceControls}
-          onSpaceControlsChange={viewerState.setSpaceControls}
-          onResetCamera={viewerState.handleResetCamera}
-        />
+        {showCustomizePanel && (
+          <ProgressiveCustomizePanel
+            selectedScene={viewerState.selectedScene}
+            selectedLighting={viewerState.selectedLighting}
+            effectValues={effectValues}
+            overallBrightness={viewerState.overallBrightness}
+            interactiveLighting={viewerState.interactiveLighting}
+            materialSettings={viewerState.materialSettings}
+            isFullscreen={viewerState.isFullscreen}
+            onSceneChange={viewerState.setSelectedScene}
+            onLightingChange={viewerState.setSelectedLighting}
+            onEffectChange={handleManualEffectChange}
+            onResetAllEffects={resetAllEffects}
+            onBrightnessChange={viewerState.setOverallBrightness}
+            onInteractiveLightingToggle={() => viewerState.setInteractiveLighting(!viewerState.interactiveLighting)}
+            onMaterialSettingsChange={viewerState.setMaterialSettings}
+            onToggleFullscreen={() => viewerState.setIsFullscreen(!viewerState.isFullscreen)}
+            onDownload={handleDownload}
+            onShare={() => handleShare(selectedCard)}
+            onClose={() => setShowCustomizePanel(false)}
+            card={selectedCard}
+            selectedPresetId={viewerState.selectedPresetId}
+            onPresetSelect={viewerState.setSelectedPresetId}
+            onApplyCombo={handleComboApplication}
+            isApplyingPreset={isApplyingPreset}
+          />
+        )}
       </div>
     </ErrorBoundary>
   );
 };
 
 export default Studio;
+
