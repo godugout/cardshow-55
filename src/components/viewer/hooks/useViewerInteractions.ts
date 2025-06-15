@@ -38,6 +38,8 @@ export const useViewerInteractions = ({
   hasMultipleCards
 }: UseViewerInteractionsProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const initialDragPosition = useRef<{ x: number; y: number } | null>(null);
+  const DRAG_THRESHOLD = 5; // pixels
 
   // Safe zone detection
   const { isInSafeZone } = useSafeZones({
@@ -49,7 +51,8 @@ export const useViewerInteractions = ({
 
   // Enhanced mouse handling with increased rotation sensitivity for 360° rotation
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!containerRef.current) return;
+    // Do not run hover effect if mouse is down for a potential drag
+    if (!containerRef.current || initialDragPosition.current) return;
     
     const rect = containerRef.current.getBoundingClientRect();
     const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
@@ -93,29 +96,41 @@ export const useViewerInteractions = ({
     const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
     
     if (allowRotation && !inSafeZone) {
-      setIsDragging(true);
+      initialDragPosition.current = { x: e.clientX, y: e.clientY };
       // Adjusted drag start calculation for increased sensitivity
       setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
       setAutoRotate(false);
     }
-  }, [rotation, allowRotation, isInSafeZone, setIsDragging, setDragStart, setAutoRotate]);
+  }, [rotation, allowRotation, isInSafeZone, setDragStart, setAutoRotate]);
 
   const handleDrag = useCallback((e: React.MouseEvent) => {
-    if (isDragging && allowRotation) {
-      // Enhanced drag rotation with continuous 360° support
-      const newRotationY = e.clientX - dragStart.x;
-      const newRotationX = e.clientY - dragStart.y;
-      
-      setRotation({
-        x: Math.max(-90, Math.min(90, newRotationX)), // Limit X rotation to prevent flipping
-        y: newRotationY // Allow full 360° Y rotation
-      });
+    if (allowRotation && initialDragPosition.current) {
+      if (isDragging) {
+        // Already dragging, just update rotation
+        const newRotationY = e.clientX - dragStart.x;
+        const newRotationX = e.clientY - dragStart.y;
+        
+        setRotation({
+          x: Math.max(-90, Math.min(90, newRotationX)), // Limit X rotation to prevent flipping
+          y: newRotationY // Allow full 360° Y rotation
+        });
+      } else {
+        // Not dragging yet, check threshold
+        const dx = e.clientX - initialDragPosition.current.x;
+        const dy = e.clientY - initialDragPosition.current.y;
+        if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
+          setIsDragging(true);
+        }
+      }
     }
-  }, [isDragging, dragStart, allowRotation, setRotation]);
+  }, [isDragging, dragStart, allowRotation, setRotation, setIsDragging]);
 
   const handleDragEnd = useCallback(() => {
-    setIsDragging(false);
-  }, [setIsDragging]);
+    if (isDragging) {
+      setIsDragging(false);
+    }
+    initialDragPosition.current = null;
+  }, [isDragging, setIsDragging]);
 
   useEffect(() => {
     const container = containerRef.current;
