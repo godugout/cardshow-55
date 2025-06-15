@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useRef } from 'react';
 import { useSafeZones } from './useSafeZones';
 
@@ -39,6 +38,9 @@ export const useViewerInteractions = ({
 }: UseViewerInteractionsProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const initialDragPosition = useRef<{ x: number; y: number } | null>(null);
+  const lastDragPositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const velocityRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const animationFrameRef = useRef<number>();
   const DRAG_THRESHOLD = 5; // pixels
 
   // Safe zone detection
@@ -90,6 +92,9 @@ export const useViewerInteractions = ({
   }, [isInSafeZone, handleZoom]);
 
   const handleDragStart = useCallback((e: React.MouseEvent) => {
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
     if (!containerRef.current) return;
     
     const rect = containerRef.current.getBoundingClientRect();
@@ -99,6 +104,7 @@ export const useViewerInteractions = ({
       initialDragPosition.current = { x: e.clientX, y: e.clientY };
       // Adjusted drag start calculation for increased sensitivity
       setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
+      lastDragPositionRef.current = { x: e.clientX, y: e.clientY };
       setAutoRotate(false);
     }
   }, [rotation, allowRotation, isInSafeZone, setDragStart, setAutoRotate]);
@@ -114,12 +120,22 @@ export const useViewerInteractions = ({
           x: Math.max(-90, Math.min(90, newRotationX)), // Limit X rotation to prevent flipping
           y: newRotationY // Allow full 360° Y rotation
         });
+
+        // Calculate velocity for momentum
+        velocityRef.current = {
+          x: e.clientX - lastDragPositionRef.current.x,
+          y: e.clientY - lastDragPositionRef.current.y
+        };
+        lastDragPositionRef.current = { x: e.clientX, y: e.clientY };
+
       } else {
         // Not dragging yet, check threshold
         const dx = e.clientX - initialDragPosition.current.x;
         const dy = e.clientY - initialDragPosition.current.y;
         if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
           setIsDragging(true);
+          // Set initial last drag position when drag starts
+          lastDragPositionRef.current = { x: e.clientX, y: e.clientY };
         }
       }
     }
@@ -128,9 +144,28 @@ export const useViewerInteractions = ({
   const handleDragEnd = useCallback(() => {
     if (isDragging) {
       setIsDragging(false);
+      
+      if (!autoRotate) {
+        const animateMomentum = () => {
+          if (Math.abs(velocityRef.current.x) < 0.1 && Math.abs(velocityRef.current.y) < 0.1) {
+            return;
+          }
+
+          setRotation(prev => ({
+            x: Math.max(-90, Math.min(90, prev.x + velocityRef.current.y)),
+            y: prev.y + velocityRef.current.x,
+          }));
+
+          velocityRef.current.x *= 0.95; // Damping factor
+          velocityRef.current.y *= 0.95;
+
+          animationFrameRef.current = requestAnimationFrame(animateMomentum);
+        };
+        animateMomentum();
+      }
     }
     initialDragPosition.current = null;
-  }, [isDragging, setIsDragging]);
+  }, [isDragging, setIsDragging, autoRotate, setRotation]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -139,6 +174,22 @@ export const useViewerInteractions = ({
       return () => container.removeEventListener('wheel', handleWheel);
     }
   }, [handleWheel]);
+
+  useEffect(() => {
+    // Stop momentum if auto-rotate is toggled on
+    if (autoRotate && animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+  }, [autoRotate]);
+
+  useEffect(() => {
+    // Cleanup animation frame on unmount
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
 
   return {
     containerRef,
