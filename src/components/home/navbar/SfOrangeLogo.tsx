@@ -3,7 +3,13 @@ import React from "react";
 
 export const SfOrangeLogo = ({ className }: { className?: string }) => {
   return (
-    <svg id="Capa_5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 366.15 90.46" className={className}>
+    <svg 
+      id="Capa_5" 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 366.15 90.46" 
+      className={className}
+      style={{ color: '#f15b24' }}
+    >
       <defs>
         <style>{`.cls-1{fill:#f15b24;}`}</style>
       </defs>

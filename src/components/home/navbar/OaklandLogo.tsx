@@ -3,7 +3,13 @@ import React from "react";
 
 export const OaklandLogo = ({ className }: { className?: string }) => {
   return (
-    <svg id="Capa_5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 423.34 62.5" className={className}>
+    <svg 
+      id="Capa_5" 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 423.34 62.5" 
+      className={className}
+      style={{ color: '#4cbb18' }}
+    >
       <defs><style>{`.cls-1{fill:#4cbb18;}`}</style></defs>
       <polygon className="cls-1" points="75.56 35.12 86.98 35.12 81.31 19.65 75.56 35.12"/>
       <path className="cls-1" d="M128.27,14.19h-6.38v11.78h6.38c4.04,0,6.31-2.77,6.31-5.82s-2.27-5.96-6.31-5.96Z"/>
