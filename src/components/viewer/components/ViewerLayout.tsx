@@ -115,6 +115,11 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
 
   const handleCanvasDoubleClick = useDoubleClick({
     onDoubleClick: (event: React.MouseEvent) => {
+      // Prevent flipping if click is on the card container itself
+      if (cardContainerRef.current && cardContainerRef.current.contains(event.target as Node)) {
+        return;
+      }
+
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
         if (!isInSafeZone(event.clientX, event.clientY, rect)) {
@@ -219,7 +224,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
           onMouseMove={handleDrag}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          onClick={(e) => e.stopPropagation()}
+          onClick={onCardClick}
         />
       </div>
 

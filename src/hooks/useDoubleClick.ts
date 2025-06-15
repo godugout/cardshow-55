@@ -2,8 +2,8 @@
 import { useRef, useCallback } from 'react';
 
 interface UseDoubleClickOptions {
-  onSingleClick?: () => void;
-  onDoubleClick: () => void;
+  onSingleClick?: (event: React.MouseEvent) => void;
+  onDoubleClick: (event: React.MouseEvent) => void;
   delay?: number;
 }
 
@@ -11,7 +11,7 @@ export const useDoubleClick = ({ onSingleClick, onDoubleClick, delay = 300 }: Us
   const clickCountRef = useRef(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback((event: React.MouseEvent) => {
     clickCountRef.current += 1;
     console.log(`🖱️ Click count: ${clickCountRef.current}`);
 
@@ -22,7 +22,7 @@ export const useDoubleClick = ({ onSingleClick, onDoubleClick, delay = 300 }: Us
         // Reset if only single click within delay
         clickCountRef.current = 0;
         console.log('🖱️ Single click processed.');
-        onSingleClick?.();
+        onSingleClick?.(event);
       }, delay);
     } else if (clickCountRef.current === 2) {
       // Double click detected
@@ -32,7 +32,7 @@ export const useDoubleClick = ({ onSingleClick, onDoubleClick, delay = 300 }: Us
         timeoutRef.current = null;
       }
       clickCountRef.current = 0;
-      onDoubleClick();
+      onDoubleClick(event);
     }
   }, [onSingleClick, onDoubleClick, delay]);
 
