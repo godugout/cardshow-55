@@ -159,6 +159,28 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     validateEffectState();
   }, [handleReset, resetAllEffects, validateEffectState]);
 
+  // Enhanced combo application to connect StudioPanel to effect hooks
+  const handleApplyCombo = useCallback((combo: any) => {
+    console.log('🚀 Applying style combo:', combo.id);
+    validateEffectState();
+    applyPreset(combo.effects, combo.id);
+    setSelectedPresetId(combo.id);
+    if (combo.scene) {
+      setSelectedScene(combo.scene);
+    }
+    if (combo.lighting) {
+      setSelectedLighting(combo.lighting);
+    }
+  }, [applyPreset, validateEffectState, setSelectedPresetId, setSelectedScene, setSelectedLighting]);
+
+  // Enhanced manual effect change to clear preset selection
+  const handleManualEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
+    if (!isApplyingPreset) {
+      setSelectedPresetId(undefined);
+    }
+    handleEffectChange(effectId, parameterId, value);
+  }, [handleEffectChange, isApplyingPreset, setSelectedPresetId]);
+
   // Add environment controls state
   const [environmentControls, setEnvironmentControls] = useState({
     depthOfField: 1.0,
@@ -245,13 +267,13 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         environmentControls={environmentControls}
         onSceneChange={setSelectedScene}
         onLightingChange={setSelectedLighting}
-        onEffectChange={handleEffectChange}
+        onEffectChange={handleManualEffectChange}
         onBrightnessChange={setOverallBrightness}
         onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
         onMaterialSettingsChange={setMaterialSettings}
         selectedPresetId={selectedPresetId}
         onPresetSelect={setSelectedPresetId}
-        onApplyCombo={() => {}} // Will be handled by ViewerActionsManager
+        onApplyCombo={handleApplyCombo}
         isApplyingPreset={isApplyingPreset}
         onResetCamera={handleResetCamera}
       />
