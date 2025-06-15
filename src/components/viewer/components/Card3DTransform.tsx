@@ -43,7 +43,7 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
         height: '560px',
         transform: getDynamicTransform(),
         transformStyle: 'preserve-3d',
-        transition: isDragging ? 'none' : 'transform 0.1s ease',
+        transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
         filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`,
         cursor: isDragging ? 'grabbing' : 'grab'
       }}
@@ -54,3 +54,4 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
     </div>
   );
 };
+

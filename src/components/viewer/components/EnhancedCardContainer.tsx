@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -9,6 +10,7 @@ import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
 
 interface EnhancedCardContainerProps {
   card: CardData;
+  isFlipped: boolean;
   isHovering: boolean;
   showEffects: boolean;
   effectValues: EffectValues;
@@ -35,6 +37,7 @@ interface EnhancedCardContainerProps {
 
 export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   card,
+  isFlipped,
   isHovering,
   showEffects,
   effectValues,
@@ -84,6 +87,12 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
   const effectiveSurfaceTexture = cachedEffects?.SurfaceTexture || SurfaceTexture;
 
+  // Calculate the final rotation including the flip
+  const finalRotation = {
+    x: rotation.x,
+    y: rotation.y + (isFlipped ? 180 : 0),
+  };
+
   return (
     <div 
       className={`relative z-20 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
@@ -99,7 +108,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onClick={onClick}
     >
       <Card3DTransform
-        rotation={rotation}
+        rotation={finalRotation}
         mousePosition={mousePosition}
         isDragging={isDragging}
         interactiveLighting={interactiveLighting}
@@ -108,7 +117,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         {/* Front of Card */}
         <CardFrontContainer
           card={card}
-          rotation={rotation}
+          rotation={finalRotation}
           isHovering={isHovering}
           showEffects={showEffects}
           effectValues={effectValues}
@@ -121,7 +130,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
 
         {/* Back of Card */}
         <CardBackContainer
-          rotation={rotation}
+          rotation={finalRotation}
           isHovering={isHovering}
           showEffects={showEffects}
           effectValues={effectValues}
@@ -137,3 +146,4 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
 };
 
 EnhancedCardContainer.displayName = 'EnhancedCardContainer';
+

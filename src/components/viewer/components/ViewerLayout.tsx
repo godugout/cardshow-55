@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { ViewerHeader } from './ViewerHeader';
 import { CompactCardDetails } from './CompactCardDetails';
@@ -172,6 +173,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
         <EnhancedCardContainer
           card={card}
           isHovering={isHovering}
+          isFlipped={isFlipped}
           showEffects={showEffects}
           effectValues={effectValues}
           mousePosition={mousePosition}
@@ -206,3 +208,4 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
     </div>
   );
 };
+
