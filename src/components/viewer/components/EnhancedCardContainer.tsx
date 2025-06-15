@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -97,6 +96,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onClick={onClick}
     >
       <Card3DTransform
         rotation={rotation}
@@ -104,7 +104,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
         isDragging={isDragging}
         interactiveLighting={interactiveLighting}
         isHovering={isHovering}
-        onClick={onClick}
       >
         {/* Front of Card */}
         <CardFrontContainer

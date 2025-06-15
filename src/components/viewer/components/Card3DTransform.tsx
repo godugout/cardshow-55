@@ -8,7 +8,6 @@ interface Card3DTransformProps {
   isDragging: boolean;
   interactiveLighting?: boolean;
   isHovering: boolean;
-  onClick: () => void;
 }
 
 export const Card3DTransform: React.FC<Card3DTransformProps> = ({
@@ -18,7 +17,6 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
   isDragging,
   interactiveLighting = false,
   isHovering,
-  onClick
 }) => {
   // Calculate dynamic transform with full 360° Y-axis rotation support
   const getDynamicTransform = () => {
@@ -49,7 +47,6 @@ export const Card3DTransform: React.FC<Card3DTransformProps> = ({
         filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`,
         cursor: isDragging ? 'grabbing' : 'grab'
       }}
-      onClick={onClick}
       data-rotation-x={rotation.x.toFixed(1)}
       data-rotation-y={rotation.y.toFixed(1)}
     >

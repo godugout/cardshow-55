@@ -51,6 +51,7 @@ export const useViewerState = () => {
 
   const onCardClick = useDoubleClick({
     onDoubleClick: useCallback(() => {
+      console.log('🎉 Double click registered! Flipping card.');
       setIsFlipped(prev => !prev);
     }, []),
   });

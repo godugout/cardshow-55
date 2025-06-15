@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -51,6 +52,7 @@ export const useViewerState = () => {
 
   const onCardClick = useDoubleClick({
     onDoubleClick: useCallback(() => {
+      console.log('🎉 Double click registered! Flipping card.');
       setIsFlipped(prev => !prev);
     }, []),
   });
