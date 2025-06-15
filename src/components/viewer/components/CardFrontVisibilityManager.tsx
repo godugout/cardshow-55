@@ -17,33 +17,11 @@ export const CardFrontVisibilityManager: React.FC<CardFrontVisibilityManagerProp
   children,
   solidCardTransition = false,
 }) => {
-  const getVisibility = (): CardFrontVisibilityData => {
-    const normalizedY = ((rotation.y % 360) + 360) % 360;
-    const normalizedX = ((rotation.x % 360) + 360) % 360;
-
-    if (solidCardTransition) {
-      // For solid transitions, show front when Y rotation is in front range
-      const isFrontVisibleY = normalizedY <= 90 || normalizedY >= 270;
-      
-      return {
-        opacity: isFrontVisibleY ? 1 : 0,
-        zIndex: isFrontVisibleY ? 25 : 5,
-      };
-    }
-    
-    // Simplified logic: front is visible when Y rotation is in front range
-    // This ensures the card is always visible
-    const isFrontVisible = normalizedY <= 90 || normalizedY >= 270;
-    
-    console.log('🔄 Card Front - Rotation X:', normalizedX.toFixed(1), 'Y:', normalizedY.toFixed(1), 'Visible:', isFrontVisible);
-    
-    return { 
-      opacity: isFrontVisible ? 1 : 0,
-      zIndex: isFrontVisible ? 25 : 15,
-    };
+  // Simplified: always show the front face, let CSS handle the 3D flip
+  const visibilityData: CardFrontVisibilityData = {
+    opacity: 1,
+    zIndex: 10,
   };
-
-  const visibilityData = getVisibility();
   
   return <>{children(visibilityData)}</>;
 };

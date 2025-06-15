@@ -38,15 +38,10 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         <div 
           className="absolute inset-0 rounded-xl overflow-hidden"
           style={{
-            opacity: frontOpacity,
-            zIndex: frontZIndex,
-            transition: 'opacity 0.3s ease, z-index 0.1s ease',
             backfaceVisibility: 'hidden',
+            transform: 'rotateY(0deg)', // Ensure front face is properly oriented
             ...frameStyles,
-            pointerEvents: frontOpacity > 0.1 ? 'auto' : 'none',
           }}
-          data-visibility={frontOpacity > 0.1 ? 'visible' : 'hidden'}
-          data-front-rotation={rotation.y.toFixed(1)}
         >
           {/* Base Layer - Card Frame */}
           <div className="absolute inset-0 z-10" style={frameStyles} />
@@ -56,7 +51,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
             <CardEffectsLayer
               showEffects={showEffects}
               isHovering={isHovering}
-              effectIntensity={[50]} // Keep for backward compatibility
+              effectIntensity={[50]}
               mousePosition={mousePosition}
               physicalEffectStyles={enhancedEffectStyles}
               effectValues={effectValues}
@@ -134,4 +129,3 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
     </CardFrontVisibilityManager>
   );
 };
-

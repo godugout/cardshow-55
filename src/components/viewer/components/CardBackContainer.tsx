@@ -35,8 +35,6 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
 }) => {
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
-  
-  console.log('🎨 Card Back - Material:', selectedMaterial.name);
 
   return (
     <CardBackVisibilityManager rotation={rotation} solidCardTransition={solidCardTransition}>
@@ -44,11 +42,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         <div 
           className="absolute inset-0 rounded-xl overflow-hidden"
           style={{
-            opacity,
-            zIndex,
-            transition: 'opacity 0.3s ease, z-index 0.1s ease',
             backfaceVisibility: 'hidden',
-            // REMOVED: transform: 'rotateY(180deg)' - this was causing double flip
+            transform: 'rotateY(180deg)', // Ensure back face is flipped
             background: selectedMaterial.background,
             border: `2px solid ${selectedMaterial.borderColor}`,
             ...(selectedMaterial.blur && {
@@ -59,18 +54,13 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
               inset 0 0 20px rgba(255, 255, 255, 0.1)
             `,
             ...frameStyles,
-            pointerEvents: opacity > 0.1 ? 'auto' : 'none',
           }}
-          data-material={selectedMaterial.id}
-          data-material-name={selectedMaterial.name}
-          data-visibility={opacity > 0.1 ? 'visible' : 'hidden'}
-          data-back-rotation={rotation.y.toFixed(1)}
         >
           {/* Back Effects Layer */}
           <CardEffectsLayer
             showEffects={showEffects}
             isHovering={isHovering}
-            effectIntensity={[50]} // Keep for backward compatibility
+            effectIntensity={[50]}
             mousePosition={mousePosition}
             physicalEffectStyles={enhancedEffectStyles}
             effectValues={effectValues}
