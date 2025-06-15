@@ -2,50 +2,36 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
+import { useNavigate } from 'react-router-dom';
 
 export const useGalleryActions = () => {
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
-  const [showImmersiveViewer, setShowImmersiveViewer] = useState(false);
-  const [isStudioInitiallyOpen, setIsStudioInitiallyOpen] = useState(false);
+  // Clean up: Don't manage immersive viewer state here
+  // const [showImmersiveViewer, setShowImmersiveViewer] = useState(false);
+  // const [isStudioInitiallyOpen, setIsStudioInitiallyOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleCardClick = (card: any, featuredCards: any[]) => {
-    const cardIndex = featuredCards.findIndex(c => c.id === card.id);
-    setSelectedCardIndex(cardIndex >= 0 ? cardIndex : 0);
-    setShowImmersiveViewer(true);
-    setIsStudioInitiallyOpen(false); // Ensure studio is closed when opening from grid
+    // Go directly to studio for the clicked card
+    if (card && card.id) {
+      navigate(`/studio/${card.id}`);
+    }
   };
 
   const handleCardChange = (newIndex: number) => {
     setSelectedCardIndex(newIndex);
   };
 
-  const handleCloseViewer = () => {
-    setShowImmersiveViewer(false);
-  };
-
-  const handleShareCard = (convertedCards: CardData[]) => {
-    const selectedCard = convertedCards[selectedCardIndex];
-    if (selectedCard) {
-      const shareUrl = `${window.location.origin}/card/${selectedCard.id}`;
-      
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(shareUrl)
-          .then(() => toast.success('Card link copied to clipboard'))
-          .catch(() => toast.error('Failed to copy link'));
-      } else {
-        toast.error('Sharing not supported in this browser');
-      }
-    }
-  };
-
-  const handleDownloadCard = (convertedCards: CardData[]) => {
-    console.log('Download triggered - handled by export dialog');
-  };
+  // Remove immersive logic
+  const handleCloseViewer = () => {};
+  const handleShareCard = (convertedCards: CardData[]) => {};
+  const handleDownloadCard = (convertedCards: CardData[]) => {};
 
   return {
     selectedCardIndex,
-    showImmersiveViewer,
-    isStudioInitiallyOpen,
+    // Remove immersive viewer state from return; just export navigation handlers
+    // showImmersiveViewer,
+    // isStudioInitiallyOpen,
     handleCardClick,
     handleCardChange,
     handleCloseViewer,
