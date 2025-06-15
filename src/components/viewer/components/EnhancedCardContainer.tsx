@@ -85,7 +85,14 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   // Use enhanced cached styles if available, otherwise fall back to provided styles
   const effectiveFrameStyles = enhancedCachedEffects?.frameStyles || frameStyles;
   const effectiveEnhancedEffectStyles = enhancedCachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
-  const effectiveSurfaceTexture = enhancedCachedEffects?.SurfaceTexture || SurfaceTexture;
+  
+  // Create SurfaceTexture component from cached styles if available
+  const effectiveSurfaceTexture = enhancedCachedEffects ? (
+    <div 
+      className="absolute inset-0 opacity-10 bg-gradient-to-br from-white/5 to-transparent"
+      style={enhancedCachedEffects.surfaceTextureStyles}
+    />
+  ) : SurfaceTexture;
 
   return (
     <UnifiedCardRenderer

@@ -98,23 +98,18 @@ export const useEnhancedCachedEffects = (params: UseEnhancedCachedEffectsParams)
     return styles;
   }, [cacheKey, mousePosition, showEffects, effectValues, interactiveLighting, isHovering]);
 
-  // Optimized surface texture with memoization
-  const SurfaceTexture = useMemo(() => {
+  // Optimized surface texture styles (return style object instead of JSX)
+  const surfaceTextureStyles = useMemo(() => {
     const textureOpacity = showEffects ? 0.05 : 0.1;
-    return (
-      <div 
-        className="absolute inset-0 opacity-10 bg-gradient-to-br from-white/5 to-transparent"
-        style={{
-          opacity: textureOpacity,
-          mixBlendMode: 'overlay',
-          background: `
-            radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
-            linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 100%)
-          `,
-          willChange: 'opacity'
-        }}
-      />
-    );
+    return {
+      opacity: textureOpacity,
+      mixBlendMode: 'overlay' as const,
+      background: `
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 100%)
+      `,
+      willChange: 'opacity'
+    };
   }, [showEffects]);
 
   // Clear cache when component unmounts
@@ -125,7 +120,7 @@ export const useEnhancedCachedEffects = (params: UseEnhancedCachedEffectsParams)
   return {
     frameStyles,
     enhancedEffectStyles,
-    SurfaceTexture,
+    surfaceTextureStyles,
     isImageLoaded,
     getCachedImage,
     clearCache
