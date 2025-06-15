@@ -6,14 +6,16 @@ export interface SectionStates {
   effects: boolean;
   spaces: boolean;
   materials: boolean;
+  lighting: boolean;
 }
 
 export const useSectionManager = () => {
   const [sectionStates, setSectionStates] = useState<SectionStates>({
     styles: true, // Default open
     effects: false,
-    spaces: false,
-    materials: false
+    spaces: true, // Default open to match screenshot
+    materials: false,
+    lighting: false,
   });
 
   const setSectionState = (section: keyof SectionStates, isOpen: boolean) => {

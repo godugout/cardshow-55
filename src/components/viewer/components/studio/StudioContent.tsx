@@ -5,7 +5,8 @@ import {
   StylesSection, 
   EffectsSection, 
   SpacesSection,
-  SurfaceSection
+  SurfaceSection,
+  LightingSection
 } from './sections';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
@@ -80,15 +81,21 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             selectedPresetId={selectedPresetId}
           />
 
-          {/* Scene Section - For environment, lighting, and brightness */}
+          {/* Spaces Section */}
           <SpacesSection
             selectedScene={selectedScene}
+            isOpen={sectionStates.spaces}
+            onToggle={(isOpen) => setSectionState('spaces', isOpen)}
+            onSceneChange={onSceneChange}
+          />
+          
+          {/* Lighting Section */}
+          <LightingSection
             selectedLighting={selectedLighting}
             overallBrightness={overallBrightness}
             interactiveLighting={interactiveLighting}
-            isOpen={sectionStates.spaces !== false}
-            onToggle={(isOpen) => setSectionState('spaces', isOpen)}
-            onSceneChange={onSceneChange}
+            isOpen={sectionStates.lighting}
+            onToggle={(isOpen) => setSectionState('lighting', isOpen)}
             onLightingChange={onLightingChange}
             onBrightnessChange={handleBrightnessChange}
             onInteractiveLightingToggle={onInteractiveLightingToggle}

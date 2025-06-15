@@ -1,77 +1,105 @@
 
 import React from 'react';
 import { CollapsibleSection } from '@/components/ui/design-system';
-import { LightingSection } from '../../LightingSection';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { LightingPreset, EnvironmentScene } from '../../../types';
+import type { EnvironmentScene } from '../../../types';
 import { ENVIRONMENT_SCENES } from '../../../constants';
+import { cn } from '@/lib/utils';
 
 interface SpacesSectionProps {
   selectedScene: EnvironmentScene;
   isOpen: boolean;
   onToggle: (isOpen: boolean) => void;
-  selectedLighting: LightingPreset;
-  overallBrightness: number[];
-  interactiveLighting: boolean;
   onSceneChange: (scene: EnvironmentScene) => void;
-  onLightingChange: (lighting: LightingPreset) => void;
-  onBrightnessChange: (value: number[]) => void;
-  onInteractiveLightingToggle: () => void;
 }
+
+const EnvironmentButton = ({ scene, isSelected, onSelect }: { scene: EnvironmentScene, isSelected: boolean, onSelect: () => void }) => {
+  return (
+    <button
+      onClick={onSelect}
+      className={cn(
+        "relative aspect-[16/10] w-full rounded-lg overflow-hidden group border-2 transition-all duration-200",
+        isSelected ? "border-crd-blue shadow-lg" : "border-white/10 hover:border-crd-blue/50"
+      )}
+    >
+      <div 
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+        style={{ backgroundImage: `url(${scene.image})` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 p-2 text-left">
+        <p className="text-white text-xs font-medium truncate">{scene.name}</p>
+      </div>
+      {isSelected && (
+        <div className="absolute inset-0 ring-2 ring-inset ring-crd-blue bg-crd-blue/20" />
+      )}
+    </button>
+  );
+};
 
 export const SpacesSection: React.FC<SpacesSectionProps> = ({
   selectedScene,
   isOpen,
   onToggle,
-  selectedLighting,
-  overallBrightness,
-  interactiveLighting,
   onSceneChange,
-  onLightingChange,
-  onBrightnessChange,
-  onInteractiveLightingToggle
 }) => {
+  const scenes2D = ENVIRONMENT_SCENES.filter(s => s.type === '2d');
+  const scenes3D = ENVIRONMENT_SCENES.filter(s => s.type === '3d');
+  
+  const statusText = `${selectedScene.name} ${selectedScene.type === '3d' ? '(3D Space)' : ''}`;
+
   return (
     <CollapsibleSection
-      title="Spaces & Lighting"
+      title="Spaces"
       emoji="🌌"
-      statusText={selectedScene.name}
+      statusText={statusText}
       isOpen={isOpen}
       onToggle={onToggle}
     >
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="scene-select" className="text-white text-sm mb-2 block">
-            2D Environment
-          </Label>
-          <Select 
-            value={JSON.stringify(ENVIRONMENT_SCENES.find(s => s.id === selectedScene.id))} 
-            onValueChange={(value) => onSceneChange(JSON.parse(value))}
-          >
-            <SelectTrigger id="scene-select" className="w-full bg-white/10 border-white/20 text-white">
-              <SelectValue placeholder="Select a scene" />
-            </SelectTrigger>
-            <SelectContent className="bg-black border-white/20">
-              {ENVIRONMENT_SCENES.map((scene) => (
-                <SelectItem key={scene.id} value={JSON.stringify(scene)} className="text-white hover:bg-white/10">
-                  {scene.name}
-                </SelectItem>
+      <div className="space-y-6 pt-2">
+        {scenes2D.length > 0 && (
+          <div className="space-y-3">
+            <Label className="text-white text-sm font-medium px-3">
+              2D Environments
+            </Label>
+            <div className="grid grid-cols-2 gap-3 px-3">
+              {scenes2D.map((scene) => (
+                <EnvironmentButton 
+                  key={scene.id}
+                  scene={scene}
+                  isSelected={selectedScene.id === scene.id}
+                  onSelect={() => onSceneChange(scene)}
+                />
               ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <hr className="border-white/10" />
+            </div>
+          </div>
+        )}
 
-        <LightingSection
-          selectedLighting={selectedLighting}
-          overallBrightness={overallBrightness}
-          interactiveLighting={interactiveLighting}
-          onLightingChange={onLightingChange}
-          onBrightnessChange={onBrightnessChange}
-          onInteractiveLightingToggle={onInteractiveLightingToggle}
-        />
+        {scenes3D.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-3">
+              <Label className="text-white text-sm font-medium">
+                3D Environments
+              </Label>
+              {selectedScene.type === '3d' && (
+                <span className="text-xs bg-crd-blue text-white font-semibold px-2 py-0.5 rounded-md">Active</span>
+              )}
+            </div>
+            <p className="text-crd-lightGray text-xs px-3">
+              Select a 3D environment for immersive backgrounds.
+            </p>
+            <div className="grid grid-cols-2 gap-3 px-3">
+              {scenes3D.map((scene) => (
+                <EnvironmentButton 
+                  key={scene.id}
+                  scene={scene}
+                  isSelected={selectedScene.id === scene.id}
+                  onSelect={() => onSceneChange(scene)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </CollapsibleSection>
   );
