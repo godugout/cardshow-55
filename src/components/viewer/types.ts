@@ -1,8 +1,10 @@
+
 import type { CardData } from '@/hooks/useCardEditor';
 
 export interface EnvironmentScene {
   id: string;
   name: string;
+  type: '2d' | '3d';
   icon: string;
   category: 'natural' | 'fantasy' | 'futuristic' | 'architectural' | 'professional' | 'luxury' | 'artistic' | 'abstract' | 'minimalist';
   description: string;

@@ -1,10 +1,10 @@
-
 import type { EnvironmentScene } from '../types';
 
 export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
   {
     id: 'forest',
     name: 'Enchanted Forest',
+    type: '2d',
     icon: '🌲',
     category: 'natural',
     description: 'Mystical forest with ancient trees',
@@ -33,6 +33,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
   {
     id: 'mountain',
     name: 'Mountain Vista',
+    type: '2d',
     icon: '🏔️',
     category: 'natural',
     description: 'Breathtaking mountain landscape',
@@ -61,6 +62,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
   {
     id: 'crystal-cave',
     name: 'Crystal Cavern',
+    type: '2d',
     icon: '💎',
     category: 'fantasy',
     description: 'Glowing crystal cave realm',
@@ -89,6 +91,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
   {
     id: 'cyberpunk-city',
     name: 'Neon Metropolis',
+    type: '2d',
     icon: '🌃',
     category: 'futuristic',
     description: 'Cyberpunk cityscape at night',
@@ -117,6 +120,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
   {
     id: 'ancient-temple',
     name: 'Ancient Temple',
+    type: '2d',
     icon: '🏛️',
     category: 'architectural',
     description: 'Majestic ancient temple ruins',
@@ -145,6 +149,7 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
   {
     id: 'space-station',
     name: 'Space Station',
+    type: '2d',
     icon: '🚀',
     category: 'futuristic',
     description: 'Orbital space station interior',

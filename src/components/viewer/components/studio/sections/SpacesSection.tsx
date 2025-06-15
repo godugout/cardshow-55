@@ -24,7 +24,7 @@ const EnvironmentButton = ({ scene, isSelected, onSelect }: { scene: Environment
     >
       <div 
         className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-        style={{ backgroundImage: `url(${scene.image})` }}
+        style={{ backgroundImage: `url(${scene.previewUrl})` }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-2 text-left">
