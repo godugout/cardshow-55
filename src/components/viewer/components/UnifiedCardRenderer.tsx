@@ -103,10 +103,11 @@ export const UnifiedCardRenderer: React.FC<UnifiedCardRendererProps> = ({
   const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
   const effectiveSurfaceTexture = cachedEffects?.SurfaceTexture || SurfaceTexture;
 
-  // Calculate the final rotation including the flip
+  // Calculate the final rotation including the flip - NO LONGER ADDING 180 degrees here
+  // The flip is now handled by the visibility managers
   const finalRotation = {
     x: rotation.x,
-    y: rotation.y + (isFlipped ? 180 : 0),
+    y: rotation.y, // Remove the automatic flip offset
   };
 
   // Optimize container styles with hardware acceleration
