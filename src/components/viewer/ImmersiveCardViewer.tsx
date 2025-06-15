@@ -1,6 +1,5 @@
-
 import React, { useRef, useEffect, useCallback, useState } from 'react';
-import type { ImmersiveCardViewerProps } from './types';
+import type { ImmersiveCardViewerProps, MaterialSettings } from './types';
 import { 
   useEnhancedCardEffects, 
   type EffectValues 

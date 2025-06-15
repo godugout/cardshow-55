@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { ViewerHeader } from './ViewerHeader';
 import { CompactCardDetails } from './CompactCardDetails';
@@ -9,7 +8,6 @@ import { BackgroundRenderer } from './BackgroundRenderer';
 import { EnhancedCardContainer } from './EnhancedCardContainer';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import type { BackgroundType } from '../types';
 
 interface ViewerLayoutProps {
   card: CardData;
@@ -40,10 +38,6 @@ interface ViewerLayoutProps {
   rotation: { x: number; y: number };
   zoom: number;
   isDragging: boolean;
-  backgroundType: BackgroundType;
-  selectedSpace: any;
-  spaceControls: any;
-  adaptedCard: any;
   frameStyles: any;
   enhancedEffectStyles: any;
   SurfaceTexture: any;
@@ -90,10 +84,6 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
   rotation,
   zoom,
   isDragging,
-  backgroundType,
-  selectedSpace,
-  spaceControls,
-  adaptedCard,
   frameStyles,
   enhancedEffectStyles,
   SurfaceTexture,
@@ -131,20 +121,9 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
       onMouseLeave={handleDragEnd}
     >
       <BackgroundRenderer
-        backgroundType={backgroundType}
-        selectedSpace={selectedSpace}
-        spaceControls={spaceControls}
-        adaptedCard={adaptedCard}
-        onCardClick={onCardClick}
-        onCameraReset={handleResetCamera}
         selectedScene={selectedScene}
-        selectedLighting={selectedLighting}
         mousePosition={mousePosition}
         isHovering={isHovering}
-        effectValues={effectValues}
-        materialSettings={materialSettings}
-        overallBrightness={overallBrightness}
-        interactiveLighting={interactiveLighting}
       />
 
       {/* Header */}
@@ -188,36 +167,34 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
         setIsFlipped={setIsFlipped}
       />
 
-      {/* Enhanced Card Container (only for scene background) */}
-      {backgroundType === 'scene' && (
-        <div ref={cardContainerRef}>
-          <EnhancedCardContainer
-            card={card}
-            isHovering={isHovering}
-            showEffects={showEffects}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={zoom}
-            isDragging={isDragging}
-            frameStyles={frameStyles}
-            enhancedEffectStyles={enhancedEffectStyles}
-            SurfaceTexture={SurfaceTexture}
-            interactiveLighting={interactiveLighting}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            environmentControls={environmentControls}
-            showBackgroundInfo={false}
-            onMouseDown={handleDragStart}
-            onMouseMove={handleDrag}
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-            onClick={() => {}}
-          />
-        </div>
-      )}
+      {/* Enhanced Card Container */}
+      <div ref={cardContainerRef}>
+        <EnhancedCardContainer
+          card={card}
+          isHovering={isHovering}
+          showEffects={showEffects}
+          effectValues={effectValues}
+          mousePosition={mousePosition}
+          rotation={rotation}
+          zoom={zoom}
+          isDragging={isDragging}
+          frameStyles={frameStyles}
+          enhancedEffectStyles={enhancedEffectStyles}
+          SurfaceTexture={SurfaceTexture}
+          interactiveLighting={interactiveLighting}
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
+          overallBrightness={overallBrightness}
+          environmentControls={environmentControls}
+          showBackgroundInfo={false}
+          onMouseDown={handleDragStart}
+          onMouseMove={handleDrag}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+          onClick={() => {}}
+        />
+      </div>
 
       {/* Info Panel */}
       <ViewerInfoPanel

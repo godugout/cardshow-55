@@ -4,7 +4,7 @@ export interface EnvironmentScene {
   id: string;
   name: string;
   icon: string;
-  category: 'natural' | 'fantasy' | 'futuristic' | 'architectural';
+  category: 'natural' | 'fantasy' | 'futuristic' | 'architectural' | 'professional' | 'luxury' | 'artistic' | 'abstract' | 'minimalist';
   description: string;
   panoramicUrl: string;
   previewUrl: string;
@@ -73,12 +73,4 @@ export interface ImmersiveCardViewerProps {
   allowRotation?: boolean;
   showStats?: boolean;
   ambient?: boolean;
-}
-
-export type BackgroundType = 'scene' | '3dSpace';
-
-export interface UnifiedBackground {
-  type: BackgroundType;
-  scene?: EnvironmentScene;
-  space?: any; // Will be properly typed when 3D spaces are fully implemented
 }
