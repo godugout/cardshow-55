@@ -1,4 +1,5 @@
-import { useTexture, useLoader } from '@react-three/drei';
+import { useTexture } from '@react-three/drei';
+import { useLoader } from '@react-three/fiber';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
@@ -112,10 +113,9 @@ function useCardBackCanvasTexture(
           if (parts) {
             const color = parts[1];
             let percent = 0;
-            if (parts[2].endsWith('%')) {
-              percent = parseFloat(parts[2]) / 100;
-            } else {
-              percent = parseFloat(parts[2]) / 100;
+            if (parts[2] !== undefined) {
+              const parsed = parseFloat(parts[2]);
+              percent = isNaN(parsed) ? 0 : parsed / 100;
             }
             gradient!.addColorStop(percent, color);
           } else if (stop.startsWith('#') || stop.startsWith('rgb')) {
