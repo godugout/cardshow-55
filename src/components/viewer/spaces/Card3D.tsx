@@ -1,4 +1,3 @@
-
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
@@ -181,45 +180,6 @@ export const Card3D: React.FC<Card3DProps> = ({
           />
         </>
       )}
-      
-      {/* HTML overlay for the enhanced card - Positioned further out for proper layering */}
-      <Html
-        transform
-        occlude
-        position={[0, 0, cardDepth + 0.02]}
-        distanceFactor={0.625}
-        style={{
-          width: '400px',
-          height: '560px',
-          pointerEvents: 'none'
-        }}
-      >
-        <div style={{ width: '400px', height: '560px' }}>
-          <EnhancedCardContainer
-            card={adaptedCard}
-            isHovering={isHovering}
-            showEffects={true}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            rotation={rotation}
-            zoom={zoom}
-            isDragging={isDragging}
-            frameStyles={cardEffects?.getFrameStyles() || { transition: 'all 0.3s ease' }}
-            enhancedEffectStyles={cardEffects?.getEnhancedEffectStyles() || {}}
-            SurfaceTexture={cardEffects?.SurfaceTexture || <div />}
-            interactiveLighting={interactiveLighting}
-            selectedScene={selectedScene}
-            selectedLighting={selectedLighting}
-            materialSettings={materialSettings}
-            overallBrightness={overallBrightness}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={handlePointerEnter}
-            onMouseLeave={handlePointerLeave}
-            onClick={handleCardClick}
-          />
-        </div>
-      </Html>
     </group>
   );
 };
