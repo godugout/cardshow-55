@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -60,7 +59,6 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
       return {
         opacity: isStrictlyFrontVisible ? 1 : 0,
         zIndex: isStrictlyFrontVisible ? 25 : 5,
-        display: isStrictlyFrontVisible ? 'block' as const : 'none' as const
       };
     }
     
@@ -73,24 +71,13 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
 
     console.log('🔄 Card Front - Rotation X:', normalizedX.toFixed(1), 'Y:', normalizedY.toFixed(1), 'Opacity:', opacity.toFixed(2));
     
-    const display = opacity > 0.01 ? 'block' as const : 'none' as const;
-    if (display === 'none') {
-      return { opacity: 0, zIndex: 5, display: 'none' as const };
-    }
-    
     return { 
       opacity: Math.max(0, opacity),
       zIndex: opacity > 0.3 ? 25 : 15, // Higher z-index when more visible
-      display: 'block' as const
     };
   };
 
-  const { opacity: frontOpacity, zIndex: frontZIndex, display } = getVisibility();
-
-  // Don't render at all if not visible
-  if (display === 'none') {
-    return null;
-  }
+  const { opacity: frontOpacity, zIndex: frontZIndex } = getVisibility();
 
   return (
     <div 
@@ -100,7 +87,8 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         zIndex: frontZIndex,
         transition: 'opacity 0.3s ease, z-index 0.1s ease',
         backfaceVisibility: 'hidden',
-        ...frameStyles
+        ...frameStyles,
+        pointerEvents: frontOpacity > 0.1 ? 'auto' : 'none',
       }}
       data-visibility={frontOpacity > 0.1 ? 'visible' : 'hidden'}
       data-front-rotation={rotation.y.toFixed(1)}

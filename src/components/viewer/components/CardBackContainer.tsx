@@ -58,7 +58,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
               0 0 30px ${selectedMaterial.borderColor},
               inset 0 0 20px rgba(255, 255, 255, 0.1)
             `,
-            ...frameStyles
+            ...frameStyles,
+            pointerEvents: opacity > 0.1 ? 'auto' : 'none',
           }}
           data-material={selectedMaterial.id}
           data-material-name={selectedMaterial.name}

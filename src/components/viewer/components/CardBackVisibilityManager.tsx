@@ -1,10 +1,8 @@
-
 import React from 'react';
 
 interface CardBackVisibilityData {
   opacity: number;
   zIndex: number;
-  display: 'block' | 'none';
 }
 
 interface CardBackVisibilityManagerProps {
@@ -50,12 +48,7 @@ export const CardBackVisibilityManager: React.FC<CardBackVisibilityManagerProps>
       return {
         opacity: isBackVisible ? 1 : 0,
         zIndex: isBackVisible ? 25 : 5,
-        display: isBackVisible ? 'block' : 'none'
       };
-    }
-    
-    if (!isBackVisible) {
-      return { opacity: 0, zIndex: 5, display: 'none' };
     }
     
     const opacityY = getAxisBackOpacity(normalizedY);
@@ -70,16 +63,10 @@ export const CardBackVisibilityManager: React.FC<CardBackVisibilityManagerProps>
     return { 
       opacity: Math.max(0, opacity),
       zIndex: opacity > 0.3 ? 25 : 15, // Higher z-index when more visible
-      display: 'block'
     };
   };
 
   const visibilityData = getVisibility();
   
-  // Don't render at all if not visible
-  if (visibilityData.display === 'none') {
-    return null;
-  }
-
   return <>{children(visibilityData)}</>;
 };
