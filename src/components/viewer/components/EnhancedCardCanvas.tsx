@@ -114,6 +114,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
       {/* Enhanced Card Container with continuous rotation */}
       <EnhancedCardContainer
         card={card}
+        isFlipped={false}
         isHovering={isHovering}
         showEffects={true}
         effectValues={effectValues}
