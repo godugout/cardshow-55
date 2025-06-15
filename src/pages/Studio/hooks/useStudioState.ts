@@ -12,11 +12,10 @@ export const useStudioState = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load card data based on URL params
+  // Load card data based on URL params - always load default card for /studio (no cardId)
   useEffect(() => {
     const loadCard = async () => {
       setIsLoading(true);
-      
       if (cardId) {
         // Find the specific card
         const card = mockCards.find(c => c.id === cardId);
@@ -26,19 +25,26 @@ export const useStudioState = () => {
           setCurrentCardIndex(index);
         } else {
           toast.error('Card not found');
-          navigate('/studio');
+          // If invalid cardId, fallback to default
+          setSelectedCard(mockCards[0]);
+          setCurrentCardIndex(0);
+          navigate('/studio', { replace: true });
           return;
         }
       } else {
-        // Default to first card if no ID specified
+        // Always load default card (first card in array) if no ID specified
         setSelectedCard(mockCards[0]);
         setCurrentCardIndex(0);
+        // If the user is not already at /studio/default-card, update route
+        if (window.location.pathname !== '/studio/default-card') {
+          navigate('/studio/default-card', { replace: true });
+        }
       }
-      
       setIsLoading(false);
     };
 
     loadCard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardId, navigate]);
 
   // Handle card navigation
@@ -89,3 +95,4 @@ export const useStudioState = () => {
     handleClose
   };
 };
+
