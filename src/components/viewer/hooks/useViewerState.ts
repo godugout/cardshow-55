@@ -19,17 +19,17 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  // --- NEW: Default minimal custom-back effect values for card initialization
+  // --- NEW: Default minimal custom-back effect values for card initialization with the correct object shape
   const [effectValues, setEffectValues] = useState({
-    holographic: 0.15,
-    refractor: 0.15,
-    foil: 0.15,
-    prizm: 0.15,
-    rainbow: 0.15,
-    chrome: 0.15,
-    gold: 0.15,
-    black: 0.15,
-    // Add any other effect needed for your selector defaults
+    holographic: { intensity: 0.15 },
+    refractor: { intensity: 0.15 },
+    foil: { intensity: 0.15 },
+    prizm: { intensity: 0.15 },
+    rainbow: { intensity: 0.15 },
+    chrome: { intensity: 0.15 },
+    gold: { intensity: 0.15 },
+    black: { intensity: 0.15 },
+    // Add any other effect needed for your selector defaults, always as { intensity: number }
   });
 
   // --- END NEW
