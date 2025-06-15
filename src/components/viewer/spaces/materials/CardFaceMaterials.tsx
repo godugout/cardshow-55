@@ -139,8 +139,11 @@ function useCardBackCanvasTexture(
     if (selectedMaterial.texture === "noise") {
       // Simple noise (grain) overlay for vintage, for demo
       for (let i = 0; i < 2000; i++) {
-        const x = Math.random() * cardWidth;
-        const y = Math.random() * cardHeight;
+        // Ensure cardWidth and cardHeight are numbers for arithmetic
+        const safeCardWidth = Number(cardWidth);
+        const safeCardHeight = Number(cardHeight);
+        const x = Math.random() * safeCardWidth;
+        const y = Math.random() * safeCardHeight;
         const alpha = Math.floor(30 + Math.random() * 40); // 30-70
         ctx.fillStyle = `rgba(80,70,60,${alpha / 255})`;
         ctx.fillRect(x, y, 1, 1);
