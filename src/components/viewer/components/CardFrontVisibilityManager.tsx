@@ -14,6 +14,7 @@ interface CardFrontVisibilityManagerProps {
 
 const getAxisFrontOpacity = (normalizedRotation: number): number => {
   const fadeRange = 30;
+  // Front should be visible when rotation is 0° to 90° or 270° to 360°
   const isFrontVisible = normalizedRotation <= 90 || normalizedRotation >= 270;
   if (!isFrontVisible) return 0;
 
@@ -26,7 +27,7 @@ const getAxisFrontOpacity = (normalizedRotation: number): number => {
   else if (normalizedRotation >= 270 && normalizedRotation < 270 + fadeRange) {
     opacity = (normalizedRotation - 270) / fadeRange;
   }
-  return opacity;
+  return Math.max(0, Math.min(1, opacity));
 };
 
 export const CardFrontVisibilityManager: React.FC<CardFrontVisibilityManagerProps> = ({
@@ -38,9 +39,12 @@ export const CardFrontVisibilityManager: React.FC<CardFrontVisibilityManagerProp
     const normalizedY = ((rotation.y % 360) + 360) % 360;
     const normalizedX = ((rotation.x % 360) + 360) % 360;
 
-    const isStrictlyFrontVisible = (normalizedY <= 90 || normalizedY >= 270) && (normalizedX <= 90 || normalizedX >= 270);
-
     if (solidCardTransition) {
+      // For solid transitions, show front when both axes are in front range
+      const isFrontVisibleY = normalizedY <= 90 || normalizedY >= 270;
+      const isFrontVisibleX = normalizedX <= 90 || normalizedX >= 270;
+      const isStrictlyFrontVisible = isFrontVisibleY && isFrontVisibleX;
+      
       return {
         opacity: isStrictlyFrontVisible ? 1 : 0,
         zIndex: isStrictlyFrontVisible ? 25 : 5,
@@ -50,15 +54,18 @@ export const CardFrontVisibilityManager: React.FC<CardFrontVisibilityManagerProp
     const opacityY = getAxisFrontOpacity(normalizedY);
     const opacityX = getAxisFrontOpacity(normalizedX);
     
-    // Final opacity is the minimum of opacities from each axis.
-    // This ensures the front fades out if either axis turns away.
+    // Use minimum opacity - front only shows when both axes are showing front
     const opacity = Math.min(opacityY, opacityX);
 
     console.log('🔄 Card Front - Rotation X:', normalizedX.toFixed(1), 'Y:', normalizedY.toFixed(1), 'Opacity:', opacity.toFixed(2));
     
+    // Ensure at least one face is always visible during transitions
+    const minVisibleOpacity = 0.1;
+    const adjustedOpacity = Math.max(minVisibleOpacity, opacity);
+    
     return { 
-      opacity: Math.max(0, opacity),
-      zIndex: opacity > 0.3 ? 25 : 15,
+      opacity: adjustedOpacity,
+      zIndex: adjustedOpacity > 0.3 ? 25 : 15,
     };
   };
 
@@ -66,4 +73,3 @@ export const CardFrontVisibilityManager: React.FC<CardFrontVisibilityManagerProp
   
   return <>{children(visibilityData)}</>;
 };
-
