@@ -110,14 +110,14 @@ function useCardBackCanvasTexture(
         stops.forEach(stop => {
           // Find color and percent
           const parts = stop.match(/(#[0-9a-fA-F]+|rgba?\([^)]+\)|[a-zA-Z0-9]+)\s*([0-9.]+%?)/);
+          let percent: number = 0;
           if (parts) {
             const color = parts[1];
-            let percent = 0;
             if (parts[2] !== undefined) {
               const parsed = parseFloat(parts[2]);
-              percent = isNaN(parsed) ? 0 : parsed / 100;
+              percent = (!isNaN(parsed) ? parsed : 0) / 100;
             }
-            gradient!.addColorStop(percent, color);
+            gradient!.addColorStop(percent, parts[1]);
           } else if (stop.startsWith('#') || stop.startsWith('rgb')) {
             // Support for stops without explicit percent (fallback)
             gradient!.addColorStop(0, stop);
