@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -15,7 +14,6 @@ interface CardFrontContainerProps {
   enhancedEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
-  onClick: () => void;
 }
 
 export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
@@ -29,7 +27,6 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting = false,
-  onClick
 }) => {
   // Improved visibility calculation with clearer angle ranges
   const getVisibility = () => {

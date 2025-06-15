@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -117,7 +118,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           enhancedEffectStyles={effectiveEnhancedEffectStyles}
           SurfaceTexture={effectiveSurfaceTexture}
           interactiveLighting={interactiveLighting}
-          onClick={onClick}
         />
 
         {/* Back of Card */}
