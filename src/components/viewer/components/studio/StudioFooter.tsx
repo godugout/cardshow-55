@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Download, Share2, Maximize2, Minimize2 } from 'lucide-react';
+import { Download, Share2, Maximize2, Minimize2, Orbit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface StudioFooterProps {
@@ -8,13 +8,17 @@ interface StudioFooterProps {
   onToggleFullscreen: () => void;
   onDownload: () => void;
   onShare?: () => void;
+  onToggle3D?: () => void;
+  is3D?: boolean;
 }
 
 export const StudioFooter: React.FC<StudioFooterProps> = ({
   isFullscreen,
   onToggleFullscreen,
   onDownload,
-  onShare
+  onShare,
+  onToggle3D,
+  is3D
 }) => {
   return (
     <div className="border-t border-white/10 p-4 bg-black/50">
@@ -29,6 +33,18 @@ export const StudioFooter: React.FC<StudioFooterProps> = ({
           View
         </Button>
         
+        {onToggle3D && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onToggle3D}
+            className="flex-1 border-white/20 text-white hover:bg-white/10"
+          >
+            <Orbit className="w-4 h-4 mr-2" />
+            {is3D ? 'View 2D' : 'View 3D'}
+          </Button>
+        )}
+
         {onShare && (
           <Button
             variant="outline"
