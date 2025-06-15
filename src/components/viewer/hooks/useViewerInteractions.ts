@@ -43,6 +43,7 @@ export const useViewerInteractions = ({
   const animationFrameRef = useRef<number>();
   const DRAG_THRESHOLD = 5; // pixels
   const [isMomentumActive, setIsMomentumActive] = useState(false);
+  const restingRotationRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   // Safe zone detection
   const { isInSafeZone } = useSafeZones({
@@ -52,13 +53,15 @@ export const useViewerInteractions = ({
     hasNavigation: hasMultipleCards
   });
 
-  // Enhanced mouse handling with increased rotation sensitivity for 360° rotation
+  // Enhanced mouse handling with hover effect only on card
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     // Do not run hover effect if mouse is down for a potential drag OR if momentum is active
     if (!containerRef.current || initialDragPosition.current || isMomentumActive) return;
     
     const rect = containerRef.current.getBoundingClientRect();
     const inSafeZone = isInSafeZone(e.clientX, e.clientY, rect);
+    const targetElement = e.target as HTMLElement;
+    const cardElement = targetElement.closest('[class*="cursor-grab"]');
     
     if (!isDragging && !inSafeZone) {
       const x = (e.clientX - rect.left) / rect.width;
@@ -69,11 +72,19 @@ export const useViewerInteractions = ({
       setIsHoveringControls(isInControlsArea);
       
       if (allowRotation && !autoRotate) {
-        // Increased sensitivity for full 360° rotation
-        setRotation({
-          x: (y - 0.5) * 40, // Increased from 20 to 40 for more responsive X rotation
-          y: (x - 0.5) * -180 // Increased from -20 to -180 for full Y rotation range
-        });
+        if (cardElement) {
+          const cardRect = cardElement.getBoundingClientRect();
+          const cardX = (e.clientX - cardRect.left) / cardRect.width;
+          const cardY = (e.clientY - cardRect.top) / cardRect.height;
+          
+          setRotation({
+            x: restingRotationRef.current.x + (cardY - 0.5) * 15, // Subtle hover effect
+            y: restingRotationRef.current.y + (cardX - 0.5) * -30,
+          });
+        } else {
+          // When not hovering card, return to resting rotation
+          setRotation(restingRotationRef.current);
+        }
       }
     }
   }, [isDragging, allowRotation, autoRotate, isInSafeZone, setMousePosition, setIsHoveringControls, setRotation, isMomentumActive]);
@@ -117,10 +128,12 @@ export const useViewerInteractions = ({
         const newRotationY = e.clientX - dragStart.x;
         const newRotationX = e.clientY - dragStart.y;
         
-        setRotation({
+        const newRotation = {
           x: newRotationX, // Allow full 360° X rotation
           y: newRotationY // Allow full 360° Y rotation
-        });
+        };
+        setRotation(newRotation);
+        restingRotationRef.current = newRotation; // Update resting rotation during drag
 
         // Calculate velocity for momentum
         velocityRef.current = {
@@ -156,10 +169,14 @@ export const useViewerInteractions = ({
             return;
           }
 
-          setRotation(prev => ({
-            x: prev.x + velocityRef.current.y,
-            y: prev.y + velocityRef.current.x,
-          }));
+          setRotation(prev => {
+            const newRotation = {
+              x: prev.x + velocityRef.current.y,
+              y: prev.y + velocityRef.current.x,
+            };
+            restingRotationRef.current = newRotation; // Update resting rotation during momentum
+            return newRotation;
+          });
 
           velocityRef.current.x *= 0.95; // Damping factor
           velocityRef.current.y *= 0.95;
