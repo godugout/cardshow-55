@@ -39,8 +39,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       style={{
         opacity: 1,
         zIndex: 15,
-        backfaceVisibility: 'hidden',
-        transform: 'rotateY(180deg)',
+        backfaceVisibility: 'hidden', // hides when facing away in 3D
+        // Removed explicit transform: 'rotateY(180deg)', flip is handled by parent container
         background: selectedMaterial.background,
         border: `2px solid ${selectedMaterial.borderColor}`,
         ...(selectedMaterial.blur && {

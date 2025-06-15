@@ -15,18 +15,16 @@ export const CardBackLogo: React.FC<CardBackLogoProps> = ({
   mousePosition,
   interactiveLighting = false
 }) => {
-  // Enhanced logo effects with proper flipping for back face
+  // Enhanced logo effects without flip for back face (parent rotation handles orientation)
   const getLogoEffects = () => {
     const baseTreatment = selectedMaterial.logoTreatment;
-    
-    // Always flip the logo horizontally on the back face to correct mirroring
-    const logoFlipTransform = 'scaleX(-1)';
-    console.log('🔄 Logo Transform - Applying flip for back face');
-    
+
+    // Remove scaleX(-1) because the container is correctly positioned now.
+    // Only apply the style props from material config.
     if (!interactiveLighting || !isHovering) {
       return {
         filter: baseTreatment.filter,
-        transform: `${logoFlipTransform} ${baseTreatment.transform}`,
+        transform: baseTreatment.transform,
         opacity: baseTreatment.opacity,
         userSelect: 'none' as const,
         WebkitUserSelect: 'none' as const,
@@ -46,7 +44,7 @@ export const CardBackLogo: React.FC<CardBackLogoProps> = ({
         brightness(${1 + intensity * 0.3})
         contrast(${1.1 + intensity * 0.2})
       `,
-      transform: `${logoFlipTransform} ${baseTreatment.transform} scale(${1 + intensity * 0.05})`,
+      transform: `${baseTreatment.transform} scale(${1 + intensity * 0.05})`,
       opacity: baseTreatment.opacity + intensity * 0.1,
       userSelect: 'none' as const,
       WebkitUserSelect: 'none' as const,
