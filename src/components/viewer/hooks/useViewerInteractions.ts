@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useSafeZones } from './useSafeZones';
 
 interface UseViewerInteractionsProps {
@@ -8,7 +8,7 @@ interface UseViewerInteractionsProps {
   setIsDragging: (dragging: boolean) => void;
   setDragStart: (start: { x: number; y: number }) => void;
   setAutoRotate: (rotate: boolean) => void;
-  setRotation: (rotation: { x: number; y: number }) => void;
+  setRotation: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
   setMousePosition: (position: { x: number; y: number }) => void;
   setIsHoveringControls: (hovering: boolean) => void;
   rotation: { x: number; y: number };
