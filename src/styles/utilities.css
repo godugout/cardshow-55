@@ -1,26 +1,9 @@
 
 @tailwind utilities;
 
-/* Animation classes */
-@keyframes particle-animation {
-  0% {
-    transform: translate(0, 0);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--x, 20px), var(--y, -50px));
-    opacity: 0;
-  }
-}
-
-.animate-fade-out {
-  animation: particle-animation 1.5s ease-out forwards;
-  --x: calc(random() * 60px - 30px);
-  --y: calc(random() * -70px - 20px);
-}
-
-/* Button text color utilities to ensure proper contrast */
+/* CRD Color Utilities */
 @layer utilities {
+  /* Button text color utilities with higher specificity */
   .btn-text-dark {
     color: #121212 !important;
   }
@@ -32,37 +15,77 @@
   .btn-text-gray {
     color: #777E90 !important;
   }
-  
-  /* Dynamic color utilities for secondary parameter labels */
-  .text-purple-400\/70 {
-    color: rgba(168, 85, 247, 0.7) !important;
+
+  /* CRD Color Classes */
+  .bg-crd-green {
+    background-color: #45B26B !important;
   }
   
-  .text-yellow-400\/70 {
-    color: rgba(250, 204, 21, 0.7) !important;
+  .text-crd-green {
+    color: #45B26B !important;
   }
   
-  .text-blue-400\/70 {
-    color: rgba(96, 165, 250, 0.7) !important;
+  .border-crd-green {
+    border-color: #45B26B !important;
   }
   
-  .text-gray-400\/70 {
-    color: rgba(156, 163, 175, 0.7) !important;
+  .shadow-crd-green {
+    box-shadow: 0 4px 6px -1px rgba(69, 178, 107, 0.1), 0 2px 4px -1px rgba(69, 178, 107, 0.06) !important;
+  }
+
+  /* Performance optimization utilities */
+  .will-change-transform {
+    will-change: transform;
   }
   
-  .text-green-400\/70 {
-    color: rgba(74, 222, 128, 0.7) !important;
+  .will-change-filter {
+    will-change: filter;
   }
   
-  .text-orange-400\/70 {
-    color: rgba(251, 146, 60, 0.7) !important;
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Smooth transitions */
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  .text-cyan-400\/70 {
-    color: rgba(34, 211, 238, 0.7) !important;
+  .transition-fast {
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
-  .text-amber-400\/70 {
-    color: rgba(251, 191, 36, 0.7) !important;
-  }
+}
+
+/* Custom CSS variables for better color consistency */
+:root {
+  --crd-green: #45B26B;
+  --crd-green-dark: #3a9659;
+  --crd-green-light: #55c27a;
+}
+
+/* Override Tailwind green classes to use CRD green */
+.bg-green-500,
+.bg-green-600 {
+  background-color: var(--crd-green) !important;
+}
+
+.hover\:bg-green-400:hover,
+.hover\:bg-green-500:hover {
+  background-color: var(--crd-green-light) !important;
+}
+
+.text-green-500,
+.text-green-600 {
+  color: var(--crd-green) !important;
+}
+
+.border-green-500,
+.border-green-600 {
+  border-color: var(--crd-green) !important;
+}
+
+/* Focus states for green elements */
+.focus\:ring-green-500:focus {
+  --tw-ring-color: rgba(69, 178, 107, 0.5) !important;
 }

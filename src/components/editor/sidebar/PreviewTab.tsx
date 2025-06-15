@@ -34,21 +34,23 @@ export const PreviewTab = ({ selectedTemplate, cardData, onContinueToEffects }: 
     toast.success('Generating share link...');
   };
 
-  const handleDownloadCard = (card: CardData) => {
-    const dataStr = JSON.stringify(card, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${card.title.replace(/\s+/g, '_')}_card.json`;
-    link.click();
-    
-    URL.revokeObjectURL(url);
-    toast.success('Card exported successfully');
+  const handleDownload = () => {
+    if (cardData) {
+      const dataStr = JSON.stringify(cardData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${cardData.title.replace(/\s+/g, '_')}_card.json`;
+      link.click();
+      
+      URL.revokeObjectURL(url);
+      toast.success('Card exported successfully');
+    }
   };
 
-  const handleShareCard = (card: CardData) => {
+  const handleShareCard = () => {
     const shareUrl = window.location.href;
     
     if (navigator.clipboard) {
@@ -161,7 +163,7 @@ export const PreviewTab = ({ selectedTemplate, cardData, onContinueToEffects }: 
           isOpen={showImmersiveViewer}
           onClose={() => setShowImmersiveViewer(false)}
           onShare={handleShareCard}
-          onDownload={handleDownloadCard}
+          onDownload={handleDownload}
           allowRotation={true}
           showStats={true}
           ambient={true}

@@ -7,7 +7,7 @@ import { CardFrontContainer } from './CardFrontContainer';
 import { CardBackContainer } from './CardBackContainer';
 import { CardEdgeContainer } from './CardEdgeContainer';
 import { Card3DTransform } from './Card3DTransform';
-import { useCachedCardEffects } from '../hooks/useCachedCardEffects';
+import { useDefaultEffectValues } from '../hooks/useDefaultEffectValues';
 
 interface EnhancedCardContainerProps {
   card: CardData;
@@ -39,7 +39,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   card,
   isHovering,
   showEffects,
-  effectValues,
+  effectValues: rawEffectValues,
   mousePosition,
   rotation,
   zoom,
@@ -48,51 +48,24 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting = false,
-  selectedScene,
-  selectedLighting,
-  materialSettings,
-  overallBrightness = [100],
-  showBackgroundInfo = true,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
-  onClick,
-  environmentControls = {
-    depthOfField: 1.0,
-    parallaxIntensity: 1.0,
-    fieldOfView: 75,
-    atmosphericDensity: 1.0
-  }
+  onClick
 }) => {
-  // Use cached effects for better performance only when all required props are available
-  const cachedEffects = selectedScene && selectedLighting && materialSettings ? useCachedCardEffects({
-    card,
-    effectValues,
-    mousePosition,
-    showEffects,
-    overallBrightness,
-    interactiveLighting,
-    selectedScene,
-    selectedLighting,
-    materialSettings,
-    zoom,
-    rotation,
-    isHovering
-  }) : null;
-
-  // Use cached styles if available, otherwise fall back to provided styles
-  const effectiveFrameStyles = cachedEffects?.frameStyles || frameStyles;
-  const effectiveEnhancedEffectStyles = cachedEffects?.enhancedEffectStyles || enhancedEffectStyles;
-  const effectiveSurfaceTexture = cachedEffects?.SurfaceTexture || SurfaceTexture;
+  // Use default values to prevent undefined errors
+  const effectValues = useDefaultEffectValues(rawEffectValues);
 
   return (
     <div 
-      className={`relative z-20 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      className={`relative z-20 transition-all duration-300 ${
+        isDragging ? 'cursor-grabbing' : 'cursor-grab'
+      }`}
       style={{
         transform: `scale(${zoom})`,
-        transition: isDragging ? 'none' : 'transform 0.3s ease',
-        filter: `brightness(${interactiveLighting && isHovering ? 1.3 : 1.2}) contrast(1.1)`
+        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        filter: `brightness(${interactiveLighting && isHovering ? 1.15 : 1.05}) contrast(1.03)`
       }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
@@ -115,9 +88,9 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           showEffects={showEffects}
           effectValues={effectValues}
           mousePosition={mousePosition}
-          frameStyles={effectiveFrameStyles}
-          enhancedEffectStyles={effectiveEnhancedEffectStyles}
-          SurfaceTexture={effectiveSurfaceTexture}
+          frameStyles={frameStyles}
+          enhancedEffectStyles={enhancedEffectStyles}
+          SurfaceTexture={SurfaceTexture}
           interactiveLighting={interactiveLighting}
           onClick={onClick}
         />
@@ -129,9 +102,9 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
           showEffects={showEffects}
           effectValues={effectValues}
           mousePosition={mousePosition}
-          frameStyles={effectiveFrameStyles}
-          enhancedEffectStyles={effectiveEnhancedEffectStyles}
-          SurfaceTexture={effectiveSurfaceTexture}
+          frameStyles={frameStyles}
+          enhancedEffectStyles={enhancedEffectStyles}
+          SurfaceTexture={SurfaceTexture}
           interactiveLighting={interactiveLighting}
         />
 
