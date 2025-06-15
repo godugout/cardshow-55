@@ -4,7 +4,7 @@ import { useState } from 'react';
 export interface SectionStates {
   styles: boolean;
   effects: boolean;
-  scene: boolean;
+  spaces: boolean;
   materials: boolean;
 }
 
@@ -12,7 +12,7 @@ export const useSectionManager = () => {
   const [sectionStates, setSectionStates] = useState<SectionStates>({
     styles: true, // Default open
     effects: false,
-    scene: false,
+    spaces: false,
     materials: false
   });
 

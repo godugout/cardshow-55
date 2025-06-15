@@ -1,11 +1,10 @@
-
 import React, { useCallback } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSectionManager } from './hooks/useSectionManager';
 import { 
   StylesSection, 
   EffectsSection, 
-  SceneSection, 
+  SpacesSection,
   SurfaceSection
 } from './sections';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
@@ -82,13 +81,13 @@ export const StudioContent: React.FC<StudioContentProps> = ({
           />
 
           {/* Scene Section - For environment, lighting, and brightness */}
-          <SceneSection
+          <SpacesSection
             selectedScene={selectedScene}
             selectedLighting={selectedLighting}
             overallBrightness={overallBrightness}
             interactiveLighting={interactiveLighting}
-            isOpen={sectionStates.scene !== false}
-            onToggle={(isOpen) => setSectionState('scene', isOpen)}
+            isOpen={sectionStates.spaces !== false}
+            onToggle={(isOpen) => setSectionState('spaces', isOpen)}
             onSceneChange={onSceneChange}
             onLightingChange={onLightingChange}
             onBrightnessChange={handleBrightnessChange}

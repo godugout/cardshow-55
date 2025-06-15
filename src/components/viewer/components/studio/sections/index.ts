@@ -1,5 +1,5 @@
 
 export { StylesSection } from './StylesSection';
 export { EffectsSection } from './EffectsSection';
-export { SceneSection } from './SceneSection';
+export { SpacesSection } from './SpacesSection';
 export { SurfaceSection } from './SurfaceSection';
