@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import { ViewerUI } from './components/ViewerUI';
@@ -10,8 +9,7 @@ import { ViewerControls } from './components/ViewerControls';
 import { usePerformanceMonitor } from './hooks/usePerformanceMonitor';
 import { useUnifiedCardInteraction } from './hooks/useUnifiedCardInteraction';
 import type { EffectValues } from './hooks/useEnhancedCardEffects';
-import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls, BackgroundType } from './types';
-import type { SpaceEnvironment, SpaceControls } from './spaces/types';
+import type { EnvironmentControls } from './types';
 import { EnhancedCardContainer } from './components/EnhancedCardContainer';
 
 interface ImmersiveCardViewerProps {
@@ -91,8 +89,6 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     setIsHoveringControls,
     showExportDialog,
     setShowExportDialog,
-    backgroundType,
-    setBackgroundType,
     selectedScene,
     setSelectedScene,
     selectedLighting,
@@ -105,10 +101,6 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
     setMaterialSettings,
     selectedPresetId,
     setSelectedPresetId,
-    selectedSpace,
-    setSelectedSpace,
-    spaceControls,
-    setSpaceControls,
     handleResetCamera,
     onCardClick
   } = useViewerState();
@@ -220,71 +212,58 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black">
-      {/* Background Renderer - SINGLE RENDER MODE ONLY */}
+      {/* Background Renderer */}
       <BackgroundRenderer
-        backgroundType={backgroundType}
-        selectedSpace={selectedSpace}
-        spaceControls={spaceControls}
-        adaptedCard={adaptedCard}
-        onCardClick={onCardClick}
-        onCameraReset={handleResetCamera}
         selectedScene={selectedScene}
-        selectedLighting={selectedLighting}
         mousePosition={mousePosition}
         isHovering={isHovering}
-        effectValues={effectValues}
-        materialSettings={materialSettings}
-        overallBrightness={overallBrightness}
-        interactiveLighting={interactiveLighting}
       />
 
-      {/* Main Card Display - ONLY FOR 2D MODE */}
-      {backgroundType !== '3dSpace' && (
+      {/* Main Card Display */}
+      <div 
+        className="relative h-full flex items-center justify-center"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
         <div 
-          className="relative h-full flex items-center justify-center"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          className="relative"
+          style={{
+            width: '400px',
+            height: '560px',
+            perspective: '1000px'
+          }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          <div 
-            className="relative"
-            style={{
-              width: '400px',
-              height: '560px',
-              perspective: '1000px'
-            }}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <EnhancedCardContainer
-              card={card}
-              isHovering={isHovering}
-              showEffects={showEffects}
-              effectValues={effectValues}
-              mousePosition={mousePosition}
-              rotation={rotation}
-              zoom={zoom}
-              isDragging={isDragging}
-              frameStyles={frameStyles}
-              enhancedEffectStyles={enhancedEffectStyles}
-              SurfaceTexture={SurfaceTexture}
-              interactiveLighting={interactiveLighting}
-              selectedScene={selectedScene}
-              selectedLighting={selectedLighting}
-              materialSettings={materialSettings}
-              overallBrightness={overallBrightness}
-              showBackgroundInfo={showBackgroundInfo}
-              onMouseDown={() => {}}
-              onMouseMove={() => {}}
-              onMouseEnter={() => {}}
-              onMouseLeave={() => {}}
-              onClick={onCardClick}
-              environmentControls={environmentControls}
-            />
-          </div>
+          <EnhancedCardContainer
+            card={card}
+            isHovering={isHovering}
+            showEffects={showEffects}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            rotation={rotation}
+            zoom={zoom}
+            isDragging={isDragging}
+            frameStyles={frameStyles}
+            enhancedEffectStyles={enhancedEffectStyles}
+            SurfaceTexture={SurfaceTexture}
+            interactiveLighting={interactiveLighting}
+            selectedScene={selectedScene}
+            selectedLighting={selectedLighting}
+            materialSettings={materialSettings}
+            overallBrightness={overallBrightness}
+            showBackgroundInfo={showBackgroundInfo}
+            onMouseDown={() => {}}
+            onMouseMove={() => {}}
+            onMouseEnter={() => {}}
+            onMouseLeave={() => {}}
+            onClick={onCardClick}
+            environmentControls={environmentControls}
+          />
         </div>
-      )}
+      </div>
 
       {/* Top UI Controls */}
       <ViewerUI
@@ -359,13 +338,6 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
         onApplyCombo={() => {}}
         environmentControls={environmentControls}
         onEnvironmentControlsChange={setEnvironmentControls}
-        backgroundType={backgroundType}
-        onBackgroundTypeChange={setBackgroundType}
-        onSpaceChange={setSelectedSpace}
-        selectedSpace={selectedSpace}
-        spaceControls={spaceControls}
-        onSpaceControlsChange={setSpaceControls}
-        onResetCamera={handleReset}
       />
     </div>
   );

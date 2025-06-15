@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { Sparkles, X } from 'lucide-react';
 import { ScrollableStudioContent } from './studio/ScrollableStudioContent';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
-import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls, BackgroundType } from '../types';
-import type { SpaceEnvironment, SpaceControls } from '../spaces/types';
+import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
 
 interface StudioPanelProps {
   isVisible: boolean;
@@ -27,13 +25,6 @@ interface StudioPanelProps {
   isApplyingPreset?: boolean;
   environmentControls?: EnvironmentControls;
   onEnvironmentControlsChange?: (controls: EnvironmentControls) => void;
-  backgroundType?: BackgroundType;
-  onBackgroundTypeChange?: (type: BackgroundType) => void;
-  onSpaceChange?: (space: SpaceEnvironment) => void;
-  selectedSpace?: SpaceEnvironment | null;
-  spaceControls?: SpaceControls;
-  onSpaceControlsChange?: (controls: SpaceControls) => void;
-  onResetCamera?: () => void;
 }
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({

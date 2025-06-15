@@ -1,7 +1,34 @@
-
 import type { EnvironmentScene } from '../types';
 
 export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
+  {
+    id: 'clean-studio',
+    name: 'Clean Studio',
+    icon: '📸',
+    category: 'professional',
+    description: 'Bright, professional studio with clean lighting',
+    panoramicUrl: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%)',
+    lighting: { color: '#ffffff', intensity: 1.2, elevation: 60, azimuth: 0 },
+    atmosphere: { fog: false, fogColor: '#ffffff', fogDensity: 0.1, particles: false },
+    depth: { layers: 3, parallaxIntensity: 0.8, fieldOfView: 80 }
+  },
+  {
+    id: 'art-gallery',
+    name: 'Art Gallery',
+    icon: '🖼️',
+    category: 'luxury',
+    description: 'Modern art gallery with focused spotlights',
+    panoramicUrl: 'https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%)',
+    lighting: { color: '#ffd700', intensity: 1.0, elevation: 45, azimuth: 30 },
+    atmosphere: { fog: false, fogColor: '#000000', fogDensity: 0, particles: false },
+    depth: { layers: 5, parallaxIntensity: 1.1, fieldOfView: 75 }
+  },
   {
     id: 'forest',
     name: 'Enchanted Forest',
@@ -169,5 +196,19 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
       parallaxIntensity: 0.8,
       fieldOfView: 110
     }
+  },
+  {
+    id: 'abstract-gradient',
+    name: 'Abstract Gradient',
+    icon: '🎨',
+    category: 'artistic',
+    description: 'A vibrant, flowing artistic color gradient',
+    panoramicUrl: 'https://images.unsplash.com/photo-1554034483-043a35443c24?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1554034483-043a35443c24?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1554034483-043a35443c24?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%)',
+    lighting: { color: '#ff6b6b', intensity: 1.1, elevation: 45, azimuth: 45 },
+    atmosphere: { fog: false, fogColor: '#000000', fogDensity: 0, particles: true },
+    depth: { layers: 2, parallaxIntensity: 0.5, fieldOfView: 90 }
   }
 ];
