@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -20,6 +19,21 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
+  // --- NEW: Default minimal custom-back effect values for card initialization
+  const [effectValues, setEffectValues] = useState({
+    holographic: 0.15,
+    refractor: 0.15,
+    foil: 0.15,
+    prizm: 0.15,
+    rainbow: 0.15,
+    chrome: 0.15,
+    gold: 0.15,
+    black: 0.15,
+    // Add any other effect needed for your selector defaults
+  });
+
+  // --- END NEW
+
   // Environment and effects state - Simplified to only handle 2D scenes
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
   const [selectedLighting, setSelectedLighting] = useState<LightingPreset>(LIGHTING_PRESETS[0]);
@@ -31,7 +45,10 @@ export const useViewerState = () => {
     clearcoat: 0.0,
     reflectivity: 0.5
   });
-  const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>();
+
+  // --- NEW: Preset state initialized to "custom-init"
+  const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>("custom-init");
+  // --- END NEW
 
   // Action handlers
   const handleReset = useCallback(() => {
@@ -85,6 +102,10 @@ export const useViewerState = () => {
     setIsHoveringControls,
     showExportDialog,
     setShowExportDialog,
+
+    // NEW: expose effectValues/setEffectValues for use as initial for child hooks (if needed)
+    effectValues,
+    setEffectValues,
 
     // Environment state
     selectedScene,
