@@ -21,7 +21,7 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
         <img 
           src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
           alt="CRD Logo" 
-          className="w-8 h-8"
+          className="w-24 h-24"
           onError={(e) => {
             console.warn('CRD logo failed to load');
             e.currentTarget.style.display = 'none';
@@ -33,7 +33,7 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
           onClick={onClose}
           className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center px-3 py-2"
         >
-          <span className="text-sm font-medium">Back to CRD</span>
+          <span className="text-sm font-medium">Back</span>
         </Button>
       </div>
 
