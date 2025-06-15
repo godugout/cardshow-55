@@ -185,9 +185,12 @@ function useCardBackCanvasTexture(
     logoImg.onload = () => {
       // clear center region (optional)
       // draw logo in the center
-      const scale = (selectedMaterial.logoTreatment?.transform?.match(/scale\(([\d.]+)\)/)?.[1] || 1.0) * 1;
-      const logoW = 180 * scale; // appearance tweak
-      const logoH = 180 * scale;
+      // FIX: Ensure scale is always a number (parse, fallback to 1.0)
+      const rawScale = selectedMaterial.logoTreatment?.transform?.match(/scale\(([\d.]+)\)/)?.[1];
+      const scale = rawScale ? parseFloat(rawScale) : 1.0;
+      const safeScale = Number.isFinite(scale) ? scale : 1.0;
+      const logoW = 180 * safeScale; // appearance tweak
+      const logoH = 180 * safeScale;
       const x = cardWidth / 2 - logoW / 2;
       const y = cardHeight / 2 - logoH / 2;
       ctx.save();
