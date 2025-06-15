@@ -1,68 +1,41 @@
 
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useResolveStudioCard } from './useResolveStudioCard';
 import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
 import { mockCards } from '../mockData';
 
+// Core studio state management
 export const useStudioState = () => {
-  const { cardId } = useParams<{ cardId?: string }>();
-  const navigate = useNavigate();
+  const resolveCard = useResolveStudioCard();
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load card data based on URL params - always load default card for /studio (no cardId)
+  // On mount and when params change, resolve the card
   useEffect(() => {
-    const loadCard = async () => {
-      setIsLoading(true);
-      if (cardId) {
-        // Find the specific card
-        const card = mockCards.find(c => c.id === cardId);
-        if (card) {
-          setSelectedCard(card);
-          const index = mockCards.findIndex(c => c.id === cardId);
-          setCurrentCardIndex(index);
-        } else {
-          toast.error('Card not found');
-          // If invalid cardId, fallback to default
-          setSelectedCard(mockCards[0]);
-          setCurrentCardIndex(0);
-          navigate('/studio', { replace: true });
-          return;
-        }
-      } else {
-        // Always load default card (first card in array) if no ID specified
-        setSelectedCard(mockCards[0]);
-        setCurrentCardIndex(0);
-        // If the user is not already at /studio/default-card, update route
-        if (window.location.pathname !== '/studio/default-card') {
-          navigate('/studio/default-card', { replace: true });
-        }
-      }
-      setIsLoading(false);
-    };
+    setIsLoading(true);
+    const [card, idx] = resolveCard();
+    setSelectedCard(card);
+    setCurrentCardIndex(idx);
+    setIsLoading(false);
+    // Log to debug card selection logic
+    console.log('[Studio] Loaded card:', card?.id, idx);
+  }, [resolveCard]);
 
-    loadCard();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cardId, navigate]);
-
-  // Handle card navigation
+  // Handle navigation (next/prev) by index.
   const handleCardChange = (index: number) => {
     const newCard = mockCards[index];
     if (newCard) {
       setSelectedCard(newCard);
       setCurrentCardIndex(index);
-      
-      // Update URL without preset if we're changing cards
-      navigate(`/studio/${newCard.id}`, { replace: true });
+      window.history.replaceState(null, '', `/studio/${newCard.id}`);
     }
   };
 
   // Handle sharing - generates shareable URL
   const handleShare = (card: CardData) => {
     const shareUrl = `${window.location.origin}/studio/${card.id}`;
-    
     if (navigator.clipboard) {
       navigator.clipboard.writeText(shareUrl)
         .then(() => toast.success('Studio link copied to clipboard!'))
@@ -72,16 +45,16 @@ export const useStudioState = () => {
     }
   };
 
-  // Handle download/export
+  // Fake download (could expand later)
   const handleDownload = () => {
     if (selectedCard) {
       toast.success(`Exporting ${selectedCard.title}...`);
     }
   };
 
-  // Handle closing studio
+  // On studio close, return to gallery
   const handleClose = () => {
-    navigate('/gallery');
+    window.location.href = '/gallery';
   };
 
   return {
@@ -95,4 +68,3 @@ export const useStudioState = () => {
     handleClose
   };
 };
-
