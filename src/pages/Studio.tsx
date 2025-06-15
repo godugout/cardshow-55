@@ -47,7 +47,7 @@ const Studio = () => {
   };
 
   const handleToggle3D = () => {
-    viewerState.setBackgroundType(prev => (prev === 'scene' ? 'space' : 'scene'));
+    viewerState.setBackgroundType(prev => (prev === 'scene' ? '3dSpace' : 'scene'));
   };
 
   if (isLoading) {
@@ -120,7 +120,7 @@ const Studio = () => {
           onDownload={handleDownload}
           onShare={() => handleShare(selectedCard)}
           onToggle3D={handleToggle3D}
-          is3D={viewerState.backgroundType === 'space'}
+          is3D={viewerState.backgroundType === '3dSpace'}
         />
       </div>
     </ErrorBoundary>
