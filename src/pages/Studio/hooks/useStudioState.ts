@@ -3,47 +3,66 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
-import { mockCards } from '../mockData';
+import { mockCards as fallbackMockCards } from '../mockData';
+import { useCards } from '@/hooks/useCards';
+import { useCardConversion } from '@/pages/Gallery/hooks/useCardConversion';
 
 export const useStudioState = () => {
   const { cardId } = useParams<{ cardId?: string }>();
   const navigate = useNavigate();
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [allCards, setAllCards] = useState<CardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load card data based on URL params
-  useEffect(() => {
-    const loadCard = async () => {
-      setIsLoading(true);
-      
-      if (cardId) {
-        // Find the specific card
-        const card = mockCards.find(c => c.id === cardId);
-        if (card) {
-          setSelectedCard(card);
-          const index = mockCards.findIndex(c => c.id === cardId);
-          setCurrentCardIndex(index);
-        } else {
-          toast.error('Card not found');
-          navigate('/studio');
-          return;
-        }
-      } else {
-        // Default to first card if no ID specified
-        setSelectedCard(mockCards[0]);
-        setCurrentCardIndex(0);
-      }
-      
-      setIsLoading(false);
-    };
+  const { featuredCards, loading: cardsLoading } = useCards();
+  const { convertCardsToCardData } = useCardConversion();
 
-    loadCard();
-  }, [cardId, navigate]);
+  // Load card data based on URL params and available data
+  useEffect(() => {
+    if (cardsLoading) {
+      setIsLoading(true);
+      return;
+    }
+
+    const dbCards = convertCardsToCardData(featuredCards || []);
+    const availableCards = dbCards.length > 0 ? dbCards : fallbackMockCards;
+    setAllCards(availableCards);
+
+    let cardToSelect: CardData | undefined;
+    let cardIndex = -1;
+
+    if (cardId) {
+      // Find the specific card from all available cards
+      cardIndex = availableCards.findIndex(c => c.id === cardId);
+      if (cardIndex !== -1) {
+        cardToSelect = availableCards[cardIndex];
+      } else {
+        toast.error('Card not found. Showing a default card instead.');
+        cardToSelect = availableCards[0];
+        cardIndex = 0;
+      }
+    } else {
+      // Default to first card if no ID specified
+      cardToSelect = availableCards[0];
+      cardIndex = 0;
+    }
+
+    if (cardToSelect) {
+      setSelectedCard(cardToSelect);
+      setCurrentCardIndex(cardIndex >= 0 ? cardIndex : 0);
+    } else {
+      // This case happens if both DB and mock cards are empty
+      toast.error('No cards are available to display.');
+      navigate('/gallery');
+    }
+    
+    setIsLoading(false);
+  }, [cardId, navigate, featuredCards, cardsLoading, convertCardsToCardData]);
 
   // Handle card navigation
   const handleCardChange = (index: number) => {
-    const newCard = mockCards[index];
+    const newCard = allCards[index];
     if (newCard) {
       setSelectedCard(newCard);
       setCurrentCardIndex(index);
@@ -82,7 +101,7 @@ export const useStudioState = () => {
     selectedCard,
     currentCardIndex,
     isLoading,
-    mockCards,
+    mockCards: allCards, // Pass the correct list of cards
     handleCardChange,
     handleShare,
     handleDownload,
