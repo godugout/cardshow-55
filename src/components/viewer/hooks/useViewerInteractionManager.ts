@@ -47,7 +47,7 @@ export const useViewerInteractionManager = (props: UseViewerInteractionManagerPr
   const hasMultipleCards = cards.length > 1;
 
   // Viewer interactions hook
-  const { containerRef, handleMouseMove, handleDragStart, handleDrag, handleDragEnd } = useViewerInteractions({
+  const { containerRef, handleMouseMove, handleDragStart, handleDrag, handleDragEnd, isMomentumActive } = useViewerInteractions({
     allowRotation,
     autoRotate,
     isDragging,
@@ -67,7 +67,7 @@ export const useViewerInteractionManager = (props: UseViewerInteractionManagerPr
 
   // Auto-rotation effect
   useEffect(() => {
-    if (autoRotate && !isDragging) {
+    if (autoRotate && !isDragging && !isMomentumActive) {
       const animate = () => {
         setRotation(prev => ({
           x: Math.sin(Date.now() * 0.0005) * 10,
@@ -87,7 +87,7 @@ export const useViewerInteractionManager = (props: UseViewerInteractionManagerPr
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [autoRotate, isDragging, setRotation]);
+  }, [autoRotate, isDragging, isMomentumActive, setRotation]);
 
   return {
     containerRef,

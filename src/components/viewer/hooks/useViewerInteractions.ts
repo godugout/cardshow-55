@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSafeZones } from './useSafeZones';
 
 interface UseViewerInteractionsProps {
@@ -42,6 +43,7 @@ export const useViewerInteractions = ({
   const velocityRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const animationFrameRef = useRef<number>();
   const DRAG_THRESHOLD = 5; // pixels
+  const [isMomentumActive, setIsMomentumActive] = useState(false);
 
   // Safe zone detection
   const { isInSafeZone } = useSafeZones({
@@ -145,9 +147,13 @@ export const useViewerInteractions = ({
     if (isDragging) {
       setIsDragging(false);
       
-      if (!autoRotate) {
+      const hasMomentum = Math.abs(velocityRef.current.x) > 0.1 || Math.abs(velocityRef.current.y) > 0.1;
+
+      if (!autoRotate && hasMomentum) {
+        setIsMomentumActive(true);
         const animateMomentum = () => {
           if (Math.abs(velocityRef.current.x) < 0.1 && Math.abs(velocityRef.current.y) < 0.1) {
+            setIsMomentumActive(false);
             return;
           }
 
@@ -179,6 +185,7 @@ export const useViewerInteractions = ({
     // Stop momentum if auto-rotate is toggled on
     if (autoRotate && animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
+      setIsMomentumActive(false);
     }
   }, [autoRotate]);
 
@@ -196,6 +203,7 @@ export const useViewerInteractions = ({
     handleMouseMove,
     handleDragStart,
     handleDrag,
-    handleDragEnd
+    handleDragEnd,
+    isMomentumActive,
   };
 };
