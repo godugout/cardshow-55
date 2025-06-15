@@ -113,11 +113,10 @@ function useCardBackCanvasTexture(
           let percent: number = 0;
           if (parts) {
             const color = parts[1];
-            if (parts[2] !== undefined) {
-              const parsed = parseFloat(parts[2]);
-              percent = (!isNaN(parsed) ? parsed : 0) / 100;
-            }
-            gradient!.addColorStop(percent, parts[1]);
+            // SAFER percent parse: ensure parsed is a finite number
+            let parsed = parseFloat(parts[2]);
+            percent = Number.isFinite(parsed) ? parsed / 100 : 0;
+            gradient!.addColorStop(percent, color);
           } else if (stop.startsWith('#') || stop.startsWith('rgb')) {
             // Support for stops without explicit percent (fallback)
             gradient!.addColorStop(0, stop);
