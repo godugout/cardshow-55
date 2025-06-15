@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps } from './types';
 import { 
@@ -244,7 +245,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     <>
       <div 
         ref={containerRef}
-        className={`fixed inset-0 z-50 flex items-center justify-center select-none ${
+        className={`fixed inset-0 z-50 flex items-center justify-center select-none bg-crd-darkest/80 backdrop-blur-sm ${
           isFullscreen ? 'p-0' : 'p-8'
         } ${shouldShowPanel ? `pr-[${panelWidth + 32}px]` : ''}`}
         style={{
