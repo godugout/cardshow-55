@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps, MaterialSettings } from './types';
 import { 
@@ -9,7 +10,6 @@ import { useCardExport } from './hooks/useCardExport';
 import { ExportOptionsDialog } from './components/ExportOptionsDialog';
 import { StudioPanel } from './components/StudioPanel';
 import { useViewerState } from './hooks/useViewerState';
-import { adaptCardForSpaceRenderer } from './utils/cardAdapter';
 import { useViewerInteractionManager } from './hooks/useViewerInteractionManager';
 import { ViewerActionsManager } from './components/ViewerActionsManager';
 import { ViewerLayout } from './components/ViewerLayout';
@@ -61,8 +61,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     setIsHoveringControls,
     showExportDialog,
     setShowExportDialog,
-    backgroundType,
-    setBackgroundType,
     selectedScene,
     setSelectedScene,
     selectedLighting,
@@ -75,10 +73,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     setMaterialSettings,
     selectedPresetId,
     setSelectedPresetId,
-    selectedSpace,
-    setSelectedSpace,
-    spaceControls,
-    setSpaceControls,
     handleReset,
     handleZoom,
     handleResetCamera,
@@ -175,9 +169,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 
   if (!isOpen) return null;
 
-  // Adapt card for space renderer
-  const adaptedCard = adaptCardForSpaceRenderer(card);
-
   return (
     <>
       <ViewerActionsManager
@@ -223,10 +214,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
           rotation={rotation}
           zoom={zoom}
           isDragging={isDragging}
-          backgroundType={backgroundType}
-          selectedSpace={selectedSpace}
-          spaceControls={spaceControls}
-          adaptedCard={adaptedCard}
           frameStyles={getFrameStyles()}
           enhancedEffectStyles={getEnhancedEffectStyles()}
           SurfaceTexture={SurfaceTexture}
@@ -266,12 +253,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         onPresetSelect={setSelectedPresetId}
         onApplyCombo={() => {}} // Will be handled by ViewerActionsManager
         isApplyingPreset={isApplyingPreset}
-        backgroundType={backgroundType}
-        onBackgroundTypeChange={setBackgroundType}
-        onSpaceChange={setSelectedSpace}
-        selectedSpace={selectedSpace}
-        spaceControls={spaceControls}
-        onSpaceControlsChange={setSpaceControls}
         onResetCamera={handleResetCamera}
       />
 

@@ -4,20 +4,16 @@ import { useState } from 'react';
 export interface SectionStates {
   styles: boolean;
   effects: boolean;
-  environment: boolean;
-  lighting: boolean;
+  scene: boolean;
   materials: boolean;
-  spaces: boolean;
 }
 
 export const useSectionManager = () => {
   const [sectionStates, setSectionStates] = useState<SectionStates>({
     styles: true, // Default open
     effects: false,
-    environment: false,
-    lighting: false,
-    materials: false,
-    spaces: false
+    scene: false,
+    materials: false
   });
 
   const setSectionState = (section: keyof SectionStates, isOpen: boolean) => {
