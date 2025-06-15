@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
 
 export const useViewerState = () => {
   // Basic viewer state
@@ -48,9 +49,11 @@ export const useViewerState = () => {
     setZoom(1);
   }, []);
 
-  const onCardClick = useCallback(() => {
-    console.log('Card clicked');
-  }, []);
+  const onCardClick = useDoubleClick({
+    onDoubleClick: useCallback(() => {
+      setIsFlipped(prev => !prev);
+    }, []),
+  });
 
   return {
     // Basic state

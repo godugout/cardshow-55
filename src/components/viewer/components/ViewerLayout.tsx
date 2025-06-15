@@ -192,7 +192,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
           onMouseMove={handleDrag}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          onClick={() => {}}
+          onClick={onCardClick}
         />
       </div>
 

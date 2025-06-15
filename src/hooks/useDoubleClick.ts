@@ -2,11 +2,12 @@
 import { useRef, useCallback } from 'react';
 
 interface UseDoubleClickOptions {
+  onSingleClick?: () => void;
   onDoubleClick: () => void;
   delay?: number;
 }
 
-export const useDoubleClick = ({ onDoubleClick, delay = 300 }: UseDoubleClickOptions) => {
+export const useDoubleClick = ({ onSingleClick, onDoubleClick, delay = 300 }: UseDoubleClickOptions) => {
   const clickCountRef = useRef(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -18,6 +19,7 @@ export const useDoubleClick = ({ onDoubleClick, delay = 300 }: UseDoubleClickOpt
       timeoutRef.current = setTimeout(() => {
         // Reset if only single click within delay
         clickCountRef.current = 0;
+        onSingleClick?.();
       }, delay);
     } else if (clickCountRef.current === 2) {
       // Double click detected
@@ -28,7 +30,7 @@ export const useDoubleClick = ({ onDoubleClick, delay = 300 }: UseDoubleClickOpt
       clickCountRef.current = 0;
       onDoubleClick();
     }
-  }, [onDoubleClick, delay]);
+  }, [onSingleClick, onDoubleClick, delay]);
 
   return handleClick;
 };
