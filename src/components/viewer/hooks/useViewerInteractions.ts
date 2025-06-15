@@ -118,7 +118,7 @@ export const useViewerInteractions = ({
         const newRotationX = e.clientY - dragStart.y;
         
         setRotation({
-          x: Math.max(-90, Math.min(90, newRotationX)), // Limit X rotation to prevent flipping
+          x: newRotationX, // Allow full 360° X rotation
           y: newRotationY // Allow full 360° Y rotation
         });
 
@@ -157,7 +157,7 @@ export const useViewerInteractions = ({
           }
 
           setRotation(prev => ({
-            x: Math.max(-90, Math.min(90, prev.x + velocityRef.current.y)),
+            x: prev.x + velocityRef.current.y,
             y: prev.y + velocityRef.current.x,
           }));
 
