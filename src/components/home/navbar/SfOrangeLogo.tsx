@@ -1,7 +1,7 @@
 
 import React from "react";
 
-export const CardshowLogo = ({ className }: { className?: string }) => {
+export const SfOrangeLogo = ({ className }: { className?: string }) => {
   return (
     <svg id="Capa_5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 366.15 90.46" className={className}>
       <defs>
