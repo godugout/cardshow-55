@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { ViewerHeader } from './ViewerHeader';
 import { CompactCardDetails } from './CompactCardDetails';
 import { ViewerControls } from './ViewerControls';
@@ -9,6 +9,8 @@ import { BackgroundRenderer } from './BackgroundRenderer';
 import { EnhancedCardContainer } from './EnhancedCardContainer';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
+import { useDoubleClick } from '@/hooks/useDoubleClick';
+import { useSafeZones } from '../hooks/useSafeZones';
 
 interface ViewerLayoutProps {
   card: CardData;
@@ -104,6 +106,28 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
   const panelWidth = 320;
   const shouldShowPanel = showCustomizePanel;
 
+  const { isInSafeZone } = useSafeZones({
+    panelWidth,
+    showPanel: shouldShowPanel,
+    showStats,
+    hasNavigation: hasMultipleCards,
+  });
+
+  const handleCanvasDoubleClick = useDoubleClick({
+    onDoubleClick: (event: React.MouseEvent) => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        if (!isInSafeZone(event.clientX, event.clientY, rect)) {
+          // Prevent flip on interactive elements within overlays
+          const target = event.target as HTMLElement;
+          if (!target.closest('button, a, input, [role="slider"], [data-radix-collection-item]')) {
+            setIsFlipped(!isFlipped);
+          }
+        }
+      }
+    },
+  });
+
   return (
     <div 
       ref={containerRef}
@@ -120,6 +144,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleDragEnd}
       onMouseLeave={handleDragEnd}
+      onClick={handleCanvasDoubleClick}
     >
       <BackgroundRenderer
         selectedScene={selectedScene}
@@ -194,7 +219,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
           onMouseMove={handleDrag}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          onClick={onCardClick}
+          onClick={(e) => e.stopPropagation()}
         />
       </div>
 
@@ -208,4 +233,3 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
     </div>
   );
 };
-
