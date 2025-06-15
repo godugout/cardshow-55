@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -108,42 +109,60 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseLeave={onMouseLeave}
       onClick={onClick}
     >
-      <Card3DTransform
-        rotation={finalRotation}
-        mousePosition={mousePosition}
-        isDragging={isDragging}
-        interactiveLighting={interactiveLighting}
-        isHovering={isHovering}
+      {/* This acts as the 3D stage */}
+      <div
+        className="relative"
+        style={{
+          width: '400px',
+          height: '560px',
+          transform: `perspective(1000px) rotateX(${finalRotation.x}deg) rotateY(${finalRotation.y}deg)`,
+          transformStyle: 'preserve-3d',
+          transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
+          filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`
+        }}
       >
-        {/* Front of Card */}
-        <CardFrontContainer
-          card={card}
-          rotation={finalRotation}
-          isHovering={isHovering}
-          showEffects={showEffects}
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-          frameStyles={effectiveFrameStyles}
-          enhancedEffectStyles={effectiveEnhancedEffectStyles}
-          SurfaceTexture={effectiveSurfaceTexture}
-          interactiveLighting={interactiveLighting}
-          solidCardTransition={solidCardTransition}
-        />
-
-        {/* Back of Card */}
-        <CardBackContainer
-          rotation={finalRotation}
-          isHovering={isHovering}
-          showEffects={showEffects}
-          effectValues={effectValues}
-          mousePosition={mousePosition}
-          frameStyles={effectiveFrameStyles}
-          enhancedEffectStyles={effectiveEnhancedEffectStyles}
-          SurfaceTexture={effectiveSurfaceTexture}
-          interactiveLighting={interactiveLighting}
-          solidCardTransition={solidCardTransition}
-        />
-      </Card3DTransform>
+        {/* Card front: sits on front */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backfaceVisibility: 'hidden',
+            transform: 'rotateY(0deg)'
+          }}
+        >
+          <CardFrontContainer
+            card={card}
+            rotation={finalRotation}
+            isHovering={isHovering}
+            showEffects={showEffects}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            frameStyles={effectiveFrameStyles}
+            enhancedEffectStyles={effectiveEnhancedEffectStyles}
+            SurfaceTexture={effectiveSurfaceTexture}
+            interactiveLighting={interactiveLighting}
+          />
+        </div>
+        {/* Card back: sits on back, flipped */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)'
+          }}
+        >
+          <CardBackContainer
+            rotation={finalRotation}
+            isHovering={isHovering}
+            showEffects={showEffects}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            frameStyles={effectiveFrameStyles}
+            enhancedEffectStyles={effectiveEnhancedEffectStyles}
+            SurfaceTexture={effectiveSurfaceTexture}
+            interactiveLighting={interactiveLighting}
+          />
+        </div>
+      </div>
     </div>
   );
 };
