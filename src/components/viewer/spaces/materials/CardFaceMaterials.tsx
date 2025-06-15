@@ -11,43 +11,38 @@ interface Simple3DCard {
   image_url?: string;
 }
 
-// Utility function to create edge glow properties with null safety
+interface CardFaceMaterialsProps {
+  card: Simple3DCard;
+  effectValues: EffectValues;
+  isHovering?: boolean;
+  interactiveLighting?: boolean;
+}
+
+// Utility function to create edge glow properties
 export const createEdgeGlowProps = (
-  effectValues: EffectValues = {},
+  effectValues: EffectValues,
   isHovering: boolean = false,
   interactiveLighting: boolean = false
 ): { emissiveColor: THREE.Color; emissiveIntensity: number } => {
-  // Ensure effectValues is valid and has proper structure
-  if (!effectValues || typeof effectValues !== 'object') {
-    return {
-      emissiveColor: new THREE.Color(0x4a90e2),
-      emissiveIntensity: 0.5
-    };
-  }
-
-  // Get the dominant effect to determine glow color with null safety
+  // Get the dominant effect to determine glow color
   const activeEffects = Object.entries(effectValues).filter(([_, effect]) => 
-    effect && 
-    typeof effect === 'object' && 
-    effect.intensity && 
-    typeof effect.intensity === 'number' && 
-    effect.intensity > 10
+    effect.intensity && typeof effect.intensity === 'number' && effect.intensity > 10
   );
   
   if (activeEffects.length === 0) {
     return {
-      emissiveColor: new THREE.Color(0x4a90e2),
+      emissiveColor: new THREE.Color(0x4a90e2), // Default blue
       emissiveIntensity: 0.5
     };
   }
   
   // Find the effect with highest intensity
   const dominantEffect = activeEffects.reduce((max, current) => 
-    ((current[1]?.intensity as number) || 0) > ((max[1]?.intensity as number) || 0) ? current : max
+    (current[1].intensity as number) > (max[1].intensity as number) ? current : max
   );
   
   const [effectId, effect] = dominantEffect;
-  const intensity = ((effect?.intensity as number) || 0) / 100;
+  const intensity = (effect.intensity as number) / 100;
   
   // Color mapping for different effects
   const colorMap: Record<string, number> = {
@@ -67,7 +62,7 @@ export const createEdgeGlowProps = (
   };
   
   const baseColor = colorMap[effectId] || 0x4a90e2;
-  let finalIntensity = intensity * 1.5;
+  let finalIntensity = intensity * 1.5; // Increased base intensity
   
   // Boost intensity for hovering and interactive lighting
   if (isHovering && interactiveLighting) {
@@ -78,37 +73,32 @@ export const createEdgeGlowProps = (
   
   return {
     emissiveColor: new THREE.Color(baseColor),
-    emissiveIntensity: Math.min(finalIntensity, 3.0)
+    emissiveIntensity: Math.min(finalIntensity, 3.0) // Increased max intensity
   };
 };
 
-// Hook to create materials for card faces with comprehensive null safety
+// Hook to create materials for card faces
 export const useCardFaceMaterials = (
-  card: Simple3DCard | null,
-  effectValues: EffectValues = {},
+  card: Simple3DCard,
+  effectValues: EffectValues,
   isHovering: boolean = false,
   interactiveLighting: boolean = false
 ): THREE.Material[] => {
-  // Ensure card has valid structure
-  const safeCard = card || { id: 'default', title: 'Default Card' };
+  // Get specialized materials for front and back
+  const frontMaterial = useCardFrontMaterial(card, effectValues, isHovering, interactiveLighting);
+  const backMaterial = useCardBackMaterial(effectValues, isHovering, interactiveLighting);
   
-  // Ensure effectValues is properly structured
-  const safeEffectValues = effectValues && typeof effectValues === 'object' ? effectValues : {};
-
-  // Get specialized materials for front and back with null safety
-  const frontMaterial = useCardFrontMaterial(safeCard, safeEffectValues, isHovering, interactiveLighting);
-  const backMaterial = useCardBackMaterial(safeEffectValues, isHovering, interactiveLighting);
-  
-  // Get edge glow properties with null safety - using useMemo with proper dependency array
+  // Get edge glow properties
   const edgeGlowProps = useMemo(() => 
-    createEdgeGlowProps(safeEffectValues, isHovering, interactiveLighting),
-    [safeEffectValues, isHovering, interactiveLighting]
+    createEdgeGlowProps(effectValues, isHovering, interactiveLighting),
+    [effectValues, isHovering, interactiveLighting]
   );
 
-  // Create materials array for box geometry faces with useMemo for performance
-  const materials: THREE.Material[] = useMemo(() => {
-    // Create edge material
-    const edgeMaterial = new THREE.MeshStandardMaterial({
+  // Create materials array for box geometry faces
+  // Order: [+X, -X, +Y, -Y, +Z, -Z] = [right, left, top, bottom, front, back]
+  const materials: THREE.Material[] = useMemo(() => [
+    // Right side (+X) - Edge glow material
+    new THREE.MeshStandardMaterial({
       color: 0x1a1a1a,
       emissive: edgeGlowProps.emissiveColor,
       emissiveIntensity: edgeGlowProps.emissiveIntensity,
@@ -116,18 +106,42 @@ export const useCardFaceMaterials = (
       roughness: 0.6,
       transparent: true,
       opacity: 0.95
-    });
-
-    // Order: [+X, -X, +Y, -Y, +Z, -Z] = [right, left, top, bottom, front, back]
-    return [
-      edgeMaterial, // Right side (+X)
-      edgeMaterial.clone(), // Left side (-X)
-      edgeMaterial.clone(), // Top side (+Y)
-      edgeMaterial.clone(), // Bottom side (-Y)
-      frontMaterial, // Front face (+Z)
-      backMaterial // Back face (-Z)
-    ];
-  }, [frontMaterial, backMaterial, edgeGlowProps]);
+    }),
+    // Left side (-X) - Edge glow material
+    new THREE.MeshStandardMaterial({
+      color: 0x1a1a1a,
+      emissive: edgeGlowProps.emissiveColor,
+      emissiveIntensity: edgeGlowProps.emissiveIntensity,
+      metalness: 0.4,
+      roughness: 0.6,
+      transparent: true,
+      opacity: 0.95
+    }),
+    // Top side (+Y) - Edge glow material
+    new THREE.MeshStandardMaterial({
+      color: 0x1a1a1a,
+      emissive: edgeGlowProps.emissiveColor,
+      emissiveIntensity: edgeGlowProps.emissiveIntensity,
+      metalness: 0.4,
+      roughness: 0.6,
+      transparent: true,
+      opacity: 0.95
+    }),
+    // Bottom side (-Y) - Edge glow material
+    new THREE.MeshStandardMaterial({
+      color: 0x1a1a1a,
+      emissive: edgeGlowProps.emissiveColor,
+      emissiveIntensity: edgeGlowProps.emissiveIntensity,
+      metalness: 0.4,
+      roughness: 0.6,
+      transparent: true,
+      opacity: 0.95
+    }),
+    // Front face (+Z) - Card image
+    frontMaterial,
+    // Back face (-Z) - CRD back
+    backMaterial
+  ], [frontMaterial, backMaterial, edgeGlowProps]);
 
   return materials;
 };

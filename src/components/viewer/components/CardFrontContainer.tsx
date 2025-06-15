@@ -31,7 +31,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   interactiveLighting = false,
   onClick
 }) => {
-  // Improved visibility calculation for front face
+  // Improved visibility calculation with clearer angle ranges
   const getVisibility = () => {
     // Normalize rotation to 0-360 range
     const normalizedRotation = ((rotation.y % 360) + 360) % 360;
@@ -39,27 +39,30 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
     // Front is visible from 270° to 90° (crossing 0°/360°)
     const isFrontVisible = normalizedRotation >= 270 || normalizedRotation <= 90;
     
+    // Enhanced debug logging
     console.log('🔄 Card Front - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isFrontVisible);
     
     if (!isFrontVisible) {
       return { opacity: 0, zIndex: 5, display: 'none' as const };
     }
     
-    // Calculate smooth opacity transitions
+    // Calculate smooth opacity transitions with longer fade ranges
     let opacity = 1;
-    const fadeRange = 20; // Degrees for fade transition
+    const fadeRange = 30; // Increased from 15 to 30 degrees for smoother transitions
     
     if (normalizedRotation >= 270 && normalizedRotation <= 270 + fadeRange) {
-      // Fade in from 270° to 290°
+      // Fade in from 270° to 300°
       opacity = (normalizedRotation - 270) / fadeRange;
+      console.log('🔄 Card Front - Fade in (270°+):', opacity.toFixed(2));
     } else if (normalizedRotation >= 90 - fadeRange && normalizedRotation <= 90) {
-      // Fade out from 70° to 90°
+      // Fade out from 60° to 90°
       opacity = (90 - normalizedRotation) / fadeRange;
+      console.log('🔄 Card Front - Fade out (90°-):', opacity.toFixed(2));
     }
     
     return { 
       opacity: Math.max(0.1, opacity),
-      zIndex: opacity > 0.5 ? 25 : 15,
+      zIndex: opacity > 0.3 ? 25 : 15, // Higher z-index when more visible
       display: 'block' as const
     };
   };
@@ -81,12 +84,13 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
         backfaceVisibility: 'hidden',
         ...frameStyles
       }}
-      onClick={onClick}
+      data-visibility={frontOpacity > 0.1 ? 'visible' : 'hidden'}
+      data-front-rotation={rotation.y.toFixed(1)}
     >
-      {/* Base Card Frame */}
+      {/* Base Layer - Card Frame */}
       <div className="absolute inset-0 z-10" style={frameStyles} />
       
-      {/* Effects Layer */}
+      {/* Effects Layer - Only on Frame */}
       <div className="absolute inset-0 z-20">
         <CardEffectsLayer
           showEffects={showEffects}
@@ -96,79 +100,71 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
           physicalEffectStyles={enhancedEffectStyles}
           effectValues={effectValues}
           interactiveLighting={interactiveLighting}
-          applyToFrame={false} // Apply to full card
+          applyToFrame={true}
         />
         
-        {/* Surface Texture */}
-        <div className="relative z-20">
+        {/* Surface Texture - Only applied to frame areas */}
+        <div className="relative">
           {SurfaceTexture}
         </div>
       </div>
-      
-      {/* Card Image */}
-      <div className="relative h-full z-30">
-        {card.image_url ? (
+
+      {/* Card Image - Always On Top */}
+      <div className="absolute inset-0 z-40">
+        {card.image_url && (
           <img 
             src={card.image_url} 
             alt={card.title}
-            className="w-full h-full object-cover object-center rounded-xl"
+            className="w-full h-full object-cover"
             style={{
-              filter: showEffects 
-                ? 'brightness(1.05) contrast(1.02)' 
-                : 'none',
-              transition: 'filter 0.3s ease'
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              pointerEvents: 'none',
+              backfaceVisibility: 'hidden'
             }}
-            draggable="false"
+            draggable={false}
           />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl">
-            <div className="text-center text-gray-500">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gray-300 rounded-lg flex items-center justify-center">
-                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <p className="text-sm font-medium">No Image</p>
-            </div>
-          </div>
         )}
       </div>
 
-      {/* Card Content Overlay */}
-      <div className="absolute inset-0 z-40 p-6 pointer-events-none">
-        <div className="h-full flex flex-col">
-          <div className="mt-auto">
-            <div className="bg-black bg-opacity-40 backdrop-blur-sm rounded-lg p-3">
-              {card.title && (
-                <h3 className="text-white text-xl font-bold mb-1">{card.title}</h3>
-              )}
-              {card.description && (
-                <p className="text-white text-sm opacity-90">{card.description}</p>
-              )}
-              {card.rarity && (
-                <p className="text-white text-xs uppercase tracking-wide opacity-75 mt-1">{card.rarity}</p>
-              )}
-            </div>
+      {/* Card Content - Overlay */}
+      <div 
+        className="absolute inset-0 p-6 flex flex-col z-30"
+        style={{
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          pointerEvents: 'none',
+          backfaceVisibility: 'hidden'
+        }}
+      >
+        <div className="mt-auto">
+          <div className="bg-black bg-opacity-40 backdrop-filter backdrop-blur-sm rounded-lg p-3 text-white">
+            <h3 className="text-xl font-bold mb-1">{card.title}</h3>
+            {card.description && (
+              <p className="text-sm mb-1">{card.description}</p>
+            )}
+            {card.rarity && (
+              <p className="text-xs uppercase tracking-wide opacity-75">{card.rarity}</p>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Interactive Lighting */}
-      {interactiveLighting && isHovering && (
-        <div
-          className="absolute inset-0 z-50 pointer-events-none rounded-xl"
+      {/* Interactive Lighting Overlay - Very Subtle */}
+      {isHovering && interactiveLighting && (
+        <div 
+          className="absolute inset-0 pointer-events-none z-50"
           style={{
-            background: `
-              radial-gradient(
-                ellipse 180% 140% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-                rgba(255, 255, 255, 0.03) 0%,
-                rgba(255, 255, 255, 0.01) 50%,
-                transparent 85%
-              )
-            `,
+            background: `radial-gradient(
+              ellipse 120% 80% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+              rgba(255, 255, 255, 0.06) 0%,
+              rgba(255, 255, 255, 0.03) 40%,
+              transparent 70%
+            )`,
             mixBlendMode: 'soft-light',
-            transition: 'opacity 0.2s ease',
-            opacity: showEffects ? 0.6 : 0.3
+            opacity: 0.5,
+            transition: 'opacity 0.1s ease',
+            backfaceVisibility: 'hidden'
           }}
         />
       )}

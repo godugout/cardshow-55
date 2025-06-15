@@ -1,7 +1,8 @@
 
 import { useState, useCallback } from 'react';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../components/viewer/constants';
-import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../components/viewer/types';
+import type { EnvironmentScene, LightingPreset, MaterialSettings, BackgroundType } from '../components/viewer/types';
+import type { SpaceEnvironment, SpaceControls } from '../components/viewer/spaces/types';
 
 export const useViewerState = () => {
   // Basic viewer state
@@ -19,7 +20,8 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  // Environment and effects state
+  // Environment and effects state - Initialize with 2D scene background
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>('scene');
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
   const [selectedLighting, setSelectedLighting] = useState<LightingPreset>(LIGHTING_PRESETS[0]);
   const [overallBrightness, setOverallBrightness] = useState([100]);
@@ -31,6 +33,17 @@ export const useViewerState = () => {
     reflectivity: 0.5
   });
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>();
+
+  // Space-specific state with default space
+  const [selectedSpace, setSelectedSpace] = useState<SpaceEnvironment | null>(null);
+  const [spaceControls, setSpaceControls] = useState<SpaceControls>({
+    autoRotate: true,
+    orbitSpeed: 0.5,
+    floatIntensity: 1.0,
+    gravityEffect: 0.0,
+    fieldOfView: 45,
+    cameraDistance: 8
+  });
 
   // Action handlers
   const handleReset = useCallback(() => {
@@ -51,7 +64,7 @@ export const useViewerState = () => {
 
   const onCardClick = useCallback(() => {
     // Card click handler - can be customized
-    console.log('Card clicked');
+    console.log('Card clicked in 3D space');
   }, []);
 
   return {
@@ -84,6 +97,8 @@ export const useViewerState = () => {
     setShowExportDialog,
 
     // Environment state
+    backgroundType,
+    setBackgroundType,
     selectedScene,
     setSelectedScene,
     selectedLighting,
@@ -96,6 +111,12 @@ export const useViewerState = () => {
     setMaterialSettings,
     selectedPresetId,
     setSelectedPresetId,
+
+    // Space state
+    selectedSpace,
+    setSelectedSpace,
+    spaceControls,
+    setSpaceControls,
 
     // Actions
     handleReset,
