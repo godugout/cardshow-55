@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
@@ -31,7 +30,7 @@ interface EnhancedCardContainerProps {
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
-  onClick: () => void;
+  onClick: (event: React.MouseEvent) => void;
   environmentControls?: EnvironmentControls;
 }
 
@@ -146,4 +145,3 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
 };
 
 EnhancedCardContainer.displayName = 'EnhancedCardContainer';
-
