@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../components/viewer/constants';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../components/viewer/types';

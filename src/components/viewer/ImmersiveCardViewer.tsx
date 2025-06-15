@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import { ViewerUI } from './components/ViewerUI';
@@ -9,7 +10,7 @@ import { ViewerControls } from './components/ViewerControls';
 import { usePerformanceMonitor } from './hooks/usePerformanceMonitor';
 import { useUnifiedCardInteraction } from './hooks/useUnifiedCardInteraction';
 import type { EffectValues } from './hooks/useEnhancedCardEffects';
-import type { EnvironmentControls } from './types';
+import type { EnvironmentControls, MaterialSettings } from './types';
 import { EnhancedCardContainer } from './components/EnhancedCardContainer';
 
 interface ImmersiveCardViewerProps {

@@ -1,10 +1,11 @@
+
 import type { CardData } from '@/hooks/useCardEditor';
 
 export interface EnvironmentScene {
   id: string;
   name: string;
   icon: string;
-  category: 'natural' | 'fantasy' | 'futuristic' | 'architectural';
+  category: 'natural' | 'fantasy' | 'futuristic' | 'architectural' | 'professional' | 'luxury' | 'artistic';
   description: string;
   panoramicUrl: string;
   previewUrl: string;
