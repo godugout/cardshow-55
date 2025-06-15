@@ -30,7 +30,7 @@ export const LogoSelector = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 focus:ring-crd-primary focus:ring-offset-[#141416] rounded-md">
-          <SelectedLogoComponent className="h-20 object-contain" />
+          <SelectedLogoComponent className="h-12 object-contain" />
           <ChevronDown className="h-4 w-4 text-gray-400" />
         </button>
       </DropdownMenuTrigger>
@@ -39,9 +39,9 @@ export const LogoSelector = () => {
           <DropdownMenuItem
             key={logo.name}
             onSelect={() => setSelectedLogo(logo)}
-            className="cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center gap-4 py-2 px-3"
+            className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center gap-4 py-2 px-3"
           >
-            <logo.component className="h-12 w-32 object-contain" />
+            <logo.component className="h-12 w-32 object-contain opacity-75 group-hover:opacity-100 transition-opacity" />
             <span className="font-semibold">{logo.name}</span>
           </DropdownMenuItem>
         ))}
