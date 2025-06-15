@@ -14,8 +14,8 @@ interface CardBackVisibilityManagerProps {
 
 const getAxisBackOpacity = (normalizedRotation: number): number => {
   const fadeRange = 30;
-  // Since the back face is pre-flipped with rotateY(180deg), we need to adjust our visibility logic
-  // The back should be visible when the card is rotated 90° to 270° from the viewer's perspective
+  // Back should be visible when the card is rotated 90° to 270° from the viewer's perspective
+  // (No longer accounting for pre-flip since we removed the transform)
   const isBackVisible = normalizedRotation > 90 && normalizedRotation < 270;
   if (!isBackVisible) return 0;
 

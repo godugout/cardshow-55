@@ -48,7 +48,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
             zIndex,
             transition: 'opacity 0.3s ease, z-index 0.1s ease',
             backfaceVisibility: 'hidden',
-            transform: 'rotateY(180deg)', // Pre-flips the back face
+            // REMOVED: transform: 'rotateY(180deg)' - this was causing double flip
             background: selectedMaterial.background,
             border: `2px solid ${selectedMaterial.borderColor}`,
             ...(selectedMaterial.blur && {

@@ -59,8 +59,10 @@ export const CardFrontVisibilityManager: React.FC<CardFrontVisibilityManagerProp
 
     console.log('🔄 Card Front - Rotation X:', normalizedX.toFixed(1), 'Y:', normalizedY.toFixed(1), 'Opacity:', opacity.toFixed(2));
     
-    // Ensure at least one face is always visible during transitions
-    const minVisibleOpacity = 0.1;
+    // Safety fallback: ensure at least one face is always visible
+    // If back would be invisible (Y rotation 0-90 or 270-360), ensure front is visible
+    const backWouldBeVisible = normalizedY > 90 && normalizedY < 270;
+    const minVisibleOpacity = backWouldBeVisible ? 0 : 0.1;
     const adjustedOpacity = Math.max(minVisibleOpacity, opacity);
     
     return { 
