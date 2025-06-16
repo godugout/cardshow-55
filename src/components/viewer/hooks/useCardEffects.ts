@@ -11,14 +11,15 @@ export interface CardEffects {
 
 export const useCardEffects = (card: CardData) => {
   const effects = useMemo(() => {
-    const metadata = card.metadata?.effects;
+    // Use design_metadata instead of metadata to match CardData interface
+    const effectsData = card.design_metadata?.effects;
     return {
-      holographic: metadata?.holographic || false,
-      chrome: metadata?.chrome || false,
-      foil: metadata?.foil || false,
-      intensity: metadata?.intensity || 0.5
+      holographic: effectsData?.holographic || false,
+      chrome: effectsData?.chrome || false,
+      foil: effectsData?.foil || false,
+      intensity: effectsData?.intensity || 0.5
     };
-  }, [card.metadata?.effects]);
+  }, [card.design_metadata?.effects]);
 
   const effectClasses = useMemo(() => {
     const classes: string[] = [];

@@ -27,8 +27,8 @@ function CardMesh({ card }: { card: CardData }) {
       // Subtle breathing animation
       meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.05;
       
-      // Effect-based animations
-      if (card.metadata?.effects?.holographic) {
+      // Effect-based animations - check design_metadata instead of metadata
+      if (card.design_metadata?.effects?.holographic) {
         const material = meshRef.current.material as THREE.MeshStandardMaterial;
         material.emissiveIntensity = 0.2 + Math.sin(state.clock.elapsedTime * 2) * 0.1;
       }
@@ -40,9 +40,9 @@ function CardMesh({ card }: { card: CardData }) {
       <boxGeometry args={[cardWidth, cardHeight, cardDepth]} />
       <meshStandardMaterial
         map={texture}
-        roughness={card.metadata?.effects?.chrome ? 0.1 : 0.3}
-        metalness={card.metadata?.effects?.chrome ? 0.8 : 0.1}
-        emissive={card.metadata?.effects?.holographic ? new THREE.Color(0x004444) : new THREE.Color(0x000000)}
+        roughness={card.design_metadata?.effects?.chrome ? 0.1 : 0.3}
+        metalness={card.design_metadata?.effects?.chrome ? 0.8 : 0.1}
+        emissive={card.design_metadata?.effects?.holographic ? new THREE.Color(0x004444) : new THREE.Color(0x000000)}
         side={THREE.DoubleSide}
       />
     </mesh>
@@ -87,8 +87,8 @@ export function CardViewer3D({
         )}
       </Canvas>
       
-      {/* Effect overlays */}
-      {card.metadata?.effects?.holographic && (
+      {/* Effect overlays - check design_metadata */}
+      {card.design_metadata?.effects?.holographic && (
         <div className="absolute inset-0 pointer-events-none">
           <div className="holographic-overlay" />
         </div>

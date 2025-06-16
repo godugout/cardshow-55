@@ -41,19 +41,19 @@ export const Card3DPreview: React.FC<Card3DPreviewProps> = ({
           <span className="px-2 py-1 bg-crd-green bg-opacity-20 rounded text-crd-green">
             {card.rarity || 'Common'}
           </span>
-          {card.metadata?.effects && (
+          {card.design_metadata?.effects && (
             <div className="flex gap-1">
-              {card.metadata.effects.holographic && (
+              {card.design_metadata.effects.holographic && (
                 <span className="px-2 py-1 bg-purple-500 bg-opacity-20 rounded text-purple-300">
                   Holographic
                 </span>
               )}
-              {card.metadata.effects.chrome && (
+              {card.design_metadata.effects.chrome && (
                 <span className="px-2 py-1 bg-gray-500 bg-opacity-20 rounded text-gray-300">
                   Chrome
                 </span>
               )}
-              {card.metadata.effects.foil && (
+              {card.design_metadata.effects.foil && (
                 <span className="px-2 py-1 bg-pink-500 bg-opacity-20 rounded text-pink-300">
                   Foil
                 </span>
