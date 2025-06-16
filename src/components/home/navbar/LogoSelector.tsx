@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SfOrangeLogo } from './SfOrangeLogo';
 import { WashingtonLogo } from './WashingtonLogo';
 import { OaklandLogo } from './OaklandLogo';
@@ -63,35 +63,30 @@ const getHoverColorClasses = (color: string) => {
   return colorMap[color] || 'hover:bg-gray-500/10 hover:border-gray-500/20';
 };
 
-const getSelectedColorClasses = (color: string) => {
-  const colorMap = {
-    orange: 'bg-orange-500/5 border-orange-500/10',
-    red: 'bg-red-500/5 border-red-500/10',
-    green: 'bg-green-500/5 border-green-500/10',
-    yellow: 'bg-yellow-500/5 border-yellow-500/10',
-    blue: 'bg-blue-500/5 border-blue-500/10',
-    gray: 'bg-gray-500/5 border-gray-500/10',
-    emerald: 'bg-emerald-500/5 border-emerald-500/10',
-    purple: 'bg-purple-500/5 border-purple-500/10',
-    slate: 'bg-slate-500/5 border-slate-500/10',
-    amber: 'bg-amber-500/5 border-amber-500/10',
-    cyan: 'bg-cyan-500/5 border-cyan-500/10',
-    indigo: 'bg-indigo-500/5 border-indigo-500/10',
-  };
-  return colorMap[color] || 'bg-gray-500/5 border-gray-500/10';
-};
+interface LogoSelectorProps {
+  onColorChange?: (color: string) => void;
+}
 
-export const LogoSelector = () => {
+export const LogoSelector = ({ onColorChange }: LogoSelectorProps) => {
   const [selectedLogo, setSelectedLogo] = useState(logoGroups[0].logos[0]);
   const [isOpen, setIsOpen] = useState(false);
 
   const SelectedLogoComponent = selectedLogo.component;
-  const selectedColorClasses = getSelectedColorClasses(selectedLogo.hoverColor);
+
+  // Notify parent of color changes
+  useEffect(() => {
+    onColorChange?.(selectedLogo.hoverColor);
+  }, [selectedLogo.hoverColor, onColorChange]);
+
+  const handleLogoSelect = (logo: typeof selectedLogo) => {
+    setSelectedLogo(logo);
+    setIsOpen(false);
+  };
 
   return (
     <div className="relative z-[10000]">
       <button 
-        className={`flex items-center gap-2 cursor-pointer outline-none focus:outline-none border border-transparent bg-transparent p-2 rounded-lg transition-all duration-300 ${selectedColorClasses}`}
+        className="flex items-center gap-2 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-0"
         onClick={() => setIsOpen(!isOpen)}
         onBlur={() => setTimeout(() => setIsOpen(false), 150)}
       >
@@ -116,10 +111,7 @@ export const LogoSelector = () => {
                   return (
                     <button
                       key={logo.name}
-                      onClick={() => {
-                        setSelectedLogo(logo);
-                        setIsOpen(false);
-                      }}
+                      onClick={() => handleLogoSelect(logo)}
                       className={`group bg-[#2A2D37] rounded-xl p-4 transition-all duration-300 hover:scale-105 border border-transparent ${hoverClasses} hover:shadow-lg`}
                     >
                       <LogoComponent className="h-10 w-24 object-contain transition-all duration-300 group-hover:brightness-110" />
