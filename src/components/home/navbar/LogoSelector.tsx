@@ -73,7 +73,7 @@ export const LogoSelector = () => {
       </button>
 
       {/* Horizontal Dropdown Menu */}
-      <div className={`absolute top-full left-0 mt-2 bg-[#23262F] border border-[#353945] rounded-lg shadow-xl z-50 transition-all duration-300 transform origin-top ${
+      <div className={`absolute top-full left-0 mt-2 bg-[#23262F] border border-[#353945] rounded-lg shadow-xl z-[9999] transition-all duration-300 transform origin-top ${
         isOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'
       }`}>
         <div className="p-4 space-y-4 min-w-[800px]">
