@@ -12,7 +12,7 @@ interface WizardStepContentProps {
   wizardState: WizardState;
   cardData: CardData;
   templates: DesignTemplate[];
-  handlers: WizardHandlers;
+  handlers: WizardHandlers & { onBulkUpload?: () => void };
 }
 
 export const WizardStepContent = ({ 
@@ -29,6 +29,7 @@ export const WizardStepContent = ({
           selectedPhoto={wizardState.selectedPhoto}
           onPhotoSelect={handlers.handlePhotoSelect}
           onAnalysisComplete={handlers.handleAiAnalysis}
+          onBulkUpload={handlers.onBulkUpload}
         />
       );
     case 2:

@@ -1,18 +1,21 @@
+
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
-import { Image, Upload, Sparkles, Crop, RotateCw, Scissors, Check } from 'lucide-react';
+import { Image, Upload, Sparkles, Crop, RotateCw, Scissors, Check, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { analyzeCardImage } from '@/services/cardAnalyzer';
 import { AdvancedCropper } from '../AdvancedCropper';
+import { BulkUploadOption } from '../BulkUploadOption';
 
 interface PhotoUploadStepProps {
   selectedPhoto: string;
   onPhotoSelect: (photo: string) => void;
   onAnalysisComplete?: (analysis: any) => void;
+  onBulkUpload?: () => void;
 }
 
-export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComplete }: PhotoUploadStepProps) => {
+export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComplete, onBulkUpload }: PhotoUploadStepProps) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showAdvancedCrop, setShowAdvancedCrop] = useState(false);
   const [imageDetails, setImageDetails] = useState<{
@@ -240,6 +243,13 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
           </Button>
         )}
       </div>
+
+      {/* Bulk Upload Option - Secondary placement */}
+      {onBulkUpload && (
+        <div className="mb-8">
+          <BulkUploadOption onSelectBulkUpload={onBulkUpload} />
+        </div>
+      )}
 
       {/* Ready Section */}
       {selectedPhoto && !isAnalyzing && (

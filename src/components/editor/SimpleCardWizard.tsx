@@ -2,31 +2,20 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
-import { WizardHeader } from './wizard/WizardHeader';
 import { WizardStepContent } from './wizard/WizardStepContent';
 import { useWizardState } from './wizard/useWizardState';
 import type { CardData, DesignTemplate } from '@/hooks/useCardEditor';
 
 interface SimpleCardWizardProps {
   onComplete: (cardData: CardData) => void;
+  onBulkUpload?: () => void;
 }
 
-export const SimpleCardWizard = ({ onComplete }: SimpleCardWizardProps) => {
+export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardProps) => {
   const { wizardState, cardData, handlers, isSaving, templates } = useWizardState(onComplete);
 
   return (
     <div className="min-h-screen bg-crd-darkest">
-      {/* Header */}
-      <div className="bg-crd-darker border-b border-crd-mediumGray/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">Create New Card</h1>
-          <div className="text-crd-lightGray text-sm">
-            Upload your image and let AI suggest the perfect details
-            {wizardState.aiAnalysisComplete && <span className="text-crd-green ml-2">✨ AI analysis complete!</span>}
-          </div>
-        </div>
-      </div>
-
       {/* Progress Steps */}
       <div className="bg-crd-darker border-b border-crd-mediumGray/20 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,6 +49,9 @@ export const SimpleCardWizard = ({ onComplete }: SimpleCardWizardProps) => {
             <span className="text-crd-lightGray text-sm">
               Step {wizardState.currentStep} of 4
             </span>
+            {wizardState.aiAnalysisComplete && (
+              <span className="text-crd-green ml-4">✨ AI analysis complete!</span>
+            )}
           </div>
         </div>
       </div>
@@ -72,7 +64,7 @@ export const SimpleCardWizard = ({ onComplete }: SimpleCardWizardProps) => {
             wizardState={wizardState}
             cardData={cardData}
             templates={templates}
-            handlers={handlers}
+            handlers={{...handlers, onBulkUpload}}
           />
         </div>
 
