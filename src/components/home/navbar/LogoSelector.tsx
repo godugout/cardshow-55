@@ -112,9 +112,9 @@ export const LogoSelector = ({ onColorChange }: LogoSelectorProps) => {
                     <button
                       key={logo.name}
                       onClick={() => handleLogoSelect(logo)}
-                      className={`group bg-[#2A2D37] rounded-xl p-4 transition-all duration-300 hover:scale-105 border border-transparent ${hoverClasses} hover:shadow-lg`}
+                      className={`group bg-[#2A2D37] rounded-xl p-2 transition-all duration-300 hover:scale-105 border border-transparent ${hoverClasses} hover:shadow-lg flex items-center justify-center`}
                     >
-                      <LogoComponent className="h-10 w-24 object-contain transition-all duration-300 group-hover:brightness-110" />
+                      <LogoComponent className="h-8 w-20 object-contain transition-all duration-300 group-hover:brightness-110" />
                     </button>
                   );
                 })}
