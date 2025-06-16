@@ -27,8 +27,11 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
 
   return (
     <div className="absolute top-6 left-6 right-6 z-50 flex items-center justify-between pointer-events-none">
-      {/* Left: Compact Back Button - aligned with navbar logo */}
-      <div className="pointer-events-auto">
+      {/* Left: Empty space to maintain layout balance */}
+      <div></div>
+
+      {/* Right: Button group with Back and Studio buttons */}
+      <div className="flex items-center gap-2 pointer-events-auto">
         <Button
           variant="ghost"
           size="sm"
@@ -37,11 +40,8 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
         >
           <ArrowLeft className="w-4 h-4" />
         </Button>
-      </div>
-
-      {/* Right: Compact Studio Button (when panel is closed) */}
-      {showStudioButton && (
-        <div className="pointer-events-auto">
+        
+        {showStudioButton && (
           <Button
             variant="ghost"
             size="sm"
@@ -51,8 +51,8 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
             <Sparkles className="w-4 h-4 text-crd-green" />
             <span className="text-sm font-medium">Studio</span>
           </Button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
