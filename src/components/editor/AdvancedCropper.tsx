@@ -312,7 +312,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
             variant="outline"
             size="sm"
             onClick={() => setShowPreview(!showPreview)}
-            className="text-gray-300 border-editor-border"
+            className="text-gray-300 border-editor-border hover:bg-editor-tool hover:text-white"
           >
             {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             Preview
@@ -323,7 +323,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
             size="sm"
             onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
             disabled={zoom <= 0.5}
-            className="text-gray-300 border-editor-border"
+            className="text-gray-300 border-editor-border hover:bg-editor-tool hover:text-white"
           >
             <ZoomOut className="w-4 h-4" />
           </Button>
@@ -335,7 +335,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
             size="sm"
             onClick={() => setZoom(Math.min(3, zoom + 0.25))}
             disabled={zoom >= 3}
-            className="text-gray-300 border-editor-border"
+            className="text-gray-300 border-editor-border hover:bg-editor-tool hover:text-white"
           >
             <ZoomIn className="w-4 h-4" />
           </Button>
@@ -361,7 +361,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
           <Button
             variant="outline"
             onClick={onCancel}
-            className="border-editor-border text-white"
+            className="border-editor-border text-gray-300 hover:bg-editor-tool hover:text-white"
           >
             Cancel
           </Button>
@@ -404,7 +404,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
                       {crop.selected && ['tl', 'tr', 'bl', 'br'].map((handle) => (
                         <div
                           key={handle}
-                          className="absolute w-3 h-3 border border-white cursor-pointer hover:scale-110 transition-transform"
+                          className="absolute w-3 h-3 border border-gray-300 cursor-pointer hover:scale-110 transition-transform"
                           style={{
                             backgroundColor: crop.color,
                             top: handle.includes('t') ? -6 : 'auto',
@@ -442,7 +442,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
                 <Button
                   onClick={() => addCropArea('frame')}
                   variant="outline"
-                  className="w-full border-editor-border text-white hover:bg-blue-600/20"
+                  className="w-full border-editor-border text-gray-300 hover:bg-blue-600/20 hover:text-white hover:border-blue-400"
                   disabled={!imageLoaded}
                 >
                   <Square className="w-4 h-4 mr-2" />
@@ -451,7 +451,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
                 <Button
                   onClick={() => addCropArea('element')}
                   variant="outline"
-                  className="w-full border-editor-border text-white hover:bg-yellow-600/20"
+                  className="w-full border-editor-border text-gray-300 hover:bg-yellow-600/20 hover:text-white hover:border-yellow-400"
                   disabled={!imageLoaded}
                 >
                   <Maximize className="w-4 h-4 mr-2" />
@@ -467,7 +467,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
                 {cropAreas.map((crop) => (
                   <Card
                     key={crop.id}
-                    className={`p-3 cursor-pointer transition-all ${
+                    className={`p-3 cursor-pointer transition-all bg-editor-tool ${
                       crop.selected 
                         ? 'border-2' 
                         : 'border border-editor-border hover:border-gray-500'
@@ -496,7 +496,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
                             e.stopPropagation();
                             removeCropArea(crop.id);
                           }}
-                          className="p-1 h-auto text-red-400 hover:text-red-300"
+                          className="p-1 h-auto text-red-400 hover:text-red-300 hover:bg-red-400/10"
                         >
                           ×
                         </Button>
