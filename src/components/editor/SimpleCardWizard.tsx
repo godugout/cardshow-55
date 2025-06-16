@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { WizardStepContent } from './wizard/WizardStepContent';
+import { WizardProgressTracker } from './wizard/WizardProgressTracker';
 import { useWizardState } from './wizard/useWizardState';
 import type { CardData, DesignTemplate } from '@/hooks/useCardEditor';
 
@@ -10,6 +11,13 @@ interface SimpleCardWizardProps {
   onComplete: (cardData: CardData) => void;
   onBulkUpload?: () => void;
 }
+
+const wizardSteps = [
+  { number: 1, title: 'Upload', description: 'Add your photo' },
+  { number: 2, title: 'Template', description: 'Choose design' },
+  { number: 3, title: 'Details', description: 'Add information' },
+  { number: 4, title: 'Publish', description: 'Complete card' }
+];
 
 export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardProps) => {
   const { wizardState, cardData, handlers, isSaving, templates } = useWizardState(onComplete);
@@ -25,6 +33,14 @@ export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardP
             cardData={cardData}
             templates={templates}
             handlers={{...handlers, onBulkUpload}}
+          />
+        </div>
+
+        {/* Progress Tracker */}
+        <div className="mb-6">
+          <WizardProgressTracker 
+            currentStep={wizardState.currentStep}
+            steps={wizardSteps}
           />
         </div>
 

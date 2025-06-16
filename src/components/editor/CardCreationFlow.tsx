@@ -71,7 +71,7 @@ export const CardCreationFlow = ({ initialCardId }: CardCreationFlowProps) => {
         {/* Header with centered title and more padding */}
         <div className="border-b border-editor-border bg-editor-dark">
           <div className="flex items-center justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20">
-            <h1 className="text-2xl font-bold text-white">Create Your Card</h1>
+            <h1 className="text-2xl font-bold text-white">Create a CRD</h1>
           </div>
         </div>
 
