@@ -167,22 +167,9 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
   }
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">Upload Your Photo</h2>
-        <p className="text-crd-lightGray">
-          Choose the image that will be featured on your card
-        </p>
-        {isAnalyzing && (
-          <div className="mt-2 flex items-center justify-center gap-2 text-crd-green">
-            <Sparkles className="w-4 h-4 animate-pulse" />
-            <span className="text-sm">AI is analyzing your image...</span>
-          </div>
-        )}
-      </div>
-      
+    <div className="space-y-8">      
       {/* Card Preview Area */}
-      <div className="flex justify-center mb-8">
+      <div className="flex justify-center">
         <div className="bg-crd-mediumGray rounded-lg p-8 border-2 border-dashed border-crd-lightGray/30 max-w-md">
           {selectedPhoto ? (
             <div className="space-y-4">
@@ -223,7 +210,7 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
       </div>
 
       {/* Upload Actions */}
-      <div className="flex justify-center gap-4 mb-8">
+      <div className="flex justify-center gap-4">
         <Button
           onClick={() => document.getElementById('photo-input')?.click()}
           variant="outline"
@@ -244,41 +231,18 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
         )}
       </div>
 
-      {/* Bulk Upload Option - Secondary placement */}
+      {/* Bulk Upload Option */}
       {onBulkUpload && (
-        <div className="mb-8">
+        <div>
           <BulkUploadOption onSelectBulkUpload={onBulkUpload} />
         </div>
       )}
 
-      {/* Ready Section */}
-      {selectedPhoto && !isAnalyzing && (
-        <div className="bg-crd-darkGray border border-crd-mediumGray/30 rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Check className="w-5 h-5 text-crd-green" />
-            <h3 className="text-white font-semibold">Ready for Card Creation</h3>
-          </div>
-          <p className="text-crd-lightGray text-sm mb-6">
-            Your image has been processed and optimized for the standard trading card format. 
-            Use "Advanced Crop" to extract multiple elements (frame, logos, etc.) or proceed with the simple workflow.
-          </p>
-          
-          {/* Features */}
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <h4 className="text-white font-medium mb-2">Supported Formats & Features</h4>
-              <div className="text-crd-lightGray text-sm space-y-1">
-                <div>File Types:</div>
-                <div>JPG, PNG, WebP, GIF</div>
-              </div>
-            </div>
-            <div>
-              <h4 className="text-white font-medium mb-2">Advanced Features:</h4>
-              <div className="text-crd-lightGray text-sm space-y-1">
-                <div>Multi-element cropping, Frame extraction</div>
-              </div>
-            </div>
-          </div>
+      {/* Status Messages */}
+      {isAnalyzing && (
+        <div className="flex items-center justify-center gap-2 text-crd-green">
+          <Sparkles className="w-4 h-4 animate-pulse" />
+          <span className="text-sm">AI is analyzing your image...</span>
         </div>
       )}
 
