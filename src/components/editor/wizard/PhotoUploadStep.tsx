@@ -1,9 +1,11 @@
+
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
-import { Image, Upload, Sparkles, Crop, RotateCw } from 'lucide-react';
+import { Image, Upload, Sparkles, Crop, RotateCw, Scissors } from 'lucide-react';
 import { toast } from 'sonner';
 import { analyzeCardImage } from '@/services/cardAnalyzer';
+import { AdvancedCropper } from '../AdvancedCropper';
 
 interface PhotoUploadStepProps {
   selectedPhoto: string;
@@ -13,6 +15,7 @@ interface PhotoUploadStepProps {
 
 export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComplete }: PhotoUploadStepProps) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showAdvancedCrop, setShowAdvancedCrop] = useState(false);
   const [imageDetails, setImageDetails] = useState<{
     dimensions: { width: number; height: number };
     aspectRatio: number;
@@ -23,7 +26,7 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
     return new Promise((resolve, reject) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      const img = document.createElement('img'); // Fixed: Use createElement instead of new Image()
+      const img = document.createElement('img');
       
       img.onload = () => {
         // Standard trading card aspect ratio is 2.5:3.5 (roughly 0.714)
@@ -139,6 +142,28 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
     event.target.value = '';
   };
 
+  const handleAdvancedCropComplete = (crops: { main?: string; frame?: string; elements?: string[] }) => {
+    if (crops.main) {
+      onPhotoSelect(crops.main);
+      toast.success('Advanced crop applied to card!');
+    }
+    setShowAdvancedCrop(false);
+  };
+
+  // Show advanced cropper if active
+  if (showAdvancedCrop && selectedPhoto) {
+    return (
+      <div className="h-[600px]">
+        <AdvancedCropper
+          imageUrl={selectedPhoto}
+          onCropComplete={handleAdvancedCropComplete}
+          onCancel={() => setShowAdvancedCrop(false)}
+          aspectRatio={2.5 / 3.5}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -200,12 +225,12 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
                 Choose Different Photo
               </Button>
               <Button
-                variant="outline"
-                className="border-editor-border text-white hover:bg-editor-border"
+                onClick={() => setShowAdvancedCrop(true)}
+                className="bg-crd-green hover:bg-crd-green/90 text-black"
                 disabled={isAnalyzing}
               >
-                <Crop className="w-4 h-4 mr-2" />
-                Adjust Crop
+                <Scissors className="w-4 h-4 mr-2" />
+                Advanced Crop
               </Button>
             </div>
           </div>
@@ -249,22 +274,22 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
           </div>
           <p className="text-crd-lightGray text-xs">
             Your image has been processed and optimized for the standard trading card format. 
-            You can now choose a template that matches your style.
+            Use "Advanced Crop" to extract multiple elements (frame, logos, etc.) or proceed with the simple workflow.
           </p>
         </div>
       )}
 
       {/* Format Info */}
       <div className="bg-editor-darker p-4 rounded-lg">
-        <h4 className="text-white font-medium text-sm mb-2">Supported Formats</h4>
+        <h4 className="text-white font-medium text-sm mb-2">Supported Formats & Features</h4>
         <div className="grid grid-cols-2 gap-4 text-xs text-crd-lightGray">
           <div>
             <div className="font-medium">File Types:</div>
             <div>JPG, PNG, WebP, GIF</div>
           </div>
           <div>
-            <div className="font-medium">Recommendations:</div>
-            <div>High resolution, good lighting</div>
+            <div className="font-medium">Advanced Features:</div>
+            <div>Multi-element cropping, Frame extraction</div>
           </div>
         </div>
       </div>
