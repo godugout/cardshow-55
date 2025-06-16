@@ -133,7 +133,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 
   // Style generation hook - fix the parameters to match UseCardEffectsParams interface
   const { getFrameStyles, getEnhancedEffectStyles, surfaceTextureStyles } = useCardEffects({
-    card,
     effectValues,
     mousePosition,
     showEffects,
