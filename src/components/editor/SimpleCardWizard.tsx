@@ -46,11 +46,8 @@ export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardP
             ))}
           </div>
           <div className="text-center mt-4">
-            <span className="text-crd-lightGray text-sm">
-              Step {wizardState.currentStep} of 4
-            </span>
             {wizardState.aiAnalysisComplete && (
-              <span className="text-crd-green ml-4">✨ AI analysis complete!</span>
+              <span className="text-crd-green">✨ AI analysis complete!</span>
             )}
           </div>
         </div>
