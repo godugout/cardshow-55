@@ -34,7 +34,7 @@ export const LogoSelector = () => {
           <ChevronDown className="h-4 w-4 text-gray-400" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-[#23262F] border-[#353945] text-white">
+      <DropdownMenuContent className="bg-[#23262F] border-[#353945]">
         {logos.map((logo) => {
           const LogoComponent = logo.component;
           return (
