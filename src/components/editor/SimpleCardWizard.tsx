@@ -18,18 +18,16 @@ export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardP
     <div className="min-h-screen bg-crd-darkest">
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-crd-darkGray rounded-xl border border-crd-mediumGray/30 p-8 mb-6">
-          <WizardStepContent
-            currentStep={wizardState.currentStep}
-            wizardState={wizardState}
-            cardData={cardData}
-            templates={templates}
-            handlers={{...handlers, onBulkUpload}}
-          />
-        </div>
+        <WizardStepContent
+          currentStep={wizardState.currentStep}
+          wizardState={wizardState}
+          cardData={cardData}
+          templates={templates}
+          handlers={{...handlers, onBulkUpload}}
+        />
 
         {/* Navigation */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mt-8">
           <Button
             variant="outline"
             onClick={handlers.handleBack}
