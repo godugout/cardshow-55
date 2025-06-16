@@ -38,9 +38,40 @@ export const useCardEffects = (card: CardData) => {
     };
   }, [effects.intensity]);
 
+  // Add the missing methods expected by ImmersiveCardViewer
+  const getFrameStyles = useMemo(() => {
+    return () => ({
+      background: `linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)`,
+      border: '1px solid rgba(255,255,255,0.1)',
+      ...effectStyles
+    });
+  }, [effectStyles]);
+
+  const getEnhancedEffectStyles = useMemo(() => {
+    return () => ({
+      filter: `brightness(${1 + effects.intensity * 0.3}) contrast(${1 + effects.intensity * 0.2}) saturate(${1 + effects.intensity * 0.1})`,
+      transition: 'all 0.3s ease'
+    });
+  }, [effects.intensity]);
+
+  const SurfaceTexture = useMemo(() => (
+    <div 
+      className="absolute inset-0 opacity-10 bg-gradient-to-br from-white/5 to-transparent"
+      style={{
+        background: `
+          radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
+          linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 100%)
+        `
+      }}
+    />
+  ), []);
+
   return {
     effects,
     effectClasses,
-    effectStyles
+    effectStyles,
+    getFrameStyles,
+    getEnhancedEffectStyles,
+    SurfaceTexture
   };
 };
