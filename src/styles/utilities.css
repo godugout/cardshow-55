@@ -1,3 +1,4 @@
+
 @tailwind utilities;
 
 /* Animation classes */
@@ -16,19 +17,6 @@
   animation: particle-animation 1.5s ease-out forwards;
   --x: calc(random() * 60px - 30px);
   --y: calc(random() * -70px - 20px);
-}
-
-@keyframes holographic-flow {
-  0% {
-    transform: translateX(-100%) skewX(-12deg);
-  }
-  100% {
-    transform: translateX(200%) skewX(-12deg);
-  }
-}
-
-.animate-holographic-flow {
-  animation: holographic-flow 2s ease-in-out infinite;
 }
 
 /* Button text color utilities to ensure proper contrast */

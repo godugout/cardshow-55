@@ -71,13 +71,8 @@ export const LogoSelector = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 focus:ring-crd-primary focus:ring-offset-[#141416] rounded-md group">
-          <div className="relative overflow-hidden rounded-md">
-            <SelectedLogoComponent className="h-12 w-32 object-contain transition-all duration-300 group-hover:brightness-110" />
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 animate-holographic-flow"></div>
-            </div>
-          </div>
+        <button className="flex items-center gap-2 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 focus:ring-crd-primary focus:ring-offset-[#141416] rounded-md">
+          <SelectedLogoComponent className="h-12 w-32 object-contain" />
           <ChevronDown className="h-4 w-4 text-gray-400" />
         </button>
       </DropdownMenuTrigger>
@@ -95,12 +90,7 @@ export const LogoSelector = () => {
                   onSelect={() => setSelectedLogo(logo)}
                   className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center justify-center py-2 px-3"
                 >
-                  <div className="relative overflow-hidden rounded-md">
-                    <LogoComponent className="h-8 w-20 object-contain group-hover:scale-105 transition-all duration-300 group-hover:brightness-110" />
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent transform -skew-x-12 animate-holographic-flow"></div>
-                    </div>
-                  </div>
+                  <LogoComponent className="h-8 w-20 object-contain group-hover:scale-105 transition-all duration-300" />
                 </DropdownMenuItem>
               );
             })}
