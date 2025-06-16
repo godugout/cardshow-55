@@ -35,16 +35,18 @@ export const LogoSelector = () => {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-[#23262F] border-[#353945] text-white">
-        {logos.map((logo) => (
-          <DropdownMenuItem
-            key={logo.name}
-            onSelect={() => setSelectedLogo(logo)}
-            className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center gap-4 py-2 px-3"
-          >
-            <logo.component className="h-12 w-32 object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-300" />
-            <span className="font-semibold">{logo.name}</span>
-          </DropdownMenuItem>
-        ))}
+        {logos.map((logo) => {
+          const LogoComponent = logo.component;
+          return (
+            <DropdownMenuItem
+              key={logo.name}
+              onSelect={() => setSelectedLogo(logo)}
+              className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center justify-center py-2 px-3"
+            >
+              <LogoComponent className="h-8 w-20 object-contain group-hover:scale-105 transition-all duration-300" />
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );
