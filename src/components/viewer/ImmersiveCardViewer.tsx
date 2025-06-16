@@ -1,4 +1,5 @@
 
+
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps, MaterialSettings } from './types';
 import { 
@@ -130,7 +131,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     effectValues
   });
 
-  // Style generation hook
+  // Style generation hook - fix the parameters to match UseCardEffectsParams interface
   const { getFrameStyles, getEnhancedEffectStyles, surfaceTextureStyles } = useCardEffects({
     card,
     effectValues,
@@ -301,3 +302,4 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 };
 
 export default ImmersiveCardViewer;
+
