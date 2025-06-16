@@ -27,13 +27,13 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
 
   return (
     <div className="absolute top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none">
-      {/* Left: Back Button */}
+      {/* Left: Subtle Back Button */}
       <div className="pointer-events-auto">
         <Button
           variant="ghost"
           size="sm"
           onClick={handleBackClick}
-          className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center space-x-2 px-3 py-2"
+          className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center justify-center px-3 py-2"
         >
           <ArrowLeft className="w-4 h-4" />
         </Button>
