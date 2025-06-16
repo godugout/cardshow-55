@@ -86,12 +86,12 @@ export const LogoSelector = ({ onColorChange }: LogoSelectorProps) => {
   return (
     <div className="relative z-[10000]">
       <button 
-        className="flex items-center gap-2 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-0"
+        className="group flex items-center gap-2 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-2 rounded-lg transition-all duration-300 hover:bg-white/5"
         onClick={() => setIsOpen(!isOpen)}
         onBlur={() => setTimeout(() => setIsOpen(false), 150)}
       >
         <SelectedLogoComponent className="h-12 w-32 object-contain" />
-        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 text-gray-400 transition-all duration-300 opacity-0 group-hover:opacity-100 ${isOpen ? 'rotate-180 opacity-100' : ''}`} />
       </button>
 
       {/* Enhanced Dropdown Menu */}
