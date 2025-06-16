@@ -26,7 +26,7 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
   };
 
   return (
-    <div className="absolute top-6 left-6 right-6 z-50 flex items-center justify-between pointer-events-none">
+    <div className="absolute top-8 left-6 right-6 z-50 flex items-center justify-between pointer-events-none">
       {/* Left: Empty space to maintain layout balance */}
       <div></div>
 
