@@ -40,23 +40,6 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
     }
   };
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      await processFile(file);
-    }
-  }, [onPhotoSelect, onAnalysisComplete]);
-
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': []
-    },
-    maxFiles: 1,
-    noClick: true,
-    noKeyboard: true
-  });
-
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
