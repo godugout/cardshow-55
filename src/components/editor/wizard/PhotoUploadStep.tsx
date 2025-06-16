@@ -1,8 +1,7 @@
-
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
-import { Image, Upload, Sparkles, Crop, RotateCw, Scissors } from 'lucide-react';
+import { Image, Upload, Sparkles, Crop, RotateCw, Scissors, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { analyzeCardImage } from '@/services/cardAnalyzer';
 import { AdvancedCropper } from '../AdvancedCropper';
@@ -167,8 +166,10 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-white mb-2">Upload Your Photo</h2>
-        <p className="text-crd-lightGray">Choose the image that will be featured on your card</p>
+        <h2 className="text-3xl font-bold text-white mb-4">Upload Your Photo</h2>
+        <p className="text-crd-lightGray">
+          Choose the image that will be featured on your card
+        </p>
         {isAnalyzing && (
           <div className="mt-2 flex items-center justify-center gap-2 text-crd-green">
             <Sparkles className="w-4 h-4 animate-pulse" />
@@ -177,19 +178,11 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
         )}
       </div>
       
-      <div 
-        {...getRootProps()}
-        className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
-          isDragActive 
-            ? 'border-crd-green bg-crd-green/10' 
-            : 'border-editor-border hover:border-crd-green/50'
-        }`}
-      >
-        <input {...getInputProps()} />
-        {selectedPhoto ? (
-          <div className="space-y-4">
-            {/* Card Preview */}
-            <div className="flex justify-center">
+      {/* Card Preview Area */}
+      <div className="flex justify-center mb-8">
+        <div className="bg-crd-mediumGray rounded-lg p-8 border-2 border-dashed border-crd-lightGray/30 max-w-md">
+          {selectedPhoto ? (
+            <div className="space-y-4">
               <div className="relative bg-white p-2 rounded-lg shadow-lg" style={{ width: 200, height: 280 }}>
                 <img 
                   src={selectedPhoto} 
@@ -200,99 +193,93 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
                   Card Preview
                 </div>
               </div>
-            </div>
-            
-            <p className="text-crd-green font-medium">Photo optimized for card format!</p>
-            
-            {imageDetails && (
-              <div className="text-xs text-crd-lightGray bg-editor-tool p-3 rounded">
-                <div className="grid grid-cols-3 gap-2">
+              
+              <div className="text-crd-green text-sm flex items-center justify-center gap-2">
+                <Check className="w-4 h-4" />
+                Photo optimized for card format!
+              </div>
+              
+              {imageDetails && (
+                <div className="text-crd-lightGray text-xs space-y-1">
                   <div>Original: {imageDetails.dimensions.width}×{imageDetails.dimensions.height}</div>
                   <div>Size: {imageDetails.fileSize}</div>
                   <div>Ratio: {imageDetails.aspectRatio.toFixed(2)}:1</div>
                 </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center" style={{ width: 200, height: 280 }}>
+              <div className="flex flex-col items-center justify-center h-full">
+                <Upload className="w-16 h-16 text-crd-lightGray mb-4" />
+                <p className="text-white text-lg mb-2">Drop your image here</p>
+                <p className="text-crd-lightGray text-sm">or click to browse</p>
               </div>
-            )}
-            
-            <div className="flex gap-2 justify-center">
-              <Button
-                onClick={open}
-                variant="outline"
-                className="border-editor-border text-white hover:bg-editor-border"
-                disabled={isAnalyzing}
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                Choose Different Photo
-              </Button>
-              <Button
-                onClick={() => setShowAdvancedCrop(true)}
-                className="bg-crd-green hover:bg-crd-green/90 text-black"
-                disabled={isAnalyzing}
-              >
-                <Scissors className="w-4 h-4 mr-2" />
-                Advanced Crop
-              </Button>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <Image className="w-16 h-16 text-gray-400 mx-auto" />
-            <div>
-              <p className="text-crd-lightGray mb-2">
-                {isDragActive ? 'Drop your photo here' : 'Drag and drop your photo here'}
-              </p>
-              <p className="text-crd-lightGray/70 text-sm mb-4">
-                Images will be automatically optimized for trading card format (2.5:3.5 ratio)
-              </p>
-              <Button
-                onClick={open}
-                className="bg-crd-green hover:bg-crd-green/90 text-black"
-                disabled={isAnalyzing}
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                Select Photo
-              </Button>
-            </div>
-          </div>
-        )}
-        
-        {/* Hidden file input for manual selection */}
-        <input
-          id="photo-input"
-          type="file"
-          accept="image/*"
-          onChange={handlePhotoUpload}
-          className="hidden"
-        />
+          )}
+        </div>
       </div>
 
+      {/* Upload Actions */}
+      <div className="flex justify-center gap-4 mb-8">
+        <Button
+          onClick={() => document.getElementById('photo-input')?.click()}
+          variant="outline"
+          className="bg-transparent border-crd-lightGray text-crd-lightGray hover:bg-crd-lightGray hover:text-black"
+          disabled={isAnalyzing}
+        >
+          Choose File
+        </Button>
+        {selectedPhoto && (
+          <Button
+            onClick={() => setShowAdvancedCrop(true)}
+            className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
+            disabled={isAnalyzing}
+          >
+            <Scissors className="w-4 h-4 mr-2" />
+            Advanced Crop
+          </Button>
+        )}
+      </div>
+
+      {/* Ready Section */}
       {selectedPhoto && !isAnalyzing && (
-        <div className="bg-editor-tool p-4 rounded-lg">
-          <div className="flex items-center gap-2 text-crd-green mb-2">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-sm font-medium">Ready for Card Creation</span>
+        <div className="bg-crd-darkGray border border-crd-mediumGray/30 rounded-lg p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Check className="w-5 h-5 text-crd-green" />
+            <h3 className="text-white font-semibold">Ready for Card Creation</h3>
           </div>
-          <p className="text-crd-lightGray text-xs">
+          <p className="text-crd-lightGray text-sm mb-6">
             Your image has been processed and optimized for the standard trading card format. 
             Use "Advanced Crop" to extract multiple elements (frame, logos, etc.) or proceed with the simple workflow.
           </p>
+          
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-white font-medium mb-2">Supported Formats & Features</h4>
+              <div className="text-crd-lightGray text-sm space-y-1">
+                <div>File Types:</div>
+                <div>JPG, PNG, WebP, GIF</div>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-white font-medium mb-2">Advanced Features:</h4>
+              <div className="text-crd-lightGray text-sm space-y-1">
+                <div>Multi-element cropping, Frame extraction</div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Format Info */}
-      <div className="bg-editor-darker p-4 rounded-lg">
-        <h4 className="text-white font-medium text-sm mb-2">Supported Formats & Features</h4>
-        <div className="grid grid-cols-2 gap-4 text-xs text-crd-lightGray">
-          <div>
-            <div className="font-medium">File Types:</div>
-            <div>JPG, PNG, WebP, GIF</div>
-          </div>
-          <div>
-            <div className="font-medium">Advanced Features:</div>
-            <div>Multi-element cropping, Frame extraction</div>
-          </div>
-        </div>
-      </div>
+      {/* Hidden file input */}
+      <input
+        id="photo-input"
+        type="file"
+        accept="image/*"
+        onChange={handlePhotoUpload}
+        className="hidden"
+      />
     </div>
   );
 };

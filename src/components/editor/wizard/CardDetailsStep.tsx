@@ -23,7 +23,7 @@ export const CardDetailsStep = ({
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-white mb-2">Card Details</h2>
+        <h2 className="text-3xl font-bold text-white mb-4">Card Details</h2>
         <p className="text-crd-lightGray">
           {aiAnalysisComplete 
             ? 'Review the AI-suggested details below and make any adjustments'
@@ -31,7 +31,7 @@ export const CardDetailsStep = ({
           }
         </p>
         {aiAnalysisComplete && (
-          <div className="flex items-center justify-center gap-2 mt-2 text-crd-green text-sm">
+          <div className="flex items-center justify-center gap-2 mt-4 text-crd-green text-sm">
             <Sparkles className="w-4 h-4" />
             <span>Fields have been pre-filled with AI suggestions</span>
           </div>
@@ -41,7 +41,7 @@ export const CardDetailsStep = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div>
-            <Label className="text-white flex items-center gap-2">
+            <Label className="text-white flex items-center gap-2 mb-2">
               Card Title *
               {aiAnalysisComplete && <Sparkles className="w-3 h-3 text-crd-green" />}
             </Label>
@@ -49,12 +49,12 @@ export const CardDetailsStep = ({
               value={cardData.title}
               onChange={(e) => onFieldUpdate('title', e.target.value)}
               placeholder="Enter card title"
-              className="bg-editor-tool border-editor-border text-white"
+              className="bg-crd-darkGray border-crd-mediumGray text-white"
             />
           </div>
 
           <div>
-            <Label className="text-white flex items-center gap-2">
+            <Label className="text-white flex items-center gap-2 mb-2">
               Description
               {aiAnalysisComplete && <Sparkles className="w-3 h-3 text-crd-green" />}
             </Label>
@@ -62,21 +62,21 @@ export const CardDetailsStep = ({
               value={cardData.description || ''}
               onChange={(e) => onFieldUpdate('description', e.target.value)}
               placeholder="Describe your card..."
-              className="bg-editor-tool border-editor-border text-white"
+              className="bg-crd-darkGray border-crd-mediumGray text-white"
               rows={3}
             />
           </div>
 
           <div>
-            <Label className="text-white flex items-center gap-2">
+            <Label className="text-white flex items-center gap-2 mb-2">
               Rarity
               {aiAnalysisComplete && <Sparkles className="w-3 h-3 text-crd-green" />}
             </Label>
             <Select value={cardData.rarity} onValueChange={(value) => onFieldUpdate('rarity', value as CardRarity)}>
-              <SelectTrigger className="bg-editor-tool border-editor-border text-white">
+              <SelectTrigger className="bg-crd-darkGray border-crd-mediumGray text-white">
                 <SelectValue placeholder="Select rarity" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-crd-darkGray border-crd-mediumGray">
                 <SelectItem value="common">Common</SelectItem>
                 <SelectItem value="uncommon">Uncommon</SelectItem>
                 <SelectItem value="rare">Rare</SelectItem>
@@ -89,15 +89,15 @@ export const CardDetailsStep = ({
 
         <div className="space-y-4">
           <div>
-            <Label className="text-white">Creator Attribution</Label>
+            <Label className="text-white mb-2">Creator Attribution</Label>
             <Select 
               value={cardData.creator_attribution.collaboration_type} 
               onValueChange={(value) => onCreatorAttributionUpdate('collaboration_type', value)}
             >
-              <SelectTrigger className="bg-editor-tool border-editor-border text-white">
+              <SelectTrigger className="bg-crd-darkGray border-crd-mediumGray text-white">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-crd-darkGray border-crd-mediumGray">
                 <SelectItem value="solo">Solo Creation</SelectItem>
                 <SelectItem value="collaboration">Collaboration</SelectItem>
                 <SelectItem value="commission">Commission</SelectItem>
@@ -106,14 +106,14 @@ export const CardDetailsStep = ({
           </div>
 
           <div>
-            <Label className="text-white flex items-center gap-2">
+            <Label className="text-white flex items-center gap-2 mb-2">
               Tags
               {aiAnalysisComplete && <Sparkles className="w-3 h-3 text-crd-green" />}
             </Label>
             <Input
               value={cardData.tags.join(', ')}
               placeholder="Add tags (comma separated)"
-              className="bg-editor-tool border-editor-border text-white"
+              className="bg-crd-darkGray border-crd-mediumGray text-white"
               onChange={(e) => {
                 const tags = e.target.value.split(',').map(tag => tag.trim()).filter(Boolean);
                 onFieldUpdate('tags', tags);
@@ -122,12 +122,12 @@ export const CardDetailsStep = ({
           </div>
 
           <div>
-            <Label className="text-white">Visibility</Label>
+            <Label className="text-white mb-2">Visibility</Label>
             <Select value={cardData.visibility} onValueChange={(value) => onFieldUpdate('visibility', value as CardVisibility)}>
-              <SelectTrigger className="bg-editor-tool border-editor-border text-white">
+              <SelectTrigger className="bg-crd-darkGray border-crd-mediumGray text-white">
                 <SelectValue placeholder="Select visibility" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-crd-darkGray border-crd-mediumGray">
                 <SelectItem value="private">
                   <div className="flex items-center">
                     <Lock className="h-4 w-4 mr-2" />
@@ -153,7 +153,7 @@ export const CardDetailsStep = ({
       </div>
 
       {aiAnalysisComplete && (
-        <div className="bg-editor-tool p-4 rounded-lg border border-crd-green/30">
+        <div className="bg-crd-darkGray p-4 rounded-lg border border-crd-green/30">
           <h4 className="text-white font-medium text-sm mb-2 flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-crd-green" />
             AI Analysis Summary
