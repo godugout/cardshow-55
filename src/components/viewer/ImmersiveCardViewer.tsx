@@ -1,5 +1,4 @@
 
-
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps, MaterialSettings } from './types';
 import { 
@@ -131,8 +130,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     effectValues
   });
 
-  // Style generation hook - fix the parameters to match UseCardEffectsParams interface
-  const { getFrameStyles, getEnhancedEffectStyles, surfaceTextureStyles } = useCardEffects({
+  // Style generation hook - properly structure parameters for useCardEffects
+  const cardEffectsParams = {
+    card,
     effectValues,
     mousePosition,
     showEffects,
@@ -144,7 +144,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     zoom,
     rotation,
     isHovering
-  });
+  };
+  
+  const { getFrameStyles, getEnhancedEffectStyles, surfaceTextureStyles } = useCardEffects(cardEffectsParams);
 
   // Enhanced state validation on card change
   useEffect(() => {
@@ -301,4 +303,3 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 };
 
 export default ImmersiveCardViewer;
-
