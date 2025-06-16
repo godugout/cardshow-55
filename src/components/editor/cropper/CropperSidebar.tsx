@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
-import { Square, Maximize } from 'lucide-react';
 import { CropArea } from './types';
+import { Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 
 interface CropperSidebarProps {
   cropAreas: CropArea[];
@@ -23,58 +24,67 @@ export const CropperSidebar: React.FC<CropperSidebarProps> = ({
   onRemoveCrop
 }) => {
   return (
-    <div className="w-80 border-l border-editor-border bg-editor-dark p-4 overflow-y-auto">
-      <div className="space-y-6">
-        {/* Add Crop Areas */}
-        <div>
-          <h4 className="text-white font-medium mb-3">Add Crop Areas</h4>
-          <div className="space-y-2">
-            <Button
-              onClick={() => onAddCropArea('frame')}
-              variant="outline"
-              className="w-full bg-editor-tool border-editor-border text-gray-300 hover:bg-blue-600/20 hover:text-white hover:border-blue-400"
-              disabled={!imageLoaded}
-            >
-              <Square className="w-4 h-4 mr-2" />
-              Add Frame Element
-            </Button>
-            <Button
-              onClick={() => onAddCropArea('element')}
-              variant="outline"
-              className="w-full bg-editor-tool border-editor-border text-gray-300 hover:bg-yellow-600/20 hover:text-white hover:border-yellow-400"
-              disabled={!imageLoaded}
-            >
-              <Maximize className="w-4 h-4 mr-2" />
-              Add Custom Element
-            </Button>
-          </div>
-        </div>
+    <div className="w-80 bg-crd-darker border-l border-crd-mediumGray/30 flex flex-col">
+      {/* Header */}
+      <div className="p-4 border-b border-crd-mediumGray/30">
+        <h3 className="text-white font-semibold text-lg mb-2">Crop Areas</h3>
+        <p className="text-crd-lightGray text-sm">
+          Add and manage your card crop areas
+        </p>
+      </div>
 
-        {/* Crop Areas List */}
-        <div>
-          <h4 className="text-white font-medium mb-3">Crop Areas ({cropAreas.length})</h4>
-          <div className="space-y-2">
-            {cropAreas.map((crop) => (
-              <Card
-                key={crop.id}
-                className={`p-3 cursor-pointer transition-all bg-editor-tool ${
-                  crop.selected 
-                    ? 'border-2' 
-                    : 'border border-editor-border hover:border-gray-500'
-                }`}
-                style={{ borderColor: crop.selected ? crop.color : undefined }}
-                onClick={() => onSelectCrop(crop.id)}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded"
-                      style={{ backgroundColor: crop.color }}
-                    />
-                    <span className="text-white text-sm font-medium">
-                      {crop.label}
-                    </span>
+      {/* Add New Area */}
+      <div className="p-4 border-b border-crd-mediumGray/30">
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            onClick={() => onAddCropArea('frame')}
+            disabled={!imageLoaded}
+            className="bg-crd-blue hover:bg-crd-blue/90 text-white"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Frame
+          </Button>
+          <Button
+            onClick={() => onAddCropArea('element')}
+            disabled={!imageLoaded}
+            className="bg-crd-orange hover:bg-crd-orange/90 text-white"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Element
+          </Button>
+        </div>
+      </div>
+
+      {/* Crop Areas List */}
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-3">
+          {cropAreas.map((crop) => (
+            <Card
+              key={crop.id}
+              className={`p-3 cursor-pointer transition-all border-2 ${
+                selectedCropId === crop.id 
+                  ? 'border-crd-green bg-crd-green/10' 
+                  : 'border-crd-mediumGray bg-crd-darkGray hover:border-crd-lightGray'
+              }`}
+              onClick={() => onSelectCrop(crop.id)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-4 h-4 rounded-sm border"
+                    style={{ backgroundColor: crop.color }}
+                  />
+                  <div>
+                    <p className="text-white font-medium text-sm">{crop.label}</p>
+                    <p className="text-crd-lightGray text-xs">
+                      {Math.round(crop.width)}×{Math.round(crop.height)}
+                      {crop.rotation !== 0 && ` • ${crop.rotation}°`}
+                    </p>
                   </div>
+                </div>
+                
+                <div className="flex items-center gap-1">
+                  {crop.selected && <Eye className="w-4 h-4 text-crd-green" />}
                   {crop.id !== 'main' && (
                     <Button
                       variant="ghost"
@@ -83,35 +93,29 @@ export const CropperSidebar: React.FC<CropperSidebarProps> = ({
                         e.stopPropagation();
                         onRemoveCrop(crop.id);
                       }}
-                      className="p-1 h-auto text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                      className="text-red-400 hover:text-red-300 hover:bg-red-400/10 p-1"
                     >
-                      ×
+                      <Trash2 className="w-3 h-3" />
                     </Button>
                   )}
                 </div>
-
-                <div className="text-xs text-gray-300">
-                  {Math.round(crop.width)} × {Math.round(crop.height)}px
-                  <br />
-                  Type: {crop.type}
-                </div>
-              </Card>
-            ))}
-          </div>
+              </div>
+            </Card>
+          ))}
         </div>
+      </ScrollArea>
 
-        {/* Instructions */}
-        <Card className="bg-editor-tool border-editor-border p-4">
-          <h5 className="text-white font-medium mb-2">Instructions</h5>
-          <ul className="text-gray-300 text-xs space-y-1">
-            <li>• Green: Main card image (required)</li>
-            <li>• Blue: Frame elements (logos, borders)</li>
-            <li>• Yellow: Custom elements (text, graphics)</li>
-            <li>• Click and drag to move crop areas</li>
+      {/* Quick Tips */}
+      <div className="p-4 border-t border-crd-mediumGray/30">
+        <div className="bg-crd-darkGray rounded-lg p-3">
+          <h4 className="text-white font-medium text-sm mb-2">Quick Tips</h4>
+          <ul className="text-crd-lightGray text-xs space-y-1">
             <li>• Drag corners to resize</li>
-            <li>• Use zoom for precision</li>
+            <li>• Use rotation handle to rotate</li>
+            <li>• Hold Ctrl to multi-select</li>
+            <li>• Right-click for options</li>
           </ul>
-        </Card>
+        </div>
       </div>
     </div>
   );
