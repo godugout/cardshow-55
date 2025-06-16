@@ -68,12 +68,10 @@ export const CardCreationFlow = ({ initialCardId }: CardCreationFlowProps) => {
   if (!wizardComplete) {
     return (
       <div className="min-h-screen bg-crd-darkest">
-        {/* Single header without bulk upload button */}
+        {/* Header with centered title */}
         <div className="border-b border-editor-border bg-editor-dark">
-          <div className="flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-white">Create Your Card</h1>
-            </div>
+          <div className="flex items-center justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
+            <h1 className="text-2xl font-bold text-white">Create Your Card</h1>
           </div>
         </div>
 
