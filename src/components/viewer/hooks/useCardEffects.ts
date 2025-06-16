@@ -54,14 +54,13 @@ export const useCardEffects = (card: CardData) => {
     });
   }, [effects.intensity]);
 
-  const SurfaceTexture = useMemo(() => (
-    <div 
-      className="absolute inset-0 opacity-10 bg-gradient-to-br from-white/5 to-transparent"
-      style={{
-        background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%), linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 100%)'
-      }}
-    />
-  ), []);
+  // Return surface texture properties instead of JSX component
+  const surfaceTextureStyles = useMemo(() => ({
+    position: 'absolute' as const,
+    inset: '0',
+    opacity: 0.1,
+    background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%), linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 100%)'
+  }), []);
 
   return {
     effects,
@@ -69,6 +68,6 @@ export const useCardEffects = (card: CardData) => {
     effectStyles,
     getFrameStyles,
     getEnhancedEffectStyles,
-    SurfaceTexture
+    surfaceTextureStyles
   };
 };
