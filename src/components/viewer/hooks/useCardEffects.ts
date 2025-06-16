@@ -58,10 +58,7 @@ export const useCardEffects = (card: CardData) => {
     <div 
       className="absolute inset-0 opacity-10 bg-gradient-to-br from-white/5 to-transparent"
       style={{
-        background: `
-          radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
-          linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 100%)
-        `
+        background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%), linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 100%)'
       }}
     />
   ), []);
