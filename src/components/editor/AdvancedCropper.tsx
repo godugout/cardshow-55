@@ -2,11 +2,11 @@
 import React, { useCallback, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { CropperProps } from './cropper/types';
-import { CropperToolbar } from './cropper/CropperToolbar';
-import { CropOverlay } from './cropper/CropOverlay';
+import { CropperProps, DragHandle } from './cropper/types';
+import { EnhancedCropperToolbar } from './cropper/EnhancedCropperToolbar';
+import { EnhancedCropOverlay } from './cropper/EnhancedCropOverlay';
 import { CropperSidebar } from './cropper/CropperSidebar';
-import { useCropAreaManager } from './cropper/useCropAreaManager';
+import { useEnhancedCropAreaManager } from './cropper/useEnhancedCropAreaManager';
 
 export const AdvancedCropper: React.FC<CropperProps> = ({
   imageUrl,
@@ -18,8 +18,8 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
   const {
     cropAreas,
     setCropAreas,
-    selectedCropId,
-    setSelectedCropId,
+    selectedCropIds,
+    selectedCount,
     isDragging,
     setIsDragging,
     dragHandle,
@@ -34,20 +34,38 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
     setShowPreview,
     isExtracting,
     setIsExtracting,
+    showGrid,
+    setShowGrid,
+    snapToGrid,
+    setSnapToGrid,
+    gridSize,
+    activeTool,
+    setActiveTool,
     imageRef,
     initializeCrops,
     addCropArea,
     removeCropArea,
-    selectCrop
-  } = useCropAreaManager(aspectRatio);
+    selectCrop,
+    copyCrop,
+    cutCrop,
+    pasteCrop,
+    duplicateCrop,
+    undo,
+    redo,
+    zoomFit,
+    saveToHistory,
+    snapToGridHelper,
+    canUndo,
+    canRedo
+  } = useEnhancedCropAreaManager(aspectRatio);
 
   const handleImageLoad = useCallback(() => {
     initializeCrops();
     setImageLoaded(true);
   }, [initializeCrops, setImageLoaded]);
 
-  // Mouse event handlers
-  const handleMouseDown = useCallback((e: React.MouseEvent, cropId: string, handle?: string) => {
+  // Enhanced mouse event handlers with rotation support
+  const handleMouseDown = useCallback((e: React.MouseEvent, cropId: string, handle?: DragHandle) => {
     e.preventDefault();
     setIsDragging(true);
     setDragHandle(handle || 'move');
@@ -56,11 +74,12 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
   }, [setIsDragging, setDragHandle, setDragStart, selectCrop]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging || !selectedCropId || !imageRef.current) return;
+    if (!isDragging || selectedCropIds.length === 0 || !imageRef.current) return;
 
     const deltaX = e.clientX - dragStart.x;
     const deltaY = e.clientY - dragStart.y;
     const img = imageRef.current;
+    const selectedCropId = selectedCropIds[0]; // Work with first selected for now
 
     setCropAreas(prev => prev.map(crop => {
       if (crop.id !== selectedCropId) return crop;
@@ -69,25 +88,32 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
 
       switch (dragHandle) {
         case 'move':
-          newCrop.x = Math.max(0, Math.min(crop.x + deltaX, img.clientWidth - crop.width));
-          newCrop.y = Math.max(0, Math.min(crop.y + deltaY, img.clientHeight - crop.height));
+          newCrop.x = snapToGridHelper(Math.max(0, Math.min(crop.x + deltaX, img.clientWidth - crop.width)));
+          newCrop.y = snapToGridHelper(Math.max(0, Math.min(crop.y + deltaY, img.clientHeight - crop.height)));
+          break;
+        
+        case 'rotate':
+          const centerX = crop.x + crop.width / 2;
+          const centerY = crop.y + crop.height / 2;
+          const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+          newCrop.rotation = Math.round((angle * 180 / Math.PI) / 15) * 15; // Snap to 15-degree increments
           break;
         
         case 'tl':
-          newCrop.x = Math.max(0, crop.x + deltaX);
-          newCrop.y = Math.max(0, crop.y + deltaY);
+          newCrop.x = snapToGridHelper(Math.max(0, crop.x + deltaX));
+          newCrop.y = snapToGridHelper(Math.max(0, crop.y + deltaY));
           newCrop.width = crop.width - deltaX;
           newCrop.height = crop.height - deltaY;
           break;
         
         case 'tr':
-          newCrop.y = Math.max(0, crop.y + deltaY);
+          newCrop.y = snapToGridHelper(Math.max(0, crop.y + deltaY));
           newCrop.width = crop.width + deltaX;
           newCrop.height = crop.height - deltaY;
           break;
         
         case 'bl':
-          newCrop.x = Math.max(0, crop.x + deltaX);
+          newCrop.x = snapToGridHelper(Math.max(0, crop.x + deltaX));
           newCrop.width = crop.width - deltaX;
           newCrop.height = crop.height + deltaY;
           break;
@@ -96,21 +122,39 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
           newCrop.width = crop.width + deltaX;
           newCrop.height = crop.height + deltaY;
           break;
+
+        case 't':
+          newCrop.y = snapToGridHelper(Math.max(0, crop.y + deltaY));
+          newCrop.height = crop.height - deltaY;
+          break;
+
+        case 'b':
+          newCrop.height = crop.height + deltaY;
+          break;
+
+        case 'l':
+          newCrop.x = snapToGridHelper(Math.max(0, crop.x + deltaX));
+          newCrop.width = crop.width - deltaX;
+          break;
+
+        case 'r':
+          newCrop.width = crop.width + deltaX;
+          break;
       }
 
       // Ensure minimum size
-      newCrop.width = Math.max(50, newCrop.width);
-      newCrop.height = Math.max(50, newCrop.height);
+      newCrop.width = Math.max(20, newCrop.width);
+      newCrop.height = Math.max(20, newCrop.height);
 
       // Ensure within bounds
       newCrop.width = Math.min(newCrop.width, img.clientWidth - newCrop.x);
       newCrop.height = Math.min(newCrop.height, img.clientHeight - newCrop.y);
 
-      // Maintain aspect ratio for main card
-      if (crop.type === 'main' && dragHandle !== 'move') {
-        if (dragHandle?.includes('r')) {
+      // Maintain aspect ratio for main card when resizing (not rotating)
+      if (crop.type === 'main' && dragHandle !== 'move' && dragHandle !== 'rotate') {
+        if (dragHandle?.includes('r') || dragHandle === 'l') {
           newCrop.height = newCrop.width / aspectRatio;
-        } else {
+        } else if (dragHandle?.includes('t') || dragHandle?.includes('b')) {
           newCrop.width = newCrop.height * aspectRatio;
         }
       }
@@ -119,12 +163,15 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
     }));
 
     setDragStart({ x: e.clientX, y: e.clientY });
-  }, [isDragging, selectedCropId, dragHandle, dragStart, aspectRatio, setCropAreas, setDragStart]);
+  }, [isDragging, selectedCropIds, dragHandle, dragStart, aspectRatio, setCropAreas, setDragStart, snapToGridHelper]);
 
   const handleMouseUp = useCallback(() => {
+    if (isDragging) {
+      saveToHistory(`${dragHandle === 'rotate' ? 'Rotate' : dragHandle === 'move' ? 'Move' : 'Resize'} crop area`);
+    }
     setIsDragging(false);
     setDragHandle(null);
-  }, [setIsDragging, setDragHandle]);
+  }, [isDragging, dragHandle, saveToHistory, setIsDragging, setDragHandle]);
 
   useEffect(() => {
     if (isDragging) {
@@ -137,7 +184,7 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  // Extract all crops
+  // Extract all crops with enhanced functionality
   const extractAllCrops = useCallback(async () => {
     if (!imageRef.current || !imageLoaded) {
       toast.error('Image not ready');
@@ -173,12 +220,24 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
         canvas.width = outputWidth;
         canvas.height = outputHeight;
 
+        // Apply rotation if needed
+        if (crop.rotation !== 0) {
+          ctx.save();
+          ctx.translate(outputWidth / 2, outputHeight / 2);
+          ctx.rotate((crop.rotation * Math.PI) / 180);
+          ctx.translate(-outputWidth / 2, -outputHeight / 2);
+        }
+
         // Draw the cropped area
         ctx.drawImage(
           img,
           sourceX, sourceY, sourceWidth, sourceHeight,
           0, 0, outputWidth, outputHeight
         );
+
+        if (crop.rotation !== 0) {
+          ctx.restore();
+        }
 
         // Convert to data URL
         const dataUrl = canvas.toDataURL('image/png', 0.95);
@@ -197,7 +256,7 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
       }
 
       onCropComplete(results);
-      toast.success('All crops extracted successfully!');
+      toast.success(`Successfully extracted ${cropAreas.length} crop areas!`);
     } catch (error) {
       console.error('Extraction failed:', error);
       toast.error('Failed to extract crops');
@@ -208,13 +267,29 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
 
   return (
     <div className={`h-full flex flex-col bg-editor-darker ${className}`}>
-      <CropperToolbar
+      <EnhancedCropperToolbar
         cropCount={cropAreas.length}
+        selectedCount={selectedCount}
         showPreview={showPreview}
+        showGrid={showGrid}
+        snapToGrid={snapToGrid}
+        activeTool={activeTool}
+        canUndo={canUndo}
+        canRedo={canRedo}
         onTogglePreview={() => setShowPreview(!showPreview)}
+        onToggleGrid={() => setShowGrid(!showGrid)}
+        onToggleSnap={() => setSnapToGrid(!snapToGrid)}
+        onToolChange={setActiveTool}
         zoom={zoom}
         onZoomIn={() => setZoom(Math.min(3, zoom + 0.25))}
         onZoomOut={() => setZoom(Math.max(0.5, zoom - 0.25))}
+        onZoomFit={zoomFit}
+        onUndo={undo}
+        onRedo={redo}
+        onCopy={copyCrop}
+        onCut={cutCrop}
+        onPaste={pasteCrop}
+        onDuplicate={duplicateCrop}
         onExtractAll={extractAllCrops}
         onCancel={onCancel}
         imageLoaded={imageLoaded}
@@ -236,11 +311,15 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
                 style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}
               />
               
-              <CropOverlay
+              <EnhancedCropOverlay
                 cropAreas={cropAreas}
+                selectedCropIds={selectedCropIds}
                 zoom={zoom}
                 imageLoaded={imageLoaded}
+                showGrid={showGrid}
+                gridSize={gridSize}
                 onMouseDown={handleMouseDown}
+                onCropSelect={selectCrop}
               />
             </div>
           </Card>
@@ -249,7 +328,7 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
         <CropperSidebar
           cropAreas={cropAreas}
           imageLoaded={imageLoaded}
-          selectedCropId={selectedCropId}
+          selectedCropId={selectedCropIds[0] || null}
           onAddCropArea={addCropArea}
           onSelectCrop={selectCrop}
           onRemoveCrop={removeCropArea}

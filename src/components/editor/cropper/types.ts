@@ -6,14 +6,16 @@ export interface CropArea {
   y: number;
   width: number;
   height: number;
+  rotation: number;
   type: 'main' | 'frame' | 'element';
   color: string;
   selected: boolean;
+  cornerRadius?: number;
 }
 
 export interface CropperState {
   cropAreas: CropArea[];
-  selectedCropId: string | null;
+  selectedCropIds: string[];
   isDragging: boolean;
   dragHandle: string | null;
   dragStart: { x: number; y: number };
@@ -21,6 +23,20 @@ export interface CropperState {
   zoom: number;
   showPreview: boolean;
   isExtracting: boolean;
+  showGrid: boolean;
+  snapToGrid: boolean;
+  gridSize: number;
+  history: HistoryEntry[];
+  historyIndex: number;
+  clipboard: CropArea | null;
+  activeTool: 'select' | 'crop' | 'rotate' | 'zoom';
+}
+
+export interface HistoryEntry {
+  id: string;
+  timestamp: number;
+  description: string;
+  cropAreas: CropArea[];
 }
 
 export interface CropperProps {
@@ -30,3 +46,5 @@ export interface CropperProps {
   aspectRatio?: number;
   className?: string;
 }
+
+export type DragHandle = 'move' | 'rotate' | 'tl' | 'tr' | 'bl' | 'br' | 't' | 'r' | 'b' | 'l';
