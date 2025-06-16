@@ -62,7 +62,7 @@ export const LogoSelector = () => {
   const SelectedLogoComponent = selectedLogo.component;
 
   return (
-    <div className="relative">
+    <div className="relative z-[10000]">
       <button 
         className="flex items-center gap-2 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 focus:ring-crd-primary focus:ring-offset-[#141416] rounded-md"
         onClick={() => setIsOpen(!isOpen)}
@@ -73,10 +73,10 @@ export const LogoSelector = () => {
       </button>
 
       {/* Horizontal Dropdown Menu */}
-      <div className={`absolute top-full left-0 mt-2 bg-[#23262F] border border-[#353945] rounded-lg shadow-xl z-[9999] transition-all duration-300 transform origin-top ${
+      <div className={`fixed top-[80px] left-0 right-0 bg-[#23262F] border border-[#353945] shadow-xl z-[10001] transition-all duration-300 transform origin-top ${
         isOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'
       }`}>
-        <div className="p-4 space-y-4 min-w-[800px]">
+        <div className="max-w-7xl mx-auto p-4 space-y-4">
           {logoGroups.map((group, groupIndex) => (
             <div key={group.label}>
               <h3 className="text-gray-300 text-xs font-semibold mb-3 px-2">
