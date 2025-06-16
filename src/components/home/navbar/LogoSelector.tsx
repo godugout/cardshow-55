@@ -1,13 +1,5 @@
 
 import React, { useState } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-} from '@/components/ui/dropdown-menu';
 import { SfOrangeLogo } from './SfOrangeLogo';
 import { WashingtonLogo } from './WashingtonLogo';
 import { OaklandLogo } from './OaklandLogo';
@@ -65,39 +57,55 @@ const logoGroups = [
 
 export const LogoSelector = () => {
   const [selectedLogo, setSelectedLogo] = useState(logoGroups[0].logos[0]);
+  const [isOpen, setIsOpen] = useState(false);
 
   const SelectedLogoComponent = selectedLogo.component;
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 focus:ring-crd-primary focus:ring-offset-[#141416] rounded-md">
-          <SelectedLogoComponent className="h-12 w-32 object-contain" />
-          <ChevronDown className="h-4 w-4 text-gray-400" />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-[#23262F] border-[#353945] w-64">
-        {logoGroups.map((group, groupIndex) => (
-          <div key={group.label}>
-            <DropdownMenuLabel className="text-gray-300 text-xs font-semibold px-3 py-2">
-              {group.label}
-            </DropdownMenuLabel>
-            {group.logos.map((logo) => {
-              const LogoComponent = logo.component;
-              return (
-                <DropdownMenuItem
-                  key={logo.name}
-                  onSelect={() => setSelectedLogo(logo)}
-                  className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center justify-center py-2 px-3"
-                >
-                  <LogoComponent className="h-8 w-20 object-contain group-hover:scale-105 transition-all duration-300" />
-                </DropdownMenuItem>
-              );
-            })}
-            {groupIndex < logoGroups.length - 1 && <DropdownMenuSeparator className="bg-[#353945]" />}
-          </div>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="relative">
+      <button 
+        className="flex items-center gap-2 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 focus:ring-crd-primary focus:ring-offset-[#141416] rounded-md"
+        onClick={() => setIsOpen(!isOpen)}
+        onBlur={() => setTimeout(() => setIsOpen(false), 150)}
+      >
+        <SelectedLogoComponent className="h-12 w-32 object-contain" />
+        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {/* Horizontal Dropdown Menu */}
+      <div className={`absolute top-full left-0 mt-2 bg-[#23262F] border border-[#353945] rounded-lg shadow-xl z-50 transition-all duration-300 transform origin-top ${
+        isOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'
+      }`}>
+        <div className="p-4 space-y-4 min-w-[800px]">
+          {logoGroups.map((group, groupIndex) => (
+            <div key={group.label}>
+              <h3 className="text-gray-300 text-xs font-semibold mb-3 px-2">
+                {group.label}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {group.logos.map((logo) => {
+                  const LogoComponent = logo.component;
+                  return (
+                    <button
+                      key={logo.name}
+                      onClick={() => {
+                        setSelectedLogo(logo);
+                        setIsOpen(false);
+                      }}
+                      className="group bg-[#2A2D37] hover:bg-[#353945] rounded-lg p-3 transition-all duration-300 hover:scale-105 border border-transparent hover:border-[#404040]"
+                    >
+                      <LogoComponent className="h-8 w-20 object-contain transition-all duration-300" />
+                    </button>
+                  );
+                })}
+              </div>
+              {groupIndex < logoGroups.length - 1 && (
+                <div className="border-t border-[#353945] mt-4" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
