@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ImmersiveCardViewerProps, MaterialSettings } from './types';
 import { 
@@ -130,7 +131,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   });
 
   // Style generation hook
-  const { getFrameStyles, getEnhancedEffectStyles, SurfaceTexture } = useCardEffects({
+  const { getFrameStyles, getEnhancedEffectStyles, surfaceTextureStyles } = useCardEffects({
     card,
     effectValues,
     mousePosition,
@@ -188,6 +189,11 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     fieldOfView: 75,
     atmosphericDensity: 1.0
   });
+
+  // Create SurfaceTexture component from styles
+  const SurfaceTexture = (
+    <div style={surfaceTextureStyles} />
+  );
 
   if (!isOpen) return null;
 
