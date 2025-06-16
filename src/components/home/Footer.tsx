@@ -1,8 +1,29 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 export const Footer: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    setIsSubscribing(true);
+    
+    // Simulate newsletter subscription
+    setTimeout(() => {
+      toast.success("Thanks for subscribing! You'll receive updates soon.");
+      setEmail("");
+      setIsSubscribing(false);
+    }, 1000);
+  };
+
   return (
     <footer className="bg-[#141416] w-full py-16 px-6 max-w-7xl mx-auto max-md:px-5">
       <div className="flex flex-wrap justify-between gap-12 mb-12">
@@ -40,7 +61,7 @@ export const Footer: React.FC = () => {
           <div className="text-[#FCFCFD] text-base font-semibold mb-2">Create</div>
           <div className="text-[#777E90] flex flex-col gap-3">
             <Link to="/studio" className="hover:text-[#FCFCFD] transition-colors">Card Studio</Link>
-            <Link to="/cards" className="hover:text-[#FCFCFD] transition-colors">Upload Cards</Link>
+            <Link to="/cards/create" className="hover:text-[#FCFCFD] transition-colors">Create Cards</Link>
             <Link to="/gallery" className="hover:text-[#FCFCFD] transition-colors">Templates</Link>
             <Link to="/collections" className="hover:text-[#FCFCFD] transition-colors">Collections</Link>
           </div>
@@ -59,10 +80,10 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col gap-5">
           <div className="text-[#FCFCFD] text-base font-semibold mb-2">Support</div>
           <div className="text-[#777E90] flex flex-col gap-3">
-            <a href="#" className="hover:text-[#FCFCFD] transition-colors">Help Center</a>
-            <a href="#" className="hover:text-[#FCFCFD] transition-colors">Getting Started</a>
-            <a href="#" className="hover:text-[#FCFCFD] transition-colors">Contact Us</a>
-            <a href="#" className="hover:text-[#FCFCFD] transition-colors">Community</a>
+            <Link to="/help" className="hover:text-[#FCFCFD] transition-colors">Help Center</Link>
+            <Link to="/getting-started" className="hover:text-[#FCFCFD] transition-colors">Getting Started</Link>
+            <Link to="/contact" className="hover:text-[#FCFCFD] transition-colors">Contact Us</Link>
+            <Link to="/community" className="hover:text-[#FCFCFD] transition-colors">Community</Link>
           </div>
         </div>
 
@@ -71,16 +92,23 @@ export const Footer: React.FC = () => {
           <div className="text-[#777E90] text-base">
             Get the latest updates on new features, templates, and creator spotlights.
           </div>
-          <div className="flex">
+          <form onSubmit={handleNewsletterSubmit} className="flex">
             <input 
               type="email" 
               placeholder="Enter your email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-[#23262F] text-[#777E90] px-4 py-3 rounded-l-lg flex-1 border-none focus:outline-none focus:ring-2 focus:ring-[#EA6E48] transition-all" 
+              disabled={isSubscribing}
             />
-            <button className="bg-[#EA6E48] hover:bg-[#EA6E48]/90 text-white font-bold px-6 py-3 rounded-r-lg transition-colors">
-              Subscribe
+            <button 
+              type="submit"
+              disabled={isSubscribing}
+              className="bg-[#EA6E48] hover:bg-[#EA6E48]/90 disabled:opacity-50 text-white font-bold px-6 py-3 rounded-r-lg transition-colors"
+            >
+              {isSubscribing ? "..." : "Subscribe"}
             </button>
-          </div>
+          </form>
         </div>
       </div>
       
