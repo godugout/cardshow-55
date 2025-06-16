@@ -15,27 +15,25 @@ interface WizardProgressTrackerProps {
 
 export const WizardProgressTracker = ({ currentStep, steps }: WizardProgressTrackerProps) => {
   return (
-    <div className="flex items-center justify-center py-6">
+    <div className="flex items-center justify-center mb-8">
       {steps.map((step, index) => (
-        <div key={step.number} className="flex items-center">
-          <div className={`flex items-center ${index < steps.length - 1 ? 'flex-1' : ''}`}>
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
-              currentStep >= step.number ? 'bg-crd-green text-black' : 
-              currentStep === step.number ? 'bg-crd-blue text-white' : 'bg-crd-mediumGray text-gray-400'
+        <React.Fragment key={step.number}>
+          <div className="flex flex-col items-center">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold mb-2 ${
+              currentStep >= step.number ? 'bg-crd-green text-black' : 'bg-gray-600 text-gray-300'
             }`}>
               {currentStep > step.number ? <Check size={16} /> : step.number}
             </div>
-            <div className="ml-3 hidden md:block">
+            <div className="text-center">
               <p className={`text-sm font-medium ${currentStep >= step.number ? 'text-white' : 'text-gray-400'}`}>
                 {step.title}
               </p>
-              <p className="text-xs text-gray-500">{step.description}</p>
             </div>
           </div>
           {index < steps.length - 1 && (
-            <div className={`flex-1 h-px mx-4 ${currentStep > step.number ? 'bg-crd-green' : 'bg-crd-mediumGray'}`} />
+            <div className={`h-px w-16 mx-4 mt-[-20px] ${currentStep > step.number ? 'bg-crd-green' : 'bg-gray-600'}`} />
           )}
-        </div>
+        </React.Fragment>
       ))}
     </div>
   );
