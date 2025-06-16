@@ -20,11 +20,11 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
   const totalCards = results.reduce((sum, result) => sum + result.detectedCards.length, 0);
 
   const handleDownloadAll = () => {
-    results.forEach((result) => {
+    results.forEach((result, resultIndex) => {
       result.detectedCards.forEach((card, index) => {
         const link = document.createElement('a');
         link.href = card.croppedImageUrl;
-        link.download = `detected-card-${result.imageId}-${index + 1}.png`;
+        link.download = `detected-card-${resultIndex}-${index + 1}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -63,13 +63,13 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
 
       {/* Results Grid */}
       <div className="space-y-8">
-        {results.map((result) => (
-          <div key={result.imageId} className="space-y-4">
+        {results.map((result, resultIndex) => (
+          <div key={`result-${resultIndex}`} className="space-y-4">
             {/* Source Image Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <img
-                  src={result.originalImageUrl}
+                  src={result.originalImage}
                   alt="Source"
                   className="w-16 h-16 object-cover rounded-lg border border-crd-mediumGray"
                 />
@@ -82,7 +82,7 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
               </div>
               {onAdvancedCrop && (
                 <Button
-                  onClick={() => onAdvancedCrop(result.originalImageUrl)}
+                  onClick={() => onAdvancedCrop(result.originalImage)}
                   className="bg-crd-green hover:bg-crd-green/90 text-black"
                 >
                   <Crop className="w-4 h-4 mr-2" />
@@ -117,7 +117,7 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
                         onClick={() => {
                           const link = document.createElement('a');
                           link.href = card.croppedImageUrl;
-                          link.download = `detected-card-${result.imageId}-${index + 1}.png`;
+                          link.download = `detected-card-${resultIndex}-${index + 1}.png`;
                           document.body.appendChild(link);
                           link.click();
                           document.body.removeChild(link);
