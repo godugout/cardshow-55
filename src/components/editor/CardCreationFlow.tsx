@@ -43,7 +43,7 @@ export const CardCreationFlow = ({ initialCardId }: CardCreationFlowProps) => {
   if (flowType === 'bulk') {
     return (
       <div className="min-h-screen bg-crd-darkest">
-        <div className="border-b border-crd-orange bg-crd-darkest">
+        <div className="border-b border-crd-mediumGray bg-crd-darkest">
           <div className="flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
             <div className="flex items-center space-x-4">
               <Button
@@ -69,7 +69,7 @@ export const CardCreationFlow = ({ initialCardId }: CardCreationFlowProps) => {
     return (
       <div className="min-h-screen bg-crd-darkest">
         {/* Header with centered title and proper padding */}
-        <div className="border-b border-crd-orange bg-crd-darkest">
+        <div className="border-b border-crd-mediumGray bg-crd-darkest">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
             <h1 className="text-2xl font-medium text-gray-300 m-0 leading-none">Create Your Card</h1>
           </div>

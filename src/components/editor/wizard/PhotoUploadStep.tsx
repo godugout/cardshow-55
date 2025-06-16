@@ -1,3 +1,4 @@
+
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
@@ -167,22 +168,18 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">Upload Your Photo</h2>
-        <p className="text-crd-lightGray">
-          Choose the image that will be featured on your card
-        </p>
-        {isAnalyzing && (
-          <div className="mt-2 flex items-center justify-center gap-2 text-crd-green">
+      {isAnalyzing && (
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-2 text-crd-green">
             <Sparkles className="w-4 h-4 animate-pulse" />
             <span className="text-sm">AI is analyzing your image...</span>
           </div>
-        )}
-      </div>
+        </div>
+      )}
       
       {/* Card Preview Area */}
       <div className="flex justify-center mb-8">
-        <div className="bg-crd-mediumGray rounded-lg p-8 border-2 border-dashed border-crd-lightGray/30 max-w-md">
+        <div className="bg-crd-darkGray rounded-lg p-8 border-2 border-dashed border-crd-lightGray/30 max-w-md">
           {selectedPhoto ? (
             <div className="space-y-4">
               <div className="relative bg-white p-2 rounded-lg shadow-lg" style={{ width: 200, height: 280 }}>

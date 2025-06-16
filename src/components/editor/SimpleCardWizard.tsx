@@ -17,7 +17,7 @@ export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardP
   return (
     <div className="min-h-screen bg-crd-darkest">
       {/* Progress Steps */}
-      <div className="bg-crd-darker border-b border-crd-mediumGray/20 py-6">
+      <div className="bg-crd-darkest border-b border-crd-mediumGray/20 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center space-x-8">
             {[1, 2, 3, 4].map((step, index) => (
