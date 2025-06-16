@@ -1,4 +1,3 @@
-
 import React from "react";
 
 export const Footer: React.FC = () => {
@@ -9,7 +8,7 @@ export const Footer: React.FC = () => {
           <div className="flex gap-2 text-lg text-[#F4F5F6] font-black tracking-[-0.36px] leading-8">
             <img
               src="/lovable-uploads/cd4cf59d-5ff5-461d-92e9-61b6e2c63e2e.png"
-              className="aspect-[1.34] object-contain w-[80px]"
+              className="aspect-[1.34] object-contain w-[160px]"
               alt="Logo"
             />
           </div>
