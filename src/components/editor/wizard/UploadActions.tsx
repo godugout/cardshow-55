@@ -22,8 +22,8 @@ export const UploadActions = ({
       <div className="flex justify-center gap-4">
         <Button
           onClick={onFileSelect}
-          variant="outline"
-          className="bg-transparent border-crd-lightGray text-crd-lightGray hover:bg-crd-lightGray hover:text-black"
+          variant="ghost"
+          className="bg-crd-mediumGray/30 border border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/50 hover:text-white hover:border-crd-lightGray"
           disabled={isAnalyzing}
         >
           Choose File

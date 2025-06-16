@@ -43,19 +43,19 @@ export const CardCreationFlow = ({ initialCardId }: CardCreationFlowProps) => {
   if (flowType === 'bulk') {
     return (
       <div className="min-h-screen bg-crd-darkest">
-        <div className="border-b border-editor-border bg-editor-dark">
+        <div className="border-b border-crd-orange bg-crd-darkest">
           <div className="flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setFlowType('single')}
-                className="text-white hover:bg-editor-border hover:text-white"
+                className="text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Single Card Creation
               </Button>
-              <h1 className="text-xl font-semibold text-white">Bulk Card Upload</h1>
+              <h1 className="text-xl font-medium text-crd-lightGray">Bulk Card Upload</h1>
             </div>
           </div>
         </div>
@@ -68,10 +68,10 @@ export const CardCreationFlow = ({ initialCardId }: CardCreationFlowProps) => {
   if (!wizardComplete) {
     return (
       <div className="min-h-screen bg-crd-darkest">
-        {/* Header with explicit line-height centering */}
-        <div className="border-b border-editor-border bg-editor-dark h-20 py-6">
+        {/* Header with orange border and subtle styling */}
+        <div className="border-b border-crd-orange bg-crd-darkest h-20 py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-2xl font-bold text-white leading-8">Create a CRD</h1>
+            <h1 className="text-2xl font-medium text-crd-lightGray leading-8">Create a CRD</h1>
           </div>
         </div>
 
