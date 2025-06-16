@@ -21,39 +21,47 @@ const logoGroups = [
   {
     label: 'Team Logos',
     logos: [
-      { name: 'SF ORANGE', component: SfOrangeLogo },
-      { name: 'WAS', component: WashingtonLogo },
-      { name: 'OAK', component: OaklandLogo },
-      { name: 'PIT', component: PittsburghLogo },
-      { name: 'TOR', component: TorontoLogo },
+      { name: 'SF ORANGE', component: SfOrangeLogo, hoverColor: 'orange' },
+      { name: 'WAS', component: WashingtonLogo, hoverColor: 'red' },
+      { name: 'OAK', component: OaklandLogo, hoverColor: 'green' },
+      { name: 'PIT', component: PittsburghLogo, hoverColor: 'yellow' },
+      { name: 'TOR', component: TorontoLogo, hoverColor: 'blue' },
     ]
   },
   {
-    label: 'Script Style',
+    label: 'Cardshow Logos',
     logos: [
-      { name: 'Cardshow Basic', component: CardshowBasicLogo },
-      { name: 'Cardshow Green', component: CardshowGreenLogo },
-      { name: 'Cardshow Green Sparkles', component: CardshowGreenSparklesLogo },
-      { name: 'Cardshow Red/Blue', component: CardshowRedBlueLogo },
-      { name: 'Cardshow Blue', component: CardshowBlueLogo },
-      { name: 'Cardshow Orange', component: CardshowOrangeLogo },
-    ]
-  },
-  {
-    label: 'Bold & Block',
-    logos: [
-      { name: 'Cardshow Block', component: CardshowBlockLettersLogo },
-      { name: 'Cardshow Vintage', component: CardshowVintageLogo },
-    ]
-  },
-  {
-    label: 'Modern & Retro',
-    logos: [
-      { name: 'Cardshow Retro', component: CardshowRetroLogo },
-      { name: 'Cardshow Modern', component: CardshowModernLogo },
+      { name: 'Cardshow Basic', component: CardshowBasicLogo, hoverColor: 'gray' },
+      { name: 'Cardshow Green', component: CardshowGreenLogo, hoverColor: 'green' },
+      { name: 'Cardshow Green Sparkles', component: CardshowGreenSparklesLogo, hoverColor: 'emerald' },
+      { name: 'Cardshow Red/Blue', component: CardshowRedBlueLogo, hoverColor: 'purple' },
+      { name: 'Cardshow Blue', component: CardshowBlueLogo, hoverColor: 'blue' },
+      { name: 'Cardshow Orange', component: CardshowOrangeLogo, hoverColor: 'orange' },
+      { name: 'Cardshow Block', component: CardshowBlockLettersLogo, hoverColor: 'slate' },
+      { name: 'Cardshow Vintage', component: CardshowVintageLogo, hoverColor: 'amber' },
+      { name: 'Cardshow Retro', component: CardshowRetroLogo, hoverColor: 'cyan' },
+      { name: 'Cardshow Modern', component: CardshowModernLogo, hoverColor: 'indigo' },
     ]
   }
 ];
+
+const getHoverColorClasses = (color: string) => {
+  const colorMap = {
+    orange: 'hover:bg-orange-500/10 hover:border-orange-500/20',
+    red: 'hover:bg-red-500/10 hover:border-red-500/20',
+    green: 'hover:bg-green-500/10 hover:border-green-500/20',
+    yellow: 'hover:bg-yellow-500/10 hover:border-yellow-500/20',
+    blue: 'hover:bg-blue-500/10 hover:border-blue-500/20',
+    gray: 'hover:bg-gray-500/10 hover:border-gray-500/20',
+    emerald: 'hover:bg-emerald-500/10 hover:border-emerald-500/20',
+    purple: 'hover:bg-purple-500/10 hover:border-purple-500/20',
+    slate: 'hover:bg-slate-500/10 hover:border-slate-500/20',
+    amber: 'hover:bg-amber-500/10 hover:border-amber-500/20',
+    cyan: 'hover:bg-cyan-500/10 hover:border-cyan-500/20',
+    indigo: 'hover:bg-indigo-500/10 hover:border-indigo-500/20',
+  };
+  return colorMap[color] || 'hover:bg-gray-500/10 hover:border-gray-500/20';
+};
 
 export const LogoSelector = () => {
   const [selectedLogo, setSelectedLogo] = useState(logoGroups[0].logos[0]);
@@ -64,27 +72,28 @@ export const LogoSelector = () => {
   return (
     <div className="relative z-[10000]">
       <button 
-        className="flex items-center gap-2 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 focus:ring-crd-primary focus:ring-offset-[#141416] rounded-md"
+        className="flex items-center gap-2 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-0"
         onClick={() => setIsOpen(!isOpen)}
         onBlur={() => setTimeout(() => setIsOpen(false), 150)}
       >
         <SelectedLogoComponent className="h-12 w-32 object-contain" />
-        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
-      {/* Horizontal Dropdown Menu */}
-      <div className={`fixed top-[80px] left-0 right-0 bg-[#23262F] border border-[#353945] shadow-xl z-[10001] transition-all duration-300 transform origin-top ${
-        isOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'
+      {/* Enhanced Dropdown Menu */}
+      <div className={`fixed top-[80px] left-0 right-0 bg-gradient-to-b from-[#23262F] to-[#1C1F28] border border-[#353945] shadow-2xl z-[10001] transition-all duration-500 transform origin-top ${
+        isOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-4 pointer-events-none'
       }`}>
-        <div className="max-w-7xl mx-auto p-4 space-y-4">
+        <div className="max-w-7xl mx-auto p-6 space-y-6">
           {logoGroups.map((group, groupIndex) => (
             <div key={group.label}>
-              <h3 className="text-gray-300 text-xs font-semibold mb-3 px-2">
+              <h3 className="text-gray-300 text-sm font-semibold mb-4 px-2 tracking-wide">
                 {group.label}
               </h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {group.logos.map((logo) => {
                   const LogoComponent = logo.component;
+                  const hoverClasses = getHoverColorClasses(logo.hoverColor);
                   return (
                     <button
                       key={logo.name}
@@ -92,15 +101,18 @@ export const LogoSelector = () => {
                         setSelectedLogo(logo);
                         setIsOpen(false);
                       }}
-                      className="group bg-[#2A2D37] hover:bg-[#353945] rounded-lg p-3 transition-all duration-300 hover:scale-105 border border-transparent hover:border-[#404040]"
+                      className={`group bg-[#2A2D37] rounded-xl p-4 transition-all duration-300 hover:scale-105 border border-transparent ${hoverClasses} hover:shadow-lg`}
                     >
-                      <LogoComponent className="h-8 w-20 object-contain transition-all duration-300" />
+                      <LogoComponent className="h-10 w-24 object-contain transition-all duration-300 group-hover:brightness-110" />
+                      <p className="text-gray-400 text-xs mt-2 group-hover:text-gray-200 transition-colors duration-300 truncate">
+                        {logo.name}
+                      </p>
                     </button>
                   );
                 })}
               </div>
               {groupIndex < logoGroups.length - 1 && (
-                <div className="border-t border-[#353945] mt-4" />
+                <div className="border-t border-[#353945] mt-6" />
               )}
             </div>
           ))}
