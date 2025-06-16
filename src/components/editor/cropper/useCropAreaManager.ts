@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useRef } from 'react';
-import { CropArea, CropperState } from './types';
+import { CropArea } from './types';
 import { toast } from 'sonner';
 
 export const useCropAreaManager = (aspectRatio: number) => {
@@ -33,6 +33,7 @@ export const useCropAreaManager = (aspectRatio: number) => {
       y: (displayHeight - cropHeight) / 2,
       width: cropWidth,
       height: cropHeight,
+      rotation: 0,
       type: 'main',
       color: '#10b981',
       selected: true
@@ -61,6 +62,7 @@ export const useCropAreaManager = (aspectRatio: number) => {
       y: Math.random() * (displayHeight - cropHeight),
       width: cropWidth,
       height: cropHeight,
+      rotation: 0,
       type,
       color: type === 'frame' ? '#3b82f6' : '#f59e0b',
       selected: false

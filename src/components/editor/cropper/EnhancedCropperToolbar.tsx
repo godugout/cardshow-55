@@ -10,7 +10,7 @@ import {
   EyeOff,
   RotateCw,
   Copy,
-  Cut,
+  Scissors,
   Undo,
   Redo,
   Grid3X3,
@@ -164,7 +164,7 @@ export const EnhancedCropperToolbar: React.FC<EnhancedCropperToolbarProps> = ({
           className="bg-editor-tool border-editor-border text-gray-300 hover:bg-editor-border hover:text-white"
           title="Cut (Ctrl+X)"
         >
-          <Cut className="w-4 h-4" />
+          <Scissors className="w-4 h-4" />
         </Button>
 
         {/* View Controls */}
