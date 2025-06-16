@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,16 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
 }) => {
   const totalCards = results.reduce((sum, result) => sum + result.detectedCards.length, 0);
 
+  // Convert File objects to object URLs for display
+  const resultsWithUrls = useMemo(() => {
+    return results.map(result => ({
+      ...result,
+      originalImageUrl: result.originalImage instanceof File 
+        ? URL.createObjectURL(result.originalImage)
+        : result.originalImage
+    }));
+  }, [results]);
+
   const handleDownloadAll = () => {
     results.forEach((result, resultIndex) => {
       result.detectedCards.forEach((card, index) => {
@@ -30,6 +40,13 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
         document.body.removeChild(link);
       });
     });
+  };
+
+  const handleAdvancedCrop = (result: CardDetectionResult, index: number) => {
+    if (onAdvancedCrop) {
+      const imageUrl = resultsWithUrls[index].originalImageUrl;
+      onAdvancedCrop(imageUrl);
+    }
   };
 
   return (
@@ -69,7 +86,7 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <img
-                  src={result.originalImage}
+                  src={resultsWithUrls[resultIndex].originalImageUrl}
                   alt="Source"
                   className="w-16 h-16 object-cover rounded-lg border border-crd-mediumGray"
                 />
@@ -82,7 +99,7 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
               </div>
               {onAdvancedCrop && (
                 <Button
-                  onClick={() => onAdvancedCrop(result.originalImage)}
+                  onClick={() => handleAdvancedCrop(result, resultIndex)}
                   className="bg-crd-green hover:bg-crd-green/90 text-black"
                 >
                   <Crop className="w-4 h-4 mr-2" />
