@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
@@ -226,8 +225,7 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, onAnalysisComple
       <div className="flex justify-center gap-4 mb-8">
         <Button
           onClick={() => document.getElementById('photo-input')?.click()}
-          variant="outline"
-          className="bg-transparent border-crd-lightGray text-crd-lightGray hover:bg-crd-lightGray hover:text-black"
+          className="bg-crd-darkGray border border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white hover:border-crd-lightGray transition-all"
           disabled={isAnalyzing}
         >
           Choose File
