@@ -29,8 +29,8 @@ export const Navbar: React.FC = () => {
 
   return (
     <div className={`bg-[#141416] w-full overflow-hidden transition-all duration-500 ${navbarColorClasses}`}>
-      <div className="flex w-full items-center justify-between flex-wrap px-40 py-5 max-md:max-w-full max-md:px-5">
-        <div className="self-stretch flex items-center gap-8 my-auto max-md:max-w-full">
+      <div className="flex w-full items-center justify-between flex-wrap px-6 py-5 max-md:max-w-full max-md:px-5">
+        <div className="flex items-center gap-8 my-auto">
           <LogoSelector onColorChange={setSelectedLogoColor} />
           <NavLinks />
         </div>

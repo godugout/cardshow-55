@@ -26,8 +26,8 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
   };
 
   return (
-    <div className="absolute top-6 left-2 right-4 z-50 flex items-center justify-between pointer-events-none">
-      {/* Left: Compact Back Button - positioned close to logo */}
+    <div className="absolute top-6 left-6 right-6 z-50 flex items-center justify-between pointer-events-none">
+      {/* Left: Compact Back Button - aligned with navbar logo */}
       <div className="pointer-events-auto">
         <Button
           variant="ghost"
