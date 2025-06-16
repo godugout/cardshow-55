@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -442,7 +441,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
                 <Button
                   onClick={() => addCropArea('frame')}
                   variant="outline"
-                  className="w-full border-editor-border text-gray-300 hover:bg-blue-600/20 hover:text-white hover:border-blue-400"
+                  className="w-full bg-editor-tool border-editor-border text-gray-300 hover:bg-blue-600/20 hover:text-white hover:border-blue-400"
                   disabled={!imageLoaded}
                 >
                   <Square className="w-4 h-4 mr-2" />
@@ -451,7 +450,7 @@ export const AdvancedCropper: React.FC<AdvancedCropperProps> = ({
                 <Button
                   onClick={() => addCropArea('element')}
                   variant="outline"
-                  className="w-full border-editor-border text-gray-300 hover:bg-yellow-600/20 hover:text-white hover:border-yellow-400"
+                  className="w-full bg-editor-tool border-editor-border text-gray-300 hover:bg-yellow-600/20 hover:text-white hover:border-yellow-400"
                   disabled={!imageLoaded}
                 >
                   <Maximize className="w-4 h-4 mr-2" />
