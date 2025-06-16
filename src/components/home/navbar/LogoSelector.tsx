@@ -31,7 +31,7 @@ export const LogoSelector = () => {
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2 cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 focus:ring-crd-primary focus:ring-offset-[#141416] rounded-md">
           <div className="logo-container" style={{ color: 'initial' }}>
-            <SelectedLogoComponent className="h-12 w-32 object-contain" />
+            <SelectedLogoComponent className="h-8 w-24 object-contain" />
           </div>
           <ChevronDown className="h-4 w-4 text-gray-400" />
         </button>
@@ -41,12 +41,11 @@ export const LogoSelector = () => {
           <DropdownMenuItem
             key={logo.name}
             onSelect={() => setSelectedLogo(logo)}
-            className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center gap-4 py-2 px-3"
+            className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center justify-center py-1 px-2"
           >
             <div className="logo-container transition-all duration-300" style={{ color: 'initial' }}>
-              <logo.component className="h-12 w-32 object-contain" />
+              <logo.component className="h-6 w-20 object-contain" />
             </div>
-            <span className="font-semibold">{logo.name}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
