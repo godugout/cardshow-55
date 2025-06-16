@@ -37,17 +37,20 @@ export const LogoSelector = () => {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-[#23262F] border-[#353945] text-white z-50">
-        {logos.map((logo) => (
-          <DropdownMenuItem
-            key={logo.name}
-            onSelect={() => setSelectedLogo(logo)}
-            className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center justify-center py-1 px-2"
-          >
-            <div className="logo-container transition-all duration-300" style={{ color: 'initial' }}>
-              <logo.component className="h-6 w-20 object-contain" />
-            </div>
-          </DropdownMenuItem>
-        ))}
+        {logos.map((logo) => {
+          const LogoComponent = logo.component;
+          return (
+            <DropdownMenuItem
+              key={logo.name}
+              onSelect={() => setSelectedLogo(logo)}
+              className="group cursor-pointer hover:!bg-[#353945] focus:!bg-[#353945] flex items-center justify-center py-1 px-2"
+            >
+              <div className="logo-container transition-all duration-300" style={{ color: 'initial' }}>
+                <LogoComponent className="h-6 w-20 object-contain" />
+              </div>
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );
