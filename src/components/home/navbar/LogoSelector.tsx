@@ -86,7 +86,7 @@ export const LogoSelector = ({ onColorChange }: LogoSelectorProps) => {
   return (
     <div className="relative z-[10000]">
       <button 
-        className="group flex items-center gap-2 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-2 rounded-lg transition-all duration-300 hover:bg-white/5"
+        className="group flex items-center gap-2 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-2 rounded-lg transition-all duration-300"
         onClick={() => setIsOpen(!isOpen)}
         onBlur={() => setTimeout(() => setIsOpen(false), 150)}
       >
