@@ -3,7 +3,6 @@ import React from 'react';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
-import { StudioHeader } from './Studio/components/StudioHeader';
 import { NoCardSelected } from './Studio/components/NoCardSelected';
 import { useStudioState } from './Studio/hooks/useStudioState';
 
@@ -30,10 +29,7 @@ const Studio = () => {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-crd-darkest">
-        {/* Studio Header */}
-        <StudioHeader />
-
-        {/* Immersive Card Viewer */}
+        {/* Immersive Card Viewer - the navbar logo will show through */}
         <ImmersiveCardViewer
           card={selectedCard}
           cards={mockCards}

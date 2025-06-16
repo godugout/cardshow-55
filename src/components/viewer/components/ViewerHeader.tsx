@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface ViewerHeaderProps {
   onClose?: () => void;
@@ -14,26 +15,27 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
   showStudioButton,
   onOpenStudio
 }) => {
+  const navigate = useNavigate();
+
+  const handleBackClick = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate('/gallery');
+    }
+  };
+
   return (
     <div className="absolute top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none">
-      {/* Left: Logo and Back Button */}
-      <div className="pointer-events-auto flex items-center space-x-4">
-        <img 
-          src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
-          alt="CRD Logo" 
-          className="w-24 h-24"
-          onError={(e) => {
-            console.warn('CRD logo failed to load');
-            e.currentTarget.style.display = 'none';
-          }}
-        />
+      {/* Left: Back Button */}
+      <div className="pointer-events-auto">
         <Button
           variant="ghost"
           size="sm"
-          onClick={onClose}
-          className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center px-3 py-2"
+          onClick={handleBackClick}
+          className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center space-x-2 px-3 py-2"
         >
-          <span className="text-sm font-medium">Back</span>
+          <ArrowLeft className="w-4 h-4" />
         </Button>
       </div>
 
