@@ -68,10 +68,10 @@ export const CardCreationFlow = ({ initialCardId }: CardCreationFlowProps) => {
   if (!wizardComplete) {
     return (
       <div className="min-h-screen bg-crd-darkest">
-        {/* Header with fixed vertical centering */}
-        <div className="border-b border-editor-border bg-editor-dark h-20 flex items-center justify-center">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center justify-center">
-            <h1 className="text-2xl font-bold text-white">Create a CRD</h1>
+        {/* Header with explicit line-height centering */}
+        <div className="border-b border-editor-border bg-editor-dark h-20 py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-2xl font-bold text-white leading-8">Create a CRD</h1>
           </div>
         </div>
 
