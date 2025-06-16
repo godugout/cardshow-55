@@ -130,23 +130,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     effectValues
   });
 
-  // Style generation hook - properly structure parameters for useCardEffects
-  const cardEffectsParams = {
-    card,
-    effectValues,
-    mousePosition,
-    showEffects,
-    overallBrightness,
-    interactiveLighting,
-    selectedScene,
-    selectedLighting,
-    materialSettings,
-    zoom,
-    rotation,
-    isHovering
-  };
-  
-  const { getFrameStyles, getEnhancedEffectStyles, surfaceTextureStyles } = useCardEffects(cardEffectsParams);
+  // Style generation hook - use the simple version that just takes CardData
+  const { getFrameStyles, getEnhancedEffectStyles, surfaceTextureStyles } = useCardEffects(card);
 
   // Enhanced state validation on card change
   useEffect(() => {
