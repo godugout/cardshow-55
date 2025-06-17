@@ -21,7 +21,13 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
     if (onClose) {
       onClose();
     } else {
-      navigate('/gallery');
+      // Use browser history to go back to previous page
+      // If there's no history (direct access), fallback to gallery
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate('/gallery');
+      }
     }
   };
 

@@ -138,9 +138,15 @@ export const useStudioState = () => {
     }
   };
 
-  // Handle closing studio
+  // Handle closing studio - use browser history when possible
   const handleClose = () => {
-    navigate('/gallery');
+    // Use browser history to go back to previous page
+    // If there's no history (direct access), fallback to gallery
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/gallery');
+    }
   };
 
   return {
