@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { CardEffectsLayer } from './CardEffectsLayer';
@@ -32,11 +33,6 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
 
-  // SurfaceTexture is never rendered on the back. Add a debug warning ONLY if present.
-  if (SurfaceTexture) {
-    console.warn('[CardBackContainer] SurfaceTexture was passed to the back, which is unintended. Back ignores images.');
-  }
-
   return (
     <div 
       className="absolute inset-0 rounded-xl overflow-hidden"
@@ -61,7 +57,9 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       data-visibility={'visible'}
       data-back-rotation={rotation.y.toFixed(1)}
     >
-      {/* Effects, overlays, and logo only! */}
+      {/* IMPORTANT: No card image on the back - only effects and logo */}
+      
+      {/* Effects Layer */}
       <CardEffectsLayer
         showEffects={showEffects}
         isHovering={isHovering}
@@ -72,15 +70,22 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         interactiveLighting={interactiveLighting}
       />
 
+      {/* Material Overlay */}
       <CardBackMaterialOverlay selectedMaterial={selectedMaterial} />
 
-      <CardBackLogo
-        selectedMaterial={selectedMaterial}
-        isHovering={isHovering}
-        mousePosition={mousePosition}
-        interactiveLighting={interactiveLighting}
-      />
+      {/* CRD Logo - Center of back */}
+      <div className="absolute inset-0 flex items-center justify-center z-40">
+        <img 
+          src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
+          alt="CRD Logo" 
+          className="w-48 h-auto opacity-90"
+          style={{
+            filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
+          }}
+        />
+      </div>
 
+      {/* Interactive Lighting */}
       <CardBackInteractiveLighting
         selectedMaterial={selectedMaterial}
         mousePosition={mousePosition}

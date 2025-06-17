@@ -21,7 +21,8 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
     if (onClose) {
       onClose();
     } else {
-      navigate('/gallery');
+      // Use React Router navigation instead of window.location
+      navigate(-1); // Go back to previous page
     }
   };
 

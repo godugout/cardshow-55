@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -35,7 +34,7 @@ export const useStudioState = () => {
 
     // Determine which card set to use (prioritize database cards)
     let availableCards: CardData[] = [];
-    let source: 'database' | 'mock' = 'mock';
+    let source: 'database' | 'mock' | 'none' = 'none'; // included 'none' for completeness
 
     if (dbCards.length > 0) {
       availableCards = dbCards;
@@ -138,17 +137,17 @@ export const useStudioState = () => {
     }
   };
 
-  // Handle closing studio
+  // Handle closing studio - use React Router navigation
   const handleClose = () => {
-    navigate('/gallery');
+    navigate('/gallery'); // Use React Router instead of direct navigation
   };
 
   return {
     selectedCard,
     currentCardIndex,
     isLoading,
-    mockCards: allCards, // Pass the correct list of cards (database or mock)
-    dataSource, // New: expose data source for debugging
+    mockCards: allCards,
+    dataSource,
     handleCardChange,
     handleShare,
     handleDownload,
