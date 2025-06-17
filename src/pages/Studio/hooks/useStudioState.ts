@@ -14,6 +14,7 @@ export const useStudioState = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [allCards, setAllCards] = useState<CardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [dataSource, setDataSource] = useState<'database' | 'mock' | 'none'>('none');
 
   const { featuredCards, loading: cardsLoading } = useCards();
   const { convertCardsToCardData } = useCardConversion();
@@ -25,9 +26,29 @@ export const useStudioState = () => {
       return;
     }
 
+    console.log('🏗️ Studio: Processing card data...');
+    console.log('📊 Featured cards from database:', featuredCards?.length || 0);
+
+    // Convert database cards to CardData format
     const dbCards = convertCardsToCardData(featuredCards || []);
-    const availableCards = dbCards.length > 0 ? dbCards : fallbackMockCards;
+    console.log('🔄 Converted database cards:', dbCards.length);
+
+    // Determine which card set to use (prioritize database cards)
+    let availableCards: CardData[] = [];
+    let source: 'database' | 'mock' = 'mock';
+
+    if (dbCards.length > 0) {
+      availableCards = dbCards;
+      source = 'database';
+      console.log('✅ Using database cards as primary source');
+    } else {
+      availableCards = fallbackMockCards;
+      source = 'mock';
+      console.log('⚠️ Falling back to mock cards');
+    }
+
     setAllCards(availableCards);
+    setDataSource(source);
 
     let cardToSelect: CardData | undefined;
     let cardIndex = -1;
@@ -38,20 +59,20 @@ export const useStudioState = () => {
       
       if (cardIndex !== -1) {
         cardToSelect = availableCards[cardIndex];
-        console.log(`Found card: ${cardToSelect.title} at index ${cardIndex}`);
+        console.log(`🎯 Found requested card: ${cardToSelect.title} at index ${cardIndex} (${source})`);
       } else {
-        // Card not found - this is the main issue
-        console.warn(`Card with ID "${cardId}" not found in available cards`);
-        console.log('Available card IDs:', availableCards.map(c => c.id));
+        // Card not found - show helpful error message
+        console.warn(`❌ Card with ID "${cardId}" not found in ${source} cards`);
+        console.log('🔍 Available card IDs:', availableCards.map(c => `${c.title}:${c.id}`));
         
         // Default to first available card
         cardToSelect = availableCards[0];
         cardIndex = 0;
         
         if (cardToSelect) {
-          console.log(`Redirecting to first available card: ${cardToSelect.id}`);
+          console.log(`🔄 Redirecting to first available card: ${cardToSelect.id}`);
           navigate(`/studio/${cardToSelect.id}`, { replace: true });
-          toast.info(`Card not found. Showing ${cardToSelect.title} instead.`);
+          toast.info(`Card not found in ${source} data. Showing ${cardToSelect.title} instead.`);
         }
       }
     } else {
@@ -60,7 +81,7 @@ export const useStudioState = () => {
       cardIndex = 0;
       
       if (cardToSelect) {
-        console.log(`No card ID specified, redirecting to: ${cardToSelect.id}`);
+        console.log(`📍 No card ID specified, redirecting to: ${cardToSelect.id}`);
         navigate(`/studio/${cardToSelect.id}`, { replace: true });
       }
     }
@@ -68,11 +89,12 @@ export const useStudioState = () => {
     if (cardToSelect) {
       setSelectedCard(cardToSelect);
       setCurrentCardIndex(cardIndex >= 0 ? cardIndex : 0);
-      console.log(`Selected card: ${cardToSelect.title} (${cardToSelect.id})`);
+      console.log(`🎮 Selected card: ${cardToSelect.title} (${cardToSelect.id}) from ${source}`);
     } else {
       // This case happens if no cards are available at all
-      console.error('No cards are available to display');
+      console.error('💥 No cards are available to display');
       toast.error('No cards are available to display.');
+      setDataSource('none');
       navigate('/gallery');
     }
     
@@ -83,7 +105,7 @@ export const useStudioState = () => {
   const handleCardChange = (index: number) => {
     const newCard = allCards[index];
     if (newCard) {
-      console.log(`Changing to card: ${newCard.title} (${newCard.id})`);
+      console.log(`🔄 Changing to card: ${newCard.title} (${newCard.id})`);
       setSelectedCard(newCard);
       setCurrentCardIndex(index);
       
@@ -98,7 +120,10 @@ export const useStudioState = () => {
     
     if (navigator.clipboard) {
       navigator.clipboard.writeText(shareUrl)
-        .then(() => toast.success('Studio link copied to clipboard!'))
+        .then(() => {
+          toast.success(`Studio link copied to clipboard!`);
+          console.log(`📋 Shared card: ${card.title}`);
+        })
         .catch(() => toast.error('Failed to copy link'));
     } else {
       toast.error('Sharing not supported in this browser');
@@ -109,6 +134,7 @@ export const useStudioState = () => {
   const handleDownload = () => {
     if (selectedCard) {
       toast.success(`Exporting ${selectedCard.title}...`);
+      console.log(`💾 Exporting card: ${selectedCard.title} from ${dataSource}`);
     }
   };
 
@@ -121,7 +147,8 @@ export const useStudioState = () => {
     selectedCard,
     currentCardIndex,
     isLoading,
-    mockCards: allCards, // Pass the correct list of cards
+    mockCards: allCards, // Pass the correct list of cards (database or mock)
+    dataSource, // New: expose data source for debugging
     handleCardChange,
     handleShare,
     handleDownload,

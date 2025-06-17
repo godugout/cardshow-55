@@ -19,6 +19,7 @@ const Studio = () => {
     currentCardIndex,
     isLoading,
     mockCards,
+    dataSource,
     handleCardChange,
     handleShare,
     handleDownload,
@@ -32,6 +33,7 @@ const Studio = () => {
       
       try {
         const hasCards = await checkIfDatabaseHasCards();
+        console.log('🔍 Database check result:', hasCards ? 'Has cards' : 'Empty');
         if (!hasCards) {
           setShowSeedPrompt(true);
         }
@@ -47,6 +49,7 @@ const Studio = () => {
 
   const handleSeedComplete = () => {
     setShowSeedPrompt(false);
+    console.log('🌱 Database seeded, reloading studio...');
     // Trigger a reload of the studio state
     window.location.reload();
   };
@@ -56,7 +59,7 @@ const Studio = () => {
   }
 
   // Show seed prompt if database is empty and user is authenticated
-  if (showSeedPrompt && user) {
+  if (showSeedPrompt && user && dataSource !== 'database') {
     return <DatabaseSeedPrompt onSeedComplete={handleSeedComplete} />;
   }
 
@@ -64,9 +67,21 @@ const Studio = () => {
     return <NoCardSelected />;
   }
 
+  // Debug info in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`🎮 Studio rendering card: ${selectedCard.title} from ${dataSource} source`);
+  }
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-crd-darkest">
+        {/* Data source indicator (only in development) */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="fixed top-4 left-4 z-50 bg-black/80 text-white px-2 py-1 rounded text-xs">
+            Source: {dataSource} ({mockCards.length} cards)
+          </div>
+        )}
+        
         {/* Immersive Card Viewer - the navbar logo will show through */}
         <ImmersiveCardViewer
           card={selectedCard}
