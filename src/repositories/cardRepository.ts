@@ -183,8 +183,12 @@ export const CardRepository = {
       }
       
       if (rarity) {
-        // Ensure rarity is mapped correctly for database query
-        const dbRarity = rarity === 'ultra-rare' ? 'legendary' : rarity;
+        // Map rarity values for database compatibility
+        const rarityMapping: Record<string, string> = {
+          'epic': 'legendary', // Map epic to legendary
+          'ultra-rare': 'legendary' // Map ultra-rare to legendary
+        };
+        const dbRarity = rarityMapping[rarity] || rarity;
         query = query.eq('rarity', dbRarity);
       }
       

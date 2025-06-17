@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { EditorHeader } from './EditorHeader';
 import { EditorSidebar } from './EditorSidebar';
@@ -29,6 +30,8 @@ export const SimpleEditor = ({ initialData, onStartOver }: SimpleEditorProps) =>
       design_metadata: {},
       visibility: 'private',
       creator_attribution: {
+        creator_name: '',
+        creator_id: '',
         collaboration_type: 'solo'
       },
       publishing_options: {

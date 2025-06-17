@@ -29,7 +29,9 @@ export const mockCards: CardData[] = [
     },
     visibility: 'public',
     creator_attribution: {
-      creator_name: 'CRD Studio'
+      creator_name: 'CRD Studio',
+      creator_id: 'crd-studio-1',
+      collaboration_type: 'solo'
     },
     publishing_options: {
       marketplace_listing: false,
@@ -37,6 +39,9 @@ export const mockCards: CardData[] = [
       print_available: false,
       pricing: {
         currency: 'USD'
+      },
+      distribution: {
+        limited_edition: false
       }
     }
   },
@@ -44,7 +49,7 @@ export const mockCards: CardData[] = [
     id: 'card-2',
     title: 'Stephen Curry',
     description: 'Golden State Warriors - Point Guard',
-    rarity: 'epic',
+    rarity: 'legendary', // Changed from 'epic' to 'legendary'
     tags: ['basketball', 'nba', 'curry', 'warriors'],
     image_url: 'https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=400&h=600&fit=crop',
     design_metadata: {
@@ -67,7 +72,9 @@ export const mockCards: CardData[] = [
     },
     visibility: 'public',
     creator_attribution: {
-      creator_name: 'CRD Studio'
+      creator_name: 'CRD Studio',
+      creator_id: 'crd-studio-1',
+      collaboration_type: 'solo'
     },
     publishing_options: {
       marketplace_listing: false,
@@ -75,6 +82,9 @@ export const mockCards: CardData[] = [
       print_available: false,
       pricing: {
         currency: 'USD'
+      },
+      distribution: {
+        limited_edition: false
       }
     }
   },
@@ -105,7 +115,9 @@ export const mockCards: CardData[] = [
     },
     visibility: 'public',
     creator_attribution: {
-      creator_name: 'CRD Studio'
+      creator_name: 'CRD Studio',
+      creator_id: 'crd-studio-1',
+      collaboration_type: 'solo'
     },
     publishing_options: {
       marketplace_listing: false,
@@ -113,6 +125,9 @@ export const mockCards: CardData[] = [
       print_available: false,
       pricing: {
         currency: 'USD'
+      },
+      distribution: {
+        limited_edition: false
       }
     }
   }

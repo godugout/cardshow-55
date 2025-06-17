@@ -14,6 +14,7 @@ import { CardDataInvestigator } from '@/components/debug/CardDataInvestigator';
 import { Button } from '@/components/ui/button';
 import { Plus, Bug, RefreshCw } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
+import type { CardData } from '@/hooks/useCardEditor';
 
 // Use the database type directly
 type DbCard = Tables<'cards'>;
