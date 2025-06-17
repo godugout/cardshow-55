@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { analyzeCardImage } from '@/services/cardAnalyzer';
 import { CardRepository } from '@/repositories/cardRepository';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
+import type { CardRarity } from '@/types/card';
 
 interface UploadedFile {
   id: string;
@@ -19,6 +20,19 @@ interface UploadedFile {
   analysis?: any;
   error?: string;
 }
+
+// Helper function to map AI analysis rarity to our valid rarity types
+const mapRarityToValidType = (rarity: string): CardRarity => {
+  const rarityMap: Record<string, CardRarity> = {
+    'common': 'common',
+    'uncommon': 'uncommon', 
+    'rare': 'rare',
+    'epic': 'rare', // Map epic to rare since epic is not in our type
+    'legendary': 'legendary'
+  };
+  
+  return rarityMap[rarity.toLowerCase()] || 'common';
+};
 
 const BulkUpload = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
@@ -110,14 +124,14 @@ const BulkUpload = () => {
         // Analyze with AI
         const analysis = await analyzeCardImage(imageDataUrl);
         
-        // Create card in database
+        // Create card in database with proper rarity mapping
         const cardResult = await CardRepository.createCard({
           title: analysis.title || 'Untitled Card',
           description: analysis.description || 'A unique trading card.',
           creator_id: user.id,
           image_url: imageDataUrl,
           thumbnail_url: imageDataUrl,
-          rarity: analysis.rarity || 'common',
+          rarity: mapRarityToValidType(analysis.rarity || 'common'),
           tags: analysis.tags || ['custom'],
           design_metadata: {
             aiGenerated: true,
