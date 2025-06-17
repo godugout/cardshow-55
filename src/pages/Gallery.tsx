@@ -1,20 +1,18 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { useAllCollections } from '@/hooks/useCollections';
 import { useCards } from '@/hooks/useCards';
-import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { GallerySection } from './Gallery/components/GallerySection';
 import { GalleryHeader } from './Gallery/components/GalleryHeader';
 import { CollectionsGrid } from './Gallery/components/CollectionsGrid';
 import { CardsGrid } from './Gallery/components/CardsGrid';
-import { useCardConversion } from './Gallery/hooks/useCardConversion';
-import { useGalleryActions } from './Gallery/hooks/useGalleryActions';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { CardDataInvestigator } from '@/components/debug/CardDataInvestigator';
 import { Button } from '@/components/ui/button';
 import { Plus, Bug, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { Tables } from '@/integrations/supabase/types';
-import type { CardData } from '@/hooks/useCardEditor';
 
 // Use the database type directly
 type DbCard = Tables<'cards'>;
@@ -22,6 +20,7 @@ type DbCard = Tables<'cards'>;
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
   const [showDebug, setShowDebug] = useState(false);
+  const navigate = useNavigate();
   
   const { collections, loading: collectionsLoading } = useAllCollections(1, 6);
   const { 
@@ -31,20 +30,6 @@ const Gallery = () => {
     fetchCards,
     migrateLocalCardsToDatabase 
   } = useCards();
-  
-  const { convertCardsToCardData } = useCardConversion();
-  const {
-    selectedCardIndex,
-    handleCardClick,
-    handleCardChange,
-    handleCloseViewer,
-    handleShareCard,
-    handleDownloadCard
-  } = useGalleryActions();
-
-  // Convert cards to CardData format for the viewer
-  const convertedCards = convertCardsToCardData(featuredCards || []);
-  const currentCard = convertedCards[selectedCardIndex];
 
   const handleCreateCollection = () => {
     console.log('Create collection clicked');
@@ -55,27 +40,12 @@ const Gallery = () => {
     await fetchCards();
   };
 
-  const handleCardGridClick = (card: DbCard) => {
-    const allConvertedCards = convertCardsToCardData(featuredCards || []);
-    const clickedCardIndex = (featuredCards || []).findIndex(c => c.id === card.id);
-    const clickedCardConverted = allConvertedCards[clickedCardIndex];
-    
-    if (clickedCardConverted) {
-      handleCardClick(clickedCardConverted, allConvertedCards);
+  const handleCardClick = (card: DbCard) => {
+    // Navigate directly to Studio for the clicked card
+    if (card && card.id) {
+      console.log(`🎯 Navigating to Studio for card: ${card.title} (${card.id})`);
+      navigate(`/studio/${card.id}`);
     }
-  };
-
-  // Fix the viewer handlers to match expected signatures - pass convertedCards array
-  const handleViewerCardChange = (newIndex: number) => {
-    handleCardChange(newIndex);
-  };
-
-  const handleViewerShare = (card: CardData) => {
-    handleShareCard(convertedCards);
-  };
-
-  const handleViewerDownload = (card: CardData) => {
-    handleDownloadCard(convertedCards);
   };
 
   return (
@@ -158,7 +128,7 @@ const Gallery = () => {
               <CardsGrid 
                 cards={featuredCards} 
                 loading={cardsLoading}
-                onCardClick={handleCardGridClick}
+                onCardClick={handleCardClick}
               />
             ) : (
               <EmptyState
@@ -190,23 +160,6 @@ const Gallery = () => {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* Immersive Viewer */}
-      {currentCard && (
-        <ImmersiveCardViewer
-          card={currentCard}
-          cards={convertedCards}
-          currentCardIndex={selectedCardIndex}
-          onCardChange={handleViewerCardChange}
-          isOpen={true}
-          onClose={handleCloseViewer}
-          onShare={handleViewerShare}
-          onDownload={handleViewerDownload}
-          allowRotation={true}
-          showStats={true}
-          ambient={true}
-        />
-      )}
     </div>
   );
 };
