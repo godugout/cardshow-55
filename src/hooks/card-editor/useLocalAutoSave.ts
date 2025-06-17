@@ -57,7 +57,7 @@ export const useLocalAutoSave = (
     }
 
     const localCard = localCardStorage.getCard(cardId);
-    if (!localCard || !localCard.needsSync) {
+    if (!localCard || localCard.needsSync === false) {
       return;
     }
 
@@ -83,11 +83,8 @@ export const useLocalAutoSave = (
             thumbnail_url: localCard.thumbnail_url,
             rarity: localCard.rarity,
             tags: localCard.tags,
-            is_public: localCard.is_public || false,
+            is_public: localCard.visibility === 'public',
             template_id: localCard.template_id && localCard.template_id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) ? localCard.template_id : null,
-            creator_attribution: localCard.creator_attribution,
-            publishing_options: localCard.publishing_options,
-            print_metadata: localCard.print_metadata,
             updated_at: new Date().toISOString(),
           })
           .eq('id', cardId);
@@ -107,12 +104,10 @@ export const useLocalAutoSave = (
             thumbnail_url: localCard.thumbnail_url,
             rarity: localCard.rarity,
             tags: localCard.tags,
-            is_public: localCard.is_public || false,
+            is_public: localCard.visibility === 'public',
             template_id: localCard.template_id && localCard.template_id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) ? localCard.template_id : null,
-            creator_attribution: localCard.creator_attribution,
-            publishing_options: localCard.publishing_options,
             verification_status: 'pending',
-            print_metadata: localCard.print_metadata
+            print_metadata: localCard.print_metadata || {}
           });
         
         if (error) throw error;

@@ -18,21 +18,51 @@ export const localCardStorage = {
     }
   },
 
-  saveCard(card: CardData): void {
+  getCard(cardId: string): CardData | null {
     try {
       const cards = this.getAllCards();
-      const existingIndex = cards.findIndex(c => c.id === card.id);
+      return cards.find(c => c.id === cardId) || null;
+    } catch (error) {
+      console.error('Error getting card from local storage:', error);
+      return null;
+    }
+  },
+
+  saveCard(card: CardData): string {
+    try {
+      const cards = this.getAllCards();
+      const cardId = card.id || `card_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const cardWithId = { ...card, id: cardId };
+      
+      const existingIndex = cards.findIndex(c => c.id === cardId);
       
       if (existingIndex >= 0) {
-        cards[existingIndex] = card;
+        cards[existingIndex] = cardWithId;
       } else {
-        cards.push(card);
+        cards.push(cardWithId);
       }
       
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
-      console.log(`💾 Saved card "${card.title}" to local storage`);
+      console.log(`💾 Saved card "${cardWithId.title}" to local storage`);
+      return cardId;
     } catch (error) {
       console.error('Error saving card to local storage:', error);
+      return card.id || '';
+    }
+  },
+
+  markAsSynced(cardId: string): void {
+    try {
+      const cards = this.getAllCards();
+      const cardIndex = cards.findIndex(c => c.id === cardId);
+      
+      if (cardIndex >= 0) {
+        cards[cardIndex] = { ...cards[cardIndex], needsSync: false };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+        console.log(`💾 Marked card ${cardId} as synced`);
+      }
+    } catch (error) {
+      console.error('Error marking card as synced:', error);
     }
   },
 
@@ -59,8 +89,7 @@ export const localCardStorage = {
   // Check if there are cards that haven't been synced to database
   getUnsyncedCards(): CardData[] {
     const localCards = this.getAllCards();
-    // In a real implementation, you'd check which cards exist in the database
-    // For now, we'll return all local cards as potentially unsynced
-    return localCards;
+    // Return cards that are marked as needing sync or don't have the flag
+    return localCards.filter(card => card.needsSync !== false);
   }
 };

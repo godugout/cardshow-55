@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { useAllCollections } from '@/hooks/useCollections';
@@ -135,7 +134,7 @@ const Gallery = () => {
               <CardsGrid 
                 cards={featuredCards} 
                 loading={cardsLoading}
-                onCardClick={(card: DbCard) => handleCardClick(card, featuredCards)}
+                onCardClick={(card: DbCard, allCards: DbCard[]) => handleCardClick(convertCardsToCardData([card])[0], convertCardsToCardData(allCards))}
               />
             ) : (
               <EmptyState

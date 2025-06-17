@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -11,7 +10,7 @@ export interface CardCreateParams {
   creator_id: string;
   image_url?: string;
   thumbnail_url?: string;
-  rarity?: string;
+  rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   tags?: string[];
   design_metadata?: Record<string, any>;
   price?: number;
@@ -20,7 +19,7 @@ export interface CardCreateParams {
   verification_status?: string;
   print_metadata?: Record<string, any>;
   series?: string;
-  visibility?: string;
+  visibility?: 'public' | 'private' | 'shared';
   marketplace_listing?: boolean;
   edition_number?: number;
   total_supply?: number;
@@ -32,7 +31,7 @@ export interface CardUpdateParams {
   description?: string;
   image_url?: string;
   thumbnail_url?: string;
-  rarity?: string;
+  rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   tags?: string[];
   design_metadata?: Record<string, any>;
   price?: number;
@@ -41,7 +40,7 @@ export interface CardUpdateParams {
   verification_status?: string;
   print_metadata?: Record<string, any>;
   series?: string;
-  visibility?: string;
+  visibility?: 'public' | 'private' | 'shared';
   marketplace_listing?: boolean;
   edition_number?: number;
   total_supply?: number;
@@ -87,6 +86,15 @@ export const CardRepository = {
     try {
       console.log('🎨 Creating new card:', params.title);
       
+      // Map the rarity to match database enum values
+      const rarityMapping: Record<string, string> = {
+        'common': 'common',
+        'uncommon': 'uncommon', 
+        'rare': 'rare',
+        'epic': 'legendary', // Map epic to legendary since database doesn't have epic
+        'legendary': 'legendary'
+      };
+      
       const { data, error } = await supabase
         .from('cards')
         .insert({
@@ -95,7 +103,7 @@ export const CardRepository = {
           creator_id: params.creator_id,
           image_url: params.image_url,
           thumbnail_url: params.thumbnail_url,
-          rarity: params.rarity || 'common',
+          rarity: rarityMapping[params.rarity || 'common'] as any,
           tags: params.tags || [],
           design_metadata: params.design_metadata || {},
           price: params.price,
