@@ -1,0 +1,126 @@
+
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Sparkles, Upload, Users } from 'lucide-react';
+import { CreationModeSelector } from './components/CreationModeSelector';
+import { EnhancedWizard } from './components/EnhancedWizard';
+import { BulkCreationFlow } from './components/BulkCreationFlow';
+import { SimpleEditor } from '@/components/editor/SimpleEditor';
+import type { CardData } from '@/hooks/useCardEditor';
+
+type CreationMode = 'select' | 'quick' | 'advanced' | 'bulk' | 'editing';
+
+interface UnifiedCardCreatorProps {
+  initialCardId?: string;
+  initialMode?: CreationMode;
+}
+
+export const UnifiedCardCreator = ({ 
+  initialCardId, 
+  initialMode = 'select' 
+}: UnifiedCardCreatorProps) => {
+  const [mode, setMode] = useState<CreationMode>(
+    initialCardId ? 'editing' : initialMode
+  );
+  const [cardData, setCardData] = useState<CardData | null>(null);
+
+  const handleModeSelect = (selectedMode: CreationMode) => {
+    setMode(selectedMode);
+  };
+
+  const handleWizardComplete = (data: CardData) => {
+    setCardData(data);
+    setMode('editing');
+  };
+
+  const handleStartOver = () => {
+    setMode('select');
+    setCardData(null);
+  };
+
+  const renderContent = () => {
+    switch (mode) {
+      case 'select':
+        return (
+          <div className="min-h-screen bg-crd-darkest">
+            <div className="bg-crd-darkest border-b border-crd-mediumGray/20 py-8">
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 className="text-3xl font-bold text-white mb-4">Create Your Card</h1>
+                <p className="text-crd-lightGray text-lg max-w-2xl mx-auto">
+                  Choose how you'd like to create your card. We'll guide you through the process with AI assistance.
+                </p>
+              </div>
+            </div>
+            
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+              <CreationModeSelector onModeSelect={handleModeSelect} />
+            </div>
+          </div>
+        );
+
+      case 'quick':
+      case 'advanced':
+        return (
+          <div className="min-h-screen bg-crd-darkest">
+            <div className="bg-crd-darkest border-b border-crd-mediumGray/20">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleStartOver}
+                  className="text-crd-lightGray hover:text-white hover:bg-editor-border mr-4"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Mode Selection
+                </Button>
+                <h1 className="text-xl font-semibold text-white">
+                  {mode === 'quick' ? 'Quick Card Creation' : 'Advanced Card Creation'}
+                </h1>
+              </div>
+            </div>
+            
+            <EnhancedWizard
+              mode={mode}
+              onComplete={handleWizardComplete}
+              onBack={handleStartOver}
+            />
+          </div>
+        );
+
+      case 'bulk':
+        return (
+          <div className="min-h-screen bg-crd-darkest">
+            <div className="bg-crd-darkest border-b border-crd-mediumGray/20">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleStartOver}
+                  className="text-crd-lightGray hover:text-white hover:bg-editor-border mr-4"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Mode Selection
+                </Button>
+                <h1 className="text-xl font-semibold text-white">Bulk Card Creation</h1>
+              </div>
+            </div>
+            
+            <BulkCreationFlow onBack={handleStartOver} />
+          </div>
+        );
+
+      case 'editing':
+        return cardData ? (
+          <SimpleEditor 
+            initialData={cardData} 
+            onStartOver={handleStartOver} 
+          />
+        ) : null;
+
+      default:
+        return null;
+    }
+  };
+
+  return renderContent();
+};
