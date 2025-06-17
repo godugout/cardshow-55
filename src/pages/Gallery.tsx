@@ -57,8 +57,12 @@ const Gallery = () => {
 
   const handleCardGridClick = (card: DbCard) => {
     const allConvertedCards = convertCardsToCardData(featuredCards || []);
-    const clickedCardConverted = convertCardsToCardData([card])[0];
-    handleCardClick(clickedCardConverted, allConvertedCards);
+    const clickedCardIndex = (featuredCards || []).findIndex(c => c.id === card.id);
+    const clickedCardConverted = allConvertedCards[clickedCardIndex];
+    
+    if (clickedCardConverted) {
+      handleCardClick(clickedCardConverted, allConvertedCards);
+    }
   };
 
   return (

@@ -106,7 +106,7 @@ export const EditorHeader = ({ cardEditor }: EditorHeaderProps) => {
   const isSaving = cardEditor?.isSaving || false;
   
   const isLocalCard = cardEditor?.cardData.id ? 
-    localCardStorage.getCard(cardEditor.cardData.id)?.isLocal : false;
+    localCardStorage.getCard(cardEditor.cardData.id)?.isLocal || false : false;
 
   const getStatusDisplay = () => {
     if (isSaving) return 'Saving...';

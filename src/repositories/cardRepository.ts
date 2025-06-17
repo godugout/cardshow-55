@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -86,15 +87,6 @@ export const CardRepository = {
     try {
       console.log('🎨 Creating new card:', params.title);
       
-      // Map the rarity to match database enum values
-      const rarityMapping: Record<string, 'common' | 'uncommon' | 'rare' | 'legendary'> = {
-        'common': 'common',
-        'uncommon': 'uncommon', 
-        'rare': 'rare',
-        'epic': 'legendary', // Map epic to legendary since database doesn't have epic
-        'legendary': 'legendary'
-      };
-      
       const { data, error } = await supabase
         .from('cards')
         .insert({
@@ -103,7 +95,7 @@ export const CardRepository = {
           creator_id: params.creator_id,
           image_url: params.image_url,
           thumbnail_url: params.thumbnail_url,
-          rarity: rarityMapping[params.rarity || 'common'],
+          rarity: params.rarity || 'common',
           tags: params.tags || [],
           design_metadata: params.design_metadata || {},
           price: params.price,

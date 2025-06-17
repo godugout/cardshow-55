@@ -147,13 +147,21 @@ export const useCards = () => {
     
     for (const localCard of localCards) {
       try {
+        // Map rarity to database enum (remove epic, map ultra-rare to legendary)
+        let dbRarity: 'common' | 'uncommon' | 'rare' | 'legendary' = 'common';
+        if (localCard.rarity === 'ultra-rare' || localCard.rarity === 'legendary') {
+          dbRarity = 'legendary';
+        } else if (['common', 'uncommon', 'rare'].includes(localCard.rarity)) {
+          dbRarity = localCard.rarity as 'common' | 'uncommon' | 'rare';
+        }
+
         const cardData = {
           title: localCard.title,
           description: localCard.description,
           creator_id: user.id,
           image_url: localCard.image_url,
           thumbnail_url: localCard.thumbnail_url,
-          rarity: localCard.rarity,
+          rarity: dbRarity,
           tags: localCard.tags,
           design_metadata: localCard.design_metadata,
           is_public: localCard.visibility === 'public',
