@@ -188,10 +188,12 @@ export const CardRepository = {
         };
         const dbRarity = rarityMapping[rarity] || rarity;
         
-        // Only query if it's a valid database rarity
+        // Only query if it's a valid database rarity - remove epic entirely
         const validRarities = ['common', 'uncommon', 'rare', 'legendary'];
         if (validRarities.includes(dbRarity)) {
           query = query.eq('rarity', dbRarity);
+        } else {
+          console.warn(`Invalid rarity "${rarity}" ignored in query`);
         }
       }
       
