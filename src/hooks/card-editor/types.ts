@@ -17,7 +17,7 @@ export interface CardData {
     creator_id: string;
     collaboration_type: 'solo' | 'collaboration';
   };
-  publishing_options?: {
+  publishing_options: {
     marketplace_listing: boolean;
     crd_catalog_inclusion: boolean;
     print_available: boolean;
