@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { generateCardId } from '@/lib/utils';
 import type { CardData, CardCreateParams, CardRarity, CardVisibility, CreatorAttribution, PublishingOptions } from '@/types/card';
@@ -9,13 +9,23 @@ export interface DesignTemplate {
   name: string;
   template_data: Record<string, any>;
   tags: string[];
+  category?: string;
+  description?: string;
+  usage_count?: number;
+  is_premium?: boolean;
 }
 
 interface UseCardEditorOptions {
   initialData?: Partial<CardData>;
+  autoSave?: boolean;
+  autoSaveInterval?: number;
 }
 
-export const useCardEditor = ({ initialData = {} }: UseCardEditorOptions = {}) => {
+export const useCardEditor = ({ 
+  initialData = {},
+  autoSave = false,
+  autoSaveInterval = 30000 
+}: UseCardEditorOptions = {}) => {
   const [cardData, setCardData] = useState<CardData>({
     id: generateCardId(),
     title: '',
@@ -25,6 +35,8 @@ export const useCardEditor = ({ initialData = {} }: UseCardEditorOptions = {}) =
     design_metadata: {},
     visibility: 'private' as CardVisibility,
     is_public: false,
+    type: '',
+    series: '',
     creator_attribution: {
       creator_name: '',
       creator_id: '',
@@ -49,12 +61,57 @@ export const useCardEditor = ({ initialData = {} }: UseCardEditorOptions = {}) =
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+
+  // Auto-save effect
+  useEffect(() => {
+    if (!autoSave || !isDirty) return;
+
+    const timeout = setTimeout(() => {
+      saveCard();
+    }, autoSaveInterval);
+
+    return () => clearTimeout(timeout);
+  }, [cardData, isDirty, autoSave, autoSaveInterval]);
 
   const updateCardField = useCallback(<K extends keyof CardData>(field: K, value: CardData[K]) => {
     setCardData(prev => ({
       ...prev,
       [field]: value
     }));
+    setIsDirty(true);
+  }, []);
+
+  const updateDesignMetadata = useCallback((updates: Record<string, any>) => {
+    setCardData(prev => ({
+      ...prev,
+      design_metadata: {
+        ...prev.design_metadata,
+        ...updates
+      }
+    }));
+    setIsDirty(true);
+  }, []);
+
+  // Tag management methods
+  const tags = cardData.tags;
+  const hasMaxTags = tags.length >= 10;
+
+  const addTag = useCallback((tag: string) => {
+    if (tags.length >= 10 || tags.includes(tag)) return;
+    setCardData(prev => ({
+      ...prev,
+      tags: [...prev.tags, tag]
+    }));
+    setIsDirty(true);
+  }, [tags]);
+
+  const removeTag = useCallback((tagToRemove: string) => {
+    setCardData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
+    setIsDirty(true);
   }, []);
 
   const saveCard = useCallback(async (): Promise<boolean> => {
@@ -100,6 +157,7 @@ export const useCardEditor = ({ initialData = {} }: UseCardEditorOptions = {}) =
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      setIsDirty(false);
       toast.success('Card saved successfully!');
       return true;
     } catch (error) {
@@ -111,11 +169,50 @@ export const useCardEditor = ({ initialData = {} }: UseCardEditorOptions = {}) =
     }
   }, [cardData]);
 
+  const publishCard = useCallback(async (): Promise<boolean> => {
+    setIsSaving(true);
+    try {
+      // First save the card if there are unsaved changes
+      if (isDirty) {
+        const saved = await saveCard();
+        if (!saved) return false;
+      }
+
+      // Update publishing status
+      updateCardField('visibility', 'public');
+      updateCardField('is_public', true);
+      updateCardField('publishing_options', {
+        ...cardData.publishing_options,
+        marketplace_listing: true
+      });
+
+      // Simulate API call for publishing
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setIsDirty(false);
+      toast.success('Card published successfully!');
+      return true;
+    } catch (error) {
+      console.error('Failed to publish card:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to publish card');
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  }, [cardData, isDirty, saveCard]);
+
   return {
     cardData,
     updateCardField,
+    updateDesignMetadata,
     saveCard,
-    isSaving
+    publishCard,
+    isSaving,
+    isDirty,
+    tags,
+    addTag,
+    removeTag,
+    hasMaxTags
   };
 };
 

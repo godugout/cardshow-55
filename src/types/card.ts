@@ -109,4 +109,12 @@ export interface CardData {
   marketplace_listing?: boolean;
   crd_catalog_inclusion?: boolean;
   print_available?: boolean;
+  // Add missing fields that are used in the codebase
+  type?: string;
+  series?: string;
+  edition_number?: number;
+  total_supply?: number;
+  // Add properties for local storage sync management
+  needsSync?: boolean;
+  isLocal?: boolean;
 }
