@@ -39,6 +39,12 @@ export const NavLinks = () => {
       >
         Creators
       </Link>
+      <Link 
+        to="/cards/bulk-upload" 
+        className={`nav-item ${isActive('/cards/bulk-upload') ? 'active' : ''}`}
+      >
+        Bulk Upload
+      </Link>
     </div>
   );
 };

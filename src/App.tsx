@@ -14,6 +14,7 @@ import HelpCenter from '@/pages/HelpCenter';
 import GettingStarted from '@/pages/GettingStarted';
 import ContactUs from '@/pages/ContactUs';
 import Community from '@/pages/Community';
+import BulkUpload from '@/pages/BulkUpload';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { CardCreationFlow } from '@/components/editor/CardCreationFlow';
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="cards" element={<Navigate to="/cards/create" replace />} />
             <Route path="cards/create" element={<CardCreationFlow />} />
             <Route path="cards/upload" element={<Navigate to="/cards/create" replace />} />
+            <Route path="cards/bulk-upload" element={<BulkUpload />} />
             <Route path="gallery" element={<Gallery />} />
             <Route path="collections" element={<Collections />} />
             <Route path="memories" element={<Memories />} />
