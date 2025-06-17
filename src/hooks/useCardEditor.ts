@@ -1,83 +1,37 @@
 
-import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
-
-// Import the unified CardData type and re-export it
-import type { CardData } from '@/hooks/card-editor/types';
-export type { CardData } from '@/hooks/card-editor/types';
-
-export type CardRarity = 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary';
-export type CardVisibility = 'private' | 'public' | 'shared';
-
-export interface CreatorAttribution {
-  creator_name?: string;
-  creator_id?: string;
-  collaboration_type?: 'solo' | 'collaboration' | 'commission';
-  additional_credits?: Array<{
-    name: string;
-    role: string;
-  }>;
-}
-
-export interface PublishingOptions {
-  marketplace_listing: boolean;
-  crd_catalog_inclusion: boolean;
-  print_available: boolean;
-  pricing?: {
-    base_price?: number;
-    print_price?: number;
-    currency: string;
-  };
-  distribution?: {
-    limited_edition: boolean;
-    edition_size?: number;
-  };
-}
+import { generateCardId } from '@/lib/utils';
+import type { CardData, CardCreateParams, CardRarity, CardVisibility, CreatorAttribution, PublishingOptions } from '@/types/card';
 
 export interface DesignTemplate {
   id: string;
   name: string;
-  category: string;
-  description?: string;
-  preview_url?: string;
   template_data: Record<string, any>;
-  is_premium: boolean;
-  usage_count: number;
   tags: string[];
 }
 
-export interface UseCardEditorOptions {
+interface UseCardEditorOptions {
   initialData?: Partial<CardData>;
-  autoSave?: boolean;
-  autoSaveInterval?: number;
 }
 
-export const useCardEditor = (options: UseCardEditorOptions = {}) => {
-  const { user } = useAuth();
-  const { initialData = {}, autoSave = false, autoSaveInterval = 30000 } = options;
-  
+export const useCardEditor = ({ initialData = {} }: UseCardEditorOptions = {}) => {
   const [cardData, setCardData] = useState<CardData>({
-    id: initialData.id || uuidv4(),
-    title: initialData.title || 'My New Card',
-    description: initialData.description || '',
-    image_url: initialData.image_url,
-    thumbnail_url: initialData.thumbnail_url,
-    rarity: initialData.rarity || 'common',
-    tags: initialData.tags || [],
-    design_metadata: initialData.design_metadata || {},
-    visibility: initialData.visibility || 'private',
-    is_public: initialData.is_public || false,
-    template_id: initialData.template_id,
-    type: initialData.type || 'Digital',
-    series: initialData.series || '',
-    creator_attribution: initialData.creator_attribution || {
-      creator_name: user?.email || '',
-      creator_id: user?.id || '',
-      collaboration_type: 'solo'
-    },
-    publishing_options: initialData.publishing_options || {
+    id: generateCardId(),
+    title: '',
+    description: '',
+    rarity: 'common' as CardRarity,
+    tags: [],
+    design_metadata: {},
+    visibility: 'private' as CardVisibility,
+    is_public: false,
+    creator_attribution: {
+      creator_name: '',
+      creator_id: '',
+      collaboration_type: 'solo',
+      additional_credits: []
+    } as CreatorAttribution,
+    publishing_options: {
       marketplace_listing: false,
       crd_catalog_inclusion: true,
       print_available: false,
@@ -87,129 +41,82 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
       distribution: {
         limited_edition: false
       }
-    },
-    creator_id: user?.id,
-    needsSync: false,
-    isLocal: false
+    } as PublishingOptions,
+    verification_status: 'pending',
+    print_metadata: {},
+    marketplace_listing: false,
+    ...initialData
   });
 
   const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [isDirty, setIsDirty] = useState(false);
 
-  useEffect(() => {
-    if (user?.id && !cardData.creator_id) {
-      setCardData(prev => ({ ...prev, creator_id: user.id }));
-    }
-  }, [user?.id, cardData.creator_id]);
-
-  const updateCardField = <K extends keyof CardData>(field: K, value: CardData[K]) => {
-    setCardData(prev => ({ ...prev, [field]: value }));
-    setIsDirty(true);
-  };
-
-  const updateDesignMetadata = (key: string, value: any) => {
+  const updateCardField = useCallback(<K extends keyof CardData>(field: K, value: CardData[K]) => {
     setCardData(prev => ({
       ...prev,
-      design_metadata: { ...prev.design_metadata, [key]: value }
+      [field]: value
     }));
-    setIsDirty(true);
-  };
+  }, []);
 
-  // Tag management
-  const tags = cardData.tags;
-  const hasMaxTags = tags.length >= 10;
-
-  const addTag = (tag: string) => {
-    if (!hasMaxTags && !tags.includes(tag)) {
-      updateCardField('tags', [...tags, tag]);
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    updateCardField('tags', tags.filter(tag => tag !== tagToRemove));
-  };
-
-  const handleTagInput = (input: string) => {
-    const newTags = input.split(',').map(tag => tag.trim()).filter(Boolean);
-    const uniqueTags = [...new Set([...tags, ...newTags])].slice(0, 10);
-    updateCardField('tags', uniqueTags);
-  };
-
-  const saveCard = async (): Promise<boolean> => {
-    console.log('Starting card save...', { cardData, user });
-    
-    if (!user) {
-      toast.error('Please sign in to save cards');
-      return false;
-    }
-
-    // Ensure minimum required data
-    const finalCardData = {
-      ...cardData,
-      title: cardData.title?.trim() || 'My New Card',
-      creator_id: user.id
-    };
-
+  const saveCard = useCallback(async (): Promise<boolean> => {
     setIsSaving(true);
     try {
-      // For now, save to localStorage
-      // Once database tables are set up, this will save to Supabase
-      const cardsKey = `cards_${user.id}`;
-      const existingCards = JSON.parse(localStorage.getItem(cardsKey) || '[]');
-      const cardIndex = existingCards.findIndex((card: CardData) => card.id === finalCardData.id);
-      
-      if (cardIndex >= 0) {
-        existingCards[cardIndex] = finalCardData;
-      } else {
-        existingCards.push(finalCardData);
+      // Validate required fields
+      if (!cardData.title.trim()) {
+        throw new Error('Card title is required');
       }
-      
-      localStorage.setItem(cardsKey, JSON.stringify(existingCards));
+      if (!cardData.image_url) {
+        throw new Error('Card image is required');
+      }
 
-      console.log('Card saved successfully:', finalCardData);
-      setLastSaved(new Date());
-      setIsDirty(false);
-      toast.success('Card saved successfully');
+      const cardParams: CardCreateParams = {
+        title: cardData.title,
+        description: cardData.description || '',
+        creator_id: cardData.creator_id || 'current-user',
+        image_url: cardData.image_url,
+        thumbnail_url: cardData.thumbnail_url || cardData.image_url,
+        rarity: cardData.rarity,
+        tags: cardData.tags,
+        design_metadata: cardData.design_metadata,
+        visibility: cardData.visibility,
+        is_public: cardData.visibility === 'public',
+        template_id: cardData.template_id || null,
+        collection_id: cardData.collection_id || null,
+        team_id: cardData.team_id || null,
+        price: cardData.price || null,
+        edition_size: cardData.edition_size || null,
+        marketplace_listing: cardData.publishing_options.marketplace_listing,
+        crd_catalog_inclusion: cardData.publishing_options.crd_catalog_inclusion || null,
+        print_available: cardData.publishing_options.print_available || null,
+        verification_status: cardData.verification_status || 'pending',
+        print_metadata: cardData.print_metadata || {},
+        series: cardData.series || null,
+        edition_number: cardData.edition_number || null,
+        total_supply: cardData.total_supply || null
+      };
+
+      // Here you would normally save to your backend
+      console.log('Saving card:', cardParams);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success('Card saved successfully!');
       return true;
     } catch (error) {
-      console.error('Error saving card:', error);
-      toast.error('Failed to save card. Please try again.');
+      console.error('Failed to save card:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to save card');
       return false;
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const publishCard = async (): Promise<boolean> => {
-    const saved = await saveCard();
-    if (!saved) return false;
-
-    try {
-      updateCardField('is_public', true);
-      updateCardField('visibility', 'public');
-      toast.success('Card published successfully');
-      return true;
-    } catch (error) {
-      console.error('Error publishing card:', error);
-      toast.error('Failed to publish card');
-      return false;
-    }
-  };
+  }, [cardData]);
 
   return {
     cardData,
     updateCardField,
-    updateDesignMetadata,
     saveCard,
-    publishCard,
-    isSaving,
-    lastSaved,
-    isDirty,
-    tags,
-    addTag,
-    removeTag,
-    handleTagInput,
-    hasMaxTags
+    isSaving
   };
 };
+
+export type { CardData, CardRarity, CardVisibility, CreatorAttribution, PublishingOptions };
