@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { generateCardId } from '@/lib/utils';
@@ -125,13 +126,16 @@ export const useCardEditor = ({
         throw new Error('Card image is required');
       }
 
+      // Map ultra-rare to legendary for database compatibility
+      const mappedRarity = cardData.rarity === 'ultra-rare' ? 'legendary' : cardData.rarity;
+
       const cardParams: CardCreateParams = {
         title: cardData.title,
         description: cardData.description || '',
         creator_id: cardData.creator_id || 'current-user',
         image_url: cardData.image_url,
         thumbnail_url: cardData.thumbnail_url || cardData.image_url,
-        rarity: cardData.rarity,
+        rarity: mappedRarity as 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary',
         tags: cardData.tags,
         design_metadata: cardData.design_metadata,
         visibility: cardData.visibility,

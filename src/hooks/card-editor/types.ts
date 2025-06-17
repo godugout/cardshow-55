@@ -7,7 +7,7 @@ export interface CardData {
   tags: string[];
   image_url?: string;
   thumbnail_url?: string;
-  design_metadata?: Record<string, any>;
+  design_metadata: Record<string, any>; // Make required to match main CardData interface
   visibility: 'public' | 'private' | 'shared';
   template_id?: string;
   type?: string; // Added missing property

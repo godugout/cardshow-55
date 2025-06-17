@@ -35,7 +35,7 @@ export interface Card {
   image_url: string; // Required in database
   thumbnail_url: string; // Required in database
   creator_id: string;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'ultra-rare'; // Include all rarity types
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'; // Match database schema exactly
   tags: string[];
   design_metadata: Record<string, any>;
   visibility: CardVisibility;
@@ -64,7 +64,7 @@ export interface CardCreateParams {
   creator_id: string;
   image_url: string; // Required in database
   thumbnail_url: string; // Required in database
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'ultra-rare';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'; // Match database schema
   tags: string[];
   design_metadata: Record<string, any>;
   visibility: CardVisibility;
@@ -89,11 +89,11 @@ export interface CardData {
   id?: string;
   title: string;
   description?: string;
-  rarity: CardRarity;
+  rarity: CardRarity; // Keep ultra-rare for UI, will be mapped to database compatible value
   tags: string[];
   image_url?: string;
   thumbnail_url?: string;
-  design_metadata: Record<string, any>;
+  design_metadata: Record<string, any>; // Make required to match other interface
   visibility: CardVisibility;
   is_public?: boolean;
   template_id?: string;
