@@ -26,6 +26,8 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+  const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
+  const [canvasDimensions, setCanvasDimensions] = useState({ width: 0, height: 0 });
   const [cropArea, setCropArea] = useState<CropArea>(
     file.editData?.cropArea || {
       x: 100,
@@ -48,6 +50,8 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
   const imageRef = useRef<HTMLImageElement>(null);
 
   const CARD_ASPECT_RATIO = 2.5 / 3.5;
+  const CANVAS_PADDING = 100; // Padding around the image
+  const MIN_OVERLAP = 0.25; // Minimum 25% of crop box must overlap with image
 
   const saveToHistory = useCallback((cropState: CropArea) => {
     const newHistory = history.slice(0, historyIndex + 1);
@@ -70,6 +74,29 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
     }
   }, [history, historyIndex]);
 
+  // Calculate if crop box has sufficient overlap with image
+  const hasValidOverlap = useCallback((crop: CropArea) => {
+    const cropRight = crop.x + crop.width;
+    const cropBottom = crop.y + crop.height;
+    const imageRight = imagePosition.x + imageDimensions.width;
+    const imageBottom = imagePosition.y + imageDimensions.height;
+
+    // Calculate intersection area
+    const intersectionLeft = Math.max(crop.x, imagePosition.x);
+    const intersectionTop = Math.max(crop.y, imagePosition.y);
+    const intersectionRight = Math.min(cropRight, imageRight);
+    const intersectionBottom = Math.min(cropBottom, imageBottom);
+
+    if (intersectionLeft >= intersectionRight || intersectionTop >= intersectionBottom) {
+      return false; // No intersection
+    }
+
+    const intersectionArea = (intersectionRight - intersectionLeft) * (intersectionBottom - intersectionTop);
+    const cropArea = crop.width * crop.height;
+    
+    return intersectionArea >= (cropArea * MIN_OVERLAP);
+  }, [imagePosition, imageDimensions]);
+
   // Initialize crop area when image loads
   useEffect(() => {
     const img = new Image();
@@ -81,20 +108,30 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
       const containerWidth = containerRect.width;
       const containerHeight = containerRect.height;
       
+      // Set canvas dimensions
+      setCanvasDimensions({ width: containerWidth, height: containerHeight });
+      
       // Calculate display dimensions while maintaining aspect ratio
       const imageAspect = img.naturalWidth / img.naturalHeight;
-      const containerAspect = containerWidth / containerHeight;
+      const availableWidth = containerWidth - (CANVAS_PADDING * 2);
+      const availableHeight = containerHeight - (CANVAS_PADDING * 2);
+      const availableAspect = availableWidth / availableHeight;
       
       let displayWidth, displayHeight;
-      if (imageAspect > containerAspect) {
-        displayWidth = containerWidth * 0.9; // Leave some padding
+      if (imageAspect > availableAspect) {
+        displayWidth = availableWidth;
         displayHeight = displayWidth / imageAspect;
       } else {
-        displayHeight = containerHeight * 0.9; // Leave some padding
+        displayHeight = availableHeight;
         displayWidth = displayHeight * imageAspect;
       }
 
       setImageDimensions({ width: displayWidth, height: displayHeight });
+
+      // Center the image in the canvas
+      const imageX = (containerWidth - displayWidth) / 2;
+      const imageY = (containerHeight - displayHeight) / 2;
+      setImagePosition({ x: imageX, y: imageY });
 
       // Initialize crop area in the center if not already set
       if (!file.editData?.cropArea) {
@@ -102,8 +139,8 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
         const cropHeight = aspectRatioLocked ? cropWidth / CARD_ASPECT_RATIO : Math.min(280, displayHeight * 0.6);
         
         const initialCrop = {
-          x: (displayWidth - cropWidth) / 2,
-          y: (displayHeight - cropHeight) / 2,
+          x: imageX + (displayWidth - cropWidth) / 2,
+          y: imageY + (displayHeight - cropHeight) / 2,
           width: cropWidth,
           height: cropHeight,
           rotation: 0
@@ -154,18 +191,20 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
 
       switch (dragHandle) {
         case 'move':
-          newCrop.x = Math.max(0, Math.min(imageDimensions.width - prev.width, dragStart.cropX + deltaX));
-          newCrop.y = Math.max(0, Math.min(imageDimensions.height - prev.height, dragStart.cropY + deltaY));
+          // Allow movement anywhere within the canvas, just ensure some overlap
+          const newX = dragStart.cropX + deltaX;
+          const newY = dragStart.cropY + deltaY;
+          
+          // Constrain to canvas bounds with some tolerance
+          newCrop.x = Math.max(-prev.width + 50, Math.min(canvasDimensions.width - 50, newX));
+          newCrop.y = Math.max(-prev.height + 50, Math.min(canvasDimensions.height - 50, newY));
           break;
 
         case 'tl':
           const newWidthTL = Math.max(30, prev.width - deltaX);
           const newHeightTL = aspectRatioLocked ? newWidthTL / CARD_ASPECT_RATIO : Math.max(30, prev.height - deltaY);
-          const newXTL = Math.max(0, Math.min(prev.x + deltaX, prev.x + prev.width - 30));
-          const newYTL = Math.max(0, Math.min(prev.y + deltaY, prev.y + prev.height - 30));
-          
-          newCrop.x = newXTL;
-          newCrop.y = newYTL;
+          newCrop.x = prev.x + deltaX;
+          newCrop.y = aspectRatioLocked ? prev.y - (newHeightTL - prev.height) : prev.y + deltaY;
           newCrop.width = newWidthTL;
           newCrop.height = newHeightTL;
           break;
@@ -173,29 +212,24 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
         case 'tr':
           const newWidthTR = Math.max(30, prev.width + deltaX);
           const newHeightTR = aspectRatioLocked ? newWidthTR / CARD_ASPECT_RATIO : Math.max(30, prev.height - deltaY);
-          const newYTR = aspectRatioLocked ? prev.y - (newHeightTR - prev.height) : Math.max(0, prev.y + deltaY);
-          
-          newCrop.width = Math.min(newWidthTR, imageDimensions.width - prev.x);
+          newCrop.width = newWidthTR;
           newCrop.height = newHeightTR;
-          newCrop.y = Math.max(0, newYTR);
+          newCrop.y = aspectRatioLocked ? prev.y - (newHeightTR - prev.height) : prev.y + deltaY;
           break;
 
         case 'bl':
           const newWidthBL = Math.max(30, prev.width - deltaX);
           const newHeightBL = aspectRatioLocked ? newWidthBL / CARD_ASPECT_RATIO : Math.max(30, prev.height + deltaY);
-          const newXBL = Math.max(0, prev.x + deltaX);
-          
-          newCrop.x = newXBL;
+          newCrop.x = prev.x + deltaX;
           newCrop.width = newWidthBL;
-          newCrop.height = Math.min(newHeightBL, imageDimensions.height - prev.y);
+          newCrop.height = newHeightBL;
           break;
 
         case 'br':
           const newWidthBR = Math.max(30, prev.width + deltaX);
           const newHeightBR = aspectRatioLocked ? newWidthBR / CARD_ASPECT_RATIO : Math.max(30, prev.height + deltaY);
-          
-          newCrop.width = Math.min(newWidthBR, imageDimensions.width - prev.x);
-          newCrop.height = Math.min(newHeightBR, imageDimensions.height - prev.y);
+          newCrop.width = newWidthBR;
+          newCrop.height = newHeightBR;
           break;
 
         case 'rotate':
@@ -208,34 +242,30 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
         // Edge handles
         case 't':
           const newHeightT = aspectRatioLocked ? prev.width / CARD_ASPECT_RATIO : Math.max(30, prev.height - deltaY);
-          newCrop.y = Math.max(0, prev.y + (prev.height - newHeightT));
+          newCrop.y = prev.y + (prev.height - newHeightT);
           newCrop.height = newHeightT;
           break;
 
         case 'b':
           const newHeightB = aspectRatioLocked ? prev.width / CARD_ASPECT_RATIO : Math.max(30, prev.height + deltaY);
-          newCrop.height = Math.min(newHeightB, imageDimensions.height - prev.y);
+          newCrop.height = newHeightB;
           break;
 
         case 'l':
           const newWidthL = aspectRatioLocked ? prev.height * CARD_ASPECT_RATIO : Math.max(30, prev.width - deltaX);
-          newCrop.x = Math.max(0, prev.x + (prev.width - newWidthL));
+          newCrop.x = prev.x + (prev.width - newWidthL);
           newCrop.width = newWidthL;
           break;
 
         case 'r':
           const newWidthR = aspectRatioLocked ? prev.height * CARD_ASPECT_RATIO : Math.max(30, prev.width + deltaX);
-          newCrop.width = Math.min(newWidthR, imageDimensions.width - prev.x);
+          newCrop.width = newWidthR;
           break;
       }
 
-      // Ensure crop area stays within image bounds
-      newCrop.x = Math.max(0, Math.min(newCrop.x, imageDimensions.width - newCrop.width));
-      newCrop.y = Math.max(0, Math.min(newCrop.y, imageDimensions.height - newCrop.height));
-
       return newCrop;
     });
-  }, [isDragging, dragHandle, dragStart, aspectRatioLocked, imageDimensions, imageLoaded]);
+  }, [isDragging, dragHandle, dragStart, aspectRatioLocked, canvasDimensions, imageLoaded]);
 
   const handleMouseUp = useCallback(() => {
     if (isDragging) {
@@ -259,6 +289,12 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
   const handleApply = async () => {
     if (!imageLoaded) return;
 
+    // Validate that there's sufficient overlap
+    if (!hasValidOverlap(cropArea)) {
+      alert('Crop area must have at least 25% overlap with the image');
+      return;
+    }
+
     // Create a canvas for the cropped image
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -273,6 +309,12 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
       const scaleX = img.naturalWidth / imageDimensions.width;
       const scaleY = img.naturalHeight / imageDimensions.height;
 
+      // Calculate crop area relative to the image (not canvas)
+      const relativeX = (cropArea.x - imagePosition.x) * scaleX;
+      const relativeY = (cropArea.y - imagePosition.y) * scaleY;
+      const relativeWidth = cropArea.width * scaleX;
+      const relativeHeight = cropArea.height * scaleY;
+
       // Apply the crop with rotation
       ctx.save();
       ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -280,10 +322,10 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
       
       ctx.drawImage(
         img,
-        cropArea.x * scaleX, 
-        cropArea.y * scaleY, 
-        cropArea.width * scaleX, 
-        cropArea.height * scaleY,
+        Math.max(0, relativeX), 
+        Math.max(0, relativeY), 
+        Math.min(relativeWidth, img.naturalWidth - Math.max(0, relativeX)), 
+        Math.min(relativeHeight, img.naturalHeight - Math.max(0, relativeY)),
         -canvas.width / 2, 
         -canvas.height / 2, 
         canvas.width, 
@@ -345,14 +387,39 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
                 ref={imageRef}
                 src={file.preview}
                 alt="Crop preview"
-                className="max-w-full max-h-full object-contain pointer-events-none"
+                className="absolute pointer-events-none"
                 style={{
+                  left: imagePosition.x,
+                  top: imagePosition.y,
                   width: imageDimensions.width,
                   height: imageDimensions.height,
                   transform: `scale(${zoom})`,
                   transformOrigin: 'center'
                 }}
               />
+              
+              {/* Canvas overlay for out-of-bounds visualization */}
+              <div 
+                className="absolute inset-0 pointer-events-none" 
+                style={{ transform: `scale(${zoom})`, transformOrigin: 'center' }}
+              >
+                <svg className="absolute inset-0 w-full h-full">
+                  <defs>
+                    <mask id="canvas-mask">
+                      <rect width="100%" height="100%" fill="black" />
+                      <rect 
+                        x={cropArea.x} 
+                        y={cropArea.y} 
+                        width={cropArea.width} 
+                        height={cropArea.height}
+                        fill="white"
+                        transform={`rotate(${cropArea.rotation} ${cropArea.x + cropArea.width/2} ${cropArea.y + cropArea.height/2})`}
+                      />
+                    </mask>
+                  </defs>
+                  <rect width="100%" height="100%" fill="rgba(0, 0, 0, 0.3)" mask="url(#canvas-mask)" />
+                </svg>
+              </div>
               
               <ImprovedCropOverlay
                 cropArea={cropArea}
@@ -362,9 +429,16 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
                 gridSize={20}
                 aspectRatioLocked={aspectRatioLocked}
                 onMouseDown={handleMouseDown}
-                canvasWidth={imageDimensions.width}
-                canvasHeight={imageDimensions.height}
+                canvasWidth={canvasDimensions.width}
+                canvasHeight={canvasDimensions.height}
               />
+
+              {/* Visual indicator for invalid overlap */}
+              {!hasValidOverlap(cropArea) && (
+                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium z-30">
+                  ⚠️ Crop area needs more overlap with image
+                </div>
+              )}
             </>
           )}
           
