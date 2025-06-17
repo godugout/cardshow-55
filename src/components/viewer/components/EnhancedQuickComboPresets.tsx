@@ -159,11 +159,16 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
       {quickCombos.map((combo) => (
         <PresetCard
           key={combo.id}
-          name={combo.name}
-          preview={combo.preview}
+          title={combo.name}
           isSelected={selectedPresetId === combo.id}
-          isApplying={isApplyingPreset && selectedPresetId === combo.id}
+          isLoading={isApplyingPreset && selectedPresetId === combo.id}
           onClick={() => handleComboClick(combo)}
+          styleColor={{
+            primary: combo.preview.includes('gradient') ? '#667eea' : '#45B26B',
+            border: combo.preview.includes('gradient') ? '#667eea' : '#45B26B',
+            bg: combo.preview.includes('gradient') ? 'rgba(102, 126, 234, 0.1)' : 'rgba(69, 178, 107, 0.1)',
+            gradient: combo.preview
+          }}
         />
       ))}
     </div>
