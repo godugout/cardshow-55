@@ -52,7 +52,7 @@ export class CardRepository {
       }
 
       return {
-        cards: data || [],
+        cards: (data || []) as Card[],
         total: count || 0
       };
     } catch (error) {
@@ -73,7 +73,7 @@ export class CardRepository {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Card[];
     } catch (error) {
       console.error('Failed to fetch cards:', error);
       throw error;
@@ -93,7 +93,7 @@ export class CardRepository {
         return null;
       }
 
-      return data || null;
+      return (data || null) as Card;
     } catch (error) {
       console.error('Failed to fetch card:', error);
       return null;
@@ -137,7 +137,7 @@ export class CardRepository {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Card[];
     } catch (error) {
       console.error('Failed to fetch user cards:', error);
       throw error;

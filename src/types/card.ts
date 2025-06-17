@@ -27,61 +27,61 @@ export interface PublishingOptions {
   };
 }
 
-// Add the missing Card interface that other files are trying to import
+// Update Card interface to match database schema exactly
 export interface Card {
   id: string;
   title: string;
-  description?: string;
-  image_url?: string;
-  thumbnail_url?: string;
+  description: string; // Required in database
+  image_url: string; // Required in database
+  thumbnail_url: string; // Required in database
   creator_id: string;
-  rarity: 'common' | 'uncommon' | 'rare' | 'legendary';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'; // Include 'epic' to match database
   tags: string[];
   design_metadata: Record<string, any>;
   visibility: CardVisibility;
-  is_public?: boolean;
+  is_public: boolean; // Required in database
   created_at: string;
   updated_at: string;
-  template_id?: string;
-  collection_id?: string;
-  team_id?: string;
-  price?: number;
-  edition_size?: number;
-  marketplace_listing?: boolean;
-  crd_catalog_inclusion?: boolean;
-  print_available?: boolean;
-  verification_status?: 'pending' | 'verified' | 'rejected';
-  print_metadata?: Record<string, any>;
-  series?: string;
-  edition_number?: number;
-  total_supply?: number;
+  template_id: string | null; // Match database nullable fields
+  collection_id: string | null;
+  team_id: string | null;
+  price: number | null;
+  edition_size: number | null;
+  marketplace_listing: boolean; // Required in database
+  crd_catalog_inclusion: boolean | null;
+  print_available: boolean | null;
+  verification_status: 'pending' | 'verified' | 'rejected' | null;
+  print_metadata: Record<string, any>;
+  series: string | null;
+  edition_number: number | null;
+  total_supply: number | null;
 }
 
-// Add CardCreateParams interface for repository
+// Update CardCreateParams to match database requirements
 export interface CardCreateParams {
   title: string;
-  description?: string;
+  description: string; // Required in database
   creator_id: string;
-  image_url?: string;
-  thumbnail_url?: string;
-  rarity: 'common' | 'uncommon' | 'rare' | 'legendary';
+  image_url: string; // Required in database
+  thumbnail_url: string; // Required in database
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   tags: string[];
   design_metadata: Record<string, any>;
   visibility: CardVisibility;
-  is_public?: boolean;
-  template_id?: string;
-  collection_id?: string;
-  team_id?: string;
-  price?: number;
-  edition_size?: number;
-  marketplace_listing?: boolean;
-  crd_catalog_inclusion?: boolean;
-  print_available?: boolean;
-  verification_status?: 'pending' | 'verified' | 'rejected';
+  is_public: boolean; // Required in database
+  template_id?: string | null;
+  collection_id?: string | null;
+  team_id?: string | null;
+  price?: number | null;
+  edition_size?: number | null;
+  marketplace_listing: boolean; // Required in database
+  crd_catalog_inclusion?: boolean | null;
+  print_available?: boolean | null;
+  verification_status?: 'pending' | 'verified' | 'rejected' | null;
   print_metadata?: Record<string, any>;
-  series?: string;
-  edition_number?: number;
-  total_supply?: number;
+  series?: string | null;
+  edition_number?: number | null;
+  total_supply?: number | null;
   updated_at?: string;
 }
 

@@ -6,10 +6,7 @@ import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 import { useCards } from "@/hooks/useCards";
 import { useGalleryActions } from "@/pages/Gallery/hooks/useGalleryActions";
 import { useCardConversion } from "@/pages/Gallery/hooks/useCardConversion";
-import type { Tables } from '@/integrations/supabase/types';
-
-// Use the database type directly
-type DbCard = Tables<'cards'>;
+import type { Card } from '@/types/card';
 
 export const EnhancedHero: React.FC = () => {
   const { containerPadding, isMobile } = useResponsiveLayout();
@@ -22,7 +19,7 @@ export const EnhancedHero: React.FC = () => {
   const showcaseCards = (featuredCards || []).slice(0, 3);
 
   // Make cards clickable, no immersive preview
-  const handleCardStudioOpen = (card: DbCard) => {
+  const handleCardStudioOpen = (card: Card) => {
     if (!card?.id) return;
     navigate(`/studio/${card.id}`);
   };

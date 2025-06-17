@@ -11,10 +11,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { Button } from '@/components/ui/button';
 import { Plus, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import type { Tables } from '@/integrations/supabase/types';
-
-// Use the database type directly
-type DbCard = Tables<'cards'>;
+import type { Card } from '@/types/card';
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
@@ -38,7 +35,7 @@ const Gallery = () => {
     await fetchCards();
   };
 
-  const handleCardClick = (card: DbCard) => {
+  const handleCardClick = (card: Card) => {
     // Navigate directly to Studio for the clicked card
     if (card && card.id) {
       console.log(`🎯 Navigating to Studio for card: ${card.title} (${card.id})`);
