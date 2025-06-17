@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { CardEffectsLayer } from './CardEffectsLayer';
@@ -33,29 +32,10 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
 
-  // Enhanced debugging for card back rendering
-  console.log('🃏 CardBackContainer: Rendering with:', {
-    showEffects,
-    effectValues,
-    selectedMaterial: selectedMaterial.name,
-    materialBackground: selectedMaterial.background,
-    materialBorder: selectedMaterial.borderColor,
-    rotationY: rotation.y.toFixed(1),
-    isVisible: rotation.y > 90 && rotation.y < 270
-  });
-
   // SurfaceTexture is never rendered on the back. Add a debug warning ONLY if present.
   if (SurfaceTexture) {
     console.warn('[CardBackContainer] SurfaceTexture was passed to the back, which is unintended. Back ignores images.');
   }
-
-  // Count active effects for debugging
-  const activeEffectsCount = Object.values(effectValues || {}).filter(effect => {
-    const intensity = effect.intensity;
-    return typeof intensity === 'number' && intensity > 0;
-  }).length;
-
-  console.log('🃏 CardBackContainer: Active effects count:', activeEffectsCount);
 
   return (
     <div 
@@ -80,7 +60,6 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       data-material-name={selectedMaterial.name}
       data-visibility={'visible'}
       data-back-rotation={rotation.y.toFixed(1)}
-      data-active-effects={activeEffectsCount}
     >
       {/* Effects, overlays, and logo only! */}
       <CardEffectsLayer
@@ -108,13 +87,6 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         isHovering={isHovering}
         interactiveLighting={interactiveLighting}
       />
-
-      {/* Debug indicator for development */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="absolute top-2 left-2 bg-black/80 text-white text-xs p-1 rounded pointer-events-none">
-          {selectedMaterial.name} | Effects: {activeEffectsCount}
-        </div>
-      )}
     </div>
   );
 };

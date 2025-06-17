@@ -13,7 +13,6 @@ export const useEffectStateManager = () => {
     if (defaults.brushedmetal) {
       defaults.brushedmetal.intensity = 6;
     }
-    console.log('🎛️ Effect State Manager: Initialized with defaults:', defaults);
     return defaults;
   });
 
@@ -22,19 +21,14 @@ export const useEffectStateManager = () => {
     
     // Apply clamping for smooth transitions
     const clampedValue = clampEffectValue(effectId, parameterId, value);
-    console.log('🎛️ Clamped value:', clampedValue);
     
-    setEffectValues(prev => {
-      const newValues = {
-        ...prev,
-        [effectId]: {
-          ...prev[effectId],
-          [parameterId]: clampedValue
-        }
-      };
-      console.log('🎛️ New effect values after change:', newValues);
-      return newValues;
-    });
+    setEffectValues(prev => ({
+      ...prev,
+      [effectId]: {
+        ...prev[effectId],
+        [parameterId]: clampedValue
+      }
+    }));
   }, []);
 
   const resetEffect = useCallback((effectId: string) => {
@@ -42,14 +36,10 @@ export const useEffectStateManager = () => {
     const defaultValues = createDefaultEffectValues();
     
     if (defaultValues[effectId]) {
-      setEffectValues(prev => {
-        const newValues = {
-          ...prev,
-          [effectId]: { ...defaultValues[effectId] }
-        };
-        console.log('🔄 Effect values after reset:', newValues);
-        return newValues;
-      });
+      setEffectValues(prev => ({
+        ...prev,
+        [effectId]: { ...defaultValues[effectId] }
+      }));
     }
   }, []);
 
@@ -60,7 +50,6 @@ export const useEffectStateManager = () => {
     if (defaults.brushedmetal) {
       defaults.brushedmetal.intensity = 6;
     }
-    console.log('🔄 All effects reset to:', defaults);
     setEffectValues(defaults);
   }, []);
 

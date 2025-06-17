@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 import { useCards } from "@/hooks/useCards";
+// REMOVED: import { ImmersiveCardViewer } from "@/components/viewer/ImmersiveCardViewer";
 import { useGalleryActions } from "@/pages/Gallery/hooks/useGalleryActions";
 import { useCardConversion } from "@/pages/Gallery/hooks/useCardConversion";
 import type { Tables } from '@/integrations/supabase/types';
@@ -14,12 +15,16 @@ type DbCard = Tables<'cards'>;
 export const EnhancedHero: React.FC = () => {
   const { containerPadding, isMobile } = useResponsiveLayout();
   const { featuredCards, loading } = useCards();
-  const { handleCardClick, handleCreateCollection } = useGalleryActions();
+  const { selectedCardIndex /* , showImmersiveViewer, handleCardClick, handleCardChange, handleCloseViewer, handleShareCard, handleDownloadCard */ } = useGalleryActions();
   const { convertCardsToCardData } = useCardConversion();
   const navigate = useNavigate();
   
+  // Convert cards to CardData format
+  // const convertedCards = convertCardsToCardData(featuredCards || []);
+  
   // Get top 3 featured cards for showcase
   const showcaseCards = (featuredCards || []).slice(0, 3);
+  // const [activeCardIndex, setActiveCardIndex] = useState(0);
 
   // Make cards clickable, no immersive preview
   const handleCardStudioOpen = (card: DbCard) => {
@@ -78,6 +83,10 @@ export const EnhancedHero: React.FC = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="text-white text-sm font-semibold mb-1">{card.title}</div>
+                        {/* REMOVED: "View in 3D" button */}
+                        {/* <CRDButton size="sm" className="w-full">
+                          View in 3D
+                        </CRDButton> */}
                       </div>
                     </div>
                   </div>
@@ -101,3 +110,5 @@ export const EnhancedHero: React.FC = () => {
     </>
   );
 };
+
+// Removed ImmersiveCardViewer and 3D state handling
