@@ -98,12 +98,7 @@ export const MainLayout = () => {
 
   return (
     <NotificationProvider>
-      <ErrorBoundary 
-        fallback={AppFallback}
-        onError={(error, errorInfo) => {
-          console.error('MainLayout Error Boundary caught error:', error, errorInfo);
-        }}
-      >
+      <ErrorBoundary fallback={AppFallback}>
         <Navbar />
         <ErrorBoundary fallback={PageFallback}>
           <div className="outlet-container">
