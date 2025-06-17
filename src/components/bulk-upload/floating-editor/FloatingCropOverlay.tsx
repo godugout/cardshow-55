@@ -24,12 +24,14 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
   onApply,
   onCancel
 }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const [cropArea, setCropArea] = useState<CropArea>(
     file.editData?.cropArea || {
-      x: 50,
-      y: 50,
-      width: 250,
-      height: 350,
+      x: 100,
+      y: 100,
+      width: 200,
+      height: 280,
       rotation: 0
     }
   );
@@ -38,13 +40,12 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
   const [aspectRatioLocked, setAspectRatioLocked] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [dragHandle, setDragHandle] = useState<string | null>(null);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [history, setHistory] = useState<CropArea[]>([cropArea]);
-  const [historyIndex, setHistoryIndex] = useState(0);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0, cropX: 0, cropY: 0 });
+  const [history, setHistory] = useState<CropArea[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   const CARD_ASPECT_RATIO = 2.5 / 3.5;
 
@@ -69,104 +70,172 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
     }
   }, [history, historyIndex]);
 
+  // Initialize crop area when image loads
   useEffect(() => {
-    loadImageAndDraw();
-  }, [cropArea, zoom, showGrid]);
-
-  const loadImageAndDraw = () => {
-    if (!imageRef.current || !canvasRef.current) return;
-
-    const img = imageRef.current;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
+    const img = new Image();
     img.onload = () => {
-      const containerWidth = containerRef.current?.clientWidth || 800;
-      const containerHeight = containerRef.current?.clientHeight || 600;
-      
-      const scale = Math.min(containerWidth / img.naturalWidth, containerHeight / img.naturalHeight);
-      
-      canvas.width = img.naturalWidth * scale;
-      canvas.height = img.naturalHeight * scale;
+      const container = containerRef.current;
+      if (!container) return;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const containerRect = container.getBoundingClientRect();
+      const containerWidth = containerRect.width;
+      const containerHeight = containerRect.height;
+      
+      // Calculate display dimensions while maintaining aspect ratio
+      const imageAspect = img.naturalWidth / img.naturalHeight;
+      const containerAspect = containerWidth / containerHeight;
+      
+      let displayWidth, displayHeight;
+      if (imageAspect > containerAspect) {
+        displayWidth = containerWidth * 0.9; // Leave some padding
+        displayHeight = displayWidth / imageAspect;
+      } else {
+        displayHeight = containerHeight * 0.9; // Leave some padding
+        displayWidth = displayHeight * imageAspect;
+      }
+
+      setImageDimensions({ width: displayWidth, height: displayHeight });
+
+      // Initialize crop area in the center if not already set
+      if (!file.editData?.cropArea) {
+        const cropWidth = Math.min(200, displayWidth * 0.6);
+        const cropHeight = aspectRatioLocked ? cropWidth / CARD_ASPECT_RATIO : Math.min(280, displayHeight * 0.6);
+        
+        const initialCrop = {
+          x: (displayWidth - cropWidth) / 2,
+          y: (displayHeight - cropHeight) / 2,
+          width: cropWidth,
+          height: cropHeight,
+          rotation: 0
+        };
+        
+        setCropArea(initialCrop);
+        setHistory([initialCrop]);
+        setHistoryIndex(0);
+      }
+      
+      setImageLoaded(true);
     };
-
+    
     img.src = file.preview;
-  };
+  }, [file.preview, file.editData?.cropArea, aspectRatioLocked]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLElement>, handle: string) => {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    if (!containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const clientY = e.clientY - rect.top;
 
     setDragStart({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      x: clientX,
+      y: clientY,
+      cropX: cropArea.x,
+      cropY: cropArea.y
     });
     setDragHandle(handle);
     setIsDragging(true);
-  }, []);
+    
+    e.preventDefault();
+    e.stopPropagation();
+  }, [cropArea]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging || !canvasRef.current || !imageRef.current) return;
+    if (!isDragging || !containerRef.current || !imageLoaded) return;
 
-    const rect = canvasRef.current.getBoundingClientRect();
-    const currentX = e.clientX - rect.left;
-    const currentY = e.clientY - rect.top;
-    const deltaX = currentX - dragStart.x;
-    const deltaY = currentY - dragStart.y;
+    const rect = containerRef.current.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const clientY = e.clientY - rect.top;
+    const deltaX = clientX - dragStart.x;
+    const deltaY = clientY - dragStart.y;
 
     setCropArea(prev => {
       let newCrop = { ...prev };
-      const img = imageRef.current!;
-      const maxX = img.clientWidth - prev.width;
-      const maxY = img.clientHeight - prev.height;
 
       switch (dragHandle) {
         case 'move':
-          newCrop.x = Math.max(0, Math.min(maxX, prev.x + deltaX));
-          newCrop.y = Math.max(0, Math.min(maxY, prev.y + deltaY));
+          newCrop.x = Math.max(0, Math.min(imageDimensions.width - prev.width, dragStart.cropX + deltaX));
+          newCrop.y = Math.max(0, Math.min(imageDimensions.height - prev.height, dragStart.cropY + deltaY));
           break;
 
         case 'tl':
-          const newWidth = prev.width - deltaX;
-          const newHeight = aspectRatioLocked ? newWidth / CARD_ASPECT_RATIO : prev.height - deltaY;
-          if (newWidth > 30 && newHeight > 30) {
-            newCrop.x = prev.x + deltaX;
-            newCrop.y = prev.y + (aspectRatioLocked ? deltaY : deltaY);
-            newCrop.width = newWidth;
-            newCrop.height = newHeight;
-          }
+          const newWidthTL = Math.max(30, prev.width - deltaX);
+          const newHeightTL = aspectRatioLocked ? newWidthTL / CARD_ASPECT_RATIO : Math.max(30, prev.height - deltaY);
+          const newXTL = Math.max(0, Math.min(prev.x + deltaX, prev.x + prev.width - 30));
+          const newYTL = Math.max(0, Math.min(prev.y + deltaY, prev.y + prev.height - 30));
+          
+          newCrop.x = newXTL;
+          newCrop.y = newYTL;
+          newCrop.width = newWidthTL;
+          newCrop.height = newHeightTL;
+          break;
+
+        case 'tr':
+          const newWidthTR = Math.max(30, prev.width + deltaX);
+          const newHeightTR = aspectRatioLocked ? newWidthTR / CARD_ASPECT_RATIO : Math.max(30, prev.height - deltaY);
+          const newYTR = aspectRatioLocked ? prev.y - (newHeightTR - prev.height) : Math.max(0, prev.y + deltaY);
+          
+          newCrop.width = Math.min(newWidthTR, imageDimensions.width - prev.x);
+          newCrop.height = newHeightTR;
+          newCrop.y = Math.max(0, newYTR);
+          break;
+
+        case 'bl':
+          const newWidthBL = Math.max(30, prev.width - deltaX);
+          const newHeightBL = aspectRatioLocked ? newWidthBL / CARD_ASPECT_RATIO : Math.max(30, prev.height + deltaY);
+          const newXBL = Math.max(0, prev.x + deltaX);
+          
+          newCrop.x = newXBL;
+          newCrop.width = newWidthBL;
+          newCrop.height = Math.min(newHeightBL, imageDimensions.height - prev.y);
           break;
 
         case 'br':
-          const brNewWidth = prev.width + deltaX;
-          const brNewHeight = aspectRatioLocked ? brNewWidth / CARD_ASPECT_RATIO : prev.height + deltaY;
-          if (brNewWidth > 30 && brNewHeight > 30) {
-            newCrop.width = brNewWidth;
-            newCrop.height = brNewHeight;
-          }
+          const newWidthBR = Math.max(30, prev.width + deltaX);
+          const newHeightBR = aspectRatioLocked ? newWidthBR / CARD_ASPECT_RATIO : Math.max(30, prev.height + deltaY);
+          
+          newCrop.width = Math.min(newWidthBR, imageDimensions.width - prev.x);
+          newCrop.height = Math.min(newHeightBR, imageDimensions.height - prev.y);
           break;
 
         case 'rotate':
           const centerX = prev.x + prev.width / 2;
           const centerY = prev.y + prev.height / 2;
-          const angle = Math.atan2(currentY - centerY, currentX - centerX);
+          const angle = Math.atan2(clientY - centerY, clientX - centerX);
           newCrop.rotation = Math.round((angle * 180 / Math.PI) / 15) * 15;
+          break;
+
+        // Edge handles
+        case 't':
+          const newHeightT = aspectRatioLocked ? prev.width / CARD_ASPECT_RATIO : Math.max(30, prev.height - deltaY);
+          newCrop.y = Math.max(0, prev.y + (prev.height - newHeightT));
+          newCrop.height = newHeightT;
+          break;
+
+        case 'b':
+          const newHeightB = aspectRatioLocked ? prev.width / CARD_ASPECT_RATIO : Math.max(30, prev.height + deltaY);
+          newCrop.height = Math.min(newHeightB, imageDimensions.height - prev.y);
+          break;
+
+        case 'l':
+          const newWidthL = aspectRatioLocked ? prev.height * CARD_ASPECT_RATIO : Math.max(30, prev.width - deltaX);
+          newCrop.x = Math.max(0, prev.x + (prev.width - newWidthL));
+          newCrop.width = newWidthL;
+          break;
+
+        case 'r':
+          const newWidthR = aspectRatioLocked ? prev.height * CARD_ASPECT_RATIO : Math.max(30, prev.width + deltaX);
+          newCrop.width = Math.min(newWidthR, imageDimensions.width - prev.x);
           break;
       }
 
-      // Ensure bounds
-      newCrop.x = Math.max(0, Math.min(newCrop.x, img.clientWidth - newCrop.width));
-      newCrop.y = Math.max(0, Math.min(newCrop.y, img.clientHeight - newCrop.height));
+      // Ensure crop area stays within image bounds
+      newCrop.x = Math.max(0, Math.min(newCrop.x, imageDimensions.width - newCrop.width));
+      newCrop.y = Math.max(0, Math.min(newCrop.y, imageDimensions.height - newCrop.height));
 
       return newCrop;
     });
-
-    setDragStart({ x: currentX, y: currentY });
-  }, [isDragging, dragHandle, dragStart, aspectRatioLocked]);
+  }, [isDragging, dragHandle, dragStart, aspectRatioLocked, imageDimensions, imageLoaded]);
 
   const handleMouseUp = useCallback(() => {
     if (isDragging) {
@@ -188,8 +257,9 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
   const handleApply = async () => {
-    if (!imageRef.current) return;
+    if (!imageLoaded) return;
 
+    // Create a canvas for the cropped image
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -197,26 +267,42 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
     canvas.width = 350;
     canvas.height = 490;
 
-    ctx.save();
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.rotate((cropArea.rotation * Math.PI) / 180);
-    
-    ctx.drawImage(
-      imageRef.current,
-      cropArea.x, cropArea.y, cropArea.width, cropArea.height,
-      -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height
-    );
-    
-    ctx.restore();
+    const img = new Image();
+    img.onload = () => {
+      // Calculate the scale factor between display image and actual image
+      const scaleX = img.naturalWidth / imageDimensions.width;
+      const scaleY = img.naturalHeight / imageDimensions.height;
 
-    const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
+      // Apply the crop with rotation
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((cropArea.rotation * Math.PI) / 180);
+      
+      ctx.drawImage(
+        img,
+        cropArea.x * scaleX, 
+        cropArea.y * scaleY, 
+        cropArea.width * scaleX, 
+        cropArea.height * scaleY,
+        -canvas.width / 2, 
+        -canvas.height / 2, 
+        canvas.width, 
+        canvas.height
+      );
+      
+      ctx.restore();
+
+      const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
+      
+      onApply({
+        cropArea,
+        zoom,
+        originalImageUrl: file.preview,
+        croppedImageUrl
+      });
+    };
     
-    onApply({
-      cropArea,
-      zoom,
-      originalImageUrl: file.preview,
-      croppedImageUrl
-    });
+    img.src = file.preview;
   };
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -252,29 +338,39 @@ export const FloatingCropOverlay: React.FC<FloatingCropOverlayProps> = ({
       />
 
       <Card className="bg-crd-darkGray border-crd-mediumGray/30 w-[90vw] h-[80vh] overflow-hidden mt-20">
-        <div className="relative w-full h-full" ref={containerRef}>
-          <canvas
-            ref={canvasRef}
-            className="w-full h-full object-contain"
-            style={{ transform: `scale(${zoom})`, transformOrigin: 'center' }}
-          />
-          <img
-            ref={imageRef}
-            className="hidden"
-            alt="Source"
-          />
+        <div className="relative w-full h-full flex items-center justify-center" ref={containerRef}>
+          {imageLoaded && (
+            <>
+              <img
+                ref={imageRef}
+                src={file.preview}
+                alt="Crop preview"
+                className="max-w-full max-h-full object-contain pointer-events-none"
+                style={{
+                  width: imageDimensions.width,
+                  height: imageDimensions.height,
+                  transform: `scale(${zoom})`,
+                  transformOrigin: 'center'
+                }}
+              />
+              
+              <ImprovedCropOverlay
+                cropArea={cropArea}
+                zoom={zoom}
+                imageLoaded={imageLoaded}
+                showGrid={showGrid}
+                gridSize={20}
+                aspectRatioLocked={aspectRatioLocked}
+                onMouseDown={handleMouseDown}
+                canvasWidth={imageDimensions.width}
+                canvasHeight={imageDimensions.height}
+              />
+            </>
+          )}
           
-          <ImprovedCropOverlay
-            cropArea={cropArea}
-            zoom={zoom}
-            imageLoaded={true}
-            showGrid={showGrid}
-            gridSize={20}
-            aspectRatioLocked={aspectRatioLocked}
-            onMouseDown={handleMouseDown}
-            canvasWidth={canvasRef.current?.width || 0}
-            canvasHeight={canvasRef.current?.height || 0}
-          />
+          {!imageLoaded && (
+            <div className="text-white">Loading image...</div>
+          )}
         </div>
       </Card>
     </div>
