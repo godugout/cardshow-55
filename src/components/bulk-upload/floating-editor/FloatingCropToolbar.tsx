@@ -14,7 +14,10 @@ import {
   X,
   Grid3X3,
   Lock,
-  Unlock
+  Unlock,
+  RectangleHorizontal,
+  RectangleVertical,
+  Square
 } from 'lucide-react';
 
 interface FloatingCropToolbarProps {
@@ -22,12 +25,14 @@ interface FloatingCropToolbarProps {
   zoom: number;
   showGrid: boolean;
   aspectRatioLocked: boolean;
+  aspectRatioMode: 'free' | 'landscape' | 'portrait' | 'square' | 'card';
   canUndo: boolean;
   canRedo: boolean;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onToggleGrid: () => void;
   onToggleAspectRatio: () => void;
+  onSetAspectRatio: (mode: 'free' | 'landscape' | 'portrait' | 'square' | 'card') => void;
   onUndo: () => void;
   onRedo: () => void;
   onApply: () => void;
@@ -39,12 +44,14 @@ export const FloatingCropToolbar: React.FC<FloatingCropToolbarProps> = ({
   zoom,
   showGrid,
   aspectRatioLocked,
+  aspectRatioMode,
   canUndo,
   canRedo,
   onZoomIn,
   onZoomOut,
   onToggleGrid,
   onToggleAspectRatio,
+  onSetAspectRatio,
   onUndo,
   onRedo,
   onApply,
@@ -67,7 +74,66 @@ export const FloatingCropToolbar: React.FC<FloatingCropToolbarProps> = ({
       </div>
 
       {/* Tools */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
+        {/* Aspect Ratio Presets */}
+        <div className="flex items-center gap-1 bg-crd-darkGray rounded-md p-1">
+          <Button
+            onClick={() => onSetAspectRatio('card')}
+            className={`h-8 w-8 p-0 border-0 ${
+              aspectRatioMode === 'card' 
+                ? 'bg-crd-green text-black' 
+                : 'bg-transparent hover:bg-crd-mediumGray/20 text-crd-lightGray'
+            }`}
+            title="Card Ratio (2.5:3.5)"
+          >
+            <RectangleVertical className="w-4 h-4" />
+          </Button>
+          <Button
+            onClick={() => onSetAspectRatio('landscape')}
+            className={`h-8 w-8 p-0 border-0 ${
+              aspectRatioMode === 'landscape' 
+                ? 'bg-crd-blue text-white' 
+                : 'bg-transparent hover:bg-crd-mediumGray/20 text-crd-lightGray'
+            }`}
+            title="Landscape (3:2)"
+          >
+            <RectangleHorizontal className="w-4 h-4" />
+          </Button>
+          <Button
+            onClick={() => onSetAspectRatio('portrait')}
+            className={`h-8 w-8 p-0 border-0 ${
+              aspectRatioMode === 'portrait' 
+                ? 'bg-crd-blue text-white' 
+                : 'bg-transparent hover:bg-crd-mediumGray/20 text-crd-lightGray'
+            }`}
+            title="Portrait (2:3)"
+          >
+            <RectangleVertical className="w-4 h-4" />
+          </Button>
+          <Button
+            onClick={() => onSetAspectRatio('square')}
+            className={`h-8 w-8 p-0 border-0 ${
+              aspectRatioMode === 'square' 
+                ? 'bg-crd-blue text-white' 
+                : 'bg-transparent hover:bg-crd-mediumGray/20 text-crd-lightGray'
+            }`}
+            title="Square (1:1)"
+          >
+            <Square className="w-4 h-4" />
+          </Button>
+          <Button
+            onClick={() => onSetAspectRatio('free')}
+            className={`h-8 w-8 p-0 border-0 ${
+              aspectRatioMode === 'free' 
+                ? 'bg-orange-500 text-white' 
+                : 'bg-transparent hover:bg-crd-mediumGray/20 text-crd-lightGray'
+            }`}
+            title="Free Form"
+          >
+            {aspectRatioMode === 'free' ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+          </Button>
+        </div>
+
         {/* Zoom Controls */}
         <div className="flex items-center gap-1 bg-crd-darkGray rounded-md p-1">
           <Button
@@ -96,18 +162,6 @@ export const FloatingCropToolbar: React.FC<FloatingCropToolbarProps> = ({
           }`}
         >
           <Grid3X3 className="w-4 h-4" />
-        </Button>
-
-        {/* Aspect Ratio Lock */}
-        <Button
-          onClick={onToggleAspectRatio}
-          className={`h-8 w-8 p-0 border-0 ${
-            aspectRatioLocked 
-              ? 'bg-crd-green text-black' 
-              : 'bg-crd-darkGray hover:bg-crd-mediumGray/20 text-crd-lightGray'
-          }`}
-        >
-          {aspectRatioLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
         </Button>
 
         {/* History Controls */}
