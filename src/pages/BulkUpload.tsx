@@ -9,12 +9,14 @@ import { BulkUploadProgress } from '@/components/bulk-upload/BulkUploadProgress'
 import { BulkUploadGrid } from '@/components/bulk-upload/BulkUploadGrid';
 import { BulkRecropSelector } from '@/components/bulk-upload/BulkRecropSelector';
 import { EnhancedBulkRecropInterface } from '@/components/bulk-upload/EnhancedBulkRecropInterface';
+import { FloatingCropOverlay } from '@/components/bulk-upload/floating-editor/FloatingCropOverlay';
 import { useBulkUploadLogic } from '@/hooks/useBulkUploadLogic';
 import { useUser } from '@/hooks/use-user';
 import { CardRepository } from '@/repositories/cardRepository';
 import { toast } from 'sonner';
 import { Crop } from 'lucide-react';
 import type { Card as CardType } from '@/types/card';
+import type { UploadedFile } from '@/types/bulk-upload';
 
 type Mode = 'upload' | 'recrop-select' | 'recrop-interface';
 
@@ -23,6 +25,7 @@ const BulkUpload = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>('upload');
   const [selectedCardsForRecrop, setSelectedCardsForRecrop] = useState<CardType[]>([]);
+  const [editingFileId, setEditingFileId] = useState<string | null>(null);
   
   const {
     uploadedFiles,
@@ -30,7 +33,8 @@ const BulkUpload = () => {
     progress,
     addFiles,
     removeFile,
-    processAllFiles
+    processAllFiles,
+    updateFile
   } = useBulkUploadLogic(user);
 
   const completedCount = uploadedFiles.filter(f => f.status === 'complete').length;
@@ -39,6 +43,31 @@ const BulkUpload = () => {
 
   const viewInGallery = () => {
     navigate('/gallery');
+  };
+
+  const handleEditFile = (fileId: string) => {
+    // Update file status to editing
+    updateFile(fileId, { status: 'editing' });
+    setEditingFileId(fileId);
+  };
+
+  const handleApplyEdit = (fileId: string, editData: UploadedFile['editData']) => {
+    // Update file with edit data and reset status
+    updateFile(fileId, { 
+      editData, 
+      status: 'pending',
+      preview: editData?.croppedImageUrl || uploadedFiles.find(f => f.id === fileId)?.preview || ''
+    });
+    setEditingFileId(null);
+    toast.success('Crop applied successfully!');
+  };
+
+  const handleCancelEdit = () => {
+    if (editingFileId) {
+      // Reset status from editing back to previous state
+      updateFile(editingFileId, { status: 'pending' });
+    }
+    setEditingFileId(null);
   };
 
   const handleRecropComplete = async (croppedCards: { card: CardType; croppedImageUrl: string }[]) => {
@@ -64,6 +93,8 @@ const BulkUpload = () => {
       toast.error('Failed to update some cards. Please try again.');
     }
   };
+
+  const editingFile = editingFileId ? uploadedFiles.find(f => f.id === editingFileId) : null;
 
   return (
     <div className="min-h-screen bg-crd-darkest">
@@ -115,6 +146,7 @@ const BulkUpload = () => {
                   uploadedFiles={uploadedFiles}
                   onRemoveFile={removeFile}
                   onFilesAdded={addFiles}
+                  onEditFile={handleEditFile}
                 />
               </div>
             )}
@@ -139,6 +171,15 @@ const BulkUpload = () => {
           />
         )}
       </div>
+
+      {/* Floating Crop Overlay */}
+      {editingFile && (
+        <FloatingCropOverlay
+          file={editingFile}
+          onApply={(editData) => handleApplyEdit(editingFile.id, editData)}
+          onCancel={handleCancelEdit}
+        />
+      )}
     </div>
   );
 };

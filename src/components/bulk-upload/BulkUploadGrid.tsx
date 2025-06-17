@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, X, Check, Sparkles, AlertCircle } from 'lucide-react';
+import { Upload, X, Check, Sparkles, AlertCircle, Edit3 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import type { UploadedFile } from '@/types/bulk-upload';
 
@@ -10,9 +10,10 @@ interface BulkUploadGridProps {
   uploadedFiles: UploadedFile[];
   onRemoveFile: (id: string) => void;
   onFilesAdded: (files: File[]) => void;
+  onEditFile: (id: string) => void;
 }
 
-export const BulkUploadGrid = ({ uploadedFiles, onRemoveFile, onFilesAdded }: BulkUploadGridProps) => {
+export const BulkUploadGrid = ({ uploadedFiles, onRemoveFile, onFilesAdded, onEditFile }: BulkUploadGridProps) => {
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp']
@@ -26,13 +27,25 @@ export const BulkUploadGrid = ({ uploadedFiles, onRemoveFile, onFilesAdded }: Bu
       {/* Files Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {uploadedFiles.map((fileData) => (
-          <Card key={fileData.id} className="bg-crd-darker border-crd-mediumGray/20 overflow-hidden">
+          <Card key={fileData.id} className="bg-crd-darker border-crd-mediumGray/20 overflow-hidden group">
             <div className="relative">
               <img
-                src={fileData.preview}
+                src={fileData.editData?.croppedImageUrl || fileData.preview}
                 alt="Upload preview"
                 className="w-full aspect-[3/4] object-cover"
               />
+              
+              {/* Hover Overlay with Edit Button */}
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Button
+                  onClick={() => onEditFile(fileData.id)}
+                  className="bg-crd-green hover:bg-crd-green/90 text-black font-medium"
+                  size="sm"
+                >
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Edit
+                </Button>
+              </div>
               
               {/* Status Overlay */}
               <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -45,6 +58,12 @@ export const BulkUploadGrid = ({ uploadedFiles, onRemoveFile, onFilesAdded }: Bu
                   >
                     <X className="w-4 h-4" />
                   </Button>
+                )}
+                
+                {fileData.status === 'editing' && (
+                  <div className="absolute top-2 left-2 bg-crd-blue text-white text-xs px-2 py-1 rounded">
+                    Editing...
+                  </div>
                 )}
                 
                 {fileData.status === 'analyzing' && (
@@ -60,6 +79,9 @@ export const BulkUploadGrid = ({ uploadedFiles, onRemoveFile, onFilesAdded }: Bu
                     <span className="text-white text-sm">Complete</span>
                     {fileData.analysis?.aiGenerated && (
                       <span className="text-crd-green text-xs block">AI Enhanced</span>
+                    )}
+                    {fileData.editData?.croppedImageUrl && (
+                      <span className="text-crd-blue text-xs block">Cropped</span>
                     )}
                   </div>
                 )}

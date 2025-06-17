@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { analyzeCardImage } from '@/services/cardAnalyzer';
 import { CardRepository } from '@/repositories/cardRepository';
@@ -8,7 +7,7 @@ import type { UploadedFile } from '@/types/bulk-upload';
 import { processImageToDataUrl } from './imageProcessor';
 import { createCardCreateParams, generateFallbackData } from './cardDataUtils';
 
-export const useBulkUploadLogic = (user: User | null) => {
+export const useBulkUploadLogic = (user: any) => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -34,6 +33,16 @@ export const useBulkUploadLogic = (user: User | null) => {
       return updated;
     });
   };
+
+  const updateFile = useCallback((fileId: string, updates: Partial<UploadedFile>) => {
+    setUploadedFiles(prev => 
+      prev.map(file => 
+        file.id === fileId 
+          ? { ...file, ...updates }
+          : file
+      )
+    );
+  }, []);
 
   const processAllFiles = async () => {
     if (!user) {
@@ -134,6 +143,7 @@ export const useBulkUploadLogic = (user: User | null) => {
     progress,
     addFiles,
     removeFile,
-    processAllFiles
+    processAllFiles,
+    updateFile
   };
 };
