@@ -38,14 +38,17 @@ export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClic
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {cards.map((card) => (
-        <CardItem
+        <div
           key={card.id}
-          title={card.title}
-          price="1.5"
-          image={card.image_url || card.thumbnail_url || ''}
           onClick={() => onCardClick(card)}
           className="cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
-        />
+        >
+          <CardItem
+            title={card.title}
+            price="1.5"
+            image={card.image_url || card.thumbnail_url || ''}
+          />
+        </div>
       ))}
     </div>
   );
