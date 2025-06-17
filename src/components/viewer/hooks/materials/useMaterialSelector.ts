@@ -21,6 +21,12 @@ export const useMaterialSelector = (effectValues: EffectValues = {}): CardBackMa
     // Calculate effect intensities with enhanced debugging
     const effectIntensities = calculateEffectIntensities(effectValues);
     
+    console.log('🎨 Material Selection: All effect intensities:', 
+      Object.entries(effectValues).map(([id, params]) => ({
+        id,
+        intensity: params.intensity || 0
+      }))
+    );
     console.log('🎨 Material Selection: Active effects (>5 intensity):', effectIntensities);
     
     // If no effects are active, return default
@@ -32,6 +38,7 @@ export const useMaterialSelector = (effectValues: EffectValues = {}): CardBackMa
     // Find the effect with highest intensity
     const dominantEffect = findDominantEffect(effectIntensities);
     if (!dominantEffect) {
+      console.log('🎨 Material Selection: No dominant effect found, using default');
       return CARD_BACK_MATERIALS.default;
     }
     
@@ -50,6 +57,11 @@ export const useMaterialSelector = (effectValues: EffectValues = {}): CardBackMa
     const selectedMat = CARD_BACK_MATERIALS[materialId];
     
     console.log('🎨 Material Selection: Selected material:', materialId, selectedMat.name);
+    console.log('🎨 Material Selection: Material properties:', {
+      background: selectedMat.background,
+      borderColor: selectedMat.borderColor,
+      name: selectedMat.name
+    });
     
     return selectedMat;
   }, [effectValues]);

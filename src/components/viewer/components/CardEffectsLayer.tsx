@@ -44,11 +44,27 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
     interactiveLighting
   );
 
-  if (!showEffects || !effectValues) return null;
+  // Enhanced debugging for effects layer
+  console.log('✨ CardEffectsLayer: Rendering with:', {
+    showEffects,
+    effectValues,
+    hasEffectValues: !!effectValues,
+    effectsCount: effectValues ? Object.keys(effectValues).length : 0,
+    applyToFrame
+  });
+
+  if (!showEffects || !effectValues) {
+    console.log('✨ CardEffectsLayer: Not rendering - showEffects:', showEffects, 'effectValues:', !!effectValues);
+    return null;
+  }
 
   // Helper function to safely get effect parameter values
   const getEffectParam = (effectId: string, paramId: string, defaultValue: any = 0) => {
-    return effectValues?.[effectId]?.[paramId] ?? defaultValue;
+    const value = effectValues?.[effectId]?.[paramId] ?? defaultValue;
+    if (paramId === 'intensity' && value > 0) {
+      console.log(`✨ CardEffectsLayer: ${effectId} intensity:`, value);
+    }
+    return value;
   };
   
   // Get individual effect intensities from effectValues
@@ -63,6 +79,23 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
   const goldIntensity = getEffectParam('gold', 'intensity', 0);
   const auroraIntensity = getEffectParam('aurora', 'intensity', 0);
   const wavesIntensity = getEffectParam('waves', 'intensity', 0);
+
+  // Log which effects are active
+  const activeEffects = [
+    { name: 'holographic', intensity: holographicIntensity },
+    { name: 'chrome', intensity: chromeIntensity },
+    { name: 'brushedmetal', intensity: brushedmetalIntensity },
+    { name: 'crystal', intensity: crystalIntensity },
+    { name: 'vintage', intensity: vintageIntensity },
+    { name: 'interference', intensity: interferenceIntensity },
+    { name: 'prizm', intensity: prizemIntensity },
+    { name: 'foilspray', intensity: foilsprayIntensity },
+    { name: 'gold', intensity: goldIntensity },
+    { name: 'aurora', intensity: auroraIntensity },
+    { name: 'waves', intensity: wavesIntensity }
+  ].filter(effect => effect.intensity > 0);
+
+  console.log('✨ CardEffectsLayer: Active effects:', activeEffects);
 
   // Apply effects only to frame borders if applyToFrame is true
   const effectMaskStyle: React.CSSProperties | undefined = applyToFrame ? {
@@ -154,6 +187,8 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
                               prizemIntensity + foilsprayIntensity + goldIntensity + auroraIntensity + wavesIntensity;
         const normalizedIntensity = Math.min(totalIntensity / 100, 1);
         
+        console.log('✨ CardEffectsLayer: Total intensity:', totalIntensity, 'Normalized:', normalizedIntensity);
+        
         // Subtle edge glow - applied either to frame only or full card based on applyToFrame
         return totalIntensity > 0 ? (
           <div
@@ -169,6 +204,13 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
           />
         ) : null;
       })()}
+
+      {/* Debug indicator for development */}
+      {process.env.NODE_ENV === 'development' && activeEffects.length > 0 && (
+        <div className="absolute top-6 left-2 bg-red-600/80 text-white text-xs p-1 rounded pointer-events-none z-50">
+          Active: {activeEffects.map(e => `${e.name}:${e.intensity}`).join(', ')}
+        </div>
+      )}
     </>
   );
 };
