@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { analyzeCardImage } from '@/services/cardAnalyzer';
 import { CardRepository } from '@/repositories/cardRepository';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
+import type { CardData } from '@/types/card';
 
 interface UploadedFile {
   id: string;
@@ -37,28 +38,28 @@ const mapRarityToValidType = (rarity: string): 'common' | 'uncommon' | 'rare' | 
 const generateFallbackData = (filename: string) => {
   const baseName = filename.replace(/\.[^/.]+$/, ""); // Remove extension
   const randomTitles = [
-    `${baseName} Card`,
+    `${baseName} Trading Card`,
     `Legendary ${baseName}`,
-    `Elite ${baseName}`,
-    `Custom ${baseName}`,
-    `Rare ${baseName}`
+    `Elite ${baseName} Card`,
+    `Custom ${baseName} Collectible`,
+    `Rare ${baseName} Edition`
   ];
   
   const randomDescriptions = [
-    "A unique collectible card featuring custom artwork.",
-    "An exclusive trading card with distinctive design elements.",
-    "A premium card showcasing exceptional craftsmanship.",
-    "A rare collectible with unique visual appeal.",
-    "A custom-designed card with special characteristics."
+    "A unique collectible card featuring custom artwork and distinctive design elements.",
+    "An exclusive trading card with premium quality materials and exceptional craftsmanship.",
+    "A rare collectible showcasing unique visual appeal and artistic excellence.",
+    "A custom-designed card with special characteristics and premium finishing.",
+    "An exceptional trading card with distinctive features and collector value."
   ];
   
   const randomRarities: ('common' | 'uncommon' | 'rare' | 'legendary')[] = ['common', 'uncommon', 'rare', 'legendary'];
   const randomTags = [
-    ['custom', 'trading-card'],
-    ['collectible', 'rare'],
-    ['artwork', 'design'],
-    ['premium', 'exclusive'],
-    ['unique', 'special']
+    ['custom', 'trading-card', 'collectible'],
+    ['rare', 'premium', 'exclusive'],
+    ['artwork', 'design', 'unique'],
+    ['limited-edition', 'special'],
+    ['collector', 'vintage', 'classic']
   ];
   
   const randomIndex = Math.floor(Math.random() * randomTitles.length);
@@ -68,9 +69,9 @@ const generateFallbackData = (filename: string) => {
     description: randomDescriptions[randomIndex],
     rarity: randomRarities[Math.floor(Math.random() * randomRarities.length)],
     tags: randomTags[Math.floor(Math.random() * randomTags.length)],
-    category: 'Custom Card',
+    category: 'Custom Trading Card',
     type: 'Character',
-    series: 'Custom Collection'
+    series: 'Bulk Upload Collection'
   };
 };
 
@@ -176,22 +177,25 @@ const BulkUpload = () => {
 
         console.log(`🔍 Processing file: ${fileData.file.name}`);
 
-        // Convert image to data URL with proper cropping
+        // Convert image to data URL with proper cropping to fill card face
         const imageDataUrl = await processImageToDataUrl(fileData.file);
         
         // Analyze with AI (with better error handling)
         let analysis;
+        let aiAnalysisWorked = false;
         try {
           console.log('🤖 Analyzing image with AI...');
           analysis = await analyzeCardImage(imageDataUrl);
+          aiAnalysisWorked = true;
           console.log('✅ AI Analysis successful:', analysis);
         } catch (aiError) {
-          console.warn('⚠️ AI Analysis failed, using fallback data:', aiError);
+          console.warn('⚠️ AI Analysis failed, using enhanced fallback data:', aiError);
           analysis = generateFallbackData(fileData.file.name);
+          aiAnalysisWorked = false;
         }
         
-        // Create card in database with proper rarity mapping
-        const cardData = {
+        // Create card data with proper typing
+        const cardData: Partial<CardData> = {
           title: analysis.title || generateFallbackData(fileData.file.name).title,
           description: analysis.description || generateFallbackData(fileData.file.name).description,
           creator_id: user.id,
@@ -200,20 +204,35 @@ const BulkUpload = () => {
           rarity: mapRarityToValidType(analysis.rarity || 'common'),
           tags: analysis.tags || ['custom', 'bulk-upload'],
           design_metadata: {
-            aiGenerated: !!analysis.title, // True if AI analysis worked
+            aiGenerated: aiAnalysisWorked,
             originalFilename: fileData.file.name,
             analysis: analysis,
-            processingMethod: 'bulk-upload',
+            processingMethod: 'bulk-upload-v2',
             imageProcessing: {
-              originalDimensions: { width: 0, height: 0 }, // Would need to capture from img.onload
-              cardDimensions: { width: 350, height: 490 },
               scalingMethod: 'fill',
-              backgroundColor: '#ffffff'
+              cardDimensions: { width: 350, height: 490 },
+              backgroundColor: '#ffffff',
+              compressionQuality: 0.9
             }
           },
-          visibility: 'public',
+          visibility: 'public' as const,
           is_public: true,
-          series: analysis.series || 'Bulk Upload Collection'
+          creator_attribution: {
+            creator_name: user.username || 'Anonymous',
+            creator_id: user.id,
+            collaboration_type: 'solo' as const,
+          },
+          publishing_options: {
+            marketplace_listing: false,
+            crd_catalog_inclusion: true,
+            print_available: false,
+            pricing: {
+              currency: 'USD'
+            },
+            distribution: {
+              limited_edition: false
+            }
+          }
         };
 
         console.log('💾 Creating card in database...', cardData);
@@ -225,7 +244,7 @@ const BulkUpload = () => {
             f.id === fileData.id ? { 
               ...f, 
               status: 'complete', 
-              analysis: { ...analysis, cardId: cardResult.id }
+              analysis: { ...analysis, cardId: cardResult.id, aiGenerated: aiAnalysisWorked }
             } : f
           ));
           
@@ -255,7 +274,7 @@ const BulkUpload = () => {
     const errorCount = uploadedFiles.filter(f => f.status === 'error').length;
     
     if (successCount > 0) {
-      toast.success(`Successfully created ${successCount} cards! Images now fill the entire card face.`);
+      toast.success(`Successfully created ${successCount} cards with AI analysis and improved image processing!`);
     }
     if (errorCount > 0) {
       toast.error(`${errorCount} cards failed to process. Check the console for details.`);
@@ -310,7 +329,7 @@ const BulkUpload = () => {
                 AI will automatically analyze and create cards with metadata
               </p>
               <p className="text-crd-green text-sm mt-1">
-                ✨ Images will now properly fill the entire card face
+                ✨ Images now properly fill the entire card face with improved cropping
               </p>
             </div>
           </Card>
@@ -358,7 +377,7 @@ const BulkUpload = () => {
             {isProcessing && (
               <div className="bg-crd-darker rounded-lg p-4 border border-crd-mediumGray/20">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-white">Processing cards with improved image filling...</span>
+                  <span className="text-white">Processing cards with AI analysis and improved image filling...</span>
                   <span className="text-crd-lightGray">{Math.round(progress)}%</span>
                 </div>
                 <Progress value={progress} className="w-full" />
@@ -392,7 +411,7 @@ const BulkUpload = () => {
                       {fileData.status === 'analyzing' && (
                         <div className="text-center">
                           <Sparkles className="w-8 h-8 text-crd-green animate-pulse mx-auto mb-2" />
-                          <span className="text-white text-sm">Analyzing...</span>
+                          <span className="text-white text-sm">AI Analyzing...</span>
                         </div>
                       )}
                       
@@ -400,6 +419,9 @@ const BulkUpload = () => {
                         <div className="text-center">
                           <Check className="w-8 h-8 text-green-400 mx-auto mb-2" />
                           <span className="text-white text-sm">Complete</span>
+                          {fileData.analysis?.aiGenerated && (
+                            <span className="text-crd-green text-xs block">AI Enhanced</span>
+                          )}
                         </div>
                       )}
                       
