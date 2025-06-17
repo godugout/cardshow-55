@@ -17,6 +17,8 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
   const { cardData, updateCardField, saveCard, isSaving } = useCardEditor({
     initialData: {
       creator_attribution: {
+        creator_name: '',
+        creator_id: '',
         collaboration_type: 'solo'
       },
       publishing_options: {
@@ -42,7 +44,9 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     handleAiAnalysis: (analysis: CardAnalysisResult) => {
       updateCardField('title', analysis.title);
       updateCardField('description', analysis.description);
-      updateCardField('rarity', analysis.rarity);
+      // Map epic to legendary for database compatibility
+      const mappedRarity = analysis.rarity === 'epic' ? 'legendary' : analysis.rarity;
+      updateCardField('rarity', mappedRarity as any);
       updateCardField('tags', analysis.tags);
       updateCardField('type', analysis.type);
       updateCardField('series', analysis.series);

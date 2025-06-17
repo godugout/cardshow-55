@@ -4,8 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { toast } from 'sonner';
 
-// Import the unified CardData type
+// Import the unified CardData type and re-export it
 import type { CardData } from '@/hooks/card-editor/types';
+export type { CardData } from '@/hooks/card-editor/types';
 
 export type CardRarity = 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary';
 export type CardVisibility = 'private' | 'public' | 'shared';
@@ -69,9 +70,11 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
     visibility: initialData.visibility || 'private',
     is_public: initialData.is_public || false,
     template_id: initialData.template_id,
+    type: initialData.type || 'Digital',
+    series: initialData.series || '',
     creator_attribution: initialData.creator_attribution || {
-      creator_name: '',
-      creator_id: '',
+      creator_name: user?.email || '',
+      creator_id: user?.id || '',
       collaboration_type: 'solo'
     },
     publishing_options: initialData.publishing_options || {
@@ -86,7 +89,6 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
       }
     },
     creator_id: user?.id,
-    // Add local storage properties
     needsSync: false,
     isLocal: false
   });

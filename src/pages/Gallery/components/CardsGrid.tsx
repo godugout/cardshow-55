@@ -41,7 +41,7 @@ export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClic
         <CardItem
           key={card.id}
           title={card.title}
-          image_url={card.image_url || card.thumbnail_url || ''}
+          imageUrl={card.image_url || card.thumbnail_url || ''}
           rarity={card.rarity as any}
           creator={{
             username: 'Creator',

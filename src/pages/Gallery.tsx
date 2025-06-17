@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { useAllCollections } from '@/hooks/useCollections';
@@ -70,16 +69,12 @@ const Gallery = () => {
     handleCardChange(newIndex);
   };
 
-  const handleViewerShare = () => {
-    if (currentCard) {
-      handleShareCard(currentCard);
-    }
+  const handleViewerShare = (card: CardData) => {
+    handleShareCard(card);
   };
 
-  const handleViewerDownload = () => {
-    if (currentCard) {
-      handleDownloadCard(currentCard);
-    }
+  const handleViewerDownload = (card: CardData) => {
+    handleDownloadCard(card);
   };
 
   return (
