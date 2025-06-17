@@ -1,8 +1,11 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { Database } from '@/integrations/supabase/types';
 
-export const sampleCards: Partial<CardData>[] = [
+// Use the actual database type for cards
+type DatabaseCard = Database['public']['Tables']['cards']['Insert'];
+
+export const sampleCards: Omit<DatabaseCard, 'creator_id' | 'created_at' | 'updated_at'>[] = [
   {
     title: 'LeBron James',
     description: 'Los Angeles Lakers - Forward',
@@ -33,7 +36,7 @@ export const sampleCards: Partial<CardData>[] = [
   {
     title: 'Stephen Curry',
     description: 'Golden State Warriors - Point Guard',
-    rarity: 'epic',
+    rarity: 'rare',
     tags: ['basketball', 'nba', 'curry', 'warriors'],
     image_url: 'https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=400&h=600&fit=crop',
     design_metadata: {
@@ -90,7 +93,7 @@ export const seedSampleCards = async (userId: string) => {
   try {
     console.log('Seeding database with sample cards...');
     
-    const cardsToInsert = sampleCards.map(card => ({
+    const cardsToInsert: DatabaseCard[] = sampleCards.map(card => ({
       ...card,
       creator_id: userId,
       created_at: new Date().toISOString(),
