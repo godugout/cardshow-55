@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -192,9 +191,9 @@ export const CardRepository = {
         const mappedRarity = rarityMapping[rarity] || rarity;
         
         // Only query if it's a valid database rarity
-        const validRarities: ('common' | 'uncommon' | 'rare' | 'legendary')[] = ['common', 'uncommon', 'rare', 'legendary'];
+        const validRarities = ['common', 'uncommon', 'rare', 'legendary'] as const;
         if (validRarities.includes(mappedRarity as any)) {
-          query = query.eq('rarity', mappedRarity);
+          query = query.eq('rarity', mappedRarity as typeof validRarities[number]);
         } else {
           console.warn(`Invalid rarity "${rarity}" ignored in query`);
         }
