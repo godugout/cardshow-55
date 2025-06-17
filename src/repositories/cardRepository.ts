@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -183,13 +182,17 @@ export const CardRepository = {
       }
       
       if (rarity) {
-        // Map rarity values for database compatibility
+        // Map rarity values for database compatibility - remove "epic" from mapping
         const rarityMapping: Record<string, string> = {
-          'epic': 'legendary', // Map epic to legendary
           'ultra-rare': 'legendary' // Map ultra-rare to legendary
         };
         const dbRarity = rarityMapping[rarity] || rarity;
-        query = query.eq('rarity', dbRarity);
+        
+        // Only query if it's a valid database rarity
+        const validRarities = ['common', 'uncommon', 'rare', 'legendary'];
+        if (validRarities.includes(dbRarity)) {
+          query = query.eq('rarity', dbRarity);
+        }
       }
       
       if (tags && tags.length > 0) {

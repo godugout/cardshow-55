@@ -65,7 +65,7 @@ const Gallery = () => {
     }
   };
 
-  // Fix the viewer handlers to match expected signatures
+  // Fix the viewer handlers to match expected signatures - pass single card, not array
   const handleViewerCardChange = (newIndex: number) => {
     handleCardChange(newIndex);
   };

@@ -41,12 +41,8 @@ export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClic
         <CardItem
           key={card.id}
           title={card.title}
-          imageUrl={card.image_url || card.thumbnail_url || ''}
-          rarity={card.rarity as any}
-          creator={{
-            username: 'Creator',
-            avatar: undefined
-          }}
+          price="1.5"
+          image={card.image_url || card.thumbnail_url || ''}
           onClick={() => onCardClick(card)}
           className="cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
         />
