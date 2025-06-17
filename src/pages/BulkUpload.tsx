@@ -8,10 +8,10 @@ import { BulkUploadControls } from '@/components/bulk-upload/BulkUploadControls'
 import { BulkUploadProgress } from '@/components/bulk-upload/BulkUploadProgress';
 import { BulkUploadGrid } from '@/components/bulk-upload/BulkUploadGrid';
 import { useBulkUploadLogic } from '@/hooks/useBulkUploadLogic';
-import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { useUser } from '@/hooks/use-user';
 
 const BulkUpload = () => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const navigate = useNavigate();
   
   const {

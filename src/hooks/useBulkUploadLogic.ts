@@ -2,9 +2,8 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { analyzeCardImage } from '@/services/cardAnalyzer';
-import { CardRepository } from '@/repositories/cardRepository';
+import { CardRepository, type CardCreateParams } from '@/repositories/cardRepository';
 import type { User } from '@/types/user';
-import type { CardData } from '@/types/card';
 import type { UploadedFile } from '@/types/bulk-upload';
 
 // Helper function to map AI analysis rarity to valid database rarity types
@@ -171,11 +170,11 @@ export const useBulkUploadLogic = (user: User | null) => {
           aiAnalysisWorked = false;
         }
         
-        // Create card data with proper typing
-        const cardData: CardData = {
+        // Create card data with proper typing for CardCreateParams
+        const cardCreateParams: CardCreateParams = {
           title: analysis.title || generateFallbackData(fileData.file.name).title,
           description: analysis.description || generateFallbackData(fileData.file.name).description,
-          creator_id: user.id,
+          creator_id: user.id, // Required field for CardCreateParams
           image_url: imageDataUrl,
           thumbnail_url: imageDataUrl,
           rarity: mapRarityToValidType(analysis.rarity || 'common'),
@@ -194,26 +193,11 @@ export const useBulkUploadLogic = (user: User | null) => {
           },
           visibility: 'public',
           is_public: true,
-          creator_attribution: {
-            creator_name: user.username || user.email?.split('@')[0] || 'Anonymous',
-            creator_id: user.id,
-            collaboration_type: 'solo',
-          },
-          publishing_options: {
-            marketplace_listing: false,
-            crd_catalog_inclusion: true,
-            print_available: false,
-            pricing: {
-              currency: 'USD'
-            },
-            distribution: {
-              limited_edition: false
-            }
-          }
+          series: 'Bulk Upload Collection'
         };
 
-        console.log('💾 Creating card in database...', cardData);
-        const cardResult = await CardRepository.createCard(cardData);
+        console.log('💾 Creating card in database...', cardCreateParams);
+        const cardResult = await CardRepository.createCard(cardCreateParams);
 
         if (cardResult) {
           // Update status to complete
