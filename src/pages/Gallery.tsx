@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { useAllCollections } from '@/hooks/useCollections';
@@ -52,6 +53,12 @@ const Gallery = () => {
   const handleRefreshData = async () => {
     console.log('🔄 Manually refreshing all card data...');
     await fetchCards();
+  };
+
+  const handleCardGridClick = (card: DbCard) => {
+    const allConvertedCards = convertCardsToCardData(featuredCards || []);
+    const clickedCardConverted = convertCardsToCardData([card])[0];
+    handleCardClick(clickedCardConverted, allConvertedCards);
   };
 
   return (
@@ -134,7 +141,7 @@ const Gallery = () => {
               <CardsGrid 
                 cards={featuredCards} 
                 loading={cardsLoading}
-                onCardClick={(card: DbCard, allCards: DbCard[]) => handleCardClick(convertCardsToCardData([card])[0], convertCardsToCardData(allCards))}
+                onCardClick={handleCardGridClick}
               />
             ) : (
               <EmptyState

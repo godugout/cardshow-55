@@ -32,6 +32,11 @@ export interface CardData {
   // Add properties for local storage sync management
   needsSync?: boolean;
   isLocal?: boolean;
+  // Add database-specific properties
+  is_public?: boolean;
+  shop_id?: string;
+  collection_id?: string;
+  team_id?: string;
 }
 
 export interface CreatorAttribution {

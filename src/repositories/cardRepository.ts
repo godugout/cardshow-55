@@ -10,7 +10,7 @@ export interface CardCreateParams {
   creator_id: string;
   image_url?: string;
   thumbnail_url?: string;
-  rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
   tags?: string[];
   design_metadata?: Record<string, any>;
   price?: number;
@@ -31,7 +31,7 @@ export interface CardUpdateParams {
   description?: string;
   image_url?: string;
   thumbnail_url?: string;
-  rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
   tags?: string[];
   design_metadata?: Record<string, any>;
   price?: number;
@@ -87,7 +87,7 @@ export const CardRepository = {
       console.log('🎨 Creating new card:', params.title);
       
       // Map the rarity to match database enum values
-      const rarityMapping: Record<string, string> = {
+      const rarityMapping: Record<string, 'common' | 'uncommon' | 'rare' | 'legendary'> = {
         'common': 'common',
         'uncommon': 'uncommon', 
         'rare': 'rare',
@@ -103,7 +103,7 @@ export const CardRepository = {
           creator_id: params.creator_id,
           image_url: params.image_url,
           thumbnail_url: params.thumbnail_url,
-          rarity: rarityMapping[params.rarity || 'common'] as any,
+          rarity: rarityMapping[params.rarity || 'common'],
           tags: params.tags || [],
           design_metadata: params.design_metadata || {},
           price: params.price,
