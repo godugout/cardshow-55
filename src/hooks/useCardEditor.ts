@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { generateCardId } from '@/lib/utils';
@@ -13,6 +12,7 @@ export interface DesignTemplate {
   description?: string;
   usage_count?: number;
   is_premium?: boolean;
+  preview_url?: string;
 }
 
 interface UseCardEditorOptions {

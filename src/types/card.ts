@@ -1,5 +1,5 @@
 
-export type CardRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+export type CardRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'ultra-rare';
 export type CardVisibility = 'private' | 'public' | 'shared';
 
 export interface CreatorAttribution {
@@ -35,7 +35,7 @@ export interface Card {
   image_url: string; // Required in database
   thumbnail_url: string; // Required in database
   creator_id: string;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'; // Include 'epic' to match database
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'ultra-rare'; // Include all rarity types
   tags: string[];
   design_metadata: Record<string, any>;
   visibility: CardVisibility;
@@ -64,7 +64,7 @@ export interface CardCreateParams {
   creator_id: string;
   image_url: string; // Required in database
   thumbnail_url: string; // Required in database
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'ultra-rare';
   tags: string[];
   design_metadata: Record<string, any>;
   visibility: CardVisibility;
