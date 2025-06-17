@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,6 @@ import { toast } from 'sonner';
 import { analyzeCardImage } from '@/services/cardAnalyzer';
 import { CardRepository } from '@/repositories/cardRepository';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
-import type { CardRarity } from '@/types/card';
 
 interface UploadedFile {
   id: string;
@@ -21,13 +19,13 @@ interface UploadedFile {
   error?: string;
 }
 
-// Helper function to map AI analysis rarity to our valid rarity types
-const mapRarityToValidType = (rarity: string): CardRarity => {
-  const rarityMap: Record<string, CardRarity> = {
+// Helper function to map AI analysis rarity to valid database rarity types
+const mapRarityToValidType = (rarity: string): 'common' | 'uncommon' | 'rare' | 'legendary' => {
+  const rarityMap: Record<string, 'common' | 'uncommon' | 'rare' | 'legendary'> = {
     'common': 'common',
     'uncommon': 'uncommon', 
     'rare': 'rare',
-    'epic': 'rare', // Map epic to rare since epic is not in our type
+    'epic': 'rare', // Map epic to rare since epic is not in the database type
     'legendary': 'legendary'
   };
   
