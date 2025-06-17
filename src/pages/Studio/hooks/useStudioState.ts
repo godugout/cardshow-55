@@ -35,7 +35,7 @@ export const useStudioState = () => {
 
     // Determine which card set to use (prioritize database cards)
     let availableCards: CardData[] = [];
-    let source: 'database' | 'mock' | 'none' = 'none';
+    let source: 'database' | 'mock' = 'mock';
 
     if (dbCards.length > 0) {
       availableCards = dbCards;
@@ -91,6 +91,7 @@ export const useStudioState = () => {
       setCurrentCardIndex(cardIndex >= 0 ? cardIndex : 0);
       console.log(`🎮 Selected card: ${cardToSelect.title} (${cardToSelect.id}) from ${source}`);
     } else {
+      // This case happens if no cards are available at all
       console.error('💥 No cards are available to display');
       toast.error('No cards are available to display.');
       setDataSource('none');
@@ -137,18 +138,17 @@ export const useStudioState = () => {
     }
   };
 
-  // Handle closing studio - use React Router navigation to gallery
+  // Handle closing studio
   const handleClose = () => {
-    console.log('🔄 Closing studio, navigating to gallery');
-    navigate('/gallery', { replace: true });
+    navigate('/gallery');
   };
 
   return {
     selectedCard,
     currentCardIndex,
     isLoading,
-    mockCards: allCards,
-    dataSource,
+    mockCards: allCards, // Pass the correct list of cards (database or mock)
+    dataSource, // New: expose data source for debugging
     handleCardChange,
     handleShare,
     handleDownload,
