@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -182,16 +183,18 @@ export const CardRepository = {
       }
       
       if (rarity) {
-        // Map rarity values for database compatibility
-        const rarityMapping: Record<string, string> = {
-          'ultra-rare': 'legendary' // Map ultra-rare to legendary
+        // Map rarity values and filter to only valid database rarities
+        const rarityMapping: Record<string, 'common' | 'uncommon' | 'rare' | 'legendary'> = {
+          'ultra-rare': 'legendary'
         };
-        const dbRarity = rarityMapping[rarity] || rarity;
         
-        // Only query if it's a valid database rarity - remove epic entirely
-        const validRarities = ['common', 'uncommon', 'rare', 'legendary'];
-        if (validRarities.includes(dbRarity)) {
-          query = query.eq('rarity', dbRarity);
+        // Get the mapped rarity or use the original if it's already valid
+        const mappedRarity = rarityMapping[rarity] || rarity;
+        
+        // Only query if it's a valid database rarity
+        const validRarities: ('common' | 'uncommon' | 'rare' | 'legendary')[] = ['common', 'uncommon', 'rare', 'legendary'];
+        if (validRarities.includes(mappedRarity as any)) {
+          query = query.eq('rarity', mappedRarity);
         } else {
           console.warn(`Invalid rarity "${rarity}" ignored in query`);
         }
