@@ -10,6 +10,7 @@ export const useEffectStateManager = () => {
     if (defaults.brushedmetal) {
       defaults.brushedmetal.intensity = 8; // Slightly higher for visibility
     }
+    console.log('🎛️ Initialized effect values:', defaults);
     return defaults;
   });
 
@@ -28,6 +29,7 @@ export const useEffectStateManager = () => {
         }
       };
       console.log('🎛️ Updated effect values:', updated);
+      console.log('🎛️ Effect state updated successfully');
       return updated;
     });
   }, []);
@@ -51,6 +53,7 @@ export const useEffectStateManager = () => {
       defaults.brushedmetal.intensity = 8;
     }
     setEffectValues(defaults);
+    console.log('🔄 All effects reset to defaults');
   }, []);
 
   return {

@@ -18,28 +18,33 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
   const navigate = useNavigate();
 
   const handleBackClick = () => {
+    console.log('🔙 Back button clicked');
+    
     if (onClose) {
+      console.log('🔙 Using provided onClose handler');
       onClose();
     } else {
-      // Use React Router navigation instead of window.location
-      navigate(-1); // Go back to previous page
+      console.log('🔙 Using React Router navigation');
+      // Go back to gallery specifically
+      navigate('/gallery', { replace: true });
     }
   };
 
   return (
-    <div className="absolute top-8 left-6 right-6 z-50 flex items-center justify-between pointer-events-none">
+    <div className="absolute top-8 left-6 right-6 z-40 flex items-center justify-between pointer-events-none">
       {/* Left: Empty space to maintain layout balance */}
       <div></div>
 
-      {/* Right: Button group with Back and Studio buttons - aligned with navbar content level */}
+      {/* Right: Button group with Back and Studio buttons */}
       <div className="flex items-center gap-2 pointer-events-auto">
         <Button
           variant="ghost"
           size="sm"
           onClick={handleBackClick}
-          className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center justify-center px-2 py-1 h-8"
+          className="bg-black bg-opacity-60 hover:bg-opacity-80 backdrop-blur border border-white/20 text-white flex items-center justify-center px-3 py-2 h-10"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          <span className="text-sm font-medium">Back</span>
         </Button>
         
         {showStudioButton && (
@@ -47,7 +52,7 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
             variant="ghost"
             size="sm"
             onClick={onOpenStudio}
-            className="bg-black bg-opacity-50 hover:bg-opacity-70 backdrop-blur border border-white/20 text-white flex items-center space-x-2 px-2 py-1 h-8"
+            className="bg-black bg-opacity-60 hover:bg-opacity-80 backdrop-blur border border-white/20 text-white flex items-center space-x-2 px-3 py-2 h-10"
           >
             <Sparkles className="w-4 h-4 text-crd-green" />
             <span className="text-sm font-medium">Studio</span>

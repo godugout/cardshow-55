@@ -4,7 +4,6 @@ import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { CardEffectsLayer } from './CardEffectsLayer';
 import { useDynamicCardBackMaterials } from '../hooks/useDynamicCardBackMaterials';
 import { CardBackMaterialOverlay } from './CardBackMaterialOverlay';
-import { CardBackLogo } from './CardBackLogo';
 import { CardBackInteractiveLighting } from './CardBackInteractiveLighting';
 
 interface CardBackContainerProps {
@@ -49,7 +48,6 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
           0 0 30px ${selectedMaterial.borderColor},
           inset 0 0 20px rgba(255, 255, 255, 0.1)
         `,
-        ...frameStyles,
         pointerEvents: 'auto',
       }}
       data-material={selectedMaterial.id}
@@ -57,18 +55,30 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       data-visibility={'visible'}
       data-back-rotation={rotation.y.toFixed(1)}
     >
-      {/* IMPORTANT: No card image on the back - only effects and logo */}
-      
-      {/* Effects Layer */}
-      <CardEffectsLayer
-        showEffects={showEffects}
-        isHovering={isHovering}
-        effectIntensity={[50]}
-        mousePosition={mousePosition}
-        physicalEffectStyles={enhancedEffectStyles}
-        effectValues={effectValues}
-        interactiveLighting={interactiveLighting}
+      {/* Base dark background pattern */}
+      <div 
+        className="absolute inset-0 z-10"
+        style={{
+          background: `
+            linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%),
+            radial-gradient(circle at 30% 30%, rgba(255,255,255,0.03) 0%, transparent 50%),
+            radial-gradient(circle at 70% 70%, rgba(255,255,255,0.02) 0%, transparent 50%)
+          `,
+        }}
       />
+
+      {/* Effects Layer */}
+      <div className="absolute inset-0 z-20">
+        <CardEffectsLayer
+          showEffects={showEffects}
+          isHovering={isHovering}
+          effectIntensity={[50]}
+          mousePosition={mousePosition}
+          physicalEffectStyles={enhancedEffectStyles}
+          effectValues={effectValues}
+          interactiveLighting={interactiveLighting}
+        />
+      </div>
 
       {/* Material Overlay */}
       <CardBackMaterialOverlay selectedMaterial={selectedMaterial} />
@@ -82,6 +92,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
           style={{
             filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
           }}
+          onLoad={() => console.log('✅ Card back CRD logo loaded successfully')}
+          onError={() => console.log('❌ Error loading card back CRD logo')}
         />
       </div>
 

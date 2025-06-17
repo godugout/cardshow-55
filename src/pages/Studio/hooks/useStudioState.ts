@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -34,7 +35,7 @@ export const useStudioState = () => {
 
     // Determine which card set to use (prioritize database cards)
     let availableCards: CardData[] = [];
-    let source: 'database' | 'mock' | 'none' = 'none'; // included 'none' for completeness
+    let source: 'database' | 'mock' | 'none' = 'none';
 
     if (dbCards.length > 0) {
       availableCards = dbCards;
@@ -90,7 +91,6 @@ export const useStudioState = () => {
       setCurrentCardIndex(cardIndex >= 0 ? cardIndex : 0);
       console.log(`🎮 Selected card: ${cardToSelect.title} (${cardToSelect.id}) from ${source}`);
     } else {
-      // This case happens if no cards are available at all
       console.error('💥 No cards are available to display');
       toast.error('No cards are available to display.');
       setDataSource('none');
@@ -137,9 +137,10 @@ export const useStudioState = () => {
     }
   };
 
-  // Handle closing studio - use React Router navigation
+  // Handle closing studio - use React Router navigation to gallery
   const handleClose = () => {
-    navigate('/gallery'); // Use React Router instead of direct navigation
+    console.log('🔄 Closing studio, navigating to gallery');
+    navigate('/gallery', { replace: true });
   };
 
   return {

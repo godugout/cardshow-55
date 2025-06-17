@@ -26,6 +26,22 @@ const Studio = () => {
     handleClose
   } = useStudioState();
 
+  // Hide the main navbar when studio is mounted
+  useEffect(() => {
+    const navbar = document.querySelector('nav');
+    if (navbar) {
+      navbar.style.display = 'none';
+    }
+    
+    // Cleanup: show navbar when component unmounts
+    return () => {
+      const navbar = document.querySelector('nav');
+      if (navbar) {
+        navbar.style.display = '';
+      }
+    };
+  }, []);
+
   // Check if database has cards and show seed prompt if needed
   useEffect(() => {
     const checkDatabase = async () => {
@@ -50,7 +66,6 @@ const Studio = () => {
   const handleSeedComplete = () => {
     setShowSeedPrompt(false);
     console.log('🌱 Database seeded, reloading studio...');
-    // Trigger a reload of the studio state
     window.location.reload();
   };
 
@@ -58,7 +73,6 @@ const Studio = () => {
     return <LoadingState message="Loading studio..." fullPage />;
   }
 
-  // Show seed prompt if database is empty and user is authenticated
   if (showSeedPrompt && user && dataSource !== 'database') {
     return <DatabaseSeedPrompt onSeedComplete={handleSeedComplete} />;
   }
@@ -67,14 +81,13 @@ const Studio = () => {
     return <NoCardSelected />;
   }
 
-  // Debug info in development
   if (process.env.NODE_ENV === 'development') {
     console.log(`🎮 Studio rendering card: ${selectedCard.title} from ${dataSource} source`);
   }
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-crd-darkest">
+      <div className="fixed inset-0 z-50 bg-crd-darkest">
         {/* Data source indicator (only in development) */}
         {process.env.NODE_ENV === 'development' && (
           <div className="fixed top-4 left-4 z-50 bg-black/80 text-white px-2 py-1 rounded text-xs">
@@ -82,7 +95,7 @@ const Studio = () => {
           </div>
         )}
         
-        {/* Immersive Card Viewer - the navbar logo will show through */}
+        {/* Immersive Card Viewer - Full control over the entire viewport */}
         <ImmersiveCardViewer
           card={selectedCard}
           cards={mockCards}
