@@ -3,23 +3,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
-import { 
-  RotateCw, 
-  Move, 
-  Square, 
-  Check, 
-  X, 
-  ZoomIn, 
-  ZoomOut, 
-  Grid3X3, 
-  Lock,
-  Unlock,
-  Undo,
-  Redo,
-  ArrowLeft,
-  ArrowRight
-} from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { ImprovedCropOverlay } from './enhanced-crop/ImprovedCropOverlay';
+import { InteractiveCropSidebar } from './enhanced-crop/InteractiveCropSidebar';
 import type { Card as CardType } from '@/types/card';
 
 interface CropArea {
@@ -47,7 +33,6 @@ export const EnhancedBulkRecropInterface = ({ cards, onComplete, onBack }: Enhan
   });
   const [croppedResults, setCroppedResults] = useState<{ card: CardType; croppedImageUrl: string }[]>([]);
   const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
   const [dragHandle, setDragHandle] = useState<string | null>(null);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -62,8 +47,8 @@ export const EnhancedBulkRecropInterface = ({ cards, onComplete, onBack }: Enhan
   const containerRef = useRef<HTMLDivElement>(null);
 
   const currentCard = cards[currentCardIndex];
-  const CARD_ASPECT_RATIO = 2.5 / 3.5; // Standard card ratio
-  const SQUARE_ASPECT_RATIO = 1; // Square ratio
+  const CARD_ASPECT_RATIO = 2.5 / 3.5;
+  const SQUARE_ASPECT_RATIO = 1;
 
   const saveToHistory = useCallback((cropState: CropArea) => {
     const newHistory = history.slice(0, historyIndex + 1);
@@ -90,12 +75,12 @@ export const EnhancedBulkRecropInterface = ({ cards, onComplete, onBack }: Enhan
     return aspectRatio === 'card' ? CARD_ASPECT_RATIO : SQUARE_ASPECT_RATIO;
   };
 
-  const setAspectRatioPreset = (type: 'card' | 'square') => {
+  const handleAspectRatioChange = (type: 'card' | 'square') => {
     setAspectRatio(type);
     if (aspectRatioLocked) {
-      const currentRatio = getCurrentAspectRatio();
+      const newRatio = type === 'card' ? CARD_ASPECT_RATIO : SQUARE_ASPECT_RATIO;
       setCropArea(prev => {
-        const newHeight = prev.width / (type === 'card' ? CARD_ASPECT_RATIO : SQUARE_ASPECT_RATIO);
+        const newHeight = prev.width / newRatio;
         const newCrop = { ...prev, height: newHeight };
         saveToHistory(newCrop);
         return newCrop;
@@ -106,7 +91,6 @@ export const EnhancedBulkRecropInterface = ({ cards, onComplete, onBack }: Enhan
   useEffect(() => {
     if (currentCard) {
       loadImageAndDraw();
-      // Reset crop area for new card
       const initialCrop = {
         x: 50,
         y: 50,
@@ -136,165 +120,128 @@ export const EnhancedBulkRecropInterface = ({ cards, onComplete, onBack }: Enhan
       const containerWidth = containerRef.current?.clientWidth || 800;
       const containerHeight = containerRef.current?.clientHeight || 600;
       
-      // Scale image to fit container while maintaining aspect ratio
-      const scale = Math.min(containerWidth / img.naturalWidth, containerHeight / img.naturalHeight) * zoom;
+      const scale = Math.min(containerWidth / img.naturalWidth, containerHeight / img.naturalHeight);
       
       canvas.width = img.naturalWidth * scale;
       canvas.height = img.naturalHeight * scale;
 
-      // Draw image
+      // Clear and draw image
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      // Draw grid if enabled
-      if (showGrid) {
-        drawGrid(ctx, canvas.width, canvas.height);
-      }
-
-      // Draw crop overlay
-      drawCropOverlay(ctx, canvas.width, canvas.height);
     };
 
     img.src = currentCard.image_url || currentCard.thumbnail_url || '/placeholder.svg';
   };
 
-  const drawGrid = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-    const gridSize = 20;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-    ctx.lineWidth = 1;
-    
-    for (let x = 0; x <= width; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-    }
-    
-    for (let y = 0; y <= height; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
-    }
-  };
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLElement>, handle: string) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
 
-  const drawCropOverlay = (ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) => {
-    // Draw semi-transparent overlay
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-    // Clear crop area
-    ctx.save();
-    ctx.translate(cropArea.x + cropArea.width / 2, cropArea.y + cropArea.height / 2);
-    ctx.rotate((cropArea.rotation * Math.PI) / 180);
-    ctx.clearRect(-cropArea.width / 2, -cropArea.height / 2, cropArea.width, cropArea.height);
-    ctx.restore();
-
-    // Draw crop rectangle border
-    ctx.save();
-    ctx.translate(cropArea.x + cropArea.width / 2, cropArea.y + cropArea.height / 2);
-    ctx.rotate((cropArea.rotation * Math.PI) / 180);
-    ctx.strokeStyle = '#10b981';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(-cropArea.width / 2, -cropArea.height / 2, cropArea.width, cropArea.height);
-
-    // Draw corner handles
-    const handleSize = 12;
-    ctx.fillStyle = '#10b981';
-    const positions = [
-      [-cropArea.width / 2, -cropArea.height / 2], // top-left
-      [cropArea.width / 2, -cropArea.height / 2],  // top-right
-      [-cropArea.width / 2, cropArea.height / 2],  // bottom-left
-      [cropArea.width / 2, cropArea.height / 2]    // bottom-right
-    ];
-    
-    positions.forEach(([x, y]) => {
-      ctx.fillRect(x - handleSize/2, y - handleSize/2, handleSize, handleSize);
+    setDragStart({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
     });
-
-    // Draw rotation handle
-    ctx.beginPath();
-    ctx.arc(0, -cropArea.height / 2 - 20, 6, 0, 2 * Math.PI);
-    ctx.fill();
-
-    ctx.restore();
-
-    // Draw aspect ratio indicator
-    ctx.fillStyle = '#10b981';
-    ctx.font = '12px monospace';
-    const ratioText = aspectRatio === 'card' ? '2.5:3.5' : '1:1';
-    ctx.fillText(ratioText, cropArea.x, cropArea.y - 10);
-  };
-
-  const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return { x: 0, y: 0 };
-
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY
-    };
-  };
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const pos = getMousePos(e);
-    setDragStart(pos);
-    
-    // Determine what's being dragged
-    const centerX = cropArea.x + cropArea.width / 2;
-    const centerY = cropArea.y + cropArea.height / 2;
-    
-    // Check rotation handle
-    if (Math.abs(pos.x - centerX) < 10 && Math.abs(pos.y - (centerY - cropArea.height / 2 - 20)) < 10) {
-      setDragHandle('rotate');
-    } else {
-      setDragHandle('move');
-    }
-    
+    setDragHandle(handle);
     setIsDragging(true);
-  };
+  }, []);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDragging || !imageRef.current) return;
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging || !canvasRef.current || !imageRef.current) return;
 
-    const pos = getMousePos(e);
-    const deltaX = pos.x - dragStart.x;
-    const deltaY = pos.y - dragStart.y;
-    const img = imageRef.current;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const currentX = e.clientX - rect.left;
+    const currentY = e.clientY - rect.top;
+    const deltaX = currentX - dragStart.x;
+    const deltaY = currentY - dragStart.y;
 
     setCropArea(prev => {
       let newCrop = { ...prev };
+      const img = imageRef.current!;
+      const maxX = img.clientWidth - prev.width;
+      const maxY = img.clientHeight - prev.height;
 
       switch (dragHandle) {
         case 'move':
-          newCrop.x = Math.max(0, Math.min(prev.x + deltaX, img.naturalWidth - prev.width));
-          newCrop.y = Math.max(0, Math.min(prev.y + deltaY, img.naturalHeight - prev.height));
+          newCrop.x = Math.max(0, Math.min(maxX, prev.x + deltaX));
+          newCrop.y = Math.max(0, Math.min(maxY, prev.y + deltaY));
           break;
-        
+
+        case 'tl':
+          const newWidth = prev.width - deltaX;
+          const newHeight = aspectRatioLocked ? newWidth / getCurrentAspectRatio() : prev.height - deltaY;
+          if (newWidth > 30 && newHeight > 30) {
+            newCrop.x = prev.x + deltaX;
+            newCrop.y = prev.y + (aspectRatioLocked ? deltaY : deltaY);
+            newCrop.width = newWidth;
+            newCrop.height = newHeight;
+          }
+          break;
+
+        case 'tr':
+          const trNewWidth = prev.width + deltaX;
+          const trNewHeight = aspectRatioLocked ? trNewWidth / getCurrentAspectRatio() : prev.height - deltaY;
+          if (trNewWidth > 30 && trNewHeight > 30) {
+            newCrop.y = prev.y + (aspectRatioLocked ? -((trNewHeight - prev.height)) : deltaY);
+            newCrop.width = trNewWidth;
+            newCrop.height = trNewHeight;
+          }
+          break;
+
+        case 'bl':
+          const blNewWidth = prev.width - deltaX;
+          const blNewHeight = aspectRatioLocked ? blNewWidth / getCurrentAspectRatio() : prev.height + deltaY;
+          if (blNewWidth > 30 && blNewHeight > 30) {
+            newCrop.x = prev.x + deltaX;
+            newCrop.width = blNewWidth;
+            newCrop.height = blNewHeight;
+          }
+          break;
+
+        case 'br':
+          const brNewWidth = prev.width + deltaX;
+          const brNewHeight = aspectRatioLocked ? brNewWidth / getCurrentAspectRatio() : prev.height + deltaY;
+          if (brNewWidth > 30 && brNewHeight > 30) {
+            newCrop.width = brNewWidth;
+            newCrop.height = brNewHeight;
+          }
+          break;
+
         case 'rotate':
           const centerX = prev.x + prev.width / 2;
           const centerY = prev.y + prev.height / 2;
-          const angle = Math.atan2(pos.y - centerY, pos.x - centerX);
+          const angle = Math.atan2(currentY - centerY, currentX - centerX);
           newCrop.rotation = Math.round((angle * 180 / Math.PI) / 15) * 15;
           break;
       }
 
+      // Ensure bounds
+      newCrop.x = Math.max(0, Math.min(newCrop.x, img.clientWidth - newCrop.width));
+      newCrop.y = Math.max(0, Math.min(newCrop.y, img.clientHeight - newCrop.height));
+
       return newCrop;
     });
 
-    setDragStart(pos);
-  };
+    setDragStart({ x: currentX, y: currentY });
+  }, [isDragging, dragHandle, dragStart, aspectRatioLocked, getCurrentAspectRatio]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     if (isDragging) {
       saveToHistory(cropArea);
     }
     setIsDragging(false);
     setDragHandle(null);
-  };
+  }, [isDragging, cropArea, saveToHistory]);
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   const applyCrop = async () => {
     if (!imageRef.current) return;
@@ -303,11 +250,9 @@ export const EnhancedBulkRecropInterface = ({ cards, onComplete, onBack }: Enhan
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Standard card dimensions
     canvas.width = aspectRatio === 'card' ? 350 : 350;
     canvas.height = aspectRatio === 'card' ? 490 : 350;
 
-    // Draw cropped and rotated image
     ctx.save();
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate((cropArea.rotation * Math.PI) / 180);
@@ -327,7 +272,6 @@ export const EnhancedBulkRecropInterface = ({ cards, onComplete, onBack }: Enhan
       { card: currentCard, croppedImageUrl }
     ]);
 
-    // Move to next card or complete
     if (currentCardIndex < cards.length - 1) {
       setCurrentCardIndex(currentCardIndex + 1);
     } else {
@@ -336,20 +280,6 @@ export const EnhancedBulkRecropInterface = ({ cards, onComplete, onBack }: Enhan
         { card: currentCard, croppedImageUrl }
       ];
       onComplete(allResults);
-    }
-  };
-
-  const skipCard = () => {
-    if (currentCardIndex < cards.length - 1) {
-      setCurrentCardIndex(currentCardIndex + 1);
-    } else {
-      onComplete(croppedResults);
-    }
-  };
-
-  const goToPrevious = () => {
-    if (currentCardIndex > 0) {
-      setCurrentCardIndex(currentCardIndex - 1);
     }
   };
 
@@ -364,180 +294,65 @@ export const EnhancedBulkRecropInterface = ({ cards, onComplete, onBack }: Enhan
           </Badge>
           <span className="text-crd-lightGray">{currentCard?.title}</span>
         </div>
-        <Button onClick={onBack} variant="outline" className="text-white border-crd-mediumGray">
+        <Button onClick={onBack} className="bg-crd-blue hover:bg-crd-blue/80 text-white border-0">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
-      </div>
-
-      {/* Progress */}
-      <div className="px-4 py-2 bg-crd-darker border-b border-crd-mediumGray/30">
-        <div className="flex justify-between text-sm text-crd-lightGray mb-2">
-          <span>Progress</span>
-          <span>{croppedResults.length} completed, {cards.length - croppedResults.length} remaining</span>
-        </div>
-        <div className="w-full bg-crd-mediumGray rounded-full h-2">
-          <div 
-            className="bg-crd-green h-2 rounded-full transition-all"
-            style={{ width: `${(croppedResults.length / cards.length) * 100}%` }}
-          />
-        </div>
       </div>
 
       <div className="flex-1 flex">
         {/* Main Canvas Area */}
         <div className="flex-1 p-6 overflow-hidden" ref={containerRef}>
           <Card className="relative h-full bg-crd-darkGray border-crd-mediumGray/30 overflow-hidden">
-            <canvas
-              ref={canvasRef}
-              className="w-full h-full object-contain cursor-crosshair"
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-            />
-            <img
-              ref={imageRef}
-              className="hidden"
-              alt="Source"
-            />
+            <div className="relative w-full h-full">
+              <canvas
+                ref={canvasRef}
+                className="w-full h-full object-contain"
+                style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}
+              />
+              <img
+                ref={imageRef}
+                className="hidden"
+                alt="Source"
+              />
+              
+              <ImprovedCropOverlay
+                cropArea={cropArea}
+                zoom={zoom}
+                imageLoaded={true}
+                showGrid={showGrid}
+                gridSize={20}
+                aspectRatioLocked={aspectRatioLocked}
+                onMouseDown={handleMouseDown}
+                canvasWidth={canvasRef.current?.width || 0}
+                canvasHeight={canvasRef.current?.height || 0}
+              />
+            </div>
           </Card>
         </div>
 
-        {/* Enhanced Controls Sidebar */}
-        <div className="w-80 bg-crd-darker border-l border-crd-mediumGray/30 p-4 space-y-6">
-          {/* Aspect Ratio Presets */}
-          <div>
-            <h3 className="text-white font-semibold mb-3">Aspect Ratio</h3>
-            <div className="grid grid-cols-2 gap-2 mb-3">
-              <Button
-                onClick={() => setAspectRatioPreset('card')}
-                variant={aspectRatio === 'card' ? 'default' : 'outline'}
-                className={aspectRatio === 'card' ? 'bg-crd-green text-black' : 'text-white border-crd-mediumGray'}
-                size="sm"
-              >
-                Card (2.5:3.5)
-              </Button>
-              <Button
-                onClick={() => setAspectRatioPreset('square')}
-                variant={aspectRatio === 'square' ? 'default' : 'outline'}
-                className={aspectRatio === 'square' ? 'bg-crd-green text-black' : 'text-white border-crd-mediumGray'}
-                size="sm"
-              >
-                Square (1:1)
-              </Button>
-            </div>
-            <Button
-              onClick={() => setAspectRatioLocked(!aspectRatioLocked)}
-              variant="outline"
-              size="sm"
-              className="w-full text-white border-crd-mediumGray"
-            >
-              {aspectRatioLocked ? <Lock className="w-4 h-4 mr-2" /> : <Unlock className="w-4 h-4 mr-2" />}
-              {aspectRatioLocked ? 'Locked' : 'Unlocked'}
-            </Button>
-          </div>
-
-          {/* View Controls */}
-          <div>
-            <h3 className="text-white font-semibold mb-3">View Controls</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-crd-lightGray text-sm">Zoom</span>
-                <div className="flex items-center gap-2">
-                  <Button
-                    onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
-                    variant="outline"
-                    size="sm"
-                    className="text-white border-crd-mediumGray"
-                  >
-                    <ZoomOut className="w-4 h-4" />
-                  </Button>
-                  <span className="text-white text-sm min-w-[50px] text-center">
-                    {Math.round(zoom * 100)}%
-                  </span>
-                  <Button
-                    onClick={() => setZoom(Math.min(3, zoom + 0.25))}
-                    variant="outline"
-                    size="sm"
-                    className="text-white border-crd-mediumGray"
-                  >
-                    <ZoomIn className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-
-              <Button
-                onClick={() => setShowGrid(!showGrid)}
-                variant="outline"
-                size="sm"
-                className={`w-full ${showGrid ? 'bg-crd-blue text-white border-crd-blue' : 'text-white border-crd-mediumGray'}`}
-              >
-                <Grid3X3 className="w-4 h-4 mr-2" />
-                {showGrid ? 'Hide Grid' : 'Show Grid'}
-              </Button>
-            </div>
-          </div>
-
-          {/* History Controls */}
-          <div>
-            <h3 className="text-white font-semibold mb-3">History</h3>
-            <div className="flex gap-2">
-              <Button
-                onClick={undo}
-                disabled={historyIndex <= 0}
-                variant="outline"
-                size="sm"
-                className="flex-1 text-white border-crd-mediumGray disabled:opacity-50"
-              >
-                <Undo className="w-4 h-4 mr-2" />
-                Undo
-              </Button>
-              <Button
-                onClick={redo}
-                disabled={historyIndex >= history.length - 1}
-                variant="outline"
-                size="sm"
-                className="flex-1 text-white border-crd-mediumGray disabled:opacity-50"
-              >
-                <Redo className="w-4 h-4 mr-2" />
-                Redo
-              </Button>
-            </div>
-          </div>
-
-          {/* Navigation & Actions */}
-          <div className="pt-4 border-t border-crd-mediumGray/30">
-            <div className="flex gap-2 mb-4">
-              <Button
-                onClick={goToPrevious}
-                disabled={currentCardIndex === 0}
-                variant="outline"
-                size="sm"
-                className="flex-1 text-white border-crd-mediumGray disabled:opacity-50"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Previous
-              </Button>
-              <Button
-                onClick={skipCard}
-                variant="outline"
-                size="sm"
-                className="flex-1 text-white border-crd-mediumGray"
-              >
-                Skip
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-
-            <Button
-              onClick={applyCrop}
-              className="w-full bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
-            >
-              <Check className="w-4 h-4 mr-2" />
-              Apply Crop & Continue
-            </Button>
-          </div>
-        </div>
+        <InteractiveCropSidebar
+          currentCardIndex={currentCardIndex}
+          totalCards={cards.length}
+          currentCard={currentCard}
+          zoom={zoom}
+          showGrid={showGrid}
+          aspectRatioLocked={aspectRatioLocked}
+          aspectRatio={aspectRatio}
+          canUndo={historyIndex > 0}
+          canRedo={historyIndex < history.length - 1}
+          cropArea={cropArea}
+          onZoomChange={setZoom}
+          onToggleGrid={() => setShowGrid(!showGrid)}
+          onToggleAspectRatio={() => setAspectRatioLocked(!aspectRatioLocked)}
+          onSetAspectRatio={handleAspectRatioChange}
+          onUndo={undo}
+          onRedo={redo}
+          onPrevious={() => setCurrentCardIndex(Math.max(0, currentCardIndex - 1))}
+          onNext={() => setCurrentCardIndex(Math.min(cards.length - 1, currentCardIndex + 1))}
+          onApplyCrop={applyCrop}
+          onBack={onBack}
+        />
       </div>
     </div>
   );
