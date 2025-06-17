@@ -33,19 +33,43 @@ export const useStudioState = () => {
     let cardIndex = -1;
 
     if (cardId) {
-      // Find the specific card from all available cards
-      cardIndex = availableCards.findIndex(c => c.id === cardId);
-      if (cardIndex !== -1) {
-        cardToSelect = availableCards[cardIndex];
-      } else {
-        toast.error('Card not found. Showing a default card instead.');
+      // Check for invalid card IDs that should redirect
+      if (cardId.startsWith('fallback-') || cardId === 'undefined' || cardId === 'null') {
+        console.warn(`Invalid card ID detected: ${cardId}, redirecting to first available card`);
         cardToSelect = availableCards[0];
         cardIndex = 0;
+        
+        // Redirect to valid card ID
+        if (cardToSelect) {
+          navigate(`/studio/${cardToSelect.id}`, { replace: true });
+          toast.info('Redirected to available card');
+        }
+      } else {
+        // Find the specific card from all available cards
+        cardIndex = availableCards.findIndex(c => c.id === cardId);
+        if (cardIndex !== -1) {
+          cardToSelect = availableCards[cardIndex];
+        } else {
+          console.warn(`Card with ID ${cardId} not found`);
+          toast.error('Card not found. Showing default card instead.');
+          cardToSelect = availableCards[0];
+          cardIndex = 0;
+          
+          // Redirect to valid card ID
+          if (cardToSelect) {
+            navigate(`/studio/${cardToSelect.id}`, { replace: true });
+          }
+        }
       }
     } else {
       // Default to first card if no ID specified
       cardToSelect = availableCards[0];
       cardIndex = 0;
+      
+      // Update URL to include card ID
+      if (cardToSelect) {
+        navigate(`/studio/${cardToSelect.id}`, { replace: true });
+      }
     }
 
     if (cardToSelect) {
@@ -67,7 +91,7 @@ export const useStudioState = () => {
       setSelectedCard(newCard);
       setCurrentCardIndex(index);
       
-      // Update URL without preset if we're changing cards
+      // Update URL when changing cards
       navigate(`/studio/${newCard.id}`, { replace: true });
     }
   };

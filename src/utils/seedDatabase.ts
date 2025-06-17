@@ -1,9 +1,9 @@
 
+import { supabase } from '@/integrations/supabase/client';
 import type { CardData } from '@/hooks/useCardEditor';
 
-export const mockCards: CardData[] = [
+export const sampleCards: Partial<CardData>[] = [
   {
-    id: 'card-1',
     title: 'LeBron James',
     description: 'Los Angeles Lakers - Forward',
     rarity: 'legendary',
@@ -28,20 +28,9 @@ export const mockCards: CardData[] = [
       }
     },
     visibility: 'public',
-    creator_attribution: {
-      creator_name: 'CRD Studio'
-    },
-    publishing_options: {
-      marketplace_listing: false,
-      crd_catalog_inclusion: true,
-      print_available: false,
-      pricing: {
-        currency: 'USD'
-      }
-    }
+    is_public: true
   },
   {
-    id: 'card-2',
     title: 'Stephen Curry',
     description: 'Golden State Warriors - Point Guard',
     rarity: 'epic',
@@ -66,20 +55,9 @@ export const mockCards: CardData[] = [
       }
     },
     visibility: 'public',
-    creator_attribution: {
-      creator_name: 'CRD Studio'
-    },
-    publishing_options: {
-      marketplace_listing: false,
-      crd_catalog_inclusion: true,
-      print_available: false,
-      pricing: {
-        currency: 'USD'
-      }
-    }
+    is_public: true
   },
   {
-    id: 'card-3',
     title: 'Kevin Durant',
     description: 'Phoenix Suns - Forward',
     rarity: 'rare',
@@ -104,16 +82,52 @@ export const mockCards: CardData[] = [
       }
     },
     visibility: 'public',
-    creator_attribution: {
-      creator_name: 'CRD Studio'
-    },
-    publishing_options: {
-      marketplace_listing: false,
-      crd_catalog_inclusion: true,
-      print_available: false,
-      pricing: {
-        currency: 'USD'
-      }
-    }
+    is_public: true
   }
 ];
+
+export const seedSampleCards = async (userId: string) => {
+  try {
+    console.log('Seeding database with sample cards...');
+    
+    const cardsToInsert = sampleCards.map(card => ({
+      ...card,
+      creator_id: userId,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }));
+
+    const { data, error } = await supabase
+      .from('cards')
+      .insert(cardsToInsert)
+      .select();
+
+    if (error) {
+      console.error('Error seeding cards:', error);
+      throw error;
+    }
+
+    console.log(`Successfully seeded ${data?.length || 0} sample cards`);
+    return data;
+  } catch (error) {
+    console.error('Failed to seed sample cards:', error);
+    throw error;
+  }
+};
+
+export const checkIfDatabaseHasCards = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('cards')
+      .select('id')
+      .eq('is_public', true)
+      .limit(1);
+
+    if (error) throw error;
+    
+    return (data?.length || 0) > 0;
+  } catch (error) {
+    console.error('Error checking for cards:', error);
+    return false;
+  }
+};
