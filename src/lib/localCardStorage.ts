@@ -1,120 +1,66 @@
 
-import { v4 as uuidv4 } from 'uuid';
-import type { CardRarity } from '@/hooks/card-editor/types';
+import type { CardData } from '@/hooks/useCardEditor';
 
-export interface LocalCard {
-  id: string;
-  title: string;
-  description?: string;
-  image_url?: string;
-  thumbnail_url?: string;
-  design_metadata: Record<string, any>;
-  rarity: CardRarity;
-  tags: string[];
-  template_id?: string;
-  creator_attribution: any;
-  publishing_options: any;
-  print_metadata: Record<string, any>;
-  is_public?: boolean;
-  lastModified: number;
-  needsSync: boolean;
-  isLocal: boolean;
-}
-
-const LOCAL_CARDS_KEY = 'crd_local_cards';
+const STORAGE_KEY = 'crd-cards';
 
 export const localCardStorage = {
-  saveCard: (cardData: Partial<LocalCard>): string => {
-    const cards = localCardStorage.getAllCards();
-    const cardId = cardData.id || uuidv4();
-    
-    const card: LocalCard = {
-      id: cardId,
-      title: cardData.title || 'Untitled Card',
-      description: cardData.description,
-      image_url: cardData.image_url,
-      thumbnail_url: cardData.thumbnail_url,
-      design_metadata: cardData.design_metadata || {},
-      rarity: (cardData.rarity as CardRarity) || 'common',
-      tags: cardData.tags || [],
-      template_id: cardData.template_id,
-      creator_attribution: cardData.creator_attribution || { collaboration_type: 'solo' },
-      publishing_options: cardData.publishing_options || {
-        marketplace_listing: false,
-        crd_catalog_inclusion: true,
-        print_available: false,
-        pricing: { currency: 'USD' },
-        distribution: { limited_edition: false }
-      },
-      print_metadata: cardData.print_metadata || {},
-      is_public: cardData.is_public || false,
-      lastModified: Date.now(),
-      needsSync: true,
-      isLocal: true
-    };
-
-    cards[cardId] = card;
-    
+  getAllCards(): CardData[] {
     try {
-      localStorage.setItem(LOCAL_CARDS_KEY, JSON.stringify(cards));
-      console.log('Card saved to local storage:', cardId);
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return [];
+      
+      const cards = JSON.parse(stored);
+      console.log(`💾 Found ${cards.length} cards in local storage`);
+      return Array.isArray(cards) ? cards : [];
     } catch (error) {
-      console.error('Failed to save to localStorage:', error);
-    }
-    
-    return cardId;
-  },
-
-  getCard: (id: string): LocalCard | null => {
-    const cards = localCardStorage.getAllCards();
-    return cards[id] || null;
-  },
-
-  getAllCards: (): Record<string, LocalCard> => {
-    try {
-      const stored = localStorage.getItem(LOCAL_CARDS_KEY);
-      return stored ? JSON.parse(stored) : {};
-    } catch (error) {
-      console.error('Error reading local cards:', error);
-      return {};
+      console.error('Error reading cards from local storage:', error);
+      return [];
     }
   },
 
-  getCardsNeedingSync: (): LocalCard[] => {
-    const cards = localCardStorage.getAllCards();
-    return Object.values(cards).filter(card => card.needsSync);
-  },
-
-  markAsSynced: (id: string): void => {
-    const cards = localCardStorage.getAllCards();
-    if (cards[id]) {
-      cards[id].needsSync = false;
-      cards[id].isLocal = false;
-      try {
-        localStorage.setItem(LOCAL_CARDS_KEY, JSON.stringify(cards));
-        console.log('Card marked as synced:', id);
-      } catch (error) {
-        console.error('Failed to update sync status:', error);
+  saveCard(card: CardData): void {
+    try {
+      const cards = this.getAllCards();
+      const existingIndex = cards.findIndex(c => c.id === card.id);
+      
+      if (existingIndex >= 0) {
+        cards[existingIndex] = card;
+      } else {
+        cards.push(card);
       }
-    }
-  },
-
-  deleteCard: (id: string): void => {
-    const cards = localCardStorage.getAllCards();
-    delete cards[id];
-    try {
-      localStorage.setItem(LOCAL_CARDS_KEY, JSON.stringify(cards));
-      console.log('Card deleted from local storage:', id);
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+      console.log(`💾 Saved card "${card.title}" to local storage`);
     } catch (error) {
-      console.error('Failed to delete card:', error);
+      console.error('Error saving card to local storage:', error);
     }
   },
 
-  isRecentlyModified: (id: string, thresholdSeconds: number = 30): boolean => {
-    const card = localCardStorage.getCard(id);
-    if (!card) return false;
-    
-    const timeDiff = (Date.now() - card.lastModified) / 1000;
-    return timeDiff < thresholdSeconds;
+  removeCard(cardId: string): void {
+    try {
+      const cards = this.getAllCards();
+      const filtered = cards.filter(c => c.id !== cardId);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+      console.log(`💾 Removed card ${cardId} from local storage`);
+    } catch (error) {
+      console.error('Error removing card from local storage:', error);
+    }
+  },
+
+  clearAll(): void {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      console.log('💾 Cleared all cards from local storage');
+    } catch (error) {
+      console.error('Error clearing local storage:', error);
+    }
+  },
+
+  // Check if there are cards that haven't been synced to database
+  getUnsyncedCards(): CardData[] {
+    const localCards = this.getAllCards();
+    // In a real implementation, you'd check which cards exist in the database
+    // For now, we'll return all local cards as potentially unsynced
+    return localCards;
   }
 };

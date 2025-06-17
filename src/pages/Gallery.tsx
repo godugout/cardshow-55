@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { useAllCollections } from '@/hooks/useCollections';
@@ -10,7 +11,9 @@ import { CardsGrid } from './Gallery/components/CardsGrid';
 import { useCardConversion } from './Gallery/hooks/useCardConversion';
 import { useGalleryActions } from './Gallery/hooks/useGalleryActions';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { Plus } from 'lucide-react';
+import { CardDataInvestigator } from '@/components/debug/CardDataInvestigator';
+import { Button } from '@/components/ui/button';
+import { Plus, Bug, RefreshCw } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -18,9 +21,16 @@ type DbCard = Tables<'cards'>;
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
+  const [showDebug, setShowDebug] = useState(false);
   
   const { collections, loading: collectionsLoading } = useAllCollections(1, 6);
-  const { featuredCards, loading: cardsLoading } = useCards();
+  const { 
+    featuredCards, 
+    loading: cardsLoading, 
+    dataSource, 
+    fetchCards,
+    migrateLocalCardsToDatabase 
+  } = useCards();
   
   const { convertCardsToCardData } = useCardConversion();
   const {
@@ -37,17 +47,58 @@ const Gallery = () => {
   const currentCard = convertedCards[selectedCardIndex];
 
   const handleCreateCollection = () => {
-    // TODO: Implement collection creation
     console.log('Create collection clicked');
+  };
+
+  const handleRefreshData = async () => {
+    console.log('🔄 Manually refreshing all card data...');
+    await fetchCards();
   };
 
   return (
     <div className="container mx-auto p-6 max-w-7xl bg-[#121212]">
+      {/* Debug Controls */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mb-6 p-4 bg-yellow-900/20 border border-yellow-600 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Bug className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm text-yellow-400">Debug Mode - Card Data Investigation</span>
+              <span className="text-xs bg-yellow-600 px-2 py-1 rounded">
+                Source: {dataSource} | Cards: {featuredCards?.length || 0}
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={handleRefreshData}>
+                <RefreshCw className="w-4 h-4 mr-1" />
+                Refresh
+              </Button>
+              <Button size="sm" variant="outline" onClick={migrateLocalCardsToDatabase}>
+                Migrate Local
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={() => setShowDebug(!showDebug)}
+              >
+                {showDebug ? 'Hide' : 'Show'} Investigation
+              </Button>
+            </div>
+          </div>
+          
+          {showDebug && (
+            <div className="mt-4">
+              <CardDataInvestigator />
+            </div>
+          )}
+        </div>
+      )}
+
       <GalleryHeader activeTab={activeTab} onTabChange={setActiveTab} />
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsContent value="featured" className="mt-8">
-          {/* Simplified Collections Section */}
+          {/* Collections Section */}
           <GallerySection title="Collections">
             {collections && collections.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
@@ -78,13 +129,29 @@ const Gallery = () => {
             )}
           </GallerySection>
 
-          {/* Main Focus: Featured Cards */}
+          {/* Featured Cards Section */}
           <GallerySection title="Featured Cards">
-            <CardsGrid 
-              cards={featuredCards || []} 
-              loading={cardsLoading}
-              onCardClick={(card: DbCard) => handleCardClick(card, featuredCards || [])}
-            />
+            {featuredCards && featuredCards.length > 0 ? (
+              <CardsGrid 
+                cards={featuredCards} 
+                loading={cardsLoading}
+                onCardClick={(card: DbCard) => handleCardClick(card, featuredCards)}
+              />
+            ) : (
+              <EmptyState
+                title="No Cards Found"
+                description={
+                  dataSource === 'local' 
+                    ? "Cards found in local storage. Consider migrating them to the database."
+                    : "No cards available in the database. Create some cards to get started!"
+                }
+                action={{
+                  label: dataSource === 'local' ? "Migrate Local Cards" : "Create Card",
+                  onClick: dataSource === 'local' ? migrateLocalCardsToDatabase : () => window.location.href = '/create',
+                  icon: <Plus className="mr-2 h-4 w-4" />
+                }}
+              />
+            )}
           </GallerySection>
         </TabsContent>
         
@@ -100,6 +167,23 @@ const Gallery = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Immersive Viewer */}
+      {currentCard && (
+        <ImmersiveCardViewer
+          card={currentCard}
+          cards={convertedCards}
+          currentCardIndex={selectedCardIndex}
+          onCardChange={handleCardChange}
+          isOpen={true}
+          onClose={handleCloseViewer}
+          onShare={handleShareCard}
+          onDownload={handleDownloadCard}
+          allowRotation={true}
+          showStats={true}
+          ambient={true}
+        />
+      )}
     </div>
   );
 };

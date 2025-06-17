@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { CardRepository } from '@/repositories/cardRepository';
+import { localCardStorage } from '@/lib/localCardStorage';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -14,33 +16,71 @@ export const useCards = () => {
   const [featuredCards, setFeaturedCards] = useState<Card[]>([]);
   const [userCards, setUserCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dataSource, setDataSource] = useState<'database' | 'local' | 'mixed'>('database');
 
-  const fetchPublicCards = async () => {
+  const fetchAllCardsFromDatabase = async () => {
     try {
-      console.log('🔍 Fetching public cards from database...');
-      const { data, error } = await supabase
-        .from('cards')
-        .select('*')
-        .eq('is_public', true)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('❌ Error fetching public cards:', error);
-        throw error;
+      console.log('🔍 Comprehensive card investigation...');
+      
+      // Get all cards from database
+      const allCards = await CardRepository.getAllCards();
+      
+      // Also check if there are cards stored locally
+      const localCards = localCardStorage.getAllCards();
+      console.log(`💾 Found ${localCards.length} cards in local storage`);
+      
+      // Check collections table for any linked cards
+      const { data: collectionsData, error: collectionsError } = await supabase
+        .from('collections')
+        .select(`
+          *,
+          collection_cards (
+            card_id,
+            cards (*)
+          )
+        `);
+      
+      if (!collectionsError && collectionsData) {
+        console.log(`📚 Found ${collectionsData.length} collections`);
+        collectionsData.forEach(collection => {
+          console.log(`Collection "${collection.title}": ${collection.collection_cards?.length || 0} cards`);
+        });
       }
       
-      console.log('✅ Fetched public cards:', data?.length || 0);
-      if (data && data.length > 0) {
-        console.log('📋 Card titles:', data.map(c => c.title).join(', '));
+      // Check memories table (in case cards were stored there)
+      const { data: memoriesData, error: memoriesError } = await supabase
+        .from('memories')
+        .select('*');
+        
+      if (!memoriesError && memoriesData) {
+        console.log(`🧠 Found ${memoriesData.length} memories`);
       }
       
-      setCards(data || []);
-      setFeaturedCards(data?.slice(0, 8) || []);
+      // Determine data source and merge if needed
+      let finalCards = allCards;
+      let source: 'database' | 'local' | 'mixed' = 'database';
+      
+      if (allCards.length === 0 && localCards.length > 0) {
+        console.log('⚠️ No database cards found, but local cards exist. Consider migrating local cards to database.');
+        source = 'local';
+        // Could potentially migrate local cards here if needed
+      } else if (allCards.length > 0 && localCards.length > 0) {
+        console.log('🔄 Both database and local cards found');
+        source = 'mixed';
+      }
+      
+      setDataSource(source);
+      setCards(finalCards);
+      setFeaturedCards(finalCards.slice(0, 8));
+      
+      console.log(`📊 Final result: ${finalCards.length} cards from ${source} source(s)`);
+      
+      return finalCards;
     } catch (error) {
-      console.error('💥 Error fetching public cards:', error);
-      // Don't show error toast immediately, might be expected during app initialization
+      console.error('💥 Error in comprehensive card investigation:', error);
       setCards([]);
       setFeaturedCards([]);
+      return [];
     }
   };
 
@@ -53,19 +93,15 @@ export const useCards = () => {
     
     try {
       console.log('👤 Fetching user cards for:', targetUserId);
-      const { data, error } = await supabase
-        .from('cards')
-        .select('*')
-        .eq('creator_id', targetUserId)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('❌ Error fetching user cards:', error);
-        throw error;
-      }
+      const result = await CardRepository.getCards({
+        creator_id: targetUserId,
+        includePrivate: true,
+        pageSize: 100
+      });
       
-      console.log('✅ Fetched user cards:', data?.length || 0);
-      const userCardsData = data || [];
+      console.log('✅ Fetched user cards:', result.cards.length);
+      const userCardsData = result.cards;
+      
       if (!userId || userId === user?.id) {
         setUserCards(userCardsData);
       }
@@ -77,12 +113,12 @@ export const useCards = () => {
   };
 
   const fetchCards = async () => {
-    console.log('🚀 Starting card fetch process...');
+    console.log('🚀 Starting comprehensive card fetch process...');
     setLoading(true);
     
     try {
       await Promise.all([
-        fetchPublicCards(),
+        fetchAllCardsFromDatabase(),
         fetchUserCards()
       ]);
     } catch (error) {
@@ -93,11 +129,58 @@ export const useCards = () => {
     }
   };
 
+  // Method to migrate local cards to database (if needed)
+  const migrateLocalCardsToDatabase = async () => {
+    if (!user?.id) {
+      toast.error('Please sign in to migrate cards');
+      return;
+    }
+    
+    const localCards = localCardStorage.getAllCards();
+    if (localCards.length === 0) {
+      toast.info('No local cards to migrate');
+      return;
+    }
+    
+    console.log(`🔄 Migrating ${localCards.length} local cards to database...`);
+    let migratedCount = 0;
+    
+    for (const localCard of localCards) {
+      try {
+        const cardData = {
+          title: localCard.title,
+          description: localCard.description,
+          creator_id: user.id,
+          image_url: localCard.image_url,
+          thumbnail_url: localCard.thumbnail_url,
+          rarity: localCard.rarity,
+          tags: localCard.tags,
+          design_metadata: localCard.design_metadata,
+          is_public: localCard.visibility === 'public',
+          visibility: localCard.visibility
+        };
+        
+        const result = await CardRepository.createCard(cardData);
+        if (result) {
+          migratedCount++;
+        }
+      } catch (error) {
+        console.error(`Failed to migrate card "${localCard.title}":`, error);
+      }
+    }
+    
+    if (migratedCount > 0) {
+      toast.success(`Migrated ${migratedCount} cards to database`);
+      // Refresh cards after migration
+      await fetchCards();
+    }
+  };
+
   useEffect(() => {
     console.log('🔄 useCards effect triggered, user:', user?.id);
     fetchCards();
 
-    // Only set up real-time subscription if we have a user
+    // Set up real-time subscription
     let subscription: any = null;
     
     try {
@@ -135,8 +218,10 @@ export const useCards = () => {
     featuredCards,
     userCards,
     loading,
+    dataSource,
     fetchCards,
-    fetchPublicCards,
-    fetchUserCards
+    fetchAllCardsFromDatabase,
+    fetchUserCards,
+    migrateLocalCardsToDatabase
   };
 };
