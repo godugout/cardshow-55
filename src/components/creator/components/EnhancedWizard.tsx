@@ -158,7 +158,7 @@ export const EnhancedWizard = ({ mode, onComplete, onBack }: EnhancedWizardProps
             
             {wizardState.currentStep < 4 ? (
               <Button
-                onClick={handlers.handleNext}
+                onClick={() => handlers.handleNext()}
                 className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
                 disabled={isSaving}
               >

@@ -10,7 +10,7 @@ import type { CardData, CardRarity, CardVisibility, CreatorAttribution } from '@
 interface CardDetailsStepProps {
   cardData: CardData;
   onFieldUpdate: <K extends keyof CardData>(field: K, value: CardData[K]) => void;
-  onCreatorAttributionUpdate: (key: keyof CreatorAttribution, value: any) => void;
+  onCreatorAttributionUpdate: (updates: Partial<CreatorAttribution>) => void;
   aiAnalysisComplete?: boolean;
 }
 
@@ -92,7 +92,7 @@ export const CardDetailsStep = ({
             <Label className="text-white mb-2">Creator Attribution</Label>
             <Select 
               value={cardData.creator_attribution.collaboration_type} 
-              onValueChange={(value) => onCreatorAttributionUpdate('collaboration_type', value)}
+              onValueChange={(value) => onCreatorAttributionUpdate({ collaboration_type: value as any })}
             >
               <SelectTrigger className="bg-crd-darkGray border-crd-mediumGray text-white">
                 <SelectValue placeholder="Select type" />
