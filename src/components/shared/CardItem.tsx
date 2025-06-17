@@ -33,7 +33,7 @@ export const CardItem: React.FC<CardItemProps> = ({
       <div className="justify-center items-stretch bg-[#CDB4DB] flex w-full flex-col overflow-hidden rounded-2xl">
         <img
           src={image}
-          className="aspect-[0.84] object-contain w-full"
+          className="aspect-[2.5/3.5] object-cover w-full"
           alt={title}
         />
       </div>

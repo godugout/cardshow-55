@@ -51,7 +51,7 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
 
   return (
     <Card className="group bg-crd-dark border-crd-mediumGray hover:border-crd-blue transition-all duration-300 overflow-hidden">
-      <div className="aspect-[3/4] relative overflow-hidden bg-crd-mediumGray">
+      <div className="aspect-[2.5/3.5] relative overflow-hidden bg-crd-mediumGray">
         {imageLoading && (
           <Skeleton className="absolute inset-0 bg-crd-mediumGray" />
         )}
@@ -86,7 +86,7 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
 
 const LoadingSkeleton = () => (
   <div className="animate-pulse">
-    <Skeleton className="aspect-[3/4] rounded-t-lg bg-crd-mediumGray" />
+    <Skeleton className="aspect-[2.5/3.5] rounded-t-lg bg-crd-mediumGray" />
     <div className="bg-crd-dark p-4 rounded-b-lg space-y-2">
       <Skeleton className="h-4 bg-crd-mediumGray rounded" />
       <Skeleton className="h-3 bg-crd-mediumGray rounded w-2/3" />
