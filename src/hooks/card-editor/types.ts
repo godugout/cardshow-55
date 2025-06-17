@@ -12,7 +12,7 @@ export interface CardData {
   template_id?: string;
   type?: string; // Added missing property
   series?: string; // Added missing property
-  creator_attribution?: {
+  creator_attribution: {
     creator_name: string;
     creator_id: string;
     collaboration_type: 'solo' | 'collaboration';

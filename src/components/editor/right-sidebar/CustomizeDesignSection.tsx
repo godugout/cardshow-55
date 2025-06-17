@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { SidebarSection } from '../SidebarSection';
@@ -11,7 +10,7 @@ export const CustomizeDesignSection = ({ cardEditor }: CustomizeDesignSectionPro
   const { updateDesignMetadata } = cardEditor;
 
   const handleTemplateSelect = (templateId: string) => {
-    updateDesignMetadata('templateId', templateId);
+    updateDesignMetadata({ templateId });
   };
   
   return (

@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { Canvas as FabricCanvas } from 'fabric';
 import { CanvasToolsBar } from './CanvasToolsBar';
@@ -57,7 +56,7 @@ export const CanvasContainer = ({ zoom, cardEditor, onAddElement }: CanvasContai
     canvas.on('object:modified', () => {
       if (cardEditor) {
         const canvasData = JSON.stringify(canvas.toJSON());
-        cardEditor.updateDesignMetadata('canvasData', canvasData);
+        cardEditor.updateDesignMetadata({ canvasData });
       }
     });
 

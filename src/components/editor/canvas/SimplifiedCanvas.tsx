@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas as FabricCanvas } from 'fabric';
 import { useCardEditor } from '@/hooks/useCardEditor';
@@ -39,7 +38,7 @@ export const SimplifiedCanvas = ({ zoom, cardEditor, onAddElement }: SimplifiedC
     canvas.on('object:modified', () => {
       if (cardEditor) {
         const canvasData = JSON.stringify(canvas.toJSON());
-        cardEditor.updateDesignMetadata('canvasData', canvasData);
+        cardEditor.updateDesignMetadata({ canvasData });
       }
     });
 

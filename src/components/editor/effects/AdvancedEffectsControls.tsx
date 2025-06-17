@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Sparkles, Palette, Zap, Sun, Moon, Droplet, Flame, Diamond, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,9 +30,11 @@ export const AdvancedEffectsControls = ({ cardEditor }: AdvancedEffectsControlsP
 
   const updateEffect = (effectType: string, intensity: number) => {
     const currentEffects = cardData.design_metadata?.effects || {};
-    updateDesignMetadata('effects', {
-      ...currentEffects,
-      [effectType]: intensity
+    updateDesignMetadata({
+      effects: {
+        ...currentEffects,
+        [effectType]: intensity
+      }
     });
   };
 
@@ -43,7 +44,9 @@ export const AdvancedEffectsControls = ({ cardEditor }: AdvancedEffectsControlsP
       return acc;
     }, {} as Record<string, number>);
     
-    updateDesignMetadata('effects', resetEffects);
+    updateDesignMetadata({
+      effects: resetEffects
+    });
     toast.success('All effects reset');
   };
 
@@ -74,7 +77,9 @@ export const AdvancedEffectsControls = ({ cardEditor }: AdvancedEffectsControlsP
     }, {} as Record<string, number>);
     
     // Apply preset
-    updateDesignMetadata('effects', { ...resetEffects, ...preset });
+    updateDesignMetadata({
+      effects: { ...resetEffects, ...preset }
+    });
     toast.success(`${presetName} preset applied`);
   };
 

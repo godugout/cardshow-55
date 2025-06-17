@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Sparkles, Palette, Zap, Sun, Moon, Droplet, Flame, Diamond } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
@@ -29,9 +28,11 @@ export const AdvancedEffectsSection = ({ cardEditor }: AdvancedEffectsSectionPro
 
   const updateEffect = (effectType: string, intensity: number) => {
     const currentEffects = cardData.design_metadata?.effects || {};
-    updateDesignMetadata('effects', {
-      ...currentEffects,
-      [effectType]: intensity
+    updateDesignMetadata({
+      effects: {
+        ...currentEffects,
+        [effectType]: intensity
+      }
     });
   };
 
