@@ -193,6 +193,7 @@ export const useBulkUploadLogic = (user: User | null) => {
           },
           visibility: 'public',
           is_public: true,
+          marketplace_listing: false, // Required field - default to false
           series: 'Bulk Upload Collection'
         };
 

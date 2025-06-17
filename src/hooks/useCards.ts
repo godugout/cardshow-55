@@ -155,15 +155,16 @@ export const useCards = () => {
 
         const cardData = {
           title: localCard.title,
-          description: localCard.description,
+          description: localCard.description || 'No description provided',
           creator_id: user.id,
-          image_url: localCard.image_url,
-          thumbnail_url: localCard.thumbnail_url,
+          image_url: localCard.image_url || '',
+          thumbnail_url: localCard.thumbnail_url || localCard.image_url || '',
           rarity: dbRarity,
-          tags: localCard.tags,
-          design_metadata: localCard.design_metadata,
+          tags: localCard.tags || [],
+          design_metadata: localCard.design_metadata || {},
           is_public: localCard.visibility === 'public',
-          visibility: localCard.visibility
+          visibility: localCard.visibility || 'private',
+          marketplace_listing: false // Required field - default to false
         };
         
         const result = await CardRepository.createCard(cardData);
