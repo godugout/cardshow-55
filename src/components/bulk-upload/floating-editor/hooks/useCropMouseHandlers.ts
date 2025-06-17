@@ -11,7 +11,7 @@ interface CropArea {
 
 interface UseCropMouseHandlersProps {
   cropArea: CropArea;
-  setCropArea: (crop: CropArea) => void;
+  setCropArea: (cropOrUpdater: CropArea | ((prev: CropArea) => CropArea)) => void;
   isDragging: boolean;
   setIsDragging: (dragging: boolean) => void;
   dragHandle: string | null;

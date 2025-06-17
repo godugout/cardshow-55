@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 interface CropArea {
@@ -21,7 +22,7 @@ export const useCropAreaManager = ({
   imagePosition,
   imageDimensions,
 }: UseCropAreaManagerProps) => {
-  const [cropArea, setCropArea] = useState<CropArea>(
+  const [cropArea, setCropAreaState] = useState<CropArea>(
     initialCropArea || {
       x: 100,
       y: 100,
@@ -50,6 +51,15 @@ export const useCropAreaManager = ({
     square: 1,
     free: null
   };
+
+  // Custom setCropArea that accepts both direct values and updater functions
+  const setCropArea = useCallback((cropOrUpdater: CropArea | ((prev: CropArea) => CropArea)) => {
+    if (typeof cropOrUpdater === 'function') {
+      setCropAreaState(prev => cropOrUpdater(prev));
+    } else {
+      setCropAreaState(cropOrUpdater);
+    }
+  }, []);
 
   const saveToHistory = useCallback((cropState: CropArea) => {
     const newHistory = history.slice(0, historyIndex + 1);
