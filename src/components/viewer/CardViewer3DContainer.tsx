@@ -12,7 +12,7 @@ interface CardViewer3DContainerProps {
   className?: string;
 }
 
-const CardViewer3DFallback = ({ card }: { card: CardData }) => (
+const CardViewer3DFallback: React.FC<{ card: CardData }> = ({ card }) => (
   <div className="w-full h-full bg-surface-medium flex items-center justify-center rounded-xl">
     <div className="text-center text-white p-8">
       <div className="w-32 h-44 bg-surface-dark rounded-lg mx-auto mb-4 flex items-center justify-center">
@@ -31,6 +31,10 @@ const CardViewer3DFallback = ({ card }: { card: CardData }) => (
   </div>
 );
 
+const ErrorFallback: React.FC<{ error?: Error; resetError?: () => void; card: CardData }> = ({ card }) => (
+  <CardViewer3DFallback card={card} />
+);
+
 export const CardViewer3DContainer: React.FC<CardViewer3DContainerProps> = ({
   card,
   environment = 'studio',
@@ -40,7 +44,7 @@ export const CardViewer3DContainer: React.FC<CardViewer3DContainerProps> = ({
 }) => {
   return (
     <div className={`w-full h-full ${className}`}>
-      <ErrorBoundary fallback={<CardViewer3DFallback card={card} />}>
+      <ErrorBoundary fallback={(props) => <ErrorFallback {...props} card={card} />}>
         <Suspense fallback={<CardViewer3DFallback card={card} />}>
           <CardViewer3D
             card={card}

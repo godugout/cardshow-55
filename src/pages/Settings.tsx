@@ -14,6 +14,15 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { User, Mail, Globe, MapPin, Save, Eye, EyeOff } from 'lucide-react';
 
+interface UserPreferences {
+  darkMode?: boolean;
+  emailNotifications?: boolean;
+  pushNotifications?: boolean;
+  profileVisibility?: boolean;
+  showCardValue?: boolean;
+  compactView?: boolean;
+}
+
 const Settings = () => {
   const { user, signOut } = useAuth();
   const { profile, updateProfile, isLoading, isUpdating } = useProfile(user?.id);
@@ -27,13 +36,30 @@ const Settings = () => {
     avatar_url: profile?.avatar_url || ''
   });
 
-  const [preferences, setPreferences] = useState({
-    darkMode: profile?.preferences?.darkMode || false,
-    emailNotifications: profile?.preferences?.emailNotifications || true,
-    pushNotifications: profile?.preferences?.pushNotifications || true,
-    profileVisibility: profile?.preferences?.profileVisibility || true,
-    showCardValue: profile?.preferences?.showCardValue || true,
-    compactView: profile?.preferences?.compactView || false
+  const getPreferencesAsObject = (preferences: any): UserPreferences => {
+    if (!preferences) return {};
+    if (typeof preferences === 'string') {
+      try {
+        return JSON.parse(preferences);
+      } catch {
+        return {};
+      }
+    }
+    if (typeof preferences === 'object') {
+      return preferences as UserPreferences;
+    }
+    return {};
+  };
+
+  const profilePreferences = getPreferencesAsObject(profile?.preferences);
+
+  const [preferences, setPreferences] = useState<UserPreferences>({
+    darkMode: profilePreferences.darkMode || false,
+    emailNotifications: profilePreferences.emailNotifications || true,
+    pushNotifications: profilePreferences.pushNotifications || true,
+    profileVisibility: profilePreferences.profileVisibility || true,
+    showCardValue: profilePreferences.showCardValue || true,
+    compactView: profilePreferences.compactView || false
   });
 
   // Update form data when profile loads
@@ -47,13 +73,15 @@ const Settings = () => {
         location: profile.location || '',
         avatar_url: profile.avatar_url || ''
       });
+      
+      const updatedPreferences = getPreferencesAsObject(profile.preferences);
       setPreferences({
-        darkMode: profile.preferences?.darkMode || false,
-        emailNotifications: profile.preferences?.emailNotifications || true,
-        pushNotifications: profile.preferences?.pushNotifications || true,
-        profileVisibility: profile.preferences?.profileVisibility || true,
-        showCardValue: profile.preferences?.showCardValue || true,
-        compactView: profile.preferences?.compactView || false
+        darkMode: updatedPreferences.darkMode || false,
+        emailNotifications: updatedPreferences.emailNotifications || true,
+        pushNotifications: updatedPreferences.pushNotifications || true,
+        profileVisibility: updatedPreferences.profileVisibility || true,
+        showCardValue: updatedPreferences.showCardValue || true,
+        compactView: updatedPreferences.compactView || false
       });
     }
   }, [profile]);
