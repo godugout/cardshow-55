@@ -182,7 +182,7 @@ export const CardRepository = {
       }
       
       if (rarity) {
-        // Map rarity values for database compatibility - remove "epic" from mapping
+        // Map rarity values for database compatibility
         const rarityMapping: Record<string, string> = {
           'ultra-rare': 'legendary' // Map ultra-rare to legendary
         };

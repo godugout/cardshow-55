@@ -65,17 +65,17 @@ const Gallery = () => {
     }
   };
 
-  // Fix the viewer handlers to match expected signatures - pass single card, not array
+  // Fix the viewer handlers to match expected signatures - pass convertedCards array
   const handleViewerCardChange = (newIndex: number) => {
     handleCardChange(newIndex);
   };
 
   const handleViewerShare = (card: CardData) => {
-    handleShareCard(card);
+    handleShareCard(convertedCards);
   };
 
   const handleViewerDownload = (card: CardData) => {
-    handleDownloadCard(card);
+    handleDownloadCard(convertedCards);
   };
 
   return (
