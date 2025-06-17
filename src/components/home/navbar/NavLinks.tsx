@@ -1,7 +1,6 @@
 
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Bug } from "lucide-react";
 
 export const NavLinks = () => {
   const location = useLocation();
@@ -39,14 +38,6 @@ export const NavLinks = () => {
         className={`nav-item ${isActive('/creators') ? 'active' : ''}`}
       >
         Creators
-      </Link>
-      <Link 
-        to="/debug-detection" 
-        className={`nav-item ${isActive('/debug-detection') ? 'active' : ''} flex items-center gap-2`}
-        title="Debug Card Detection"
-      >
-        <Bug className="w-4 h-4" />
-        Debug
       </Link>
     </div>
   );

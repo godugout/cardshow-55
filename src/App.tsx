@@ -7,7 +7,6 @@ import Gallery from '@/pages/Gallery';
 import Profile from '@/pages/Profile';
 import AccountSettings from '@/pages/AccountSettings';
 import Creators from '@/pages/Creators';
-import DebugDetection from '@/pages/DebugDetection';
 import Studio from '@/pages/Studio';
 import Collections from '@/pages/Collections';
 import Memories from '@/pages/Memories';
@@ -42,7 +41,6 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<AccountSettings />} />
             <Route path="creators" element={<Creators />} />
-            <Route path="debug-detection" element={<DebugDetection />} />
           </Route>
         </Routes>
       </div>
