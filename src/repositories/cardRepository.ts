@@ -1,5 +1,8 @@
-import { supabase } from '@/supabase';
+
+import { supabase } from '@/integrations/supabase/client';
 import type { Card, CardCreateParams } from '@/types/card';
+
+export { type CardCreateParams } from '@/types/card';
 
 export class CardRepository {
   static async createCard(params: CardCreateParams): Promise<Card | null> {
@@ -22,7 +25,43 @@ export class CardRepository {
     }
   }
 
-  static async getCards(): Promise<Card[]> {
+  static async getCards(options?: {
+    creator_id?: string;
+    includePrivate?: boolean;
+    pageSize?: number;
+  }): Promise<{ cards: Card[]; total: number }> {
+    try {
+      let query = supabase
+        .from('cards')
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false });
+
+      if (options?.creator_id) {
+        query = query.eq('creator_id', options.creator_id);
+      }
+
+      if (options?.pageSize) {
+        query = query.limit(options.pageSize);
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) {
+        console.error('Error fetching cards:', error);
+        throw error;
+      }
+
+      return {
+        cards: data || [],
+        total: count || 0
+      };
+    } catch (error) {
+      console.error('Failed to fetch cards:', error);
+      return { cards: [], total: 0 };
+    }
+  }
+
+  static async getAllCards(): Promise<Card[]> {
     try {
       const { data, error } = await supabase
         .from('cards')

@@ -5,10 +5,7 @@ import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { CardRepository } from '@/repositories/cardRepository';
 import { localCardStorage } from '@/lib/localCardStorage';
 import { toast } from 'sonner';
-import type { Tables } from '@/integrations/supabase/types';
-
-// Use the database type directly instead of custom interface
-type Card = Tables<'cards'>;
+import type { Card } from '@/types/card';
 
 export const useCards = () => {
   const { user } = useAuth();
@@ -93,14 +90,9 @@ export const useCards = () => {
     
     try {
       console.log('👤 Fetching user cards for:', targetUserId);
-      const result = await CardRepository.getCards({
-        creator_id: targetUserId,
-        includePrivate: true,
-        pageSize: 100
-      });
+      const userCardsData = await CardRepository.getUserCards(targetUserId);
       
-      console.log('✅ Fetched user cards:', result.cards.length);
-      const userCardsData = result.cards;
+      console.log('✅ Fetched user cards:', userCardsData.length);
       
       if (!userId || userId === user?.id) {
         setUserCards(userCardsData);
