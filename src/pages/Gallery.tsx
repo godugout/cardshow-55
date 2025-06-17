@@ -8,9 +8,8 @@ import { GalleryHeader } from './Gallery/components/GalleryHeader';
 import { CollectionsGrid } from './Gallery/components/CollectionsGrid';
 import { CardsGrid } from './Gallery/components/CardsGrid';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { CardDataInvestigator } from '@/components/debug/CardDataInvestigator';
 import { Button } from '@/components/ui/button';
-import { Plus, Bug, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -19,7 +18,6 @@ type DbCard = Tables<'cards'>;
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
-  const [showDebug, setShowDebug] = useState(false);
   const navigate = useNavigate();
   
   const { collections, loading: collectionsLoading } = useAllCollections(1, 6);
@@ -50,15 +48,14 @@ const Gallery = () => {
 
   return (
     <div className="container mx-auto p-6 max-w-7xl bg-[#121212]">
-      {/* Debug Controls */}
+      {/* Debug Controls - Development Only */}
       {process.env.NODE_ENV === 'development' && (
         <div className="mb-6 p-4 bg-yellow-900/20 border border-yellow-600 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Bug className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm text-yellow-400">Debug Mode - Card Data Investigation</span>
+              <span className="text-sm text-yellow-400">Development Mode - Data Source: {dataSource}</span>
               <span className="text-xs bg-yellow-600 px-2 py-1 rounded">
-                Source: {dataSource} | Cards: {featuredCards?.length || 0}
+                Cards: {featuredCards?.length || 0}
               </span>
             </div>
             <div className="flex gap-2">
@@ -69,21 +66,8 @@ const Gallery = () => {
               <Button size="sm" variant="outline" onClick={migrateLocalCardsToDatabase}>
                 Migrate Local
               </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={() => setShowDebug(!showDebug)}
-              >
-                {showDebug ? 'Hide' : 'Show'} Investigation
-              </Button>
             </div>
           </div>
-          
-          {showDebug && (
-            <div className="mt-4">
-              <CardDataInvestigator />
-            </div>
-          )}
         </div>
       )}
 
