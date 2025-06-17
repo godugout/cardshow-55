@@ -78,7 +78,7 @@ export const useCropMouseHandlers = ({
     const deltaX = Math.round((clientX - dragStart.x) / RESIZE_STEP) * RESIZE_STEP;
     const deltaY = Math.round((clientY - dragStart.y) / RESIZE_STEP) * RESIZE_STEP;
 
-    setCropArea(prev => {
+    setCropArea((prev: CropArea) => {
       let newCrop = { ...prev };
       const currentRatio = ASPECT_RATIOS[aspectRatioMode];
 

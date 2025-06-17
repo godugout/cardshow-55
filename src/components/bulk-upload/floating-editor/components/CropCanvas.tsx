@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { ImprovedCropOverlay } from '../enhanced-crop/ImprovedCropOverlay';
+import { ImprovedCropOverlay } from '../../enhanced-crop/ImprovedCropOverlay';
 
 interface CropArea {
   x: number;

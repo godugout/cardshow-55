@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 interface CropArea {
@@ -149,7 +148,9 @@ export const useCropAreaManager = ({
     cropArea,
     setCropArea,
     history,
+    setHistory,
     historyIndex,
+    setHistoryIndex,
     isDragging,
     setIsDragging,
     dragHandle,
