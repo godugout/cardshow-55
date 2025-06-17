@@ -4,7 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { toast } from 'sonner';
 
-export type CardRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+// Import the unified CardData type
+import type { CardData } from '@/hooks/card-editor/types';
+
+export type CardRarity = 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary';
 export type CardVisibility = 'private' | 'public' | 'shared';
 
 export interface CreatorAttribution {
@@ -44,30 +47,6 @@ export interface DesignTemplate {
   tags: string[];
 }
 
-export interface CardData {
-  id?: string;
-  title: string;
-  description?: string;
-  type?: string;
-  series?: string;
-  rarity: CardRarity;
-  tags: string[];
-  image_url?: string;
-  thumbnail_url?: string;
-  design_metadata: Record<string, any>;
-  visibility: CardVisibility;
-  is_public?: boolean;
-  shop_id?: string;
-  template_id?: string;
-  collection_id?: string;
-  team_id?: string;
-  creator_attribution: CreatorAttribution;
-  publishing_options: PublishingOptions;
-  verification_status?: 'pending' | 'verified' | 'rejected';
-  print_metadata?: Record<string, any>;
-  creator_id?: string;
-}
-
 export interface UseCardEditorOptions {
   initialData?: Partial<CardData>;
   autoSave?: boolean;
@@ -82,8 +61,6 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
     id: initialData.id || uuidv4(),
     title: initialData.title || 'My New Card',
     description: initialData.description || '',
-    type: initialData.type || '',
-    series: initialData.series || '',
     image_url: initialData.image_url,
     thumbnail_url: initialData.thumbnail_url,
     rarity: initialData.rarity || 'common',
@@ -93,6 +70,8 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
     is_public: initialData.is_public || false,
     template_id: initialData.template_id,
     creator_attribution: initialData.creator_attribution || {
+      creator_name: '',
+      creator_id: '',
       collaboration_type: 'solo'
     },
     publishing_options: initialData.publishing_options || {
@@ -106,7 +85,10 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
         limited_edition: false
       }
     },
-    creator_id: user?.id
+    creator_id: user?.id,
+    // Add local storage properties
+    needsSync: false,
+    isLocal: false
   });
 
   const [isSaving, setIsSaving] = useState(false);

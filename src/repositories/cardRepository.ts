@@ -183,7 +183,9 @@ export const CardRepository = {
       }
       
       if (rarity) {
-        query = query.eq('rarity', rarity);
+        // Ensure rarity is mapped correctly for database query
+        const dbRarity = rarity === 'ultra-rare' ? 'legendary' : rarity;
+        query = query.eq('rarity', dbRarity);
       }
       
       if (tags && tags.length > 0) {

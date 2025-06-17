@@ -40,7 +40,6 @@ export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClic
       {cards.map((card) => (
         <CardItem
           key={card.id}
-          id={card.id}
           title={card.title}
           image_url={card.image_url || card.thumbnail_url || ''}
           rarity={card.rarity as any}

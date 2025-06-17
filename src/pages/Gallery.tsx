@@ -65,6 +65,23 @@ const Gallery = () => {
     }
   };
 
+  // Fix the viewer handlers to match expected signatures
+  const handleViewerCardChange = (newIndex: number) => {
+    handleCardChange(newIndex);
+  };
+
+  const handleViewerShare = () => {
+    if (currentCard) {
+      handleShareCard(currentCard);
+    }
+  };
+
+  const handleViewerDownload = () => {
+    if (currentCard) {
+      handleDownloadCard(currentCard);
+    }
+  };
+
   return (
     <div className="container mx-auto p-6 max-w-7xl bg-[#121212]">
       {/* Debug Controls */}
@@ -184,11 +201,11 @@ const Gallery = () => {
           card={currentCard}
           cards={convertedCards}
           currentCardIndex={selectedCardIndex}
-          onCardChange={handleCardChange}
+          onCardChange={handleViewerCardChange}
           isOpen={true}
           onClose={handleCloseViewer}
-          onShare={handleShareCard}
-          onDownload={handleDownloadCard}
+          onShare={handleViewerShare}
+          onDownload={handleViewerDownload}
           allowRotation={true}
           showStats={true}
           ambient={true}

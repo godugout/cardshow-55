@@ -149,10 +149,16 @@ export const useCards = () => {
       try {
         // Map rarity to database enum (remove epic, map ultra-rare to legendary)
         let dbRarity: 'common' | 'uncommon' | 'rare' | 'legendary' = 'common';
-        if (localCard.rarity === 'ultra-rare' || localCard.rarity === 'legendary') {
+        if (localCard.rarity === 'legendary') {
           dbRarity = 'legendary';
-        } else if (['common', 'uncommon', 'rare'].includes(localCard.rarity)) {
-          dbRarity = localCard.rarity as 'common' | 'uncommon' | 'rare';
+        } else if (localCard.rarity === 'ultra-rare') {
+          dbRarity = 'legendary'; // Map ultra-rare to legendary
+        } else if (localCard.rarity === 'rare') {
+          dbRarity = 'rare';
+        } else if (localCard.rarity === 'uncommon') {
+          dbRarity = 'uncommon';
+        } else {
+          dbRarity = 'common';
         }
 
         const cardData = {
