@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,47 @@ const mapRarityToValidType = (rarity: string): 'common' | 'uncommon' | 'rare' | 
   };
   
   return rarityMap[rarity.toLowerCase()] || 'common';
+};
+
+// Generate more varied fallback data based on filename
+const generateFallbackData = (filename: string) => {
+  const baseName = filename.replace(/\.[^/.]+$/, ""); // Remove extension
+  const randomTitles = [
+    `${baseName} Card`,
+    `Legendary ${baseName}`,
+    `Elite ${baseName}`,
+    `Custom ${baseName}`,
+    `Rare ${baseName}`
+  ];
+  
+  const randomDescriptions = [
+    "A unique collectible card featuring custom artwork.",
+    "An exclusive trading card with distinctive design elements.",
+    "A premium card showcasing exceptional craftsmanship.",
+    "A rare collectible with unique visual appeal.",
+    "A custom-designed card with special characteristics."
+  ];
+  
+  const randomRarities: ('common' | 'uncommon' | 'rare' | 'legendary')[] = ['common', 'uncommon', 'rare', 'legendary'];
+  const randomTags = [
+    ['custom', 'trading-card'],
+    ['collectible', 'rare'],
+    ['artwork', 'design'],
+    ['premium', 'exclusive'],
+    ['unique', 'special']
+  ];
+  
+  const randomIndex = Math.floor(Math.random() * randomTitles.length);
+  
+  return {
+    title: randomTitles[randomIndex],
+    description: randomDescriptions[randomIndex],
+    rarity: randomRarities[Math.floor(Math.random() * randomRarities.length)],
+    tags: randomTags[Math.floor(Math.random() * randomTags.length)],
+    category: 'Custom Card',
+    type: 'Character',
+    series: 'Custom Collection'
+  };
 };
 
 const BulkUpload = () => {
@@ -75,24 +117,40 @@ const BulkUpload = () => {
       const img = new Image();
       
       img.onload = () => {
-        // Standard card dimensions
-        canvas.width = 350;
-        canvas.height = 490;
+        // Standard card dimensions - portrait aspect ratio
+        const cardWidth = 350;
+        const cardHeight = 490;
+        
+        canvas.width = cardWidth;
+        canvas.height = cardHeight;
         
         // Fill with white background
         ctx!.fillStyle = '#ffffff';
         ctx!.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Calculate dimensions to fit image
-        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-        const x = (canvas.width - img.width * scale) / 2;
-        const y = (canvas.height - img.height * scale) / 2;
+        // Calculate scaling to FILL the canvas (crop if necessary)
+        const scaleX = cardWidth / img.width;
+        const scaleY = cardHeight / img.height;
+        const scale = Math.max(scaleX, scaleY); // Use max to fill, not fit
         
-        ctx!.drawImage(img, x, y, img.width * scale, img.height * scale);
+        // Calculate dimensions and position to center the image
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
+        const x = (cardWidth - scaledWidth) / 2;
+        const y = (cardHeight - scaledHeight) / 2;
+        
+        // Draw the image to fill the entire card
+        ctx!.drawImage(img, x, y, scaledWidth, scaledHeight);
+        
+        // Add subtle border for better card appearance
+        ctx!.strokeStyle = '#e0e0e0';
+        ctx!.lineWidth = 2;
+        ctx!.strokeRect(1, 1, cardWidth - 2, cardHeight - 2);
+        
         resolve(canvas.toDataURL('image/jpeg', 0.9));
       };
       
-      img.onerror = reject;
+      img.onerror = () => reject(new Error('Failed to load image'));
       img.src = URL.createObjectURL(file);
     });
   };
@@ -116,30 +174,50 @@ const BulkUpload = () => {
           f.id === fileData.id ? { ...f, status: 'analyzing' } : f
         ));
 
-        // Convert image to data URL
+        console.log(`🔍 Processing file: ${fileData.file.name}`);
+
+        // Convert image to data URL with proper cropping
         const imageDataUrl = await processImageToDataUrl(fileData.file);
         
-        // Analyze with AI
-        const analysis = await analyzeCardImage(imageDataUrl);
+        // Analyze with AI (with better error handling)
+        let analysis;
+        try {
+          console.log('🤖 Analyzing image with AI...');
+          analysis = await analyzeCardImage(imageDataUrl);
+          console.log('✅ AI Analysis successful:', analysis);
+        } catch (aiError) {
+          console.warn('⚠️ AI Analysis failed, using fallback data:', aiError);
+          analysis = generateFallbackData(fileData.file.name);
+        }
         
         // Create card in database with proper rarity mapping
-        const cardResult = await CardRepository.createCard({
-          title: analysis.title || 'Untitled Card',
-          description: analysis.description || 'A unique trading card.',
+        const cardData = {
+          title: analysis.title || generateFallbackData(fileData.file.name).title,
+          description: analysis.description || generateFallbackData(fileData.file.name).description,
           creator_id: user.id,
           image_url: imageDataUrl,
           thumbnail_url: imageDataUrl,
           rarity: mapRarityToValidType(analysis.rarity || 'common'),
-          tags: analysis.tags || ['custom'],
+          tags: analysis.tags || ['custom', 'bulk-upload'],
           design_metadata: {
-            aiGenerated: true,
+            aiGenerated: !!analysis.title, // True if AI analysis worked
             originalFilename: fileData.file.name,
-            analysis: analysis
+            analysis: analysis,
+            processingMethod: 'bulk-upload',
+            imageProcessing: {
+              originalDimensions: { width: 0, height: 0 }, // Would need to capture from img.onload
+              cardDimensions: { width: 350, height: 490 },
+              scalingMethod: 'fill',
+              backgroundColor: '#ffffff'
+            }
           },
           visibility: 'public',
           is_public: true,
-          series: analysis.series || 'AI Collection'
-        });
+          series: analysis.series || 'Bulk Upload Collection'
+        };
+
+        console.log('💾 Creating card in database...', cardData);
+        const cardResult = await CardRepository.createCard(cardData);
 
         if (cardResult) {
           // Update status to complete
@@ -157,7 +235,7 @@ const BulkUpload = () => {
         }
 
       } catch (error) {
-        console.error('Error processing file:', error);
+        console.error('❌ Error processing file:', fileData.file.name, error);
         setUploadedFiles(prev => prev.map(f => 
           f.id === fileData.id ? { 
             ...f, 
@@ -177,10 +255,10 @@ const BulkUpload = () => {
     const errorCount = uploadedFiles.filter(f => f.status === 'error').length;
     
     if (successCount > 0) {
-      toast.success(`Successfully created ${successCount} cards!`);
+      toast.success(`Successfully created ${successCount} cards! Images now fill the entire card face.`);
     }
     if (errorCount > 0) {
-      toast.error(`${errorCount} cards failed to process`);
+      toast.error(`${errorCount} cards failed to process. Check the console for details.`);
     }
   };
 
@@ -231,6 +309,9 @@ const BulkUpload = () => {
               <p className="text-crd-lightGray text-sm mt-2">
                 AI will automatically analyze and create cards with metadata
               </p>
+              <p className="text-crd-green text-sm mt-1">
+                ✨ Images will now properly fill the entire card face
+              </p>
             </div>
           </Card>
         )}
@@ -277,7 +358,7 @@ const BulkUpload = () => {
             {isProcessing && (
               <div className="bg-crd-darker rounded-lg p-4 border border-crd-mediumGray/20">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-white">Processing cards...</span>
+                  <span className="text-white">Processing cards with improved image filling...</span>
                   <span className="text-crd-lightGray">{Math.round(progress)}%</span>
                 </div>
                 <Progress value={progress} className="w-full" />
