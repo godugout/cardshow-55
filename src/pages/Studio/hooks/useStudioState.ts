@@ -33,41 +33,34 @@ export const useStudioState = () => {
     let cardIndex = -1;
 
     if (cardId) {
-      // Check for invalid card IDs that should redirect
-      if (cardId.startsWith('fallback-') || cardId === 'undefined' || cardId === 'null') {
-        console.warn(`Invalid card ID detected: ${cardId}, redirecting to first available card`);
+      // First, try to find the card in available cards
+      cardIndex = availableCards.findIndex(c => c.id === cardId);
+      
+      if (cardIndex !== -1) {
+        cardToSelect = availableCards[cardIndex];
+        console.log(`Found card: ${cardToSelect.title} at index ${cardIndex}`);
+      } else {
+        // Card not found - this is the main issue
+        console.warn(`Card with ID "${cardId}" not found in available cards`);
+        console.log('Available card IDs:', availableCards.map(c => c.id));
+        
+        // Default to first available card
         cardToSelect = availableCards[0];
         cardIndex = 0;
         
-        // Redirect to valid card ID
         if (cardToSelect) {
+          console.log(`Redirecting to first available card: ${cardToSelect.id}`);
           navigate(`/studio/${cardToSelect.id}`, { replace: true });
-          toast.info('Redirected to available card');
-        }
-      } else {
-        // Find the specific card from all available cards
-        cardIndex = availableCards.findIndex(c => c.id === cardId);
-        if (cardIndex !== -1) {
-          cardToSelect = availableCards[cardIndex];
-        } else {
-          console.warn(`Card with ID ${cardId} not found`);
-          toast.error('Card not found. Showing default card instead.');
-          cardToSelect = availableCards[0];
-          cardIndex = 0;
-          
-          // Redirect to valid card ID
-          if (cardToSelect) {
-            navigate(`/studio/${cardToSelect.id}`, { replace: true });
-          }
+          toast.info(`Card not found. Showing ${cardToSelect.title} instead.`);
         }
       }
     } else {
-      // Default to first card if no ID specified
+      // No card ID specified - default to first card
       cardToSelect = availableCards[0];
       cardIndex = 0;
       
-      // Update URL to include card ID
       if (cardToSelect) {
+        console.log(`No card ID specified, redirecting to: ${cardToSelect.id}`);
         navigate(`/studio/${cardToSelect.id}`, { replace: true });
       }
     }
@@ -75,8 +68,10 @@ export const useStudioState = () => {
     if (cardToSelect) {
       setSelectedCard(cardToSelect);
       setCurrentCardIndex(cardIndex >= 0 ? cardIndex : 0);
+      console.log(`Selected card: ${cardToSelect.title} (${cardToSelect.id})`);
     } else {
-      // This case happens if both DB and mock cards are empty
+      // This case happens if no cards are available at all
+      console.error('No cards are available to display');
       toast.error('No cards are available to display.');
       navigate('/gallery');
     }
@@ -88,6 +83,7 @@ export const useStudioState = () => {
   const handleCardChange = (index: number) => {
     const newCard = allCards[index];
     if (newCard) {
+      console.log(`Changing to card: ${newCard.title} (${newCard.id})`);
       setSelectedCard(newCard);
       setCurrentCardIndex(index);
       
