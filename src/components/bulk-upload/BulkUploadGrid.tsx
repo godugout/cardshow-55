@@ -27,7 +27,7 @@ export const BulkUploadGrid = ({ uploadedFiles, onRemoveFile, onFilesAdded, onEd
       {/* Files Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {uploadedFiles.map((fileData) => (
-          <Card key={fileData.id} className="bg-crd-darker border-crd-mediumGray/20 overflow-hidden group">
+          <Card key={fileData.id} className="bg-crd-darker border-crd-mediumGray/20 overflow-hidden group relative">
             <div className="relative">
               <img
                 src={fileData.editData?.croppedImageUrl || fileData.preview}
@@ -36,10 +36,10 @@ export const BulkUploadGrid = ({ uploadedFiles, onRemoveFile, onFilesAdded, onEd
               />
               
               {/* Hover Overlay with Edit Button */}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
                 <Button
                   onClick={() => onEditFile(fileData.id)}
-                  className="bg-crd-green hover:bg-crd-green/90 text-black font-medium"
+                  className="bg-crd-green hover:bg-crd-green/90 text-black font-medium relative z-20"
                   size="sm"
                 >
                   <Edit3 className="w-4 h-4 mr-2" />
@@ -48,20 +48,20 @@ export const BulkUploadGrid = ({ uploadedFiles, onRemoveFile, onFilesAdded, onEd
               </div>
               
               {/* Status Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-5">
                 {fileData.status === 'pending' && (
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => onRemoveFile(fileData.id)}
-                    className="absolute top-2 right-2 text-white hover:bg-red-500"
+                    className="absolute top-2 right-2 text-white hover:bg-red-500 z-15"
                   >
                     <X className="w-4 h-4" />
                   </Button>
                 )}
                 
                 {fileData.status === 'editing' && (
-                  <div className="absolute top-2 left-2 bg-crd-blue text-white text-xs px-2 py-1 rounded">
+                  <div className="absolute top-2 left-2 bg-crd-blue text-white text-xs px-2 py-1 rounded z-15">
                     Editing...
                   </div>
                 )}
