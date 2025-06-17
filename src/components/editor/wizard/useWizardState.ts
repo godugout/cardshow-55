@@ -71,7 +71,7 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       updateCardField('design_metadata', template.template_data);
     },
 
-    handleNext: () => {
+    handleNext: (targetStep?: number) => {
       if (wizardState.currentStep === 1 && !wizardState.selectedPhoto) {
         toast.error('Please upload a photo first');
         return;
@@ -85,7 +85,9 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
         return;
       }
       
-      if (wizardState.currentStep === 1 && wizardState.aiAnalysisComplete && wizardState.selectedTemplate) {
+      if (targetStep) {
+        setWizardState(prev => ({ ...prev, currentStep: targetStep }));
+      } else if (wizardState.currentStep === 1 && wizardState.aiAnalysisComplete && wizardState.selectedTemplate) {
         setWizardState(prev => ({ ...prev, currentStep: 3 }));
       } else {
         setWizardState(prev => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, 4) }));
@@ -108,17 +110,17 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       }
     },
 
-    updatePublishingOptions: (key, value) => {
+    updatePublishingOptions: (updates) => {
       updateCardField('publishing_options', {
         ...cardData.publishing_options,
-        [key]: value
+        ...updates
       });
     },
 
-    updateCreatorAttribution: (key, value) => {
+    updateCreatorAttribution: (updates) => {
       updateCardField('creator_attribution', {
         ...cardData.creator_attribution,
-        [key]: value
+        ...updates
       });
     },
 

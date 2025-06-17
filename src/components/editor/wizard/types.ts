@@ -19,11 +19,11 @@ export interface WizardHandlers {
   handlePhotoSelect: (photo: string) => void;
   handleAiAnalysis: (analysis: CardAnalysisResult) => void;
   handleTemplateSelect: (template: DesignTemplate) => void;
-  handleNext: () => void;
+  handleNext: (targetStep?: number) => void;
   handleBack: () => void;
   handleComplete: () => Promise<void>;
-  updatePublishingOptions: (key: keyof PublishingOptions, value: any) => void;
-  updateCreatorAttribution: (key: keyof CreatorAttribution, value: any) => void;
+  updatePublishingOptions: (updates: Partial<PublishingOptions>) => void;
+  updateCreatorAttribution: (updates: Partial<CreatorAttribution>) => void;
   updateCardField: <K extends keyof CardData>(field: K, value: CardData[K]) => void;
 }
 

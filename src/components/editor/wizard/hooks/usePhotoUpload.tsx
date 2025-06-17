@@ -8,6 +8,8 @@ interface ImageDetails {
   dimensions: { width: number; height: number };
   aspectRatio: number;
   fileSize: string;
+  width: number; // Add these for backward compatibility
+  height: number;
 }
 
 export const usePhotoUpload = (
@@ -62,7 +64,9 @@ export const usePhotoUpload = (
         setImageDetails({
           dimensions: { width: img.width, height: img.height },
           aspectRatio: sourceAspectRatio,
-          fileSize: (file.size / 1024 / 1024).toFixed(2) + ' MB'
+          fileSize: (file.size / 1024 / 1024).toFixed(2) + ' MB',
+          width: img.width,
+          height: img.height
         });
         
         resolve(dataUrl);
