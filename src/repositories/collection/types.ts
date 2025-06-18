@@ -12,6 +12,11 @@ export interface Collection {
   createdAt: string;
   cards?: Memory[]; // Changed from Card to Memory
   cardCount?: number;
+  // New fields for group functionality
+  templateId?: string;
+  isGroup?: boolean;
+  groupCode?: string;
+  allowMemberCardSharing?: boolean;
 }
 
 export interface CollectionItem {
@@ -23,12 +28,39 @@ export interface CollectionItem {
   memory?: Memory; // Add memory field
 }
 
+export interface CollectionTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  templateHash: string;
+  creatorId: string;
+  isPublic: boolean;
+  cardFilters?: any;
+  createdAt: string;
+  updatedAt: string;
+  usageCount: number;
+}
+
+export interface CollectionMembership {
+  id: string;
+  collectionId: string;
+  userId: string;
+  role: 'owner' | 'admin' | 'member';
+  canViewMemberCards: boolean;
+  invitedBy?: string;
+  joinedAt: string;
+}
+
 export interface CreateCollectionParams {
   title: string;
   description?: string;
   ownerId: string;
   visibility?: Visibility;
   cards?: string[];
+  templateId?: string;
+  isGroup?: boolean;
+  groupCode?: string;
+  allowMemberCardSharing?: boolean;
 }
 
 export interface UpdateCollectionParams {
@@ -36,6 +68,7 @@ export interface UpdateCollectionParams {
   title?: string;
   description?: string;
   visibility?: Visibility;
+  allowMemberCardSharing?: boolean;
 }
 
 export interface CollectionListOptions {

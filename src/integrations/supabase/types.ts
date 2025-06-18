@@ -221,36 +221,125 @@ export type Database = {
           },
         ]
       }
+      collection_memberships: {
+        Row: {
+          can_view_member_cards: boolean | null
+          collection_id: string
+          id: string
+          invited_by: string | null
+          joined_at: string | null
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          can_view_member_cards?: boolean | null
+          collection_id: string
+          id?: string
+          invited_by?: string | null
+          joined_at?: string | null
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          can_view_member_cards?: boolean | null
+          collection_id?: string
+          id?: string
+          invited_by?: string | null
+          joined_at?: string | null
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_memberships_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collection_templates: {
+        Row: {
+          card_filters: Json | null
+          created_at: string | null
+          creator_id: string
+          description: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          template_hash: string
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          card_filters?: Json | null
+          created_at?: string | null
+          creator_id: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          template_hash: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          card_filters?: Json | null
+          created_at?: string | null
+          creator_id?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          template_hash?: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
       collections: {
         Row: {
+          allow_member_card_sharing: boolean | null
           cover_image_url: string | null
           created_at: string | null
           description: string | null
+          group_code: string | null
           id: string
           is_featured: boolean | null
+          is_group: boolean | null
           owner_id: string
+          template_id: string | null
           title: string
           updated_at: string | null
           visibility: Database["public"]["Enums"]["visibility_type"] | null
         }
         Insert: {
+          allow_member_card_sharing?: boolean | null
           cover_image_url?: string | null
           created_at?: string | null
           description?: string | null
+          group_code?: string | null
           id?: string
           is_featured?: boolean | null
+          is_group?: boolean | null
           owner_id: string
+          template_id?: string | null
           title: string
           updated_at?: string | null
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
         }
         Update: {
+          allow_member_card_sharing?: boolean | null
           cover_image_url?: string | null
           created_at?: string | null
           description?: string | null
+          group_code?: string | null
           id?: string
           is_featured?: boolean | null
+          is_group?: boolean | null
           owner_id?: string
+          template_id?: string | null
           title?: string
           updated_at?: string | null
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
@@ -261,6 +350,13 @@ export type Database = {
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collections_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "collection_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -680,6 +776,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_collection_from_template: {
+        Args: { template_id: string; collection_title: string; user_id: string }
+        Returns: string
+      }
+      generate_group_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       is_admin: {
         Args: { user_uuid?: string }
         Returns: boolean
