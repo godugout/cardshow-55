@@ -19,7 +19,7 @@ function App() {
   if (showBackoffice) {
     return (
       <OverlayProvider>
-        <BackofficeLayout onBack={() => setShowBackoffice(false)} />
+        <BackofficeLayout />
       </OverlayProvider>
     );
   }
