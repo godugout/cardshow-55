@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { NotificationProvider } from '@/components/common/NotificationCenter'
 import App from './App.tsx'
 import { AuthProvider } from './features/auth/providers/AuthProvider'
 import { Toaster } from 'sonner'
@@ -29,22 +30,24 @@ ReactDOM.createRoot(rootElement).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <TooltipProvider>
-            <App />
-            <Toaster 
-              position="top-center"
-              expand={false}
-              richColors
-              closeButton
-              duration={3000}
-              toastOptions={{
-                style: {
-                  marginTop: '60px', // Avoid overlapping with top navigation
-                },
-                className: 'toast-center'
-              }}
-            />
-          </TooltipProvider>
+          <NotificationProvider>
+            <TooltipProvider>
+              <App />
+              <Toaster 
+                position="top-center"
+                expand={false}
+                richColors
+                closeButton
+                duration={3000}
+                toastOptions={{
+                  style: {
+                    marginTop: '60px', // Avoid overlapping with top navigation
+                  },
+                  className: 'toast-center'
+                }}
+              />
+            </TooltipProvider>
+          </NotificationProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
