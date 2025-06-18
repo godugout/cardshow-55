@@ -3,18 +3,23 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { useCards } from '@/hooks/useCards';
 import { CardRepository } from '@/repositories/cardRepository';
 import { toast } from 'sonner';
-import { Search, Eye, EyeOff, Trash2, Edit, MoreHorizontal } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Search } from 'lucide-react';
+import { CardsViewModeToggle } from '@/components/cards/CardsViewModeToggle';
+import { CardManagementCompactView } from './CardManagementCompactView';
+import { CardManagementGridView } from './CardManagementGridView';
+import { CardManagementTableView } from './CardManagementTableView';
 import type { Card as CardType } from '@/types/card';
+
+type ViewMode = 'rows' | 'grid' | 'table';
 
 export const CardManagement = () => {
   const { cards, loading, fetchCards } = useCards();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVisibility, setSelectedVisibility] = useState<'all' | 'public' | 'private'>('all');
+  const [viewMode, setViewMode] = useState<ViewMode>('rows');
 
   const filteredCards = cards.filter(card => {
     const matchesSearch = card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -74,6 +79,24 @@ export const CardManagement = () => {
     return colors[rarity as keyof typeof colors] || 'bg-gray-500';
   };
 
+  const renderView = () => {
+    const commonProps = {
+      cards: filteredCards,
+      onToggleVisibility: handleToggleVisibility,
+      onDeleteCard: handleDeleteCard,
+      getRarityColor
+    };
+
+    switch (viewMode) {
+      case 'grid':
+        return <CardManagementGridView {...commonProps} />;
+      case 'table':
+        return <CardManagementTableView {...commonProps} />;
+      default:
+        return <CardManagementCompactView {...commonProps} />;
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -84,31 +107,35 @@ export const CardManagement = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-crd-lightGray" />
-          <Input
-            placeholder="Search cards..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-crd-darkGray border-crd-mediumGray text-white"
-          />
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div className="flex flex-col sm:flex-row gap-4 flex-1">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-crd-lightGray" />
+            <Input
+              placeholder="Search cards..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-crd-darkGray border-crd-mediumGray text-white"
+            />
+          </div>
+          <div className="flex gap-2">
+            {['all', 'public', 'private'].map((visibility) => (
+              <Button
+                key={visibility}
+                variant={selectedVisibility === visibility ? 'default' : 'outline'}
+                onClick={() => setSelectedVisibility(visibility as any)}
+                className={selectedVisibility === visibility 
+                  ? 'bg-crd-green text-black' 
+                  : 'border-crd-mediumGray text-crd-lightGray hover:text-white'
+                }
+              >
+                {visibility.charAt(0).toUpperCase() + visibility.slice(1)}
+              </Button>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-2">
-          {['all', 'public', 'private'].map((visibility) => (
-            <Button
-              key={visibility}
-              variant={selectedVisibility === visibility ? 'default' : 'outline'}
-              onClick={() => setSelectedVisibility(visibility as any)}
-              className={selectedVisibility === visibility 
-                ? 'bg-crd-green text-black' 
-                : 'border-crd-mediumGray text-crd-lightGray hover:text-white'
-              }
-            >
-              {visibility.charAt(0).toUpperCase() + visibility.slice(1)}
-            </Button>
-          ))}
-        </div>
+        
+        <CardsViewModeToggle value={viewMode} onChange={setViewMode} />
       </div>
 
       <Card className="bg-crd-darkGray border-crd-mediumGray">
@@ -116,76 +143,7 @@ export const CardManagement = () => {
           <CardTitle className="text-white">Cards ({filteredCards.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {filteredCards.length === 0 ? (
-              <div className="text-center py-8 text-crd-lightGray">
-                No cards found matching your criteria.
-              </div>
-            ) : (
-              filteredCards.map((card) => (
-                <div key={card.id} className="flex items-center justify-between p-4 bg-crd-mediumGray/50 rounded-lg">
-                  <div className="flex items-center space-x-4">
-                    {card.thumbnail_url && (
-                      <img 
-                        src={card.thumbnail_url} 
-                        alt={card.title}
-                        className="w-12 h-16 object-cover rounded"
-                      />
-                    )}
-                    <div>
-                      <h3 className="text-white font-medium">{card.title}</h3>
-                      <p className="text-sm text-crd-lightGray truncate max-w-md">
-                        {card.description}
-                      </p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <Badge 
-                          className={`${getRarityColor(card.rarity)} text-white`}
-                        >
-                          {card.rarity}
-                        </Badge>
-                        <Badge variant={card.is_public ? 'default' : 'secondary'}>
-                          {card.is_public ? 'Public' : 'Private'}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleToggleVisibility(card.id, card.is_public)}
-                      className="text-crd-lightGray hover:text-white"
-                    >
-                      {card.is_public ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="text-crd-lightGray hover:text-white">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-crd-darkGray border-crd-mediumGray">
-                        <DropdownMenuItem 
-                          onClick={() => window.open(`/card/${card.id}`, '_blank')}
-                          className="text-white hover:bg-crd-mediumGray"
-                        >
-                          <Edit className="h-4 w-4 mr-2" />
-                          View Card
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDeleteCard(card.id)}
-                          className="text-red-400 hover:bg-crd-mediumGray focus:text-red-400"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          {renderView()}
         </CardContent>
       </Card>
     </div>
