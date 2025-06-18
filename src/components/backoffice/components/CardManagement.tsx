@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { useCards } from '@/hooks/useCards';
 import { CardRepository } from '@/repositories/cardRepository';
 import { toast } from 'sonner';
 import { Search } from 'lucide-react';
-import { CardsViewModeToggle } from '@/components/cards/CardsViewModeToggle';
+import { CardsViewModeToggle, type CardManagementViewMode } from '@/components/cards/CardsViewModeToggle';
 import { CardManagementCompactView } from './CardManagementCompactView';
 import { CardManagementGridView } from './CardManagementGridView';
 import { CardManagementTableView } from './CardManagementTableView';
@@ -19,7 +18,7 @@ export const CardManagement = () => {
   const { cards, loading, fetchCards } = useCards();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVisibility, setSelectedVisibility] = useState<'all' | 'public' | 'private'>('all');
-  const [viewMode, setViewMode] = useState<ViewMode>('rows');
+  const [viewMode, setViewMode] = useState<CardManagementViewMode>('rows');
 
   const filteredCards = cards.filter(card => {
     const matchesSearch = card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
