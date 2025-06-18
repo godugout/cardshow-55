@@ -6,7 +6,7 @@ import { useCards } from '@/hooks/useCards';
 import { CardRepository } from '@/repositories/cardRepository';
 import { toast } from 'sonner';
 import { Search } from 'lucide-react';
-import { CardsViewModeToggle, type CardManagementViewMode } from '@/components/cards/CardsViewModeToggle';
+import { CardManagementViewToggle, type CardManagementViewMode } from './CardManagementViewToggle';
 import { CardManagementCompactView } from './CardManagementCompactView';
 import { CardManagementGridView } from './CardManagementGridView';
 import { CardManagementTableView } from './CardManagementTableView';
@@ -134,7 +134,7 @@ export const CardManagement = () => {
           </div>
         </div>
         
-        <CardsViewModeToggle value={viewMode} onChange={setViewMode} />
+        <CardManagementViewToggle value={viewMode} onChange={setViewMode} />
       </div>
 
       <Card className="bg-crd-darkGray border-crd-mediumGray">
