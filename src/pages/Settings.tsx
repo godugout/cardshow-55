@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { useProfile } from '@/hooks/useProfile';
@@ -118,8 +119,15 @@ const Settings = () => {
     return (
       <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
         <Card className="bg-crd-dark border-crd-mediumGray p-6 max-w-md w-full mx-4">
-          <CardContent className="text-center">
-            <h2 className="text-2xl font-bold text-crd-white mb-4">Please sign in to access settings</h2>
+          <CardContent className="text-center space-y-4">
+            <h2 className="text-2xl font-bold text-crd-white mb-4">Authentication Required</h2>
+            <p className="text-crd-lightGray">Please sign in to access your account settings.</p>
+            <Button 
+              onClick={() => window.location.href = '/auth'}
+              className="bg-crd-green hover:bg-crd-green/90 text-black"
+            >
+              Go to Sign In
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -234,7 +242,7 @@ const Settings = () => {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-crd-green hover:bg-crd-green/90 text-white"
+                    className="w-full bg-crd-green hover:bg-crd-green/90 text-black"
                     disabled={isUpdating}
                   >
                     {isUpdating ? (
