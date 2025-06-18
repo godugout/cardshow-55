@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -6,7 +5,7 @@ import { AdvancedCardSearch } from './collection-manager/AdvancedCardSearch';
 import { CollectionBuilder } from './collection-manager/CollectionBuilder';
 import { TemplateManager } from './collection-manager/TemplateManager';
 import { GroupManager } from './collection-manager/GroupManager';
-import { Search, Users, Template, Settings } from 'lucide-react';
+import { Search, Users, Settings } from 'lucide-react';
 
 export const CollectionManager = () => {
   const [activeTab, setActiveTab] = useState('search');
@@ -28,7 +27,7 @@ export const CollectionManager = () => {
             Card Search
           </TabsTrigger>
           <TabsTrigger value="builder" className="flex items-center gap-2">
-            <Template className="w-4 h-4" />
+            <Settings className="w-4 h-4" />
             Collection Builder
           </TabsTrigger>
           <TabsTrigger value="templates" className="flex items-center gap-2">

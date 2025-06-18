@@ -16,11 +16,12 @@ interface Card {
   title: string;
   description?: string;
   image_url?: string;
-  rarity?: string;
+  rarity?: 'common' | 'uncommon' | 'rare' | 'ultra_rare' | 'legendary';
   tags?: string[];
   series?: string;
   created_at: string;
   creator_id: string;
+  visibility?: 'public' | 'private' | 'shared';
 }
 
 interface AdvancedCardSearchProps {
@@ -34,9 +35,9 @@ export const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
-    rarity: '',
+    rarity: '' as '' | 'common' | 'uncommon' | 'rare' | 'ultra_rare' | 'legendary',
     series: '',
-    visibility: '',
+    visibility: '' as '' | 'public' | 'private' | 'shared',
     dateFrom: '',
     dateTo: ''
   });
@@ -126,7 +127,7 @@ export const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
 
         <div>
           <Label className="text-crd-white">Rarity</Label>
-          <Select value={filters.rarity} onValueChange={(value) => setFilters(prev => ({ ...prev, rarity: value }))}>
+          <Select value={filters.rarity} onValueChange={(value: '' | 'common' | 'uncommon' | 'rare' | 'ultra_rare' | 'legendary') => setFilters(prev => ({ ...prev, rarity: value }))}>
             <SelectTrigger className="bg-crd-mediumGray border-crd-lightGray text-crd-white">
               <SelectValue placeholder="All rarities" />
             </SelectTrigger>
@@ -143,7 +144,7 @@ export const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
 
         <div>
           <Label className="text-crd-white">Visibility</Label>
-          <Select value={filters.visibility} onValueChange={(value) => setFilters(prev => ({ ...prev, visibility: value }))}>
+          <Select value={filters.visibility} onValueChange={(value: '' | 'public' | 'private' | 'shared') => setFilters(prev => ({ ...prev, visibility: value }))}>
             <SelectTrigger className="bg-crd-mediumGray border-crd-lightGray text-crd-white">
               <SelectValue placeholder="All visibility" />
             </SelectTrigger>
