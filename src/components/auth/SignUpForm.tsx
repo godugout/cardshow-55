@@ -1,31 +1,47 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system';
-import { useSignUpForm } from './hooks/useSignUpForm';
+import { useAuth } from '@/features/auth';
 import { AuthFormContainer } from './components/AuthFormContainer';
+import { EmailField } from './components/EmailField';
 import { PasswordFields } from './components/PasswordFields';
 import { UserInfoFields } from './components/UserInfoFields';
+import { useSignUpForm } from './hooks/useSignUpForm';
 
-export const SignUpForm: React.FC = () => {
-  const {
-    formData,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-    isPasswordMismatch,
-    isFormValid,
-  } = useSignUpForm();
+interface SignUpFormProps {
+  onModeChange?: (mode: 'signin' | 'signup' | 'forgot-password' | 'reset-password' | 'magic-link') => void;
+}
+
+export const SignUpForm: React.FC<SignUpFormProps> = ({ onModeChange }) => {
+  const { signUp, isLoading } = useAuth();
+  const navigate = useNavigate();
+
+  const { formData, handleInputChange, handleSubmit } = useSignUpForm({
+    onSubmit: async (data) => {
+      const { error } = await signUp(data.email, data.password, {
+        username: data.username,
+        full_name: data.fullName,
+      });
+      
+      if (!error) {
+        navigate('/');
+      }
+    },
+  });
 
   return (
     <AuthFormContainer>
       <form onSubmit={handleSubmit} className="space-y-4">
         <UserInfoFields
-          fullName={formData.fullName}
           username={formData.username}
-          email={formData.email}
-          onFullNameChange={(value) => handleInputChange('fullName', value)}
+          fullName={formData.fullName}
           onUsernameChange={(value) => handleInputChange('username', value)}
+          onFullNameChange={(value) => handleInputChange('fullName', value)}
+        />
+
+        <EmailField
+          email={formData.email}
           onEmailChange={(value) => handleInputChange('email', value)}
         />
 
@@ -38,10 +54,10 @@ export const SignUpForm: React.FC = () => {
 
         <CRDButton
           type="submit"
-          variant="primary"
+          variant="outline"
           size="lg"
           className="w-full"
-          disabled={isLoading || !isFormValid}
+          disabled={isLoading || !formData.email || !formData.password || !formData.username}
         >
           {isLoading ? 'Creating account...' : 'Create Account'}
         </CRDButton>
@@ -49,9 +65,13 @@ export const SignUpForm: React.FC = () => {
 
       <div className="text-center">
         <span className="text-crd-lightGray">Already have an account? </span>
-        <Link to="/auth/signin" className="text-crd-blue hover:text-crd-blue/80">
+        <button
+          type="button"
+          onClick={() => onModeChange?.('signin')}
+          className="text-crd-lightGray hover:text-crd-white underline"
+        >
           Sign in
-        </Link>
+        </button>
       </div>
     </AuthFormContainer>
   );

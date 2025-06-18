@@ -14,7 +14,11 @@ interface SignInFormData {
   password: string;
 }
 
-export const SignInForm: React.FC = () => {
+interface SignInFormProps {
+  onModeChange?: (mode: 'signin' | 'signup' | 'forgot-password' | 'reset-password' | 'magic-link') => void;
+}
+
+export const SignInForm: React.FC<SignInFormProps> = ({ onModeChange }) => {
   const { signIn, isLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -67,19 +71,21 @@ export const SignInForm: React.FC = () => {
         />
 
         <div className="flex justify-between items-center">
-          <Link 
-            to="/auth/magic-link" 
+          <button
+            type="button"
+            onClick={() => onModeChange?.('magic-link')}
             className="text-sm text-crd-lightGray hover:text-crd-white flex items-center"
           >
             <Sparkles className="h-3 w-3 mr-1" />
             Magic link
-          </Link>
-          <Link 
-            to="/auth/forgot-password" 
+          </button>
+          <button
+            type="button"
+            onClick={() => onModeChange?.('forgot-password')}
             className="text-sm text-crd-lightGray hover:text-crd-white"
           >
             Forgot password?
-          </Link>
+          </button>
         </div>
 
         <CRDButton
@@ -95,9 +101,13 @@ export const SignInForm: React.FC = () => {
 
       <div className="text-center">
         <span className="text-crd-lightGray">Don't have an account? </span>
-        <Link to="/auth/signup" className="text-crd-lightGray hover:text-crd-white underline">
+        <button
+          type="button"
+          onClick={() => onModeChange?.('signup')}
+          className="text-crd-lightGray hover:text-crd-white underline"
+        >
           Sign up
-        </Link>
+        </button>
       </div>
     </AuthFormContainer>
   );
