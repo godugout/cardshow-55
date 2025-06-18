@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sparkles, Tag, Crown, X, Plus } from 'lucide-react';
-import type { CardData, CardRarity, CreatorAttribution } from '@/hooks/useCardEditor';
+import type { CardData, CardRarity, CreatorAttribution } from '@/types/card';
 
 interface CardDetailsStepProps {
   cardData: CardData;

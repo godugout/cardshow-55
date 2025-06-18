@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import type { PublishingOptions, DesignTemplate } from '@/hooks/useCardEditor';
+import type { PublishingOptions } from '@/types/card';
+import type { DesignTemplate } from '@/hooks/useCardEditor';
 
 interface PublishingOptionsStepProps {
   publishingOptions: PublishingOptions;

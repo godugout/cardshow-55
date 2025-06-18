@@ -1,10 +1,11 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { CardRepository } from '@/repositories/cardRepository';
 import { localCardStorage } from '@/lib/localCardStorage';
 import { toast } from 'sonner';
-import type { CardData, CardRarity, CardVisibility } from '@/types/card';
+import type { CardData, CardRarity, CardVisibility, CreatorAttribution, PublishingOptions } from '@/types/card';
 
 export interface DesignTemplate {
   id: string;
@@ -64,6 +65,29 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
     });
     setIsDirty(true);
   }, []);
+
+  // Add missing tag-related methods
+  const addTag = useCallback((tag: string) => {
+    if (tag.trim() && !cardData.tags.includes(tag.trim()) && cardData.tags.length < 10) {
+      updateCardField('tags', [...cardData.tags, tag.trim()]);
+      console.log('🏷️ Added tag:', tag);
+    }
+  }, [cardData.tags, updateCardField]);
+
+  const removeTag = useCallback((tagToRemove: string) => {
+    updateCardField('tags', cardData.tags.filter(tag => tag !== tagToRemove));
+    console.log('🗑️ Removed tag:', tagToRemove);
+  }, [cardData.tags, updateCardField]);
+
+  const hasMaxTags = cardData.tags.length >= 10;
+  const tags = cardData.tags;
+
+  // Add missing updateDesignMetadata method
+  const updateDesignMetadata = useCallback((updates: Record<string, any>) => {
+    const newDesignMetadata = { ...cardData.design_metadata, ...updates };
+    updateCardField('design_metadata', newDesignMetadata);
+    console.log('🎨 Updated design metadata:', updates);
+  }, [cardData.design_metadata, updateCardField]);
 
   const saveCard = useCallback(async (): Promise<boolean> => {
     if (!user?.id) {
@@ -214,6 +238,11 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
   return {
     cardData,
     updateCardField,
+    updateDesignMetadata,
+    addTag,
+    removeTag,
+    tags,
+    hasMaxTags,
     saveCard,
     publishCard,
     isDirty,
@@ -222,4 +251,5 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
   };
 };
 
-export type { CardData, CardRarity, CardVisibility };
+// Export types for other components to use
+export type { CardData, CardRarity, CardVisibility, CreatorAttribution, PublishingOptions };

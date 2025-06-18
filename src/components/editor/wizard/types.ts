@@ -1,6 +1,7 @@
 
 import type { CardAnalysisResult } from '@/services/cardAnalyzer';
-import type { CardData, DesignTemplate, PublishingOptions, CreatorAttribution } from '@/hooks/useCardEditor';
+import type { CardData, PublishingOptions, CreatorAttribution } from '@/types/card';
+import type { DesignTemplate } from '@/hooks/useCardEditor';
 
 export interface WizardStep {
   number: number;
