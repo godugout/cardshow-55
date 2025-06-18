@@ -1,4 +1,5 @@
 
+import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { OverlayProvider } from '@/components/overlay/OverlayProvider';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -11,7 +12,6 @@ import Collections from '@/pages/Collections';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { UnifiedCardCreator } from '@/components/creator/UnifiedCardCreator';
 import { BackofficeLayout } from '@/components/backoffice/BackofficeLayout';
-import { useState } from 'react';
 
 function App() {
   const [showBackoffice, setShowBackoffice] = useState(false);

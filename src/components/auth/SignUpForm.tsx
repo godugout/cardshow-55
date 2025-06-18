@@ -36,12 +36,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onModeChange }) => {
         <UserInfoFields
           username={formData.username}
           fullName={formData.fullName}
+          email={formData.email}
           onUsernameChange={(value) => handleInputChange('username', value)}
           onFullNameChange={(value) => handleInputChange('fullName', value)}
-        />
-
-        <EmailField
-          email={formData.email}
           onEmailChange={(value) => handleInputChange('email', value)}
         />
 
