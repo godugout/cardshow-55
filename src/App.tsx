@@ -6,7 +6,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import Index from '@/pages/Index';
 import Gallery from '@/pages/Gallery';
 import Profile from '@/pages/Profile';
-import AccountSettings from '@/pages/AccountSettings';
+import Settings from '@/pages/Settings';
 import Studio from '@/pages/Studio';
 import Collections from '@/pages/Collections';
 import { AuthPage } from '@/components/auth/AuthPage';
@@ -43,7 +43,7 @@ function App() {
             <Route path="collections" element={<Collections />} />
             <Route path="auth" element={<AuthPage />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<AccountSettings />} />
+            <Route path="settings" element={<Settings />} />
             
             {/* Hidden backoffice route */}
             <Route path="admin/backoffice" element={<div />} />

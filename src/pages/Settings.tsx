@@ -12,9 +12,13 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { User, Mail, Globe, MapPin, Save, Eye, EyeOff, Bell } from 'lucide-react';
+import { User, Mail, Globe, MapPin, Save, Eye, EyeOff, Bell, Shield, Settings as SettingsIcon } from 'lucide-react';
 import { useToastPreferences } from '@/hooks/useToastPreferences';
+import { BackofficeLayout } from '@/components/backoffice/BackofficeLayout';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 interface UserPreferences {
   darkMode?: boolean;
@@ -29,6 +33,22 @@ const Settings = () => {
   const { user, signOut } = useAuth();
   const { profile, updateProfile, isLoading, isUpdating } = useProfile(user?.id);
   const { preferences: toastPrefs, updateToastPreferences } = useToastPreferences();
+  const [showBackoffice, setShowBackoffice] = useState(false);
+  
+  // Check if user is admin
+  const { data: isAdmin, isLoading: isCheckingAdmin } = useQuery({
+    queryKey: ['is-admin', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return false;
+      const { data, error } = await supabase.rpc('is_admin');
+      if (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+      }
+      return data;
+    },
+    enabled: !!user?.id,
+  });
   
   const [formData, setFormData] = useState({
     username: profile?.username || '',
@@ -111,7 +131,11 @@ const Settings = () => {
     }
   };
 
-  if (isLoading) {
+  if (showBackoffice && isAdmin) {
+    return <BackofficeLayout />;
+  }
+
+  if (isLoading || isCheckingAdmin) {
     return <LoadingState message="Loading settings..." fullPage size="lg" />;
   }
 
@@ -138,11 +162,31 @@ const Settings = () => {
     <div className="min-h-screen bg-crd-darkest">
       <div className="container mx-auto p-6 max-w-4xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-crd-white mb-2">Settings</h1>
-          <p className="text-crd-lightGray">Manage your account and preferences</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-crd-white mb-2">Settings</h1>
+              <p className="text-crd-lightGray">Manage your account and preferences</p>
+            </div>
+            {isAdmin && (
+              <div className="flex items-center space-x-2">
+                <Badge className="bg-crd-green text-black">
+                  <Shield className="w-3 h-3 mr-1" />
+                  Admin
+                </Badge>
+                <Button
+                  onClick={() => setShowBackoffice(true)}
+                  className="bg-crd-green hover:bg-crd-green/90 text-black"
+                >
+                  <SettingsIcon className="w-4 h-4 mr-2" />
+                  Admin Panel
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
           {/* Profile Settings */}
           <div className="lg:col-span-2">
             <Card className="bg-crd-dark border-crd-mediumGray">
