@@ -1,182 +1,240 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useCards } from '@/hooks/useCards';
+import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { AnalyticsDashboard } from './components/AnalyticsDashboard';
+import { CardManagement } from './components/CardManagement';
+import { SystemHealth } from './components/SystemHealth';
 import { 
+  BarChart3, 
   Settings, 
-  Upload, 
-  Users, 
-  Image, 
-  FileText, 
-  Palette,
-  Database,
-  ArrowLeft
+  CreditCard, 
+  Activity,
+  ArrowLeft,
+  Shield,
+  Database
 } from 'lucide-react';
-import { BulkCardUploader } from '@/components/catalog/BulkCardUploader';
 
-type BackofficeSection = 'overview' | 'bulk-upload' | 'media' | 'users' | 'collections' | 'content' | 'branding';
+type BackofficeSection = 'overview' | 'analytics' | 'cards' | 'system' | 'settings';
 
-interface BackofficeLayoutProps {
-  onBack: () => void;
-}
-
-export const BackofficeLayout = ({ onBack }: BackofficeLayoutProps) => {
+export const BackofficeLayout = () => {
   const [activeSection, setActiveSection] = useState<BackofficeSection>('overview');
+  const { cards, userCards, loading, dataSource } = useCards();
+  const { user } = useAuth();
 
-  const sections = [
-    { id: 'overview' as const, label: 'Overview', icon: Database },
-    { id: 'bulk-upload' as const, label: 'Bulk Upload', icon: Upload },
-    { id: 'media' as const, label: 'Media Manager', icon: Image },
-    { id: 'users' as const, label: 'Users', icon: Users },
-    { id: 'collections' as const, label: 'Collections', icon: FileText },
-    { id: 'branding' as const, label: 'Branding', icon: Palette },
+  const navigationItems = [
+    { id: 'overview', label: 'Overview', icon: Activity },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'cards', label: 'Card Management', icon: CreditCard },
+    { id: 'system', label: 'System Health', icon: Database },
+    { id: 'settings', label: 'Settings', icon: Settings }
   ];
 
   const renderContent = () => {
     switch (activeSection) {
-      case 'bulk-upload':
+      case 'overview':
         return (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Bulk Card Upload</h2>
-              <p className="text-crd-lightGray">Upload and process multiple cards at once</p>
-            </div>
-            <BulkCardUploader />
-          </div>
-        );
-      case 'media':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Media Manager</h2>
-              <p className="text-crd-lightGray">Manage uploaded images and media assets</p>
-            </div>
-            <div className="bg-crd-darkGray rounded-lg p-8 border border-crd-mediumGray/30 text-center">
-              <Image className="w-16 h-16 mx-auto mb-4 text-crd-lightGray" />
-              <p className="text-crd-lightGray">Media management coming soon</p>
-            </div>
-          </div>
-        );
-      case 'users':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">User Management</h2>
-              <p className="text-crd-lightGray">Manage user accounts and permissions</p>
-            </div>
-            <div className="bg-crd-darkGray rounded-lg p-8 border border-crd-mediumGray/30 text-center">
-              <Users className="w-16 h-16 mx-auto mb-4 text-crd-lightGray" />
-              <p className="text-crd-lightGray">User management coming soon</p>
-            </div>
-          </div>
-        );
-      case 'collections':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Collections Manager</h2>
-              <p className="text-crd-lightGray">Organize and manage card collections</p>
-            </div>
-            <div className="bg-crd-darkGray rounded-lg p-8 border border-crd-mediumGray/30 text-center">
-              <FileText className="w-16 h-16 mx-auto mb-4 text-crd-lightGray" />
-              <p className="text-crd-lightGray">Collections management coming soon</p>
-            </div>
-          </div>
-        );
-      case 'branding':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Brand Customization</h2>
-              <p className="text-crd-lightGray">Customize branding and visual identity</p>
-            </div>
-            <div className="bg-crd-darkGray rounded-lg p-8 border border-crd-mediumGray/30 text-center">
-              <Palette className="w-16 h-16 mx-auto mb-4 text-crd-lightGray" />
-              <p className="text-crd-lightGray">Brand customization coming soon</p>
-            </div>
-          </div>
-        );
-      default:
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">CRD Backoffice</h2>
-              <p className="text-crd-lightGray">Manage your cards, media, users, and branding</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sections.slice(1).map((section) => {
-                const Icon = section.icon;
-                return (
-                  <button
-                    key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className="bg-crd-darkGray rounded-lg p-6 border border-crd-mediumGray/30 hover:border-crd-green/50 transition-colors text-left group"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-crd-darkGray border-crd-mediumGray">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-crd-lightGray">Total Cards</CardTitle>
+                  <CreditCard className="h-4 w-4 text-crd-green" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{cards.length}</div>
+                  <p className="text-xs text-crd-lightGray">
+                    {cards.filter(c => c.is_public).length} public, {cards.filter(c => !c.is_public).length} private
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-crd-darkGray border-crd-mediumGray">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-crd-lightGray">Your Cards</CardTitle>
+                  <Shield className="h-4 w-4 text-crd-green" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{userCards.length}</div>
+                  <p className="text-xs text-crd-lightGray">Cards you created</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-crd-darkGray border-crd-mediumGray">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-crd-lightGray">Data Source</CardTitle>
+                  <Database className="h-4 w-4 text-crd-green" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white capitalize">{dataSource}</div>
+                  <Badge 
+                    className={`mt-1 ${
+                      dataSource === 'database' ? 'bg-green-500' : 
+                      dataSource === 'mixed' ? 'bg-yellow-500' : 'bg-red-500'
+                    } text-white`}
                   >
-                    <Icon className="w-8 h-8 text-crd-green mb-3 group-hover:scale-110 transition-transform" />
-                    <h3 className="text-white font-semibold mb-2">{section.label}</h3>
-                    <p className="text-crd-lightGray text-sm">
-                      {section.id === 'bulk-upload' && 'Upload multiple cards at once'}
-                      {section.id === 'media' && 'Manage images and assets'}
-                      {section.id === 'users' && 'User accounts and permissions'}
-                      {section.id === 'collections' && 'Organize card collections'}
-                      {section.id === 'branding' && 'Customize visual identity'}
-                    </p>
-                  </button>
-                );
-              })}
+                    {dataSource === 'database' ? 'Synced' : 
+                     dataSource === 'mixed' ? 'Partial Sync' : 'Local Only'}
+                  </Badge>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-crd-darkGray border-crd-mediumGray">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-crd-lightGray">System Status</CardTitle>
+                  <Activity className="h-4 w-4 text-crd-green" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-green-400">Healthy</div>
+                  <p className="text-xs text-crd-lightGray">All systems operational</p>
+                </CardContent>
+              </Card>
             </div>
+
+            <Card className="bg-crd-darkGray border-crd-mediumGray">
+              <CardHeader>
+                <CardTitle className="text-white">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button
+                    onClick={() => setActiveSection('analytics')}
+                    className="bg-crd-green hover:bg-crd-green/90 text-black"
+                  >
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    View Analytics
+                  </Button>
+                  <Button
+                    onClick={() => setActiveSection('cards')}
+                    variant="outline"
+                    className="border-crd-mediumGray text-crd-lightGray hover:text-white"
+                  >
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Manage Cards
+                  </Button>
+                  <Button
+                    onClick={() => setActiveSection('system')}
+                    variant="outline"
+                    className="border-crd-mediumGray text-crd-lightGray hover:text-white"
+                  >
+                    <Database className="h-4 w-4 mr-2" />
+                    System Health
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         );
+
+      case 'analytics':
+        return <AnalyticsDashboard />;
+
+      case 'cards':
+        return <CardManagement />;
+
+      case 'system':
+        return <SystemHealth />;
+
+      case 'settings':
+        return (
+          <Card className="bg-crd-darkGray border-crd-mediumGray">
+            <CardHeader>
+              <CardTitle className="text-white">Settings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-white font-medium">User Account</h3>
+                    <p className="text-sm text-crd-lightGray">
+                      Logged in as: {user?.email}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-sm text-crd-lightGray">
+                  Additional settings will be available in future updates.
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+      default:
+        return null;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
+        <div className="text-crd-lightGray">Loading backoffice...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-crd-darkest">
       {/* Header */}
-      <div className="bg-crd-darkest border-b border-crd-mediumGray/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBack}
-              className="text-crd-lightGray hover:text-white hover:bg-crd-mediumGray"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <div className="flex items-center space-x-2">
-              <Settings className="w-5 h-5 text-crd-green" />
-              <h1 className="text-xl font-semibold text-white">CRD Backoffice</h1>
+      <div className="bg-crd-darkGray border-b border-crd-mediumGray">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.history.back()}
+                className="text-crd-lightGray hover:text-white"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+              <h1 className="text-xl font-semibold text-white">Backoffice</h1>
             </div>
-          </div>
-          
-          {/* Navigation Tabs */}
-          <div className="flex space-x-1 bg-crd-mediumGray/20 rounded-lg p-1">
-            {sections.map((section) => {
-              const Icon = section.icon;
-              return (
-                <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeSection === section.id
-                      ? 'bg-crd-green text-black'
-                      : 'text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/50'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="hidden md:inline">{section.label}</span>
-                </button>
-              );
-            })}
+            <Badge className="bg-crd-green text-black">
+              Admin Panel
+            </Badge>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {renderContent()}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar Navigation */}
+          <div className="lg:w-64">
+            <Card className="bg-crd-darkGray border-crd-mediumGray">
+              <CardContent className="p-4">
+                <nav className="space-y-2">
+                  {navigationItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Button
+                        key={item.id}
+                        variant={activeSection === item.id ? 'default' : 'ghost'}
+                        className={`w-full justify-start ${
+                          activeSection === item.id 
+                            ? 'bg-crd-green text-black' 
+                            : 'text-crd-lightGray hover:text-white hover:bg-crd-mediumGray'
+                        }`}
+                        onClick={() => setActiveSection(item.id as BackofficeSection)}
+                      >
+                        <Icon className="h-4 w-4 mr-3" />
+                        {item.label}
+                      </Button>
+                    );
+                  })}
+                </nav>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1">
+            {renderContent()}
+          </div>
+        </div>
       </div>
     </div>
   );

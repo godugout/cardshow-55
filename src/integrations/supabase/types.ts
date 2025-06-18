@@ -61,6 +61,8 @@ export type Database = {
       }
       cards: {
         Row: {
+          collection_id: string | null
+          crd_catalog_inclusion: boolean | null
           created_at: string | null
           creator_id: string
           description: string | null
@@ -71,10 +73,12 @@ export type Database = {
           is_public: boolean | null
           marketplace_listing: boolean | null
           price: number | null
+          print_available: boolean | null
           print_metadata: Json | null
           rarity: Database["public"]["Enums"]["card_rarity"] | null
           series: string | null
           tags: string[] | null
+          team_id: string | null
           template_id: string | null
           thumbnail_url: string | null
           title: string
@@ -84,6 +88,8 @@ export type Database = {
           visibility: Database["public"]["Enums"]["visibility_type"] | null
         }
         Insert: {
+          collection_id?: string | null
+          crd_catalog_inclusion?: boolean | null
           created_at?: string | null
           creator_id: string
           description?: string | null
@@ -94,10 +100,12 @@ export type Database = {
           is_public?: boolean | null
           marketplace_listing?: boolean | null
           price?: number | null
+          print_available?: boolean | null
           print_metadata?: Json | null
           rarity?: Database["public"]["Enums"]["card_rarity"] | null
           series?: string | null
           tags?: string[] | null
+          team_id?: string | null
           template_id?: string | null
           thumbnail_url?: string | null
           title: string
@@ -107,6 +115,8 @@ export type Database = {
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
         }
         Update: {
+          collection_id?: string | null
+          crd_catalog_inclusion?: boolean | null
           created_at?: string | null
           creator_id?: string
           description?: string | null
@@ -117,10 +127,12 @@ export type Database = {
           is_public?: boolean | null
           marketplace_listing?: boolean | null
           price?: number | null
+          print_available?: boolean | null
           print_metadata?: Json | null
           rarity?: Database["public"]["Enums"]["card_rarity"] | null
           series?: string | null
           tags?: string[] | null
+          team_id?: string | null
           template_id?: string | null
           thumbnail_url?: string | null
           title?: string
@@ -130,6 +142,13 @@ export type Database = {
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
         }
         Relationships: [
+          {
+            foreignKeyName: "cards_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "cards_creator_id_fkey"
             columns: ["creator_id"]
