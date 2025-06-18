@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useCardEditor, CardData } from '@/hooks/useCardEditor';
@@ -44,12 +43,14 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     handleAiAnalysis: (analysis: CardAnalysis) => {
       updateCardField('title', analysis.title);
       updateCardField('description', analysis.description);
-      // Map epic to legendary for database compatibility
-      const mappedRarity = analysis.rarity === 'epic' ? 'legendary' : analysis.rarity;
-      updateCardField('rarity', mappedRarity as any);
+      updateCardField('rarity', analysis.rarity);
       updateCardField('tags', analysis.tags);
-      updateCardField('type', analysis.type);
-      updateCardField('series', analysis.series);
+      if (analysis.type) {
+        updateCardField('type', analysis.type);
+      }
+      if (analysis.series) {
+        updateCardField('series', analysis.series);
+      }
       
       setWizardState(prev => ({ ...prev, aiAnalysisComplete: true }));
       

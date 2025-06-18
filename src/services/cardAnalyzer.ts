@@ -4,6 +4,8 @@ export interface CardAnalysis {
   description: string;
   tags: string[];
   rarity: 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary';
+  type?: string;
+  series?: string;
   suggestedTemplate?: string;
   confidence: number;
 }
@@ -24,6 +26,8 @@ export const analyzeCardImage = async (imageDataUrl: string): Promise<CardAnalys
       description: 'Elite athlete captured in action',
       tags: ['sports', 'action', 'professional'],
       rarity: 'rare' as const,
+      type: 'athlete',
+      series: 'champions',
       confidence: 0.85
     },
     {
@@ -31,6 +35,8 @@ export const analyzeCardImage = async (imageDataUrl: string): Promise<CardAnalys
       description: 'Emerging talent with incredible potential',
       tags: ['sports', 'rookie', 'potential'],
       rarity: 'uncommon' as const,
+      type: 'rookie',
+      series: 'rising-stars',
       confidence: 0.78
     },
     {
@@ -38,6 +44,8 @@ export const analyzeCardImage = async (imageDataUrl: string): Promise<CardAnalys
       description: 'Iconic player with legendary status',
       tags: ['sports', 'legend', 'hall-of-fame'],
       rarity: 'legendary' as const,
+      type: 'legend',
+      series: 'hall-of-fame',
       confidence: 0.92
     },
     {
@@ -45,6 +53,8 @@ export const analyzeCardImage = async (imageDataUrl: string): Promise<CardAnalys
       description: 'Natural leader and team motivator',
       tags: ['sports', 'leadership', 'captain'],
       rarity: 'rare' as const,
+      type: 'captain',
+      series: 'leaders',
       confidence: 0.81
     }
   ];
