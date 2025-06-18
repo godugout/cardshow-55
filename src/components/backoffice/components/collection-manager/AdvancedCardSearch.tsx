@@ -16,7 +16,7 @@ interface Card {
   title: string;
   description?: string;
   image_url?: string;
-  rarity?: 'common' | 'uncommon' | 'rare' | 'ultra_rare' | 'legendary';
+  rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   tags?: string[];
   series?: string;
   created_at: string;
@@ -35,7 +35,7 @@ export const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
-    rarity: '' as '' | 'common' | 'uncommon' | 'rare' | 'ultra_rare' | 'legendary',
+    rarity: '' as '' | 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary',
     series: '',
     visibility: '' as '' | 'public' | 'private' | 'shared',
     dateFrom: '',
@@ -127,7 +127,7 @@ export const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
 
         <div>
           <Label className="text-crd-white">Rarity</Label>
-          <Select value={filters.rarity} onValueChange={(value: '' | 'common' | 'uncommon' | 'rare' | 'ultra_rare' | 'legendary') => setFilters(prev => ({ ...prev, rarity: value }))}>
+          <Select value={filters.rarity} onValueChange={(value: '' | 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary') => setFilters(prev => ({ ...prev, rarity: value }))}>
             <SelectTrigger className="bg-crd-mediumGray border-crd-lightGray text-crd-white">
               <SelectValue placeholder="All rarities" />
             </SelectTrigger>
@@ -136,7 +136,7 @@ export const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
               <SelectItem value="common">Common</SelectItem>
               <SelectItem value="uncommon">Uncommon</SelectItem>
               <SelectItem value="rare">Rare</SelectItem>
-              <SelectItem value="ultra_rare">Ultra Rare</SelectItem>
+              <SelectItem value="epic">Epic</SelectItem>
               <SelectItem value="legendary">Legendary</SelectItem>
             </SelectContent>
           </Select>
