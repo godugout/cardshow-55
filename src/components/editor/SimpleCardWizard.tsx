@@ -61,7 +61,7 @@ export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardP
             wizardState={wizardState}
             cardData={cardData}
             templates={templates}
-            handlers={{...handlers, onBulkUpload}}
+            handlers={handlers}
           />
         </div>
 
