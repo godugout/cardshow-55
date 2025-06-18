@@ -44,12 +44,12 @@ export const CardSearchFilters: React.FC<CardSearchFiltersProps> = ({
 
         <div>
           <Label className="text-crd-white">Rarity</Label>
-          <Select value={filters.rarity} onValueChange={(value: '' | 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary') => setFilters(prev => ({ ...prev, rarity: value }))}>
+          <Select value={filters.rarity || 'all'} onValueChange={(value: string) => setFilters(prev => ({ ...prev, rarity: value === 'all' ? '' : value as 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' }))}>
             <SelectTrigger className="bg-crd-mediumGray border-crd-lightGray text-crd-white">
               <SelectValue placeholder="All rarities" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All rarities</SelectItem>
+              <SelectItem value="all">All rarities</SelectItem>
               <SelectItem value="common">Common</SelectItem>
               <SelectItem value="uncommon">Uncommon</SelectItem>
               <SelectItem value="rare">Rare</SelectItem>
@@ -61,12 +61,12 @@ export const CardSearchFilters: React.FC<CardSearchFiltersProps> = ({
 
         <div>
           <Label className="text-crd-white">Visibility</Label>
-          <Select value={filters.visibility} onValueChange={(value: '' | 'public' | 'private' | 'shared') => setFilters(prev => ({ ...prev, visibility: value }))}>
+          <Select value={filters.visibility || 'all'} onValueChange={(value: string) => setFilters(prev => ({ ...prev, visibility: value === 'all' ? '' : value as 'public' | 'private' | 'shared' }))}>
             <SelectTrigger className="bg-crd-mediumGray border-crd-lightGray text-crd-white">
               <SelectValue placeholder="All visibility" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All visibility</SelectItem>
+              <SelectItem value="all">All visibility</SelectItem>
               <SelectItem value="public">Public</SelectItem>
               <SelectItem value="private">Private</SelectItem>
               <SelectItem value="shared">Shared</SelectItem>
