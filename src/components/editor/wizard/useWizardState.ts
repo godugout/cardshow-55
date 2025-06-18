@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useCardEditor, CardData } from '@/hooks/useCardEditor';
 import { DEFAULT_TEMPLATES } from './wizardConfig';
 import type { WizardState, WizardHandlers } from './types';
-import type { CardAnalysisResult } from '@/services/cardAnalyzer';
+import type { CardAnalysis } from '@/services/cardAnalyzer';
 
 export const useWizardState = (onComplete: (cardData: CardData) => void) => {
   const [wizardState, setWizardState] = useState<WizardState>({
@@ -41,7 +41,7 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       updateCardField('image_url', photo);
     },
 
-    handleAiAnalysis: (analysis: CardAnalysisResult) => {
+    handleAiAnalysis: (analysis: CardAnalysis) => {
       updateCardField('title', analysis.title);
       updateCardField('description', analysis.description);
       // Map epic to legendary for database compatibility
