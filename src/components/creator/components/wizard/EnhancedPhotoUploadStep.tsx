@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Sparkles, Camera, Crop } from 'lucide-react';
+import { Sparkles, Camera, Crop, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { FloatingCropOverlay } from '@/components/bulk-upload/floating-editor/FloatingCropOverlay';
@@ -23,7 +23,7 @@ export const EnhancedPhotoUploadStep = ({
   const [showCropEditor, setShowCropEditor] = useState(false);
   const [cropFile, setCropFile] = useState<any>(null);
   
-  const { isAnalyzing, imageDetails, handleFileUpload } = usePhotoUpload(
+  const { isAnalyzing, imageDetails, analysisStatus, handleFileUpload } = usePhotoUpload(
     onPhotoSelect,
     onAnalysisComplete
   );
@@ -41,7 +41,6 @@ export const EnhancedPhotoUploadStep = ({
 
   const handleCropClick = () => {
     if (selectedPhoto) {
-      // Create a mock file for the crop editor
       const mockFile = {
         id: 'crop-edit',
         file: new File([], 'image.jpg'),
@@ -78,6 +77,32 @@ export const EnhancedPhotoUploadStep = ({
     );
   }
 
+  const getAnalysisStatusIcon = () => {
+    switch (analysisStatus) {
+      case 'analyzing':
+        return <Loader2 className="w-5 h-5 animate-spin" />;
+      case 'complete':
+        return <CheckCircle className="w-5 h-5 text-crd-green" />;
+      case 'error':
+        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+      default:
+        return <Sparkles className="w-5 h-5" />;
+    }
+  };
+
+  const getAnalysisStatusMessage = () => {
+    switch (analysisStatus) {
+      case 'analyzing':
+        return 'AI is analyzing your image and generating card details...';
+      case 'complete':
+        return 'Analysis complete! Your card details have been pre-filled.';
+      case 'error':
+        return 'Analysis encountered issues, but smart defaults are ready.';
+      default:
+        return 'Upload a photo to start AI analysis';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Mode-specific header */}
@@ -87,24 +112,37 @@ export const EnhancedPhotoUploadStep = ({
         </h2>
         <p className="text-crd-lightGray">
           {mode === 'quick' 
-            ? 'Upload a photo and our AI will handle the rest automatically'
-            : 'Upload a photo with advanced cropping and editing options'
+            ? 'Upload a photo and our AI will analyze it to create your card'
+            : 'Upload a photo with advanced AI analysis and editing options'
           }
         </p>
       </div>
 
       {/* AI Analysis Status */}
-      {isAnalyzing && (
-        <div className="text-center p-4 bg-crd-green/10 rounded-lg border border-crd-green/20">
-          <div className="flex items-center justify-center gap-2 text-crd-green mb-2">
-            <Sparkles className="w-5 h-5 animate-pulse" />
-            <span className="font-medium">AI is analyzing your image...</span>
+      <div className={`p-4 rounded-lg border transition-all ${
+        analysisStatus === 'complete' 
+          ? 'bg-crd-green/10 border-crd-green/20' 
+          : analysisStatus === 'analyzing'
+          ? 'bg-blue-500/10 border-blue-500/20'
+          : analysisStatus === 'error'
+          ? 'bg-yellow-500/10 border-yellow-500/20'
+          : 'bg-crd-mediumGray/10 border-crd-mediumGray/20'
+      }`}>
+        <div className="flex items-center gap-3">
+          {getAnalysisStatusIcon()}
+          <div>
+            <p className="text-white font-medium">
+              {analysisStatus === 'analyzing' ? 'AI Analysis in Progress' : 
+               analysisStatus === 'complete' ? 'AI Analysis Complete' :
+               analysisStatus === 'error' ? 'Analysis Complete (with fallbacks)' :
+               'Ready for AI Analysis'}
+            </p>
+            <p className="text-sm text-crd-lightGray">
+              {getAnalysisStatusMessage()}
+            </p>
           </div>
-          <p className="text-sm text-crd-lightGray">
-            Detecting subjects, analyzing composition, and suggesting templates
-          </p>
         </div>
-      )}
+      </div>
 
       {/* Photo Preview or Upload Area */}
       {selectedPhoto ? (
@@ -116,8 +154,16 @@ export const EnhancedPhotoUploadStep = ({
               className="w-full max-h-96 object-contain rounded-lg"
             />
             {imageDetails && (
-              <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
-                {imageDetails.width} × {imageDetails.height}
+              <div className="absolute bottom-2 right-2 bg-black/80 text-white px-3 py-1 rounded text-sm">
+                {imageDetails.width} × {imageDetails.height} • {imageDetails.fileSize}
+              </div>
+            )}
+            {analysisStatus === 'analyzing' && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
+                <div className="text-center text-white">
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
+                  <p className="text-sm">Analyzing image...</p>
+                </div>
               </div>
             )}
           </div>
@@ -128,6 +174,7 @@ export const EnhancedPhotoUploadStep = ({
               variant="outline"
               onClick={() => document.getElementById('photo-input')?.click()}
               className="text-crd-lightGray border-crd-lightGray hover:bg-crd-lightGray hover:text-black"
+              disabled={isAnalyzing}
             >
               <Camera className="w-4 h-4 mr-2" />
               Choose Different Photo
@@ -138,6 +185,7 @@ export const EnhancedPhotoUploadStep = ({
                 variant="outline"
                 onClick={handleCropClick}
                 className="text-crd-blue border-crd-blue hover:bg-crd-blue hover:text-white"
+                disabled={isAnalyzing}
               >
                 <Crop className="w-4 h-4 mr-2" />
                 Advanced Crop
@@ -166,22 +214,20 @@ export const EnhancedPhotoUploadStep = ({
             Choose Photo
           </Button>
           <p className="text-crd-lightGray text-sm mt-3">
-            Supports JPG, PNG, WebP • Max 10MB
+            Supports JPG, PNG, WebP • Max 10MB • AI analysis included
           </p>
         </div>
       )}
 
       {/* Ready State */}
-      {selectedPhoto && !isAnalyzing && (
+      {selectedPhoto && analysisStatus === 'complete' && (
         <div className="text-center p-4 bg-crd-green/10 rounded-lg border border-crd-green/20">
-          <div className="text-crd-green font-medium mb-1">
-            ✅ Photo ready for card creation
+          <div className="text-crd-green font-medium mb-1 flex items-center justify-center gap-2">
+            <CheckCircle className="w-5 h-5" />
+            Photo ready & analyzed
           </div>
           <p className="text-sm text-crd-lightGray">
-            {mode === 'quick' 
-              ? 'Click Next to proceed with AI-suggested templates'
-              : 'Click Next to choose your template or continue with advanced options'
-            }
+            Your card details have been pre-filled with AI-generated content. Click Next to review and customize them.
           </p>
         </div>
       )}

@@ -1,14 +1,14 @@
 
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, CheckCircle, AlertCircle } from 'lucide-react';
 import { analyzeCardImage } from '@/services/cardAnalyzer';
 
 interface ImageDetails {
   dimensions: { width: number; height: number };
   aspectRatio: number;
   fileSize: string;
-  width: number; // Add these for backward compatibility
+  width: number;
   height: number;
 }
 
@@ -18,6 +18,7 @@ export const usePhotoUpload = (
 ) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [imageDetails, setImageDetails] = useState<ImageDetails | null>(null);
+  const [analysisStatus, setAnalysisStatus] = useState<'idle' | 'analyzing' | 'complete' | 'error'>('idle');
 
   const processImageForCard = useCallback((file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -30,9 +31,9 @@ export const usePhotoUpload = (
         const targetAspectRatio = 2.5 / 3.5;
         const sourceAspectRatio = img.width / img.height;
         
-        // Set canvas to optimal card dimensions (300x420 pixels for good quality)
-        canvas.width = 300;
-        canvas.height = 420;
+        // Set canvas to optimal card dimensions (400x560 pixels for better quality)
+        canvas.width = 400;
+        canvas.height = 560;
         
         // Clear canvas with white background
         ctx!.fillStyle = '#ffffff';
@@ -57,10 +58,10 @@ export const usePhotoUpload = (
         // Draw the image centered and fitted
         ctx!.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
         
-        // Convert to data URL
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        // Convert to data URL with high quality
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
         
-        // Store image details
+        // Store enhanced image details
         setImageDetails({
           dimensions: { width: img.width, height: img.height },
           aspectRatio: sourceAspectRatio,
@@ -81,14 +82,35 @@ export const usePhotoUpload = (
     if (!onAnalysisComplete) return;
     
     setIsAnalyzing(true);
+    setAnalysisStatus('analyzing');
+    
     try {
-      toast.info('Analyzing image with AI...', { icon: <Sparkles className="w-4 h-4" /> });
+      // Show enhanced progress feedback
+      toast.info('AI Analysis Starting', { 
+        icon: <Sparkles className="w-4 h-4 animate-pulse" />,
+        description: 'Analyzing image content, style, and generating metadata...'
+      });
+      
       const analysis = await analyzeCardImage(imageDataUrl);
+      
+      // Update analysis status
+      setAnalysisStatus('complete');
       onAnalysisComplete(analysis);
-      toast.success('Image analyzed! Fields have been pre-filled.');
+      
+      // Show detailed success feedback
+      toast.success('Analysis Complete!', {
+        icon: <CheckCircle className="w-4 h-4" />,
+        description: `Generated title: "${analysis.title}" • ${analysis.tags.length} tags • ${analysis.rarity} rarity`
+      });
+      
     } catch (error) {
       console.error('Analysis failed:', error);
-      toast.error('Analysis failed, but you can still fill details manually.');
+      setAnalysisStatus('error');
+      
+      toast.error('Analysis had issues', {
+        icon: <AlertCircle className="w-4 h-4" />,
+        description: 'Using smart defaults. You can still edit all details manually.'
+      });
     } finally {
       setIsAnalyzing(false);
     }
@@ -96,22 +118,49 @@ export const usePhotoUpload = (
 
   const handleFileUpload = useCallback(async (file: File) => {
     try {
-      toast.info('Processing image for card format...');
+      // Validate file
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
+      
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('Image too large', {
+          description: 'Please use an image smaller than 10MB'
+        });
+        return;
+      }
+      
+      // Show processing feedback
+      const processingToast = toast.loading('Processing image...', {
+        description: 'Optimizing for card format'
+      });
+      
       const processedImageUrl = await processImageForCard(file);
       onPhotoSelect(processedImageUrl);
-      toast.success('Photo processed and ready for card!');
       
-      // Trigger AI analysis
-      await handlePhotoAnalysis(processedImageUrl);
+      toast.dismiss(processingToast);
+      toast.success('Image processed successfully!', {
+        description: 'Ready for AI analysis'
+      });
+      
+      // Trigger AI analysis after a short delay
+      setTimeout(() => {
+        handlePhotoAnalysis(processedImageUrl);
+      }, 500);
+      
     } catch (error) {
       console.error('Error processing image:', error);
-      toast.error('Failed to process image. Please try again.');
+      toast.error('Failed to process image', {
+        description: 'Please try again with a different image'
+      });
     }
   }, [processImageForCard, onPhotoSelect, handlePhotoAnalysis]);
 
   return {
     isAnalyzing,
     imageDetails,
+    analysisStatus,
     handleFileUpload,
   };
 };
