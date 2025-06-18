@@ -4,7 +4,6 @@ import { useDropzone } from 'react-dropzone';
 import { Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { AdvancedCropper } from '../AdvancedCropper';
-import { BulkUploadOption } from '../BulkUploadOption';
 import { PhotoPreview } from './components/PhotoPreview';
 import { UploadActions } from './components/UploadActions';
 import { ReadySection } from './components/ReadySection';
@@ -14,14 +13,12 @@ interface PhotoUploadStepProps {
   selectedPhoto: string;
   onPhotoSelect: (photo: string) => void;
   onAnalysisComplete?: (analysis: any) => void;
-  onBulkUpload?: () => void;
 }
 
 export const PhotoUploadStep = ({ 
   selectedPhoto, 
   onPhotoSelect, 
-  onAnalysisComplete, 
-  onBulkUpload 
+  onAnalysisComplete
 }: PhotoUploadStepProps) => {
   const [showAdvancedCrop, setShowAdvancedCrop] = useState(false);
   const { isAnalyzing, imageDetails, handleFileUpload } = usePhotoUpload(
@@ -95,13 +92,6 @@ export const PhotoUploadStep = ({
         onChooseFile={() => document.getElementById('photo-input')?.click()}
         onAdvancedCrop={() => setShowAdvancedCrop(true)}
       />
-
-      {/* Bulk Upload Option - Secondary placement */}
-      {onBulkUpload && (
-        <div className="mb-8">
-          <BulkUploadOption onSelectBulkUpload={onBulkUpload} />
-        </div>
-      )}
 
       <ReadySection selectedPhoto={selectedPhoto} isAnalyzing={isAnalyzing} />
 

@@ -16,16 +16,10 @@ export const NavLinks = () => {
         Home
       </Link>
       <Link 
-        to="/studio" 
-        className={`nav-item ${location.pathname.startsWith('/studio') ? 'active' : ''}`}
+        to="/create" 
+        className={`nav-item ${location.pathname.startsWith('/create') ? 'active' : ''}`}
       >
-        Studio
-      </Link>
-      <Link 
-        to="/cards" 
-        className={`nav-item ${location.pathname.startsWith('/cards') ? 'active' : ''}`}
-      >
-        Cards
+        Create
       </Link>
       <Link 
         to="/gallery" 
@@ -34,16 +28,10 @@ export const NavLinks = () => {
         Gallery
       </Link>
       <Link 
-        to="/creators" 
-        className={`nav-item ${isActive('/creators') ? 'active' : ''}`}
+        to="/collections" 
+        className={`nav-item ${isActive('/collections') ? 'active' : ''}`}
       >
-        Creators
-      </Link>
-      <Link 
-        to="/cards/bulk-upload" 
-        className={`nav-item ${isActive('/cards/bulk-upload') ? 'active' : ''}`}
-      >
-        Bulk Upload
+        Collections
       </Link>
     </div>
   );
