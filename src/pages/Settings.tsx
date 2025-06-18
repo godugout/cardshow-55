@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { useProfile } from '@/hooks/useProfile';
@@ -11,8 +10,10 @@ import { Separator } from '@/components/ui/separator';
 import { LoadingState } from '@/components/common/LoadingState';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
-import { User, Mail, Globe, MapPin, Save, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Globe, MapPin, Save, Eye, EyeOff, Bell } from 'lucide-react';
+import { useToastPreferences } from '@/hooks/useToastPreferences';
 
 interface UserPreferences {
   darkMode?: boolean;
@@ -26,6 +27,7 @@ interface UserPreferences {
 const Settings = () => {
   const { user, signOut } = useAuth();
   const { profile, updateProfile, isLoading, isUpdating } = useProfile(user?.id);
+  const { preferences: toastPrefs, updateToastPreferences } = useToastPreferences();
   
   const [formData, setFormData] = useState({
     username: profile?.username || '',
@@ -310,6 +312,51 @@ const Settings = () => {
                     }
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Toast Preferences */}
+            <Card className="bg-crd-dark border-crd-mediumGray">
+              <CardHeader>
+                <CardTitle className="text-crd-white flex items-center">
+                  <Bell className="w-4 h-4 mr-2" />
+                  Notifications
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-crd-white">Show Toast Notifications</Label>
+                    <p className="text-sm text-crd-lightGray">Display popup notifications</p>
+                  </div>
+                  <Switch
+                    checked={toastPrefs.showToasts}
+                    onCheckedChange={(checked) => 
+                      updateToastPreferences({ showToasts: checked })
+                    }
+                  />
+                </div>
+
+                {toastPrefs.showToasts && (
+                  <div className="space-y-2">
+                    <Label className="text-crd-white">
+                      Auto-dismiss Duration: {toastPrefs.duration / 1000}s
+                    </Label>
+                    <Slider
+                      value={[toastPrefs.duration]}
+                      onValueChange={([value]) => 
+                        updateToastPreferences({ duration: value })
+                      }
+                      min={1000}
+                      max={8000}
+                      step={500}
+                      className="w-full"
+                    />
+                    <p className="text-xs text-crd-lightGray">
+                      How long notifications stay visible (1-8 seconds)
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

@@ -31,7 +31,19 @@ ReactDOM.createRoot(rootElement).render(
         <AuthProvider>
           <TooltipProvider>
             <App />
-            <Toaster />
+            <Toaster 
+              position="top-center"
+              expand={false}
+              richColors
+              closeButton
+              duration={3000}
+              toastOptions={{
+                style: {
+                  marginTop: '60px', // Avoid overlapping with top navigation
+                },
+                className: 'toast-center'
+              }}
+            />
           </TooltipProvider>
         </AuthProvider>
       </BrowserRouter>
