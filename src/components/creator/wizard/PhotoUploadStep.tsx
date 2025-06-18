@@ -3,42 +3,34 @@ import React, { useCallback } from 'react';
 import { Upload, Camera, FileImage, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { usePhotoUpload } from '@/components/editor/wizard/hooks/usePhotoUpload';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 
 interface PhotoUploadStepProps {
   selectedPhoto: string | null;
   onPhotoSelect: (photoUrl: string) => void;
   selectedTemplate: DesignTemplate | null;
+  onAnalysisComplete?: (analysis: any) => void;
 }
 
-export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, selectedTemplate }: PhotoUploadStepProps) => {
-  const handleFileUpload = useCallback(async (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select a valid image file');
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) { // 10MB limit
-      toast.error('Image size should be less than 10MB');
-      return;
-    }
-
-    try {
-      // Create a URL for the uploaded file
-      const imageUrl = URL.createObjectURL(file);
-      onPhotoSelect(imageUrl);
-      toast.success('Photo uploaded successfully!');
-    } catch (error) {
-      console.error('Error uploading photo:', error);
-      toast.error('Failed to upload photo. Please try again.');
-    }
-  }, [onPhotoSelect]);
+export const PhotoUploadStep = ({ 
+  selectedPhoto, 
+  onPhotoSelect, 
+  selectedTemplate,
+  onAnalysisComplete 
+}: PhotoUploadStepProps) => {
+  const { isAnalyzing, imageDetails, analysisStatus, handleFileUpload } = usePhotoUpload(
+    onPhotoSelect,
+    onAnalysisComplete
+  );
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
+    if (files.length > 0 && files[0].type.startsWith('image/')) {
       handleFileUpload(files[0]);
+    } else {
+      toast.error('Please drop a valid image file');
     }
   }, [handleFileUpload]);
 
@@ -51,6 +43,8 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, selectedTemplate
     if (file) {
       handleFileUpload(file);
     }
+    // Clear the input
+    e.target.value = '';
   };
 
   const getTemplateRecommendation = () => {
@@ -92,6 +86,33 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, selectedTemplate
         </div>
       )}
 
+      {/* Analysis Status */}
+      {(isAnalyzing || analysisStatus !== 'idle') && (
+        <div className={`p-4 rounded-lg border transition-all ${
+          analysisStatus === 'complete' 
+            ? 'bg-crd-green/10 border-crd-green/20' 
+            : analysisStatus === 'analyzing'
+            ? 'bg-blue-500/10 border-blue-500/20'
+            : 'bg-yellow-500/10 border-yellow-500/20'
+        }`}>
+          <div className="flex items-center gap-3">
+            <Sparkles className={`w-5 h-5 ${isAnalyzing ? 'animate-pulse' : ''}`} />
+            <div>
+              <p className="text-white font-medium">
+                {isAnalyzing ? 'AI Analysis in Progress' : 
+                 analysisStatus === 'complete' ? 'AI Analysis Complete' :
+                 'Analysis Ready'}
+              </p>
+              <p className="text-sm text-crd-lightGray">
+                {isAnalyzing ? 'Analyzing image and generating card details...' :
+                 analysisStatus === 'complete' ? 'Your card details have been pre-filled' :
+                 'Smart defaults applied'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Upload Area */}
       <div
         onDrop={handleDrop}
@@ -109,6 +130,11 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, selectedTemplate
               <div className="absolute top-2 right-2 bg-crd-green text-black px-2 py-1 rounded-md text-xs font-medium">
                 ✓ Uploaded
               </div>
+              {imageDetails && (
+                <div className="absolute bottom-2 left-2 bg-black/80 text-white px-2 py-1 rounded text-xs">
+                  {imageDetails.width} × {imageDetails.height} • {imageDetails.fileSize}
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <p className="text-white font-medium">Photo uploaded successfully!</p>
@@ -116,6 +142,7 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, selectedTemplate
                 variant="outline"
                 onClick={() => document.getElementById('photo-upload')?.click()}
                 className="bg-transparent border-crd-green text-crd-green hover:bg-crd-green hover:text-black"
+                disabled={isAnalyzing}
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Upload Different Photo
@@ -132,12 +159,13 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, selectedTemplate
             <div className="space-y-2">
               <p className="text-white font-medium">Drop your photo here, or click to browse</p>
               <p className="text-crd-lightGray text-sm">
-                Supports JPG, PNG, WebP • Max 10MB • Recommended: 1080x1080 or higher
+                Supports JPG, PNG, WebP • Max 10MB • AI analysis included
               </p>
             </div>
             <Button
               onClick={() => document.getElementById('photo-upload')?.click()}
               className="bg-crd-green hover:bg-crd-green/90 text-black font-medium"
+              disabled={isAnalyzing}
             >
               <Upload className="w-4 h-4 mr-2" />
               Choose Photo
@@ -169,6 +197,7 @@ export const PhotoUploadStep = ({ selectedPhoto, onPhotoSelect, selectedTemplate
             variant="outline"
             size="sm"
             className="w-full border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white"
+            disabled={isAnalyzing}
             onClick={() => {
               const input = document.createElement('input');
               input.type = 'file';
