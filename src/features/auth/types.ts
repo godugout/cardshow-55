@@ -12,12 +12,6 @@ export interface AuthUser {
   avatar_url?: string;
 }
 
-export interface AuthError {
-  message: string;
-  status?: number;
-  name?: string;
-}
-
 export interface AuthState {
   user: User | null;
   session: Session | null;
