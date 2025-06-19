@@ -33,7 +33,7 @@ export class ImageProcessor {
     } = options;
 
     return new Promise((resolve, reject) => {
-      // Validate file
+      // Basic file validation
       if (!file || !file.type.startsWith('image/')) {
         reject(new Error('Invalid file type. Please select an image.'));
         return;
@@ -44,84 +44,109 @@ export class ImageProcessor {
         return;
       }
 
-      const img = new Image();
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      console.log('📸 Processing file:', file.name, file.type, file.size);
 
-      if (!ctx) {
-        reject(new Error('Canvas not supported in this browser'));
-        return;
-      }
-
-      img.onload = () => {
-        try {
-          const originalWidth = img.naturalWidth;
-          const originalHeight = img.naturalHeight;
-          
-          let { width, height } = img;
-
-          // Calculate new dimensions
-          if (maintainAspectRatio) {
-            const scale = Math.min(maxWidth / width, maxHeight / height);
-            if (scale < 1) {
-              width = Math.round(width * scale);
-              height = Math.round(height * scale);
-            }
-          } else {
-            width = Math.min(width, maxWidth);
-            height = Math.min(height, maxHeight);
-          }
-
-          // Set canvas dimensions
-          canvas.width = width;
-          canvas.height = height;
-
-          // Draw image
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, width, height);
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Create outputs
-          const mimeType = `image/${format}`;
-          const dataUrl = canvas.toDataURL(mimeType, quality);
-          
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                reject(new Error('Failed to create image blob'));
-                return;
-              }
-
-              resolve({
-                dataUrl,
-                blob,
-                dimensions: {
-                  width,
-                  height,
-                  originalWidth,
-                  originalHeight
-                },
-                fileSize: blob.size
-              });
-            },
-            mimeType,
-            quality
-          );
-        } catch (error) {
-          reject(new Error(`Image processing failed: ${error}`));
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        const result = event.target?.result;
+        if (!result || typeof result !== 'string') {
+          reject(new Error('Failed to read file'));
+          return;
         }
+
+        const img = new Image();
+        
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            if (!ctx) {
+              reject(new Error('Canvas not supported in this browser'));
+              return;
+            }
+
+            const originalWidth = img.naturalWidth || img.width;
+            const originalHeight = img.naturalHeight || img.height;
+            
+            let { width, height } = { width: originalWidth, height: originalHeight };
+
+            // Calculate new dimensions
+            if (maintainAspectRatio) {
+              const scale = Math.min(maxWidth / width, maxHeight / height);
+              if (scale < 1) {
+                width = Math.round(width * scale);
+                height = Math.round(height * scale);
+              }
+            } else {
+              width = Math.min(width, maxWidth);
+              height = Math.min(height, maxHeight);
+            }
+
+            // Set canvas dimensions
+            canvas.width = width;
+            canvas.height = height;
+
+            // Clear canvas with white background for JPEG
+            if (format === 'jpeg') {
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect(0, 0, width, height);
+            }
+
+            // Draw image
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Create outputs
+            const mimeType = `image/${format}`;
+            const dataUrl = canvas.toDataURL(mimeType, quality);
+            
+            canvas.toBlob(
+              (blob) => {
+                if (!blob) {
+                  reject(new Error('Failed to create image blob'));
+                  return;
+                }
+
+                console.log('✅ Image processed successfully:', width, 'x', height);
+
+                resolve({
+                  dataUrl,
+                  blob,
+                  dimensions: {
+                    width,
+                    height,
+                    originalWidth,
+                    originalHeight
+                  },
+                  fileSize: blob.size
+                });
+              },
+              mimeType,
+              quality
+            );
+          } catch (error) {
+            console.error('❌ Canvas processing error:', error);
+            reject(new Error(`Image processing failed: ${error}`));
+          }
+        };
+
+        img.onerror = (error) => {
+          console.error('❌ Image load error:', error);
+          reject(new Error('Unable to load image. Please try a different file.'));
+        };
+
+        // Set image source
+        img.src = result;
       };
 
-      img.onerror = () => {
-        reject(new Error('Failed to load image. Please try a different file.'));
+      reader.onerror = (error) => {
+        console.error('❌ FileReader error:', error);
+        reject(new Error('Failed to read file. Please try again.'));
       };
 
-      // Load image
-      try {
-        img.src = URL.createObjectURL(file);
-      } catch (error) {
-        reject(new Error('Failed to read file'));
-      }
+      // Start reading the file
+      reader.readAsDataURL(file);
     });
   }
 
@@ -138,19 +163,9 @@ export class ImageProcessor {
       throw new Error('File size too large. Please select an image under 10MB.');
     }
 
-    // Additional validation: try to load the image
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        URL.revokeObjectURL(img.src);
-        resolve();
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(img.src);
-        reject(new Error('Invalid image format or corrupted file'));
-      };
-      img.src = URL.createObjectURL(file);
-    });
+    // Remove the complex image loading validation that was causing issues
+    // The actual processing will handle invalid images gracefully
+    console.log('✅ File validation passed:', file.name);
   }
 
   static formatFileSize(bytes: number): string {

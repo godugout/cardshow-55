@@ -43,7 +43,7 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
   });
 
   const uploadImage = useCallback(async (file: File) => {
-    console.log('Starting image upload process:', file.name);
+    console.log('🚀 Starting image upload process:', file.name);
     
     setState(prev => ({
       ...prev,
@@ -54,14 +54,14 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
     }));
 
     try {
-      // Validate file first
+      // Validate file first (simplified validation)
       await ImageProcessor.validateImageFile(file);
       
       const processingToast = toast.loading('Processing image...', {
         description: 'Optimizing for upload'
       });
 
-      // Process image
+      // Process image with better error handling
       const result = await ImageProcessor.processFile(file, {
         maxWidth: 1024,
         maxHeight: 1024,
@@ -108,7 +108,7 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
             onAnalysisComplete(analysis);
           }
         } catch (analysisError) {
-          console.warn('AI analysis failed:', analysisError);
+          console.warn('⚠️ AI analysis failed:', analysisError);
           setState(prev => ({ ...prev, isAnalyzing: false }));
           
           toast.dismiss(analysisToast);
@@ -119,7 +119,7 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
       }
 
     } catch (error) {
-      console.error('Image upload failed:', error);
+      console.error('💥 Image upload failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to process image';
       
       setState(prev => ({
