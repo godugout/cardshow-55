@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useCardEditor, CardData } from '@/hooks/useCardEditor';
-import { DEFAULT_TEMPLATES } from './wizardConfig';
+import { ALL_FRAMES } from '@/data/cardTemplates';
 import type { WizardState, WizardHandlers } from './types';
 import type { CardAnalysisResult } from '@/services/cardAnalyzer';
 
@@ -54,9 +54,9 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       setWizardState(prev => ({ ...prev, aiAnalysisComplete: true }));
       
       // Find template based on tags only since category field doesn't exist in database
-      const suggestedTemplate = DEFAULT_TEMPLATES.find(t => 
+      const suggestedTemplate = ALL_FRAMES.find(t => 
         analysis.tags.some(tag => t.tags.includes(tag))
-      ) || DEFAULT_TEMPLATES[0];
+      ) || ALL_FRAMES[0];
       
       setWizardState(prev => ({ ...prev, selectedTemplate: suggestedTemplate }));
       updateCardField('template_id', suggestedTemplate.id);
@@ -132,7 +132,7 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     cardData,
     handlers,
     isSaving,
-    templates: DEFAULT_TEMPLATES,
+    templates: ALL_FRAMES,
     updateCardField
   };
 };
