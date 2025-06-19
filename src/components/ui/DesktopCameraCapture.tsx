@@ -21,14 +21,32 @@ export const DesktopCameraCapture = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
+  const [isInitializing, setIsInitializing] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const startCamera = useCallback(async () => {
+    console.log('🎥 Starting camera initialization...');
+    setIsInitializing(true);
+    setError(null);
+    setIsStreaming(false);
+
+    // Set timeout to prevent infinite loading
+    if (initTimeoutRef.current) {
+      clearTimeout(initTimeoutRef.current);
+    }
+    
+    initTimeoutRef.current = setTimeout(() => {
+      console.log('⏰ Camera initialization timeout');
+      setError('Camera initialization timed out. Please try again.');
+      setIsInitializing(false);
+    }, 10000); // 10 second timeout
+
     try {
-      setError(null);
+      console.log('📷 Requesting camera access...');
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 1280 },
@@ -37,13 +55,53 @@ export const DesktopCameraCapture = ({
         }
       });
       
+      console.log('✅ Camera access granted, setting up video element...');
       streamRef.current = stream;
+      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        setIsStreaming(true);
+        
+        // Wait for video to be ready
+        const video = videoRef.current;
+        
+        const handleLoadedMetadata = () => {
+          console.log('📺 Video metadata loaded, camera ready');
+          if (initTimeoutRef.current) {
+            clearTimeout(initTimeoutRef.current);
+            initTimeoutRef.current = null;
+          }
+          setIsInitializing(false);
+          setIsStreaming(true);
+        };
+
+        const handleError = (e: Event) => {
+          console.error('❌ Video element error:', e);
+          if (initTimeoutRef.current) {
+            clearTimeout(initTimeoutRef.current);
+            initTimeoutRef.current = null;
+          }
+          setError('Failed to display camera feed. Please try again.');
+          setIsInitializing(false);
+        };
+
+        video.addEventListener('loadedmetadata', handleLoadedMetadata);
+        video.addEventListener('error', handleError);
+        
+        // Cleanup function
+        return () => {
+          video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+          video.removeEventListener('error', handleError);
+        };
       }
     } catch (err) {
-      console.error('Camera access error:', err);
+      console.error('❌ Camera access error:', err);
+      if (initTimeoutRef.current) {
+        clearTimeout(initTimeoutRef.current);
+        initTimeoutRef.current = null;
+      }
+      
+      setIsInitializing(false);
+      
       if (err instanceof Error) {
         if (err.name === 'NotAllowedError') {
           setError('Camera permission denied. Please allow camera access and try again.');
@@ -61,11 +119,21 @@ export const DesktopCameraCapture = ({
   }, []);
 
   const stopCamera = useCallback(() => {
+    console.log('🛑 Stopping camera...');
+    if (initTimeoutRef.current) {
+      clearTimeout(initTimeoutRef.current);
+      initTimeoutRef.current = null;
+    }
+    
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach(track => {
+        console.log('🔌 Stopping track:', track.kind);
+        track.stop();
+      });
       streamRef.current = null;
     }
     setIsStreaming(false);
+    setIsInitializing(false);
   }, []);
 
   const capturePhoto = useCallback(() => {
@@ -136,17 +204,27 @@ export const DesktopCameraCapture = ({
     onClose();
   }, [stopCamera, onClose]);
 
-  // Start camera when dialog opens
+  // Initialize camera when dialog opens
   useEffect(() => {
-    if (isOpen && !capturedImage && !error) {
+    if (isOpen && !capturedImage && !error && !isStreaming && !isInitializing) {
+      console.log('🚀 Dialog opened, starting camera...');
       startCamera();
     }
     
-    // Cleanup on unmount
+    // Cleanup on unmount or close
+    return () => {
+      if (!isOpen) {
+        stopCamera();
+      }
+    };
+  }, [isOpen, capturedImage, error, isStreaming, isInitializing]);
+
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
       stopCamera();
     };
-  }, [isOpen, capturedImage, error, startCamera, stopCamera]);
+  }, []);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -213,7 +291,9 @@ export const DesktopCameraCapture = ({
                       <div className="w-16 h-16 bg-crd-green/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
                         <Camera className="w-8 h-8 text-crd-green" />
                       </div>
-                      <p className="text-crd-lightGray">Starting camera...</p>
+                      <p className="text-crd-lightGray">
+                        {isInitializing ? 'Starting camera...' : 'Initializing...'}
+                      </p>
                     </div>
                   </div>
                 )}
