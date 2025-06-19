@@ -22,7 +22,7 @@ export const usePhotoUpload = (
 
   const processImageForCard = useCallback((file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
-      // Basic validation
+      // Enhanced validation
       if (!file) {
         reject(new Error('No file provided'));
         return;
@@ -42,27 +42,33 @@ export const usePhotoUpload = (
 
       const reader = new FileReader();
       
-      reader.onerror = () => {
-        console.error('FileReader error');
-        reject(new Error('Failed to read file'));
+      reader.onerror = (event) => {
+        console.error('FileReader error:', event);
+        reject(new Error('Failed to read file. Please try a different image.'));
+      };
+
+      reader.onabort = () => {
+        console.error('FileReader aborted');
+        reject(new Error('File reading was aborted. Please try again.'));
       };
 
       reader.onload = (event) => {
         try {
-          const result = event.target?.result as string;
+          const result = event.target?.result;
           
-          if (!result) {
+          if (!result || typeof result !== 'string') {
             reject(new Error('Failed to read image data'));
             return;
           }
 
-          console.log('File read successfully, creating image element');
+          console.log('File read successfully, processing image...');
           
+          // Create image element to get dimensions and process
           const img = new Image();
           
           img.onerror = () => {
-            console.error('Image load error');
-            reject(new Error('Failed to load image. Please try a different image.'));
+            console.error('Image load error - invalid image format');
+            reject(new Error('Invalid image format. Please try a different image.'));
           };
           
           img.onload = () => {
@@ -74,11 +80,11 @@ export const usePhotoUpload = (
               const ctx = canvas.getContext('2d');
               
               if (!ctx) {
-                reject(new Error('Browser does not support image processing'));
+                reject(new Error('Canvas not supported in this browser'));
                 return;
               }
 
-              // Set optimal dimensions for card format
+              // Set optimal dimensions for card format (maintaining aspect ratio)
               const maxWidth = 800;
               const maxHeight = 1120; // 800 * (3.5/2.5) for card aspect ratio
               
@@ -94,12 +100,12 @@ export const usePhotoUpload = (
               canvas.width = width;
               canvas.height = height;
               
-              // Draw image to canvas
+              // Clear canvas and draw image
               ctx.fillStyle = '#ffffff';
               ctx.fillRect(0, 0, width, height);
               ctx.drawImage(img, 0, 0, width, height);
               
-              // Convert to data URL
+              // Convert to optimized data URL
               const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
               
               // Store image details
@@ -116,19 +122,26 @@ export const usePhotoUpload = (
               
             } catch (error) {
               console.error('Canvas processing error:', error);
-              reject(new Error('Failed to process image'));
+              reject(new Error('Failed to process image. Please try again.'));
             }
           };
           
+          // Set image source to trigger loading
           img.src = result;
           
         } catch (error) {
           console.error('FileReader result processing error:', error);
-          reject(new Error('Failed to process file'));
+          reject(new Error('Failed to process uploaded file'));
         }
       };
       
-      reader.readAsDataURL(file);
+      // Start reading the file as data URL
+      try {
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('FileReader readAsDataURL error:', error);
+        reject(new Error('Failed to start reading file'));
+      }
     });
   }, []);
 
@@ -171,6 +184,10 @@ export const usePhotoUpload = (
     console.log('Starting file upload process for:', file.name);
     
     try {
+      // Clear previous state
+      setImageDetails(null);
+      setAnalysisStatus('idle');
+      
       const processingToast = toast.loading('Processing image...', {
         description: 'Optimizing for card format'
       });
@@ -183,19 +200,26 @@ export const usePhotoUpload = (
         description: 'Ready for AI analysis'
       });
       
-      // Trigger AI analysis
-      setTimeout(() => {
-        handlePhotoAnalysis(processedImageUrl);
-      }, 500);
+      // Trigger AI analysis after successful upload
+      if (onAnalysisComplete) {
+        setTimeout(() => {
+          handlePhotoAnalysis(processedImageUrl);
+        }, 500);
+      }
       
     } catch (error) {
       console.error('Error processing image:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to process image';
+      
+      // Clear any loading states
+      setIsAnalyzing(false);
+      setAnalysisStatus('error');
+      
       toast.error('Failed to process image', {
         description: errorMessage
       });
     }
-  }, [processImageForCard, onPhotoSelect, handlePhotoAnalysis]);
+  }, [processImageForCard, onPhotoSelect, handlePhotoAnalysis, onAnalysisComplete]);
 
   return {
     isAnalyzing,

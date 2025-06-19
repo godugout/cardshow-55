@@ -1,6 +1,6 @@
 
 import React, { useCallback } from 'react';
-import { Upload, Camera, FileImage, Sparkles } from 'lucide-react';
+import { Upload, Camera, FileImage, Sparkles, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { usePhotoUpload } from '@/components/editor/wizard/hooks/usePhotoUpload';
@@ -63,6 +63,32 @@ export const PhotoUploadStep = ({
            'Upload a high-quality photo that represents your subject well';
   };
 
+  const getAnalysisStatusIcon = () => {
+    switch (analysisStatus) {
+      case 'analyzing':
+        return <Loader2 className="w-5 h-5 animate-spin" />;
+      case 'complete':
+        return <CheckCircle className="w-5 h-5 text-crd-green" />;
+      case 'error':
+        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+      default:
+        return <Sparkles className="w-5 h-5" />;
+    }
+  };
+
+  const getAnalysisStatusMessage = () => {
+    switch (analysisStatus) {
+      case 'analyzing':
+        return 'AI is analyzing your image and generating card details...';
+      case 'complete':
+        return 'Analysis complete! Your card details have been pre-filled.';
+      case 'error':
+        return 'Analysis encountered issues, but smart defaults are ready.';
+      default:
+        return 'Upload a photo to start AI analysis';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -87,31 +113,30 @@ export const PhotoUploadStep = ({
       )}
 
       {/* Analysis Status */}
-      {(isAnalyzing || analysisStatus !== 'idle') && (
-        <div className={`p-4 rounded-lg border transition-all ${
-          analysisStatus === 'complete' 
-            ? 'bg-crd-green/10 border-crd-green/20' 
-            : analysisStatus === 'analyzing'
-            ? 'bg-blue-500/10 border-blue-500/20'
-            : 'bg-yellow-500/10 border-yellow-500/20'
-        }`}>
-          <div className="flex items-center gap-3">
-            <Sparkles className={`w-5 h-5 ${isAnalyzing ? 'animate-pulse' : ''}`} />
-            <div>
-              <p className="text-white font-medium">
-                {isAnalyzing ? 'AI Analysis in Progress' : 
-                 analysisStatus === 'complete' ? 'AI Analysis Complete' :
-                 'Analysis Ready'}
-              </p>
-              <p className="text-sm text-crd-lightGray">
-                {isAnalyzing ? 'Analyzing image and generating card details...' :
-                 analysisStatus === 'complete' ? 'Your card details have been pre-filled' :
-                 'Smart defaults applied'}
-              </p>
-            </div>
+      <div className={`p-4 rounded-lg border transition-all ${
+        analysisStatus === 'complete' 
+          ? 'bg-crd-green/10 border-crd-green/20' 
+          : analysisStatus === 'analyzing'
+          ? 'bg-blue-500/10 border-blue-500/20'
+          : analysisStatus === 'error'
+          ? 'bg-yellow-500/10 border-yellow-500/20'
+          : 'bg-crd-mediumGray/10 border-crd-mediumGray/20'
+      }`}>
+        <div className="flex items-center gap-3">
+          {getAnalysisStatusIcon()}
+          <div>
+            <p className="text-white font-medium">
+              {analysisStatus === 'analyzing' ? 'AI Analysis in Progress' : 
+               analysisStatus === 'complete' ? 'AI Analysis Complete' :
+               analysisStatus === 'error' ? 'Analysis Complete (with fallbacks)' :
+               'Ready for AI Analysis'}
+            </p>
+            <p className="text-sm text-crd-lightGray">
+              {getAnalysisStatusMessage()}
+            </p>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Upload Area */}
       <div
@@ -133,6 +158,14 @@ export const PhotoUploadStep = ({
               {imageDetails && (
                 <div className="absolute bottom-2 left-2 bg-black/80 text-white px-2 py-1 rounded text-xs">
                   {imageDetails.width} × {imageDetails.height} • {imageDetails.fileSize}
+                </div>
+              )}
+              {isAnalyzing && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
+                  <div className="text-center text-white">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
+                    <p className="text-sm">Analyzing...</p>
+                  </div>
                 </div>
               )}
             </div>
