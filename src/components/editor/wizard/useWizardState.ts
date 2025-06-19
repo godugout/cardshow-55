@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useCardEditor, CardData } from '@/hooks/useCardEditor';
@@ -76,11 +77,12 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     },
 
     handleNext: (targetStep?: number) => {
+      // Updated validation for 3-step flow
       if (wizardState.currentStep === 1 && !wizardState.selectedPhoto) {
         toast.error('Please upload a photo first');
         return;
       }
-      if (wizardState.currentStep === 2 && !wizardState.selectedTemplate) {
+      if (wizardState.currentStep === 1 && !wizardState.selectedTemplate) {
         toast.error('Please select a template');
         return;
       }
@@ -92,9 +94,11 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       if (targetStep) {
         setWizardState(prev => ({ ...prev, currentStep: targetStep }));
       } else if (wizardState.currentStep === 1 && wizardState.aiAnalysisComplete && wizardState.selectedTemplate) {
+        // Skip directly to step 3 if AI analysis is complete in quick mode
         setWizardState(prev => ({ ...prev, currentStep: 3 }));
       } else {
-        setWizardState(prev => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, 4) }));
+        // Normal progression: max step is now 3
+        setWizardState(prev => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, 3) }));
       }
     },
 

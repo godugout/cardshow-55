@@ -5,7 +5,6 @@ import { WizardStepIndicator } from './WizardStepIndicator';
 import { WizardHeader } from './WizardHeader';
 import { WizardNavigation } from './WizardNavigation';
 import { UnifiedUploadAndFrameStep } from './steps/UnifiedUploadAndFrameStep';
-import { CropPositionStep } from './steps/CropPositionStep';
 import { EffectsStylingStep } from './steps/EffectsStylingStep';
 import { UnifiedCardDetailsStep } from './steps/UnifiedCardDetailsStep';
 import { useWizardState } from './useWizardState';
@@ -44,7 +43,7 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
       }
     }
 
-    // Standard flow for quick and advanced modes
+    // Updated 3-step flow for quick and advanced modes
     switch (wizardState.currentStep) {
       case 1:
         return (
@@ -60,16 +59,6 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
         );
       case 2:
         return (
-          <CropPositionStep
-            selectedPhoto={wizardState.selectedPhoto}
-            selectedTemplate={wizardState.selectedTemplate}
-            onCropComplete={(croppedImage) => {
-              handlers.handlePhotoSelect(croppedImage);
-            }}
-          />
-        );
-      case 3:
-        return (
           <EffectsStylingStep
             selectedTemplate={wizardState.selectedTemplate}
             selectedPhoto={wizardState.selectedPhoto}
@@ -81,7 +70,7 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
             }}
           />
         );
-      case 4:
+      case 3:
         return (
           <UnifiedCardDetailsStep
             mode={mode}
@@ -103,10 +92,8 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
       case 1:
         return wizardState.selectedPhoto && wizardState.selectedTemplate;
       case 2:
-        return wizardState.selectedPhoto; // Crop step - photo should be present
-      case 3:
         return true; // Effects step - always can proceed (effects are optional)
-      case 4:
+      case 3:
         return cardData.title && cardData.title.trim().length > 0;
       default:
         return true;
@@ -120,10 +107,8 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
         if (!wizardState.selectedTemplate) return 'Please select a frame for your card';
         return '';
       case 2:
-        return ''; // Crop step doesn't require validation
-      case 3:
         return ''; // Effects step doesn't require validation
-      case 4:
+      case 3:
         if (!cardData.title || !cardData.title.trim()) return 'Please enter a title for your card';
         return '';
       default:

@@ -1,24 +1,18 @@
-
 export const WIZARD_STEPS = [
   { 
     number: 1, 
     title: 'Upload & Frame Selection', 
-    description: 'Upload your photo and choose the perfect frame' 
+    description: 'Upload your photo, choose frame, and adjust crop if needed' 
   },
   { 
     number: 2, 
-    title: 'Crop & Position', 
-    description: 'Adjust your photo to fit perfectly within the frame' 
-  },
-  { 
-    number: 3, 
     title: 'Effects & Styling', 
     description: 'Add visual effects and customize your card appearance' 
   },
   { 
-    number: 4, 
+    number: 3, 
     title: 'Finalize & Publish', 
-    description: 'Complete your card details and publish options' 
+    description: 'Complete your card details and publishing options' 
   }
 ];
 
