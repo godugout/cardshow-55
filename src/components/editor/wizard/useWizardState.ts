@@ -1,8 +1,7 @@
-
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useCardEditor, CardData } from '@/hooks/useCardEditor';
-import { ALL_FRAMES } from '@/data/cardTemplates';
+import { ADAPTIVE_TEMPLATES, convertAdaptiveToDesignTemplate } from '@/data/adaptiveTemplates';
 import type { WizardState, WizardHandlers } from './types';
 import type { CardAnalysisResult } from '@/services/cardAnalyzer';
 
@@ -35,6 +34,9 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     }
   });
 
+  // Convert adaptive templates to design templates for compatibility
+  const compatibleTemplates = ADAPTIVE_TEMPLATES.map(convertAdaptiveToDesignTemplate);
+
   const handlers: WizardHandlers = {
     handlePhotoSelect: (photo: string) => {
       setWizardState(prev => ({ ...prev, selectedPhoto: photo }));
@@ -53,10 +55,12 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       
       setWizardState(prev => ({ ...prev, aiAnalysisComplete: true }));
       
-      // Find template based on tags only since category field doesn't exist in database
-      const suggestedTemplate = ALL_FRAMES.find(t => 
+      // Find template based on tags using adaptive templates
+      const suggestedAdaptiveTemplate = ADAPTIVE_TEMPLATES.find(t => 
         analysis.tags.some(tag => t.tags.includes(tag))
-      ) || ALL_FRAMES[0];
+      ) || ADAPTIVE_TEMPLATES[0];
+      
+      const suggestedTemplate = convertAdaptiveToDesignTemplate(suggestedAdaptiveTemplate);
       
       setWizardState(prev => ({ ...prev, selectedTemplate: suggestedTemplate }));
       updateCardField('template_id', suggestedTemplate.id);
@@ -132,7 +136,7 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     cardData,
     handlers,
     isSaving,
-    templates: ALL_FRAMES,
+    templates: compatibleTemplates,
     updateCardField
   };
 };
