@@ -1,21 +1,23 @@
-import React, { useState } from 'react';
-import { Label } from '@/components/ui/label';
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, Tag, Crown, X, Plus, Zap, Settings, ChevronDown, ChevronUp } from 'lucide-react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import type { CardData, CardRarity, CreatorAttribution } from '@/types/card';
+import { Zap, Settings, Sparkles, User, FileText, Crown, Eye } from 'lucide-react';
+import type { CardData } from '@/hooks/useCardEditor';
+import type { PublishingOptions } from '@/types/card';
 import type { WizardMode } from '../UnifiedCardWizard';
 
 interface UnifiedCardDetailsStepProps {
   mode: WizardMode;
   cardData: CardData;
   onFieldUpdate: <K extends keyof CardData>(field: K, value: CardData[K]) => void;
-  onCreatorAttributionUpdate: (attribution: CreatorAttribution) => void;
-  aiAnalysisComplete: boolean;
+  onCreatorAttributionUpdate: (updates: any) => void;
+  onPublishingUpdate: (updates: Partial<PublishingOptions>) => void;
+  aiAnalysisComplete?: boolean;
 }
 
 export const UnifiedCardDetailsStep = ({ 
@@ -23,220 +25,235 @@ export const UnifiedCardDetailsStep = ({
   cardData, 
   onFieldUpdate, 
   onCreatorAttributionUpdate,
-  aiAnalysisComplete 
+  onPublishingUpdate,
+  aiAnalysisComplete = false
 }: UnifiedCardDetailsStepProps) => {
-  const [newTag, setNewTag] = useState('');
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState(mode === 'advanced');
-
-  const handleAddTag = () => {
-    if (newTag.trim() && !cardData.tags.includes(newTag.trim()) && cardData.tags.length < 10) {
-      onFieldUpdate('tags', [...cardData.tags, newTag.trim()]);
-      setNewTag('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    onFieldUpdate('tags', cardData.tags.filter(tag => tag !== tagToRemove));
-  };
-
-  const rarityColors = {
-    common: 'bg-gray-500',
-    uncommon: 'bg-green-500',
-    rare: 'bg-blue-500',
-    'ultra-rare': 'bg-purple-500',
-    legendary: 'bg-yellow-500'
-  };
-
+  
   const getModeIcon = () => {
     switch (mode) {
       case 'quick': return <Zap className="w-5 h-5 text-crd-green" />;
       case 'advanced': return <Settings className="w-5 h-5 text-crd-blue" />;
-      default: return <Sparkles className="w-5 h-5" />;
+      default: return <FileText className="w-5 h-5" />;
     }
   };
 
   const getModeDescription = () => {
     switch (mode) {
       case 'quick': 
-        return aiAnalysisComplete 
-          ? 'AI has filled in your card details. Review and adjust anything you\'d like to change.'
-          : 'Fill in your card details to create your unique trading card.';
+        return 'Review AI-generated details and publish your card with recommended settings.';
       case 'advanced': 
-        return 'Customize every aspect of your card with full control over all details and metadata.';
+        return 'Fine-tune every detail of your card and configure advanced publishing options.';
       default: 
-        return 'Fill in your card details to create your unique trading card.';
+        return 'Complete your card details and choose how to share it.';
     }
   };
 
-  // Essential fields that are always shown
-  const essentialFields = (
-    <>
-      {/* Title */}
-      <div>
-        <Label htmlFor="title" className="text-crd-lightGray font-medium mb-2 block">
-          Card Title *
-        </Label>
-        <Input
-          id="title"
-          value={cardData.title}
-          onChange={(e) => onFieldUpdate('title', e.target.value)}
-          className="bg-crd-darkGray border-crd-mediumGray text-white"
-          placeholder={mode === 'quick' ? 'AI will suggest a title...' : 'Enter your card title'}
-          maxLength={60}
-        />
-        <p className="text-xs text-crd-lightGray mt-1">
-          {cardData.title.length}/60 characters
-        </p>
-      </div>
+  // Quick mode: simplified form with AI-generated content
+  const quickModeContent = (
+    <div className="space-y-6">
+      {/* AI-generated content preview */}
+      {aiAnalysisComplete && (
+        <Card className="bg-crd-green/10 border-crd-green/30">
+          <CardHeader>
+            <CardTitle className="text-white text-lg flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-crd-green" />
+              AI-Generated Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="text-white">Card Title</Label>
+              <Input
+                value={cardData.title || ''}
+                onChange={(e) => onFieldUpdate('title', e.target.value)}
+                className="bg-crd-darkGray border-crd-mediumGray text-white mt-1"
+                placeholder="AI-generated title"
+              />
+            </div>
+            
+            <div>
+              <Label className="text-white">Description</Label>
+              <Textarea
+                value={cardData.description || ''}
+                onChange={(e) => onFieldUpdate('description', e.target.value)}
+                className="bg-crd-darkGray border-crd-mediumGray text-white mt-1"
+                rows={3}
+                placeholder="AI-generated description"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Description */}
-      <div>
-        <Label htmlFor="description" className="text-crd-lightGray font-medium mb-2 block">
-          Description {mode === 'quick' ? '(Optional)' : ''}
-        </Label>
-        <Textarea
-          id="description"
-          value={cardData.description}
-          onChange={(e) => onFieldUpdate('description', e.target.value)}
-          className="bg-crd-darkGray border-crd-mediumGray text-white min-h-[80px]"
-          placeholder={mode === 'quick' ? 'AI will generate a description...' : 'Describe your card...'}
-          maxLength={500}
-        />
-        <p className="text-xs text-crd-lightGray mt-1">
-          {cardData.description?.length || 0}/500 characters
-        </p>
-      </div>
+      {/* Quick publishing options */}
+      <Card className="bg-crd-darkGray border-crd-mediumGray/30">
+        <CardHeader>
+          <CardTitle className="text-white text-lg flex items-center gap-2">
+            <Eye className="w-5 h-5" />
+            Sharing Options
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-white font-medium">Public Gallery</div>
+              <p className="text-xs text-crd-lightGray">Share your card in the CRD community gallery</p>
+            </div>
+            <Switch
+              checked={cardData.publishing_options?.crd_catalog_inclusion || false}
+              onCheckedChange={(checked) => onPublishingUpdate({ crd_catalog_inclusion: checked })}
+            />
+          </div>
 
-      {/* Rarity - simplified in quick mode */}
-      <div>
-        <Label className="text-crd-lightGray font-medium mb-2 block flex items-center gap-2">
-          <Crown className="w-4 h-4" />
-          Rarity {mode === 'quick' && '(AI Suggested)'}
-        </Label>
-        <Select 
-          value={cardData.rarity} 
-          onValueChange={(value: CardRarity) => onFieldUpdate('rarity', value)}
-          disabled={mode === 'quick' && aiAnalysisComplete}
-        >
-          <SelectTrigger className="bg-crd-darkGray border-crd-mediumGray text-white">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-crd-darkGray border-crd-mediumGray">
-            {(['common', 'uncommon', 'rare', 'ultra-rare', 'legendary'] as CardRarity[]).map((rarity) => (
-              <SelectItem key={rarity} value={rarity} className="text-white hover:bg-crd-mediumGray">
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${rarityColors[rarity]}`}></div>
-                  <span className="capitalize">{rarity.replace('-', ' ')}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {mode === 'quick' && aiAnalysisComplete && (
-          <p className="text-xs text-crd-lightGray mt-1">
-            AI selected this rarity based on your image
-          </p>
-        )}
-      </div>
-    </>
+          <div className="p-3 bg-crd-green/10 border border-crd-green/30 rounded-lg">
+            <div className="flex items-center gap-2 text-crd-green mb-1">
+              <Zap className="w-4 h-4" />
+              <span className="font-medium text-sm">Ready to Publish!</span>
+            </div>
+            <p className="text-xs text-crd-lightGray">
+              Your card will be created with AI-optimized settings. You can adjust more options after publishing.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 
-  // Advanced fields that can be collapsed in quick mode
-  const advancedFields = (
-    <>
-      {/* Tags */}
-      <div>
-        <Label className="text-crd-lightGray font-medium mb-2 block flex items-center gap-2">
-          <Tag className="w-4 h-4" />
-          Tags {mode === 'quick' && aiAnalysisComplete && '(AI Generated)'}
-        </Label>
-        
-        {/* Existing Tags */}
-        {cardData.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {cardData.tags.map((tag) => (
-              <Badge 
-                key={tag} 
-                variant="secondary" 
-                className="bg-crd-mediumGray text-white hover:bg-crd-lightGray"
-              >
-                {tag}
-                {(mode === 'advanced' || !aiAnalysisComplete) && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="ml-1 h-auto p-0 hover:bg-transparent"
-                    onClick={() => handleRemoveTag(tag)}
-                  >
-                    <X className="w-3 h-3" />
-                  </Button>
-                )}
-              </Badge>
-            ))}
-          </div>
-        )}
-        
-        {/* Add New Tag - hidden in quick mode with AI analysis */}
-        {(mode === 'advanced' || !aiAnalysisComplete) && cardData.tags.length < 10 && (
-          <div className="flex gap-2">
-            <Input
-              value={newTag}
-              onChange={(e) => setNewTag(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
-              className="bg-crd-darkGray border-crd-mediumGray text-white flex-1"
-              placeholder="Add a tag..."
-              maxLength={20}
-            />
-            <Button
-              onClick={handleAddTag}
-              disabled={!newTag.trim() || cardData.tags.includes(newTag.trim())}
-              className={`${
-                mode === 'quick' 
-                  ? 'bg-crd-green hover:bg-crd-green/90 text-black' 
-                  : 'bg-crd-blue hover:bg-crd-blue/90 text-white'
-              }`}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
-          </div>
-        )}
-        
-        <p className="text-xs text-crd-lightGray mt-1">
-          {cardData.tags.length}/10 tags • Tags help people find your card
-        </p>
-      </div>
-
-      {/* Type & Series - advanced mode only */}
-      {mode === 'advanced' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  // Advanced mode: full form with all options
+  const advancedModeContent = (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Card Details */}
+      <Card className="bg-crd-darkGray border-crd-mediumGray/30">
+        <CardHeader>
+          <CardTitle className="text-white text-lg flex items-center gap-2">
+            <FileText className="w-5 h-5" />
+            Card Details
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="type" className="text-crd-lightGray font-medium mb-2 block">
-              Type
-            </Label>
+            <Label className="text-white">Title *</Label>
             <Input
-              id="type"
-              value={cardData.type || ''}
-              onChange={(e) => onFieldUpdate('type', e.target.value)}
-              className="bg-crd-darkGray border-crd-mediumGray text-white"
-              placeholder="Card type (e.g., Player, Character)"
+              value={cardData.title || ''}
+              onChange={(e) => onFieldUpdate('title', e.target.value)}
+              className="bg-crd-darkGray border-crd-mediumGray text-white mt-1"
+              placeholder="Enter card title"
             />
           </div>
           
           <div>
-            <Label htmlFor="series" className="text-crd-lightGray font-medium mb-2 block">
-              Series
-            </Label>
-            <Input
-              id="series"
-              value={cardData.series || ''}
-              onChange={(e) => onFieldUpdate('series', e.target.value)}
-              className="bg-crd-darkGray border-crd-mediumGray text-white"
-              placeholder="Card series or collection"
+            <Label className="text-white">Description</Label>
+            <Textarea
+              value={cardData.description || ''}
+              onChange={(e) => onFieldUpdate('description', e.target.value)}
+              className="bg-crd-darkGray border-crd-mediumGray text-white mt-1"
+              rows={3}
+              placeholder="Describe your card"
             />
           </div>
-        </div>
-      )}
-    </>
+
+          <div>
+            <Label className="text-white">Series (Optional)</Label>
+            <Input
+              value={cardData.series || ''}
+              onChange={(e) => onFieldUpdate('series', e.target.value)}
+              className="bg-crd-darkGray border-crd-mediumGray text-white mt-1"
+              placeholder="Card series name"
+            />
+          </div>
+
+          <div>
+            <Label className="text-white">Rarity</Label>
+            <select 
+              value={cardData.rarity || 'common'}
+              onChange={(e) => onFieldUpdate('rarity', e.target.value as any)}
+              className="w-full mt-1 bg-crd-darkGray border border-crd-mediumGray rounded text-white p-2"
+            >
+              <option value="common">Common</option>
+              <option value="uncommon">Uncommon</option>
+              <option value="rare">Rare</option>
+              <option value="ultra-rare">Ultra Rare</option>
+              <option value="legendary">Legendary</option>
+            </select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Publishing & Distribution */}
+      <Card className="bg-crd-darkGray border-crd-mediumGray/30">
+        <CardHeader>
+          <CardTitle className="text-white text-lg flex items-center gap-2">
+            <Crown className="w-5 h-5" />
+            Publishing Options
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-white font-medium">Marketplace Listing</div>
+              <p className="text-xs text-crd-lightGray">List on CRD marketplace for trading</p>
+            </div>
+            <Switch
+              checked={cardData.publishing_options?.marketplace_listing || false}
+              onCheckedChange={(checked) => onPublishingUpdate({ marketplace_listing: checked })}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-white font-medium">Public Gallery</div>
+              <p className="text-xs text-crd-lightGray">Include in main catalog</p>
+            </div>
+            <Switch
+              checked={cardData.publishing_options?.crd_catalog_inclusion || false}
+              onCheckedChange={(checked) => onPublishingUpdate({ crd_catalog_inclusion: checked })}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-white font-medium">Print Available</div>
+              <p className="text-xs text-crd-lightGray">Allow physical printing</p>
+            </div>
+            <Switch
+              checked={cardData.publishing_options?.print_available || false}
+              onCheckedChange={(checked) => onPublishingUpdate({ print_available: checked })}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-white font-medium">Limited Edition</div>
+              <p className="text-xs text-crd-lightGray">Restrict number of copies</p>
+            </div>
+            <Switch
+              checked={cardData.publishing_options?.distribution?.limited_edition || false}
+              onCheckedChange={(checked) => onPublishingUpdate({ 
+                distribution: {
+                  ...cardData.publishing_options?.distribution,
+                  limited_edition: checked
+                }
+              })}
+            />
+          </div>
+
+          <div className="pt-4 border-t border-crd-mediumGray">
+            <div className="text-sm text-crd-lightGray space-y-1">
+              <div className="flex justify-between">
+                <span>Status:</span>
+                <span className="text-crd-green">Ready to publish</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Verification:</span>
+                <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-400 text-xs">
+                  Auto-approved
+                </Badge>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 
   return (
@@ -246,60 +263,27 @@ export const UnifiedCardDetailsStep = ({
         <div className="flex items-center justify-center gap-2 mb-2">
           {getModeIcon()}
           <h2 className="text-2xl font-bold text-white">
-            {mode === 'quick' ? 'Review Card Details' : 'Customize Card Details'}
+            {mode === 'quick' ? 'Finalize & Publish' : 'Complete Your Card'}
           </h2>
         </div>
         <p className="text-crd-lightGray">{getModeDescription()}</p>
       </div>
 
-      {/* AI Analysis Status */}
-      {aiAnalysisComplete && (
-        <div className={`p-4 rounded-lg ${
-          mode === 'quick' 
-            ? 'bg-crd-green/10 border border-crd-green/30' 
-            : 'bg-crd-blue/10 border border-crd-blue/30'
-        }`}>
-          <div className={`flex items-center gap-2 mb-2 ${
-            mode === 'quick' ? 'text-crd-green' : 'text-crd-blue'
-          }`}>
-            <Sparkles className="w-5 h-5" />
-            <span className="font-medium">
-              {mode === 'quick' ? 'AI Setup Complete!' : 'AI Analysis Complete'}
-            </span>
+      {/* Mode-specific content */}
+      {mode === 'quick' ? quickModeContent : advancedModeContent}
+
+      {/* Privacy notice */}
+      <div className="bg-crd-mediumGray/10 border border-crd-mediumGray/30 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <Eye className="w-5 h-5 text-crd-lightGray mt-0.5" />
+          <div>
+            <p className="text-white font-medium mb-1">Privacy & Ownership</p>
+            <p className="text-sm text-crd-lightGray">
+              You retain full ownership of your card. You can change these settings anytime from your dashboard.
+              {mode === 'quick' && ' Additional options are available in advanced mode.'}
+            </p>
           </div>
-          <p className="text-sm text-crd-lightGray">
-            {mode === 'quick' 
-              ? 'Your card is ready! Review the details below and publish when you\'re happy with everything.'
-              : 'Your card details have been automatically generated. Feel free to customize any of the fields below.'
-            }
-          </p>
         </div>
-      )}
-
-      <div className="grid gap-6">
-        {/* Essential fields - always visible */}
-        {essentialFields}
-
-        {/* Advanced options - collapsible in quick mode */}
-        {mode === 'quick' ? (
-          <Collapsible open={showAdvancedOptions} onOpenChange={setShowAdvancedOptions}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                {showAdvancedOptions ? 'Hide' : 'Show'} Advanced Options
-                {showAdvancedOptions ? <ChevronUp className="w-4 h-4 ml-2" /> : <ChevronDown className="w-4 h-4 ml-2" />}
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-6 mt-6">
-              {advancedFields}
-            </CollapsibleContent>
-          </Collapsible>
-        ) : (
-          advancedFields
-        )}
       </div>
     </div>
   );

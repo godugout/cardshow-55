@@ -4,12 +4,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { WizardStepIndicator } from './WizardStepIndicator';
 import { WizardHeader } from './WizardHeader';
 import { WizardNavigation } from './WizardNavigation';
-import { UnifiedPhotoUploadStep } from './steps/UnifiedPhotoUploadStep';
-import { UnifiedTemplateSelectionStep } from './steps/UnifiedTemplateSelectionStep';
+import { UnifiedUploadAndFrameStep } from './steps/UnifiedUploadAndFrameStep';
 import { UnifiedCardDetailsStep } from './steps/UnifiedCardDetailsStep';
-import { UnifiedPublishingOptionsStep } from './steps/UnifiedPublishingOptionsStep';
 import { useWizardState } from './useWizardState';
-import { WIZARD_STEPS } from './wizardConfig';
+import { WIZARD_STEPS, BULK_WIZARD_STEPS } from './wizardConfig';
 import type { EnhancedCardWizardProps } from './types';
 
 export type WizardMode = 'quick' | 'advanced' | 'bulk';
@@ -28,12 +26,7 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
   // Mode-specific step configuration
   const getStepsForMode = () => {
     if (mode === 'bulk') {
-      return [
-        { number: 1, title: 'Upload Images', description: 'Select multiple images for batch processing' },
-        { number: 2, title: 'Auto-Process', description: 'AI analyzes and creates cards automatically' },
-        { number: 3, title: 'Review & Edit', description: 'Review generated cards and make adjustments' },
-        { number: 4, title: 'Publish Collection', description: 'Publish your card collection' }
-      ];
+      return BULK_WIZARD_STEPS;
     }
     return WIZARD_STEPS;
   };
@@ -53,39 +46,25 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
     switch (wizardState.currentStep) {
       case 1:
         return (
-          <UnifiedPhotoUploadStep
+          <UnifiedUploadAndFrameStep
             mode={mode}
             selectedPhoto={wizardState.selectedPhoto}
             onPhotoSelect={handlers.handlePhotoSelect}
             onAnalysisComplete={handlers.handleAiAnalysis}
-          />
-        );
-      case 2:
-        return (
-          <UnifiedTemplateSelectionStep
-            mode={mode}
             templates={templates}
             selectedTemplate={wizardState.selectedTemplate}
             onTemplateSelect={handlers.handleTemplateSelect}
           />
         );
-      case 3:
+      case 2:
         return (
           <UnifiedCardDetailsStep
             mode={mode}
             cardData={cardData}
             onFieldUpdate={handleFieldUpdate}
             onCreatorAttributionUpdate={handlers.updateCreatorAttribution}
-            aiAnalysisComplete={wizardState.aiAnalysisComplete}
-          />
-        );
-      case 4:
-        return (
-          <UnifiedPublishingOptionsStep
-            mode={mode}
-            publishingOptions={cardData.publishing_options}
-            selectedTemplate={wizardState.selectedTemplate}
             onPublishingUpdate={handlers.updatePublishingOptions}
+            aiAnalysisComplete={wizardState.aiAnalysisComplete}
           />
         );
       default:
@@ -93,12 +72,21 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
     }
   };
 
-  // Mode-specific navigation behavior
-  const canSkipToEnd = mode === 'quick' && wizardState.aiAnalysisComplete && !!wizardState.selectedTemplate;
+  // Validation for navigation
+  const canProceedToNext = () => {
+    switch (wizardState.currentStep) {
+      case 1:
+        return wizardState.selectedPhoto && wizardState.selectedTemplate;
+      case 2:
+        return cardData.title && cardData.title.trim().length > 0;
+      default:
+        return true;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-editor-darker p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <WizardHeader 
           mode={mode}
           aiAnalysisComplete={wizardState.aiAnalysisComplete} 
@@ -120,9 +108,24 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
               isSaving={isSaving}
               onCancel={onCancel}
               onBack={handlers.handleBack}
-              onNext={() => handlers.handleNext()}
+              onNext={() => {
+                if (canProceedToNext()) {
+                  handlers.handleNext();
+                } else {
+                  // Show validation message based on current step
+                  if (wizardState.currentStep === 1) {
+                    if (!wizardState.selectedPhoto) {
+                      alert('Please upload a photo first');
+                    } else if (!wizardState.selectedTemplate) {
+                      alert('Please select a frame for your card');
+                    }
+                  } else if (wizardState.currentStep === 2) {
+                    alert('Please enter a title for your card');
+                  }
+                }
+              }}
               onComplete={handlers.handleComplete}
-              canSkipToEnd={canSkipToEnd}
+              canSkipToEnd={false} // Removed problematic skip functionality
             />
           </CardContent>
         </Card>

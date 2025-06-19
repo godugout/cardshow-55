@@ -1,7 +1,7 @@
 
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 
-export const SPORTS_TEMPLATES: DesignTemplate[] = [
+export const SPORTS_FRAMES: DesignTemplate[] = [
   {
     id: 'baseball-classic',
     name: 'Baseball Classic',
@@ -133,7 +133,7 @@ export const SPORTS_TEMPLATES: DesignTemplate[] = [
   }
 ];
 
-export const ENTERTAINMENT_TEMPLATES: DesignTemplate[] = [
+export const ENTERTAINMENT_FRAMES: DesignTemplate[] = [
   {
     id: 'musician-spotlight',
     name: 'Musician Spotlight',
@@ -200,19 +200,19 @@ export const ENTERTAINMENT_TEMPLATES: DesignTemplate[] = [
   }
 ];
 
-export const ALL_TEMPLATES = [...SPORTS_TEMPLATES, ...ENTERTAINMENT_TEMPLATES];
+export const ALL_FRAMES = [...SPORTS_FRAMES, ...ENTERTAINMENT_FRAMES];
 
-export const getTemplatesByCategory = (category: string) => {
+export const getFramesByCategory = (category: string) => {
   switch (category) {
     case 'sports':
-      return SPORTS_TEMPLATES;
+      return SPORTS_FRAMES;
     case 'entertainment':
-      return ENTERTAINMENT_TEMPLATES;
+      return ENTERTAINMENT_FRAMES;
     default:
-      return ALL_TEMPLATES;
+      return ALL_FRAMES;
   }
 };
 
-export const getTemplateById = (id: string): DesignTemplate | null => {
-  return ALL_TEMPLATES.find(template => template.id === id) || null;
+export const getFrameById = (id: string): DesignTemplate | null => {
+  return ALL_FRAMES.find(template => template.id === id) || null;
 };

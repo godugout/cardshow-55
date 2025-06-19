@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 
 interface WizardNavigationProps {
   currentStep: number;
@@ -26,13 +26,6 @@ export const WizardNavigation = ({
   onComplete,
   canSkipToEnd = false
 }: WizardNavigationProps) => {
-  const handleSkipToEnd = () => {
-    // Call onNext multiple times to reach the end
-    for (let i = currentStep; i < totalSteps; i++) {
-      onNext();
-    }
-  };
-
   return (
     <div className="flex justify-between items-center mt-8 pt-6 border-t border-editor-border">
       <div className="flex items-center gap-3">
@@ -57,16 +50,6 @@ export const WizardNavigation = ({
       </div>
 
       <div className="flex items-center gap-3">
-        {canSkipToEnd && currentStep < totalSteps && (
-          <Button
-            onClick={handleSkipToEnd}
-            className="bg-crd-green/20 hover:bg-crd-green/30 text-crd-green border border-crd-green/30"
-          >
-            <Sparkles className="w-4 h-4 mr-2" />
-            Skip to Preview
-          </Button>
-        )}
-        
         {isLastStep ? (
           <Button
             onClick={onComplete}
