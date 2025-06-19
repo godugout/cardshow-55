@@ -1,4 +1,3 @@
-
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 
 export const ESSENTIAL_FRAMES: DesignTemplate[] = [
@@ -27,7 +26,8 @@ export const ESSENTIAL_FRAMES: DesignTemplate[] = [
         shadow: false
       }
     },
-    usage_count: 1000
+    usage_count: 1000,
+    tags: ['clean', 'minimal', 'edge-to-edge']
   },
   {
     id: 'graded-slab-2d',
@@ -69,7 +69,8 @@ export const ESSENTIAL_FRAMES: DesignTemplate[] = [
         shadow: true
       }
     },
-    usage_count: 800
+    usage_count: 800,
+    tags: ['graded', 'professional', 'slab', '2d']
   },
   {
     id: 'graded-slab-3d',
@@ -118,7 +119,8 @@ export const ESSENTIAL_FRAMES: DesignTemplate[] = [
         transform: 'rotateY(-3deg) rotateX(1deg)'
       }
     },
-    usage_count: 600
+    usage_count: 600,
+    tags: ['graded', 'professional', 'slab', '3d', 'premium']
   }
 ];
 
