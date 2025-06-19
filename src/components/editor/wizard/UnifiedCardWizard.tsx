@@ -5,6 +5,8 @@ import { WizardStepIndicator } from './WizardStepIndicator';
 import { WizardHeader } from './WizardHeader';
 import { WizardNavigation } from './WizardNavigation';
 import { UnifiedUploadAndFrameStep } from './steps/UnifiedUploadAndFrameStep';
+import { CropPositionStep } from './steps/CropPositionStep';
+import { EffectsStylingStep } from './steps/EffectsStylingStep';
 import { UnifiedCardDetailsStep } from './steps/UnifiedCardDetailsStep';
 import { useWizardState } from './useWizardState';
 import { WIZARD_STEPS, BULK_WIZARD_STEPS } from './wizardConfig';
@@ -58,6 +60,29 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
         );
       case 2:
         return (
+          <CropPositionStep
+            selectedPhoto={wizardState.selectedPhoto}
+            selectedTemplate={wizardState.selectedTemplate}
+            onCropComplete={(croppedImage) => {
+              handlers.handlePhotoSelect(croppedImage);
+            }}
+          />
+        );
+      case 3:
+        return (
+          <EffectsStylingStep
+            selectedTemplate={wizardState.selectedTemplate}
+            selectedPhoto={wizardState.selectedPhoto}
+            onEffectsUpdate={(effects) => {
+              updateCardField('design_metadata', {
+                ...cardData.design_metadata,
+                effects
+              });
+            }}
+          />
+        );
+      case 4:
+        return (
           <UnifiedCardDetailsStep
             mode={mode}
             cardData={cardData}
@@ -78,9 +103,31 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
       case 1:
         return wizardState.selectedPhoto && wizardState.selectedTemplate;
       case 2:
+        return wizardState.selectedPhoto; // Crop step - photo should be present
+      case 3:
+        return true; // Effects step - always can proceed (effects are optional)
+      case 4:
         return cardData.title && cardData.title.trim().length > 0;
       default:
         return true;
+    }
+  };
+
+  const getValidationMessage = () => {
+    switch (wizardState.currentStep) {
+      case 1:
+        if (!wizardState.selectedPhoto) return 'Please upload a photo first';
+        if (!wizardState.selectedTemplate) return 'Please select a frame for your card';
+        return '';
+      case 2:
+        return ''; // Crop step doesn't require validation
+      case 3:
+        return ''; // Effects step doesn't require validation
+      case 4:
+        if (!cardData.title || !cardData.title.trim()) return 'Please enter a title for your card';
+        return '';
+      default:
+        return '';
     }
   };
 
@@ -109,23 +156,15 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
               onCancel={onCancel}
               onBack={handlers.handleBack}
               onNext={() => {
+                const validationMessage = getValidationMessage();
                 if (canProceedToNext()) {
                   handlers.handleNext();
-                } else {
-                  // Show validation message based on current step
-                  if (wizardState.currentStep === 1) {
-                    if (!wizardState.selectedPhoto) {
-                      alert('Please upload a photo first');
-                    } else if (!wizardState.selectedTemplate) {
-                      alert('Please select a frame for your card');
-                    }
-                  } else if (wizardState.currentStep === 2) {
-                    alert('Please enter a title for your card');
-                  }
+                } else if (validationMessage) {
+                  alert(validationMessage);
                 }
               }}
               onComplete={handlers.handleComplete}
-              canSkipToEnd={false} // Removed problematic skip functionality
+              canSkipToEnd={false}
             />
           </CardContent>
         </Card>

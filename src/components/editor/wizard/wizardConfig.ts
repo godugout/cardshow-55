@@ -7,6 +7,16 @@ export const WIZARD_STEPS = [
   },
   { 
     number: 2, 
+    title: 'Crop & Position', 
+    description: 'Adjust your photo to fit perfectly within the frame' 
+  },
+  { 
+    number: 3, 
+    title: 'Effects & Styling', 
+    description: 'Add visual effects and customize your card appearance' 
+  },
+  { 
+    number: 4, 
     title: 'Finalize & Publish', 
     description: 'Complete your card details and publish options' 
   }
