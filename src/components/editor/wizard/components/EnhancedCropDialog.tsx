@@ -1,12 +1,13 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { X, Grid3X3, ZoomIn, ZoomOut, RotateCw, Lock, Unlock, Check, Square, Maximize } from 'lucide-react';
+import { X, Grid3X3, ZoomIn, ZoomOut, RotateCw, Check, Square, Maximize, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { cropImageFromFile } from '@/services/imageCropper';
+import { InteractiveCropArea } from './InteractiveCropArea';
 import type { CropBounds } from '@/services/imageCropper';
 
 interface EnhancedCropDialogProps {
@@ -27,28 +28,116 @@ export const EnhancedCropDialog = ({
   initialFormat = 'fullCard'
 }: EnhancedCropDialogProps) => {
   const [cropFormat, setCropFormat] = useState<'fullCard' | 'cropped'>(initialFormat);
-  const [cropShape, setCropShape] = useState<'square' | 'circle'>('square');
   const [zoom, setZoom] = useState(1);
-  const [rotation, setRotation] = useState(0);
   const [showGrid, setShowGrid] = useState(true);
-  const [aspectRatioLocked, setAspectRatioLocked] = useState(true);
-  const [cropBounds, setCropBounds] = useState<CropBounds>({ x: 10, y: 10, width: 80, height: 80 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+  const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
+  
+  // Initialize crop bounds based on format
+  const getInitialCropBounds = useCallback((): CropBounds => {
+    if (cropFormat === 'fullCard') {
+      // 2.5:3.5 aspect ratio for trading cards
+      const aspectRatio = 2.5 / 3.5;
+      const centerX = 50;
+      const centerY = 50;
+      const height = 70; // 70% of image height
+      const width = height * aspectRatio;
+      
+      return {
+        x: centerX - width / 2,
+        y: centerY - height / 2,
+        width,
+        height
+      };
+    } else {
+      // Square crop for cropped format
+      const size = 60;
+      return {
+        x: 20,
+        y: 20,
+        width: size,
+        height: size
+      };
+    }
+  }, [cropFormat]);
+
+  const [cropBounds, setCropBounds] = useState<CropBounds>(getInitialCropBounds());
 
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Set smart default crop based on format
+  // Update crop bounds when format changes
   useEffect(() => {
-    if (cropFormat === 'fullCard') {
-      setCropBounds({ x: 0, y: 0, width: 100, height: 100 });
-      setAspectRatioLocked(true);
-    } else {
-      setCropBounds({ x: 15, y: 15, width: 70, height: 70 });
-      setAspectRatioLocked(cropShape === 'square');
+    setCropBounds(getInitialCropBounds());
+  }, [cropFormat, getInitialCropBounds]);
+
+  // Handle image load to get natural dimensions
+  useEffect(() => {
+    if (selectedPhoto && imageRef.current) {
+      const img = new Image();
+      img.onload = () => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const containerRect = container.getBoundingClientRect();
+        const containerWidth = containerRect.width - 40; // Account for padding
+        const containerHeight = containerRect.height - 40;
+        
+        // Calculate display size while maintaining aspect ratio
+        const imageAspect = img.naturalWidth / img.naturalHeight;
+        const containerAspect = containerWidth / containerHeight;
+        
+        let displayWidth, displayHeight;
+        if (imageAspect > containerAspect) {
+          displayWidth = containerWidth;
+          displayHeight = displayWidth / imageAspect;
+        } else {
+          displayHeight = containerHeight;
+          displayWidth = displayHeight * imageAspect;
+        }
+        
+        setImageDimensions({ width: displayWidth, height: displayHeight });
+        setImagePosition({
+          x: (containerWidth - displayWidth) / 2 + 20,
+          y: (containerHeight - displayHeight) / 2 + 20
+        });
+      };
+      img.src = selectedPhoto;
     }
-  }, [cropFormat, cropShape]);
+  }, [selectedPhoto, isOpen]);
+
+  // Handle zoom with mouse wheel
+  const handleWheel = useCallback((e: WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    setZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
+  }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container && isOpen) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
+      return () => container.removeEventListener('wheel', handleWheel);
+    }
+  }, [handleWheel, isOpen]);
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+      
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (e.key === 'Enter') {
+        handleApplyCrop();
+      } else if (e.key === 'g') {
+        setShowGrid(!showGrid);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose, showGrid]);
 
   const handleApplyCrop = async () => {
     if (!originalFile) {
@@ -80,310 +169,291 @@ export const EnhancedCropDialog = ({
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setDragStart({ x: e.clientX, y: e.clientY });
+  const handleReset = () => {
+    setCropBounds(getInitialCropBounds());
+    setZoom(1);
+    toast.success('Crop reset to default');
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !containerRef.current) return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const deltaX = ((e.clientX - dragStart.x) / rect.width) * 100;
-    const deltaY = ((e.clientY - dragStart.y) / rect.height) * 100;
-
-    setCropBounds(prev => ({
-      ...prev,
-      x: Math.max(0, Math.min(100 - prev.width, prev.x + deltaX)),
-      y: Math.max(0, Math.min(100 - prev.height, prev.y + deltaY))
-    }));
-
-    setDragStart({ x: e.clientX, y: e.clientY });
+  const handlePresetPosition = (position: 'center' | 'top' | 'bottom') => {
+    const newBounds = { ...cropBounds };
+    
+    switch (position) {
+      case 'center':
+        newBounds.y = 50 - cropBounds.height / 2;
+        break;
+      case 'top':
+        newBounds.y = 10;
+        break;
+      case 'bottom':
+        newBounds.y = 90 - cropBounds.height;
+        break;
+    }
+    
+    setCropBounds(newBounds);
   };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  if (!isOpen) return null;
-
-  const aspectRatio = cropFormat === 'fullCard' ? 2.5 / 3.5 : 1;
-  const cropWidth = Math.round((cropBounds.width / 100) * (imageRef.current?.naturalWidth || 1));
-  const cropHeight = Math.round((cropBounds.height / 100) * (imageRef.current?.naturalHeight || 1));
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/80">
-      {/* Header */}
-      <div className="h-16 bg-crd-darkGray border-b border-crd-mediumGray/30 flex items-center justify-between px-6">
-        <div className="flex items-center gap-4">
-          <h1 className="text-white text-xl font-semibold">Crop & Position</h1>
-          <Badge className="bg-crd-green/20 text-crd-green border-crd-green/30">
-            {cropFormat === 'fullCard' ? 'Full Card' : `Cropped ${cropShape}`}
-          </Badge>
-        </div>
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={handleApplyCrop}
-            className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
-          >
-            <Check className="w-4 h-4 mr-2" />
-            Apply Crop
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="text-crd-lightGray hover:text-white"
-          >
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-      </div>
-
-      <div className="h-[calc(100vh-4rem)] flex">
-        {/* Main Crop Area */}
-        <div className="flex-1 flex flex-col">
-          {/* Toolbar */}
-          <div className="h-16 bg-crd-mediumGray/20 border-b border-crd-mediumGray/30 flex items-center justify-between px-6">
-            {/* Format Selection */}
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-6xl w-[90vw] h-[85vh] bg-crd-darkGray border-crd-mediumGray/30 p-0">
+        <DialogHeader className="p-6 pb-4 border-b border-crd-mediumGray/30">
+          <DialogTitle className="text-xl font-semibold text-white flex items-center justify-between">
+            <span>Crop & Position Your Photo</span>
             <div className="flex items-center gap-2">
-              <span className="text-crd-lightGray text-sm">Format:</span>
+              <Button
+                onClick={handleApplyCrop}
+                className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
+              >
+                <Check className="w-4 h-4 mr-2" />
+                Apply Crop
+              </Button>
+            </div>
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="flex h-[calc(100%-80px)]">
+          {/* Main Crop Area */}
+          <div className="flex-1 flex flex-col">
+            {/* Toolbar */}
+            <div className="h-16 bg-crd-mediumGray/20 border-b border-crd-mediumGray/30 flex items-center justify-between px-6">
+              {/* Format Selection */}
               <div className="flex bg-crd-darkGray rounded-lg p-1">
                 <button
                   onClick={() => setCropFormat('fullCard')}
-                  className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                  className={`px-4 py-2 text-sm rounded-md transition-colors ${
                     cropFormat === 'fullCard'
                       ? 'bg-crd-green text-black font-medium'
                       : 'text-crd-lightGray hover:text-white'
                   }`}
                 >
-                  <Maximize className="w-4 h-4 mr-1 inline" />
-                  Full Card
+                  <Maximize className="w-4 h-4 mr-2 inline" />
+                  Full Card (2.5:3.5)
                 </button>
                 <button
                   onClick={() => setCropFormat('cropped')}
-                  className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                  className={`px-4 py-2 text-sm rounded-md transition-colors ${
                     cropFormat === 'cropped'
                       ? 'bg-crd-green text-black font-medium'
                       : 'text-crd-lightGray hover:text-white'
                   }`}
                 >
-                  <Square className="w-4 h-4 mr-1 inline" />
-                  Cropped
+                  <Square className="w-4 h-4 mr-2 inline" />
+                  Square Crop
                 </button>
               </div>
-            </div>
 
-            {/* Controls */}
-            <div className="flex items-center gap-4">
-              {/* Grid Toggle */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowGrid(!showGrid)}
-                className={`${
-                  showGrid
-                    ? 'bg-crd-blue/20 border-crd-blue text-crd-blue'
-                    : 'border-crd-mediumGray text-crd-lightGray'
-                }`}
-              >
-                <Grid3X3 className="w-4 h-4 mr-2" />
-                Grid
-              </Button>
-
-              {/* Zoom Controls */}
-              <div className="flex items-center gap-2">
+              {/* Controls */}
+              <div className="flex items-center gap-4">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
-                  className="border-crd-mediumGray text-crd-lightGray"
+                  onClick={() => setShowGrid(!showGrid)}
+                  className={`${
+                    showGrid
+                      ? 'bg-crd-blue/20 border-crd-blue text-crd-blue'
+                      : 'border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white'
+                  }`}
                 >
-                  <ZoomOut className="w-4 h-4" />
+                  <Grid3X3 className="w-4 h-4 mr-2" />
+                  Grid (G)
                 </Button>
-                <span className="text-crd-lightGray text-sm w-12 text-center">
-                  {Math.round(zoom * 100)}%
-                </span>
+
+                {/* Zoom Controls */}
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
+                    className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </Button>
+                  <span className="text-crd-lightGray text-sm w-16 text-center">
+                    {Math.round(zoom * 100)}%
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setZoom(Math.min(3, zoom + 0.25))}
+                    className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </Button>
+                </div>
+
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setZoom(Math.min(3, zoom + 0.25))}
-                  className="border-crd-mediumGray text-crd-lightGray"
+                  onClick={handleReset}
+                  className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white"
                 >
-                  <ZoomIn className="w-4 h-4" />
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Reset
                 </Button>
               </div>
-
-              {/* Rotation */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setRotation(rotation + 90)}
-                className="border-crd-mediumGray text-crd-lightGray"
-              >
-                <RotateCw className="w-4 h-4 mr-2" />
-                Rotate
-              </Button>
             </div>
-          </div>
 
-          {/* Canvas Area */}
-          <div className="flex-1 bg-crd-darker p-8 overflow-hidden">
-            <div
+            {/* Canvas Area */}
+            <div 
               ref={containerRef}
-              className="relative w-full h-full flex items-center justify-center"
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
+              className="flex-1 bg-gradient-to-br from-gray-900 via-black to-gray-800 p-5 overflow-hidden relative"
             >
-              <div className="relative max-w-full max-h-full">
-                <img
-                  ref={imageRef}
-                  src={selectedPhoto}
-                  alt="Crop preview"
-                  className="max-w-full max-h-full object-contain"
-                  style={{
-                    transform: `scale(${zoom}) rotate(${rotation}deg)`
-                  }}
-                />
+              <div className="relative w-full h-full flex items-center justify-center">
+                {imageDimensions.width > 0 && (
+                  <>
+                    {/* Background Image with Darkening */}
+                    <img
+                      ref={imageRef}
+                      src={selectedPhoto}
+                      alt="Crop preview"
+                      className="absolute"
+                      style={{
+                        width: imageDimensions.width * zoom,
+                        height: imageDimensions.height * zoom,
+                        left: imagePosition.x,
+                        top: imagePosition.y,
+                        filter: 'brightness(0.3)' // Darken the background image
+                      }}
+                    />
 
-                {/* Grid Overlay */}
-                {showGrid && (
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="w-full h-full border border-white/20 grid grid-cols-3 grid-rows-3">
-                      {Array.from({ length: 9 }).map((_, i) => (
-                        <div key={i} className="border border-white/10" />
-                      ))}
+                    {/* Bright crop area */}
+                    <div
+                      className="absolute overflow-hidden"
+                      style={{
+                        left: imagePosition.x + (cropBounds.x / 100) * imageDimensions.width * zoom,
+                        top: imagePosition.y + (cropBounds.y / 100) * imageDimensions.height * zoom,
+                        width: (cropBounds.width / 100) * imageDimensions.width * zoom,
+                        height: (cropBounds.height / 100) * imageDimensions.height * zoom,
+                        borderRadius: cropFormat === 'cropped' ? '8px' : '4px'
+                      }}
+                    >
+                      <img
+                        src={selectedPhoto}
+                        alt="Crop area"
+                        className="absolute"
+                        style={{
+                          width: imageDimensions.width * zoom,
+                          height: imageDimensions.height * zoom,
+                          left: -(cropBounds.x / 100) * imageDimensions.width * zoom,
+                          top: -(cropBounds.y / 100) * imageDimensions.height * zoom,
+                          filter: 'brightness(1) contrast(1.1)' // Bright and enhanced
+                        }}
+                      />
                     </div>
-                  </div>
+
+                    {/* Interactive Crop Area Component */}
+                    <InteractiveCropArea
+                      cropBounds={cropBounds}
+                      setCropBounds={setCropBounds}
+                      imageDimensions={imageDimensions}
+                      imagePosition={imagePosition}
+                      zoom={zoom}
+                      aspectRatio={cropFormat === 'fullCard' ? 2.5 / 3.5 : 1}
+                      showGrid={showGrid}
+                    />
+                  </>
                 )}
-
-                {/* Crop Overlay */}
-                <div className="absolute inset-0 bg-black/40 pointer-events-none" />
-                <div
-                  className="absolute border-2 border-crd-green bg-transparent cursor-move"
-                  style={{
-                    left: `${cropBounds.x}%`,
-                    top: `${cropBounds.y}%`,
-                    width: `${cropBounds.width}%`,
-                    height: `${cropBounds.height}%`,
-                    borderRadius: cropShape === 'circle' && cropFormat === 'cropped' ? '50%' : '4px'
-                  }}
-                  onMouseDown={handleMouseDown}
-                >
-                  {/* Corner handles */}
-                  <div className="absolute -top-1 -left-1 w-3 h-3 bg-crd-green rounded-full border-2 border-white cursor-nw-resize" />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-crd-green rounded-full border-2 border-white cursor-ne-resize" />
-                  <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-crd-green rounded-full border-2 border-white cursor-sw-resize" />
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-crd-green rounded-full border-2 border-white cursor-se-resize" />
-
-                  {/* Crop label */}
-                  <div className="absolute -top-8 left-0 bg-crd-green text-black text-xs px-2 py-1 rounded-md font-medium flex items-center gap-2">
-                    {aspectRatioLocked && <Lock className="w-3 h-3" />}
-                    {cropFormat === 'fullCard' ? '2.5:3.5' : cropShape}
-                  </div>
-                </div>
+              </div>
+              
+              {/* Scroll to zoom hint */}
+              <div className="absolute bottom-4 left-4 bg-black/50 text-white text-xs px-3 py-2 rounded-md">
+                Scroll to zoom • Drag crop area to move
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Sidebar */}
-        <div className="w-80 bg-crd-darkGray border-l border-crd-mediumGray/30 p-6 space-y-6">
-          {/* Crop Info */}
-          <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
-            <CardContent className="p-4">
-              <h3 className="text-white font-medium mb-3">Crop Details</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between text-crd-lightGray">
-                  <span>Dimensions:</span>
-                  <span>{cropWidth} × {cropHeight}px</span>
-                </div>
-                <div className="flex justify-between text-crd-lightGray">
-                  <span>Aspect Ratio:</span>
-                  <span>{cropFormat === 'fullCard' ? '2.5:3.5' : '1:1'}</span>
-                </div>
-                <div className="flex justify-between text-crd-lightGray">
-                  <span>Format:</span>
-                  <span>{cropFormat === 'fullCard' ? 'Full Card' : `Cropped ${cropShape}`}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Shape Selection (for cropped format) */}
-          {cropFormat === 'cropped' && (
+          {/* Sidebar */}
+          <div className="w-80 bg-crd-darkGray border-l border-crd-mediumGray/30 p-6 space-y-6">
+            {/* Zoom Slider */}
             <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
               <CardContent className="p-4">
-                <h3 className="text-white font-medium mb-3">Crop Shape</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setCropShape('square')}
-                    className={`p-3 rounded-lg border transition-colors ${
-                      cropShape === 'square'
-                        ? 'border-crd-green bg-crd-green/20'
-                        : 'border-crd-mediumGray bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40'
-                    }`}
-                  >
-                    <Square className="w-6 h-6 mx-auto mb-1 text-white" />
-                    <span className="text-xs text-white">Square</span>
-                  </button>
-                  <button
-                    onClick={() => setCropShape('circle')}
-                    className={`p-3 rounded-lg border transition-colors ${
-                      cropShape === 'circle'
-                        ? 'border-crd-green bg-crd-green/20'
-                        : 'border-crd-mediumGray bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40'
-                    }`}
-                  >
-                    <div className="w-6 h-6 rounded-full border-2 border-white mx-auto mb-1" />
-                    <span className="text-xs text-white">Circle</span>
-                  </button>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-white font-medium">Zoom</h3>
+                  <span className="text-crd-lightGray text-sm">{Math.round(zoom * 100)}%</span>
+                </div>
+                <Slider
+                  value={[zoom]}
+                  onValueChange={(value) => setZoom(value[0])}
+                  min={0.5}
+                  max={3}
+                  step={0.1}
+                  className="w-full"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Preset Positions */}
+            <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
+              <CardContent className="p-4">
+                <h3 className="text-white font-medium mb-3">Quick Position</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'top', label: 'Top' },
+                    { id: 'center', label: 'Center' },
+                    { id: 'bottom', label: 'Bottom' }
+                  ].map((preset) => (
+                    <Button
+                      key={preset.id}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePresetPosition(preset.id as any)}
+                      className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white text-xs"
+                    >
+                      {preset.label}
+                    </Button>
+                  ))}
                 </div>
               </CardContent>
             </Card>
-          )}
 
-          {/* Zoom Slider */}
-          <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-white font-medium">Zoom</h3>
-                <span className="text-crd-lightGray text-sm">{Math.round(zoom * 100)}%</span>
-              </div>
-              <Slider
-                value={[zoom]}
-                onValueChange={(value) => setZoom(value[0])}
-                min={0.5}
-                max={3}
-                step={0.1}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-crd-lightGray mt-2">
-                <span>50%</span>
-                <span>300%</span>
-              </div>
-            </CardContent>
-          </Card>
+            {/* Format Info */}
+            <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
+              <CardContent className="p-4">
+                <h3 className="text-white font-medium mb-3">Format Info</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between text-crd-lightGray">
+                    <span>Type:</span>
+                    <span>{cropFormat === 'fullCard' ? 'Trading Card' : 'Square Crop'}</span>
+                  </div>
+                  <div className="flex justify-between text-crd-lightGray">
+                    <span>Aspect Ratio:</span>
+                    <span>{cropFormat === 'fullCard' ? '2.5:3.5' : '1:1'}</span>
+                  </div>
+                  <div className="flex justify-between text-crd-lightGray">
+                    <span>Output Size:</span>
+                    <span>{cropFormat === 'fullCard' ? '400×560' : '400×400'}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Aspect Ratio Lock */}
-          <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
-            <CardContent className="p-4">
-              <button
-                onClick={() => setAspectRatioLocked(!aspectRatioLocked)}
-                className={`w-full p-3 rounded-lg border transition-colors flex items-center justify-center gap-2 ${
-                  aspectRatioLocked
-                    ? 'border-crd-green bg-crd-green/20 text-crd-green'
-                    : 'border-crd-mediumGray text-crd-lightGray hover:border-crd-green/50'
-                }`}
-              >
-                {aspectRatioLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
-                {aspectRatioLocked ? 'Ratio Locked' : 'Ratio Unlocked'}
-              </button>
-            </CardContent>
-          </Card>
+            {/* Keyboard Shortcuts */}
+            <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
+              <CardContent className="p-4">
+                <h3 className="text-white font-medium mb-3">Shortcuts</h3>
+                <div className="space-y-1 text-xs text-crd-lightGray">
+                  <div className="flex justify-between">
+                    <span>Apply crop:</span>
+                    <span>Enter</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Cancel:</span>
+                    <span>Escape</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Toggle grid:</span>
+                    <span>G</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Zoom:</span>
+                    <span>Mouse wheel</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
