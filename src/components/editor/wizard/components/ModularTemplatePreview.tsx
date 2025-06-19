@@ -49,7 +49,8 @@ export const ModularTemplatePreview = ({
             style={{
               ...style,
               backgroundColor: 'transparent',
-              border: `${element.style.borderWidth || 1}px solid ${element.style.borderColor || '#000'}`,
+              border: `${element.style.borderWidth || 2}px solid ${element.style.borderColor || '#333'}`,
+              borderRadius: `${element.style.borderRadius || 8}px`,
               boxShadow: element.style.shadow
             }}
             className="pointer-events-none"
@@ -60,8 +61,12 @@ export const ModularTemplatePreview = ({
         return (
           <div
             key={element.id}
-            style={style}
-            className="pointer-events-none overflow-hidden flex items-center justify-center"
+            style={{
+              ...style,
+              borderRadius: `${element.style.borderRadius || 4}px`,
+              overflow: 'hidden'
+            }}
+            className="pointer-events-none flex items-center justify-center"
           >
             {selectedPhoto ? (
               <img
@@ -70,8 +75,11 @@ export const ModularTemplatePreview = ({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gray-200 border-2 border-dashed border-gray-400 flex items-center justify-center">
-                <span className="text-xs text-gray-500">Image</span>
+              <div 
+                className="w-full h-full flex items-center justify-center text-white/60 text-xs border border-dashed border-white/30"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+              >
+                IMAGE
               </div>
             )}
           </div>
@@ -82,16 +90,23 @@ export const ModularTemplatePreview = ({
         return (
           <div
             key={element.id}
-            style={style}
-            className="pointer-events-none flex items-center justify-center text-center"
+            style={{
+              ...style,
+              backgroundColor: element.style.backgroundColor,
+              borderRadius: `${element.style.borderRadius || 4}px`,
+              border: element.style.borderWidth 
+                ? `${element.style.borderWidth}px solid ${element.style.borderColor}`
+                : undefined
+            }}
+            className="pointer-events-none flex items-center justify-center text-center px-1"
           >
             <span style={{
-              fontSize: `${element.style.fontSize}px`,
+              fontSize: `${Math.max((element.style.fontSize || 12) * 0.7, 8)}px`,
               fontWeight: element.style.fontWeight,
               color: element.style.color,
               fontFamily: element.style.fontFamily
             }}>
-              {element.content || 'TEXT'}
+              {element.content || (element.type === 'nameplate' ? 'NAME' : 'TEXT')}
             </span>
           </div>
         );
@@ -100,10 +115,14 @@ export const ModularTemplatePreview = ({
         return (
           <div
             key={element.id}
-            style={style}
-            className="pointer-events-none bg-gray-300 rounded-full flex items-center justify-center"
+            style={{
+              ...style,
+              backgroundColor: element.style.backgroundColor || 'rgba(255,255,255,0.2)',
+              borderRadius: `${element.style.borderRadius || 50}%`
+            }}
+            className="pointer-events-none flex items-center justify-center"
           >
-            <span className="text-xs text-gray-600">LOGO</span>
+            <span className="text-xs text-white/60 font-bold">LOGO</span>
           </div>
         );
       
@@ -112,19 +131,54 @@ export const ModularTemplatePreview = ({
     }
   };
 
+  // Get the actual background from the template
+  const backgroundElement = template.elements.find(e => e.type === 'background');
+  const templateBackground = backgroundElement?.style?.backgroundColor || template.colorSchemes[0]?.background || '#1a1a1a';
+
   return (
     <div 
-      className={`relative aspect-[2.5/3.5] rounded-lg overflow-hidden ${className}`}
-      style={{ backgroundColor: '#f5f5f5' }}
+      className={`relative aspect-[2.5/3.5] rounded-lg overflow-hidden shadow-lg ${className}`}
+      style={{ 
+        background: templateBackground,
+        minHeight: '140px'
+      }}
     >
       {template.elements
         .sort((a, b) => a.layer - b.layer)
         .map(renderElement)}
       
-      {/* Aesthetic indicator */}
-      <div className="absolute top-1 right-1 px-2 py-1 bg-black/70 text-white text-xs rounded">
-        {template.aesthetic}
+      {/* Aesthetic indicator with proper color coding */}
+      <div className={`absolute top-1 right-1 px-2 py-1 text-white text-xs rounded font-medium ${getAestheticColor(template.aesthetic)}`}>
+        {getAestheticDisplayName(template.aesthetic)}
       </div>
     </div>
   );
+};
+
+const getAestheticColor = (aesthetic: string): string => {
+  const colors = {
+    'minimal-grid': 'bg-gray-600',
+    'cinematic': 'bg-red-600',
+    'neon-cyber': 'bg-cyan-500',
+    'vintage': 'bg-amber-600',
+    'magazine': 'bg-blue-600',
+    'polaroid': 'bg-yellow-600',
+    'comic': 'bg-purple-600',
+    'holographic': 'bg-pink-500'
+  };
+  return colors[aesthetic as keyof typeof colors] || 'bg-gray-500';
+};
+
+const getAestheticDisplayName = (aesthetic: string): string => {
+  const names = {
+    'minimal-grid': 'Minimal',
+    'cinematic': 'Cinema',
+    'neon-cyber': 'Cyber',
+    'vintage': 'Vintage',
+    'magazine': 'Editorial',
+    'polaroid': 'Instant',
+    'comic': 'Comic',
+    'holographic': 'Holo'
+  };
+  return names[aesthetic as keyof typeof names] || aesthetic;
 };

@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, Sparkles, Filter, Zap, Settings } from 'lucide-react';
+import { ModularTemplatePreview } from '../components/ModularTemplatePreview';
+import { MODULAR_TEMPLATES, convertToDesignTemplate } from '@/data/modularTemplates';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 import type { WizardMode } from '../UnifiedCardWizard';
 
@@ -11,13 +13,15 @@ interface UnifiedTemplateSelectionStepProps {
   templates: DesignTemplate[];
   selectedTemplate: DesignTemplate | null;
   onTemplateSelect: (template: DesignTemplate) => void;
+  selectedPhoto?: string;
 }
 
 export const UnifiedTemplateSelectionStep = ({ 
   mode, 
   templates, 
   selectedTemplate, 
-  onTemplateSelect 
+  onTemplateSelect,
+  selectedPhoto
 }: UnifiedTemplateSelectionStepProps) => {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
@@ -40,13 +44,15 @@ export const UnifiedTemplateSelectionStep = ({
     }
   };
 
-  // Filter templates based on mode
+  // Use modular templates instead of the passed templates for consistency
+  const availableTemplates = MODULAR_TEMPLATES;
+  
   const getFilteredTemplates = () => {
-    let filtered = templates;
+    let filtered = availableTemplates;
     
     if (mode === 'quick') {
       // In quick mode, prioritize popular and easy-to-use templates
-      filtered = templates.filter(t => !t.is_premium || t.usage_count > 100);
+      filtered = availableTemplates.filter(t => !t.is_premium || t.usage_count > 100);
     }
     
     if (categoryFilter !== 'all') {
@@ -57,40 +63,11 @@ export const UnifiedTemplateSelectionStep = ({
   };
 
   const filteredTemplates = getFilteredTemplates();
-  const categories = [...new Set(templates.map(t => t.category))].filter(Boolean);
+  const categories = [...new Set(availableTemplates.map(t => t.category))].filter(Boolean);
 
-  const getTemplatePreviewGradient = (templateId: string) => {
-    const gradients: Record<string, string> = {
-      'tcg-classic': 'from-blue-600 via-blue-500 to-yellow-400',
-      'sports-modern': 'from-red-600 via-red-500 to-orange-400',
-      'school-academic': 'from-green-600 via-green-500 to-yellow-400',
-      'organization-corporate': 'from-blue-700 via-indigo-600 to-purple-500',
-      'friends-social': 'from-pink-500 via-purple-500 to-cyan-400',
-      'vintage-retro': 'from-amber-700 via-orange-500 to-red-500'
-    };
-    return gradients[templateId] || 'from-gray-500 to-gray-600';
-  };
-
-  const renderTemplatePreview = (template: DesignTemplate) => {
-    return (
-      <div 
-        className="aspect-[2.5/3.5] relative rounded-lg overflow-hidden bg-gradient-to-br"
-        style={{ 
-          background: `linear-gradient(to bottom right, ${
-            template.template_data?.colors?.background || '#1a1a1a'
-          }, ${template.template_data?.colors?.primary || '#333333'})`
-        }}
-      >
-        <div className={`absolute inset-0 bg-gradient-to-br ${getTemplatePreviewGradient(template.id)} opacity-20`} />
-        
-        {/* Simplified preview based on template */}
-        <div className="absolute inset-2 border border-white/20 rounded flex flex-col items-center justify-center text-white text-xs">
-          <div className="w-12 h-12 bg-white/20 rounded mb-2"></div>
-          <div className="w-16 h-2 bg-white/40 rounded mb-1"></div>
-          <div className="w-12 h-1 bg-white/30 rounded"></div>
-        </div>
-      </div>
-    );
+  const handleTemplateSelect = (modularTemplate: any) => {
+    const convertedTemplate = convertToDesignTemplate(modularTemplate);
+    onTemplateSelect(convertedTemplate);
   };
 
   return (
@@ -154,7 +131,7 @@ export const UnifiedTemplateSelectionStep = ({
         </div>
       )}
       
-      {/* Templates grid - different layouts based on mode */}
+      {/* Templates grid - using actual ModularTemplatePreview */}
       <div className={`grid gap-4 ${
         mode === 'quick' 
           ? 'grid-cols-2 lg:grid-cols-4' 
@@ -163,16 +140,20 @@ export const UnifiedTemplateSelectionStep = ({
         {filteredTemplates.map((template) => (
           <div
             key={template.id}
-            onClick={() => onTemplateSelect(template)}
+            onClick={() => handleTemplateSelect(template)}
             className={`p-3 rounded-xl cursor-pointer transition-all border ${
               selectedTemplate?.id === template.id
                 ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green bg-crd-green/10' : 'ring-crd-blue border-crd-blue bg-crd-blue/10'}`
                 : 'bg-editor-tool hover:bg-editor-border border-editor-border hover:border-crd-mediumGray'
             }`}
           >
-            {renderTemplatePreview(template)}
+            <ModularTemplatePreview 
+              template={template} 
+              selectedPhoto={selectedPhoto}
+              className="mb-3"
+            />
             
-            <div className="space-y-2 mt-3">
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <h3 className="text-white font-medium text-sm truncate">{template.name}</h3>
                 {template.is_premium && mode === 'advanced' && (
