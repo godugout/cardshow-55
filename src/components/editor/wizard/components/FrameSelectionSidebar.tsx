@@ -3,10 +3,9 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Star, Filter } from 'lucide-react';
-import { CompactPhotoUpload } from './CompactPhotoUpload';
+import { Sparkles, Star, Filter, Square, Circle, Maximize } from 'lucide-react';
+import { EnhancedPhotoEditSection } from './EnhancedPhotoEditSection';
 import { AdaptiveTemplatePreview } from './AdaptiveTemplatePreview';
-import { ImageFormatSelector } from './ImageFormatSelector';
 import { ADAPTIVE_TEMPLATES, convertAdaptiveToDesignTemplate } from '@/data/adaptiveTemplates';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 import type { WizardMode } from '../UnifiedCardWizard';
@@ -33,6 +32,7 @@ export const FrameSelectionSidebar = ({
 }: FrameSelectionSidebarProps) => {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [imageFormat, setImageFormat] = useState<'square' | 'circle' | 'fullBleed'>('fullBleed');
+  const [showAllFormats, setShowAllFormats] = useState(false);
 
   // Use adaptive templates for consistent rendering
   const getFilteredTemplates = () => {
@@ -58,27 +58,24 @@ export const FrameSelectionSidebar = ({
     onTemplateSelect(convertedTemplate);
   };
 
+  const formatIcons = {
+    fullBleed: Maximize,
+    square: Square,
+    circle: Circle
+  };
+
   return (
     <div className="space-y-6">
-      {/* Upload Section */}
-      <CompactPhotoUpload
+      {/* Enhanced Photo Upload/Edit Section */}
+      <EnhancedPhotoEditSection
         selectedPhoto={selectedPhoto}
+        selectedTemplate={selectedTemplate}
+        imageFormat={imageFormat}
         onPhotoSelect={onPhotoSelect}
         onPhotoRemove={onPhotoRemove}
+        onImageFormatChange={setImageFormat}
         isAnalyzing={isAnalyzing}
       />
-
-      {/* Image Format Selection */}
-      {selectedPhoto && (
-        <Card className="bg-crd-darkGray border-crd-mediumGray/30">
-          <CardContent className="p-4">
-            <ImageFormatSelector
-              selectedFormat={imageFormat}
-              onFormatChange={setImageFormat}
-            />
-          </CardContent>
-        </Card>
-      )}
 
       {/* Frame Selection */}
       <Card className="bg-crd-darkGray border-crd-mediumGray/30">
@@ -86,9 +83,19 @@ export const FrameSelectionSidebar = ({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-white font-medium">Choose Frame</h3>
-              {mode === 'advanced' && (
-                <Filter className="w-4 h-4 text-crd-lightGray" />
-              )}
+              <div className="flex items-center gap-2">
+                {mode === 'advanced' && (
+                  <Filter className="w-4 h-4 text-crd-lightGray" />
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAllFormats(!showAllFormats)}
+                  className="text-xs border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40"
+                >
+                  {showAllFormats ? 'Single View' : 'All Formats'}
+                </Button>
+              </div>
             </div>
 
             {/* AI Recommendation */}
@@ -136,36 +143,88 @@ export const FrameSelectionSidebar = ({
             )}
             
             {/* Adaptive Frames Grid */}
-            <div className="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto">
+            <div className="grid grid-cols-1 gap-4 max-h-80 overflow-y-auto">
               {filteredTemplates.map((template) => (
-                <div
-                  key={template.id}
-                  onClick={() => handleTemplateSelect(template)}
-                  className={`p-2 rounded-lg cursor-pointer transition-all border ${
-                    selectedTemplate?.id === template.id
-                      ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green bg-crd-green/10' : 'ring-crd-blue border-crd-blue bg-crd-blue/10'}`
-                      : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 border-crd-mediumGray/50 hover:border-crd-mediumGray'
-                  }`}
-                >
-                  <AdaptiveTemplatePreview 
-                    template={template} 
-                    selectedPhoto={selectedPhoto}
-                    imageFormat={imageFormat}
-                    className="mb-2"
-                  />
-                  
-                  <div className="space-y-1">
-                    <h4 className="text-white font-medium text-xs text-center truncate">{template.name}</h4>
-                    
+                <div key={template.id} className="space-y-2">
+                  {/* Template Info */}
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-white font-medium text-sm">{template.name}</h4>
                     {template.is_premium && mode === 'advanced' && (
-                      <div className="flex justify-center">
-                        <Badge className="bg-yellow-500 text-black text-xs px-1 py-0">
-                          <Star className="w-2 h-2 mr-1" />
-                          Pro
-                        </Badge>
-                      </div>
+                      <Badge className="bg-yellow-500 text-black text-xs px-1 py-0">
+                        <Star className="w-2 h-2 mr-1" />
+                        Pro
+                      </Badge>
                     )}
                   </div>
+
+                  {/* Format Previews */}
+                  {showAllFormats ? (
+                    <div className="grid grid-cols-3 gap-2">
+                      {template.supportedFormats.map((format) => {
+                        const Icon = formatIcons[format];
+                        const isSelected = selectedTemplate?.id === template.id && imageFormat === format;
+                        
+                        return (
+                          <div key={format} className="space-y-1">
+                            <div
+                              onClick={() => {
+                                handleTemplateSelect(template);
+                                setImageFormat(format);
+                              }}
+                              className={`relative cursor-pointer transition-all border rounded-lg overflow-hidden ${
+                                isSelected
+                                  ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green bg-crd-green/10' : 'ring-crd-blue border-crd-blue bg-crd-blue/10'}`
+                                  : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 border-crd-mediumGray/50 hover:border-crd-mediumGray'
+                              }`}
+                            >
+                              <AdaptiveTemplatePreview 
+                                template={template} 
+                                selectedPhoto={selectedPhoto}
+                                imageFormat={format}
+                                className="aspect-[2.5/3.5]"
+                              />
+                            </div>
+                            <div className="flex items-center justify-center gap-1 text-xs text-crd-lightGray">
+                              <Icon className="w-3 h-3" />
+                              <span>{format}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => handleTemplateSelect(template)}
+                      className={`relative cursor-pointer transition-all border rounded-lg overflow-hidden p-2 ${
+                        selectedTemplate?.id === template.id
+                          ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green bg-crd-green/10' : 'ring-crd-blue border-crd-blue bg-crd-blue/10'}`
+                          : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 border-crd-mediumGray/50 hover:border-crd-mediumGray'
+                      }`}
+                    >
+                      <div className="grid grid-cols-2 gap-2">
+                        <AdaptiveTemplatePreview 
+                          template={template} 
+                          selectedPhoto={selectedPhoto}
+                          imageFormat={imageFormat}
+                          className="aspect-[2.5/3.5]"
+                        />
+                        <div className="space-y-1 text-xs">
+                          <p className="text-crd-lightGray">{template.description}</p>
+                          <div className="flex flex-wrap gap-1">
+                            {template.supportedFormats.map((format) => {
+                              const Icon = formatIcons[format];
+                              return (
+                                <div key={format} className="flex items-center gap-1 text-crd-lightGray">
+                                  <Icon className="w-3 h-3" />
+                                  <span>{format}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
