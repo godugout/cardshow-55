@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Star, Filter, Square, Circle, Maximize } from 'lucide-react';
+import { Sparkles, Star, Filter, Square, Maximize } from 'lucide-react';
 import { EnhancedPhotoEditSection } from './EnhancedPhotoEditSection';
 import { AdaptiveTemplatePreview } from './AdaptiveTemplatePreview';
 import { ADAPTIVE_TEMPLATES, convertAdaptiveToDesignTemplate } from '@/data/adaptiveTemplates';
@@ -61,7 +61,7 @@ export const FrameSelectionSidebar = ({
   const formatIcons = {
     fullBleed: Maximize,
     square: Square,
-    circle: Circle
+    circle: Square // Using square icon for both since circle uses same crop
   };
 
   return (
@@ -106,7 +106,7 @@ export const FrameSelectionSidebar = ({
                   <span className="font-medium">AI Recommended</span>
                 </div>
                 <p className="text-xs text-crd-lightGray mt-1">
-                  {selectedTemplate.name} adapts perfectly to your {imageFormat} format
+                  {selectedTemplate.name} works perfectly with your {imageFormat === 'fullBleed' ? 'full card' : 'cropped'} format
                 </p>
               </div>
             )}
@@ -157,74 +157,35 @@ export const FrameSelectionSidebar = ({
                     )}
                   </div>
 
-                  {/* Format Previews */}
-                  {showAllFormats ? (
-                    <div className="grid grid-cols-3 gap-2">
-                      {template.supportedFormats.map((format) => {
-                        const Icon = formatIcons[format];
-                        const isSelected = selectedTemplate?.id === template.id && imageFormat === format;
-                        
-                        return (
-                          <div key={format} className="space-y-1">
-                            <div
-                              onClick={() => {
-                                handleTemplateSelect(template);
-                                setImageFormat(format);
-                              }}
-                              className={`relative cursor-pointer transition-all border rounded-lg overflow-hidden ${
-                                isSelected
-                                  ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green bg-crd-green/10' : 'ring-crd-blue border-crd-blue bg-crd-blue/10'}`
-                                  : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 border-crd-mediumGray/50 hover:border-crd-mediumGray'
-                              }`}
-                            >
-                              <AdaptiveTemplatePreview 
-                                template={template} 
-                                selectedPhoto={selectedPhoto}
-                                imageFormat={format}
-                                className="aspect-[2.5/3.5]"
-                              />
-                            </div>
-                            <div className="flex items-center justify-center gap-1 text-xs text-crd-lightGray">
-                              <Icon className="w-3 h-3" />
-                              <span>{format}</span>
-                            </div>
+                  {/* Template Preview */}
+                  <div
+                    onClick={() => handleTemplateSelect(template)}
+                    className={`relative cursor-pointer transition-all border rounded-lg overflow-hidden p-2 ${
+                      selectedTemplate?.id === template.id
+                        ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green bg-crd-green/10' : 'ring-crd-blue border-crd-blue bg-crd-blue/10'}`
+                        : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 border-crd-mediumGray/50 hover:border-crd-mediumGray'
+                    }`}
+                  >
+                    <div className="grid grid-cols-2 gap-2">
+                      <AdaptiveTemplatePreview 
+                        template={template} 
+                        selectedPhoto={selectedPhoto}
+                        imageFormat={imageFormat}
+                        className="aspect-[2.5/3.5]"
+                      />
+                      <div className="space-y-1 text-xs">
+                        <p className="text-crd-lightGray">{template.description}</p>
+                        <div className="flex flex-col gap-1">
+                          <div className="text-crd-lightGray">
+                            Supports: Full Card, Cropped
                           </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div
-                      onClick={() => handleTemplateSelect(template)}
-                      className={`relative cursor-pointer transition-all border rounded-lg overflow-hidden p-2 ${
-                        selectedTemplate?.id === template.id
-                          ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green bg-crd-green/10' : 'ring-crd-blue border-crd-blue bg-crd-blue/10'}`
-                          : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 border-crd-mediumGray/50 hover:border-crd-mediumGray'
-                      }`}
-                    >
-                      <div className="grid grid-cols-2 gap-2">
-                        <AdaptiveTemplatePreview 
-                          template={template} 
-                          selectedPhoto={selectedPhoto}
-                          imageFormat={imageFormat}
-                          className="aspect-[2.5/3.5]"
-                        />
-                        <div className="space-y-1 text-xs">
-                          <p className="text-crd-lightGray">{template.description}</p>
-                          <div className="flex flex-wrap gap-1">
-                            {template.supportedFormats.map((format) => {
-                              const Icon = formatIcons[format];
-                              return (
-                                <div key={format} className="flex items-center gap-1 text-crd-lightGray">
-                                  <Icon className="w-3 h-3" />
-                                  <span>{format}</span>
-                                </div>
-                              );
-                            })}
+                          <div className="text-crd-green text-xs font-medium">
+                            {imageFormat === 'fullBleed' ? 'Full Card' : 'Cropped'} format
                           </div>
                         </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -233,7 +194,7 @@ export const FrameSelectionSidebar = ({
             {selectedPhoto && selectedTemplate && (
               <div className="text-center p-3 bg-crd-green/10 border border-crd-green/20 rounded-lg">
                 <p className="text-sm text-crd-lightGray">
-                  ✓ Ready with <strong className="text-crd-green">{imageFormat}</strong> format! Click <strong className="text-crd-green">Next</strong> to continue.
+                  ✓ Ready with <strong className="text-crd-green">{imageFormat === 'fullBleed' ? 'full card' : 'cropped'}</strong> format! Click <strong className="text-crd-green">Next</strong> to continue.
                 </p>
               </div>
             )}
