@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,7 +8,7 @@ import { SportsCustomizationStep } from './wizard/SportsCustomizationStep';
 import { VisualEffectsStep } from './wizard/VisualEffectsStep';
 import { PreviewAndPublishStep } from './wizard/PreviewAndPublishStep';
 import { useCardEditor, type CardData, type DesignTemplate } from '@/hooks/useCardEditor';
-import { ALL_TEMPLATES } from '@/data/cardTemplates';
+import { ALL_FRAMES } from '@/data/cardTemplates';
 import { toast } from 'sonner';
 
 interface CardCreationWizardProps {
@@ -124,7 +123,7 @@ export const CardCreationWizard = ({ onComplete, onCancel }: CardCreationWizardP
       case 1:
         return (
           <TemplateSelectionStep
-            templates={ALL_TEMPLATES}
+            templates={ALL_FRAMES}
             selectedTemplate={selectedTemplate}
             onTemplateSelect={handleTemplateSelect}
           />

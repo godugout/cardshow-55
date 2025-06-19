@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Star, Palette, Trophy, Music, Sparkles } from 'lucide-react';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
-import { SPORTS_TEMPLATES, ENTERTAINMENT_TEMPLATES } from '@/data/cardTemplates';
+import { SPORTS_FRAMES, ENTERTAINMENT_FRAMES } from '@/data/cardTemplates';
 
 interface TemplateSelectionStepProps {
   templates: DesignTemplate[];
@@ -215,9 +215,9 @@ export const TemplateSelectionStep = ({ selectedTemplate, onTemplateSelect }: Te
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">Choose Your Template</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">Choose Your Frame</h2>
         <p className="text-crd-lightGray">
-          Select a professional template designed for your card type
+          Select a professional frame designed for your card type
         </p>
       </div>
       
@@ -228,26 +228,26 @@ export const TemplateSelectionStep = ({ selectedTemplate, onTemplateSelect }: Te
             className="flex-1 data-[state=active]:bg-crd-green data-[state=active]:text-black"
           >
             <Trophy className="w-4 h-4 mr-2" />
-            Sports ({SPORTS_TEMPLATES.length})
+            Sports ({SPORTS_FRAMES.length})
           </TabsTrigger>
           <TabsTrigger 
             value="entertainment" 
             className="flex-1 data-[state=active]:bg-crd-green data-[state=active]:text-black"
           >
             <Music className="w-4 h-4 mr-2" />
-            Entertainment ({ENTERTAINMENT_TEMPLATES.length})
+            Entertainment ({ENTERTAINMENT_FRAMES.length})
           </TabsTrigger>
         </TabsList>
         
         <TabsContent value="sports" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SPORTS_TEMPLATES.map(renderTemplatePreview)}
+            {SPORTS_FRAMES.map(renderTemplatePreview)}
           </div>
         </TabsContent>
         
         <TabsContent value="entertainment" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ENTERTAINMENT_TEMPLATES.map(renderTemplatePreview)}
+            {ENTERTAINMENT_FRAMES.map(renderTemplatePreview)}
           </div>
         </TabsContent>
       </Tabs>
@@ -257,7 +257,7 @@ export const TemplateSelectionStep = ({ selectedTemplate, onTemplateSelect }: Te
           <div className="flex items-center gap-3">
             <Sparkles className="w-5 h-5 text-crd-green" />
             <div>
-              <p className="text-white font-medium">Template Selected</p>
+              <p className="text-white font-medium">Frame Selected</p>
               <p className="text-crd-lightGray text-sm">
                 You've chosen "{selectedTemplate.name}" - perfect choice for a professional {selectedTemplate.category} card!
               </p>

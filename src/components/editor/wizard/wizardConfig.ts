@@ -34,3 +34,17 @@ export const BULK_WIZARD_STEPS = [
     description: 'Publish your card collection' 
   }
 ];
+
+// Default templates for backward compatibility
+export const DEFAULT_TEMPLATES = [
+  {
+    id: 'baseball-classic',
+    name: 'Baseball Classic',
+    category: 'sports',
+    description: 'Traditional baseball card layout perfect for player stats',
+    usage_count: 1250,
+    is_premium: false,
+    preview_url: '/templates/baseball-classic.jpg',
+    tags: ['baseball', 'sports', 'classic', 'stats']
+  }
+];

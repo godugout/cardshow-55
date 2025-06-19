@@ -202,6 +202,11 @@ export const ENTERTAINMENT_FRAMES: DesignTemplate[] = [
 
 export const ALL_FRAMES = [...SPORTS_FRAMES, ...ENTERTAINMENT_FRAMES];
 
+// Legacy exports for backward compatibility
+export const SPORTS_TEMPLATES = SPORTS_FRAMES;
+export const ENTERTAINMENT_TEMPLATES = ENTERTAINMENT_FRAMES;
+export const ALL_TEMPLATES = ALL_FRAMES;
+
 export const getFramesByCategory = (category: string) => {
   switch (category) {
     case 'sports':
