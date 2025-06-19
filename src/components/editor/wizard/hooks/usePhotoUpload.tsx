@@ -22,126 +22,59 @@ export const usePhotoUpload = (
 
   const processImageForCard = useCallback((file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
-      // Enhanced validation
-      if (!file) {
-        reject(new Error('No file provided'));
-        return;
-      }
-
-      if (!file.type.startsWith('image/')) {
-        reject(new Error('Invalid file type. Please upload an image.'));
-        return;
-      }
-
-      if (file.size > 10 * 1024 * 1024) {
-        reject(new Error('File too large. Please upload an image smaller than 10MB.'));
-        return;
-      }
-
-      console.log('Processing image file:', file.name, file.type, file.size);
-
-      const reader = new FileReader();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = document.createElement('img');
       
-      reader.onerror = (event) => {
-        console.error('FileReader error:', event);
-        reject(new Error('Failed to read file. Please try a different image.'));
-      };
-
-      reader.onabort = () => {
-        console.error('FileReader aborted');
-        reject(new Error('File reading was aborted. Please try again.'));
-      };
-
-      reader.onload = (event) => {
-        try {
-          const result = event.target?.result;
-          
-          if (!result || typeof result !== 'string') {
-            reject(new Error('Failed to read image data'));
-            return;
-          }
-
-          console.log('File read successfully, processing image...');
-          
-          // Create image element to get dimensions and process
-          const img = new Image();
-          
-          img.onerror = () => {
-            console.error('Image load error - invalid image format');
-            reject(new Error('Invalid image format. Please try a different image.'));
-          };
-          
-          img.onload = () => {
-            try {
-              console.log('Image loaded successfully:', img.width, 'x', img.height);
-              
-              // Create canvas for processing
-              const canvas = document.createElement('canvas');
-              const ctx = canvas.getContext('2d');
-              
-              if (!ctx) {
-                reject(new Error('Canvas not supported in this browser'));
-                return;
-              }
-
-              // Set optimal dimensions for card format (maintaining aspect ratio)
-              const maxWidth = 800;
-              const maxHeight = 1120; // 800 * (3.5/2.5) for card aspect ratio
-              
-              let { width, height } = img;
-              
-              // Scale down if too large while maintaining aspect ratio
-              if (width > maxWidth || height > maxHeight) {
-                const scale = Math.min(maxWidth / width, maxHeight / height);
-                width = Math.round(width * scale);
-                height = Math.round(height * scale);
-              }
-              
-              canvas.width = width;
-              canvas.height = height;
-              
-              // Clear canvas and draw image
-              ctx.fillStyle = '#ffffff';
-              ctx.fillRect(0, 0, width, height);
-              ctx.drawImage(img, 0, 0, width, height);
-              
-              // Convert to optimized data URL
-              const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-              
-              // Store image details
-              setImageDetails({
-                dimensions: { width: img.width, height: img.height },
-                aspectRatio: img.width / img.height,
-                fileSize: (file.size / 1024 / 1024).toFixed(2) + ' MB',
-                width: img.width,
-                height: img.height
-              });
-              
-              console.log('Image processed successfully');
-              resolve(dataUrl);
-              
-            } catch (error) {
-              console.error('Canvas processing error:', error);
-              reject(new Error('Failed to process image. Please try again.'));
-            }
-          };
-          
-          // Set image source to trigger loading
-          img.src = result;
-          
-        } catch (error) {
-          console.error('FileReader result processing error:', error);
-          reject(new Error('Failed to process uploaded file'));
+      img.onload = () => {
+        // Standard trading card aspect ratio is 2.5:3.5 (roughly 0.714)
+        const targetAspectRatio = 2.5 / 3.5;
+        const sourceAspectRatio = img.width / img.height;
+        
+        // Set canvas to optimal card dimensions (400x560 pixels for better quality)
+        canvas.width = 400;
+        canvas.height = 560;
+        
+        // Clear canvas with white background
+        ctx!.fillStyle = '#ffffff';
+        ctx!.fillRect(0, 0, canvas.width, canvas.height);
+        
+        let drawWidth, drawHeight, offsetX, offsetY;
+        
+        if (sourceAspectRatio > targetAspectRatio) {
+          // Image is wider - fit to height and center horizontally
+          drawHeight = canvas.height;
+          drawWidth = drawHeight * sourceAspectRatio;
+          offsetX = (canvas.width - drawWidth) / 2;
+          offsetY = 0;
+        } else {
+          // Image is taller - fit to width and center vertically
+          drawWidth = canvas.width;
+          drawHeight = drawWidth / sourceAspectRatio;
+          offsetX = 0;
+          offsetY = (canvas.height - drawHeight) / 2;
         }
+        
+        // Draw the image centered and fitted
+        ctx!.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        
+        // Convert to data URL with high quality
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+        
+        // Store enhanced image details
+        setImageDetails({
+          dimensions: { width: img.width, height: img.height },
+          aspectRatio: sourceAspectRatio,
+          fileSize: (file.size / 1024 / 1024).toFixed(2) + ' MB',
+          width: img.width,
+          height: img.height
+        });
+        
+        resolve(dataUrl);
       };
       
-      // Start reading the file as data URL
-      try {
-        reader.readAsDataURL(file);
-      } catch (error) {
-        console.error('FileReader readAsDataURL error:', error);
-        reject(new Error('Failed to start reading file'));
-      }
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
     });
   }, []);
 
@@ -152,19 +85,22 @@ export const usePhotoUpload = (
     setAnalysisStatus('analyzing');
     
     try {
+      // Show enhanced progress feedback
       toast.info('AI Analysis Starting', { 
         icon: <Sparkles className="w-4 h-4 animate-pulse" />,
-        description: 'Analyzing image content and generating metadata...'
+        description: 'Analyzing image content, style, and generating metadata...'
       });
       
       const analysis = await analyzeCardImage(imageDataUrl);
       
+      // Update analysis status
       setAnalysisStatus('complete');
       onAnalysisComplete(analysis);
       
+      // Show detailed success feedback
       toast.success('Analysis Complete!', {
         icon: <CheckCircle className="w-4 h-4" />,
-        description: `Generated content ready for your card`
+        description: `Generated title: "${analysis.title}" • ${analysis.tags.length} tags • ${analysis.rarity} rarity`
       });
       
     } catch (error) {
@@ -173,7 +109,7 @@ export const usePhotoUpload = (
       
       toast.error('Analysis had issues', {
         icon: <AlertCircle className="w-4 h-4" />,
-        description: 'Using smart defaults. You can edit all details manually.'
+        description: 'Using smart defaults. You can still edit all details manually.'
       });
     } finally {
       setIsAnalyzing(false);
@@ -181,13 +117,21 @@ export const usePhotoUpload = (
   }, [onAnalysisComplete]);
 
   const handleFileUpload = useCallback(async (file: File) => {
-    console.log('Starting file upload process for:', file.name);
-    
     try {
-      // Clear previous state
-      setImageDetails(null);
-      setAnalysisStatus('idle');
+      // Validate file
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
       
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('Image too large', {
+          description: 'Please use an image smaller than 10MB'
+        });
+        return;
+      }
+      
+      // Show processing feedback
       const processingToast = toast.loading('Processing image...', {
         description: 'Optimizing for card format'
       });
@@ -200,26 +144,18 @@ export const usePhotoUpload = (
         description: 'Ready for AI analysis'
       });
       
-      // Trigger AI analysis after successful upload
-      if (onAnalysisComplete) {
-        setTimeout(() => {
-          handlePhotoAnalysis(processedImageUrl);
-        }, 500);
-      }
+      // Trigger AI analysis after a short delay
+      setTimeout(() => {
+        handlePhotoAnalysis(processedImageUrl);
+      }, 500);
       
     } catch (error) {
       console.error('Error processing image:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to process image';
-      
-      // Clear any loading states
-      setIsAnalyzing(false);
-      setAnalysisStatus('error');
-      
       toast.error('Failed to process image', {
-        description: errorMessage
+        description: 'Please try again with a different image'
       });
     }
-  }, [processImageForCard, onPhotoSelect, handlePhotoAnalysis, onAnalysisComplete]);
+  }, [processImageForCard, onPhotoSelect, handlePhotoAnalysis]);
 
   return {
     isAnalyzing,

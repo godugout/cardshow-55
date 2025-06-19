@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
 import { PasswordField } from './components/PasswordField';
 import { useAuthForm } from './hooks/useAuthForm';
 
@@ -24,15 +24,19 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onModeChan
     initialValues: { password: '', confirmPassword: '' },
     onSubmit: async (data) => {
       if (data.password !== data.confirmPassword) {
-        toast.error('Password Mismatch', {
-          description: 'Passwords do not match. Please try again.'
+        toast({
+          title: 'Password Mismatch',
+          description: 'Passwords do not match. Please try again.',
+          variant: 'destructive',
         });
         return;
       }
 
       if (data.password.length < 6) {
-        toast.error('Password Too Short', {
-          description: 'Password must be at least 6 characters long.'
+        toast({
+          title: 'Password Too Short',
+          description: 'Password must be at least 6 characters long.',
+          variant: 'destructive',
         });
         return;
       }
@@ -43,18 +47,23 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onModeChan
         });
 
         if (error) {
-          toast.error('Password Update Failed', {
-            description: error.message
+          toast({
+            title: 'Password Update Failed',
+            description: error.message,
+            variant: 'destructive',
           });
         } else {
-          toast.success('Password Updated', {
-            description: 'Your password has been updated successfully.'
+          toast({
+            title: 'Password Updated',
+            description: 'Your password has been updated successfully.',
           });
           navigate('/');
         }
       } catch (error) {
-        toast.error('Unexpected Error', {
-          description: 'An unexpected error occurred. Please try again.'
+        toast({
+          title: 'Unexpected Error',
+          description: 'An unexpected error occurred. Please try again.',
+          variant: 'destructive',
         });
       }
     },
@@ -64,19 +73,14 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onModeChan
     // Check if we have the required tokens from the URL
     const accessToken = searchParams.get('access_token');
     const refreshToken = searchParams.get('refresh_token');
-    const type = searchParams.get('type');
 
-    if (!accessToken || !refreshToken || type !== 'recovery') {
-      toast.error('Invalid Reset Link', {
-        description: 'This password reset link is invalid or has expired.'
+    if (!accessToken || !refreshToken) {
+      toast({
+        title: 'Invalid Reset Link',
+        description: 'This password reset link is invalid or has expired.',
+        variant: 'destructive',
       });
       onModeChange?.('forgot-password');
-    } else {
-      // Set the session with the tokens from the URL
-      supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken
-      });
     }
   }, [searchParams, onModeChange]);
 

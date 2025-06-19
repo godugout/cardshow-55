@@ -1,12 +1,11 @@
 
 import React, { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { Sparkles, Camera, Crop, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { UniversalDropZone } from '@/components/ui/UniversalDropZone';
 import { FloatingCropOverlay } from '@/components/bulk-upload/floating-editor/FloatingCropOverlay';
-import { useImageUpload } from '@/hooks/useImageUpload';
-import { ImageProcessor } from '@/lib/imageProcessor';
+import { usePhotoUpload } from '@/components/editor/wizard/hooks/usePhotoUpload';
 
 interface EnhancedPhotoUploadStepProps {
   mode: 'quick' | 'advanced';
@@ -24,12 +23,20 @@ export const EnhancedPhotoUploadStep = ({
   const [showCropEditor, setShowCropEditor] = useState(false);
   const [cropFile, setCropFile] = useState<any>(null);
   
-  const imageUpload = useImageUpload({
-    enableAnalysis: !!onAnalysisComplete,
-    onSuccess: (result) => {
-      onPhotoSelect(result.dataUrl);
-    },
+  const { isAnalyzing, imageDetails, analysisStatus, handleFileUpload } = usePhotoUpload(
+    onPhotoSelect,
     onAnalysisComplete
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: { 'image/*': [] },
+    maxFiles: 1,
+    onDrop: async (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      if (file) {
+        await handleFileUpload(file);
+      }
+    }
   });
 
   const handleCropClick = () => {
@@ -71,17 +78,29 @@ export const EnhancedPhotoUploadStep = ({
   }
 
   const getAnalysisStatusIcon = () => {
-    if (imageUpload.isAnalyzing) return <Loader2 className="w-5 h-5 animate-spin" />;
-    if (imageUpload.analysis) return <CheckCircle className="w-5 h-5 text-crd-green" />;
-    if (imageUpload.error) return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
-    return <Sparkles className="w-5 h-5" />;
+    switch (analysisStatus) {
+      case 'analyzing':
+        return <Loader2 className="w-5 h-5 animate-spin" />;
+      case 'complete':
+        return <CheckCircle className="w-5 h-5 text-crd-green" />;
+      case 'error':
+        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+      default:
+        return <Sparkles className="w-5 h-5" />;
+    }
   };
 
   const getAnalysisStatusMessage = () => {
-    if (imageUpload.isAnalyzing) return 'AI is analyzing your image and generating card details...';
-    if (imageUpload.analysis) return 'Analysis complete! Your card details have been pre-filled.';
-    if (imageUpload.error) return 'Analysis encountered issues, but smart defaults are ready.';
-    return 'Upload a photo to start AI analysis';
+    switch (analysisStatus) {
+      case 'analyzing':
+        return 'AI is analyzing your image and generating card details...';
+      case 'complete':
+        return 'Analysis complete! Your card details have been pre-filled.';
+      case 'error':
+        return 'Analysis encountered issues, but smart defaults are ready.';
+      default:
+        return 'Upload a photo to start AI analysis';
+    }
   };
 
   return (
@@ -101,11 +120,11 @@ export const EnhancedPhotoUploadStep = ({
 
       {/* AI Analysis Status */}
       <div className={`p-4 rounded-lg border transition-all ${
-        imageUpload.analysis 
+        analysisStatus === 'complete' 
           ? 'bg-crd-green/10 border-crd-green/20' 
-          : imageUpload.isAnalyzing
+          : analysisStatus === 'analyzing'
           ? 'bg-blue-500/10 border-blue-500/20'
-          : imageUpload.error
+          : analysisStatus === 'error'
           ? 'bg-yellow-500/10 border-yellow-500/20'
           : 'bg-crd-mediumGray/10 border-crd-mediumGray/20'
       }`}>
@@ -113,9 +132,9 @@ export const EnhancedPhotoUploadStep = ({
           {getAnalysisStatusIcon()}
           <div>
             <p className="text-white font-medium">
-              {imageUpload.isAnalyzing ? 'AI Analysis in Progress' : 
-               imageUpload.analysis ? 'AI Analysis Complete' :
-               imageUpload.error ? 'Analysis Complete (with fallbacks)' :
+              {analysisStatus === 'analyzing' ? 'AI Analysis in Progress' : 
+               analysisStatus === 'complete' ? 'AI Analysis Complete' :
+               analysisStatus === 'error' ? 'Analysis Complete (with fallbacks)' :
                'Ready for AI Analysis'}
             </p>
             <p className="text-sm text-crd-lightGray">
@@ -134,18 +153,16 @@ export const EnhancedPhotoUploadStep = ({
               alt="Selected photo"
               className="w-full max-h-96 object-contain rounded-lg"
             />
-            {imageUpload.processedImage && (
+            {imageDetails && (
               <div className="absolute bottom-2 right-2 bg-black/80 text-white px-3 py-1 rounded text-sm">
-                {imageUpload.processedImage.dimensions.width} × {imageUpload.processedImage.dimensions.height} • {ImageProcessor.formatFileSize(imageUpload.processedImage.fileSize)}
+                {imageDetails.width} × {imageDetails.height} • {imageDetails.fileSize}
               </div>
             )}
-            {imageUpload.isLoading && (
+            {analysisStatus === 'analyzing' && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
                 <div className="text-center text-white">
                   <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
-                  <p className="text-sm">
-                    {imageUpload.isProcessing ? 'Processing image...' : 'Analyzing image...'}
-                  </p>
+                  <p className="text-sm">Analyzing image...</p>
                 </div>
               </div>
             )}
@@ -157,7 +174,7 @@ export const EnhancedPhotoUploadStep = ({
               variant="outline"
               onClick={() => document.getElementById('photo-input')?.click()}
               className="text-crd-lightGray border-crd-lightGray hover:bg-crd-lightGray hover:text-black"
-              disabled={imageUpload.isLoading}
+              disabled={isAnalyzing}
             >
               <Camera className="w-4 h-4 mr-2" />
               Choose Different Photo
@@ -168,7 +185,7 @@ export const EnhancedPhotoUploadStep = ({
                 variant="outline"
                 onClick={handleCropClick}
                 className="text-crd-blue border-crd-blue hover:bg-crd-blue hover:text-white"
-                disabled={imageUpload.isLoading}
+                disabled={isAnalyzing}
               >
                 <Crop className="w-4 h-4 mr-2" />
                 Advanced Crop
@@ -177,17 +194,33 @@ export const EnhancedPhotoUploadStep = ({
           </div>
         </div>
       ) : (
-        <UniversalDropZone
-          onFileSelect={imageUpload.uploadImage}
-          isLoading={imageUpload.isLoading}
-          variant={mode === 'quick' ? 'default' : 'default'}
-          title={mode === 'quick' ? 'Upload Your Photo' : 'Upload & Enhance Your Photo'}
-          description="Drag and drop your image here, or click to browse"
-        />
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
+            isDragActive
+              ? 'border-crd-green bg-crd-green/10'
+              : 'border-crd-mediumGray hover:border-crd-green/50'
+          }`}
+        >
+          <input {...getInputProps()} />
+          <Camera className="w-16 h-16 mx-auto mb-4 text-crd-lightGray" />
+          <h3 className="text-white text-xl font-medium mb-2">
+            {isDragActive ? 'Drop your photo here' : 'Upload Your Photo'}
+          </h3>
+          <p className="text-crd-lightGray mb-4">
+            Drag and drop your image here, or click to browse
+          </p>
+          <Button className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold">
+            Choose Photo
+          </Button>
+          <p className="text-crd-lightGray text-sm mt-3">
+            Supports JPG, PNG, WebP • Max 10MB • AI analysis included
+          </p>
+        </div>
       )}
 
       {/* Ready State */}
-      {selectedPhoto && imageUpload.analysis && (
+      {selectedPhoto && analysisStatus === 'complete' && (
         <div className="text-center p-4 bg-crd-green/10 rounded-lg border border-crd-green/20">
           <div className="text-crd-green font-medium mb-1 flex items-center justify-center gap-2">
             <CheckCircle className="w-5 h-5" />
@@ -206,7 +239,7 @@ export const EnhancedPhotoUploadStep = ({
         onChange={async (e) => {
           const file = e.target.files?.[0];
           if (file) {
-            await imageUpload.uploadImage(file);
+            await handleFileUpload(file);
           }
           e.target.value = '';
         }}

@@ -1,5 +1,5 @@
 
-import type { CardAnalysis } from '@/services/cardAnalyzer';
+import type { CardAnalysisResult } from '@/services/cardAnalyzer';
 import type { CardData, PublishingOptions, CreatorAttribution } from '@/types/card';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 
@@ -18,7 +18,7 @@ export interface WizardState {
 
 export interface WizardHandlers {
   handlePhotoSelect: (photo: string) => void;
-  handleAiAnalysis: (analysis: CardAnalysis) => void;
+  handleAiAnalysis: (analysis: CardAnalysisResult) => void;
   handleTemplateSelect: (template: DesignTemplate) => void;
   handleNext: (targetStep?: number) => void;
   handleBack: () => void;

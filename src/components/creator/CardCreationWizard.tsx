@@ -96,30 +96,9 @@ export const CardCreationWizard = ({ onComplete, onCancel }: CardCreationWizardP
   };
 
   const handlePhotoUpload = (photoUrl: string) => {
-    console.log('Photo uploaded in wizard:', photoUrl);
     setUploadedPhoto(photoUrl);
     cardEditor.updateCardField('image_url', photoUrl);
     cardEditor.updateCardField('thumbnail_url', photoUrl);
-  };
-
-  const handleAnalysisComplete = (analysis: any) => {
-    console.log('AI analysis complete:', analysis);
-    
-    // Pre-fill card data with AI analysis
-    if (analysis.title) {
-      cardEditor.updateCardField('title', analysis.title);
-    }
-    if (analysis.description) {
-      cardEditor.updateCardField('description', analysis.description);
-    }
-    if (analysis.tags && Array.isArray(analysis.tags)) {
-      cardEditor.updateCardField('tags', analysis.tags);
-    }
-    if (analysis.rarity) {
-      cardEditor.updateCardField('rarity', analysis.rarity);
-    }
-    
-    toast.success('Card details pre-filled with AI analysis!');
   };
 
   const handleEffectsUpdate = (effects: typeof visualEffects) => {
@@ -156,7 +135,6 @@ export const CardCreationWizard = ({ onComplete, onCancel }: CardCreationWizardP
             selectedPhoto={uploadedPhoto}
             onPhotoSelect={handlePhotoUpload}
             selectedTemplate={selectedTemplate}
-            onAnalysisComplete={handleAnalysisComplete}
           />
         );
       case 3:

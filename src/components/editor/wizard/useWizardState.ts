@@ -1,9 +1,10 @@
+
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useCardEditor, CardData } from '@/hooks/useCardEditor';
 import { DEFAULT_TEMPLATES } from './wizardConfig';
 import type { WizardState, WizardHandlers } from './types';
-import type { CardAnalysis } from '@/services/cardAnalyzer';
+import type { CardAnalysisResult } from '@/services/cardAnalyzer';
 
 export const useWizardState = (onComplete: (cardData: CardData) => void) => {
   const [wizardState, setWizardState] = useState<WizardState>({
@@ -40,17 +41,15 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       updateCardField('image_url', photo);
     },
 
-    handleAiAnalysis: (analysis: CardAnalysis) => {
+    handleAiAnalysis: (analysis: CardAnalysisResult) => {
       updateCardField('title', analysis.title);
       updateCardField('description', analysis.description);
-      updateCardField('rarity', analysis.rarity);
+      // Map epic to legendary for database compatibility
+      const mappedRarity = analysis.rarity === 'epic' ? 'legendary' : analysis.rarity;
+      updateCardField('rarity', mappedRarity as any);
       updateCardField('tags', analysis.tags);
-      if (analysis.type) {
-        updateCardField('type', analysis.type);
-      }
-      if (analysis.series) {
-        updateCardField('series', analysis.series);
-      }
+      updateCardField('type', analysis.type);
+      updateCardField('series', analysis.series);
       
       setWizardState(prev => ({ ...prev, aiAnalysisComplete: true }));
       
