@@ -1,5 +1,100 @@
-
 import type { DesignTemplate } from '@/hooks/useCardEditor';
+
+// Essential Basic Frames - Always Available
+export const ESSENTIAL_FRAMES: DesignTemplate[] = [
+  {
+    id: 'full-bleed',
+    name: 'Full Bleed',
+    category: 'basic',
+    description: 'Clean full-image display with no borders - perfect for showcasing your photo',
+    usage_count: 0,
+    is_premium: false,
+    preview_url: '/templates/full-bleed.jpg',
+    tags: ['basic', 'clean', 'minimal', 'full-image'],
+    template_data: {
+      colors: {
+        primary: '#000000',
+        secondary: '#ffffff',
+        accent: '#ffffff',
+        background: 'transparent',
+        text: '#ffffff'
+      },
+      regions: {
+        image: { x: 0, y: 0, width: 100, height: 100 },
+        title: { x: 5, y: 85, width: 90, height: 10 }
+      },
+      layout: 'portrait',
+      effects: {
+        borderRadius: 8,
+        shadow: false,
+        gradient: false
+      }
+    }
+  },
+  {
+    id: 'graded-slab-2d',
+    name: 'Graded Slab (2D)',
+    category: 'basic',
+    description: 'Professional graded card case with CRD score - PSA/Beckett style protection',
+    usage_count: 0,
+    is_premium: false,
+    preview_url: '/templates/graded-slab-2d.jpg',
+    tags: ['graded', 'protection', 'professional', 'score'],
+    template_data: {
+      colors: {
+        primary: '#1a1a1a',
+        secondary: '#ffffff',
+        accent: '#00C851',
+        background: '#f8f9fa',
+        text: '#000000'
+      },
+      regions: {
+        image: { x: 10, y: 15, width: 80, height: 60 },
+        title: { x: 10, y: 78, width: 80, height: 8 },
+        grade: { x: 10, y: 5, width: 30, height: 8 },
+        score: { x: 60, y: 5, width: 30, height: 8 }
+      },
+      layout: 'portrait',
+      effects: {
+        borderRadius: 4,
+        shadow: true,
+        gradient: false
+      }
+    }
+  },
+  {
+    id: 'graded-slab-3d',
+    name: 'Graded Slab (3D)',
+    category: 'basic',
+    description: 'Interactive 3D graded card case with depth and realistic protection display',
+    usage_count: 0,
+    is_premium: false,
+    preview_url: '/templates/graded-slab-3d.jpg',
+    tags: ['graded', 'protection', '3d', 'interactive'],
+    template_data: {
+      colors: {
+        primary: '#1a1a1a',
+        secondary: '#ffffff',
+        accent: '#00C851',
+        background: '#f8f9fa',
+        text: '#000000'
+      },
+      regions: {
+        image: { x: 10, y: 15, width: 80, height: 60 },
+        title: { x: 10, y: 78, width: 80, height: 8 },
+        grade: { x: 10, y: 5, width: 30, height: 8 },
+        score: { x: 60, y: 5, width: 30, height: 8 }
+      },
+      layout: 'portrait',
+      effects: {
+        borderRadius: 4,
+        shadow: true,
+        gradient: false,
+        is3D: true
+      }
+    }
+  }
+];
 
 export const SPORTS_FRAMES: DesignTemplate[] = [
   {
@@ -200,7 +295,7 @@ export const ENTERTAINMENT_FRAMES: DesignTemplate[] = [
   }
 ];
 
-export const ALL_FRAMES = [...SPORTS_FRAMES, ...ENTERTAINMENT_FRAMES];
+export const ALL_FRAMES = [...ESSENTIAL_FRAMES, ...SPORTS_FRAMES, ...ENTERTAINMENT_FRAMES];
 
 // Legacy exports for backward compatibility
 export const SPORTS_TEMPLATES = SPORTS_FRAMES;
