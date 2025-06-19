@@ -47,9 +47,7 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
       fileName: file.name,
       fileType: file.type,
       fileSize: file.size,
-      enableAnalysis,
-      userAgent: navigator.userAgent,
-      fileReaderSupported: typeof FileReader !== 'undefined'
+      enableAnalysis
     });
     
     setState(prev => ({
@@ -61,13 +59,13 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
     }));
 
     try {
-      console.log('📋 Starting comprehensive file processing...');
+      console.log('📋 Starting image processing...');
       const processingToast = toast.loading('Processing image...', {
         description: 'Reading and optimizing your image'
       });
 
-      // Process image with comprehensive error handling
-      console.log('🔄 Starting image processing with enhanced debugging...');
+      // Process image with simplified approach
+      console.log('🔄 Starting simplified image processing...');
       const result = await ImageProcessor.processFile(file, {
         maxWidth: 1024,
         maxHeight: 1024,
@@ -135,17 +133,11 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
       }
 
     } catch (error) {
-      console.error('💥 Image upload failed with detailed context:', {
+      console.error('💥 Image upload failed:', {
         error,
         fileName: file.name,
         fileSize: file.size,
-        fileType: file.type,
-        browserInfo: {
-          userAgent: navigator.userAgent,
-          fileReaderSupported: typeof FileReader !== 'undefined',
-          canvasSupported: typeof document.createElement === 'function',
-          blobSupported: typeof Blob !== 'undefined'
-        }
+        fileType: file.type
       });
 
       const errorMessage = error instanceof Error ? error.message : 'Failed to process image';
