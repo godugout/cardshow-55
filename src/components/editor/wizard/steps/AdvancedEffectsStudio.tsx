@@ -153,6 +153,24 @@ export const AdvancedEffectsStudio = ({
     image_url: selectedPhoto,
     template_id: selectedTemplate?.id || '',
     design_metadata: selectedTemplate?.template_data || {},
+    rarity: 'common', // Set required rarity property
+    tags: [],
+    visibility: 'private',
+    creator_attribution: {
+      creator_name: 'Preview',
+      creator_id: 'preview'
+    },
+    publishing_options: {
+      marketplace_listing: false,
+      crd_catalog_inclusion: false,
+      print_available: false,
+      pricing: {
+        currency: 'USD'
+      },
+      distribution: {
+        limited_edition: false
+      }
+    },
     ...cardData
   };
 
@@ -273,8 +291,12 @@ export const AdvancedEffectsStudio = ({
                 <EnvironmentTab
                   lighting={effects.lighting}
                   physics={effects.physics}
-                  onLightingUpdate={(lighting) => updateEffects({ lighting })}
-                  onPhysicsUpdate={(physics) => updateEffects({ physics })}
+                  onLightingUpdate={(lightingUpdates) => 
+                    updateEffects({ lighting: { ...effects.lighting, ...lightingUpdates } })
+                  }
+                  onPhysicsUpdate={(physicsUpdates) => 
+                    updateEffects({ physics: { ...effects.physics, ...physicsUpdates } })
+                  }
                 />
               </div>
             </TabsContent>
