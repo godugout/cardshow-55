@@ -1,9 +1,9 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Share2, Edit3, Maximize, RotateCcw, Eye, Camera } from 'lucide-react';
 import { toast } from 'sonner';
 import html2canvas from 'html2canvas';
+import { ALL_FRAMES } from '@/data/cardTemplates';
 import type { useCardEditor } from '@/hooks/useCardEditor';
 
 interface EnhancedInteractivePreviewProps {
@@ -33,11 +33,9 @@ export const EnhancedInteractivePreview = ({
     // Get selected template from wizard state or card editor
     const templateId = cardEditor?.cardData?.template_id;
     if (templateId) {
-      // Find template data - this would come from the wizard config
-      import('@/components/editor/wizard/wizardConfig').then(({ DEFAULT_TEMPLATES }) => {
-        const template = DEFAULT_TEMPLATES.find(t => t.id === templateId);
-        setSelectedTemplate(template);
-      });
+      // Find template data from ALL_FRAMES
+      const template = ALL_FRAMES.find(t => t.id === templateId);
+      setSelectedTemplate(template);
     }
   }, [cardEditor?.cardData?.template_id]);
 
