@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -59,6 +58,8 @@ export const CropPositionStep = ({
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx || !imageElement || !selectedTemplate) return;
 
+    console.log('Drawing canvas with template:', selectedTemplate);
+
     // Set canvas size to match template dimensions
     const scaleFactor = 2; // Higher resolution for better quality
     canvas.width = 300 * scaleFactor;
@@ -71,16 +72,35 @@ export const CropPositionStep = ({
 
     // Draw template background
     const { colors } = selectedTemplate.template_data;
-    ctx.fillStyle = colors.background;
+    ctx.fillStyle = colors?.background || '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Save context for transformations
     ctx.save();
 
-    // Calculate image region within template
-    const imageRegion = selectedTemplate.template_data.regions.image || 
-                       selectedTemplate.template_data.regions.playerName ||
-                       { x: 20, y: 70, width: 260, height: 180 };
+    // Calculate image region within template - handle both old and new template structures
+    let imageRegion;
+    
+    // Try new structure first (elements)
+    if (selectedTemplate.template_data.elements?.image) {
+      const imageEl = selectedTemplate.template_data.elements.image;
+      imageRegion = {
+        x: imageEl.position?.x || 20,
+        y: imageEl.position?.y || 70,
+        width: imageEl.position?.width || 260,
+        height: imageEl.position?.height || 180
+      };
+    }
+    // Fallback to old structure (regions) if it exists
+    else if (selectedTemplate.template_data.regions?.image) {
+      imageRegion = selectedTemplate.template_data.regions.image;
+    }
+    // Default fallback
+    else {
+      imageRegion = { x: 20, y: 70, width: 260, height: 180 };
+    }
+
+    console.log('Using image region:', imageRegion);
 
     const regionX = imageRegion.x * scaleFactor;
     const regionY = imageRegion.y * scaleFactor;
@@ -128,12 +148,29 @@ export const CropPositionStep = ({
   const drawTemplateOverlay = (ctx: CanvasRenderingContext2D, scaleFactor: number) => {
     if (!selectedTemplate) return;
 
-    const { colors, regions } = selectedTemplate.template_data;
+    const { colors } = selectedTemplate.template_data;
 
-    // Draw title area
-    if (regions.title || regions.playerName) {
-      const titleRegion = regions.title || regions.playerName;
-      ctx.fillStyle = colors.primary;
+    // Handle both old and new template structures for title/text areas
+    let titleRegion;
+    
+    // Try new structure first (elements)
+    if (selectedTemplate.template_data.elements?.title) {
+      const titleEl = selectedTemplate.template_data.elements.title;
+      titleRegion = {
+        x: titleEl.position?.x || 10,
+        y: titleEl.position?.y || 10,
+        width: 280,
+        height: 30
+      };
+    }
+    // Fallback to old structure (regions)
+    else if (selectedTemplate.template_data.regions?.title || selectedTemplate.template_data.regions?.playerName) {
+      titleRegion = selectedTemplate.template_data.regions.title || selectedTemplate.template_data.regions.playerName;
+    }
+
+    // Draw title area if it exists
+    if (titleRegion) {
+      ctx.fillStyle = colors?.primary || '#000000';
       ctx.fillRect(
         titleRegion.x * scaleFactor,
         titleRegion.y * scaleFactor,
@@ -152,19 +189,31 @@ export const CropPositionStep = ({
       );
     }
 
-    // Draw stats/footer area
-    if (regions.stats) {
-      ctx.fillStyle = colors.secondary;
+    // Draw stats/footer area if it exists in old structure
+    if (selectedTemplate.template_data.regions?.stats) {
+      ctx.fillStyle = colors?.secondary || '#f0f0f0';
       ctx.fillRect(
-        regions.stats.x * scaleFactor,
-        regions.stats.y * scaleFactor,
-        regions.stats.width * scaleFactor,
-        regions.stats.height * scaleFactor
+        selectedTemplate.template_data.regions.stats.x * scaleFactor,
+        selectedTemplate.template_data.regions.stats.y * scaleFactor,
+        selectedTemplate.template_data.regions.stats.width * scaleFactor,
+        selectedTemplate.template_data.regions.stats.height * scaleFactor
       );
     }
 
     // Draw border around image region to show crop area
-    const imageRegion = regions.image || regions.playerName || { x: 20, y: 70, width: 260, height: 180 };
+    let imageRegion;
+    if (selectedTemplate.template_data.elements?.image) {
+      const imageEl = selectedTemplate.template_data.elements.image;
+      imageRegion = {
+        x: imageEl.position?.x || 20,
+        y: imageEl.position?.y || 70,
+        width: imageEl.position?.width || 260,
+        height: imageEl.position?.height || 180
+      };
+    } else {
+      imageRegion = { x: 20, y: 70, width: 260, height: 180 };
+    }
+
     ctx.strokeStyle = '#10B981';
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]);
