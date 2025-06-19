@@ -8,9 +8,11 @@ import { useCameraHandlers } from './dropzone/useCameraHandlers';
 import { DropzoneContent } from './dropzone/DropzoneContent';
 import { DropzoneActions } from './dropzone/DropzoneActions';
 import { DropzoneFooter } from './dropzone/DropzoneFooter';
+import { useFileUpload } from '@/hooks/useFileUpload';
 
 export interface UniversalDropZoneProps {
   onFileSelect: (file: File) => void;
+  onUploadComplete?: (result: { url: string; path: string }) => void;
   isLoading?: boolean;
   disabled?: boolean;
   accept?: Record<string, string[]>;
@@ -21,10 +23,14 @@ export interface UniversalDropZoneProps {
   showCameraButton?: boolean;
   title?: string;
   description?: string;
+  autoUpload?: boolean;
+  bucket?: 'card-images' | 'user-uploads';
+  folder?: string;
 }
 
 export const UniversalDropZone = ({
   onFileSelect,
+  onUploadComplete,
   isLoading = false,
   disabled = false,
   accept = { 'image/*': [] },
@@ -34,13 +40,41 @@ export const UniversalDropZone = ({
   variant = 'default',
   showCameraButton = true,
   title,
-  description
+  description,
+  autoUpload = true,
+  bucket = 'user-uploads',
+  folder = 'general'
 }: UniversalDropZoneProps) => {
   const [showDesktopCamera, setShowDesktopCamera] = useState(false);
 
+  const fileUpload = useFileUpload({
+    bucket,
+    folder,
+    generateThumbnail: true,
+    onSuccess: (result) => {
+      onUploadComplete?.(result);
+      toast.success('Upload complete!');
+    },
+    onError: (error) => {
+      toast.error(`Upload failed: ${error}`);
+    }
+  });
+
+  const handleFileSelection = async (file: File) => {
+    try {
+      onFileSelect(file);
+      
+      if (autoUpload) {
+        await fileUpload.uploadFile(file);
+      }
+    } catch (error) {
+      console.error('File selection/upload error:', error);
+    }
+  };
+
   const { getRootProps, getInputProps, isDragActive, open } = useDropzoneLogic({
-    onFileSelect,
-    isLoading,
+    onFileSelect: handleFileSelection,
+    isLoading: isLoading || fileUpload.isUploading,
     disabled,
     accept,
     maxFiles,
@@ -48,14 +82,13 @@ export const UniversalDropZone = ({
   });
 
   const { capabilities, handleCameraClick } = useCameraHandlers({
-    onFileSelect,
+    onFileSelect: handleFileSelection,
     onShowDesktopCamera: setShowDesktopCamera
   });
 
-  const handleDesktopCameraCapture = (file: File) => {
-    onFileSelect(file);
+  const handleDesktopCameraCapture = async (file: File) => {
+    await handleFileSelection(file);
     setShowDesktopCamera(false);
-    toast.success('Photo captured successfully!');
   };
 
   const getVariantStyles = () => {
@@ -81,6 +114,8 @@ export const UniversalDropZone = ({
     handleCameraClick();
   };
 
+  const currentLoading = isLoading || fileUpload.isUploading;
+
   return (
     <>
       <div
@@ -90,7 +125,7 @@ export const UniversalDropZone = ({
           'hover:border-crd-green/50 hover:bg-crd-green/5',
           isDragActive && 'border-crd-green bg-crd-green/10',
           disabled && 'opacity-50 cursor-not-allowed',
-          isLoading && 'pointer-events-none',
+          currentLoading && 'pointer-events-none',
           variant === 'default' && 'border-crd-mediumGray',
           variant === 'compact' && 'border-crd-mediumGray/50',
           variant === 'minimal' && 'border-crd-lightGray',
@@ -101,7 +136,7 @@ export const UniversalDropZone = ({
         <input {...getInputProps()} />
         
         <DropzoneContent
-          isLoading={isLoading}
+          isLoading={currentLoading}
           isDragActive={isDragActive}
           variant={variant}
           title={title}
@@ -109,7 +144,7 @@ export const UniversalDropZone = ({
         />
 
         <DropzoneActions
-          isLoading={isLoading}
+          isLoading={currentLoading}
           disabled={disabled}
           variant={variant}
           shouldShowCameraButton={shouldShowCameraButton}
@@ -122,6 +157,21 @@ export const UniversalDropZone = ({
           maxSize={maxSize}
           requiresHTTPS={capabilities.requiresHTTPS}
         />
+
+        {/* Upload Progress */}
+        {fileUpload.isUploading && fileUpload.progress > 0 && (
+          <div className="mt-4">
+            <div className="w-full bg-crd-mediumGray/30 rounded-full h-2">
+              <div 
+                className="bg-crd-green h-2 rounded-full transition-all duration-300"
+                style={{ width: `${fileUpload.progress}%` }}
+              />
+            </div>
+            <p className="text-xs text-crd-lightGray mt-1">
+              Uploading... {fileUpload.progress}%
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Desktop Camera Capture Dialog */}
