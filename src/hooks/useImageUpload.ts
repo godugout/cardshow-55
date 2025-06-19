@@ -43,7 +43,12 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
   });
 
   const uploadImage = useCallback(async (file: File) => {
-    console.log('🚀 Starting image upload process:', file.name);
+    console.log('🚀 useImageUpload.uploadImage called:', {
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      enableAnalysis
+    });
     
     setState(prev => ({
       ...prev,
@@ -54,14 +59,16 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
     }));
 
     try {
-      // Validate file first (simplified validation)
+      // Validate file first
       await ImageProcessor.validateImageFile(file);
       
+      console.log('📋 File validation passed, showing processing toast...');
       const processingToast = toast.loading('Processing image...', {
         description: 'Optimizing for upload'
       });
 
-      // Process image with better error handling
+      // Process image with enhanced error handling
+      console.log('🔄 Starting image processing...');
       const result = await ImageProcessor.processFile(file, {
         maxWidth: 1024,
         maxHeight: 1024,
@@ -70,6 +77,7 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
         ...processingOptions
       });
 
+      console.log('✅ Image processing completed successfully');
       setState(prev => ({
         ...prev,
         isProcessing: false,
@@ -86,6 +94,7 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
 
       // Start AI analysis if enabled
       if (enableAnalysis) {
+        console.log('🤖 Starting AI analysis...');
         setState(prev => ({ ...prev, isAnalyzing: true }));
         
         const analysisToast = toast.loading('AI analyzing image...', {
@@ -95,6 +104,7 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
         try {
           const analysis = await analyzeCardImage(result.dataUrl);
           
+          console.log('✅ AI analysis completed:', analysis);
           setState(prev => ({
             ...prev,
             isAnalyzing: false,
