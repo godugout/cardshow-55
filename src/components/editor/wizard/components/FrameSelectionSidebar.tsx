@@ -1,12 +1,14 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Star, Filter } from 'lucide-react';
 import { CompactPhotoUpload } from './CompactPhotoUpload';
+import { ModularTemplatePreview } from './ModularTemplatePreview';
+import { MODULAR_TEMPLATES, convertToDesignTemplate } from '@/data/modularTemplates';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 import type { WizardMode } from '../UnifiedCardWizard';
-import { ESSENTIAL_FRAMES } from '@/data/cardTemplates';
 
 interface FrameSelectionSidebarProps {
   mode: WizardMode;
@@ -25,22 +27,18 @@ export const FrameSelectionSidebar = ({
   onPhotoSelect,
   onPhotoRemove,
   isAnalyzing,
-  templates,
   selectedTemplate,
   onTemplateSelect
 }: FrameSelectionSidebarProps) => {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  // Filter templates - always show essential frames first
+  // Use modular templates to avoid duplicates
   const getFilteredTemplates = () => {
-    let filtered = [...ESSENTIAL_FRAMES];
+    let filtered = MODULAR_TEMPLATES;
     
     if (mode === 'quick') {
-      // In quick mode, add popular templates
-      filtered = [...filtered, ...templates.filter(t => !t.is_premium && t.usage_count > 100)];
-    } else {
-      // In advanced mode, add all templates
-      filtered = [...filtered, ...templates];
+      // In quick mode, prioritize popular templates
+      filtered = MODULAR_TEMPLATES.filter(t => !t.is_premium || t.usage_count > 500);
     }
     
     if (categoryFilter !== 'all') {
@@ -51,68 +49,11 @@ export const FrameSelectionSidebar = ({
   };
 
   const filteredTemplates = getFilteredTemplates();
-  const categories = [...new Set(templates.map(t => t.category))].filter(Boolean);
+  const categories = [...new Set(MODULAR_TEMPLATES.map(t => t.category))].filter(Boolean);
 
-  const renderFramePreview = (template: DesignTemplate) => {
-    const isGraded = template.id.includes('graded-slab');
-    const is3D = template.id.includes('3d');
-    
-    return (
-      <div 
-        className="aspect-[2.5/3.5] relative rounded-lg overflow-hidden bg-white"
-        style={{ 
-          transform: is3D ? 'perspective(500px) rotateY(-3deg) rotateX(1deg)' : 'none'
-        }}
-      >
-        {isGraded ? (
-          // Graded slab preview
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-100 to-gray-200 border border-gray-300 rounded-lg">
-            <div className="absolute top-1 left-1 bg-black text-white px-1 py-0.5 rounded text-xs font-bold">
-              CRD
-            </div>
-            <div className="absolute top-1 right-1 bg-crd-green text-black px-1 py-0.5 rounded text-xs font-bold">
-              10
-            </div>
-            <div className="absolute inset-2 bg-white rounded border shadow-inner">
-              {selectedPhoto ? (
-                <img 
-                  src={selectedPhoto}
-                  alt="Preview"
-                  className="w-full h-3/4 object-cover rounded-t"
-                />
-              ) : (
-                <div className="w-full h-3/4 bg-gray-200 rounded-t flex items-center justify-center">
-                  <span className="text-gray-400 text-xs">Photo</span>
-                </div>
-              )}
-              <div className="p-1">
-                <div className="h-2 bg-gray-200 rounded"></div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          // Regular frame preview
-          <>
-            {selectedPhoto ? (
-              <img 
-                src={selectedPhoto}
-                alt="Preview"
-                className={`w-full ${template.id === 'full-bleed' ? 'h-full' : 'h-3/4'} object-cover`}
-              />
-            ) : (
-              <div className={`w-full ${template.id === 'full-bleed' ? 'h-full' : 'h-3/4'} bg-gray-200 flex items-center justify-center`}>
-                <span className="text-gray-400 text-xs">Photo</span>
-              </div>
-            )}
-            {template.id !== 'full-bleed' && (
-              <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white p-1">
-                <div className="h-2 bg-white/30 rounded"></div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    );
+  const handleTemplateSelect = (modularTemplate: any) => {
+    const convertedTemplate = convertToDesignTemplate(modularTemplate);
+    onTemplateSelect(convertedTemplate);
   };
 
   return (
@@ -185,33 +126,29 @@ export const FrameSelectionSidebar = ({
               {filteredTemplates.map((template) => (
                 <div
                   key={template.id}
-                  onClick={() => onTemplateSelect(template)}
+                  onClick={() => handleTemplateSelect(template)}
                   className={`p-2 rounded-lg cursor-pointer transition-all border ${
                     selectedTemplate?.id === template.id
                       ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green bg-crd-green/10' : 'ring-crd-blue border-crd-blue bg-crd-blue/10'}`
                       : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 border-crd-mediumGray/50 hover:border-crd-mediumGray'
                   }`}
                 >
-                  {renderFramePreview(template)}
+                  <ModularTemplatePreview 
+                    template={template} 
+                    selectedPhoto={selectedPhoto}
+                    className="mb-2"
+                  />
                   
-                  <div className="space-y-1 mt-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-white font-medium text-xs truncate">{template.name}</h4>
-                      {template.is_premium && mode === 'advanced' && (
+                  <div className="space-y-1">
+                    <h4 className="text-white font-medium text-xs text-center truncate">{template.name}</h4>
+                    
+                    {template.is_premium && mode === 'advanced' && (
+                      <div className="flex justify-center">
                         <Badge className="bg-yellow-500 text-black text-xs px-1 py-0">
                           <Star className="w-2 h-2 mr-1" />
                           Pro
                         </Badge>
-                      )}
-                      {ESSENTIAL_FRAMES.includes(template) && (
-                        <Badge className="bg-crd-green text-black text-xs px-1 py-0">
-                          Essential
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {mode === 'advanced' && template.description && (
-                      <p className="text-crd-lightGray text-xs line-clamp-2">{template.description}</p>
+                      </div>
                     )}
                   </div>
                 </div>

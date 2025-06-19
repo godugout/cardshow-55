@@ -1,7 +1,69 @@
-
 import type { ModularTemplate } from '@/types/modularTemplate';
 
 export const MODULAR_TEMPLATES: ModularTemplate[] = [
+  {
+    id: 'crd-full-bleed',
+    name: 'CRD Full Bleed',
+    description: 'Full image display with CRD branding and minimal effects',
+    category: 'minimal',
+    aesthetic: 'minimal-grid',
+    is_premium: false,
+    elements: [
+      {
+        id: 'fullbleed-bg',
+        type: 'background',
+        name: 'Full Background',
+        position: { x: 0, y: 0, width: 100, height: 100 },
+        style: {
+          backgroundColor: '#000000',
+          borderRadius: 12
+        },
+        layer: 0,
+        isCustomizable: true
+      },
+      {
+        id: 'fullbleed-image',
+        type: 'imageZone',
+        name: 'Full Image Area',
+        position: { x: 0, y: 0, width: 100, height: 100 },
+        style: {
+          borderRadius: 12
+        },
+        layer: 1,
+        isCustomizable: false
+      },
+      {
+        id: 'crd-logo',
+        type: 'logoPatch',
+        name: 'CRD Logo',
+        position: { x: 85, y: 5, width: 12, height: 12 },
+        style: {
+          backgroundColor: 'rgba(16, 185, 129, 0.9)',
+          borderRadius: 50,
+          color: '#000000'
+        },
+        content: 'CRD',
+        layer: 3,
+        isCustomizable: true
+      }
+    ],
+    colorSchemes: [
+      {
+        name: 'CRD Default',
+        primary: '#10B981',
+        secondary: '#000000',
+        accent: '#ffffff',
+        background: '#000000',
+        text: '#ffffff'
+      }
+    ],
+    customization: {
+      allowedElements: ['logoPatch'],
+      presets: ['default']
+    },
+    usage_count: 2500,
+    tags: ['full-bleed', 'default', 'crd', 'minimal']
+  },
   {
     id: 'minimal-grid',
     name: 'Minimal Grid',

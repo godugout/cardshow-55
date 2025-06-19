@@ -20,17 +20,16 @@ export const WizardStepIndicator = ({ steps, currentStep }: WizardStepIndicatorP
         {steps.map((step, index) => (
           <div key={step.number} className="flex items-center">
             <div className={`flex items-center ${index < steps.length - 1 ? 'flex-1' : ''}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
                 currentStep >= step.number ? 'bg-crd-green text-black' : 
                 currentStep === step.number ? 'bg-crd-blue text-white' : 'bg-editor-border text-gray-400'
               }`}>
-                {currentStep > step.number ? <Check size={16} /> : step.number}
+                {currentStep > step.number ? <Check size={14} /> : step.number}
               </div>
               <div className="ml-3 hidden md:block">
                 <p className={`text-sm font-medium ${currentStep >= step.number ? 'text-white' : 'text-gray-400'}`}>
                   {step.title}
                 </p>
-                <p className="text-xs text-gray-500">{step.description}</p>
               </div>
             </div>
             {index < steps.length - 1 && (

@@ -34,6 +34,23 @@ export const ModularTemplatePreview = ({
 
     switch (element.type) {
       case 'background':
+        // Handle full-bleed background differently
+        if (template.id === 'crd-full-bleed' && selectedPhoto) {
+          return (
+            <div
+              key={element.id}
+              style={{
+                ...style,
+                backgroundImage: `url(${selectedPhoto})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                borderRadius: `${element.style.borderRadius || 12}px`
+              }}
+              className="pointer-events-none"
+            />
+          );
+        }
+        
         return (
           <div
             key={element.id}
@@ -58,6 +75,11 @@ export const ModularTemplatePreview = ({
         );
       
       case 'imageZone':
+        // Skip image zone for full-bleed since background handles it
+        if (template.id === 'crd-full-bleed') {
+          return null;
+        }
+        
         return (
           <div
             key={element.id}
@@ -117,12 +139,14 @@ export const ModularTemplatePreview = ({
             key={element.id}
             style={{
               ...style,
-              backgroundColor: element.style.backgroundColor || 'rgba(255,255,255,0.2)',
+              backgroundColor: element.style.backgroundColor || 'rgba(16, 185, 129, 0.9)',
               borderRadius: `${element.style.borderRadius || 50}%`
             }}
             className="pointer-events-none flex items-center justify-center"
           >
-            <span className="text-xs text-white/60 font-bold">LOGO</span>
+            <span className="text-xs font-bold" style={{ color: element.style.color || '#000000' }}>
+              {element.content || 'CRD'}
+            </span>
           </div>
         );
       
