@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,18 @@ export const CleanFrameSelector = ({
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
+  // Default to "Common CRD" template on mount
+  useEffect(() => {
+    if (!selectedTemplate) {
+      // Find the default "Common CRD" template (renamed from "CRD Full Bleed")
+      const defaultTemplate = ADAPTIVE_TEMPLATES.find(t => t.id === 'sports-classic') || ADAPTIVE_TEMPLATES[0];
+      const convertedTemplate = convertAdaptiveToDesignTemplate(defaultTemplate);
+      // Rename it to "Common CRD"
+      convertedTemplate.name = "Common CRD";
+      onTemplateSelect(convertedTemplate);
+    }
+  }, [selectedTemplate, onTemplateSelect]);
+
   // Use top templates for quick mode, all for advanced
   const getFilteredTemplates = () => {
     let filtered = ADAPTIVE_TEMPLATES;
@@ -50,6 +62,10 @@ export const CleanFrameSelector = ({
 
   const handleTemplateSelect = (adaptiveTemplate: any) => {
     const convertedTemplate = convertAdaptiveToDesignTemplate(adaptiveTemplate);
+    // Rename the default template
+    if (adaptiveTemplate.id === 'sports-classic') {
+      convertedTemplate.name = "Common CRD";
+    }
     onTemplateSelect(convertedTemplate);
   };
 
@@ -73,29 +89,35 @@ export const CleanFrameSelector = ({
             )}
           </div>
 
-          {/* Format Selection - Single Location */}
+          {/* Format Selection - Better Color Pattern */}
           <div className="space-y-3">
             <h4 className="text-white font-medium text-sm">Photo Format</h4>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { id: 'fullBleed' as const, name: 'Full Card', icon: '🃏' },
-                { id: 'square' as const, name: 'Square', icon: '⬜' },
-                { id: 'circle' as const, name: 'Circle', icon: '⭕' }
+                { id: 'fullBleed' as const, name: 'Full Card', icon: '🃏', color: 'bg-gradient-to-r from-crd-blue to-crd-purple' },
+                { id: 'square' as const, name: 'Square', icon: '⬜', color: 'bg-gradient-to-r from-crd-green to-crd-blue' },
+                { id: 'circle' as const, name: 'Circle', icon: '⭕', color: 'bg-gradient-to-r from-crd-orange to-crd-green' }
               ].map((format) => (
-                <Button
+                <button
                   key={format.id}
                   onClick={() => onImageFormatChange(format.id)}
-                  variant="outline"
-                  size="sm"
-                  className={`${
+                  className={`relative overflow-hidden rounded-lg p-3 transition-all ${
                     imageFormat === format.id
-                      ? 'bg-crd-green/20 border-crd-green text-crd-green hover:bg-crd-green/30'
-                      : 'border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white'
+                      ? 'ring-2 ring-crd-green scale-105 shadow-lg'
+                      : 'hover:scale-102 hover:shadow-md'
                   }`}
                 >
-                  <span className="mr-2">{format.icon}</span>
-                  {format.name}
-                </Button>
+                  <div className={`absolute inset-0 ${format.color} opacity-20`} />
+                  <div className={`relative flex flex-col items-center space-y-1 ${
+                    imageFormat === format.id ? 'text-crd-green' : 'text-crd-lightGray'
+                  }`}>
+                    <span className="text-lg">{format.icon}</span>
+                    <span className="text-xs font-medium">{format.name}</span>
+                  </div>
+                  {imageFormat === format.id && (
+                    <div className="absolute top-1 right-1 w-3 h-3 bg-crd-green rounded-full shadow-lg" />
+                  )}
+                </button>
               ))}
             </div>
           </div>
@@ -147,47 +169,47 @@ export const CleanFrameSelector = ({
             </div>
           )}
           
-          {/* Clean Templates Grid */}
-          <div className="grid grid-cols-1 gap-4 max-h-80 overflow-y-auto">
+          {/* Clean Templates Grid - Thumbnail Focus */}
+          <div className="grid grid-cols-3 gap-3 max-h-64 overflow-y-auto">
             {filteredTemplates.map((template) => (
-              <div
+              <button
                 key={template.id}
                 onClick={() => handleTemplateSelect(template)}
-                className={`relative cursor-pointer transition-all border rounded-lg overflow-hidden p-3 ${
+                className={`relative cursor-pointer transition-all border rounded-lg overflow-hidden ${
                   selectedTemplate?.id === template.id
-                    ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green bg-crd-green/10' : 'ring-crd-blue border-crd-blue bg-crd-blue/10'}`
-                    : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 border-crd-mediumGray/50 hover:border-crd-mediumGray'
+                    ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green' : 'ring-crd-blue border-crd-blue'} scale-105 shadow-lg`
+                    : 'border-crd-mediumGray/50 hover:border-crd-mediumGray hover:scale-102 hover:shadow-md'
                 }`}
               >
-                <div className="flex gap-3">
-                  {/* Template Preview */}
-                  <div className="w-20 aspect-[2.5/3.5] flex-shrink-0">
-                    <AdaptiveTemplatePreview 
-                      template={template} 
-                      selectedPhoto={selectedPhoto}
-                      imageFormat={imageFormat}
-                      className="w-full h-full"
-                    />
-                  </div>
-                  
-                  {/* Template Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="text-white font-medium text-sm truncate">{template.name}</h4>
-                      {template.is_premium && (
-                        <Badge className="bg-yellow-500/20 text-yellow-400 text-xs px-1 py-0 ml-2">
-                          <Star className="w-2 h-2 mr-1" />
-                          Pro
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-crd-lightGray text-xs mb-2 line-clamp-2">{template.description}</p>
-                    <div className="text-crd-green text-xs font-medium">
-                      ✓ Supports {imageFormat === 'fullBleed' ? 'Full Card' : 'Cropped'} format
-                    </div>
+                {/* Template Thumbnail */}
+                <div className="w-full aspect-[2.5/3.5]">
+                  <AdaptiveTemplatePreview 
+                    template={template} 
+                    selectedPhoto={selectedPhoto}
+                    imageFormat={imageFormat}
+                    className="w-full h-full"
+                  />
+                </div>
+                
+                {/* Minimal overlay info */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-white text-xs font-medium truncate">
+                      {template.id === 'sports-classic' ? 'Common CRD' : template.name}
+                    </h4>
+                    {template.is_premium && (
+                      <Star className="w-3 h-3 text-yellow-400 flex-shrink-0 ml-1" />
+                    )}
                   </div>
                 </div>
-              </div>
+                
+                {/* Selection indicator */}
+                {selectedTemplate?.id === template.id && (
+                  <div className="absolute top-2 right-2 w-4 h-4 bg-crd-green rounded-full shadow-lg flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full" />
+                  </div>
+                )}
+              </button>
             ))}
           </div>
 

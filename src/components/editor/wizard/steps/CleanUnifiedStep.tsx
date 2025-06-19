@@ -5,6 +5,7 @@ import { WizardModeHeader } from '../components/WizardModeHeader';
 import { CardPreviewSection } from '../components/CardPreviewSection';
 import { CleanPhotoSection } from '../components/CleanPhotoSection';
 import { CleanFrameSelector } from '../components/CleanFrameSelector';
+import { SelectedFrameInfoPanel } from '../components/SelectedFrameInfoPanel';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 import type { WizardMode } from '../UnifiedCardWizard';
 
@@ -45,6 +46,12 @@ export const CleanUnifiedStep = ({
         <CardPreviewSection
           selectedPhoto={selectedPhoto}
           selectedTemplate={selectedTemplate}
+        />
+        
+        {/* Selected Frame Info Panel */}
+        <SelectedFrameInfoPanel
+          selectedTemplate={selectedTemplate}
+          imageFormat={imageFormat}
         />
       </div>
 
