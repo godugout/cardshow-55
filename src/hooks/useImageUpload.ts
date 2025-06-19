@@ -47,7 +47,9 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
       fileName: file.name,
       fileType: file.type,
       fileSize: file.size,
-      enableAnalysis
+      enableAnalysis,
+      userAgent: navigator.userAgent,
+      fileReaderSupported: typeof FileReader !== 'undefined'
     });
     
     setState(prev => ({
@@ -59,16 +61,13 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
     }));
 
     try {
-      // Validate file first
-      await ImageProcessor.validateImageFile(file);
-      
-      console.log('📋 File validation passed, showing processing toast...');
+      console.log('📋 Starting comprehensive file processing...');
       const processingToast = toast.loading('Processing image...', {
-        description: 'Optimizing for upload'
+        description: 'Reading and optimizing your image'
       });
 
-      // Process image with enhanced error handling
-      console.log('🔄 Starting image processing...');
+      // Process image with comprehensive error handling
+      console.log('🔄 Starting image processing with enhanced debugging...');
       const result = await ImageProcessor.processFile(file, {
         maxWidth: 1024,
         maxHeight: 1024,
@@ -77,7 +76,12 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
         ...processingOptions
       });
 
-      console.log('✅ Image processing completed successfully');
+      console.log('✅ Image processing completed successfully:', {
+        dimensions: result.dimensions,
+        fileSize: result.fileSize,
+        dataUrlLength: result.dataUrl.length
+      });
+
       setState(prev => ({
         ...prev,
         isProcessing: false,
@@ -85,7 +89,9 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
       }));
 
       toast.dismiss(processingToast);
-      toast.success('Image processed successfully!');
+      toast.success('Image processed successfully!', {
+        description: `${result.dimensions.width}×${result.dimensions.height} • ${ImageProcessor.formatFileSize(result.fileSize)}`
+      });
 
       // Call success callback
       if (onSuccess) {
@@ -129,7 +135,19 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
       }
 
     } catch (error) {
-      console.error('💥 Image upload failed:', error);
+      console.error('💥 Image upload failed with detailed context:', {
+        error,
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        browserInfo: {
+          userAgent: navigator.userAgent,
+          fileReaderSupported: typeof FileReader !== 'undefined',
+          canvasSupported: typeof document.createElement === 'function',
+          blobSupported: typeof Blob !== 'undefined'
+        }
+      });
+
       const errorMessage = error instanceof Error ? error.message : 'Failed to process image';
       
       setState(prev => ({

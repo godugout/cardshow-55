@@ -1,4 +1,3 @@
-
 export interface ImageProcessingOptions {
   maxWidth?: number;
   maxHeight?: number;
@@ -39,97 +38,149 @@ export class ImageProcessor {
       options
     });
 
-    return new Promise((resolve, reject) => {
-      // Basic file validation
-      if (!file || !file.type.startsWith('image/')) {
-        console.error('❌ Invalid file type:', file?.type);
-        reject(new Error('Invalid file type. Please select an image.'));
-        return;
-      }
-
-      if (file.size > 10 * 1024 * 1024) {
-        console.error('❌ File too large:', file.size);
-        reject(new Error('File size too large. Please select an image under 10MB.'));
-        return;
-      }
-
-      console.log('✅ File validation passed, starting FileReader...');
-
-      // Try multiple approaches for reading the file
-      this.readFileWithFallback(file)
-        .then((dataUrl) => {
-          console.log('✅ File read successfully, processing image...');
-          return this.processImageData(dataUrl, options);
-        })
-        .then((result) => {
-          console.log('✅ Image processing complete:', result.dimensions);
-          resolve(result);
-        })
-        .catch((error) => {
-          console.error('❌ Image processing failed:', error);
-          reject(error);
-        });
-    });
-  }
-
-  private static async readFileWithFallback(file: File): Promise<string> {
-    // First try: Standard FileReader
+    // Enhanced file validation with detailed debugging
     try {
-      console.log('📖 Attempting standard FileReader...');
-      return await this.readFileStandard(file);
+      await this.validateImageFile(file);
+      console.log('✅ File validation passed');
     } catch (error) {
-      console.warn('⚠️ Standard FileReader failed, trying alternative method:', error);
-      
-      // Second try: Alternative approach using URL.createObjectURL
-      try {
-        console.log('📖 Attempting URL.createObjectURL method...');
-        return await this.readFileWithObjectURL(file);
-      } catch (error2) {
-        console.error('❌ All file reading methods failed:', error2);
-        throw new Error('Unable to read the selected file. Please try a different image.');
-      }
+      console.error('❌ File validation failed:', error);
+      throw error;
+    }
+
+    // Try multiple file reading strategies
+    let dataUrl: string;
+    try {
+      console.log('📖 Attempting to read file...');
+      dataUrl = await this.readFileWithMultipleFallbacks(file);
+      console.log('✅ File read successfully, data URL length:', dataUrl.length);
+    } catch (error) {
+      console.error('❌ All file reading methods failed:', error);
+      throw new Error('Unable to read the selected file. The file may be corrupted or in an unsupported format.');
+    }
+
+    // Process the image
+    try {
+      console.log('🔄 Processing image data...');
+      const result = await this.processImageData(dataUrl, options);
+      console.log('✅ Image processing complete:', result.dimensions);
+      return result;
+    } catch (error) {
+      console.error('❌ Image processing failed:', error);
+      throw new Error('Failed to process the image. Please try a different file.');
     }
   }
 
-  private static readFileStandard(file: File): Promise<string> {
+  private static async readFileWithMultipleFallbacks(file: File): Promise<string> {
+    const methods = [
+      () => this.readFileWithArrayBuffer(file),
+      () => this.readFileStandard(file),
+      () => this.readFileWithObjectURL(file),
+      () => this.readFileWithBlobReader(file)
+    ];
+
+    let lastError: Error | null = null;
+
+    for (let i = 0; i < methods.length; i++) {
+      try {
+        console.log(`📖 Trying method ${i + 1}/${methods.length}...`);
+        const result = await methods[i]();
+        console.log(`✅ Method ${i + 1} succeeded`);
+        return result;
+      } catch (error) {
+        console.warn(`⚠️ Method ${i + 1} failed:`, error);
+        lastError = error as Error;
+        continue;
+      }
+    }
+
+    throw new Error(`All file reading methods failed. Last error: ${lastError?.message}`);
+  }
+
+  // Method 1: ArrayBuffer approach (most reliable)
+  private static async readFileWithArrayBuffer(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
+      console.log('📖 Using ArrayBuffer method...');
       const reader = new FileReader();
       
+      const timeout = setTimeout(() => {
+        reader.abort();
+        reject(new Error('ArrayBuffer reading timed out'));
+      }, 30000);
+      
       reader.onload = (event) => {
-        const result = event.target?.result;
-        if (typeof result === 'string') {
-          console.log('✅ FileReader standard method succeeded');
-          resolve(result);
+        clearTimeout(timeout);
+        if (event.target?.result) {
+          const arrayBuffer = event.target.result as ArrayBuffer;
+          const blob = new Blob([arrayBuffer], { type: file.type });
+          const url = URL.createObjectURL(blob);
+          
+          // Convert to data URL
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const img = new Image();
+          
+          img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx?.drawImage(img, 0, 0);
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL('image/jpeg', 0.9));
+          };
+          
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error('Failed to load image from ArrayBuffer'));
+          };
+          
+          img.src = url;
         } else {
-          reject(new Error('FileReader returned invalid data type'));
+          reject(new Error('ArrayBuffer result is null'));
         }
       };
       
-      reader.onerror = (error) => {
-        console.error('❌ FileReader error event:', error);
-        reject(new Error('FileReader error occurred'));
+      reader.onerror = () => {
+        clearTimeout(timeout);
+        reject(new Error('ArrayBuffer reading failed'));
       };
       
-      reader.onabort = () => {
-        console.error('❌ FileReader was aborted');
-        reject(new Error('File reading was aborted'));
-      };
+      try {
+        reader.readAsArrayBuffer(file);
+      } catch (error) {
+        clearTimeout(timeout);
+        reject(error);
+      }
+    });
+  }
+
+  // Method 2: Standard FileReader (original method)
+  private static readFileStandard(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      console.log('📖 Using standard FileReader method...');
+      const reader = new FileReader();
       
-      // Add timeout to prevent hanging
       const timeout = setTimeout(() => {
         reader.abort();
-        reject(new Error('File reading timed out'));
-      }, 30000); // 30 second timeout
+        reject(new Error('Standard FileReader timed out'));
+      }, 30000);
       
       reader.onload = (event) => {
         clearTimeout(timeout);
         const result = event.target?.result;
         if (typeof result === 'string') {
-          console.log('✅ FileReader standard method succeeded');
           resolve(result);
         } else {
           reject(new Error('FileReader returned invalid data type'));
         }
+      };
+      
+      reader.onerror = () => {
+        clearTimeout(timeout);
+        reject(new Error('Standard FileReader error'));
+      };
+      
+      reader.onabort = () => {
+        clearTimeout(timeout);
+        reject(new Error('Standard FileReader aborted'));
       };
       
       try {
@@ -141,8 +192,10 @@ export class ImageProcessor {
     });
   }
 
+  // Method 3: Object URL approach
   private static readFileWithObjectURL(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
+      console.log('📖 Using Object URL method...');
       try {
         const objectUrl = URL.createObjectURL(file);
         const img = new Image();
@@ -160,12 +213,10 @@ export class ImageProcessor {
             
             canvas.width = img.width;
             canvas.height = img.height;
-            
             ctx.drawImage(img, 0, 0);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
             
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
             URL.revokeObjectURL(objectUrl);
-            console.log('✅ URL.createObjectURL method succeeded');
             resolve(dataUrl);
           } catch (error) {
             URL.revokeObjectURL(objectUrl);
@@ -182,6 +233,46 @@ export class ImageProcessor {
       } catch (error) {
         reject(error);
       }
+    });
+  }
+
+  // Method 4: Blob reader approach
+  private static async readFileWithBlobReader(file: File): Promise<string> {
+    console.log('📖 Using Blob reader method...');
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = async (event) => {
+        try {
+          const arrayBuffer = event.target?.result as ArrayBuffer;
+          if (!arrayBuffer) {
+            reject(new Error('No array buffer result'));
+            return;
+          }
+          
+          const uint8Array = new Uint8Array(arrayBuffer);
+          const blob = new Blob([uint8Array], { type: file.type });
+          
+          const blobReader = new FileReader();
+          blobReader.onload = (e) => {
+            const result = e.target?.result;
+            if (typeof result === 'string') {
+              resolve(result);
+            } else {
+              reject(new Error('Blob reader returned invalid result'));
+            }
+          };
+          
+          blobReader.onerror = () => reject(new Error('Blob reader failed'));
+          blobReader.readAsDataURL(blob);
+          
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      reader.onerror = () => reject(new Error('Initial blob read failed'));
+      reader.readAsArrayBuffer(file);
     });
   }
 
@@ -285,12 +376,30 @@ export class ImageProcessor {
   }
 
   static async validateImageFile(file: File): Promise<void> {
+    console.log('🔍 Validating file:', {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      lastModified: file.lastModified
+    });
+
     if (!file) {
       throw new Error('No file provided');
     }
 
-    if (!file.type.startsWith('image/')) {
-      throw new Error('Invalid file type. Please select an image.');
+    if (!file.type) {
+      console.warn('⚠️ File has no MIME type, checking extension...');
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+      if (!extension || !validExtensions.includes(extension)) {
+        throw new Error('Invalid file type. Please select an image file.');
+      }
+    } else if (!file.type.startsWith('image/')) {
+      throw new Error('Invalid file type. Please select an image file.');
+    }
+
+    if (file.size === 0) {
+      throw new Error('File is empty. Please select a valid image file.');
     }
 
     if (file.size > 10 * 1024 * 1024) {
