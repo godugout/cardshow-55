@@ -27,9 +27,7 @@ export const ESSENTIAL_FRAMES: DesignTemplate[] = [
         shadow: false
       }
     },
-    usage_count: 1000,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    usage_count: 1000
   },
   {
     id: 'graded-slab-2d',
@@ -71,9 +69,7 @@ export const ESSENTIAL_FRAMES: DesignTemplate[] = [
         shadow: true
       }
     },
-    usage_count: 800,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    usage_count: 800
   },
   {
     id: 'graded-slab-3d',
@@ -122,8 +118,133 @@ export const ESSENTIAL_FRAMES: DesignTemplate[] = [
         transform: 'rotateY(-3deg) rotateX(1deg)'
       }
     },
-    usage_count: 600,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    usage_count: 600
   }
+];
+
+// Sports templates
+export const SPORTS_FRAMES: DesignTemplate[] = [
+  {
+    id: 'baseball-classic',
+    name: 'Baseball Classic',
+    description: 'Traditional baseball card design with team colors',
+    category: 'sports',
+    is_premium: false,
+    template_data: {
+      layout: 'portrait',
+      colors: {
+        primary: '#1f2937',
+        secondary: '#f3f4f6',
+        accent: '#dc2626',
+        background: '#ffffff',
+        text: '#000000'
+      },
+      regions: {
+        title: { x: 10, y: 10, width: 280, height: 30 },
+        image: { x: 10, y: 50, width: 280, height: 200 },
+        stats: { x: 10, y: 260, width: 280, height: 80 }
+      },
+      effects: {
+        borderRadius: 8,
+        shadow: true
+      }
+    },
+    usage_count: 450,
+    tags: ['baseball', 'classic', 'traditional']
+  },
+  {
+    id: 'basketball-modern',
+    name: 'Basketball Modern',
+    description: 'Sleek modern design for basketball players',
+    category: 'sports',
+    is_premium: false,
+    template_data: {
+      layout: 'portrait',
+      colors: {
+        primary: '#ea580c',
+        secondary: '#f97316',
+        accent: '#fed7aa',
+        background: '#0c0a09',
+        text: '#ffffff'
+      },
+      regions: {
+        playerName: { x: 10, y: 10, width: 280, height: 35 },
+        image: { x: 10, y: 55, width: 280, height: 220 },
+        stats: { x: 10, y: 285, width: 280, height: 55 }
+      },
+      effects: {
+        borderRadius: 12,
+        shadow: true
+      }
+    },
+    usage_count: 320,
+    tags: ['basketball', 'modern', 'sleek']
+  }
+];
+
+// Entertainment templates
+export const ENTERTAINMENT_FRAMES: DesignTemplate[] = [
+  {
+    id: 'musician-spotlight',
+    name: 'Musician Spotlight',
+    description: 'Perfect for showcasing musical artists and performers',
+    category: 'entertainment',
+    is_premium: false,
+    template_data: {
+      layout: 'portrait',
+      colors: {
+        primary: '#7c3aed',
+        secondary: '#a855f7',
+        accent: '#fbbf24',
+        background: '#1f1827',
+        text: '#ffffff'
+      },
+      regions: {
+        title: { x: 10, y: 10, width: 280, height: 35 },
+        image: { x: 10, y: 55, width: 280, height: 220 },
+        stats: { x: 10, y: 285, width: 280, height: 55 }
+      },
+      effects: {
+        borderRadius: 12,
+        shadow: true
+      }
+    },
+    usage_count: 280,
+    tags: ['music', 'artist', 'performer']
+  },
+  {
+    id: 'actor-premiere',
+    name: 'Actor Premiere',
+    description: 'Elegant design for actors and film personalities',
+    category: 'entertainment',
+    is_premium: false,
+    template_data: {
+      layout: 'portrait',
+      colors: {
+        primary: '#dc2626',
+        secondary: '#991b1b',
+        accent: '#fbbf24',
+        background: '#0f0f0f',
+        text: '#ffffff'
+      },
+      regions: {
+        name: { x: 10, y: 10, width: 280, height: 35 },
+        image: { x: 10, y: 55, width: 280, height: 220 },
+        credits: { x: 10, y: 285, width: 280, height: 55 }
+      },
+      effects: {
+        borderRadius: 12,
+        shadow: true
+      }
+    },
+    usage_count: 190,
+    tags: ['actor', 'film', 'cinema']
+  }
+];
+
+// Combined exports for convenience
+export const ALL_FRAMES: DesignTemplate[] = [
+  ...ESSENTIAL_FRAMES,
+  ...SPORTS_FRAMES,
+  ...ENTERTAINMENT_FRAMES
 ];
