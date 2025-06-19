@@ -1,68 +1,43 @@
 
 @tailwind utilities;
 
-/* Animation classes */
-@keyframes particle-animation {
-  0% {
-    transform: translate(0, 0);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--x, 20px), var(--y, -50px));
-    opacity: 0;
-  }
-}
-
-.animate-fade-out {
-  animation: particle-animation 1.5s ease-out forwards;
-  --x: calc(random() * 60px - 30px);
-  --y: calc(random() * -70px - 20px);
-}
-
-/* Button text color utilities to ensure proper contrast */
+/* Dark theme button utilities */
 @layer utilities {
-  .btn-text-dark {
-    color: #121212 !important;
+  .btn-crd-outline-green {
+    @apply bg-transparent border border-crd-green text-crd-green hover:bg-crd-green/10 hover:text-crd-green transition-all;
   }
   
-  .btn-text-light {
-    color: #FCFCFD !important;
+  .btn-crd-ghost-green {
+    @apply bg-transparent text-crd-green hover:bg-crd-green/10 hover:text-crd-green transition-all;
   }
   
-  .btn-text-gray {
-    color: #777E90 !important;
+  .btn-crd-outline-blue {
+    @apply bg-transparent border border-crd-blue text-crd-blue hover:bg-crd-blue/10 hover:text-crd-blue transition-all;
   }
   
-  /* Dynamic color utilities for secondary parameter labels */
-  .text-purple-400\/70 {
-    color: rgba(168, 85, 247, 0.7) !important;
+  .btn-crd-ghost-blue {
+    @apply bg-transparent text-crd-blue hover:bg-crd-blue/10 hover:text-crd-blue transition-all;
   }
   
-  .text-yellow-400\/70 {
-    color: rgba(250, 204, 21, 0.7) !important;
+  .btn-crd-outline-gray {
+    @apply bg-transparent border border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white transition-all;
   }
   
-  .text-blue-400\/70 {
-    color: rgba(96, 165, 250, 0.7) !important;
+  /* Canvas and preview backgrounds */
+  .bg-canvas-dark {
+    @apply bg-gradient-to-br from-crd-mediumGray/20 to-crd-mediumGray/40;
   }
   
-  .text-gray-400\/70 {
-    color: rgba(156, 163, 175, 0.7) !important;
+  .bg-preview-dark {
+    @apply bg-crd-darkGray;
   }
   
-  .text-green-400\/70 {
-    color: rgba(74, 222, 128, 0.7) !important;
+  /* Focus states for dark theme */
+  .focus-crd-green:focus {
+    @apply ring-2 ring-crd-green ring-opacity-50 border-crd-green;
   }
   
-  .text-orange-400\/70 {
-    color: rgba(251, 146, 60, 0.7) !important;
-  }
-  
-  .text-cyan-400\/70 {
-    color: rgba(34, 211, 238, 0.7) !important;
-  }
-  
-  .text-amber-400\/70 {
-    color: rgba(251, 191, 36, 0.7) !important;
+  .focus-crd-blue:focus {
+    @apply ring-2 ring-crd-blue ring-opacity-50 border-crd-blue;
   }
 }

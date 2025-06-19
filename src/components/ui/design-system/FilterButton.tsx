@@ -9,9 +9,9 @@ const filterButtonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-transparent border-crd-mediumGray text-crd-lightGray hover:border-crd-green hover:text-white hover:bg-crd-green/10",
-        active: "bg-crd-green border-crd-green text-black hover:bg-crd-green/90",
-        count: "bg-transparent border-crd-mediumGray text-crd-lightGray hover:border-crd-green hover:text-white hover:bg-crd-green/10",
+        default: "bg-transparent border-crd-mediumGray text-crd-lightGray hover:border-crd-green hover:text-crd-green hover:bg-crd-green/10",
+        active: "bg-crd-green/20 border-crd-green text-crd-green hover:bg-crd-green/30",
+        count: "bg-transparent border-crd-mediumGray text-crd-lightGray hover:border-crd-green hover:text-crd-green hover:bg-crd-green/10",
       }
     },
     defaultVariants: {
@@ -42,7 +42,7 @@ export const FilterButton = React.forwardRef<HTMLButtonElement, FilterButtonProp
           <span className={cn(
             "ml-2 px-1.5 py-0.5 rounded-full text-xs leading-none",
             isActive 
-              ? "bg-black/20 text-black" 
+              ? "bg-crd-green/30 text-crd-green" 
               : "bg-crd-green/20 text-crd-green"
           )}>
             {count}

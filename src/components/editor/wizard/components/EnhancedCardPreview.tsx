@@ -125,7 +125,7 @@ export const EnhancedCardPreview = ({
                   size="sm"
                   onClick={handleZoomOut}
                   disabled={zoom <= 0.6}
-                  className="text-crd-lightGray hover:text-white"
+                  className="text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20"
                 >
                   <ZoomOut className="w-4 h-4" />
                 </Button>
@@ -137,7 +137,7 @@ export const EnhancedCardPreview = ({
                   size="sm"
                   onClick={handleZoomIn}
                   disabled={zoom >= 2}
-                  className="text-crd-lightGray hover:text-white"
+                  className="text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20"
                 >
                   <ZoomIn className="w-4 h-4" />
                 </Button>
@@ -145,7 +145,7 @@ export const EnhancedCardPreview = ({
                   variant="ghost"
                   size="sm"
                   onClick={handleResetZoom}
-                  className="text-crd-lightGray hover:text-white"
+                  className="text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20"
                 >
                   <RotateCcw className="w-4 h-4" />
                 </Button>

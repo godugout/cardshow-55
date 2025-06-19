@@ -32,7 +32,7 @@ export const WizardNavigation = ({
         <Button
           onClick={onCancel}
           variant="outline"
-          className="border-editor-border text-white hover:bg-editor-border"
+          className="bg-transparent border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white"
         >
           Cancel
         </Button>
@@ -41,7 +41,7 @@ export const WizardNavigation = ({
           <Button
             onClick={onBack}
             variant="outline"
-            className="border-editor-border text-white hover:bg-editor-border"
+            className="bg-transparent border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
@@ -54,7 +54,7 @@ export const WizardNavigation = ({
           <Button
             onClick={onComplete}
             disabled={isSaving}
-            className="bg-crd-green hover:bg-crd-green/90 text-black"
+            className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
           >
             {isSaving ? (
               'Creating...'
@@ -68,7 +68,7 @@ export const WizardNavigation = ({
         ) : (
           <Button
             onClick={onNext}
-            className="bg-crd-green hover:bg-crd-green/90 text-black"
+            className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
           >
             Next
             <ArrowRight className="w-4 h-4 ml-2" />

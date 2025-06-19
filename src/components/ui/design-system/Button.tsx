@@ -9,16 +9,19 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // CRD Design System variants with proper text colors
-        primary: "bg-crd-blue text-white hover:bg-crd-blue/90",
-        secondary: "bg-crd-lightGray text-black hover:bg-crd-lightGray/90",
-        outline: "bg-transparent border border-crd-lightGray text-crd-lightGray hover:border-crd-lightGray hover:text-black hover:bg-crd-lightGray",
-        ghost: "bg-transparent text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white",
+        // CRD Design System variants with dark theme focus
+        primary: "bg-crd-green text-black hover:bg-crd-green/90 font-semibold",
+        secondary: "bg-crd-blue text-white hover:bg-crd-blue/90 font-semibold",
+        outline: "bg-transparent border border-crd-green text-crd-green hover:bg-crd-green/10 hover:text-crd-green",
+        ghost: "bg-transparent text-crd-green hover:bg-crd-green/10 hover:text-crd-green",
+        "outline-blue": "bg-transparent border border-crd-blue text-crd-blue hover:bg-crd-blue/10 hover:text-crd-blue",
+        "ghost-blue": "bg-transparent text-crd-blue hover:bg-crd-blue/10 hover:text-crd-blue",
+        "outline-gray": "bg-transparent border border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white",
         action: "p-3 rounded-full border-2 border-crd-mediumGray bg-transparent hover:bg-crd-mediumGray/10 text-crd-lightGray hover:text-white",
-        // Standard variants
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        link: "text-primary underline-offset-4 hover:underline",
+        destructive: "bg-red-600 text-white hover:bg-red-700",
+        // Legacy variants for compatibility
+        default: "bg-crd-green text-black hover:bg-crd-green/90",
+        link: "text-crd-green underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -29,7 +32,7 @@ const buttonVariants = cva(
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "outline",
       size: "default",
     },
   }

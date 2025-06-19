@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -158,8 +157,8 @@ export const FrameSelectionSidebar = ({
                   size="sm"
                   onClick={() => setCategoryFilter('all')}
                   className={`text-xs ${categoryFilter === 'all' 
-                    ? 'bg-crd-blue text-white' 
-                    : 'border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray'
+                    ? 'bg-crd-blue text-white hover:bg-crd-blue/90' 
+                    : 'bg-transparent border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white'
                   }`}
                 >
                   All
@@ -171,8 +170,8 @@ export const FrameSelectionSidebar = ({
                     size="sm"
                     onClick={() => setCategoryFilter(category)}
                     className={`text-xs ${categoryFilter === category 
-                      ? 'bg-crd-blue text-white' 
-                      : 'border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray'
+                      ? 'bg-crd-blue text-white hover:bg-crd-blue/90' 
+                      : 'bg-transparent border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white'
                     }`}
                   >
                     {category?.charAt(0).toUpperCase() + category?.slice(1)}
@@ -190,7 +189,7 @@ export const FrameSelectionSidebar = ({
                   className={`p-2 rounded-lg cursor-pointer transition-all border ${
                     selectedTemplate?.id === template.id
                       ? `ring-2 ${mode === 'quick' ? 'ring-crd-green border-crd-green bg-crd-green/10' : 'ring-crd-blue border-crd-blue bg-crd-blue/10'}`
-                      : 'bg-editor-tool hover:bg-editor-border border-editor-border hover:border-crd-mediumGray'
+                      : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 border-crd-mediumGray/50 hover:border-crd-mediumGray'
                   }`}
                 >
                   {renderFramePreview(template)}

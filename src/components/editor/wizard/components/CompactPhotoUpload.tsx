@@ -60,7 +60,7 @@ export const CompactPhotoUpload = ({
                 variant="ghost"
                 size="sm"
                 onClick={onPhotoRemove}
-                className="h-6 w-6 p-0 text-crd-lightGray hover:text-white"
+                className="h-6 w-6 p-0 text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20"
               >
                 <X className="w-3 h-3" />
               </Button>
@@ -85,7 +85,7 @@ export const CompactPhotoUpload = ({
                 variant="outline"
                 size="sm"
                 onClick={() => document.getElementById('compact-photo-input')?.click()}
-                className="w-full bg-transparent border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white text-xs"
+                className="w-full bg-transparent border-crd-green text-crd-green hover:bg-crd-green/10 hover:text-crd-green text-xs"
               >
                 Change Photo
               </Button>

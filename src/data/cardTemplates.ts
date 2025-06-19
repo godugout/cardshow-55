@@ -1,318 +1,129 @@
+
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 
-// Essential Basic Frames - Always Available
 export const ESSENTIAL_FRAMES: DesignTemplate[] = [
   {
     id: 'full-bleed',
     name: 'Full Bleed',
-    category: 'basic',
-    description: 'Clean full-image display with no borders - perfect for showcasing your photo',
-    usage_count: 0,
+    description: 'Clean, edge-to-edge design with no borders',
+    category: 'sports',
     is_premium: false,
-    preview_url: '/templates/full-bleed.jpg',
-    tags: ['basic', 'clean', 'minimal', 'full-image'],
     template_data: {
+      layout: 'portrait',
+      elements: {
+        background: { type: 'solid', color: '#ffffff' },
+        image: { 
+          position: { x: 0, y: 0, width: 100, height: 100 },
+          borderRadius: 8 
+        }
+      },
       colors: {
         primary: '#000000',
         secondary: '#ffffff',
-        accent: '#ffffff',
-        background: 'transparent',
-        text: '#ffffff'
+        background: 'transparent'
       },
-      regions: {
-        image: { x: 0, y: 0, width: 100, height: 100 },
-        title: { x: 5, y: 85, width: 90, height: 10 }
-      },
-      layout: 'portrait',
       effects: {
         borderRadius: 8,
-        shadow: false,
-        gradient: false
+        shadow: false
       }
-    }
+    },
+    usage_count: 1000,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     id: 'graded-slab-2d',
     name: 'Graded Slab (2D)',
-    category: 'basic',
-    description: 'Professional graded card case with CRD score - PSA/Beckett style protection',
-    usage_count: 0,
+    description: 'Professional grading slab with clean 2D design',
+    category: 'sports',
     is_premium: false,
-    preview_url: '/templates/graded-slab-2d.jpg',
-    tags: ['graded', 'protection', 'professional', 'score'],
     template_data: {
-      colors: {
-        primary: '#1a1a1a',
-        secondary: '#ffffff',
-        accent: '#00C851',
-        background: '#f8f9fa',
-        text: '#000000'
-      },
-      regions: {
-        image: { x: 10, y: 15, width: 80, height: 60 },
-        title: { x: 10, y: 78, width: 80, height: 8 },
-        grade: { x: 10, y: 5, width: 30, height: 8 },
-        score: { x: 60, y: 5, width: 30, height: 8 }
-      },
       layout: 'portrait',
+      elements: {
+        background: { type: 'gradient', from: '#f3f4f6', to: '#e5e7eb' },
+        border: { width: 2, color: '#d1d5db', style: 'solid' },
+        gradeLabel: {
+          position: { x: 5, y: 5 },
+          text: 'CRD',
+          style: { fontSize: 12, fontWeight: 'bold', color: '#ffffff', background: '#000000' }
+        },
+        gradeScore: {
+          position: { x: 85, y: 5 },
+          text: '10',
+          style: { fontSize: 12, fontWeight: 'bold', color: '#000000', background: '#45B26B' }
+        },
+        image: {
+          position: { x: 8, y: 15, width: 84, height: 60 },
+          borderRadius: 4
+        },
+        title: {
+          position: { x: 8, y: 80 },
+          style: { fontSize: 10, fontWeight: 'bold', textAlign: 'center' }
+        }
+      },
+      colors: {
+        primary: '#000000',
+        secondary: '#45B26B',
+        background: '#f9fafb'
+      },
       effects: {
-        borderRadius: 4,
-        shadow: true,
-        gradient: false
+        borderRadius: 8,
+        shadow: true
       }
-    }
+    },
+    usage_count: 800,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     id: 'graded-slab-3d',
     name: 'Graded Slab (3D)',
-    category: 'basic',
-    description: 'Interactive 3D graded card case with depth and realistic protection display',
-    usage_count: 0,
+    description: 'Premium 3D grading slab with depth and perspective',
+    category: 'sports',
     is_premium: false,
-    preview_url: '/templates/graded-slab-3d.jpg',
-    tags: ['graded', 'protection', '3d', 'interactive'],
     template_data: {
-      colors: {
-        primary: '#1a1a1a',
-        secondary: '#ffffff',
-        accent: '#00C851',
-        background: '#f8f9fa',
-        text: '#000000'
-      },
-      regions: {
-        image: { x: 10, y: 15, width: 80, height: 60 },
-        title: { x: 10, y: 78, width: 80, height: 8 },
-        grade: { x: 10, y: 5, width: 30, height: 8 },
-        score: { x: 60, y: 5, width: 30, height: 8 }
-      },
       layout: 'portrait',
+      elements: {
+        background: { 
+          type: 'gradient', 
+          from: '#f3f4f6', 
+          to: '#e5e7eb',
+          transform: 'perspective(500px) rotateY(-3deg) rotateX(1deg)'
+        },
+        border: { width: 3, color: '#d1d5db', style: 'solid' },
+        gradeLabel: {
+          position: { x: 5, y: 5 },
+          text: 'CRD',
+          style: { fontSize: 12, fontWeight: 'bold', color: '#ffffff', background: '#000000' }
+        },
+        gradeScore: {
+          position: { x: 85, y: 5 },
+          text: '10',
+          style: { fontSize: 12, fontWeight: 'bold', color: '#000000', background: '#45B26B' }
+        },
+        image: {
+          position: { x: 8, y: 15, width: 84, height: 60 },
+          borderRadius: 4
+        },
+        title: {
+          position: { x: 8, y: 80 },
+          style: { fontSize: 10, fontWeight: 'bold', textAlign: 'center' }
+        }
+      },
+      colors: {
+        primary: '#000000',
+        secondary: '#45B26B',
+        background: '#f9fafb'
+      },
       effects: {
-        borderRadius: 4,
+        borderRadius: 8,
         shadow: true,
-        gradient: false,
-        is3D: true
+        perspective: '500px',
+        transform: 'rotateY(-3deg) rotateX(1deg)'
       }
-    }
+    },
+    usage_count: 600,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   }
 ];
-
-export const SPORTS_FRAMES: DesignTemplate[] = [
-  {
-    id: 'baseball-classic',
-    name: 'Baseball Classic',
-    category: 'sports',
-    description: 'Traditional baseball card layout perfect for player stats',
-    usage_count: 1250,
-    is_premium: false,
-    preview_url: '/templates/baseball-classic.jpg',
-    tags: ['baseball', 'sports', 'classic', 'stats'],
-    template_data: {
-      colors: {
-        primary: '#1e40af',
-        secondary: '#ffffff',
-        accent: '#dc2626',
-        background: '#f8fafc',
-        text: '#1f2937'
-      },
-      regions: {
-        playerName: { x: 20, y: 20, width: 260, height: 40 },
-        image: { x: 20, y: 70, width: 260, height: 180 },
-        team: { x: 20, y: 260, width: 120, height: 30 },
-        position: { x: 160, y: 260, width: 120, height: 30 },
-        stats: { x: 20, y: 300, width: 260, height: 40 }
-      },
-      layout: 'portrait',
-      effects: {
-        borderRadius: 12,
-        shadow: true,
-        gradient: false
-      }
-    }
-  },
-  {
-    id: 'basketball-modern',
-    name: 'Basketball Modern',
-    category: 'sports',
-    description: 'Dynamic basketball card with action-focused design',
-    usage_count: 980,
-    is_premium: false,
-    preview_url: '/templates/basketball-modern.jpg',
-    tags: ['basketball', 'sports', 'modern', 'dynamic'],
-    template_data: {
-      colors: {
-        primary: '#ea580c',
-        secondary: '#000000',
-        accent: '#f59e0b',
-        background: '#0f172a',
-        text: '#ffffff'
-      },
-      regions: {
-        playerName: { x: 15, y: 15, width: 270, height: 45 },
-        image: { x: 15, y: 70, width: 270, height: 200 },
-        team: { x: 15, y: 280, width: 130, height: 25 },
-        position: { x: 155, y: 280, width: 130, height: 25 },
-        stats: { x: 15, y: 315, width: 270, height: 30 }
-      },
-      layout: 'portrait',
-      effects: {
-        borderRadius: 16,
-        shadow: true,
-        gradient: true
-      }
-    }
-  },
-  {
-    id: 'football-pro',
-    name: 'Football Pro',
-    category: 'sports',
-    description: 'Professional football card with team colors',
-    usage_count: 1450,
-    is_premium: true,
-    preview_url: '/templates/football-pro.jpg',
-    tags: ['football', 'sports', 'professional', 'team'],
-    template_data: {
-      colors: {
-        primary: '#059669',
-        secondary: '#ffffff',
-        accent: '#fbbf24',
-        background: '#064e3b',
-        text: '#ffffff'
-      },
-      regions: {
-        playerName: { x: 25, y: 25, width: 250, height: 35 },
-        image: { x: 25, y: 70, width: 250, height: 170 },
-        team: { x: 25, y: 250, width: 120, height: 28 },
-        position: { x: 155, y: 250, width: 120, height: 28 },
-        stats: { x: 25, y: 288, width: 250, height: 50 }
-      },
-      layout: 'portrait',
-      effects: {
-        borderRadius: 20,
-        shadow: true,
-        gradient: true
-      }
-    }
-  },
-  {
-    id: 'soccer-international',
-    name: 'Soccer International',
-    category: 'sports',
-    description: 'International soccer card with club and country stats',
-    usage_count: 750,
-    is_premium: false,
-    preview_url: '/templates/soccer-international.jpg',
-    tags: ['soccer', 'football', 'international', 'club'],
-    template_data: {
-      colors: {
-        primary: '#7c3aed',
-        secondary: '#ffffff',
-        accent: '#10b981',
-        background: '#1e1b4b',
-        text: '#ffffff'
-      },
-      regions: {
-        playerName: { x: 20, y: 20, width: 260, height: 40 },
-        image: { x: 20, y: 70, width: 260, height: 180 },
-        team: { x: 20, y: 260, width: 85, height: 25 },
-        position: { x: 115, y: 260, width: 80, height: 25 },
-        country: { x: 205, y: 260, width: 75, height: 25 },
-        stats: { x: 20, y: 295, width: 260, height: 45 }
-      },
-      layout: 'portrait',
-      effects: {
-        borderRadius: 14,
-        shadow: true,
-        gradient: true
-      }
-    }
-  }
-];
-
-export const ENTERTAINMENT_FRAMES: DesignTemplate[] = [
-  {
-    id: 'musician-spotlight',
-    name: 'Musician Spotlight',
-    category: 'entertainment',
-    description: 'Perfect for showcasing musicians and artists',
-    usage_count: 650,
-    is_premium: false,
-    preview_url: '/templates/musician-spotlight.jpg',
-    tags: ['music', 'artist', 'entertainment', 'spotlight'],
-    template_data: {
-      colors: {
-        primary: '#ec4899',
-        secondary: '#000000',
-        accent: '#fbbf24',
-        background: '#1f2937',
-        text: '#ffffff'
-      },
-      regions: {
-        artistName: { x: 20, y: 20, width: 260, height: 45 },
-        image: { x: 20, y: 75, width: 260, height: 180 },
-        genre: { x: 20, y: 265, width: 120, height: 25 },
-        label: { x: 150, y: 265, width: 130, height: 25 },
-        achievements: { x: 20, y: 300, width: 260, height: 40 }
-      },
-      layout: 'portrait',
-      effects: {
-        borderRadius: 18,
-        shadow: true,
-        gradient: true
-      }
-    }
-  },
-  {
-    id: 'actor-premiere',
-    name: 'Actor Premiere',
-    category: 'entertainment',
-    description: 'Elegant design for actors and film personalities',
-    usage_count: 420,
-    is_premium: true,
-    preview_url: '/templates/actor-premiere.jpg',
-    tags: ['actor', 'film', 'entertainment', 'premiere'],
-    template_data: {
-      colors: {
-        primary: '#dc2626',
-        secondary: '#ffffff',
-        accent: '#fbbf24',
-        background: '#0f172a',
-        text: '#ffffff'
-      },
-      regions: {
-        actorName: { x: 25, y: 25, width: 250, height: 40 },
-        image: { x: 25, y: 75, width: 250, height: 170 },
-        genre: { x: 25, y: 255, width: 110, height: 25 },
-        studio: { x: 145, y: 255, width: 130, height: 25 },
-        filmography: { x: 25, y: 290, width: 250, height: 50 }
-      },
-      layout: 'portrait',
-      effects: {
-        borderRadius: 16,
-        shadow: true,
-        gradient: true
-      }
-    }
-  }
-];
-
-export const ALL_FRAMES = [...ESSENTIAL_FRAMES, ...SPORTS_FRAMES, ...ENTERTAINMENT_FRAMES];
-
-// Legacy exports for backward compatibility
-export const SPORTS_TEMPLATES = SPORTS_FRAMES;
-export const ENTERTAINMENT_TEMPLATES = ENTERTAINMENT_FRAMES;
-export const ALL_TEMPLATES = ALL_FRAMES;
-
-export const getFramesByCategory = (category: string) => {
-  switch (category) {
-    case 'sports':
-      return SPORTS_FRAMES;
-    case 'entertainment':
-      return ENTERTAINMENT_FRAMES;
-    default:
-      return ALL_FRAMES;
-  }
-};
-
-export const getFrameById = (id: string): DesignTemplate | null => {
-  return ALL_FRAMES.find(template => template.id === id) || null;
-};
