@@ -128,7 +128,8 @@ export const useImageUpload = (options: ImageUploadOptions = {}) => {
         });
 
         try {
-          const analysis = await analyzeCardImage(file);
+          // Pass the processed data URL instead of the File object
+          const analysis = await analyzeCardImage(result.dataUrl);
           console.log('✅ AI analysis completed:', analysis);
           
           setState(prev => ({
