@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Sparkles, Upload, Users } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { CreationModeSelector } from './components/CreationModeSelector';
 import { EnhancedWizard } from './components/EnhancedWizard';
 import { BulkCreationFlow } from './components/BulkCreationFlow';

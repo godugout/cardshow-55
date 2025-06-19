@@ -475,6 +475,7 @@ export type Database = {
       media: {
         Row: {
           alt_text: string | null
+          bucket_id: string | null
           created_at: string | null
           duration: number | null
           file_name: string
@@ -485,11 +486,13 @@ export type Database = {
           metadata: Json | null
           mime_type: string | null
           owner_id: string
+          storage_path: string | null
           thumbnail_url: string | null
           width: number | null
         }
         Insert: {
           alt_text?: string | null
+          bucket_id?: string | null
           created_at?: string | null
           duration?: number | null
           file_name: string
@@ -500,11 +503,13 @@ export type Database = {
           metadata?: Json | null
           mime_type?: string | null
           owner_id: string
+          storage_path?: string | null
           thumbnail_url?: string | null
           width?: number | null
         }
         Update: {
           alt_text?: string | null
+          bucket_id?: string | null
           created_at?: string | null
           duration?: number | null
           file_name?: string
@@ -515,6 +520,7 @@ export type Database = {
           metadata?: Json | null
           mime_type?: string | null
           owner_id?: string
+          storage_path?: string | null
           thumbnail_url?: string | null
           width?: number | null
         }
