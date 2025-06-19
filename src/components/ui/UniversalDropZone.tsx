@@ -1,4 +1,3 @@
-
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, Camera, FileImage, Loader2 } from 'lucide-react';
@@ -49,10 +48,11 @@ export const UniversalDropZone = ({
   });
 
   const handleCameraClick = () => {
+    // Create input specifically for camera capture
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.capture = 'environment';
+    input.capture = 'environment'; // Use rear camera
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) onFileSelect(file);
