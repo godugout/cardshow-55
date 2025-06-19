@@ -73,13 +73,11 @@ export const UniversalDropZone = ({
     capabilities.hasCamera || capabilities.isMobile
   );
 
-  const handleBrowseClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleBrowseClick = () => {
     open();
   };
 
-  const handleCameraButtonClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleCameraButtonClick = () => {
     handleCameraClick();
   };
 
