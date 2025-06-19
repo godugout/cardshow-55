@@ -9,6 +9,8 @@ interface HologramsTabProps {
   surface: {
     holographic: { enabled: boolean; intensity: number; pattern: string };
     prism: { enabled: boolean; dispersion: number; refraction: number };
+    foil: { enabled: boolean; type: string; intensity: number };
+    interference: { enabled: boolean; frequency: number; amplitude: number };
   };
   onUpdate: (surface: HologramsTabProps['surface']) => void;
 }

@@ -9,6 +9,8 @@ interface FoilsTabProps {
   surface: {
     foil: { enabled: boolean; type: string; intensity: number };
     interference: { enabled: boolean; frequency: number; amplitude: number };
+    holographic: { enabled: boolean; intensity: number; pattern: string };
+    prism: { enabled: boolean; dispersion: number; refraction: number };
   };
   onUpdate: (surface: FoilsTabProps['surface']) => void;
 }
