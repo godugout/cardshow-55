@@ -5,8 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Star, Filter } from 'lucide-react';
 import { CompactPhotoUpload } from './CompactPhotoUpload';
-import { ModularTemplatePreview } from './ModularTemplatePreview';
-import { MODULAR_TEMPLATES, convertToDesignTemplate } from '@/data/modularTemplates';
+import { AdaptiveTemplatePreview } from './AdaptiveTemplatePreview';
+import { ImageFormatSelector } from './ImageFormatSelector';
+import { ADAPTIVE_TEMPLATES, convertAdaptiveToDesignTemplate } from '@/data/adaptiveTemplates';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 import type { WizardMode } from '../UnifiedCardWizard';
 
@@ -31,14 +32,15 @@ export const FrameSelectionSidebar = ({
   onTemplateSelect
 }: FrameSelectionSidebarProps) => {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [imageFormat, setImageFormat] = useState<'square' | 'circle' | 'fullBleed'>('fullBleed');
 
-  // Use modular templates to avoid duplicates
+  // Use adaptive templates for consistent rendering
   const getFilteredTemplates = () => {
-    let filtered = MODULAR_TEMPLATES;
+    let filtered = ADAPTIVE_TEMPLATES;
     
     if (mode === 'quick') {
       // In quick mode, prioritize popular templates
-      filtered = MODULAR_TEMPLATES.filter(t => !t.is_premium || t.usage_count > 500);
+      filtered = ADAPTIVE_TEMPLATES.filter(t => !t.is_premium || t.usage_count > 500);
     }
     
     if (categoryFilter !== 'all') {
@@ -49,10 +51,10 @@ export const FrameSelectionSidebar = ({
   };
 
   const filteredTemplates = getFilteredTemplates();
-  const categories = [...new Set(MODULAR_TEMPLATES.map(t => t.category))].filter(Boolean);
+  const categories = [...new Set(ADAPTIVE_TEMPLATES.map(t => t.category))].filter(Boolean);
 
-  const handleTemplateSelect = (modularTemplate: any) => {
-    const convertedTemplate = convertToDesignTemplate(modularTemplate);
+  const handleTemplateSelect = (adaptiveTemplate: any) => {
+    const convertedTemplate = convertAdaptiveToDesignTemplate(adaptiveTemplate);
     onTemplateSelect(convertedTemplate);
   };
 
@@ -65,6 +67,18 @@ export const FrameSelectionSidebar = ({
         onPhotoRemove={onPhotoRemove}
         isAnalyzing={isAnalyzing}
       />
+
+      {/* Image Format Selection */}
+      {selectedPhoto && (
+        <Card className="bg-crd-darkGray border-crd-mediumGray/30">
+          <CardContent className="p-4">
+            <ImageFormatSelector
+              selectedFormat={imageFormat}
+              onFormatChange={setImageFormat}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Frame Selection */}
       <Card className="bg-crd-darkGray border-crd-mediumGray/30">
@@ -85,7 +99,7 @@ export const FrameSelectionSidebar = ({
                   <span className="font-medium">AI Recommended</span>
                 </div>
                 <p className="text-xs text-crd-lightGray mt-1">
-                  {selectedTemplate.name} works perfectly for your image
+                  {selectedTemplate.name} adapts perfectly to your {imageFormat} format
                 </p>
               </div>
             )}
@@ -121,7 +135,7 @@ export const FrameSelectionSidebar = ({
               </div>
             )}
             
-            {/* Frames Grid */}
+            {/* Adaptive Frames Grid */}
             <div className="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto">
               {filteredTemplates.map((template) => (
                 <div
@@ -133,9 +147,10 @@ export const FrameSelectionSidebar = ({
                       : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 border-crd-mediumGray/50 hover:border-crd-mediumGray'
                   }`}
                 >
-                  <ModularTemplatePreview 
+                  <AdaptiveTemplatePreview 
                     template={template} 
                     selectedPhoto={selectedPhoto}
+                    imageFormat={imageFormat}
                     className="mb-2"
                   />
                   
@@ -159,7 +174,7 @@ export const FrameSelectionSidebar = ({
             {selectedPhoto && selectedTemplate && (
               <div className="text-center p-3 bg-crd-green/10 border border-crd-green/20 rounded-lg">
                 <p className="text-sm text-crd-lightGray">
-                  ✓ Ready to proceed! Click <strong className="text-crd-green">Next</strong> to continue.
+                  ✓ Ready with <strong className="text-crd-green">{imageFormat}</strong> format! Click <strong className="text-crd-green">Next</strong> to continue.
                 </p>
               </div>
             )}

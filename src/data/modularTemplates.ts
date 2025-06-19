@@ -1,6 +1,26 @@
 import type { ModularTemplate } from '@/types/modularTemplate';
+import { ADAPTIVE_TEMPLATES } from './adaptiveTemplates';
+
+// Convert adaptive templates to modular format for backward compatibility
+const CONVERTED_ADAPTIVE_TEMPLATES: ModularTemplate[] = ADAPTIVE_TEMPLATES.map(adaptive => ({
+  id: adaptive.id,
+  name: adaptive.name,
+  description: adaptive.description,
+  category: adaptive.category,
+  aesthetic: adaptive.aesthetic,
+  is_premium: adaptive.is_premium,
+  elements: adaptive.elements,
+  colorSchemes: adaptive.colorSchemes,
+  customization: adaptive.customization,
+  usage_count: adaptive.usage_count,
+  tags: adaptive.tags
+}));
 
 export const MODULAR_TEMPLATES: ModularTemplate[] = [
+  // Start with adaptive templates (these are the new, improved versions)
+  ...CONVERTED_ADAPTIVE_TEMPLATES,
+  
+  // Legacy templates for backward compatibility (some may be filtered out to avoid duplicates)
   {
     id: 'crd-full-bleed',
     name: 'CRD Full Bleed',
