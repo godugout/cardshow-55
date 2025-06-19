@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { SignInForm } from './SignInForm';
 import { SignUpForm } from './SignUpForm';
 import { ForgotPasswordForm } from './ForgotPasswordForm';
@@ -10,7 +11,30 @@ import { AuthLayout } from './AuthLayout';
 type AuthMode = 'signin' | 'signup' | 'forgot-password' | 'reset-password' | 'magic-link';
 
 export const AuthPage: React.FC = () => {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [mode, setMode] = useState<AuthMode>('signin');
+
+  // Detect auth mode from URL path or search params
+  useEffect(() => {
+    const path = location.pathname;
+    const urlMode = searchParams.get('mode');
+    
+    // Check if we have reset password tokens in URL
+    const hasResetTokens = searchParams.get('access_token') && searchParams.get('refresh_token');
+    
+    if (hasResetTokens || path.includes('reset-password')) {
+      setMode('reset-password');
+    } else if (path.includes('forgot-password') || urlMode === 'forgot-password') {
+      setMode('forgot-password');
+    } else if (path.includes('magic-link') || urlMode === 'magic-link') {
+      setMode('magic-link');
+    } else if (path.includes('signup') || urlMode === 'signup') {
+      setMode('signup');
+    } else {
+      setMode('signin');
+    }
+  }, [location.pathname, searchParams]);
 
   const getTitle = () => {
     switch (mode) {

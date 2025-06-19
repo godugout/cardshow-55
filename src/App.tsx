@@ -13,6 +13,14 @@ import { AuthPage } from '@/components/auth/AuthPage';
 import { UnifiedCardCreator } from '@/components/creator/UnifiedCardCreator';
 import { BackofficeLayout } from '@/components/backoffice/BackofficeLayout';
 
+// Import dedicated auth pages
+import SignIn from '@/pages/auth/SignIn';
+import SignUp from '@/pages/auth/SignUp';
+import ForgotPassword from '@/pages/auth/ForgotPassword';
+import ResetPassword from '@/pages/auth/ResetPassword';
+import MagicLink from '@/pages/auth/MagicLink';
+import AuthCallback from '@/pages/auth/AuthCallback';
+
 function App() {
   const [showBackoffice, setShowBackoffice] = useState(false);
 
@@ -41,13 +49,21 @@ function App() {
             
             <Route path="gallery" element={<Gallery />} />
             <Route path="collections" element={<Collections />} />
-            <Route path="auth" element={<AuthPage />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
             
             {/* Hidden backoffice route */}
             <Route path="admin/backoffice" element={<div />} />
           </Route>
+
+          {/* Dedicated auth routes */}
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/auth/signin" element={<SignIn />} />
+          <Route path="/auth/signup" element={<SignUp />} />
+          <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+          <Route path="/auth/reset-password" element={<ResetPassword />} />
+          <Route path="/auth/magic-link" element={<MagicLink />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
         </Routes>
         
         {/* Global keyboard shortcut for backoffice access */}
