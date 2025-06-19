@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Save, Share, Download, Settings, Moon, ArrowLeft } from 'lucide-react';
-import { CRDButton } from '@/components/ui/design-system';
+import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { toast } from 'sonner';
@@ -23,16 +23,13 @@ export const Topbar = ({ cardEditor }: TopbarProps) => {
   };
 
   const handleShare = () => {
-    // Generate a sharable link for the card
     const shareUrl = window.location.href;
     
-    // Check if the browser supports the clipboard API
     if (navigator.clipboard) {
       navigator.clipboard.writeText(shareUrl)
         .then(() => toast.success('Link copied to clipboard'))
         .catch(() => toast.error('Failed to copy link'));
     } else {
-      // Fallback for browsers that don't support clipboard API
       const textArea = document.createElement('textarea');
       textArea.value = shareUrl;
       document.body.appendChild(textArea);
@@ -60,19 +57,16 @@ export const Topbar = ({ cardEditor }: TopbarProps) => {
       return;
     }
     
-    // Create a JSON blob of the card data
     const cardData = cardEditor.cardData;
     const dataStr = JSON.stringify(cardData, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     
-    // Create a download link and trigger a click
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `${cardData.title.replace(/\s+/g, '_')}_card.json`;
     link.click();
     
-    // Clean up
     URL.revokeObjectURL(url);
     toast.success('Card exported successfully');
   };
@@ -94,12 +88,12 @@ export const Topbar = ({ cardEditor }: TopbarProps) => {
   return (
     <div className="flex items-center justify-between h-16 px-4 bg-editor-dark border-b border-editor-border">
       <div className="flex items-center space-x-4">
-        <CRDButton variant="ghost" size="sm" asChild>
+        <Button variant="outline" size="sm" asChild className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white">
           <Link to="/cards">
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Cards
           </Link>
-        </CRDButton>
+        </Button>
         <div className="w-px h-8 bg-editor-border mx-2"></div>
         <h1 className="text-xl font-semibold text-white">Create a Card</h1>
       </div>
@@ -110,24 +104,27 @@ export const Topbar = ({ cardEditor }: TopbarProps) => {
             isSaving ? 'bg-yellow-500' : isDirty ? 'bg-red-500' : 'bg-crd-green'
           }`}></span>
         </div>
-        <CRDButton variant="ghost" size="sm" onClick={handleSave} disabled={isSaving} icon={<Save className="w-5 h-5" />}>
+        <Button variant="outline" size="sm" onClick={handleSave} disabled={isSaving} className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white">
+          <Save className="w-5 h-5 mr-2" />
           Save
-        </CRDButton>
-        <CRDButton variant="ghost" size="sm" onClick={handleShare} icon={<Share className="w-5 h-5" />}>
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleShare} className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white">
+          <Share className="w-5 h-5 mr-2" />
           Share
-        </CRDButton>
-        <CRDButton variant="ghost" size="sm" onClick={handleExport} icon={<Download className="w-5 h-5" />}>
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleExport} className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white">
+          <Download className="w-5 h-5 mr-2" />
           Export
-        </CRDButton>
-        <CRDButton variant="ghost" size="icon">
+        </Button>
+        <Button variant="outline" size="sm" className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white">
           <Settings className="w-5 h-5" />
-        </CRDButton>
-        <CRDButton variant="ghost" size="icon">
+        </Button>
+        <Button variant="outline" size="sm" className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white">
           <Moon className="w-5 h-5" />
-        </CRDButton>
-        <CRDButton variant="primary" className="ml-2 rounded-full" onClick={handlePublish}>
+        </Button>
+        <Button onClick={handlePublish} className="ml-2 rounded-full bg-crd-green hover:bg-crd-green/90 text-black font-semibold">
           Publish
-        </CRDButton>
+        </Button>
       </div>
     </div>
   );
