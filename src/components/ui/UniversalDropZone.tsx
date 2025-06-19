@@ -1,8 +1,12 @@
-import React, { useCallback } from 'react';
+
+import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, Camera, FileImage, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { DesktopCameraCapture } from './DesktopCameraCapture';
+import { useCameraCapabilities } from '@/hooks/useCameraCapabilities';
+import { toast } from 'sonner';
 
 export interface UniversalDropZoneProps {
   onFileSelect: (file: File) => void;
@@ -31,6 +35,9 @@ export const UniversalDropZone = ({
   title,
   description
 }: UniversalDropZoneProps) => {
+  const [showDesktopCamera, setShowDesktopCamera] = useState(false);
+  const capabilities = useCameraCapabilities();
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       onFileSelect(acceptedFiles[0]);
@@ -48,16 +55,45 @@ export const UniversalDropZone = ({
   });
 
   const handleCameraClick = () => {
-    // Create input specifically for camera capture
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment'; // Use rear camera
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) onFileSelect(file);
-    };
-    input.click();
+    if (capabilities.requiresHTTPS) {
+      toast.error('Camera requires HTTPS', {
+        description: 'Please use HTTPS to access the camera feature.'
+      });
+      return;
+    }
+
+    if (!capabilities.hasCamera) {
+      toast.error('No camera detected', {
+        description: 'No camera was found on this device.'
+      });
+      return;
+    }
+
+    if (capabilities.isDesktop && capabilities.supportsGetUserMedia) {
+      // Use desktop camera capture
+      setShowDesktopCamera(true);
+    } else if (capabilities.isMobile) {
+      // Use mobile file input with camera capture
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.capture = 'environment';
+      input.onchange = (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (file) onFileSelect(file);
+      };
+      input.click();
+    } else {
+      toast.error('Camera not supported', {
+        description: 'Camera access is not supported on this device or browser.'
+      });
+    }
+  };
+
+  const handleDesktopCameraCapture = (file: File) => {
+    onFileSelect(file);
+    setShowDesktopCamera(false);
+    toast.success('Photo captured successfully!');
   };
 
   const getVariantStyles = () => {
@@ -83,97 +119,116 @@ export const UniversalDropZone = ({
       : (description || 'Drag and drop your image here, or click to browse');
   };
 
+  const shouldShowCameraButton = showCameraButton && (
+    capabilities.hasCamera || capabilities.isMobile
+  );
+
   return (
-    <div
-      {...getRootProps()}
-      className={cn(
-        'border-2 border-dashed rounded-lg text-center cursor-pointer transition-all',
-        'hover:border-crd-green/50 hover:bg-crd-green/5',
-        isDragActive && 'border-crd-green bg-crd-green/10',
-        disabled && 'opacity-50 cursor-not-allowed',
-        isLoading && 'pointer-events-none',
-        variant === 'default' && 'border-crd-mediumGray',
-        variant === 'compact' && 'border-crd-mediumGray/50',
-        variant === 'minimal' && 'border-crd-lightGray',
-        getVariantStyles(),
-        className
-      )}
-    >
-      <input {...getInputProps()} />
-      
-      <div className="flex flex-col items-center gap-3">
-        {isLoading ? (
-          <Loader2 className="w-8 h-8 animate-spin text-crd-green" />
-        ) : (
-          <div className={cn(
-            'rounded-full flex items-center justify-center',
-            variant === 'minimal' ? 'w-8 h-8 bg-crd-mediumGray/20' : 'w-12 h-12 bg-crd-mediumGray/30'
-          )}>
-            <Upload className={cn(
-              'text-crd-lightGray',
-              variant === 'minimal' ? 'w-4 h-4' : 'w-6 h-6'
-            )} />
-          </div>
+    <>
+      <div
+        {...getRootProps()}
+        className={cn(
+          'border-2 border-dashed rounded-lg text-center cursor-pointer transition-all',
+          'hover:border-crd-green/50 hover:bg-crd-green/5',
+          isDragActive && 'border-crd-green bg-crd-green/10',
+          disabled && 'opacity-50 cursor-not-allowed',
+          isLoading && 'pointer-events-none',
+          variant === 'default' && 'border-crd-mediumGray',
+          variant === 'compact' && 'border-crd-mediumGray/50',
+          variant === 'minimal' && 'border-crd-lightGray',
+          getVariantStyles(),
+          className
         )}
+      >
+        <input {...getInputProps()} />
         
-        <div className="space-y-1">
-          <p className={cn(
-            'text-white font-medium',
-            variant === 'minimal' ? 'text-sm' : 'text-lg'
-          )}>
-            {getDefaultTitle()}
-          </p>
-          {variant !== 'minimal' && (
-            <p className={cn(
-              'text-crd-lightGray',
-              variant === 'compact' ? 'text-xs' : 'text-sm'
+        <div className="flex flex-col items-center gap-3">
+          {isLoading ? (
+            <Loader2 className="w-8 h-8 animate-spin text-crd-green" />
+          ) : (
+            <div className={cn(
+              'rounded-full flex items-center justify-center',
+              variant === 'minimal' ? 'w-8 h-8 bg-crd-mediumGray/20' : 'w-12 h-12 bg-crd-mediumGray/30'
             )}>
-              {getDefaultDescription()}
-            </p>
+              <Upload className={cn(
+                'text-crd-lightGray',
+                variant === 'minimal' ? 'w-4 h-4' : 'w-6 h-6'
+              )} />
+            </div>
           )}
-        </div>
+          
+          <div className="space-y-1">
+            <p className={cn(
+              'text-white font-medium',
+              variant === 'minimal' ? 'text-sm' : 'text-lg'
+            )}>
+              {getDefaultTitle()}
+            </p>
+            {variant !== 'minimal' && (
+              <p className={cn(
+                'text-crd-lightGray',
+                variant === 'compact' ? 'text-xs' : 'text-sm'
+              )}>
+                {getDefaultDescription()}
+              </p>
+            )}
+          </div>
 
-        {!isLoading && variant !== 'minimal' && (
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                open();
-              }}
-              disabled={disabled}
-              className="bg-crd-green hover:bg-crd-green/90 text-black"
-              size={variant === 'compact' ? 'sm' : 'default'}
-            >
-              <FileImage className="w-4 h-4 mr-2" />
-              Browse Files
-            </Button>
-
-            {showCameraButton && (
+          {!isLoading && variant !== 'minimal' && (
+            <div className="flex gap-2">
               <Button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleCameraClick();
+                  open();
                 }}
                 disabled={disabled}
-                variant="outline"
-                className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white"
+                className="bg-crd-green hover:bg-crd-green/90 text-black"
                 size={variant === 'compact' ? 'sm' : 'default'}
               >
-                <Camera className="w-4 h-4 mr-2" />
-                Camera
+                <FileImage className="w-4 h-4 mr-2" />
+                Browse Files
               </Button>
-            )}
-          </div>
-        )}
 
-        {variant !== 'minimal' && (
-          <p className="text-crd-lightGray text-xs">
-            Supports JPG, PNG, WebP • Max {Math.round(maxSize / (1024 * 1024))}MB
-          </p>
-        )}
+              {shouldShowCameraButton && (
+                <Button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCameraClick();
+                  }}
+                  disabled={disabled}
+                  variant="outline"
+                  className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white"
+                  size={variant === 'compact' ? 'sm' : 'default'}
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  {capabilities.isDesktop ? 'Camera' : 'Camera'}
+                </Button>
+              )}
+            </div>
+          )}
+
+          {variant !== 'minimal' && (
+            <p className="text-crd-lightGray text-xs">
+              Supports JPG, PNG, WebP • Max {Math.round(maxSize / (1024 * 1024))}MB
+              {capabilities.requiresHTTPS && (
+                <span className="block text-yellow-400 mt-1">
+                  HTTPS required for camera access
+                </span>
+              )}
+            </p>
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Desktop Camera Capture Dialog */}
+      <DesktopCameraCapture
+        isOpen={showDesktopCamera}
+        onClose={() => setShowDesktopCamera(false)}
+        onCapture={handleDesktopCameraCapture}
+        title="Capture Photo"
+      />
+    </>
   );
 };
