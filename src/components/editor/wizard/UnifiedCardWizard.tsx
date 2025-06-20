@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { WizardStepIndicator } from './WizardStepIndicator';
@@ -19,6 +20,11 @@ interface UnifiedCardWizardProps extends EnhancedCardWizardProps {
 export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWizardProps) => {
   const { wizardState, cardData, handlers, isSaving, templates, updateCardField } = useWizardState(onComplete);
 
+  console.log('UnifiedCardWizard - mode:', mode);
+  console.log('UnifiedCardWizard - currentStep:', wizardState.currentStep);
+  console.log('UnifiedCardWizard - selectedPhoto:', wizardState.selectedPhoto);
+  console.log('UnifiedCardWizard - handlePhotoSelect available:', !!handlers.handlePhotoSelect);
+
   const handleFieldUpdate = <K extends keyof typeof cardData>(field: K, value: typeof cardData[K]) => {
     updateCardField(field, value);
   };
@@ -32,6 +38,8 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
   };
 
   const renderStepContent = () => {
+    console.log('Rendering step content for step:', wizardState.currentStep, 'mode:', mode);
+    
     if (mode === 'bulk') {
       // Bulk mode has different step flow
       switch (wizardState.currentStep) {
@@ -45,6 +53,7 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
     // 3-step flow for quick and advanced modes
     switch (wizardState.currentStep) {
       case 1:
+        console.log('Rendering UnifiedUploadAndFrameStep with photo:', wizardState.selectedPhoto);
         return (
           <UnifiedUploadAndFrameStep
             mode={mode}

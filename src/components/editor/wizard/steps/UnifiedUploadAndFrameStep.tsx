@@ -14,6 +14,28 @@ interface UnifiedUploadAndFrameStepProps {
   onTemplateSelect: (template: DesignTemplate) => void;
 }
 
-export const UnifiedUploadAndFrameStep = (props: UnifiedUploadAndFrameStepProps) => {
-  return <CleanUnifiedStep {...props} />;
+export const UnifiedUploadAndFrameStep = ({ 
+  mode,
+  selectedPhoto, 
+  onPhotoSelect, 
+  onAnalysisComplete,
+  templates,
+  selectedTemplate,
+  onTemplateSelect
+}: UnifiedUploadAndFrameStepProps) => {
+  console.log('UnifiedUploadAndFrameStep - selectedPhoto:', selectedPhoto);
+  console.log('UnifiedUploadAndFrameStep - onPhotoSelect available:', !!onPhotoSelect);
+  console.log('UnifiedUploadAndFrameStep - mode:', mode);
+
+  return (
+    <CleanUnifiedStep
+      mode={mode}
+      selectedPhoto={selectedPhoto}
+      onPhotoSelect={onPhotoSelect}
+      onAnalysisComplete={onAnalysisComplete}
+      templates={templates}
+      selectedTemplate={selectedTemplate}
+      onTemplateSelect={onTemplateSelect}
+    />
+  );
 };
