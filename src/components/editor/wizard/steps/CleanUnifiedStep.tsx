@@ -27,10 +27,24 @@ export const CleanUnifiedStep = ({
 }: CleanUnifiedStepProps) => {
   const [imageFormat, setImageFormat] = React.useState<'square' | 'circle' | 'fullBleed'>('fullBleed');
 
+  console.log('CleanUnifiedStep - selectedPhoto:', selectedPhoto);
+  console.log('CleanUnifiedStep - selectedTemplate:', selectedTemplate);
+  console.log('CleanUnifiedStep - onPhotoSelect available:', !!onPhotoSelect);
+
   return (
     <div className="grid grid-cols-3 gap-8 h-full">
       {/* Left Side - Large Preview (2/3 width) */}
       <div className="col-span-2 space-y-6">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-white mb-2">Create Your Card</h2>
+          <p className="text-crd-lightGray">
+            {!selectedPhoto 
+              ? "Upload a photo to get started, then choose a frame style"
+              : "Your card preview with the selected frame"
+            }
+          </p>
+        </div>
+        
         <CardPreviewSection
           selectedPhoto={selectedPhoto}
           selectedTemplate={selectedTemplate}

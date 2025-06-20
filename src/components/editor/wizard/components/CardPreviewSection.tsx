@@ -54,20 +54,11 @@ export const CardPreviewSection = ({
     disabled: !onPhotoSelect
   });
 
-  if (!adaptiveTemplate) {
-    console.log('No adaptive template found for selectedTemplate:', selectedTemplate);
-    return (
-      <div className="flex items-center justify-center h-96 bg-crd-mediumGray/30 rounded-lg border border-crd-mediumGray/50">
-        <div className="text-center">
-          <p className="text-crd-lightGray mb-2">No template selected</p>
-          <p className="text-sm text-crd-lightGray/70">Choose a template to see your card preview</p>
-        </div>
-      </div>
-    );
-  }
+  // Always show the preview container, even without a template
+  const showUploadZone = !selectedPhoto && onPhotoSelect;
 
   // Create custom elements with user data and new logo
-  const customElements = adaptiveTemplate.elements.map(element => {
+  const customElements = adaptiveTemplate ? adaptiveTemplate.elements.map(element => {
     if (element.type === 'nameplate') {
       return {
         ...element,
@@ -87,14 +78,15 @@ export const CardPreviewSection = ({
       };
     }
     return element;
-  });
+  }) : [];
 
   return (
     <div className="flex justify-center">
       <div className="relative transform hover:scale-105 transition-transform duration-200">
-        {/* Card Preview with Integrated Upload */}
+        {/* Card Preview Container - Always show */}
         <div className="relative w-80 h-112 shadow-2xl border border-crd-mediumGray/50 rounded-lg overflow-hidden">
-          {!selectedPhoto && onPhotoSelect ? (
+          
+          {showUploadZone ? (
             /* Upload dropzone when no photo */
             <div
               {...getRootProps()}
@@ -121,8 +113,8 @@ export const CardPreviewSection = ({
                 </div>
               </div>
             </div>
-          ) : (
-            /* Card preview with photo */
+          ) : selectedPhoto && adaptiveTemplate ? (
+            /* Card preview with photo and template */
             <AdaptiveTemplatePreview
               template={adaptiveTemplate}
               selectedPhoto={selectedPhoto}
@@ -130,6 +122,27 @@ export const CardPreviewSection = ({
               customElements={customElements}
               className="w-full h-full"
             />
+          ) : selectedPhoto ? (
+            /* Simple photo preview when no template */
+            <div className="w-full h-full relative">
+              <img 
+                src={selectedPhoto} 
+                alt="Your uploaded photo" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-4 left-4 right-4 bg-black/80 rounded-lg p-3">
+                <p className="text-white font-medium">Your Photo</p>
+                <p className="text-crd-lightGray text-sm">Choose a frame to style your card</p>
+              </div>
+            </div>
+          ) : (
+            /* Default state when no photo and no upload capability */
+            <div className="flex items-center justify-center h-full bg-crd-mediumGray/30">
+              <div className="text-center p-8">
+                <ImageIcon className="w-16 h-16 text-crd-lightGray mx-auto mb-4" />
+                <p className="text-crd-lightGray">Card preview will appear here</p>
+              </div>
+            </div>
           )}
         </div>
       </div>
