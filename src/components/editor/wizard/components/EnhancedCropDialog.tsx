@@ -32,6 +32,8 @@ export const EnhancedCropDialog = ({
   const [showGrid, setShowGrid] = useState(true);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
   
   // Initialize crop bounds based on format
   const getInitialCropBounds = useCallback((): CropBounds => {
@@ -73,11 +75,20 @@ export const EnhancedCropDialog = ({
 
   // Handle image load to get natural dimensions
   useEffect(() => {
-    if (selectedPhoto && imageRef.current) {
+    if (selectedPhoto && isOpen) {
+      console.log('Loading image:', selectedPhoto);
+      setImageLoading(true);
+      setImageError(false);
+      
       const img = new Image();
       img.onload = () => {
+        console.log('Image loaded successfully:', img.naturalWidth, 'x', img.naturalHeight);
+        
         const container = containerRef.current;
-        if (!container) return;
+        if (!container) {
+          console.warn('Container not available');
+          return;
+        }
 
         const containerRect = container.getBoundingClientRect();
         const containerWidth = containerRect.width - 40; // Account for padding
@@ -101,7 +112,21 @@ export const EnhancedCropDialog = ({
           x: (containerWidth - displayWidth) / 2 + 20,
           y: (containerHeight - displayHeight) / 2 + 20
         });
+        setImageLoading(false);
+        
+        // Update the imageRef if it exists
+        if (imageRef.current) {
+          imageRef.current.src = selectedPhoto;
+        }
       };
+      
+      img.onerror = (error) => {
+        console.error('Image failed to load:', error);
+        setImageError(true);
+        setImageLoading(false);
+        toast.error('Failed to load image for cropping');
+      };
+      
       img.src = selectedPhoto;
     }
   }, [selectedPhoto, isOpen]);
@@ -202,6 +227,7 @@ export const EnhancedCropDialog = ({
             <div className="flex items-center gap-2">
               <Button
                 onClick={handleApplyCrop}
+                disabled={imageLoading || imageError}
                 className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
               >
                 <Check className="w-4 h-4 mr-2" />
@@ -299,13 +325,35 @@ export const EnhancedCropDialog = ({
               className="flex-1 bg-gradient-to-br from-gray-900 via-black to-gray-800 p-5 overflow-hidden relative"
             >
               <div className="relative w-full h-full flex items-center justify-center">
-                {imageDimensions.width > 0 && (
+                {imageLoading && (
+                  <div className="text-white text-center">
+                    <div className="animate-pulse">Loading image...</div>
+                  </div>
+                )}
+                
+                {imageError && (
+                  <div className="text-red-400 text-center">
+                    <div>Failed to load image</div>
+                    <div className="text-sm mt-2">Please try uploading a different image</div>
+                  </div>
+                )}
+                
+                {!imageLoading && !imageError && imageDimensions.width > 0 && (
                   <>
-                    {/* Background Image with Darkening */}
+                    {/* Hidden image element for natural dimensions */}
                     <img
                       ref={imageRef}
                       src={selectedPhoto}
-                      alt="Crop preview"
+                      alt="Source"
+                      className="hidden"
+                      onLoad={() => console.log('Hidden image ref loaded')}
+                      onError={() => console.error('Hidden image ref failed')}
+                    />
+
+                    {/* Background Image with Darkening */}
+                    <img
+                      src={selectedPhoto}
+                      alt="Crop preview background"
                       className="absolute"
                       style={{
                         width: imageDimensions.width * zoom,
@@ -426,6 +474,21 @@ export const EnhancedCropDialog = ({
                 </div>
               </CardContent>
             </Card>
+
+            {/* Debug Info */}
+            {imageDimensions.width > 0 && (
+              <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
+                <CardContent className="p-4">
+                  <h3 className="text-white font-medium mb-3">Debug Info</h3>
+                  <div className="space-y-1 text-xs text-crd-lightGray">
+                    <div>Image: {imageDimensions.width}×{imageDimensions.height}</div>
+                    <div>Loading: {imageLoading ? 'Yes' : 'No'}</div>
+                    <div>Error: {imageError ? 'Yes' : 'No'}</div>
+                    <div>Zoom: {zoom.toFixed(1)}x</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Keyboard Shortcuts */}
             <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
