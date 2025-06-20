@@ -55,9 +55,9 @@ export const ProfessionalCropCanvas = ({
       <div className="relative w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
         {imageLoading && (
           <div className="flex items-center justify-center text-white">
-            <div className="animate-pulse">
-              <div className="w-16 h-16 bg-gray-700 rounded-lg mb-4"></div>
-              <div className="text-center">Loading image...</div>
+            <div className="animate-pulse text-center">
+              <div className="w-16 h-16 bg-gray-700 rounded-lg mb-4 mx-auto"></div>
+              <div>Loading image...</div>
             </div>
           </div>
         )}

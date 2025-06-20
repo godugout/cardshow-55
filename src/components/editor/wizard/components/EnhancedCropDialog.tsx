@@ -7,10 +7,9 @@ import { toast } from 'sonner';
 import { cropImageFromFile } from '@/services/imageCropper';
 import type { CropBounds } from '@/services/imageCropper';
 
-import { ImageLoader } from './crop-dialog/ImageLoader';
 import { ProfessionalCropToolbar } from './crop-dialog/ProfessionalCropToolbar';
-import { ProfessionalCropCanvas } from './crop-dialog/ProfessionalCropCanvas';
 import { ProfessionalCropSidebar } from './crop-dialog/ProfessionalCropSidebar';
+import { InteractiveCropArea } from './InteractiveCropArea';
 
 interface EnhancedCropDialogProps {
   isOpen: boolean;
@@ -34,34 +33,30 @@ export const EnhancedCropDialog = ({
   const [showGrid, setShowGrid] = useState(true);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
-  const [imageLoading, setImageLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   
+  const canvasRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize crop bounds based on format
   const getInitialCropBounds = useCallback((): CropBounds => {
     if (cropFormat === 'fullCard') {
-      // 2.5:3.5 aspect ratio for trading cards
       const aspectRatio = 2.5 / 3.5;
-      const centerX = 50;
-      const centerY = 50;
-      const height = 70; // 70% of image height
+      const height = 80;
       const width = height * aspectRatio;
       
       return {
-        x: centerX - width / 2,
-        y: centerY - height / 2,
+        x: (100 - width) / 2,
+        y: (100 - height) / 2,
         width,
         height
       };
     } else {
-      // Square crop for cropped format
-      const size = 60;
+      const size = 70;
       return {
-        x: 20,
-        y: 20,
+        x: (100 - size) / 2,
+        y: (100 - size) / 2,
         width: size,
         height: size
       };
@@ -75,42 +70,53 @@ export const EnhancedCropDialog = ({
     setCropBounds(getInitialCropBounds());
   }, [cropFormat, getInitialCropBounds]);
 
-  const handleImageLoad = useCallback((img: HTMLImageElement) => {
-    const container = containerRef.current;
-    if (!container) return;
+  // Handle image loading and positioning
+  useEffect(() => {
+    if (!selectedPhoto || !isOpen) return;
 
-    const containerRect = container.getBoundingClientRect();
-    const containerWidth = containerRect.width - 32; // Account for padding
-    const containerHeight = containerRect.height - 32;
-    
-    // Calculate display size while maintaining aspect ratio
-    const imageAspect = img.naturalWidth / img.naturalHeight;
-    const containerAspect = containerWidth / containerHeight;
-    
-    let displayWidth, displayHeight;
-    if (imageAspect > containerAspect) {
-      displayWidth = containerWidth;
-      displayHeight = displayWidth / imageAspect;
-    } else {
-      displayHeight = containerHeight;
-      displayWidth = displayHeight * imageAspect;
-    }
-    
-    setImageDimensions({ width: displayWidth, height: displayHeight });
-    setImagePosition({
-      x: (containerWidth - displayWidth) / 2 + 16,
-      y: (containerHeight - displayHeight) / 2 + 16
-    });
-    
-    if (imageRef.current) {
-      imageRef.current.src = selectedPhoto;
-    }
-  }, [selectedPhoto]);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-  const handleImageError = useCallback(() => {
-    setImageError(true);
-    toast.error('Failed to load image for cropping');
-  }, []);
+      const canvasRect = canvas.getBoundingClientRect();
+      const canvasWidth = canvasRect.width - 32;
+      const canvasHeight = canvasRect.height - 32;
+      
+      const imageAspect = img.naturalWidth / img.naturalHeight;
+      const canvasAspect = canvasWidth / canvasHeight;
+      
+      let displayWidth, displayHeight;
+      if (imageAspect > canvasAspect) {
+        displayWidth = canvasWidth * 0.8; // Leave some margin
+        displayHeight = displayWidth / imageAspect;
+      } else {
+        displayHeight = canvasHeight * 0.8;
+        displayWidth = displayHeight * imageAspect;
+      }
+      
+      setImageDimensions({ width: displayWidth, height: displayHeight });
+      setImagePosition({
+        x: (canvasWidth - displayWidth) / 2 + 16,
+        y: (canvasHeight - displayHeight) / 2 + 16
+      });
+      
+      setImageLoaded(true);
+      setImageError(false);
+      
+      if (imageRef.current) {
+        imageRef.current.src = selectedPhoto;
+      }
+    };
+    
+    img.onerror = () => {
+      setImageError(true);
+      setImageLoaded(false);
+      toast.error('Failed to load image');
+    };
+    
+    img.src = selectedPhoto;
+  }, [selectedPhoto, isOpen]);
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -130,6 +136,21 @@ export const EnhancedCropDialog = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, showGrid]);
 
+  // Handle zoom with mouse wheel
+  const handleWheel = useCallback((e: WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    setZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.addEventListener('wheel', handleWheel, { passive: false });
+      return () => canvas.removeEventListener('wheel', handleWheel);
+    }
+  }, [handleWheel]);
+
   const handleApplyCrop = async () => {
     if (!originalFile) {
       toast.error('No original file available');
@@ -137,8 +158,11 @@ export const EnhancedCropDialog = ({
     }
 
     try {
-      const naturalWidth = imageRef.current?.naturalWidth || 1;
-      const naturalHeight = imageRef.current?.naturalHeight || 1;
+      const img = imageRef.current;
+      if (!img) return;
+
+      const naturalWidth = img.naturalWidth;
+      const naturalHeight = img.naturalHeight;
 
       const croppedImageUrl = await cropImageFromFile(originalFile, {
         bounds: {
@@ -171,7 +195,7 @@ export const EnhancedCropDialog = ({
     
     switch (position) {
       case 'center':
-        newBounds.y = 50 - cropBounds.height / 2;
+        newBounds.y = (100 - cropBounds.height) / 2;
         break;
       case 'top':
         newBounds.y = 10;
@@ -186,13 +210,13 @@ export const EnhancedCropDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl w-[90vw] h-[80vh] bg-gray-900 border-gray-700 p-0 gap-0">
+      <DialogContent className="max-w-4xl w-[90vw] h-[80vh] bg-gray-900 border-gray-700 p-0 gap-0">
         <DialogHeader className="px-6 py-4 border-b border-gray-700 bg-gray-800/50">
           <DialogTitle className="text-xl font-semibold text-white flex items-center justify-between">
             <span>Crop & Position Your Photo</span>
             <Button
               onClick={handleApplyCrop}
-              disabled={imageLoading || imageError}
+              disabled={!imageLoaded || imageError}
               className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6"
             >
               <Check className="w-4 h-4 mr-2" />
@@ -214,28 +238,97 @@ export const EnhancedCropDialog = ({
               onReset={handleReset}
             />
 
-            <div ref={containerRef} className="flex-1 min-h-0">
-              <ImageLoader
-                selectedPhoto={selectedPhoto}
-                isOpen={isOpen}
-                onImageLoad={handleImageLoad}
-                onImageError={handleImageError}
-                onLoadingChange={setImageLoading}
-              />
+            {/* Canvas Area */}
+            <div 
+              ref={canvasRef}
+              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 overflow-hidden relative"
+            >
+              <div className="relative w-full h-full flex items-center justify-center">
+                {!imageLoaded && !imageError && (
+                  <div className="flex items-center justify-center text-white">
+                    <div className="animate-pulse text-center">
+                      <div className="w-16 h-16 bg-gray-700 rounded-lg mb-4 mx-auto"></div>
+                      <div>Loading image...</div>
+                    </div>
+                  </div>
+                )}
+                
+                {imageError && (
+                  <div className="text-center p-8">
+                    <div className="w-16 h-16 bg-red-900/50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <span className="text-red-400 text-2xl">⚠</span>
+                    </div>
+                    <div className="text-red-400 font-medium">Failed to load image</div>
+                    <div className="text-gray-400 text-sm mt-2">Please try uploading a different image</div>
+                  </div>
+                )}
+                
+                {imageLoaded && !imageError && imageDimensions.width > 0 && (
+                  <>
+                    {/* Background Image (Darkened) */}
+                    <img
+                      ref={imageRef}
+                      src={selectedPhoto}
+                      alt="Crop preview background"
+                      className="absolute rounded-lg"
+                      style={{
+                        width: imageDimensions.width * zoom,
+                        height: imageDimensions.height * zoom,
+                        left: imagePosition.x,
+                        top: imagePosition.y,
+                        filter: 'brightness(0.4) contrast(0.8)',
+                        transition: 'all 0.2s ease-out'
+                      }}
+                    />
 
-              <ProfessionalCropCanvas
-                selectedPhoto={selectedPhoto}
-                cropBounds={cropBounds}
-                cropFormat={cropFormat}
-                imageDimensions={imageDimensions}
-                imagePosition={imagePosition}
-                zoom={zoom}
-                showGrid={showGrid}
-                imageLoading={imageLoading}
-                imageError={imageError}
-                setCropBounds={setCropBounds}
-                onZoomChange={setZoom}
-              />
+                    {/* Bright Crop Preview */}
+                    <div
+                      className="absolute overflow-hidden shadow-2xl"
+                      style={{
+                        left: imagePosition.x + (cropBounds.x / 100) * imageDimensions.width * zoom,
+                        top: imagePosition.y + (cropBounds.y / 100) * imageDimensions.height * zoom,
+                        width: (cropBounds.width / 100) * imageDimensions.width * zoom,
+                        height: (cropBounds.height / 100) * imageDimensions.height * zoom,
+                        borderRadius: cropFormat === 'cropped' ? '12px' : '6px',
+                        transition: 'all 0.2s ease-out'
+                      }}
+                    >
+                      <img
+                        src={selectedPhoto}
+                        alt="Crop area"
+                        className="absolute"
+                        style={{
+                          width: imageDimensions.width * zoom,
+                          height: imageDimensions.height * zoom,
+                          left: -(cropBounds.x / 100) * imageDimensions.width * zoom,
+                          top: -(cropBounds.y / 100) * imageDimensions.height * zoom,
+                          filter: 'brightness(1) contrast(1.05) saturate(1.1)'
+                        }}
+                      />
+                    </div>
+
+                    {/* Interactive Crop Area */}
+                    <InteractiveCropArea
+                      cropBounds={cropBounds}
+                      setCropBounds={setCropBounds}
+                      imageDimensions={imageDimensions}
+                      imagePosition={imagePosition}
+                      zoom={zoom}
+                      aspectRatio={cropFormat === 'fullCard' ? 2.5 / 3.5 : 1}
+                      showGrid={showGrid}
+                    />
+                  </>
+                )}
+              </div>
+              
+              {/* Controls hint */}
+              <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-gray-600">
+                <div className="flex items-center gap-4">
+                  <span>🖱️ Scroll to zoom</span>
+                  <span>⌨️ G for grid</span>
+                  <span>↕️ Drag to move</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -244,7 +337,7 @@ export const EnhancedCropDialog = ({
             cropFormat={cropFormat}
             zoom={zoom}
             imageDimensions={imageDimensions}
-            imageLoading={imageLoading}
+            imageLoading={!imageLoaded}
             imageError={imageError}
             onZoomChange={setZoom}
             onPresetPosition={handlePresetPosition}
