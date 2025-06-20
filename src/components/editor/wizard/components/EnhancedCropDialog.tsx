@@ -86,10 +86,10 @@ export const EnhancedCropDialog = ({
       
       let displayWidth, displayHeight;
       if (imageAspect > canvasAspect) {
-        displayWidth = canvasWidth * 0.8;
+        displayWidth = canvasWidth * 0.9;
         displayHeight = displayWidth / imageAspect;
       } else {
-        displayHeight = canvasHeight * 0.8;
+        displayHeight = canvasHeight * 0.9;
         displayWidth = displayHeight * imageAspect;
       }
       
@@ -116,7 +116,7 @@ export const EnhancedCropDialog = ({
     img.src = selectedPhoto;
   }, [selectedPhoto, isOpen]);
 
-  // Centralized scroll-to-zoom handler
+  // Centralized scroll-to-zoom handler - FIXED
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
@@ -142,10 +142,10 @@ export const EnhancedCropDialog = ({
     }
   }, [isOpen, onClose, showGrid]);
 
-  // Set up event listeners
+  // Set up event listeners - FIXED to prevent conflicts
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (canvas && isOpen) {
+    if (canvas && isOpen && imageLoaded) {
       canvas.addEventListener('wheel', handleWheel, { passive: false });
       document.addEventListener('keydown', handleKeyDown);
       
@@ -154,7 +154,7 @@ export const EnhancedCropDialog = ({
         document.removeEventListener('keydown', handleKeyDown);
       };
     }
-  }, [handleWheel, handleKeyDown, isOpen]);
+  }, [handleWheel, handleKeyDown, isOpen, imageLoaded]);
 
   const handleApplyCrop = async () => {
     if (!originalFile) {
@@ -216,15 +216,15 @@ export const EnhancedCropDialog = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl w-[90vw] h-[80vh] bg-gray-900 border-gray-700 p-0 gap-0">
-        {/* Compact Header - Remove excessive padding */}
-        <div className="px-6 py-3 border-b border-gray-700 bg-gray-800/50">
+        {/* Compact Header - Reduced padding */}
+        <div className="px-6 py-2 border-b border-gray-700 bg-gray-800/50">
           <h2 className="text-lg font-semibold text-white">Crop & Position Your Photo</h2>
         </div>
 
         <div className="flex h-full min-h-0">
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {/* Compact Toolbar - Moved closer to header */}
+            {/* Compact Toolbar - Moved directly below header */}
             <ProfessionalCropToolbar
               cropFormat={cropFormat}
               showGrid={showGrid}
@@ -236,10 +236,10 @@ export const EnhancedCropDialog = ({
               onApplyCrop={handleApplyCrop}
             />
 
-            {/* Canvas Area - Reduced padding */}
+            {/* Canvas Area - Minimal padding */}
             <div 
               ref={canvasRef}
-              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-2 overflow-hidden relative"
+              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 overflow-hidden relative"
             >
               <div className="relative w-full h-full flex items-center justify-center">
                 {!imageLoaded && !imageError && (
@@ -263,7 +263,7 @@ export const EnhancedCropDialog = ({
                 
                 {imageLoaded && !imageError && imageDimensions.width > 0 && (
                   <>
-                    {/* Single Background Image with Simple Overlay */}
+                    {/* Single Background Image - FIXED positioning */}
                     <div
                       className="absolute"
                       style={{
@@ -279,45 +279,36 @@ export const EnhancedCropDialog = ({
                         src={selectedPhoto}
                         alt="Crop preview"
                         className="w-full h-full object-cover rounded-lg"
+                        style={{ display: 'block' }}
                       />
                       
-                      {/* Simple dark overlay with transparent crop window */}
+                      {/* Simple dark overlay with crop window cutout - SIMPLIFIED */}
                       <div
-                        className="absolute inset-0 bg-black/50"
+                        className="absolute inset-0 bg-black/60 pointer-events-none"
                         style={{
-                          maskImage: `
-                            linear-gradient(transparent, transparent),
-                            polygon(
-                              0% 0%, 
-                              ${cropBounds.x}% 0%, 
-                              ${cropBounds.x}% ${cropBounds.y}%, 
-                              ${cropBounds.x + cropBounds.width}% ${cropBounds.y}%, 
-                              ${cropBounds.x + cropBounds.width}% ${cropBounds.y + cropBounds.height}%, 
-                              ${cropBounds.x}% ${cropBounds.y + cropBounds.height}%, 
-                              ${cropBounds.x}% 100%, 
-                              0% 100%
-                            ),
-                            polygon(
-                              ${cropBounds.x + cropBounds.width}% 0%, 
-                              100% 0%, 
-                              100% 100%, 
-                              ${cropBounds.x + cropBounds.width}% 100%, 
-                              ${cropBounds.x + cropBounds.width}% ${cropBounds.y + cropBounds.height}%, 
-                              ${cropBounds.x + cropBounds.width}% ${cropBounds.y}%
-                            ),
-                            polygon(
-                              ${cropBounds.x}% ${cropBounds.y + cropBounds.height}%, 
-                              ${cropBounds.x + cropBounds.width}% ${cropBounds.y + cropBounds.height}%, 
-                              ${cropBounds.x + cropBounds.width}% 100%, 
-                              ${cropBounds.x}% 100%
-                            )
-                          `,
-                          maskComposite: 'add'
+                          clipPath: `polygon(
+                            0% 0%, 
+                            ${cropBounds.x}% 0%, 
+                            ${cropBounds.x}% ${cropBounds.y}%, 
+                            ${cropBounds.x + cropBounds.width}% ${cropBounds.y}%, 
+                            ${cropBounds.x + cropBounds.width}% ${cropBounds.y + cropBounds.height}%, 
+                            ${cropBounds.x}% ${cropBounds.y + cropBounds.height}%, 
+                            ${cropBounds.x}% 100%, 
+                            0% 100%, 
+                            0% 0%, 
+                            100% 0%, 
+                            100% 100%, 
+                            ${cropBounds.x + cropBounds.width}% 100%, 
+                            ${cropBounds.x + cropBounds.width}% ${cropBounds.y + cropBounds.height}%, 
+                            ${cropBounds.x + cropBounds.width}% ${cropBounds.y}%, 
+                            100% ${cropBounds.y}%, 
+                            100% 0%
+                          )`
                         }}
                       />
                     </div>
 
-                    {/* Interactive Crop Area */}
+                    {/* Interactive Crop Area - ALIGNED properly */}
                     <InteractiveCropArea
                       cropBounds={cropBounds}
                       setCropBounds={setCropBounds}
@@ -332,7 +323,7 @@ export const EnhancedCropDialog = ({
               </div>
               
               {/* Compact controls hint */}
-              <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-lg border border-gray-600">
+              <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-lg border border-gray-600">
                 <div className="flex items-center gap-3">
                   <span>🖱️ Scroll: zoom</span>
                   <span>G: grid</span>

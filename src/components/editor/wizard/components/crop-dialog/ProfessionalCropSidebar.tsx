@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Target, AlignCenter, MoveUp, MoveDown } from 'lucide-react';
 
 interface ProfessionalCropSidebarProps {
   cropFormat: 'fullCard' | 'cropped';
@@ -24,121 +24,94 @@ export const ProfessionalCropSidebar = ({
   onPresetPosition
 }: ProfessionalCropSidebarProps) => {
   return (
-    <div className="w-72 bg-gray-900 border-l border-gray-700 flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-700">
-        <h3 className="text-lg font-semibold text-white">Inspector</h3>
-        <p className="text-sm text-gray-400">Fine-tune your crop settings</p>
+    <div className="w-64 bg-gray-800 border-l border-gray-700 p-4 space-y-4 overflow-y-auto">
+      {/* Format Info */}
+      <div>
+        <h3 className="text-white font-medium text-sm mb-2">Crop Format</h3>
+        <Badge className={`${
+          cropFormat === 'fullCard' 
+            ? 'bg-green-600/20 text-green-400 border-green-500/30' 
+            : 'bg-blue-600/20 text-blue-400 border-blue-500/30'
+        }`}>
+          {cropFormat === 'fullCard' ? 'Trading Card (2.5:3.5)' : 'Square (1:1)'}
+        </Badge>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        {/* Zoom Control */}
-        <Card className="bg-gray-950 border-gray-700">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-white font-medium">Zoom Level</h4>
-              <span className="text-green-400 font-semibold text-sm bg-green-400/10 px-2 py-1 rounded">
-                {Math.round(zoom * 100)}%
-              </span>
-            </div>
-            <Slider
-              value={[zoom]}
-              onValueChange={(value) => onZoomChange(value[0])}
-              min={0.5}
-              max={3}
-              step={0.1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-gray-400 mt-2">
-              <span>50%</span>
-              <span>300%</span>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Zoom Control */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-white font-medium text-sm">Zoom</label>
+          <span className="text-xs text-gray-400">{Math.round(zoom * 100)}%</span>
+        </div>
+        <input
+          type="range"
+          min="0.5"
+          max="3"
+          step="0.1"
+          value={zoom}
+          onChange={(e) => onZoomChange(parseFloat(e.target.value))}
+          className="w-full accent-green-500"
+        />
+        <div className="flex justify-between text-xs text-gray-400 mt-1">
+          <span>50%</span>
+          <span>300%</span>
+        </div>
+      </div>
 
-        {/* Quick Position Controls - Dark Theme */}
-        <Card className="bg-gray-950 border-gray-700">
-          <CardContent className="p-4">
-            <h4 className="text-white font-medium mb-3">Quick Position</h4>
-            <div className="grid grid-cols-1 gap-2">
-              {[
-                { id: 'top', label: 'Top Focus', desc: 'Position crop at top' },
-                { id: 'center', label: 'Center Focus', desc: 'Center the crop' },
-                { id: 'bottom', label: 'Bottom Focus', desc: 'Position crop at bottom' }
-              ].map((preset) => (
-                <Button
-                  key={preset.id}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onPresetPosition(preset.id as any)}
-                  className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white border border-gray-600 justify-start h-auto p-3"
-                >
-                  <div className="text-left">
-                    <div className="font-medium">{preset.label}</div>
-                    <div className="text-xs text-gray-400">{preset.desc}</div>
-                  </div>
-                </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Quick Position Presets */}
+      <div>
+        <h3 className="text-white font-medium text-sm mb-2">Quick Position</h3>
+        <div className="space-y-2">
+          <Button
+            onClick={() => onPresetPosition('center')}
+            variant="outline"
+            size="sm"
+            className="w-full border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white text-xs"
+          >
+            <AlignCenter className="w-3 h-3 mr-2" />
+            Center
+          </Button>
+          <Button
+            onClick={() => onPresetPosition('top')}
+            variant="outline"
+            size="sm"
+            className="w-full border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white text-xs"
+          >
+            <MoveUp className="w-3 h-3 mr-2" />
+            Top
+          </Button>
+          <Button
+            onClick={() => onPresetPosition('bottom')}
+            variant="outline"
+            size="sm"
+            className="w-full border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white text-xs"
+          >
+            <MoveDown className="w-3 h-3 mr-2" />
+            Bottom
+          </Button>
+        </div>
+      </div>
 
-        {/* Format Information */}
-        <Card className="bg-gray-950 border-gray-700">
-          <CardContent className="p-4">
-            <h4 className="text-white font-medium mb-3">Format Details</h4>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400 text-sm">Type:</span>
-                <span className="text-white font-medium">
-                  {cropFormat === 'fullCard' ? 'Trading Card' : 'Square Crop'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400 text-sm">Aspect Ratio:</span>
-                <span className="text-green-400 font-mono text-sm">
-                  {cropFormat === 'fullCard' ? '2.5:3.5' : '1:1'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400 text-sm">Output Size:</span>
-                <span className="text-blue-400 font-mono text-sm">
-                  {cropFormat === 'fullCard' ? '400×560px' : '400×400px'}
-                </span>
-              </div>
-              {imageDimensions.width > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Source:</span>
-                  <span className="text-gray-300 font-mono text-sm">
-                    {Math.round(imageDimensions.width)}×{Math.round(imageDimensions.height)}px
-                  </span>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Image Info */}
+      {!imageLoading && !imageError && (
+        <div>
+          <h3 className="text-white font-medium text-sm mb-2">Image Info</h3>
+          <div className="text-xs text-gray-400 space-y-1">
+            <div>Display: {Math.round(imageDimensions.width)}×{Math.round(imageDimensions.height)}</div>
+            <div>Zoom: {Math.round(zoom * 100)}%</div>
+          </div>
+        </div>
+      )}
 
-        {/* Keyboard Shortcuts */}
-        <Card className="bg-gray-950 border-gray-700">
-          <CardContent className="p-4">
-            <h4 className="text-white font-medium mb-3">Shortcuts</h4>
-            <div className="space-y-2">
-              {[
-                { key: 'Enter', action: 'Apply crop' },
-                { key: 'Esc', action: 'Cancel' },
-                { key: 'G', action: 'Toggle grid' },
-                { key: 'Scroll', action: 'Zoom in/out' }
-              ].map((shortcut) => (
-                <div key={shortcut.key} className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">{shortcut.action}:</span>
-                  <kbd className="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs font-mono border border-gray-600">
-                    {shortcut.key}
-                  </kbd>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Tips */}
+      <div className="bg-gray-700/50 p-3 rounded-lg">
+        <h4 className="text-white font-medium text-xs mb-2">Crop Tips</h4>
+        <ul className="text-gray-400 text-xs space-y-1">
+          <li>• Drag corners to resize</li>
+          <li>• Drag inside to move</li>
+          <li>• Scroll to zoom</li>
+          <li>• Press G for grid</li>
+        </ul>
       </div>
     </div>
   );
