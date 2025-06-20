@@ -33,6 +33,35 @@ export type Database = {
         }
         Relationships: []
       }
+      card_favorites: {
+        Row: {
+          card_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          card_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          card_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_favorites_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       card_templates: {
         Row: {
           category: string
@@ -85,84 +114,120 @@ export type Database = {
       }
       cards: {
         Row: {
+          abilities: string[] | null
+          base_price: number | null
+          card_type: Database["public"]["Enums"]["card_type"] | null
           collection_id: string | null
           crd_catalog_inclusion: boolean | null
           created_at: string | null
           creator_id: string
+          current_market_value: number | null
           description: string | null
           design_metadata: Json | null
           edition_number: number | null
+          favorite_count: number | null
           id: string
           image_url: string | null
           is_public: boolean | null
+          mana_cost: Json | null
           marketplace_listing: boolean | null
+          power: number | null
           price: number | null
           print_available: boolean | null
           print_metadata: Json | null
           rarity: Database["public"]["Enums"]["card_rarity"] | null
+          royalty_percentage: number | null
+          serial_number: number | null
           series: string | null
+          set_id: string | null
           tags: string[] | null
           team_id: string | null
           template_id: string | null
           thumbnail_url: string | null
           title: string
           total_supply: number | null
+          toughness: number | null
           updated_at: string | null
           verification_status: string | null
+          view_count: number | null
           visibility: Database["public"]["Enums"]["visibility_type"] | null
         }
         Insert: {
+          abilities?: string[] | null
+          base_price?: number | null
+          card_type?: Database["public"]["Enums"]["card_type"] | null
           collection_id?: string | null
           crd_catalog_inclusion?: boolean | null
           created_at?: string | null
           creator_id: string
+          current_market_value?: number | null
           description?: string | null
           design_metadata?: Json | null
           edition_number?: number | null
+          favorite_count?: number | null
           id?: string
           image_url?: string | null
           is_public?: boolean | null
+          mana_cost?: Json | null
           marketplace_listing?: boolean | null
+          power?: number | null
           price?: number | null
           print_available?: boolean | null
           print_metadata?: Json | null
           rarity?: Database["public"]["Enums"]["card_rarity"] | null
+          royalty_percentage?: number | null
+          serial_number?: number | null
           series?: string | null
+          set_id?: string | null
           tags?: string[] | null
           team_id?: string | null
           template_id?: string | null
           thumbnail_url?: string | null
           title: string
           total_supply?: number | null
+          toughness?: number | null
           updated_at?: string | null
           verification_status?: string | null
+          view_count?: number | null
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
         }
         Update: {
+          abilities?: string[] | null
+          base_price?: number | null
+          card_type?: Database["public"]["Enums"]["card_type"] | null
           collection_id?: string | null
           crd_catalog_inclusion?: boolean | null
           created_at?: string | null
           creator_id?: string
+          current_market_value?: number | null
           description?: string | null
           design_metadata?: Json | null
           edition_number?: number | null
+          favorite_count?: number | null
           id?: string
           image_url?: string | null
           is_public?: boolean | null
+          mana_cost?: Json | null
           marketplace_listing?: boolean | null
+          power?: number | null
           price?: number | null
           print_available?: boolean | null
           print_metadata?: Json | null
           rarity?: Database["public"]["Enums"]["card_rarity"] | null
+          royalty_percentage?: number | null
+          serial_number?: number | null
           series?: string | null
+          set_id?: string | null
           tags?: string[] | null
           team_id?: string | null
           template_id?: string | null
           thumbnail_url?: string | null
           title?: string
           total_supply?: number | null
+          toughness?: number | null
           updated_at?: string | null
           verification_status?: string | null
+          view_count?: number | null
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
         }
         Relationships: [
@@ -178,6 +243,13 @@ export type Database = {
             columns: ["creator_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cards_set_id_fkey"
+            columns: ["set_id"]
+            isOneToOne: false
+            referencedRelation: "sets"
             referencedColumns: ["id"]
           },
         ]
@@ -753,6 +825,36 @@ export type Database = {
           },
         ]
       }
+      sets: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          release_date: string | null
+          total_cards: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          release_date?: string | null
+          total_cards?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          release_date?: string | null
+          total_cards?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       tags: {
         Row: {
           category: string | null
@@ -796,7 +898,20 @@ export type Database = {
       }
     }
     Enums: {
-      card_rarity: "common" | "uncommon" | "rare" | "epic" | "legendary"
+      card_rarity:
+        | "common"
+        | "uncommon"
+        | "rare"
+        | "epic"
+        | "legendary"
+        | "mythic"
+      card_type:
+        | "athlete"
+        | "creature"
+        | "spell"
+        | "artifact"
+        | "vehicle"
+        | "character"
       media_type: "image" | "video" | "audio"
       notification_type:
         | "comment"
@@ -921,7 +1036,22 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      card_rarity: ["common", "uncommon", "rare", "epic", "legendary"],
+      card_rarity: [
+        "common",
+        "uncommon",
+        "rare",
+        "epic",
+        "legendary",
+        "mythic",
+      ],
+      card_type: [
+        "athlete",
+        "creature",
+        "spell",
+        "artifact",
+        "vehicle",
+        "character",
+      ],
       media_type: ["image", "video", "audio"],
       notification_type: [
         "comment",

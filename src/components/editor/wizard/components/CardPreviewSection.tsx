@@ -86,68 +86,73 @@ export const CardPreviewSection = ({
         {/* Card Preview Container - Always show */}
         <div className="relative w-80 h-112 shadow-2xl border border-crd-mediumGray/50 rounded-lg overflow-hidden bg-crd-darkGray">
           
-          {/* Conditional rendering based on photo and upload availability */}
-          {!selectedPhoto && onPhotoSelect ? (
-            /* Upload dropzone when no photo and upload is available */
-            <div
-              {...getRootProps()}
-              className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-all ${
-                isDragActive 
-                  ? 'bg-crd-green/20 border-2 border-crd-green border-dashed' 
-                  : 'bg-crd-darkGray hover:bg-crd-mediumGray/40 border-2 border-dashed border-crd-mediumGray/50 hover:border-crd-green/50'
-              }`}
-            >
-              <input {...getInputProps()} />
-              <div className="text-center p-8 z-10">
-                <div className="w-16 h-16 mx-auto mb-4 bg-crd-mediumGray/40 rounded-full flex items-center justify-center">
-                  {isDragActive ? (
-                    <Upload className="w-8 h-8 text-crd-green animate-bounce" />
-                  ) : (
-                    <ImageIcon className="w-8 h-8 text-crd-lightGray" />
-                  )}
-                </div>
-                <div className="text-white font-medium mb-2 text-lg">
-                  {isDragActive ? 'Drop your image here' : 'Add Your Photo'}
-                </div>
-                <div className="text-crd-lightGray text-sm">
-                  {isDragActive ? 'Release to upload' : 'Drag & drop or click to browse'}
-                </div>
-                <div className="text-crd-lightGray text-xs mt-2">
-                  JPG, PNG, WebP • Max 10MB
+          {/* FIXED CONDITIONAL LOGIC - Priority: Upload when no photo, regardless of template */}
+          {!selectedPhoto ? (
+            /* Show upload dropzone when no photo is selected */
+            onPhotoSelect ? (
+              <div
+                {...getRootProps()}
+                className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-all z-10 ${
+                  isDragActive 
+                    ? 'bg-crd-green/20 border-2 border-crd-green border-dashed' 
+                    : 'bg-crd-darkGray hover:bg-crd-mediumGray/40 border-2 border-dashed border-crd-mediumGray/50 hover:border-crd-green/50'
+                }`}
+              >
+                <input {...getInputProps()} />
+                <div className="text-center p-8">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-crd-mediumGray/40 rounded-full flex items-center justify-center">
+                    {isDragActive ? (
+                      <Upload className="w-8 h-8 text-crd-green animate-bounce" />
+                    ) : (
+                      <ImageIcon className="w-8 h-8 text-crd-lightGray" />
+                    )}
+                  </div>
+                  <div className="text-white font-medium mb-2 text-lg">
+                    {isDragActive ? 'Drop your image here' : 'Add Your Photo'}
+                  </div>
+                  <div className="text-crd-lightGray text-sm">
+                    {isDragActive ? 'Release to upload' : 'Drag & drop or click to browse'}
+                  </div>
+                  <div className="text-crd-lightGray text-xs mt-2">
+                    JPG, PNG, WebP • Max 10MB
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : selectedPhoto && adaptiveTemplate ? (
-            /* Card preview with photo and template */
-            <AdaptiveTemplatePreview
-              template={adaptiveTemplate}
-              selectedPhoto={selectedPhoto}
-              imageFormat={imageFormat}
-              customElements={customElements}
-              className="w-full h-full"
-            />
-          ) : selectedPhoto ? (
-            /* Simple photo preview when no template */
-            <div className="w-full h-full relative">
-              <img 
-                src={selectedPhoto} 
-                alt="Your uploaded photo" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute bottom-4 left-4 right-4 bg-black/80 rounded-lg p-3">
-                <p className="text-white font-medium">Your Photo</p>
-                <p className="text-crd-lightGray text-sm">Choose a frame to style your card</p>
+            ) : (
+              /* Default state when no photo and no upload capability */
+              <div className="flex items-center justify-center h-full bg-crd-mediumGray/30">
+                <div className="text-center p-8">
+                  <ImageIcon className="w-16 h-16 text-crd-lightGray mx-auto mb-4" />
+                  <p className="text-crd-lightGray text-lg font-medium">Card Preview</p>
+                  <p className="text-crd-lightGray/70 text-sm mt-2">Upload a photo to get started</p>
+                </div>
               </div>
-            </div>
+            )
           ) : (
-            /* Default state when no photo and no upload capability */
-            <div className="flex items-center justify-center h-full bg-crd-mediumGray/30">
-              <div className="text-center p-8">
-                <ImageIcon className="w-16 h-16 text-crd-lightGray mx-auto mb-4" />
-                <p className="text-crd-lightGray text-lg font-medium">Card Preview</p>
-                <p className="text-crd-lightGray/70 text-sm mt-2">Upload a photo to get started</p>
+            /* Photo exists - show preview */
+            selectedPhoto && adaptiveTemplate ? (
+              /* Card preview with photo and template */
+              <AdaptiveTemplatePreview
+                template={adaptiveTemplate}
+                selectedPhoto={selectedPhoto}
+                imageFormat={imageFormat}
+                customElements={customElements}
+                className="w-full h-full"
+              />
+            ) : (
+              /* Simple photo preview when no template */
+              <div className="w-full h-full relative">
+                <img 
+                  src={selectedPhoto} 
+                  alt="Your uploaded photo" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-4 left-4 right-4 bg-black/80 rounded-lg p-3">
+                  <p className="text-white font-medium">Your Photo</p>
+                  <p className="text-crd-lightGray text-sm">Choose a frame to style your card</p>
+                </div>
               </div>
-            </div>
+            )
           )}
         </div>
       </div>
