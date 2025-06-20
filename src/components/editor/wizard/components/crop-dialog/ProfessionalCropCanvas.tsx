@@ -74,46 +74,32 @@ export const ProfessionalCropCanvas = ({
         
         {!imageLoading && !imageError && imageDimensions.width > 0 && (
           <>
-            {/* Background Image with Darkening */}
+            {/* Single Background Image */}
             <img
               src={selectedPhoto}
-              alt="Crop preview background"
+              alt="Crop preview"
               className="absolute rounded-lg"
               style={{
                 width: imageDimensions.width * zoom,
                 height: imageDimensions.height * zoom,
                 left: imagePosition.x,
                 top: imagePosition.y,
-                filter: 'brightness(0.4) contrast(0.8)',
                 transition: 'all 0.2s ease-out'
               }}
             />
 
-            {/* Bright crop area */}
-            <div
-              className="absolute overflow-hidden shadow-2xl"
+            {/* Dark overlay to dim areas outside crop */}
+            <div 
+              className="absolute inset-0 bg-black/70 pointer-events-none"
               style={{
-                left: imagePosition.x + (cropBounds.x / 100) * imageDimensions.width * zoom,
-                top: imagePosition.y + (cropBounds.y / 100) * imageDimensions.height * zoom,
-                width: (cropBounds.width / 100) * imageDimensions.width * zoom,
-                height: (cropBounds.height / 100) * imageDimensions.height * zoom,
-                borderRadius: cropFormat === 'cropped' ? '12px' : '6px',
-                transition: 'all 0.2s ease-out'
+                maskImage: `
+                  linear-gradient(transparent, transparent),
+                  radial-gradient(ellipse at center, transparent 0%, black 100%)
+                `,
+                maskComposite: 'subtract',
+                WebkitMaskComposite: 'xor'
               }}
-            >
-              <img
-                src={selectedPhoto}
-                alt="Crop area"
-                className="absolute"
-                style={{
-                  width: imageDimensions.width * zoom,
-                  height: imageDimensions.height * zoom,
-                  left: -(cropBounds.x / 100) * imageDimensions.width * zoom,
-                  top: -(cropBounds.y / 100) * imageDimensions.height * zoom,
-                  filter: 'brightness(1) contrast(1.05) saturate(1.1)'
-                }}
-              />
-            </div>
+            />
 
             {/* Interactive Crop Area Component */}
             <InteractiveCropArea

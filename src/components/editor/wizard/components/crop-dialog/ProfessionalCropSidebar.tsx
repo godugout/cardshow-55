@@ -24,7 +24,7 @@ export const ProfessionalCropSidebar = ({
   onPresetPosition
 }: ProfessionalCropSidebarProps) => {
   return (
-    <div className="w-72 bg-gray-850 border-l border-gray-700 flex flex-col">
+    <div className="w-72 bg-gray-900 border-l border-gray-700 flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
         <h3 className="text-lg font-semibold text-white">Inspector</h3>
@@ -33,7 +33,7 @@ export const ProfessionalCropSidebar = ({
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {/* Zoom Control */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-gray-950 border-gray-700">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-white font-medium">Zoom Level</h4>
@@ -57,7 +57,7 @@ export const ProfessionalCropSidebar = ({
         </Card>
 
         {/* Quick Position Controls */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-gray-950 border-gray-700">
           <CardContent className="p-4">
             <h4 className="text-white font-medium mb-3">Quick Position</h4>
             <div className="grid grid-cols-1 gap-2">
@@ -71,7 +71,7 @@ export const ProfessionalCropSidebar = ({
                   variant="outline"
                   size="sm"
                   onClick={() => onPresetPosition(preset.id as any)}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white justify-start h-auto p-3"
+                  className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-gray-500 justify-start h-auto p-3"
                 >
                   <div className="text-left">
                     <div className="font-medium">{preset.label}</div>
@@ -84,7 +84,7 @@ export const ProfessionalCropSidebar = ({
         </Card>
 
         {/* Format Information */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-gray-950 border-gray-700">
           <CardContent className="p-4">
             <h4 className="text-white font-medium mb-3">Format Details</h4>
             <div className="space-y-3">
@@ -119,7 +119,7 @@ export const ProfessionalCropSidebar = ({
         </Card>
 
         {/* Keyboard Shortcuts */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-gray-950 border-gray-700">
           <CardContent className="p-4">
             <h4 className="text-white font-medium mb-3">Shortcuts</h4>
             <div className="space-y-2">
@@ -131,7 +131,7 @@ export const ProfessionalCropSidebar = ({
               ].map((shortcut) => (
                 <div key={shortcut.key} className="flex justify-between items-center">
                   <span className="text-gray-400 text-sm">{shortcut.action}:</span>
-                  <kbd className="bg-gray-700 text-gray-300 px-2 py-1 rounded text-xs font-mono">
+                  <kbd className="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs font-mono border border-gray-600">
                     {shortcut.key}
                   </kbd>
                 </div>
