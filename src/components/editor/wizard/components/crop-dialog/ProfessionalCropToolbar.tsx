@@ -1,7 +1,16 @@
-
 import React from 'react';
-import { Grid3X3, ZoomIn, ZoomOut, RotateCcw, Maximize, Square, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { 
+  RotateCcw, 
+  Grid3X3, 
+  ZoomIn, 
+  ZoomOut,
+  Square,
+  CreditCard,
+  Check
+} from 'lucide-react';
 
 interface ProfessionalCropToolbarProps {
   cropFormat: 'fullCard' | 'cropped';
@@ -12,6 +21,7 @@ interface ProfessionalCropToolbarProps {
   onZoomChange: (zoom: number) => void;
   onReset: () => void;
   onApplyCrop: () => void;
+  compact?: boolean;
 }
 
 export const ProfessionalCropToolbar = ({
@@ -22,100 +32,174 @@ export const ProfessionalCropToolbar = ({
   onToggleGrid,
   onZoomChange,
   onReset,
-  onApplyCrop
+  onApplyCrop,
+  compact = false
 }: ProfessionalCropToolbarProps) => {
-  return (
-    <div className="h-12 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4">
-      {/* Left Section - Format Selection */}
-      <div className="flex items-center gap-3">
-        <span className="text-sm font-medium text-gray-300">Format:</span>
-        <div className="flex bg-gray-700 rounded-lg p-1">
-          <button
-            onClick={() => onFormatChange('fullCard')}
-            className={`px-3 py-1 text-sm rounded-md transition-all duration-200 flex items-center gap-1 ${
-              cropFormat === 'fullCard'
-                ? 'bg-green-600 text-white shadow-md'
-                : 'text-gray-300 hover:text-white hover:bg-gray-600'
-            }`}
-          >
-            <Maximize className="w-3 h-3" />
-            Trading Card
-          </button>
-          <button
-            onClick={() => onFormatChange('cropped')}
-            className={`px-3 py-1 text-sm rounded-md transition-all duration-200 flex items-center gap-1 ${
-              cropFormat === 'cropped'
-                ? 'bg-green-600 text-white shadow-md'
-                : 'text-gray-300 hover:text-white hover:bg-gray-600'
-            }`}
-          >
-            <Square className="w-3 h-3" />
-            Square
-          </button>
-        </div>
-      </div>
+  const handleZoomIn = () => onZoomChange(Math.min(zoom + 0.25, 3));
+  const handleZoomOut = () => onZoomChange(Math.max(zoom - 0.25, 0.5));
 
-      {/* Right Section - Controls */}
+  if (compact) {
+    return (
       <div className="flex items-center gap-2">
-        {/* Grid Toggle */}
+        {/* Format Toggle */}
+        <div className="flex bg-gray-800 rounded p-1">
+          <Button
+            variant={cropFormat === 'fullCard' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => onFormatChange('fullCard')}
+            className={`h-6 px-2 text-xs ${
+              cropFormat === 'fullCard' 
+                ? 'bg-green-600 hover:bg-green-700 text-white' 
+                : 'text-gray-300 hover:text-white hover:bg-gray-700'
+            }`}
+          >
+            <CreditCard className="w-3 h-3 mr-1" />
+            Card
+          </Button>
+          <Button
+            variant={cropFormat === 'cropped' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => onFormatChange('cropped')}
+            className={`h-6 px-2 text-xs ${
+              cropFormat === 'cropped' 
+                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                : 'text-gray-300 hover:text-white hover:bg-gray-700'
+            }`}
+          >
+            <Square className="w-3 h-3 mr-1" />
+            Square
+          </Button>
+        </div>
+
+        {/* Quick controls */}
         <Button
-          variant="outline"
+          variant={showGrid ? 'default' : 'outline'}
           size="sm"
           onClick={onToggleGrid}
-          className={`h-8 px-3 text-xs transition-all duration-200 ${
-            showGrid
-              ? 'bg-blue-600/20 border-blue-500 text-blue-400 hover:bg-blue-600/30'
-              : 'border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-gray-500'
-          }`}
+          className="h-6 px-2"
         >
-          <Grid3X3 className="w-3 h-3 mr-1" />
-          Grid
+          <Grid3X3 className="w-3 h-3" />
         </Button>
 
-        {/* Zoom Controls */}
-        <div className="flex items-center gap-1 px-2 py-1 bg-gray-700 rounded h-8">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onZoomChange(Math.max(0.5, zoom - 0.25))}
-            className="h-6 w-6 p-0 text-gray-300 hover:text-white hover:bg-gray-600"
-            disabled={zoom <= 0.5}
-          >
-            <ZoomOut className="w-3 h-3" />
-          </Button>
-          <span className="text-xs font-medium text-gray-300 w-12 text-center">
-            {Math.round(zoom * 100)}%
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onZoomChange(Math.min(3, zoom + 0.25))}
-            className="h-6 w-6 p-0 text-gray-300 hover:text-white hover:bg-gray-600"
-            disabled={zoom >= 3}
-          >
-            <ZoomIn className="w-3 h-3" />
-          </Button>
-        </div>
-
-        {/* Reset Button */}
         <Button
           variant="outline"
           size="sm"
           onClick={onReset}
-          className="h-8 px-3 text-xs border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-gray-500"
+          className="h-6 px-2"
         >
-          <RotateCcw className="w-3 h-3 mr-1" />
-          Reset
+          <RotateCcw className="w-3 h-3" />
         </Button>
 
-        {/* Apply Crop Button */}
         <Button
           onClick={onApplyCrop}
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 h-8 text-xs"
+          className="h-6 px-3 bg-green-600 hover:bg-green-700 text-white text-xs font-medium"
         >
           <Check className="w-3 h-3 mr-1" />
-          Apply Crop
+          Apply
         </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-4 py-3 bg-gray-800/30 border-b border-gray-700">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {/* Format Selection */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-300 font-medium">Format:</span>
+            <div className="flex bg-gray-800 rounded-lg p-1">
+              <Button
+                variant={cropFormat === 'fullCard' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onFormatChange('fullCard')}
+                className={`${
+                  cropFormat === 'fullCard' 
+                    ? 'bg-green-600 hover:bg-green-700 text-white' 
+                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                }`}
+              >
+                <CreditCard className="w-4 h-4 mr-2" />
+                Trading Card (2.5:3.5)
+              </Button>
+              <Button
+                variant={cropFormat === 'cropped' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => onFormatChange('cropped')}
+                className={`${
+                  cropFormat === 'cropped' 
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                }`}
+              >
+                <Square className="w-4 h-4 mr-2" />
+                Square (1:1)
+              </Button>
+            </div>
+          </div>
+
+          <Separator orientation="vertical" className="h-6 bg-gray-600" />
+
+          {/* View Controls */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant={showGrid ? 'default' : 'outline'}
+              size="sm"
+              onClick={onToggleGrid}
+              className={showGrid ? 'bg-blue-600 hover:bg-blue-700' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
+            >
+              <Grid3X3 className="w-4 h-4 mr-2" />
+              Grid
+            </Button>
+          </div>
+
+          <Separator orientation="vertical" className="h-6 bg-gray-600" />
+
+          {/* Zoom Controls */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-300">Zoom:</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomOut}
+              disabled={zoom <= 0.5}
+              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+            >
+              <ZoomOut className="w-4 h-4" />
+            </Button>
+            <Badge variant="secondary" className="bg-gray-700 text-white min-w-[60px] text-center">
+              {Math.round(zoom * 100)}%
+            </Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomIn}
+              disabled={zoom >= 3}
+              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+            >
+              <ZoomIn className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={onReset}
+            className="border-gray-600 text-gray-300 hover:bg-gray-700"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Reset
+          </Button>
+
+          <Button
+            onClick={onApplyCrop}
+            className="bg-green-600 hover:bg-green-700 text-white font-medium"
+          >
+            <Check className="w-4 h-4 mr-2" />
+            Apply Crop
+          </Button>
+        </div>
       </div>
     </div>
   );

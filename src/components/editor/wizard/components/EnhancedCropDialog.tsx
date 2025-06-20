@@ -215,49 +215,48 @@ export const EnhancedCropDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-[95vw] h-[90vh] bg-gray-900 border-gray-700 p-0 gap-0">
-        {/* Header */}
-        <div className="px-6 py-3 border-b border-gray-700 bg-gray-800/50">
-          <h2 className="text-xl font-semibold text-white">Advanced Crop & Position</h2>
+      <DialogContent className="max-w-6xl w-[95vw] max-h-[85vh] bg-gray-900 border-gray-700 p-0 gap-0 overflow-hidden">
+        {/* Compact Header with integrated toolbar */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700 bg-gray-800/50 h-10">
+          <h2 className="text-lg font-semibold text-white">Advanced Crop & Position</h2>
+          <ProfessionalCropToolbar
+            cropFormat={cropFormat}
+            showGrid={showGrid}
+            zoom={zoom}
+            onFormatChange={setCropFormat}
+            onToggleGrid={() => setShowGrid(!showGrid)}
+            onZoomChange={setZoom}
+            onReset={handleReset}
+            onApplyCrop={handleApplyCrop}
+            compact={true}
+          />
         </div>
 
-        <div className="flex h-full min-h-0">
+        <div className="flex h-full min-h-0 gap-2">
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {/* Toolbar */}
-            <ProfessionalCropToolbar
-              cropFormat={cropFormat}
-              showGrid={showGrid}
-              zoom={zoom}
-              onFormatChange={setCropFormat}
-              onToggleGrid={() => setShowGrid(!showGrid)}
-              onZoomChange={setZoom}
-              onReset={handleReset}
-              onApplyCrop={handleApplyCrop}
-            />
-
-            {/* Canvas Area */}
+            {/* Canvas Area - Optimized for tall windows */}
             <div 
               ref={canvasRef}
-              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 overflow-hidden relative"
+              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-3 overflow-hidden relative max-h-[calc(85vh-3rem)]"
             >
-              <div className="relative w-full h-full flex items-center justify-center">
+              <div className="relative w-full h-full flex items-start justify-center pt-8">
                 {!imageLoaded && !imageError && (
                   <div className="flex items-center justify-center text-white">
                     <div className="animate-pulse text-center">
-                      <div className="w-16 h-16 bg-gray-700 rounded-lg mb-4 mx-auto"></div>
-                      <div>Loading image...</div>
+                      <div className="w-12 h-12 bg-gray-700 rounded-lg mb-3 mx-auto"></div>
+                      <div className="text-sm">Loading image...</div>
                     </div>
                   </div>
                 )}
                 
                 {imageError && (
-                  <div className="text-center p-8">
-                    <div className="w-16 h-16 bg-red-900/50 rounded-lg flex items-center justify-center mx-auto mb-4">
-                      <span className="text-red-400 text-2xl">⚠</span>
+                  <div className="text-center p-4">
+                    <div className="w-12 h-12 bg-red-900/50 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <span className="text-red-400 text-xl">⚠</span>
                     </div>
-                    <div className="text-red-400 font-medium">Failed to load image</div>
-                    <div className="text-gray-400 text-sm mt-2">Please try uploading a different image</div>
+                    <div className="text-red-400 font-medium text-sm">Failed to load image</div>
+                    <div className="text-gray-400 text-xs mt-1">Please try uploading a different image</div>
                   </div>
                 )}
                 
@@ -322,9 +321,9 @@ export const EnhancedCropDialog = ({
                 )}
               </div>
               
-              {/* Controls hint */}
-              <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-gray-600">
-                <div className="flex items-center gap-4">
+              {/* Compact controls hint */}
+              <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded border border-gray-600">
+                <div className="flex items-center gap-3">
                   <span>🖱️ Scroll: zoom</span>
                   <span>G: grid</span>
                   <span>+/-: zoom</span>
@@ -334,16 +333,19 @@ export const EnhancedCropDialog = ({
             </div>
           </div>
 
-          {/* Sidebar */}
-          <ProfessionalCropSidebar
-            cropFormat={cropFormat}
-            zoom={zoom}
-            imageDimensions={imageDimensions}
-            imageLoading={!imageLoaded}
-            imageError={imageError}
-            onZoomChange={setZoom}
-            onPresetPosition={handlePresetPosition}
-          />
+          {/* Compact Sidebar */}
+          <div className="w-48 min-h-0">
+            <ProfessionalCropSidebar
+              cropFormat={cropFormat}
+              zoom={zoom}
+              imageDimensions={imageDimensions}
+              imageLoading={!imageLoaded}
+              imageError={imageError}
+              onZoomChange={setZoom}
+              onPresetPosition={handlePresetPosition}
+              compact={true}
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

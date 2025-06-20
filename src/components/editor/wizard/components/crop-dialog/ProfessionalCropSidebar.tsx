@@ -1,8 +1,18 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Target, AlignCenter, MoveUp, MoveDown } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Slider } from '@/components/ui/slider';
+import { 
+  ZoomIn, 
+  ZoomOut,
+  Move,
+  RotateCcw,
+  AlignCenter,
+  AlignStartVertical,
+  AlignEndVertical,
+  Image as ImageIcon
+} from 'lucide-react';
 
 interface ProfessionalCropSidebarProps {
   cropFormat: 'fullCard' | 'cropped';
@@ -12,6 +22,7 @@ interface ProfessionalCropSidebarProps {
   imageError: boolean;
   onZoomChange: (zoom: number) => void;
   onPresetPosition: (position: 'center' | 'top' | 'bottom') => void;
+  compact?: boolean;
 }
 
 export const ProfessionalCropSidebar = ({
@@ -21,98 +32,272 @@ export const ProfessionalCropSidebar = ({
   imageLoading,
   imageError,
   onZoomChange,
-  onPresetPosition
+  onPresetPosition,
+  compact = false
 }: ProfessionalCropSidebarProps) => {
+  const handleZoomIn = () => onZoomChange(Math.min(zoom + 0.25, 3));
+  const handleZoomOut = () => onZoomChange(Math.max(zoom - 0.25, 0.5));
+
+  if (compact) {
+    return (
+      <div className="bg-gray-800/50 border-l border-gray-700 p-3 max-h-[calc(85vh-3rem)] overflow-y-auto">
+        {/* Format Info */}
+        <div className="mb-4">
+          <h3 className="text-white text-sm font-medium mb-2">Crop Format</h3>
+          <Badge 
+            className={`w-full justify-center ${
+              cropFormat === 'fullCard' 
+                ? 'bg-green-600 text-white' 
+                : 'bg-blue-600 text-white'
+            }`}
+          >
+            {cropFormat === 'fullCard' ? 'Trading Card (2.5:3.5)' : 'Square (1:1)'}
+          </Badge>
+        </div>
+
+        <Separator className="my-3 bg-gray-600" />
+
+        {/* Zoom Controls */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-white text-sm font-medium">Zoom</span>
+            <Badge variant="secondary" className="bg-gray-700 text-white text-xs">
+              {Math.round(zoom * 100)}%
+            </Badge>
+          </div>
+          <div className="flex items-center gap-2 mb-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomOut}
+              disabled={zoom <= 0.5}
+              className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 h-7"
+            >
+              <ZoomOut className="w-3 h-3" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomIn}
+              disabled={zoom >= 3}
+              className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 h-7"
+            >
+              <ZoomIn className="w-3 h-3" />
+            </Button>
+          </div>
+          <Slider
+            value={[zoom]}
+            onValueChange={([value]) => onZoomChange(value)}
+            min={0.5}
+            max={3}
+            step={0.1}
+            className="w-full"
+          />
+        </div>
+
+        <Separator className="my-3 bg-gray-600" />
+
+        {/* Quick Position */}
+        <div className="mb-4">
+          <h3 className="text-white text-sm font-medium mb-2">Position</h3>
+          <div className="space-y-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPresetPosition('top')}
+              className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700 h-7"
+            >
+              <AlignStartVertical className="w-3 h-3 mr-2" />
+              Top
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPresetPosition('center')}
+              className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700 h-7"
+            >
+              <AlignCenter className="w-3 h-3 mr-2" />
+              Center
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPresetPosition('bottom')}
+              className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700 h-7"
+            >
+              <AlignEndVertical className="w-3 h-3 mr-2" />
+              Bottom
+            </Button>
+          </div>
+        </div>
+
+        {/* Image Info */}
+        {!imageLoading && !imageError && imageDimensions.width > 0 && (
+          <div className="bg-gray-900/50 rounded p-2">
+            <div className="flex items-center gap-2 mb-1">
+              <ImageIcon className="w-3 h-3 text-gray-400" />
+              <span className="text-gray-400 text-xs">Image Info</span>
+            </div>
+            <div className="text-xs text-gray-300 space-y-1">
+              <div>Size: {Math.round(imageDimensions.width)} × {Math.round(imageDimensions.height)}</div>
+              <div>Zoom: {Math.round(zoom * 100)}%</div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="w-64 bg-gray-800 border-l border-gray-700 p-4 space-y-4 overflow-y-auto">
-      {/* Format Info */}
-      <div>
-        <h3 className="text-white font-medium text-sm mb-2">Crop Format</h3>
-        <Badge className={`${
-          cropFormat === 'fullCard' 
-            ? 'bg-green-600/20 text-green-400 border-green-500/30' 
-            : 'bg-blue-600/20 text-blue-400 border-blue-500/30'
-        }`}>
+    <div className="w-64 bg-gray-800/50 border-l border-gray-700 p-6 overflow-y-auto">
+      {/* Format Information */}
+      <div className="mb-6">
+        <h3 className="text-white font-medium mb-3">Crop Format</h3>
+        <Badge 
+          className={`w-full justify-center py-2 ${
+            cropFormat === 'fullCard' 
+              ? 'bg-green-600 text-white' 
+              : 'bg-blue-600 text-white'
+          }`}
+        >
           {cropFormat === 'fullCard' ? 'Trading Card (2.5:3.5)' : 'Square (1:1)'}
         </Badge>
+        
+        <div className="mt-3 p-3 bg-gray-900/50 rounded-lg">
+          <h4 className="text-gray-300 text-sm font-medium mb-2">About this format:</h4>
+          <p className="text-gray-400 text-xs leading-relaxed">
+            {cropFormat === 'fullCard' 
+              ? 'Standard trading card proportions. Perfect for sports cards, entertainment cards, and collectibles.'
+              : 'Square format ideal for social media, profile pictures, and modern designs.'
+            }
+          </p>
+        </div>
       </div>
 
-      {/* Zoom Control */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-white font-medium text-sm">Zoom</label>
-          <span className="text-xs text-gray-400">{Math.round(zoom * 100)}%</span>
+      <Separator className="my-6 bg-gray-600" />
+
+      {/* Zoom Controls */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-white font-medium">Zoom</h3>
+          <Badge variant="secondary" className="bg-gray-700 text-white">
+            {Math.round(zoom * 100)}%
+          </Badge>
         </div>
-        <input
-          type="range"
-          min="0.5"
-          max="3"
-          step="0.1"
-          value={zoom}
-          onChange={(e) => onZoomChange(parseFloat(e.target.value))}
-          className="w-full accent-green-500"
+        
+        <div className="flex items-center gap-2 mb-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleZoomOut}
+            disabled={zoom <= 0.5}
+            className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+          >
+            <ZoomOut className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleZoomIn}
+            disabled={zoom >= 3}
+            className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+          >
+            <ZoomIn className="w-4 h-4" />
+          </Button>
+        </div>
+        
+        <Slider
+          value={[zoom]}
+          onValueChange={([value]) => onZoomChange(value)}
+          min={0.5}
+          max={3}
+          step={0.1}
+          className="w-full"
         />
-        <div className="flex justify-between text-xs text-gray-400 mt-1">
+        
+        <div className="flex justify-between mt-2 text-xs text-gray-400">
           <span>50%</span>
           <span>300%</span>
         </div>
       </div>
 
+      <Separator className="my-6 bg-gray-600" />
+
       {/* Quick Position Presets */}
-      <div>
-        <h3 className="text-white font-medium text-sm mb-2">Quick Position</h3>
+      <div className="mb-6">
+        <h3 className="text-white font-medium mb-3">Quick Position</h3>
         <div className="space-y-2">
           <Button
-            onClick={() => onPresetPosition('center')}
             variant="outline"
-            size="sm"
-            className="w-full border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white text-xs"
+            onClick={() => onPresetPosition('top')}
+            className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700"
           >
-            <AlignCenter className="w-3 h-3 mr-2" />
+            <AlignStartVertical className="w-4 h-4 mr-2" />
+            Top Aligned
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => onPresetPosition('center')}
+            className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700"
+          >
+            <AlignCenter className="w-4 h-4 mr-2" />
             Center
           </Button>
           <Button
-            onClick={() => onPresetPosition('top')}
             variant="outline"
-            size="sm"
-            className="w-full border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white text-xs"
-          >
-            <MoveUp className="w-3 h-3 mr-2" />
-            Top
-          </Button>
-          <Button
             onClick={() => onPresetPosition('bottom')}
-            variant="outline"
-            size="sm"
-            className="w-full border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white text-xs"
+            className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700"
           >
-            <MoveDown className="w-3 h-3 mr-2" />
-            Bottom
+            <AlignEndVertical className="w-4 h-4 mr-2" />
+            Bottom Aligned
           </Button>
         </div>
       </div>
 
-      {/* Image Info */}
-      {!imageLoading && !imageError && (
-        <div>
-          <h3 className="text-white font-medium text-sm mb-2">Image Info</h3>
-          <div className="text-xs text-gray-400 space-y-1">
-            <div>Display: {Math.round(imageDimensions.width)}×{Math.round(imageDimensions.height)}</div>
-            <div>Zoom: {Math.round(zoom * 100)}%</div>
+      <Separator className="my-6 bg-gray-600" />
+
+      {/* Image Information */}
+      {!imageLoading && !imageError && imageDimensions.width > 0 && (
+        <div className="bg-gray-900/50 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <ImageIcon className="w-4 h-4 text-gray-400" />
+            <h3 className="text-white font-medium">Image Info</h3>
+          </div>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-400">Display Size:</span>
+              <span className="text-gray-300">
+                {Math.round(imageDimensions.width)} × {Math.round(imageDimensions.height)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-400">Zoom Level:</span>
+              <span className="text-gray-300">{Math.round(zoom * 100)}%</span>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Tips */}
-      <div className="bg-gray-700/50 p-3 rounded-lg">
-        <h4 className="text-white font-medium text-xs mb-2">Crop Tips</h4>
-        <ul className="text-gray-400 text-xs space-y-1">
-          <li>• Drag corners to resize</li>
-          <li>• Drag inside to move</li>
-          <li>• Scroll to zoom</li>
-          <li>• Press G for grid</li>
-        </ul>
-      </div>
+      {imageLoading && (
+        <div className="bg-gray-900/50 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-gray-600 rounded animate-pulse"></div>
+            <span className="text-gray-400">Loading image...</span>
+          </div>
+        </div>
+      )}
+
+      {imageError && (
+        <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-red-400 text-lg">⚠</span>
+            <span className="text-red-400 font-medium">Image Error</span>
+          </div>
+          <p className="text-red-300 text-sm">
+            Failed to load the image. Please try uploading a different file.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
