@@ -15,11 +15,12 @@ export const InlineCropPreview = ({
   onCropChange,
   aspectRatio = 2.5 / 3.5
 }: InlineCropPreviewProps) => {
+  // Initialize with proper 2.5:3.5 aspect ratio
   const [cropBounds, setCropBounds] = useState<CropBounds>({
-    x: 15,
-    y: 10,
-    width: 70,
-    height: 70 / aspectRatio
+    x: 20,
+    y: 15,
+    width: 60,
+    height: 60 / aspectRatio // This ensures 2.5:3.5 ratio
   });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -66,6 +67,12 @@ export const InlineCropPreview = ({
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
+  const resetCrop = () => {
+    const newBounds = { x: 20, y: 15, width: 60, height: 60 / aspectRatio };
+    setCropBounds(newBounds);
+    onCropChange(newBounds);
+  };
+
   return (
     <div className="space-y-3">
       {/* Inline Crop Preview */}
@@ -106,7 +113,7 @@ export const InlineCropPreview = ({
           }}
         />
 
-        {/* Crop area border */}
+        {/* Crop area border with better visibility */}
         <div
           className="absolute border-2 border-crd-green pointer-events-none"
           style={{
@@ -114,19 +121,19 @@ export const InlineCropPreview = ({
             top: `${cropBounds.y}%`,
             width: `${cropBounds.width}%`,
             height: `${cropBounds.height}%`,
-            boxShadow: '0 0 0 2px rgba(34, 197, 94, 0.3)'
+            boxShadow: '0 0 0 2px rgba(34, 197, 94, 0.4), 0 0 10px rgba(34, 197, 94, 0.3)'
           }}
         >
           {/* Grid overlay */}
-          <div className="w-full h-full grid grid-cols-3 grid-rows-3 opacity-50">
+          <div className="w-full h-full grid grid-cols-3 grid-rows-3 opacity-60">
             {Array.from({ length: 9 }).map((_, i) => (
-              <div key={i} className="border border-crd-green/30" />
+              <div key={i} className="border border-crd-green/40" />
             ))}
           </div>
         </div>
 
         {/* Aspect ratio indicator */}
-        <div className="absolute top-2 right-2 bg-crd-green text-black px-2 py-1 rounded text-xs font-medium">
+        <div className="absolute top-2 right-2 bg-crd-green text-black px-2 py-1 rounded text-xs font-medium shadow-lg">
           2.5:3.5 Card
         </div>
       </div>
@@ -134,21 +141,15 @@ export const InlineCropPreview = ({
       {/* Simple controls */}
       <div className="flex items-center justify-between">
         <span className="text-crd-lightGray text-sm">Drag to adjust crop area</span>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const newBounds = { x: 15, y: 10, width: 70, height: 70 / aspectRatio };
-              setCropBounds(newBounds);
-              onCropChange(newBounds);
-            }}
-            className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40"
-          >
-            <RotateCw className="w-3 h-3 mr-1" />
-            Reset
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={resetCrop}
+          className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40"
+        >
+          <RotateCw className="w-3 h-3 mr-1" />
+          Reset
+        </Button>
       </div>
     </div>
   );
