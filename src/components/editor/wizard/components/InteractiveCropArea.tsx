@@ -159,52 +159,62 @@ export const InteractiveCropArea = ({
 
   return (
     <>
-      {/* Crop Overlay */}
+      {/* Crop Overlay with Professional Styling */}
       <div
         ref={cropRef}
-        className="absolute border-2 border-crd-green bg-transparent cursor-move group"
+        className="absolute border-2 border-green-400 bg-transparent cursor-move group shadow-lg"
         style={{
           left: cropPixels.left,
           top: cropPixels.top,
           width: cropPixels.width,
           height: cropPixels.height,
-          boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.7)', // Dark overlay outside crop
-          borderRadius: aspectRatio === 1 ? '8px' : '4px'
+          borderRadius: aspectRatio === 1 ? '8px' : '4px',
+          boxShadow: '0 0 0 2px rgba(34, 197, 94, 0.3), 0 0 20px rgba(34, 197, 94, 0.2)'
         }}
         onMouseDown={(e) => handleMouseDown(e, 'move')}
       >
         {/* Grid Lines */}
         {showGrid && (
-          <div className="absolute inset-0 pointer-events-none opacity-50">
-            <div className="w-full h-full grid grid-cols-3 grid-rows-3">
+          <div className="absolute inset-0 pointer-events-none opacity-60">
+            <div className="w-full h-full grid grid-cols-3 grid-rows-3 gap-0">
               {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="border border-white/30" />
+                <div key={i} className="border border-green-300/40" />
               ))}
             </div>
           </div>
         )}
 
-        {/* Resize Handles */}
+        {/* Corner Handles - Perfectly Aligned */}
         {[
-          { handle: 'nw', className: 'top-0 left-0 cursor-nw-resize' },
-          { handle: 'ne', className: 'top-0 right-0 cursor-ne-resize' },
-          { handle: 'sw', className: 'bottom-0 left-0 cursor-sw-resize' },
-          { handle: 'se', className: 'bottom-0 right-0 cursor-se-resize' },
-          { handle: 'n', className: 'top-0 left-1/2 -translate-x-1/2 cursor-n-resize' },
-          { handle: 's', className: 'bottom-0 left-1/2 -translate-x-1/2 cursor-s-resize' },
-          { handle: 'e', className: 'top-1/2 right-0 -translate-y-1/2 cursor-e-resize' },
-          { handle: 'w', className: 'top-1/2 left-0 -translate-y-1/2 cursor-w-resize' }
+          { handle: 'nw', className: 'top-0 left-0 -translate-x-1/2 -translate-y-1/2 cursor-nw-resize' },
+          { handle: 'ne', className: 'top-0 right-0 translate-x-1/2 -translate-y-1/2 cursor-ne-resize' },
+          { handle: 'sw', className: 'bottom-0 left-0 -translate-x-1/2 translate-y-1/2 cursor-sw-resize' },
+          { handle: 'se', className: 'bottom-0 right-0 translate-x-1/2 translate-y-1/2 cursor-se-resize' }
         ].map(({ handle, className }) => (
           <div
             key={handle}
-            className={`absolute w-3 h-3 bg-crd-green border border-white rounded-sm opacity-0 group-hover:opacity-100 transition-opacity hover:scale-125 transform -translate-x-1/2 -translate-y-1/2 ${className}`}
+            className={`absolute w-4 h-4 bg-green-400 border-2 border-white rounded-full shadow-lg opacity-90 hover:opacity-100 hover:scale-110 transition-all ${className}`}
+            onMouseDown={(e) => handleMouseDown(e, handle as ResizeHandle)}
+          />
+        ))}
+
+        {/* Edge Handles - Perfectly Centered */}
+        {[
+          { handle: 'n', className: 'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-n-resize' },
+          { handle: 's', className: 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 cursor-s-resize' },
+          { handle: 'e', className: 'top-1/2 right-0 translate-x-1/2 -translate-y-1/2 cursor-e-resize' },
+          { handle: 'w', className: 'top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 cursor-w-resize' }
+        ].map(({ handle, className }) => (
+          <div
+            key={handle}
+            className={`absolute w-3 h-3 bg-blue-400 border border-white rounded-sm shadow-md opacity-80 hover:opacity-100 hover:scale-110 transition-all ${className}`}
             onMouseDown={(e) => handleMouseDown(e, handle as ResizeHandle)}
           />
         ))}
 
         {/* Format Label */}
-        <div className="absolute -top-8 left-0 bg-crd-green text-black text-xs px-2 py-1 rounded-md font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-          {aspectRatio ? (aspectRatio === 1 ? 'Square' : '2.5:3.5') : 'Free'}
+        <div className="absolute -top-8 left-0 bg-green-500 text-black text-xs px-2 py-1 rounded-md font-medium opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+          {aspectRatio ? (aspectRatio === 1 ? 'Square (1:1)' : 'Card (2.5:3.5)') : 'Free Crop'}
         </div>
       </div>
     </>

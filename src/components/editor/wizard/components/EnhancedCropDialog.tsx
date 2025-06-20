@@ -88,7 +88,7 @@ export const EnhancedCropDialog = ({
       
       let displayWidth, displayHeight;
       if (imageAspect > canvasAspect) {
-        displayWidth = canvasWidth * 0.8; // Leave some margin
+        displayWidth = canvasWidth * 0.8;
         displayHeight = displayWidth / imageAspect;
       } else {
         displayHeight = canvasHeight * 0.8;
@@ -238,7 +238,7 @@ export const EnhancedCropDialog = ({
               onReset={handleReset}
             />
 
-            {/* Canvas Area */}
+            {/* Canvas Area - Single Image with CSS Mask */}
             <div 
               ref={canvasRef}
               className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 overflow-hidden relative"
@@ -265,46 +265,51 @@ export const EnhancedCropDialog = ({
                 
                 {imageLoaded && !imageError && imageDimensions.width > 0 && (
                   <>
-                    {/* Background Image (Darkened) */}
-                    <img
-                      ref={imageRef}
-                      src={selectedPhoto}
-                      alt="Crop preview background"
-                      className="absolute rounded-lg"
+                    {/* Single Background Image with Dark Overlay */}
+                    <div
+                      className="absolute"
                       style={{
-                        width: imageDimensions.width * zoom,
-                        height: imageDimensions.height * zoom,
                         left: imagePosition.x,
                         top: imagePosition.y,
-                        filter: 'brightness(0.4) contrast(0.8)',
-                        transition: 'all 0.2s ease-out'
-                      }}
-                    />
-
-                    {/* Bright Crop Preview */}
-                    <div
-                      className="absolute overflow-hidden shadow-2xl"
-                      style={{
-                        left: imagePosition.x + (cropBounds.x / 100) * imageDimensions.width * zoom,
-                        top: imagePosition.y + (cropBounds.y / 100) * imageDimensions.height * zoom,
-                        width: (cropBounds.width / 100) * imageDimensions.width * zoom,
-                        height: (cropBounds.height / 100) * imageDimensions.height * zoom,
-                        borderRadius: cropFormat === 'cropped' ? '12px' : '6px',
+                        width: imageDimensions.width * zoom,
+                        height: imageDimensions.height * zoom,
                         transition: 'all 0.2s ease-out'
                       }}
                     >
                       <img
+                        ref={imageRef}
                         src={selectedPhoto}
-                        alt="Crop area"
-                        className="absolute"
+                        alt="Crop preview"
+                        className="w-full h-full object-cover rounded-lg"
                         style={{
-                          width: imageDimensions.width * zoom,
-                          height: imageDimensions.height * zoom,
-                          left: -(cropBounds.x / 100) * imageDimensions.width * zoom,
-                          top: -(cropBounds.y / 100) * imageDimensions.height * zoom,
-                          filter: 'brightness(1) contrast(1.05) saturate(1.1)'
+                          filter: 'brightness(0.4) contrast(0.8)'
                         }}
                       />
+                      
+                      {/* Bright Crop Window - Creates "window" effect */}
+                      <div
+                        className="absolute overflow-hidden"
+                        style={{
+                          left: `${cropBounds.x}%`,
+                          top: `${cropBounds.y}%`,
+                          width: `${cropBounds.width}%`,
+                          height: `${cropBounds.height}%`,
+                          borderRadius: cropFormat === 'cropped' ? '12px' : '6px'
+                        }}
+                      >
+                        <img
+                          src={selectedPhoto}
+                          alt="Crop area"
+                          className="absolute w-full h-full object-cover"
+                          style={{
+                            left: `-${(cropBounds.x / cropBounds.width) * 100}%`,
+                            top: `-${(cropBounds.y / cropBounds.height) * 100}%`,
+                            width: `${100 / cropBounds.width * 100}%`,
+                            height: `${100 / cropBounds.height * 100}%`,
+                            filter: 'brightness(1) contrast(1.05) saturate(1.1)'
+                          }}
+                        />
+                      </div>
                     </div>
 
                     {/* Interactive Crop Area */}

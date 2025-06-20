@@ -56,7 +56,7 @@ export const ProfessionalCropSidebar = ({
           </CardContent>
         </Card>
 
-        {/* Quick Position Controls */}
+        {/* Quick Position Controls - Dark Theme */}
         <Card className="bg-gray-950 border-gray-700">
           <CardContent className="p-4">
             <h4 className="text-white font-medium mb-3">Quick Position</h4>
@@ -68,10 +68,10 @@ export const ProfessionalCropSidebar = ({
               ].map((preset) => (
                 <Button
                   key={preset.id}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => onPresetPosition(preset.id as any)}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-gray-500 justify-start h-auto p-3"
+                  className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white border border-gray-600 justify-start h-auto p-3"
                 >
                   <div className="text-left">
                     <div className="font-medium">{preset.label}</div>
