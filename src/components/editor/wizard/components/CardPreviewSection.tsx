@@ -30,6 +30,9 @@ export const CardPreviewSection = ({
     ? ADAPTIVE_TEMPLATES.find(t => t.id === selectedTemplate.id)
     : null;
 
+  console.log('CardPreviewSection - selectedTemplate:', selectedTemplate);
+  console.log('CardPreviewSection - adaptiveTemplate:', adaptiveTemplate);
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file && onPhotoSelect) {
@@ -52,6 +55,7 @@ export const CardPreviewSection = ({
   });
 
   if (!adaptiveTemplate) {
+    console.log('No adaptive template found for selectedTemplate:', selectedTemplate);
     return (
       <div className="flex items-center justify-center h-96 bg-crd-mediumGray/30 rounded-lg border border-crd-mediumGray/50">
         <div className="text-center">

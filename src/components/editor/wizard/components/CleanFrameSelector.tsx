@@ -29,13 +29,16 @@ export const CleanFrameSelector = ({
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  // Default to "Common CRD" template on mount
+  // Default to the first available template on mount
   useEffect(() => {
-    if (!selectedTemplate) {
-      // Find the default "Common CRD" template (renamed from "CRD Full Bleed")
-      const defaultTemplate = ADAPTIVE_TEMPLATES.find(t => t.id === 'sports-classic') || ADAPTIVE_TEMPLATES[0];
+    if (!selectedTemplate && ADAPTIVE_TEMPLATES.length > 0) {
+      console.log('No template selected, setting default template');
+      // Use the first template available (crd-adaptive-full-bleed)
+      const defaultTemplate = ADAPTIVE_TEMPLATES[0];
+      console.log('Default template found:', defaultTemplate);
       const convertedTemplate = convertAdaptiveToDesignTemplate(defaultTemplate);
-      // Rename it to "Common CRD"
+      console.log('Converted template:', convertedTemplate);
+      // Rename it to "Common CRD" for display
       convertedTemplate.name = "Common CRD";
       onTemplateSelect(convertedTemplate);
     }
@@ -61,9 +64,11 @@ export const CleanFrameSelector = ({
   const categories = [...new Set(ADAPTIVE_TEMPLATES.map(t => t.category))].filter(Boolean);
 
   const handleTemplateSelect = (adaptiveTemplate: any) => {
+    console.log('Selecting template:', adaptiveTemplate);
     const convertedTemplate = convertAdaptiveToDesignTemplate(adaptiveTemplate);
-    // Rename the default template
-    if (adaptiveTemplate.id === 'sports-classic') {
+    console.log('Converted template:', convertedTemplate);
+    // Rename the first template to "Common CRD"
+    if (adaptiveTemplate.id === 'crd-adaptive-full-bleed') {
       convertedTemplate.name = "Common CRD";
     }
     onTemplateSelect(convertedTemplate);
@@ -195,7 +200,7 @@ export const CleanFrameSelector = ({
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-2">
                   <div className="flex items-center justify-between">
                     <h4 className="text-white text-xs font-medium truncate">
-                      {template.id === 'sports-classic' ? 'Common CRD' : template.name}
+                      {template.id === 'crd-adaptive-full-bleed' ? 'Common CRD' : template.name}
                     </h4>
                     {template.is_premium && (
                       <Star className="w-3 h-3 text-yellow-400 flex-shrink-0 ml-1" />
