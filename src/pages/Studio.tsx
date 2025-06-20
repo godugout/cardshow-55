@@ -7,7 +7,7 @@ import { NoCardSelected } from './Studio/components/NoCardSelected';
 import { DatabaseSeedPrompt } from './Studio/components/DatabaseSeedPrompt';
 import { EnhancedCardDisplay } from '@/components/viewer/EnhancedCardDisplay';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Cube, Eye } from 'lucide-react';
+import { ArrowLeft, Box, Eye } from 'lucide-react';
 import { useStudioState } from './Studio/hooks/useStudioState';
 import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
@@ -124,7 +124,7 @@ const Studio = () => {
             onClick={() => handleViewModeChange('3d')}
             className="text-xs"
           >
-            <Cube className="w-4 h-4 mr-1" />
+            <Box className="w-4 h-4 mr-1" />
             3D
           </Button>
           

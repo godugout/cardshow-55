@@ -152,8 +152,8 @@ export const Card3D: React.FC<Card3DProps> = ({
     }
   });
 
-  // Click handler for flipping
-  const handleClick = (event: THREE.Event) => {
+  // Click handler for flipping - fixed the event type
+  const handleClick = (event: any) => {
     event.stopPropagation();
     onFlip();
   };

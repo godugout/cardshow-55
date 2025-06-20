@@ -37,8 +37,8 @@ export const use3DPreferences = () => {
           .eq('id', user.id)
           .single();
 
-        if (profile?.preferences) {
-          const userPrefs = profile.preferences as any;
+        if (profile?.preferences && typeof profile.preferences === 'object') {
+          const userPrefs = profile.preferences as Record<string, any>;
           setPreferences({
             prefer3D: userPrefs.prefer3D ?? defaultPreferences.prefer3D,
             performanceMode: userPrefs.performanceMode ?? defaultPreferences.performanceMode,
@@ -70,7 +70,9 @@ export const use3DPreferences = () => {
         .eq('id', user.id)
         .single();
 
-      const currentPrefs = currentProfile?.preferences || {};
+      const currentPrefs = (currentProfile?.preferences && typeof currentProfile.preferences === 'object')
+        ? currentProfile.preferences as Record<string, any>
+        : {};
       
       await supabase
         .from('profiles')

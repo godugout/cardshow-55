@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Cube, Image } from 'lucide-react';
+import { Box, Image } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 
@@ -31,8 +31,11 @@ export const Card3DToggle: React.FC<Card3DToggleProps> = ({
           .eq('id', user.id)
           .single();
 
-        if (profile?.preferences?.prefer3D !== undefined) {
-          onToggle(profile.preferences.prefer3D);
+        if (profile?.preferences && typeof profile.preferences === 'object') {
+          const preferences = profile.preferences as { prefer3D?: boolean };
+          if (preferences.prefer3D !== undefined) {
+            onToggle(preferences.prefer3D);
+          }
         }
       } catch (error) {
         console.log('Could not load 3D preference:', error);
@@ -54,7 +57,9 @@ export const Card3DToggle: React.FC<Card3DToggleProps> = ({
         .eq('id', user.id)
         .single();
 
-      const currentPreferences = currentProfile?.preferences || {};
+      const currentPreferences = (currentProfile?.preferences && typeof currentProfile.preferences === 'object') 
+        ? currentProfile.preferences as Record<string, any>
+        : {};
       
       await supabase
         .from('profiles')
@@ -88,7 +93,7 @@ export const Card3DToggle: React.FC<Card3DToggleProps> = ({
     >
       {is3D ? (
         <>
-          <Cube className="w-4 h-4" />
+          <Box className="w-4 h-4" />
           3D View
         </>
       ) : (
