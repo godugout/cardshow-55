@@ -86,18 +86,19 @@ export const CardPreviewSection = ({
         {/* Card Preview Container - Always show */}
         <div className="relative w-80 h-112 shadow-2xl border border-crd-mediumGray/50 rounded-lg overflow-hidden bg-crd-darkGray">
           
+          {/* Conditional rendering based on photo and upload availability */}
           {!selectedPhoto && onPhotoSelect ? (
-            /* Upload dropzone when no photo */
+            /* Upload dropzone when no photo and upload is available */
             <div
               {...getRootProps()}
-              className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-colors ${
+              className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-all ${
                 isDragActive 
                   ? 'bg-crd-green/20 border-2 border-crd-green border-dashed' 
                   : 'bg-crd-darkGray hover:bg-crd-mediumGray/40 border-2 border-dashed border-crd-mediumGray/50 hover:border-crd-green/50'
               }`}
             >
               <input {...getInputProps()} />
-              <div className="text-center p-8">
+              <div className="text-center p-8 z-10">
                 <div className="w-16 h-16 mx-auto mb-4 bg-crd-mediumGray/40 rounded-full flex items-center justify-center">
                   {isDragActive ? (
                     <Upload className="w-8 h-8 text-crd-green animate-bounce" />
@@ -143,7 +144,7 @@ export const CardPreviewSection = ({
             <div className="flex items-center justify-center h-full bg-crd-mediumGray/30">
               <div className="text-center p-8">
                 <ImageIcon className="w-16 h-16 text-crd-lightGray mx-auto mb-4" />
-                <p className="text-crd-lightGray">Card preview will appear here</p>
+                <p className="text-crd-lightGray text-lg font-medium">Card Preview</p>
                 <p className="text-crd-lightGray/70 text-sm mt-2">Upload a photo to get started</p>
               </div>
             </div>
