@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,12 +41,12 @@ export const ProfessionalCropSidebar = ({
 
   if (compact) {
     return (
-      <div className="bg-gray-800/50 border-l border-gray-700 p-3 max-h-[calc(85vh-3rem)] overflow-y-auto">
+      <div className="bg-gray-800/50 border-l border-gray-700 p-4 max-h-[calc(88vh-4rem)] overflow-y-auto">
         {/* Format Info */}
-        <div className="mb-4">
-          <h3 className="text-white text-sm font-medium mb-2">Crop Format</h3>
+        <div className="mb-5">
+          <h3 className="text-white text-sm font-medium mb-3">Crop Format</h3>
           <Badge 
-            className={`w-full justify-center ${
+            className={`w-full justify-center py-2 ${
               cropFormat === 'fullCard' 
                 ? 'bg-green-600 text-white' 
                 : 'bg-blue-600 text-white'
@@ -55,34 +56,34 @@ export const ProfessionalCropSidebar = ({
           </Badge>
         </div>
 
-        <Separator className="my-3 bg-gray-600" />
+        <Separator className="my-4 bg-gray-600" />
 
         {/* Zoom Controls */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
+        <div className="mb-5">
+          <div className="flex items-center justify-between mb-3">
             <span className="text-white text-sm font-medium">Zoom</span>
-            <Badge variant="secondary" className="bg-gray-700 text-white text-xs">
+            <Badge variant="secondary" className="bg-gray-700 text-white text-sm">
               {Math.round(zoom * 100)}%
             </Badge>
           </div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-3">
             <Button
               variant="outline"
               size="sm"
               onClick={handleZoomOut}
               disabled={zoom <= 0.5}
-              className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 h-7"
+              className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
             >
-              <ZoomOut className="w-3 h-3" />
+              <ZoomOut className="w-4 h-4" />
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={handleZoomIn}
               disabled={zoom >= 3}
-              className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 h-7"
+              className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
             >
-              <ZoomIn className="w-3 h-3" />
+              <ZoomIn className="w-4 h-4" />
             </Button>
           </div>
           <Slider
@@ -95,37 +96,37 @@ export const ProfessionalCropSidebar = ({
           />
         </div>
 
-        <Separator className="my-3 bg-gray-600" />
+        <Separator className="my-4 bg-gray-600" />
 
         {/* Quick Position */}
-        <div className="mb-4">
-          <h3 className="text-white text-sm font-medium mb-2">Position</h3>
-          <div className="space-y-1">
+        <div className="mb-5">
+          <h3 className="text-white text-sm font-medium mb-3">Position</h3>
+          <div className="space-y-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => onPresetPosition('top')}
-              className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700 h-7"
+              className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700"
             >
-              <AlignStartVertical className="w-3 h-3 mr-2" />
+              <AlignStartVertical className="w-4 h-4 mr-2" />
               Top
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => onPresetPosition('center')}
-              className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700 h-7"
+              className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700"
             >
-              <AlignCenter className="w-3 h-3 mr-2" />
+              <AlignCenter className="w-4 h-4 mr-2" />
               Center
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => onPresetPosition('bottom')}
-              className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700 h-7"
+              className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700"
             >
-              <AlignEndVertical className="w-3 h-3 mr-2" />
+              <AlignEndVertical className="w-4 h-4 mr-2" />
               Bottom
             </Button>
           </div>
@@ -133,12 +134,12 @@ export const ProfessionalCropSidebar = ({
 
         {/* Image Info */}
         {!imageLoading && !imageError && imageDimensions.width > 0 && (
-          <div className="bg-gray-900/50 rounded p-2">
-            <div className="flex items-center gap-2 mb-1">
-              <ImageIcon className="w-3 h-3 text-gray-400" />
-              <span className="text-gray-400 text-xs">Image Info</span>
+          <div className="bg-gray-900/50 rounded p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <ImageIcon className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-400 text-sm">Image Info</span>
             </div>
-            <div className="text-xs text-gray-300 space-y-1">
+            <div className="text-sm text-gray-300 space-y-1">
               <div>Size: {Math.round(imageDimensions.width)} × {Math.round(imageDimensions.height)}</div>
               <div>Zoom: {Math.round(zoom * 100)}%</div>
             </div>
