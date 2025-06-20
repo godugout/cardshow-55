@@ -17,7 +17,7 @@ interface UnifiedCardCreatorProps {
 
 export const UnifiedCardCreator = ({ 
   initialCardId, 
-  initialMode = 'select' 
+  initialMode = 'quick' // Changed from 'select' to 'quick'
 }: UnifiedCardCreatorProps) => {
   const [mode, setMode] = useState<CreationMode>(
     initialCardId ? 'editing' : initialMode
@@ -34,8 +34,12 @@ export const UnifiedCardCreator = ({
   };
 
   const handleStartOver = () => {
-    setMode('select');
+    setMode('select'); // Allow users to go back to mode selection if needed
     setCardData(null);
+  };
+
+  const handleGoToModeSelection = () => {
+    setMode('select');
   };
 
   const renderContent = () => {
@@ -63,24 +67,29 @@ export const UnifiedCardCreator = ({
         return (
           <div className="min-h-screen bg-crd-darkest">
             <div className="bg-crd-darkest border-b border-crd-mediumGray/20">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={handleStartOver}
-                  className="text-crd-lightGray hover:text-white hover:bg-editor-border mr-4"
+                  onClick={handleGoToModeSelection}
+                  className="text-crd-lightGray hover:text-white hover:bg-editor-border"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Mode Selection
+                  Change Mode
                 </Button>
-                {/* Removed heading here */}
+                
+                {/* Mode indicator */}
+                <div className="flex items-center gap-2">
+                  <span className="text-crd-lightGray text-sm">Mode:</span>
+                  <span className="text-crd-green font-medium text-sm capitalize">{mode}</span>
+                </div>
               </div>
             </div>
             
             <EnhancedWizard
               mode={mode}
               onComplete={handleWizardComplete}
-              onBack={handleStartOver}
+              onBack={handleGoToModeSelection}
             />
           </div>
         );
@@ -93,17 +102,17 @@ export const UnifiedCardCreator = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={handleStartOver}
+                  onClick={handleGoToModeSelection}
                   className="text-crd-lightGray hover:text-white hover:bg-editor-border mr-4"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Mode Selection
+                  Change Mode
                 </Button>
                 <h1 className="text-xl font-semibold text-white">Bulk Card Creation</h1>
               </div>
             </div>
             
-            <BulkCreationFlow onBack={handleStartOver} />
+            <BulkCreationFlow onBack={handleGoToModeSelection} />
           </div>
         );
 
