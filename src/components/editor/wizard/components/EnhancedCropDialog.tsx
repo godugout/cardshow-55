@@ -8,9 +8,9 @@ import { cropImageFromFile } from '@/services/imageCropper';
 import type { CropBounds } from '@/services/imageCropper';
 
 import { ImageLoader } from './crop-dialog/ImageLoader';
-import { CropToolbar } from './crop-dialog/CropToolbar';
-import { CropCanvas } from './crop-dialog/CropCanvas';
-import { CropSidebar } from './crop-dialog/CropSidebar';
+import { ProfessionalCropToolbar } from './crop-dialog/ProfessionalCropToolbar';
+import { ProfessionalCropCanvas } from './crop-dialog/ProfessionalCropCanvas';
+import { ProfessionalCropSidebar } from './crop-dialog/ProfessionalCropSidebar';
 
 interface EnhancedCropDialogProps {
   isOpen: boolean;
@@ -77,14 +77,11 @@ export const EnhancedCropDialog = ({
 
   const handleImageLoad = useCallback((img: HTMLImageElement) => {
     const container = containerRef.current;
-    if (!container) {
-      console.warn('Container not available');
-      return;
-    }
+    if (!container) return;
 
     const containerRect = container.getBoundingClientRect();
-    const containerWidth = containerRect.width - 16; // Reduced padding
-    const containerHeight = containerRect.height - 16;
+    const containerWidth = containerRect.width - 32; // Account for padding
+    const containerHeight = containerRect.height - 32;
     
     // Calculate display size while maintaining aspect ratio
     const imageAspect = img.naturalWidth / img.naturalHeight;
@@ -101,11 +98,10 @@ export const EnhancedCropDialog = ({
     
     setImageDimensions({ width: displayWidth, height: displayHeight });
     setImagePosition({
-      x: (containerWidth - displayWidth) / 2 + 8,
-      y: (containerHeight - displayHeight) / 2 + 8
+      x: (containerWidth - displayWidth) / 2 + 16,
+      y: (containerHeight - displayHeight) / 2 + 16
     });
     
-    // Update the imageRef if it exists
     if (imageRef.current) {
       imageRef.current.src = selectedPhoto;
     }
@@ -125,7 +121,7 @@ export const EnhancedCropDialog = ({
         onClose();
       } else if (e.key === 'Enter') {
         handleApplyCrop();
-      } else if (e.key === 'g') {
+      } else if (e.key === 'g' || e.key === 'G') {
         setShowGrid(!showGrid);
       }
     };
@@ -190,27 +186,25 @@ export const EnhancedCropDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-[85vw] h-[75vh] bg-crd-darkGray border-crd-mediumGray/30 p-0">
-        <DialogHeader className="p-4 pb-2 border-b border-crd-mediumGray/30">
+      <DialogContent className="max-w-5xl w-[90vw] h-[80vh] bg-gray-900 border-gray-700 p-0 gap-0">
+        <DialogHeader className="px-6 py-4 border-b border-gray-700 bg-gray-800/50">
           <DialogTitle className="text-xl font-semibold text-white flex items-center justify-between">
             <span>Crop & Position Your Photo</span>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={handleApplyCrop}
-                disabled={imageLoading || imageError}
-                className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
-              >
-                <Check className="w-4 h-4 mr-2" />
-                Apply Crop
-              </Button>
-            </div>
+            <Button
+              onClick={handleApplyCrop}
+              disabled={imageLoading || imageError}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6"
+            >
+              <Check className="w-4 h-4 mr-2" />
+              Apply Crop
+            </Button>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex h-[calc(100%-60px)]">
-          {/* Main Crop Area */}
+        <div className="flex h-full min-h-0">
+          {/* Main Content Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            <CropToolbar
+            <ProfessionalCropToolbar
               cropFormat={cropFormat}
               showGrid={showGrid}
               zoom={zoom}
@@ -220,7 +214,7 @@ export const EnhancedCropDialog = ({
               onReset={handleReset}
             />
 
-            <div ref={containerRef} className="flex-1 overflow-hidden">
+            <div ref={containerRef} className="flex-1 min-h-0">
               <ImageLoader
                 selectedPhoto={selectedPhoto}
                 isOpen={isOpen}
@@ -229,7 +223,7 @@ export const EnhancedCropDialog = ({
                 onLoadingChange={setImageLoading}
               />
 
-              <CropCanvas
+              <ProfessionalCropCanvas
                 selectedPhoto={selectedPhoto}
                 cropBounds={cropBounds}
                 cropFormat={cropFormat}
@@ -245,8 +239,8 @@ export const EnhancedCropDialog = ({
             </div>
           </div>
 
-          {/* Sidebar */}
-          <CropSidebar
+          {/* Inspector Sidebar */}
+          <ProfessionalCropSidebar
             cropFormat={cropFormat}
             zoom={zoom}
             imageDimensions={imageDimensions}
