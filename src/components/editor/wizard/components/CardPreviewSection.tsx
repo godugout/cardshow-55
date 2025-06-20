@@ -1,13 +1,15 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { Upload, Image as ImageIcon } from 'lucide-react';
 import { AdaptiveTemplatePreview } from './AdaptiveTemplatePreview';
-import { ImageFormatSelector } from './ImageFormatSelector';
 import { ADAPTIVE_TEMPLATES } from '@/data/adaptiveTemplates';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 
 interface CardPreviewSectionProps {
   selectedPhoto: string;
   selectedTemplate: DesignTemplate | null;
+  onPhotoSelect?: (photo: string) => void;
   cardData?: {
     title?: string;
     description?: string;
@@ -18,6 +20,7 @@ interface CardPreviewSectionProps {
 export const CardPreviewSection = ({ 
   selectedPhoto, 
   selectedTemplate,
+  onPhotoSelect,
   cardData = {}
 }: CardPreviewSectionProps) => {
   const [imageFormat, setImageFormat] = useState<'square' | 'circle' | 'fullBleed'>('fullBleed');
@@ -26,6 +29,27 @@ export const CardPreviewSection = ({
   const adaptiveTemplate = selectedTemplate 
     ? ADAPTIVE_TEMPLATES.find(t => t.id === selectedTemplate.id)
     : null;
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file && onPhotoSelect) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        onPhotoSelect(result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }, [onPhotoSelect]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': []
+    },
+    maxFiles: 1,
+    disabled: !onPhotoSelect
+  });
 
   if (!adaptiveTemplate) {
     return (
@@ -38,7 +62,7 @@ export const CardPreviewSection = ({
     );
   }
 
-  // Create custom elements with user data
+  // Create custom elements with user data and new logo
   const customElements = adaptiveTemplate.elements.map(element => {
     if (element.type === 'nameplate') {
       return {
@@ -52,44 +76,56 @@ export const CardPreviewSection = ({
         content: cardData.description || 'Card description will appear here'
       };
     }
+    if (element.type === 'logo') {
+      return {
+        ...element,
+        content: '/crd-logo-gradient.png' // Use the new Cardshow logo
+      };
+    }
     return element;
   });
 
   return (
-    <div className="space-y-6">
-      {/* Format Selection */}
-      {selectedPhoto && (
-        <div className="max-w-sm mx-auto">
-          <ImageFormatSelector
-            selectedFormat={imageFormat}
-            onFormatChange={setImageFormat}
-          />
-        </div>
-      )}
-      
-      <div className="flex justify-center">
-        <div className="transform hover:scale-105 transition-transform duration-200">
-          <AdaptiveTemplatePreview
-            template={adaptiveTemplate}
-            selectedPhoto={selectedPhoto}
-            imageFormat={imageFormat}
-            customElements={customElements}
-            className="w-80 h-112 shadow-2xl border border-crd-mediumGray/50"
-          />
-        </div>
-      </div>
-      
-      <div className="text-center">
-        <h3 className="text-white font-medium mb-1">{adaptiveTemplate.name}</h3>
-        <p className="text-crd-lightGray text-sm">{adaptiveTemplate.description}</p>
-        <div className="flex items-center justify-center gap-2 mt-2">
-          <span className="px-2 py-1 bg-crd-blue/20 text-crd-blue text-xs rounded-full">
-            {imageFormat.charAt(0).toUpperCase() + imageFormat.slice(1)} Format
-          </span>
-          {cardData.rarity && (
-            <span className="px-2 py-1 bg-crd-green/20 text-crd-green text-xs rounded-full">
-              {cardData.rarity} Rarity
-            </span>
+    <div className="flex justify-center">
+      <div className="relative transform hover:scale-105 transition-transform duration-200">
+        {/* Card Preview with Integrated Upload */}
+        <div className="relative w-80 h-112 shadow-2xl border border-crd-mediumGray/50 rounded-lg overflow-hidden">
+          {!selectedPhoto && onPhotoSelect ? (
+            /* Upload dropzone when no photo */
+            <div
+              {...getRootProps()}
+              className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-colors ${
+                isDragActive 
+                  ? 'bg-crd-green/20 border-crd-green' 
+                  : 'bg-crd-darkGray hover:bg-crd-mediumGray/40'
+              }`}
+            >
+              <input {...getInputProps()} />
+              <div className="text-center p-8">
+                <div className="w-16 h-16 mx-auto mb-4 bg-crd-mediumGray/40 rounded-full flex items-center justify-center">
+                  {isDragActive ? (
+                    <Upload className="w-8 h-8 text-crd-green" />
+                  ) : (
+                    <ImageIcon className="w-8 h-8 text-crd-lightGray" />
+                  )}
+                </div>
+                <div className="text-white font-medium mb-2">
+                  {isDragActive ? 'Drop your image here' : 'Add Your Photo'}
+                </div>
+                <div className="text-crd-lightGray text-sm">
+                  {isDragActive ? 'Release to upload' : 'Drag & drop or click to browse'}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Card preview with photo */
+            <AdaptiveTemplatePreview
+              template={adaptiveTemplate}
+              selectedPhoto={selectedPhoto}
+              imageFormat={imageFormat}
+              customElements={customElements}
+              className="w-full h-full"
+            />
           )}
         </div>
       </div>

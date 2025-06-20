@@ -73,9 +73,7 @@ export const UnifiedCardCreator = ({
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Mode Selection
                 </Button>
-                <h1 className="text-xl font-semibold text-white">
-                  {mode === 'quick' ? 'Quick Card Creation' : 'Advanced Card Creation'}
-                </h1>
+                {/* Removed heading here */}
               </div>
             </div>
             

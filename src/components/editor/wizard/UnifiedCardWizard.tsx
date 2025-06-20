@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { WizardStepIndicator } from './WizardStepIndicator';
@@ -155,6 +154,8 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
               totalSteps={getStepsForMode().length}
               isLastStep={wizardState.currentStep === getStepsForMode().length}
               isSaving={isSaving}
+              selectedTemplate={wizardState.selectedTemplate}
+              imageFormat="fullBleed"
               onCancel={onCancel}
               onBack={handlers.handleBack}
               onNext={handleNext}
