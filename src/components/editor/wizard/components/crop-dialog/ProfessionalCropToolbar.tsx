@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -49,7 +50,7 @@ export const ProfessionalCropToolbar = ({
             onClick={() => onFormatChange('fullCard')}
             className={`h-6 px-2 text-xs ${
               cropFormat === 'fullCard' 
-                ? 'bg-green-600 hover:bg-green-700 text-white' 
+                ? 'bg-crd-green hover:bg-crd-green/90 text-black' 
                 : 'text-gray-300 hover:text-white hover:bg-gray-700'
             }`}
           >
@@ -62,7 +63,7 @@ export const ProfessionalCropToolbar = ({
             onClick={() => onFormatChange('cropped')}
             className={`h-6 px-2 text-xs ${
               cropFormat === 'cropped' 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                ? 'bg-crd-blue hover:bg-crd-blue/90 text-white' 
                 : 'text-gray-300 hover:text-white hover:bg-gray-700'
             }`}
           >
@@ -76,7 +77,11 @@ export const ProfessionalCropToolbar = ({
           variant={showGrid ? 'default' : 'outline'}
           size="sm"
           onClick={onToggleGrid}
-          className="h-6 px-2"
+          className={`h-6 px-2 ${
+            showGrid 
+              ? 'bg-crd-blue hover:bg-crd-blue/90 text-white' 
+              : 'border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white'
+          }`}
         >
           <Grid3X3 className="w-3 h-3" />
         </Button>
@@ -85,14 +90,14 @@ export const ProfessionalCropToolbar = ({
           variant="outline"
           size="sm"
           onClick={onReset}
-          className="h-6 px-2"
+          className="h-6 px-2 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
         >
           <RotateCcw className="w-3 h-3" />
         </Button>
 
         <Button
           onClick={onApplyCrop}
-          className="h-6 px-3 bg-green-600 hover:bg-green-700 text-white text-xs font-medium"
+          className="h-6 px-3 bg-crd-green hover:bg-crd-green/90 text-black text-xs font-medium"
         >
           <Check className="w-3 h-3 mr-1" />
           Apply
@@ -115,7 +120,7 @@ export const ProfessionalCropToolbar = ({
                 onClick={() => onFormatChange('fullCard')}
                 className={`${
                   cropFormat === 'fullCard' 
-                    ? 'bg-green-600 hover:bg-green-700 text-white' 
+                    ? 'bg-crd-green hover:bg-crd-green/90 text-black' 
                     : 'text-gray-300 hover:text-white hover:bg-gray-700'
                 }`}
               >
@@ -128,7 +133,7 @@ export const ProfessionalCropToolbar = ({
                 onClick={() => onFormatChange('cropped')}
                 className={`${
                   cropFormat === 'cropped' 
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                    ? 'bg-crd-blue hover:bg-crd-blue/90 text-white' 
                     : 'text-gray-300 hover:text-white hover:bg-gray-700'
                 }`}
               >
@@ -146,7 +151,7 @@ export const ProfessionalCropToolbar = ({
               variant={showGrid ? 'default' : 'outline'}
               size="sm"
               onClick={onToggleGrid}
-              className={showGrid ? 'bg-blue-600 hover:bg-blue-700' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
+              className={showGrid ? 'bg-crd-blue hover:bg-crd-blue/90 text-white' : 'border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white'}
             >
               <Grid3X3 className="w-4 h-4 mr-2" />
               Grid
@@ -163,7 +168,7 @@ export const ProfessionalCropToolbar = ({
               size="sm"
               onClick={handleZoomOut}
               disabled={zoom <= 0.5}
-              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
             >
               <ZoomOut className="w-4 h-4" />
             </Button>
@@ -175,7 +180,7 @@ export const ProfessionalCropToolbar = ({
               size="sm"
               onClick={handleZoomIn}
               disabled={zoom >= 3}
-              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
             >
               <ZoomIn className="w-4 h-4" />
             </Button>
@@ -186,7 +191,7 @@ export const ProfessionalCropToolbar = ({
           <Button
             variant="outline"
             onClick={onReset}
-            className="border-gray-600 text-gray-300 hover:bg-gray-700"
+            className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset
@@ -194,7 +199,7 @@ export const ProfessionalCropToolbar = ({
 
           <Button
             onClick={onApplyCrop}
-            className="bg-green-600 hover:bg-green-700 text-white font-medium"
+            className="bg-crd-green hover:bg-crd-green/90 text-black font-medium"
           >
             <Check className="w-4 h-4 mr-2" />
             Apply Crop

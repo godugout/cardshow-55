@@ -215,9 +215,9 @@ export const EnhancedCropDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-[95vw] h-[88vh] bg-gray-900 border-gray-700 p-0 gap-0 overflow-hidden">
-        {/* Compact Header with integrated toolbar */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700 bg-gray-800/50 h-12 flex-shrink-0">
+      <DialogContent className="max-w-6xl w-[95vw] h-[88vh] bg-gray-900 border-gray-700 p-0 overflow-hidden">
+        {/* Compact Header with integrated toolbar - NO GAP */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700 bg-gray-800/50 h-10 flex-shrink-0">
           <h2 className="text-lg font-semibold text-white">Advanced Crop & Position</h2>
           <ProfessionalCropToolbar
             cropFormat={cropFormat}
@@ -232,15 +232,16 @@ export const EnhancedCropDialog = ({
           />
         </div>
 
-        <div className="flex h-full min-h-0 gap-3">
+        {/* Main Content - NO GAP with header */}
+        <div className="flex h-full min-h-0">
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {/* Canvas Area - Better proportioned for creative work */}
+            {/* Canvas Area */}
             <div 
               ref={canvasRef}
-              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 overflow-hidden relative max-h-[calc(88vh-4rem)]"
+              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-3 overflow-hidden relative max-h-[calc(88vh-2.5rem)]"
             >
-              <div className="relative w-full h-full flex items-start justify-center pt-6">
+              <div className="relative w-full h-full flex items-start justify-center pt-4">
                 {!imageLoaded && !imageError && (
                   <div className="flex items-center justify-center text-white">
                     <div className="animate-pulse text-center">
@@ -333,7 +334,7 @@ export const EnhancedCropDialog = ({
             </div>
           </div>
 
-          {/* Creative Work Sidebar - Properly sized for actual use */}
+          {/* Creative Work Sidebar */}
           <div className="w-70 min-h-0">
             <ProfessionalCropSidebar
               cropFormat={cropFormat}
