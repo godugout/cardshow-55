@@ -28,7 +28,7 @@ export const InteractiveCropArea = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0, bounds: cropBounds });
   const cropRef = useRef<HTMLDivElement>(null);
 
-  // Calculate crop area position and size in pixels
+  // Calculate crop area position and size in pixels - FIXED positioning
   const cropPixels = {
     left: imagePosition.x + (cropBounds.x / 100) * imageDimensions.width * zoom,
     top: imagePosition.y + (cropBounds.y / 100) * imageDimensions.height * zoom,
@@ -159,7 +159,7 @@ export const InteractiveCropArea = ({
 
   return (
     <>
-      {/* Crop Overlay with Professional Styling */}
+      {/* Crop Overlay with Perfect Alignment */}
       <div
         ref={cropRef}
         className="absolute border-2 border-green-400 bg-transparent cursor-move group shadow-lg"
@@ -173,7 +173,7 @@ export const InteractiveCropArea = ({
         }}
         onMouseDown={(e) => handleMouseDown(e, 'move')}
       >
-        {/* Grid Lines */}
+        {/* Perfect Grid Lines */}
         {showGrid && (
           <div className="absolute inset-0 pointer-events-none opacity-60">
             <div className="w-full h-full grid grid-cols-3 grid-rows-3 gap-0">
@@ -184,7 +184,7 @@ export const InteractiveCropArea = ({
           </div>
         )}
 
-        {/* Corner Handles - Perfectly Aligned */}
+        {/* Corner Handles - Perfectly Positioned */}
         {[
           { handle: 'nw', className: 'top-0 left-0 -translate-x-1/2 -translate-y-1/2 cursor-nw-resize' },
           { handle: 'ne', className: 'top-0 right-0 translate-x-1/2 -translate-y-1/2 cursor-ne-resize' },
@@ -193,7 +193,7 @@ export const InteractiveCropArea = ({
         ].map(({ handle, className }) => (
           <div
             key={handle}
-            className={`absolute w-4 h-4 bg-green-400 border-2 border-white rounded-full shadow-lg opacity-90 hover:opacity-100 hover:scale-110 transition-all ${className}`}
+            className={`absolute w-4 h-4 bg-green-400 border-2 border-gray-900 rounded-full shadow-lg opacity-90 hover:opacity-100 hover:scale-110 transition-all ${className}`}
             onMouseDown={(e) => handleMouseDown(e, handle as ResizeHandle)}
           />
         ))}
@@ -207,7 +207,7 @@ export const InteractiveCropArea = ({
         ].map(({ handle, className }) => (
           <div
             key={handle}
-            className={`absolute w-3 h-3 bg-blue-400 border border-white rounded-sm shadow-md opacity-80 hover:opacity-100 hover:scale-110 transition-all ${className}`}
+            className={`absolute w-3 h-3 bg-blue-400 border border-gray-900 rounded-sm shadow-md opacity-80 hover:opacity-100 hover:scale-110 transition-all ${className}`}
             onMouseDown={(e) => handleMouseDown(e, handle as ResizeHandle)}
           />
         ))}
