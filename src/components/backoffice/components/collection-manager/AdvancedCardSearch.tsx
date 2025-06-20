@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { CardSearchFilters } from './CardSearchFilters';
@@ -51,7 +50,7 @@ export const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
       collection_id: dbCard.collection_id,
       team_id: dbCard.team_id,
       price: dbCard.price,
-      edition_size: dbCard.edition_size,
+      edition_size: dbCard.price, // Use price as fallback since edition_size doesn't exist in DB
       marketplace_listing: dbCard.marketplace_listing || false,
       crd_catalog_inclusion: dbCard.crd_catalog_inclusion,
       print_available: dbCard.print_available,

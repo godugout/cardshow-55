@@ -58,7 +58,7 @@ export const useCardConversion = () => {
         mana_cost: safeJsonToRecord(card.mana_cost),
         toughness: card.toughness,
         power: card.power,
-        edition_size: card.edition_size, // Now included
+        edition_size: card.price || undefined, // Use price as fallback since edition_size doesn't exist in DB
         series: card.series,
         edition_number: card.edition_number,
         total_supply: card.total_supply,

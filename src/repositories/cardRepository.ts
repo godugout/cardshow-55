@@ -209,7 +209,7 @@ export class CardRepository {
       image_url: dbCard.image_url,
       thumbnail_url: dbCard.thumbnail_url,
       creator_id: dbCard.creator_id,
-      rarity: dbCard.rarity as any, // Database has mythic, our types include it now
+      rarity: dbCard.rarity as any,
       tags: dbCard.tags || [],
       design_metadata: safeJsonToRecord(dbCard.design_metadata),
       visibility: dbCard.visibility as any || (dbCard.is_public ? 'public' : 'private'),
@@ -220,7 +220,7 @@ export class CardRepository {
       collection_id: dbCard.collection_id,
       team_id: dbCard.team_id,
       price: dbCard.price,
-      edition_size: dbCard.edition_size, // Now matches nullable type
+      edition_size: dbCard.price || null, // Use price as fallback since edition_size doesn't exist in DB
       marketplace_listing: dbCard.marketplace_listing || false,
       crd_catalog_inclusion: dbCard.crd_catalog_inclusion,
       print_available: dbCard.print_available,

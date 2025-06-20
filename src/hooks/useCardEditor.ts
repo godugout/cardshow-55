@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
@@ -206,9 +205,9 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
   }, [saveCard, updateCardField]);
 
   // Map UI rarity to database-compatible rarity
-  const mapRarityToDatabase = (rarity: CardRarity): 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' => {
-    if (rarity === 'ultra-rare') return 'legendary';
-    return rarity as 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  const mapRarityToDatabase = (rarity: CardRarity): 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' => {
+    // All CardRarity values are now valid database values
+    return rarity as 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
   };
 
   // Auto-save functionality
