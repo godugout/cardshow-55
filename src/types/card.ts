@@ -47,7 +47,7 @@ export interface Card {
   collection_id: string | null;
   team_id: string | null;
   price: number | null;
-  edition_size: number | null;
+  edition_size: number | null; // Make this nullable to match database
   marketplace_listing: boolean;
   crd_catalog_inclusion: boolean | null;
   print_available: boolean | null;

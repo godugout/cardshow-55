@@ -12,6 +12,13 @@ export const useCardConversion = () => {
     return dbCards.map(card => {
       console.log('🃏 Converting card:', card.title, 'ID:', card.id);
       
+      // Helper function to safely convert Json to Record<string, any>
+      const safeJsonToRecord = (json: any): Record<string, any> => {
+        if (!json) return {};
+        if (typeof json === 'object' && json !== null) return json as Record<string, any>;
+        return {};
+      };
+      
       const convertedCard: CardData = {
         id: card.id,
         title: card.title,
@@ -20,8 +27,7 @@ export const useCardConversion = () => {
         tags: Array.isArray(card.tags) ? card.tags : [],
         image_url: card.image_url || card.thumbnail_url || '',
         thumbnail_url: card.thumbnail_url || undefined,
-        design_metadata: (typeof card.design_metadata === 'object' && card.design_metadata) ? 
-          card.design_metadata as Record<string, any> : {},
+        design_metadata: safeJsonToRecord(card.design_metadata),
         visibility: card.is_public ? 'public' : 'private',
         template_id: card.template_id || undefined,
         creator_attribution: {
@@ -37,8 +43,7 @@ export const useCardConversion = () => {
           distribution: { limited_edition: false }
         },
         verification_status: (card.verification_status as any) || 'pending',
-        print_metadata: (typeof card.print_metadata === 'object' && card.print_metadata) ? 
-          card.print_metadata as Record<string, any> : {},
+        print_metadata: safeJsonToRecord(card.print_metadata),
         creator_id: card.creator_id,
         // Add missing fields from database
         abilities: card.abilities,
@@ -50,10 +55,10 @@ export const useCardConversion = () => {
         royalty_percentage: card.royalty_percentage,
         serial_number: card.serial_number,
         set_id: card.set_id,
-        mana_cost: card.mana_cost,
+        mana_cost: safeJsonToRecord(card.mana_cost),
         toughness: card.toughness,
         power: card.power,
-        edition_size: card.edition_size,
+        edition_size: card.edition_size, // Now included
         series: card.series,
         edition_number: card.edition_number,
         total_supply: card.total_supply,

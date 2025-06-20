@@ -4,6 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { CardSearchFilters } from './CardSearchFilters';
 import { SearchResults } from './SearchResults';
 import { Card, SearchFilters, AdvancedCardSearchProps } from './types';
+import type { Tables } from '@/integrations/supabase/types';
+
+// Type alias for database card type
+type DbCard = Tables<'cards'>;
 
 export const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
   onSelectionChange,
@@ -20,6 +24,56 @@ export const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
+
+  // Helper function to convert database card to Card interface
+  const mapDbCardToCard = (dbCard: DbCard): Card => {
+    const safeJsonToRecord = (json: any): Record<string, any> | null => {
+      if (!json) return null;
+      if (typeof json === 'object' && json !== null) return json as Record<string, any>;
+      return null;
+    };
+
+    return {
+      id: dbCard.id,
+      title: dbCard.title,
+      description: dbCard.description,
+      image_url: dbCard.image_url,
+      thumbnail_url: dbCard.thumbnail_url,
+      creator_id: dbCard.creator_id,
+      rarity: dbCard.rarity as any,
+      tags: dbCard.tags || [],
+      design_metadata: safeJsonToRecord(dbCard.design_metadata),
+      visibility: dbCard.visibility as any || (dbCard.is_public ? 'public' : 'private'),
+      is_public: dbCard.is_public || false,
+      created_at: dbCard.created_at || new Date().toISOString(),
+      updated_at: dbCard.updated_at,
+      template_id: dbCard.template_id,
+      collection_id: dbCard.collection_id,
+      team_id: dbCard.team_id,
+      price: dbCard.price,
+      edition_size: dbCard.edition_size,
+      marketplace_listing: dbCard.marketplace_listing || false,
+      crd_catalog_inclusion: dbCard.crd_catalog_inclusion,
+      print_available: dbCard.print_available,
+      verification_status: dbCard.verification_status as any,
+      print_metadata: safeJsonToRecord(dbCard.print_metadata),
+      series: dbCard.series,
+      edition_number: dbCard.edition_number,
+      total_supply: dbCard.total_supply,
+      abilities: dbCard.abilities,
+      base_price: dbCard.base_price,
+      card_type: dbCard.card_type as any,
+      current_market_value: dbCard.current_market_value,
+      favorite_count: dbCard.favorite_count,
+      view_count: dbCard.view_count,
+      royalty_percentage: dbCard.royalty_percentage,
+      serial_number: dbCard.serial_number,
+      set_id: dbCard.set_id,
+      mana_cost: safeJsonToRecord(dbCard.mana_cost),
+      toughness: dbCard.toughness,
+      power: dbCard.power,
+    };
+  };
 
   const handleSearch = async () => {
     setLoading(true);
@@ -58,7 +112,7 @@ export const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
 
       if (error) throw error;
 
-      setCards(data || []);
+      setCards((data || []).map(mapDbCardToCard));
       setTotalCount(count || 0);
     } catch (error) {
       console.error('Search error:', error);
