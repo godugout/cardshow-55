@@ -68,7 +68,7 @@ export const EnhancedCropDialog = ({
     setCropBounds(getInitialCropBounds());
   }, [cropFormat, getInitialCropBounds]);
 
-  // Handle image loading and positioning - FIXED CALCULATIONS
+  // IMPROVED: Handle image loading and positioning with better calculations
   useEffect(() => {
     if (!selectedPhoto || !isOpen) return;
 
@@ -78,25 +78,30 @@ export const EnhancedCropDialog = ({
       if (!canvas) return;
 
       const canvasRect = canvas.getBoundingClientRect();
-      const canvasWidth = canvasRect.width - 32;
-      const canvasHeight = canvasRect.height - 32;
+      // FIXED: Properly account for padding (p-2 = 8px on each side)
+      const canvasWidth = canvasRect.width - 16;
+      const canvasHeight = canvasRect.height - 16;
       
       const imageAspect = img.naturalWidth / img.naturalHeight;
       const canvasAspect = canvasWidth / canvasHeight;
       
       let displayWidth, displayHeight;
+      
+      // IMPROVED: Increased scale factor from 0.9 to 0.95 for better space utilization
       if (imageAspect > canvasAspect) {
-        displayWidth = canvasWidth * 0.9;
+        displayWidth = canvasWidth * 0.95;
         displayHeight = displayWidth / imageAspect;
       } else {
-        displayHeight = canvasHeight * 0.9;
+        displayHeight = canvasHeight * 0.95;
         displayWidth = displayHeight * imageAspect;
       }
       
       setImageDimensions({ width: displayWidth, height: displayHeight });
+      
+      // IMPROVED: Center image both horizontally AND vertically
       setImagePosition({
-        x: (canvasWidth - displayWidth) / 2 + 16,
-        y: (canvasHeight - displayHeight) / 2 + 16
+        x: (canvasWidth - displayWidth) / 2 + 8, // Add padding offset
+        y: (canvasHeight - displayHeight) / 2 + 8 // Add padding offset
       });
       
       setImageLoaded(true);
@@ -216,7 +221,7 @@ export const EnhancedCropDialog = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl w-[95vw] h-[88vh] bg-gray-900 border-gray-700 p-0 overflow-hidden">
-        {/* Compact Header with integrated toolbar - NO GAP */}
+        {/* Compact Header with integrated toolbar */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700 bg-gray-800/50 h-10 flex-shrink-0">
           <h2 className="text-lg font-semibold text-white">Advanced Crop & Position</h2>
           <ProfessionalCropToolbar
@@ -232,16 +237,16 @@ export const EnhancedCropDialog = ({
           />
         </div>
 
-        {/* Main Content - NO GAP with header */}
+        {/* Main Content */}
         <div className="flex h-full min-h-0">
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {/* Canvas Area */}
+            {/* Canvas Area - IMPROVED: Better padding and centering */}
             <div 
               ref={canvasRef}
-              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-3 overflow-hidden relative max-h-[calc(88vh-2.5rem)]"
+              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-2 overflow-hidden relative max-h-[calc(88vh-2.5rem)]"
             >
-              <div className="relative w-full h-full flex items-start justify-center pt-4">
+              <div className="relative w-full h-full flex items-center justify-center">
                 {!imageLoaded && !imageError && (
                   <div className="flex items-center justify-center text-white">
                     <div className="animate-pulse text-center">
