@@ -50,7 +50,7 @@ export const CropCanvas = ({
   return (
     <div 
       ref={containerRef}
-      className="flex-1 bg-gradient-to-br from-gray-900 via-black to-gray-800 p-5 overflow-hidden relative"
+      className="flex-1 bg-gradient-to-br from-gray-900 via-black to-gray-800 p-2 overflow-hidden relative"
     >
       <div className="relative w-full h-full flex items-center justify-center">
         {imageLoading && (
@@ -122,7 +122,7 @@ export const CropCanvas = ({
       </div>
       
       {/* Scroll to zoom hint */}
-      <div className="absolute bottom-4 left-4 bg-black/50 text-white text-xs px-3 py-2 rounded-md">
+      <div className="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded-md">
         Scroll to zoom • Drag crop area to move
       </div>
     </div>

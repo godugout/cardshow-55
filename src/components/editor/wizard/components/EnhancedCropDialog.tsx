@@ -83,8 +83,8 @@ export const EnhancedCropDialog = ({
     }
 
     const containerRect = container.getBoundingClientRect();
-    const containerWidth = containerRect.width - 40; // Account for padding
-    const containerHeight = containerRect.height - 40;
+    const containerWidth = containerRect.width - 16; // Reduced padding
+    const containerHeight = containerRect.height - 16;
     
     // Calculate display size while maintaining aspect ratio
     const imageAspect = img.naturalWidth / img.naturalHeight;
@@ -101,8 +101,8 @@ export const EnhancedCropDialog = ({
     
     setImageDimensions({ width: displayWidth, height: displayHeight });
     setImagePosition({
-      x: (containerWidth - displayWidth) / 2 + 20,
-      y: (containerHeight - displayHeight) / 2 + 20
+      x: (containerWidth - displayWidth) / 2 + 8,
+      y: (containerHeight - displayHeight) / 2 + 8
     });
     
     // Update the imageRef if it exists
@@ -190,8 +190,8 @@ export const EnhancedCropDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-[90vw] h-[85vh] bg-crd-darkGray border-crd-mediumGray/30 p-0">
-        <DialogHeader className="p-6 pb-4 border-b border-crd-mediumGray/30">
+      <DialogContent className="max-w-4xl w-[85vw] h-[75vh] bg-crd-darkGray border-crd-mediumGray/30 p-0">
+        <DialogHeader className="p-4 pb-2 border-b border-crd-mediumGray/30">
           <DialogTitle className="text-xl font-semibold text-white flex items-center justify-between">
             <span>Crop & Position Your Photo</span>
             <div className="flex items-center gap-2">
@@ -207,9 +207,9 @@ export const EnhancedCropDialog = ({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex h-[calc(100%-80px)]">
+        <div className="flex h-[calc(100%-60px)]">
           {/* Main Crop Area */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-w-0">
             <CropToolbar
               cropFormat={cropFormat}
               showGrid={showGrid}

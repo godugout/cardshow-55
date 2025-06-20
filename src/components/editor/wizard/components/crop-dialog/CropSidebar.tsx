@@ -24,13 +24,13 @@ export const CropSidebar = ({
   onPresetPosition
 }: CropSidebarProps) => {
   return (
-    <div className="w-80 bg-crd-darkGray border-l border-crd-mediumGray/30 p-6 space-y-6">
+    <div className="w-64 bg-crd-darkGray border-l border-crd-mediumGray/30 p-4 space-y-4 overflow-y-auto">
       {/* Zoom Slider */}
       <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-white font-medium">Zoom</h3>
-            <span className="text-crd-lightGray text-sm">{Math.round(zoom * 100)}%</span>
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-white font-medium text-sm">Zoom</h3>
+            <span className="text-crd-lightGray text-xs">{Math.round(zoom * 100)}%</span>
           </div>
           <Slider
             value={[zoom]}
@@ -45,9 +45,9 @@ export const CropSidebar = ({
 
       {/* Preset Positions */}
       <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
-        <CardContent className="p-4">
-          <h3 className="text-white font-medium mb-3">Quick Position</h3>
-          <div className="grid grid-cols-3 gap-2">
+        <CardContent className="p-3">
+          <h3 className="text-white font-medium mb-2 text-sm">Quick Position</h3>
+          <div className="grid grid-cols-3 gap-1.5">
             {[
               { id: 'top', label: 'Top' },
               { id: 'center', label: 'Center' },
@@ -58,7 +58,7 @@ export const CropSidebar = ({
                 variant="outline"
                 size="sm"
                 onClick={() => onPresetPosition(preset.id as any)}
-                className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white text-xs"
+                className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white text-xs py-1.5"
               >
                 {preset.label}
               </Button>
@@ -69,9 +69,9 @@ export const CropSidebar = ({
 
       {/* Format Info */}
       <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
-        <CardContent className="p-4">
-          <h3 className="text-white font-medium mb-3">Format Info</h3>
-          <div className="space-y-2 text-sm">
+        <CardContent className="p-3">
+          <h3 className="text-white font-medium mb-2 text-sm">Format Info</h3>
+          <div className="space-y-1.5 text-xs">
             <div className="flex justify-between text-crd-lightGray">
               <span>Type:</span>
               <span>{cropFormat === 'fullCard' ? 'Trading Card' : 'Square Crop'}</span>
@@ -88,25 +88,10 @@ export const CropSidebar = ({
         </CardContent>
       </Card>
 
-      {/* Debug Info */}
-      {imageDimensions.width > 0 && (
-        <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
-          <CardContent className="p-4">
-            <h3 className="text-white font-medium mb-3">Debug Info</h3>
-            <div className="space-y-1 text-xs text-crd-lightGray">
-              <div>Image: {imageDimensions.width}×{imageDimensions.height}</div>
-              <div>Loading: {imageLoading ? 'Yes' : 'No'}</div>
-              <div>Error: {imageError ? 'Yes' : 'No'}</div>
-              <div>Zoom: {zoom.toFixed(1)}x</div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Keyboard Shortcuts */}
       <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
-        <CardContent className="p-4">
-          <h3 className="text-white font-medium mb-3">Shortcuts</h3>
+        <CardContent className="p-3">
+          <h3 className="text-white font-medium mb-2 text-sm">Shortcuts</h3>
           <div className="space-y-1 text-xs text-crd-lightGray">
             <div className="flex justify-between">
               <span>Apply crop:</span>
