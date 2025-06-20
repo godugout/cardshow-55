@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Crop, RotateCw, ZoomIn, ZoomOut } from 'lucide-react';
+import { RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CropBounds } from '@/services/imageCropper';
 
@@ -106,7 +106,7 @@ export const InlineCropPreview = ({
           }}
         />
 
-        {/* Crop area border - properly aligned */}
+        {/* Crop area border */}
         <div
           className="absolute border-2 border-crd-green pointer-events-none"
           style={{
