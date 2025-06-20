@@ -1,9 +1,7 @@
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense } from 'react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { CardViewer3D } from './CardViewer3D';
-import { Card3DViewer } from './Card3DViewer';
-import { Card3DToggle } from './Card3DToggle';
 import type { CardData } from '@/hooks/useCardEditor';
 
 interface CardViewer3DContainerProps {
@@ -12,8 +10,6 @@ interface CardViewer3DContainerProps {
   interactive?: boolean;
   autoRotate?: boolean;
   className?: string;
-  enableAdvanced3D?: boolean;
-  showToggle?: boolean;
 }
 
 const CardViewer3DFallback: React.FC<{ card: CardData }> = ({ card }) => (
@@ -44,45 +40,18 @@ export const CardViewer3DContainer: React.FC<CardViewer3DContainerProps> = ({
   environment = 'studio',
   interactive = true,
   autoRotate = false,
-  className = '',
-  enableAdvanced3D = true,
-  showToggle = true
+  className = ''
 }) => {
-  const [useAdvanced3D, setUseAdvanced3D] = useState(enableAdvanced3D);
-
-  // Check if we should use the advanced 3D system
-  const shouldUseAdvanced3D = enableAdvanced3D && useAdvanced3D;
-
   return (
-    <div className={`w-full h-full relative ${className}`}>
-      {/* 3D Mode Toggle */}
-      {showToggle && enableAdvanced3D && (
-        <div className="absolute top-4 right-4 z-10">
-          <Card3DToggle
-            is3D={useAdvanced3D}
-            onToggle={setUseAdvanced3D}
-          />
-        </div>
-      )}
-
+    <div className={`w-full h-full ${className}`}>
       <ErrorBoundary fallback={(props) => <ErrorFallback {...props} card={card} />}>
         <Suspense fallback={<CardViewer3DFallback card={card} />}>
-          {shouldUseAdvanced3D ? (
-            <Card3DViewer
-              card={card}
-              className="w-full h-full"
-              interactive={interactive}
-              autoRotate={autoRotate}
-              showStats={process.env.NODE_ENV === 'development'}
-            />
-          ) : (
-            <CardViewer3D
-              card={card}
-              environment={environment}
-              interactive={interactive}
-              autoRotate={autoRotate}
-            />
-          )}
+          <CardViewer3D
+            card={card}
+            environment={environment}
+            interactive={interactive}
+            autoRotate={autoRotate}
+          />
         </Suspense>
       </ErrorBoundary>
     </div>
