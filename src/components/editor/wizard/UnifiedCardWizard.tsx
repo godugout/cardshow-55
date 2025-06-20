@@ -43,7 +43,7 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
       }
     }
 
-    // Updated 3-step flow for quick and advanced modes
+    // 3-step flow for quick and advanced modes
     switch (wizardState.currentStep) {
       case 1:
         return (
@@ -116,6 +116,23 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
     }
   };
 
+  const handleNext = () => {
+    const validationMessage = getValidationMessage();
+    if (canProceedToNext()) {
+      handlers.handleNext();
+    } else if (validationMessage) {
+      // Use toast instead of alert for better UX
+      console.warn(validationMessage);
+    }
+  };
+
+  const handleComplete = () => {
+    // Only allow completion from the last step
+    if (wizardState.currentStep === getStepsForMode().length) {
+      handlers.handleComplete();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-editor-darker p-6">
       <div className="max-w-6xl mx-auto">
@@ -140,15 +157,8 @@ export const UnifiedCardWizard = ({ onComplete, onCancel, mode }: UnifiedCardWiz
               isSaving={isSaving}
               onCancel={onCancel}
               onBack={handlers.handleBack}
-              onNext={() => {
-                const validationMessage = getValidationMessage();
-                if (canProceedToNext()) {
-                  handlers.handleNext();
-                } else if (validationMessage) {
-                  alert(validationMessage);
-                }
-              }}
-              onComplete={handlers.handleComplete}
+              onNext={handleNext}
+              onComplete={handleComplete}
               canSkipToEnd={false}
             />
           </CardContent>

@@ -77,7 +77,7 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     },
 
     handleNext: (targetStep?: number) => {
-      // Updated validation for 3-step flow
+      // Validation for each step
       if (wizardState.currentStep === 1 && !wizardState.selectedPhoto) {
         toast.error('Please upload a photo first');
         return;
@@ -91,13 +91,11 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
         return;
       }
       
+      // Always progress sequentially - no step skipping
       if (targetStep) {
         setWizardState(prev => ({ ...prev, currentStep: targetStep }));
-      } else if (wizardState.currentStep === 1 && wizardState.aiAnalysisComplete && wizardState.selectedTemplate) {
-        // Skip directly to step 3 if AI analysis is complete in quick mode
-        setWizardState(prev => ({ ...prev, currentStep: 3 }));
       } else {
-        // Normal progression: max step is now 3
+        // Normal progression: 1 -> 2 -> 3
         setWizardState(prev => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, 3) }));
       }
     },
@@ -107,6 +105,12 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     },
 
     handleComplete: async () => {
+      // Only allow completion from step 3
+      if (wizardState.currentStep !== 3) {
+        toast.error('Please complete all steps before finishing');
+        return;
+      }
+      
       try {
         const success = await saveCard();
         if (success) {
