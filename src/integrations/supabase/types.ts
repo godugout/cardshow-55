@@ -254,6 +254,44 @@ export type Database = {
           },
         ]
       }
+      collection_activity_log: {
+        Row: {
+          action: string
+          collection_id: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          target_id: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          collection_id: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          collection_id?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_activity_log_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collection_cards: {
         Row: {
           added_at: string | null
@@ -293,6 +331,38 @@ export type Database = {
           },
         ]
       }
+      collection_followers: {
+        Row: {
+          collection_id: string
+          followed_at: string | null
+          follower_id: string
+          id: string
+          notification_settings: Json | null
+        }
+        Insert: {
+          collection_id: string
+          followed_at?: string | null
+          follower_id: string
+          id?: string
+          notification_settings?: Json | null
+        }
+        Update: {
+          collection_id?: string
+          followed_at?: string | null
+          follower_id?: string
+          id?: string
+          notification_settings?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_followers_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collection_memberships: {
         Row: {
           can_view_member_cards: boolean | null
@@ -324,6 +394,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "collection_memberships_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collection_ratings: {
+        Row: {
+          collection_id: string
+          created_at: string | null
+          id: string
+          rating: number | null
+          review: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          collection_id: string
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          review?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          collection_id?: string
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          review?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_ratings_collection_id_fkey"
             columns: ["collection_id"]
             isOneToOne: false
             referencedRelation: "collections"
@@ -380,6 +488,7 @@ export type Database = {
           id: string
           is_featured: boolean | null
           is_group: boolean | null
+          metadata: Json | null
           owner_id: string
           template_id: string | null
           title: string
@@ -395,6 +504,7 @@ export type Database = {
           id?: string
           is_featured?: boolean | null
           is_group?: boolean | null
+          metadata?: Json | null
           owner_id: string
           template_id?: string | null
           title: string
@@ -410,6 +520,7 @@ export type Database = {
           id?: string
           is_featured?: boolean | null
           is_group?: boolean | null
+          metadata?: Json | null
           owner_id?: string
           template_id?: string | null
           title?: string
@@ -891,6 +1002,16 @@ export type Database = {
       generate_group_code: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_collection_stats: {
+        Args: { collection_uuid: string }
+        Returns: {
+          total_cards: number
+          unique_cards: number
+          total_value: number
+          completion_percentage: number
+          last_updated: string
+        }[]
       }
       is_admin: {
         Args: { user_uuid?: string }

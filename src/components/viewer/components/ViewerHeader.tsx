@@ -18,10 +18,13 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
   const navigate = useNavigate();
 
   const handleBackClick = () => {
+    console.log('🔙 Back button clicked');
+    
     if (onClose) {
+      console.log('📞 Calling onClose callback');
       onClose();
     } else {
-      // Always navigate to gallery as a reliable fallback
+      console.log('🏠 Navigating to gallery');
       navigate('/gallery');
     }
   };
