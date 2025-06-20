@@ -1,12 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Camera, Trash2, Upload } from 'lucide-react';
+import { Camera, Trash2, Upload, Crop } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { InlineCropPreview } from './InlineCropPreview';
+import { EnhancedCropDialog } from './EnhancedCropDialog';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 import type { CropBounds } from '@/services/imageCropper';
 
@@ -29,12 +30,16 @@ export const EnhancedPhotoEditSection = ({
   onImageFormatChange,
   isAnalyzing = false
 }: EnhancedPhotoEditSectionProps) => {
+  const [showCropDialog, setShowCropDialog] = useState(false);
+  const [originalFile, setOriginalFile] = useState<File | null>(null);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { 'image/*': [] },
     maxFiles: 1,
     onDrop: async (acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file) {
+        setOriginalFile(file);
         const imageUrl = URL.createObjectURL(file);
         onPhotoSelect(imageUrl);
         toast.success('Photo uploaded!');
@@ -44,6 +49,22 @@ export const EnhancedPhotoEditSection = ({
 
   const handleCropChange = (bounds: CropBounds) => {
     console.log('Crop bounds updated:', bounds);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setOriginalFile(file);
+      const imageUrl = URL.createObjectURL(file);
+      onPhotoSelect(imageUrl);
+    }
+    e.target.value = '';
+  };
+
+  const handleCropComplete = (croppedImageUrl: string) => {
+    onPhotoSelect(croppedImageUrl);
+    setShowCropDialog(false);
+    toast.success('Crop applied successfully!');
   };
 
   if (!selectedPhoto) {
@@ -111,6 +132,13 @@ export const EnhancedPhotoEditSection = ({
           {/* Action Buttons */}
           <div className="flex gap-3">
             <Button
+              onClick={() => setShowCropDialog(true)}
+              className="bg-crd-blue hover:bg-crd-blue/90 text-white flex-1"
+            >
+              <Crop className="w-4 h-4 mr-2" />
+              Advanced Crop
+            </Button>
+            <Button
               onClick={onPhotoRemove}
               variant="outline"
               className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:border-red-500"
@@ -121,19 +149,22 @@ export const EnhancedPhotoEditSection = ({
         </CardContent>
       </Card>
 
+      {/* Advanced Crop Dialog */}
+      <EnhancedCropDialog
+        isOpen={showCropDialog}
+        onClose={() => setShowCropDialog(false)}
+        selectedPhoto={selectedPhoto}
+        originalFile={originalFile}
+        onCropComplete={handleCropComplete}
+        initialFormat="fullCard"
+      />
+
       {/* Hidden file input */}
       <input
         id="photo-input"
         type="file"
         accept="image/*"
-        onChange={async (e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            onPhotoSelect(imageUrl);
-          }
-          e.target.value = '';
-        }}
+        onChange={handleFileUpload}
         className="hidden"
       />
     </>

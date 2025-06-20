@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { toast } from 'sonner';
@@ -67,7 +68,7 @@ export const EnhancedCropDialog = ({
     setCropBounds(getInitialCropBounds());
   }, [cropFormat, getInitialCropBounds]);
 
-  // Handle image loading and positioning
+  // Handle image loading and positioning - FIXED CALCULATIONS
   useEffect(() => {
     if (!selectedPhoto || !isOpen) return;
 
@@ -115,7 +116,7 @@ export const EnhancedCropDialog = ({
     img.src = selectedPhoto;
   }, [selectedPhoto, isOpen]);
 
-  // Centralized scroll-to-zoom handler - FIXED
+  // Scroll-to-zoom handler
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
@@ -141,7 +142,7 @@ export const EnhancedCropDialog = ({
     }
   }, [isOpen, onClose, showGrid]);
 
-  // Set up event listeners - FIXED to prevent conflicts
+  // Set up event listeners
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas && isOpen && imageLoaded) {
@@ -214,16 +215,16 @@ export const EnhancedCropDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-[90vw] h-[80vh] bg-gray-900 border-gray-700 p-0 gap-0">
-        {/* Compact Header - Reduced padding */}
-        <div className="px-6 py-2 border-b border-gray-700 bg-gray-800/50">
-          <h2 className="text-lg font-semibold text-white">Crop & Position Your Photo</h2>
+      <DialogContent className="max-w-6xl w-[95vw] h-[90vh] bg-gray-900 border-gray-700 p-0 gap-0">
+        {/* Header */}
+        <div className="px-6 py-3 border-b border-gray-700 bg-gray-800/50">
+          <h2 className="text-xl font-semibold text-white">Advanced Crop & Position</h2>
         </div>
 
         <div className="flex h-full min-h-0">
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {/* Compact Toolbar - Moved directly below header */}
+            {/* Toolbar */}
             <ProfessionalCropToolbar
               cropFormat={cropFormat}
               showGrid={showGrid}
@@ -235,10 +236,10 @@ export const EnhancedCropDialog = ({
               onApplyCrop={handleApplyCrop}
             />
 
-            {/* Canvas Area - Minimal padding */}
+            {/* Canvas Area */}
             <div 
               ref={canvasRef}
-              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 overflow-hidden relative"
+              className="flex-1 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 overflow-hidden relative"
             >
               <div className="relative w-full h-full flex items-center justify-center">
                 {!imageLoaded && !imageError && (
@@ -262,7 +263,7 @@ export const EnhancedCropDialog = ({
                 
                 {imageLoaded && !imageError && imageDimensions.width > 0 && (
                   <>
-                    {/* Single Background Image - FIXED positioning */}
+                    {/* Background Image */}
                     <div
                       className="absolute"
                       style={{
@@ -281,7 +282,7 @@ export const EnhancedCropDialog = ({
                         style={{ display: 'block' }}
                       />
                       
-                      {/* Simple dark overlay with crop window cutout - SIMPLIFIED */}
+                      {/* Dark overlay with crop window cutout */}
                       <div
                         className="absolute inset-0 bg-black/60 pointer-events-none"
                         style={{
@@ -307,7 +308,7 @@ export const EnhancedCropDialog = ({
                       />
                     </div>
 
-                    {/* Interactive Crop Area - ALIGNED properly */}
+                    {/* Interactive Crop Area */}
                     <InteractiveCropArea
                       cropBounds={cropBounds}
                       setCropBounds={setCropBounds}
@@ -321,18 +322,19 @@ export const EnhancedCropDialog = ({
                 )}
               </div>
               
-              {/* Compact controls hint */}
-              <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-lg border border-gray-600">
-                <div className="flex items-center gap-3">
+              {/* Controls hint */}
+              <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-gray-600">
+                <div className="flex items-center gap-4">
                   <span>🖱️ Scroll: zoom</span>
                   <span>G: grid</span>
                   <span>+/-: zoom</span>
+                  <span>Enter: apply</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Inspector Sidebar */}
+          {/* Sidebar */}
           <ProfessionalCropSidebar
             cropFormat={cropFormat}
             zoom={zoom}

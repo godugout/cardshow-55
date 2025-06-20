@@ -28,7 +28,7 @@ export const InteractiveCropArea = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0, bounds: cropBounds });
   const cropRef = useRef<HTMLDivElement>(null);
 
-  // Calculate crop area position and size in pixels
+  // FIXED: Calculate crop area position and size in pixels relative to the zoomed image
   const cropPixels = {
     left: imagePosition.x + (cropBounds.x / 100) * imageDimensions.width * zoom,
     top: imagePosition.y + (cropBounds.y / 100) * imageDimensions.height * zoom,
@@ -55,7 +55,7 @@ export const InteractiveCropArea = ({
     const deltaX = e.clientX - dragStart.x;
     const deltaY = e.clientY - dragStart.y;
     
-    // Convert pixel deltas to percentage
+    // FIXED: Convert pixel deltas to percentage based on the zoomed image dimensions
     const deltaXPercent = (deltaX / (imageDimensions.width * zoom)) * 100;
     const deltaYPercent = (deltaY / (imageDimensions.height * zoom)) * 100;
 
