@@ -1,19 +1,11 @@
 
-export interface Card {
-  id: string;
-  title: string;
-  description?: string;
-  image_url?: string;
-  rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-  tags?: string[];
-  series?: string;
-  created_at: string;
-  creator_id: string;
-  visibility?: 'public' | 'private' | 'shared';
-}
+import type { Card as AppCard } from '@/types/card';
+
+// Use the main Card interface from types/card.ts
+export interface Card extends AppCard {}
 
 export interface SearchFilters {
-  rarity: '' | 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  rarity: '' | 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
   series: string;
   visibility: '' | 'public' | 'private' | 'shared';
   dateFrom: string;

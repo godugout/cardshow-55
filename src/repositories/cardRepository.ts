@@ -1,8 +1,12 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Card, CardCreateParams } from '@/types/card';
+import type { Tables } from '@/integrations/supabase/types';
 
 export { type CardCreateParams } from '@/types/card';
+
+// Type alias for database card type
+type DbCard = Tables<'cards'>;
 
 export class CardRepository {
   static async createCard(params: CardCreateParams): Promise<Card | null> {
@@ -21,7 +25,7 @@ export class CardRepository {
       }
 
       console.log('✅ Card created successfully in database:', data);
-      return data as Card;
+      return this.mapDbCardToCard(data);
     } catch (error) {
       console.error('💥 Failed to create card:', error);
       throw error;
@@ -63,7 +67,7 @@ export class CardRepository {
 
       console.log(`✅ Fetched ${data?.length || 0} cards from database`);
       return {
-        cards: (data || []) as Card[],
+        cards: (data || []).map(this.mapDbCardToCard),
         total: count || 0
       };
     } catch (error) {
@@ -87,7 +91,7 @@ export class CardRepository {
       }
 
       console.log(`✅ Fetched ${data?.length || 0} total cards from database`);
-      return (data || []) as Card[];
+      return (data || []).map(this.mapDbCardToCard);
     } catch (error) {
       console.error('💥 Failed to fetch all cards:', error);
       throw error;
@@ -110,7 +114,7 @@ export class CardRepository {
       }
 
       console.log('✅ Fetched card by ID:', data);
-      return (data || null) as Card;
+      return data ? this.mapDbCardToCard(data) : null;
     } catch (error) {
       console.error('💥 Failed to fetch card by ID:', error);
       return null;
@@ -160,7 +164,7 @@ export class CardRepository {
       }
 
       console.log(`✅ Fetched ${data?.length || 0} cards for user ${userId}`);
-      return (data || []) as Card[];
+      return (data || []).map(this.mapDbCardToCard);
     } catch (error) {
       console.error('💥 Failed to fetch user cards:', error);
       throw error;
@@ -187,5 +191,49 @@ export class CardRepository {
       console.error('💥 Failed to delete card:', error);
       return false;
     }
+  }
+
+  // Helper method to map database card to our Card interface
+  private static mapDbCardToCard(dbCard: DbCard): Card {
+    return {
+      id: dbCard.id,
+      title: dbCard.title,
+      description: dbCard.description,
+      image_url: dbCard.image_url,
+      thumbnail_url: dbCard.thumbnail_url,
+      creator_id: dbCard.creator_id,
+      rarity: dbCard.rarity as any, // Database has mythic, our types include it now
+      tags: dbCard.tags || [],
+      design_metadata: dbCard.design_metadata,
+      visibility: dbCard.visibility as any || (dbCard.is_public ? 'public' : 'private'),
+      is_public: dbCard.is_public || false,
+      created_at: dbCard.created_at || new Date().toISOString(),
+      updated_at: dbCard.updated_at,
+      template_id: dbCard.template_id,
+      collection_id: dbCard.collection_id,
+      team_id: dbCard.team_id,
+      price: dbCard.price,
+      edition_size: dbCard.edition_size,
+      marketplace_listing: dbCard.marketplace_listing || false,
+      crd_catalog_inclusion: dbCard.crd_catalog_inclusion,
+      print_available: dbCard.print_available,
+      verification_status: dbCard.verification_status as any,
+      print_metadata: dbCard.print_metadata,
+      series: dbCard.series,
+      edition_number: dbCard.edition_number,
+      total_supply: dbCard.total_supply,
+      abilities: dbCard.abilities,
+      base_price: dbCard.base_price,
+      card_type: dbCard.card_type as any,
+      current_market_value: dbCard.current_market_value,
+      favorite_count: dbCard.favorite_count,
+      view_count: dbCard.view_count,
+      royalty_percentage: dbCard.royalty_percentage,
+      serial_number: dbCard.serial_number,
+      set_id: dbCard.set_id,
+      mana_cost: dbCard.mana_cost,
+      toughness: dbCard.toughness,
+      power: dbCard.power,
+    };
   }
 }
