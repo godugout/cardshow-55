@@ -2,7 +2,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/features/auth/providers/AuthProvider";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
@@ -19,43 +19,41 @@ function App() {
       <TooltipProvider>
         <AuthProvider>
           <Toaster />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route
-                path="/gallery"
-                element={
-                  <ProtectedRoute>
-                    <Gallery />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/studio/:cardId?"
-                element={
-                  <ProtectedRoute>
-                    <Studio />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/create"
-                element={
-                  <ProtectedRoute>
-                    <CreatePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/cards"
-                element={
-                  <ProtectedRoute>
-                    <CardsPage />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route
+              path="/gallery"
+              element={
+                <ProtectedRoute>
+                  <Gallery />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/studio/:cardId?"
+              element={
+                <ProtectedRoute>
+                  <Studio />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/create"
+              element={
+                <ProtectedRoute>
+                  <CreatePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cards"
+              element={
+                <ProtectedRoute>
+                  <CardsPage />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
