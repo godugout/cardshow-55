@@ -76,10 +76,10 @@ export const CardPreviewSection = ({
         content: cardData.description || 'Card description will appear here'
       };
     }
-    if (element.type === 'logo') {
+    if (element.type === 'logoPatch') {
       return {
         ...element,
-        content: '/crd-logo-gradient.png' // Use the new Cardshow logo
+        content: '/lovable-uploads/ffcc3926-a637-4938-a3d6-6b0b366e95d4.png' // Use the new Cardshow logo
       };
     }
     return element;
