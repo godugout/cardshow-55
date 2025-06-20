@@ -16,7 +16,8 @@ export const useStudioState = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<'database' | 'mock' | 'none'>('none');
 
-  const { featuredCards, loading: cardsLoading } = useCards();
+  // Use ALL cards instead of just featured cards for Studio
+  const { cards, loading: cardsLoading } = useCards();
   const { convertCardsToCardData } = useCardConversion();
 
   // Load card data based on URL params and available data
@@ -27,10 +28,10 @@ export const useStudioState = () => {
     }
 
     console.log('🏗️ Studio: Processing card data...');
-    console.log('📊 Featured cards from database:', featuredCards?.length || 0);
+    console.log('📊 All cards from database:', cards?.length || 0);
 
     // Convert database cards to CardData format
-    const dbCards = convertCardsToCardData(featuredCards || []);
+    const dbCards = convertCardsToCardData(cards || []);
     console.log('🔄 Converted database cards:', dbCards.length);
 
     // Determine which card set to use (prioritize database cards)
@@ -99,7 +100,7 @@ export const useStudioState = () => {
     }
     
     setIsLoading(false);
-  }, [cardId, navigate, featuredCards, cardsLoading, convertCardsToCardData]);
+  }, [cardId, navigate, cards, cardsLoading, convertCardsToCardData]);
 
   // Handle card navigation
   const handleCardChange = (index: number) => {

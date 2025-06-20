@@ -655,6 +655,149 @@ export type Database = {
           },
         ]
       }
+      gallery_preferences: {
+        Row: {
+          accessibility_mode: boolean | null
+          ambient_lighting: boolean | null
+          auto_rotate: boolean | null
+          created_at: string | null
+          environment_theme: string | null
+          id: string
+          layout_type: string | null
+          navigation_speed: number | null
+          particle_effects: boolean | null
+          reduced_motion: boolean | null
+          spatial_audio: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          accessibility_mode?: boolean | null
+          ambient_lighting?: boolean | null
+          auto_rotate?: boolean | null
+          created_at?: string | null
+          environment_theme?: string | null
+          id?: string
+          layout_type?: string | null
+          navigation_speed?: number | null
+          particle_effects?: boolean | null
+          reduced_motion?: boolean | null
+          spatial_audio?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          accessibility_mode?: boolean | null
+          ambient_lighting?: boolean | null
+          auto_rotate?: boolean | null
+          created_at?: string | null
+          environment_theme?: string | null
+          id?: string
+          layout_type?: string | null
+          navigation_speed?: number | null
+          particle_effects?: boolean | null
+          reduced_motion?: boolean | null
+          spatial_audio?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gallery_session_participants: {
+        Row: {
+          cursor_position: Json | null
+          id: string
+          is_host: boolean | null
+          joined_at: string | null
+          last_active: string | null
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          cursor_position?: Json | null
+          id?: string
+          is_host?: boolean | null
+          joined_at?: string | null
+          last_active?: string | null
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          cursor_position?: Json | null
+          id?: string
+          is_host?: boolean | null
+          joined_at?: string | null
+          last_active?: string | null
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_session_participants_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "shared_gallery_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_viewing_history: {
+        Row: {
+          cards_viewed: string[] | null
+          collection_id: string
+          created_at: string | null
+          id: string
+          interaction_count: number | null
+          last_card_viewed: string | null
+          layout_used: string
+          session_duration: number | null
+          updated_at: string | null
+          user_id: string
+          viewing_position: Json | null
+        }
+        Insert: {
+          cards_viewed?: string[] | null
+          collection_id: string
+          created_at?: string | null
+          id?: string
+          interaction_count?: number | null
+          last_card_viewed?: string | null
+          layout_used: string
+          session_duration?: number | null
+          updated_at?: string | null
+          user_id: string
+          viewing_position?: Json | null
+        }
+        Update: {
+          cards_viewed?: string[] | null
+          collection_id?: string
+          created_at?: string | null
+          id?: string
+          interaction_count?: number | null
+          last_card_viewed?: string | null
+          layout_used?: string
+          session_duration?: number | null
+          updated_at?: string | null
+          user_id?: string
+          viewing_position?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_viewing_history_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_viewing_history_last_card_viewed_fkey"
+            columns: ["last_card_viewed"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       media: {
         Row: {
           alt_text: string | null
@@ -966,6 +1109,89 @@ export type Database = {
         }
         Relationships: []
       }
+      shader_performance_logs: {
+        Row: {
+          compilation_time_ms: number | null
+          device_info: Json | null
+          fps_average: number | null
+          id: string
+          quality_preset: string | null
+          render_time_ms: number | null
+          shader_type: string | null
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          compilation_time_ms?: number | null
+          device_info?: Json | null
+          fps_average?: number | null
+          id?: string
+          quality_preset?: string | null
+          render_time_ms?: number | null
+          shader_type?: string | null
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          compilation_time_ms?: number | null
+          device_info?: Json | null
+          fps_average?: number | null
+          id?: string
+          quality_preset?: string | null
+          render_time_ms?: number | null
+          shader_type?: string | null
+          timestamp?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      shared_gallery_sessions: {
+        Row: {
+          collection_id: string
+          created_at: string | null
+          current_participants: number | null
+          expires_at: string | null
+          host_user_id: string
+          id: string
+          is_active: boolean | null
+          layout_type: string | null
+          max_participants: number | null
+          session_code: string
+        }
+        Insert: {
+          collection_id: string
+          created_at?: string | null
+          current_participants?: number | null
+          expires_at?: string | null
+          host_user_id: string
+          id?: string
+          is_active?: boolean | null
+          layout_type?: string | null
+          max_participants?: number | null
+          session_code?: string
+        }
+        Update: {
+          collection_id?: string
+          created_at?: string | null
+          current_participants?: number | null
+          expires_at?: string | null
+          host_user_id?: string
+          id?: string
+          is_active?: boolean | null
+          layout_type?: string | null
+          max_participants?: number | null
+          session_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_gallery_sessions_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tags: {
         Row: {
           category: string | null
@@ -987,6 +1213,54 @@ export type Database = {
           id?: string
           name?: string
           usage_count?: number | null
+        }
+        Relationships: []
+      }
+      user_3d_preferences: {
+        Row: {
+          accessibility_mode: boolean | null
+          battery_optimization: boolean | null
+          created_at: string
+          custom_settings: Json | null
+          enable_animations: boolean | null
+          enable_haptics: boolean | null
+          enable_particles: boolean | null
+          enable_shaders: boolean | null
+          enable_sound: boolean | null
+          id: string
+          quality_preset: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accessibility_mode?: boolean | null
+          battery_optimization?: boolean | null
+          created_at?: string
+          custom_settings?: Json | null
+          enable_animations?: boolean | null
+          enable_haptics?: boolean | null
+          enable_particles?: boolean | null
+          enable_shaders?: boolean | null
+          enable_sound?: boolean | null
+          id?: string
+          quality_preset?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accessibility_mode?: boolean | null
+          battery_optimization?: boolean | null
+          created_at?: string
+          custom_settings?: Json | null
+          enable_animations?: boolean | null
+          enable_haptics?: boolean | null
+          enable_particles?: boolean | null
+          enable_shaders?: boolean | null
+          enable_sound?: boolean | null
+          id?: string
+          quality_preset?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

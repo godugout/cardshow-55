@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
@@ -68,9 +67,10 @@ export const useCards = () => {
       
       setDataSource(source);
       setCards(finalCards);
+      // Keep featured cards as first 8 for other parts of the app
       setFeaturedCards(finalCards.slice(0, 8));
       
-      console.log(`📊 Final result: ${finalCards.length} cards from ${source} source(s)`);
+      console.log(`📊 Final result: ${finalCards.length} total cards, ${finalCards.slice(0, 8).length} featured from ${source} source(s)`);
       
       return finalCards;
     } catch (error) {
@@ -223,8 +223,8 @@ export const useCards = () => {
   }, [user?.id]);
 
   return {
-    cards,
-    featuredCards,
+    cards, // All cards - now available for Studio
+    featuredCards, // First 8 cards - for other parts of the app
     userCards,
     loading,
     dataSource,
