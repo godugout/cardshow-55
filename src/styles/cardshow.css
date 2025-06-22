@@ -17,6 +17,21 @@
   animation: scale-in 0.3s ease-out;
 }
 
+/* Card flip animation */
+@keyframes card-flip {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(180deg); }
+}
+
+.card-flip {
+  animation: card-flip 0.6s ease-in-out;
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
 /* Touch feedback */
 .touch-feedback {
   transition: transform 0.1s ease;
@@ -24,6 +39,15 @@
 
 .touch-feedback:active {
   transform: scale(0.95);
+}
+
+/* Enhanced touch target */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Smooth scrolling for mobile */
@@ -51,6 +75,41 @@
 .card-hover-animation:hover {
   transform: translateY(-4px) scale(1.02);
 }
+
+/* Pinch to zoom support */
+.pinch-zoom {
+  touch-action: pinch-zoom;
+}
+
+/* Gesture hint overlay */
+.gesture-hint {
+  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Floating tool palette */
+.floating-palette {
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Canvas drawing area */
+.creation-canvas {
+  touch-action: none;
+  user-select: none;
+}
+
+/* Tool category sections */
+.tool-category {
+  border-radius: 8px;
+  background: rgba(45, 45, 45, 0.5);
+}
+
+/* Rarity glow effects */
+.rarity-glow-common { box-shadow: 0 0 20px rgba(156, 163, 175, 0.2); }
+.rarity-glow-rare { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+.rarity-glow-epic { box-shadow: 0 0 20px rgba(147, 51, 234, 0.4); }
+.rarity-glow-legendary { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
 
 /* Bottom navigation safe area */
 .bottom-nav-safe {
@@ -84,11 +143,51 @@
   transform: translateZ(0);
 }
 
-/* Touch target improvements */
-.touch-target {
-  min-height: 44px;
-  min-width: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Advanced scroll behaviors */
+.momentum-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Template selection animations */
+.template-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.template-hover:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 200, 81, 0.2);
+}
+
+/* Creation studio specific styles */
+.studio-container {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+.tool-button-active {
+  background: linear-gradient(135deg, #00C851 0%, #00a844 100%);
+  box-shadow: 0 4px 12px rgba(0, 200, 81, 0.3);
+}
+
+/* Drag and drop effects */
+.drag-over {
+  border-color: #00C851;
+  background-color: rgba(0, 200, 81, 0.1);
+}
+
+/* Camera overlay styles */
+.camera-overlay {
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+/* Voice input indicator */
+@keyframes voice-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.voice-recording {
+  animation: voice-pulse 1s ease-in-out infinite;
+  background: linear-gradient(45deg, #00C851, #00a844);
 }

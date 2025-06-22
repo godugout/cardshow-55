@@ -1,137 +1,142 @@
-
-import React, { useState, useCallback, useEffect } from 'react';
-import { CardGrid } from '@/components/cardshow/CardGrid';
-import { CardDetailModal } from '@/components/cardshow/CardDetailModal';
-import { PullToRefresh } from '@/components/mobile/PullToRefresh';
-import { Card } from '@/types/cardshow';
+import React, { useState, useCallback } from 'react';
+import { Search, Filter, Grid3X3, List } from 'lucide-react';
 import { mockCards } from '@/data/mockCards';
-import { RefreshCw, Search, Filter } from 'lucide-react';
+import { CardGrid } from '@/components/cardshow/CardGrid';
+import { AdvancedCardItem } from '@/components/cardshow/AdvancedCardItem';
+import { CardDetailModal } from '@/components/cardshow/CardDetailModal';
+import { Card } from '@/types/cardshow';
 
 export const CardshowApp: React.FC = () => {
-  const [cards, setCards] = useState<Card[]>(mockCards);
+  const [cards] = useState(mockCards);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedRarity, setSelectedRarity] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-  const handleRefresh = useCallback(async () => {
-    setLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setCards([...mockCards]);
-    setLoading(false);
+  const filteredCards = cards.filter(card => {
+    const matchesSearch = card.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         card.type.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesRarity = selectedRarity === 'all' || card.rarity === selectedRarity;
+    return matchesSearch && matchesRarity;
+  });
+
+  const handleFavorite = useCallback((cardId: string) => {
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(cardId)) {
+        newFavorites.delete(cardId);
+      } else {
+        newFavorites.add(cardId);
+      }
+      return newFavorites;
+    });
   }, []);
 
-  const handleCardSelect = useCallback((card: Card) => {
-    setSelectedCard(card);
-    setIsModalOpen(true);
+  const handleTrade = useCallback((cardId: string) => {
+    console.log('Trade card:', cardId);
+    // Navigate to trade page with pre-selected card
   }, []);
 
-  const handleCardFavorite = useCallback((cardId: string) => {
-    setCards(prevCards => 
-      prevCards.map(card => 
-        card.id === cardId 
-          ? { ...card, favorite: !card.favorite }
-          : card
-      )
-    );
-  }, []);
-
-  const handleModalClose = useCallback(() => {
-    setIsModalOpen(false);
-    setTimeout(() => setSelectedCard(null), 300);
-  }, []);
-
-  const handleShare = useCallback((card: Card) => {
-    if (navigator.share) {
+  const handleShare = useCallback((cardId: string) => {
+    const card = cards.find(c => c.id === cardId);
+    if (card && navigator.share) {
       navigator.share({
         title: card.name,
         text: `Check out this ${card.rarity} ${card.type} card!`,
         url: window.location.href
       });
-    } else {
-      // Fallback for browsers without native share
-      navigator.clipboard.writeText(`${card.name} - ${window.location.href}`);
     }
-  }, []);
+  }, [cards]);
 
-  const filteredCards = cards.filter(card =>
-    card.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    card.type.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleCompare = useCallback((card: Card) => {
+    console.log('Compare card:', card);
+    // Implement comparison feature
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-[#1a1a1a]/95 backdrop-blur-lg border-b border-gray-700">
-        <div className="p-4">
-          <div className="flex items-center gap-3 mb-4">
-            <h1 className="text-2xl font-bold text-white">Cardshow</h1>
-            <button
-              onClick={handleRefresh}
-              disabled={loading}
-              className="ml-auto p-2 text-gray-400 hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-            >
-              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
-
-          {/* Search bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+      <div className="bg-[#1a1a1a] border-b border-gray-700 p-4 sticky top-0 z-40">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Search cards..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#2d2d2d] text-white pl-10 pr-12 py-3 rounded-lg border border-gray-600 focus:border-[#00C851] focus:outline-none transition-colors"
+              className="w-full bg-[#2d2d2d] border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#00C851] touch-target"
             />
-            <button
-              onClick={() => setFilterOpen(!filterOpen)}
-              className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-md transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center ${
-                filterOpen ? 'bg-[#00C851] text-black' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              <Filter className="w-4 h-4" />
-            </button>
+          </div>
+          <button className="bg-[#2d2d2d] border border-gray-600 rounded-lg p-3 text-gray-400 hover:text-white transition-colors touch-target">
+            <Filter className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Filters */}
+        <div className="flex items-center justify-between">
+          <div className="flex space-x-2 overflow-x-auto">
+            {['all', 'common', 'rare', 'epic', 'legendary'].map((rarity) => (
+              <button
+                key={rarity}
+                onClick={() => setSelectedRarity(rarity)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors touch-target ${
+                  selectedRarity === rarity
+                    ? 'bg-[#00C851] text-black'
+                    : 'bg-[#2d2d2d] text-gray-400 hover:text-white'
+                }`}
+              >
+                {rarity.charAt(0).toUpperCase() + rarity.slice(1)}
+              </button>
+            ))}
           </div>
 
-          {/* Filter options */}
-          {filterOpen && (
-            <div className="mt-3 p-3 bg-[#2d2d2d] rounded-lg border border-gray-600">
-              <p className="text-gray-300 text-sm font-medium mb-2">Filter by rarity:</p>
-              <div className="flex flex-wrap gap-2">
-                {['all', 'common', 'rare', 'epic', 'legendary'].map((rarity) => (
-                  <button
-                    key={rarity}
-                    className="px-3 py-1 bg-gray-600 text-white text-sm rounded-full hover:bg-gray-500 transition-colors capitalize"
-                  >
-                    {rarity}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          <div className="flex gap-2 ml-4">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-lg transition-colors touch-target ${
+                viewMode === 'grid' ? 'bg-[#00C851] text-black' : 'bg-[#2d2d2d] text-gray-400'
+              }`}
+            >
+              <Grid3X3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-lg transition-colors touch-target ${
+                viewMode === 'list' ? 'bg-[#00C851] text-black' : 'bg-[#2d2d2d] text-gray-400'
+              }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Card grid with pull-to-refresh */}
-      <PullToRefresh onRefresh={handleRefresh}>
-        <CardGrid
-          cards={filteredCards}
-          onCardSelect={handleCardSelect}
-          onCardFavorite={handleCardFavorite}
-          loading={loading}
-        />
-      </PullToRefresh>
+      {/* Enhanced Card Grid */}
+      <div className="p-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {filteredCards.map((card) => (
+            <AdvancedCardItem
+              key={card.id}
+              card={{ ...card, favorite: favorites.has(card.id) }}
+              onView={setSelectedCard}
+              onFavorite={handleFavorite}
+              onTrade={handleTrade}
+              onShare={handleShare}
+              onCompare={handleCompare}
+            />
+          ))}
+        </div>
+      </div>
 
-      {/* Card detail modal */}
+      {/* Card Detail Modal */}
       <CardDetailModal
         card={selectedCard}
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onFavorite={handleCardFavorite}
+        isOpen={!!selectedCard}
+        onClose={() => setSelectedCard(null)}
+        onFavorite={handleFavorite}
+        onTrade={handleTrade}
         onShare={handleShare}
       />
     </div>
