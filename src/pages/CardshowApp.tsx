@@ -10,14 +10,14 @@ import { CardDetailModal } from '@/components/cardshow/CardDetailModal';
 import { MobileCreationStudio } from '@/components/cardshow/creation/MobileCreationStudio';
 import type { CardData } from '@/hooks/useCardEditor';
 
-// Mock card data
-const mockCards = [
+// Mock card data that matches CardData interface
+const mockCards: CardData[] = [
   {
     id: '1',
     title: 'Lightning Dragon',
     description: 'A legendary dragon with the power of thunder',
     image_url: '/lovable-uploads/069c8fac-95c2-4bdf-8e53-f3a732cd5b41.png',
-    rarity: 'Legendary',
+    rarity: 'legendary',
     design_metadata: {
       effects: {
         holographic: true,
@@ -25,16 +25,14 @@ const mockCards = [
         foil: false,
         intensity: 0.8
       }
-    },
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    }
   },
   {
     id: '2',
     title: 'Ice Phoenix',
     description: 'A mystical bird of ice and snow',
     image_url: '/lovable-uploads/22ce728b-dbf0-4534-8ee2-2c79bbe6c0de.png',
-    rarity: 'Rare',
+    rarity: 'rare',
     design_metadata: {
       effects: {
         holographic: false,
@@ -42,16 +40,14 @@ const mockCards = [
         foil: false,
         intensity: 0.6
       }
-    },
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    }
   },
   {
     id: '3',
     title: 'Fire Sprite',
     description: 'A small but fierce fire elemental',
     image_url: '/lovable-uploads/25cbcac9-64c0-4969-9baa-7a3fdf9eb00a.png',
-    rarity: 'Common',
+    rarity: 'common',
     design_metadata: {
       effects: {
         holographic: false,
@@ -59,11 +55,9 @@ const mockCards = [
         foil: true,
         intensity: 0.4
       }
-    },
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    }
   }
-] as CardData[];
+];
 
 interface Card {
   id: string;
@@ -76,14 +70,13 @@ interface Card {
 
 export const CardshowApp: React.FC = () => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-  const [showCreationStudio, setShowCreationStudio] = useState(false);
 
   // Convert CardData to Card for modal
   const convertToCard = (cardData: CardData): Card => ({
     id: cardData.id,
     title: cardData.title,
     image: cardData.image_url || '/placeholder-card.jpg',
-    rarity: cardData.rarity || 'Common',
+    rarity: cardData.rarity || 'common',
     description: cardData.description
   });
 
@@ -145,13 +138,7 @@ export const CardshowApp: React.FC = () => {
         <Route
           path="/create"
           element={
-            <MobileCreationStudio
-              onClose={() => setShowCreationStudio(false)}
-              onSave={(cardData) => {
-                console.log('Card created:', cardData);
-                setShowCreationStudio(false);
-              }}
-            />
+            <MobileCreationStudio />
           }
         />
         

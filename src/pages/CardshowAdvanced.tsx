@@ -9,7 +9,7 @@ const mockCard: CardData = {
   title: 'Lightning Dragon',
   description: 'A legendary dragon card with stunning holographic effects',
   image_url: '/lovable-uploads/069c8fac-95c2-4bdf-8e53-f3a732cd5b41.png',
-  rarity: 'Legendary',
+  rarity: 'legendary',
   design_metadata: {
     effects: {
       holographic: true,
