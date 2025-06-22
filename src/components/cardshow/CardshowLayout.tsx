@@ -1,13 +1,16 @@
 
 import React from 'react';
-import { Outlet } from 'react-router-dom';
 import { CardshowBottomNav } from './CardshowBottomNav';
 
-export const CardshowLayout: React.FC = () => {
+interface CardshowLayoutProps {
+  children: React.ReactNode;
+}
+
+export const CardshowLayout: React.FC<CardshowLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-[#1a1a1a]">
       <main className="pb-20">
-        <Outlet />
+        {children}
       </main>
       <CardshowBottomNav />
     </div>

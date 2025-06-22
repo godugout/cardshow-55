@@ -18,6 +18,14 @@ const mockCards: CardData[] = [
     description: 'A legendary dragon with the power of thunder',
     image_url: '/lovable-uploads/069c8fac-95c2-4bdf-8e53-f3a732cd5b41.png',
     rarity: 'legendary',
+    tags: ['legendary', 'dragon', 'fantasy'],
+    visibility: 'public',
+    creator_attribution: 'Demo Creator',
+    publishing_options: {
+      allow_downloads: true,
+      allow_prints: false,
+      license_type: 'standard'
+    },
     design_metadata: {
       effects: {
         holographic: true,
@@ -33,6 +41,14 @@ const mockCards: CardData[] = [
     description: 'A mystical bird of ice and snow',
     image_url: '/lovable-uploads/22ce728b-dbf0-4534-8ee2-2c79bbe6c0de.png',
     rarity: 'rare',
+    tags: ['rare', 'phoenix', 'ice'],
+    visibility: 'public',
+    creator_attribution: 'Demo Creator',
+    publishing_options: {
+      allow_downloads: true,
+      allow_prints: false,
+      license_type: 'standard'
+    },
     design_metadata: {
       effects: {
         holographic: false,
@@ -48,6 +64,14 @@ const mockCards: CardData[] = [
     description: 'A small but fierce fire elemental',
     image_url: '/lovable-uploads/25cbcac9-64c0-4969-9baa-7a3fdf9eb00a.png',
     rarity: 'common',
+    tags: ['common', 'sprite', 'fire'],
+    visibility: 'public',
+    creator_attribution: 'Demo Creator',
+    publishing_options: {
+      allow_downloads: true,
+      allow_prints: false,
+      license_type: 'standard'
+    },
     design_metadata: {
       effects: {
         holographic: false,

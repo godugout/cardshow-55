@@ -10,6 +10,14 @@ const mockCard: CardData = {
   description: 'A legendary dragon card with stunning holographic effects',
   image_url: '/lovable-uploads/069c8fac-95c2-4bdf-8e53-f3a732cd5b41.png',
   rarity: 'legendary',
+  tags: ['legendary', 'dragon', 'fantasy'],
+  visibility: 'public',
+  creator_attribution: 'Demo Creator',
+  publishing_options: {
+    allow_downloads: true,
+    allow_prints: false,
+    license_type: 'standard'
+  },
   design_metadata: {
     effects: {
       holographic: true,
@@ -17,9 +25,7 @@ const mockCard: CardData = {
       foil: false,
       intensity: 0.8
     }
-  },
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
+  }
 };
 
 export const CardshowAdvanced: React.FC = () => {
