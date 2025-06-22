@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -29,52 +29,50 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <Router>
-            <div className="App">
-              <NetworkStatus />
-              <Routes>
-                {/* Public routes */}
-                <Route path="/auth/*" element={<AuthPage />} />
-                
-                {/* Protected main application routes */}
-                <Route
-                  path="/*"
-                  element={
-                    <ProtectedRoute>
-                      <MainLayout>
-                        <Routes>
-                          {/* Default redirect to cards */}
-                          <Route path="/" element={<Navigate to="/cards" replace />} />
-                          
-                          {/* Cards management */}
-                          <Route path="/cards/*" element={<CardsPage />} />
-                          
-                          {/* Social feed */}
-                          <Route path="/feed" element={<FeedPage />} />
-                          
-                          {/* Cardshow mobile app */}
-                          <Route path="/cardshow/*" element={<CardshowApp />} />
-                          
-                          {/* Admin/Backoffice */}
-                          <Route path="/admin/*" element={<BackofficeLayout />} />
-                          
-                          {/* Catch all route */}
-                          <Route path="*" element={<Navigate to="/cards" replace />} />
-                        </Routes>
-                      </MainLayout>
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
+          <div className="App">
+            <NetworkStatus />
+            <Routes>
+              {/* Public routes */}
+              <Route path="/auth/*" element={<AuthPage />} />
               
-              <Toaster 
-                position="top-right" 
-                expand={true}
-                richColors
-                closeButton
+              {/* Protected main application routes */}
+              <Route
+                path="/*"
+                element={
+                  <ProtectedRoute>
+                    <MainLayout>
+                      <Routes>
+                        {/* Default redirect to cards */}
+                        <Route path="/" element={<Navigate to="/cards" replace />} />
+                        
+                        {/* Cards management */}
+                        <Route path="/cards/*" element={<CardsPage />} />
+                        
+                        {/* Social feed */}
+                        <Route path="/feed" element={<FeedPage />} />
+                        
+                        {/* Cardshow mobile app */}
+                        <Route path="/cardshow/*" element={<CardshowApp />} />
+                        
+                        {/* Admin/Backoffice */}
+                        <Route path="/admin/*" element={<BackofficeLayout />} />
+                        
+                        {/* Catch all route */}
+                        <Route path="*" element={<Navigate to="/cards" replace />} />
+                      </Routes>
+                    </MainLayout>
+                  </ProtectedRoute>
+                }
               />
-            </div>
-          </Router>
+            </Routes>
+            
+            <Toaster 
+              position="top-right" 
+              expand={true}
+              richColors
+              closeButton
+            />
+          </div>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

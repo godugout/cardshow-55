@@ -12,11 +12,14 @@ const mockCard: CardData = {
   rarity: 'legendary',
   tags: ['legendary', 'dragon', 'fantasy'],
   visibility: 'public',
-  creator_attribution: 'Demo Creator',
+  creator_attribution: {
+    name: 'Demo Creator',
+    id: 'demo-creator-1'
+  },
   publishing_options: {
-    allow_downloads: true,
-    allow_prints: false,
-    license_type: 'standard'
+    downloadable: true,
+    printable: false,
+    license: 'standard'
   },
   design_metadata: {
     effects: {
