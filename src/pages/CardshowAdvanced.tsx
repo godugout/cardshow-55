@@ -13,13 +13,13 @@ const mockCard: CardData = {
   tags: ['legendary', 'dragon', 'fantasy'],
   visibility: 'public',
   creator_attribution: {
-    name: 'Demo Creator',
-    id: 'demo-creator-1'
+    creator_name: 'Demo Creator',
+    creator_id: 'demo-creator-1'
   },
   publishing_options: {
-    downloadable: true,
-    printable: false,
-    license: 'standard'
+    marketplace_listing: true,
+    crd_catalog_inclusion: true,
+    print_available: false
   },
   design_metadata: {
     effects: {

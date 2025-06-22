@@ -9,6 +9,7 @@ import { CardGrid } from '@/components/cardshow/CardGrid';
 import { CardDetailModal } from '@/components/cardshow/CardDetailModal';
 import { MobileCreationStudio } from '@/components/cardshow/creation/MobileCreationStudio';
 import type { CardData } from '@/hooks/useCardEditor';
+import type { Card } from '@/types/cardshow';
 
 // Mock card data that matches CardData interface
 const mockCards: CardData[] = [
@@ -21,13 +22,13 @@ const mockCards: CardData[] = [
     tags: ['legendary', 'dragon', 'fantasy'],
     visibility: 'public',
     creator_attribution: {
-      name: 'Demo Creator',
-      id: 'demo-creator-1'
+      creator_name: 'Demo Creator',
+      creator_id: 'demo-creator-1'
     },
     publishing_options: {
-      downloadable: true,
-      printable: false,
-      license: 'standard'
+      marketplace_listing: true,
+      crd_catalog_inclusion: true,
+      print_available: false
     },
     design_metadata: {
       effects: {
@@ -47,13 +48,13 @@ const mockCards: CardData[] = [
     tags: ['rare', 'phoenix', 'ice'],
     visibility: 'public',
     creator_attribution: {
-      name: 'Demo Creator',
-      id: 'demo-creator-1'
+      creator_name: 'Demo Creator',
+      creator_id: 'demo-creator-1'
     },
     publishing_options: {
-      downloadable: true,
-      printable: false,
-      license: 'standard'
+      marketplace_listing: true,
+      crd_catalog_inclusion: true,
+      print_available: false
     },
     design_metadata: {
       effects: {
@@ -73,13 +74,13 @@ const mockCards: CardData[] = [
     tags: ['common', 'sprite', 'fire'],
     visibility: 'public',
     creator_attribution: {
-      name: 'Demo Creator',
-      id: 'demo-creator-1'
+      creator_name: 'Demo Creator',
+      creator_id: 'demo-creator-1'
     },
     publishing_options: {
-      downloadable: true,
-      printable: false,
-      license: 'standard'
+      marketplace_listing: true,
+      crd_catalog_inclusion: true,
+      print_available: false
     },
     design_metadata: {
       effects: {
@@ -92,45 +93,40 @@ const mockCards: CardData[] = [
   }
 ];
 
-interface Card {
-  id: string;
-  title: string;
-  image: string;
-  rarity: string;
-  price?: number;
-  description?: string;
-}
-
 export const CardshowApp: React.FC = () => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
-  // Convert CardData to Card for modal
+  // Convert CardData to Card for modal and grid components
   const convertToCard = (cardData: CardData): Card => ({
-    id: cardData.id,
-    title: cardData.title,
+    id: cardData.id || '',
+    name: cardData.title,
     image: cardData.image_url || '/placeholder-card.jpg',
-    rarity: cardData.rarity || 'common',
+    rarity: cardData.rarity as Card['rarity'],
+    type: 'creature', // Default type since CardData doesn't have this
     description: cardData.description
   });
 
-  const handleCardSelect = (card: CardData) => {
-    setSelectedCard(convertToCard(card));
+  // Convert CardData array to Card array
+  const convertedCards: Card[] = mockCards.map(convertToCard);
+
+  const handleCardSelect = (card: Card) => {
+    setSelectedCard(card);
   };
 
-  const handleCardTrade = (card: CardData) => {
-    console.log('Trading card:', card.title);
+  const handleCardTrade = (card: Card) => {
+    console.log('Trading card:', card.name);
     // Implement trading logic
   };
 
-  const handleCardShare = (card: CardData) => {
+  const handleCardShare = (card: Card) => {
     if (navigator.share) {
       navigator.share({
-        title: card.title,
-        text: `Check out this amazing card: ${card.title}`,
+        title: card.name,
+        text: `Check out this amazing card: ${card.name}`,
         url: window.location.href
       });
     } else {
-      navigator.clipboard.writeText(`Check out ${card.title}!`);
+      navigator.clipboard.writeText(`Check out ${card.name}!`);
     }
   };
 
@@ -143,7 +139,7 @@ export const CardshowApp: React.FC = () => {
           element={
             <>
               <CardGrid
-                cards={mockCards}
+                cards={convertedCards}
                 onCardSelect={handleCardSelect}
                 onCardTrade={handleCardTrade}
                 onCardShare={handleCardShare}
@@ -153,8 +149,8 @@ export const CardshowApp: React.FC = () => {
                 <CardDetailModal
                   card={selectedCard}
                   onClose={() => setSelectedCard(null)}
-                  onTrade={(card) => console.log('Trading:', card.title)}
-                  onShare={(card) => handleCardShare(mockCards.find(c => c.id === card.id)!)}
+                  onTrade={(card) => console.log('Trading:', card.name)}
+                  onShare={(card) => handleCardShare(card)}
                 />
               )}
             </>

@@ -1,31 +1,25 @@
 
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/features/auth/providers/AuthProvider';
-import { LoadingState } from '@/components/common/LoadingState';
+import { Navigate } from 'react-router-dom';
+import { useAuthState } from '@/features/auth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requireAuth?: boolean;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  requireAuth = true 
-}) => {
-  const { user, loading } = useAuth();
-  const location = useLocation();
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const { user, loading } = useAuthState();
 
   if (loading) {
-    return <LoadingState message="Authenticating..." fullPage size="lg" />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
   }
 
-  if (requireAuth && !user) {
-    return <Navigate to="/auth/signin" state={{ from: location }} replace />;
-  }
-
-  if (!requireAuth && user) {
-    return <Navigate to="/" replace />;
+  if (!user) {
+    return <Navigate to="/auth/signin" replace />;
   }
 
   return <>{children}</>;

@@ -6,6 +6,8 @@ import { CardItem } from './CardItem';
 interface CardGridProps {
   cards: Card[];
   onCardSelect?: (card: Card) => void;
+  onCardTrade?: (card: Card) => void;
+  onCardShare?: (card: Card) => void;
   onCardFavorite?: (cardId: string) => void;
   loading?: boolean;
 }
@@ -13,6 +15,8 @@ interface CardGridProps {
 export const CardGrid: React.FC<CardGridProps> = ({
   cards,
   onCardSelect,
+  onCardTrade,
+  onCardShare,
   onCardFavorite,
   loading = false
 }) => {
