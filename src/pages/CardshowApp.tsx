@@ -33,21 +33,20 @@ export const CardshowApp: React.FC = () => {
     });
   }, []);
 
-  const handleTrade = useCallback((cardId: string) => {
-    console.log('Trade card:', cardId);
+  const handleTrade = useCallback((card: Card) => {
+    console.log('Trade card:', card.id);
     // Navigate to trade page with pre-selected card
   }, []);
 
-  const handleShare = useCallback((cardId: string) => {
-    const card = cards.find(c => c.id === cardId);
-    if (card && navigator.share) {
+  const handleShare = useCallback((card: Card) => {
+    if (navigator.share) {
       navigator.share({
         title: card.name,
         text: `Check out this ${card.rarity} ${card.type} card!`,
         url: window.location.href
       });
     }
-  }, [cards]);
+  }, []);
 
   const handleCompare = useCallback((card: Card) => {
     console.log('Compare card:', card);
