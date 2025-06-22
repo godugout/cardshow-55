@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Search, Plus, MessageSquare, User, ShoppingBag } from 'lucide-react';
+import { Home, Search, Plus, MessageSquare, User, ShoppingBag, Sparkles } from 'lucide-react';
 
 export const CardshowBottomNav: React.FC = () => {
   const location = useLocation();
@@ -12,7 +12,7 @@ export const CardshowBottomNav: React.FC = () => {
     { icon: ShoppingBag, label: 'Market', path: '/cardshow/marketplace' },
     { icon: Plus, label: 'Create', path: '/cardshow/create' },
     { icon: MessageSquare, label: 'Trade', path: '/cardshow/trade' },
-    { icon: User, label: 'Profile', path: '/cardshow/profile' },
+    { icon: Sparkles, label: 'Pro', path: '/cardshow/advanced' },
   ];
 
   return (

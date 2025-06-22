@@ -1,81 +1,83 @@
 
-import React, { useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { OverlayProvider } from '@/components/overlay/OverlayProvider';
-import { MainLayout } from '@/components/layout/MainLayout';
-import { CardshowLayout } from '@/components/cardshow/CardshowLayout';
-import Index from '@/pages/Index';
-import Gallery from '@/pages/Gallery';
-import Profile from '@/pages/Profile';
-import Settings from '@/pages/Settings';
-import Studio from '@/pages/Studio';
-import Collections from '@/pages/Collections';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'sonner';
+import { AuthProvider } from '@/lib/auth-context';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AuthPage } from '@/components/auth/AuthPage';
-import { UnifiedCardCreator } from '@/components/creator/UnifiedCardCreator';
-import { BackofficeLayout } from '@/components/backoffice/BackofficeLayout';
+import { MainLayout } from '@/components/layout/MainLayout';
 import { CardshowApp } from '@/pages/CardshowApp';
-import { CardshowCreate } from '@/pages/CardshowCreate';
-import { CardshowTrade } from '@/pages/CardshowTrade';
-import { CardshowProfile } from '@/pages/CardshowProfile';
+import { CardsPage } from '@/components/cards/CardsPage';
+import { FeedPage } from '@/components/feed/FeedPage';
+import { BackofficeLayout } from '@/components/backoffice/BackofficeLayout';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { NetworkStatus } from '@/components/common/NetworkStatus';
+import './App.css';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
-  const [showBackoffice, setShowBackoffice] = useState(false);
-
-  if (showBackoffice) {
-    return (
-      <OverlayProvider>
-        <BackofficeLayout />
-      </OverlayProvider>
-    );
-  }
-
   return (
-    <OverlayProvider>
-      <div className="min-h-screen bg-crd-darkest">
-        <Routes>
-          {/* Original CRD routes */}
-          <Route path="/" element={<MainLayout />}>
-            <Route index element={<Index />} />
-            <Route path="studio" element={<Studio />} />
-            <Route path="studio/:cardId" element={<Studio />} />
-            <Route path="studio/:cardId/preset/:presetId" element={<Studio />} />
-            
-            {/* Simplified card creation routes */}
-            <Route path="create" element={<UnifiedCardCreator />} />
-            <Route path="cards/create" element={<Navigate to="/create" replace />} />
-            <Route path="cards" element={<Navigate to="/create" replace />} />
-            
-            <Route path="gallery" element={<Gallery />} />
-            <Route path="collections" element={<Collections />} />
-            <Route path="auth" element={<AuthPage />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<Settings />} />
-            
-            {/* Hidden backoffice route */}
-            <Route path="admin/backoffice" element={<div />} />
-          </Route>
-
-          {/* New Cardshow mobile-first app routes */}
-          <Route path="/cardshow" element={<CardshowLayout />}>
-            <Route index element={<CardshowApp />} />
-            <Route path="create" element={<CardshowCreate />} />
-            <Route path="trade" element={<CardshowTrade />} />
-            <Route path="profile" element={<CardshowProfile />} />
-          </Route>
-        </Routes>
-        
-        {/* Global keyboard shortcut for backoffice access */}
-        <div
-          onKeyDown={(e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'B') {
-              setShowBackoffice(true);
-            }
-          }}
-          style={{ position: 'fixed', top: 0, left: 0, width: 1, height: 1, opacity: 0 }}
-          tabIndex={-1}
-        />
-      </div>
-    </OverlayProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Router>
+            <div className="App">
+              <NetworkStatus />
+              <Routes>
+                {/* Public routes */}
+                <Route path="/auth/*" element={<AuthPage />} />
+                
+                {/* Protected main application routes */}
+                <Route
+                  path="/*"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <Routes>
+                          {/* Default redirect to cards */}
+                          <Route path="/" element={<Navigate to="/cards" replace />} />
+                          
+                          {/* Cards management */}
+                          <Route path="/cards/*" element={<CardsPage />} />
+                          
+                          {/* Social feed */}
+                          <Route path="/feed" element={<FeedPage />} />
+                          
+                          {/* Cardshow mobile app */}
+                          <Route path="/cardshow/*" element={<CardshowApp />} />
+                          
+                          {/* Admin/Backoffice */}
+                          <Route path="/admin/*" element={<BackofficeLayout />} />
+                          
+                          {/* Catch all route */}
+                          <Route path="*" element={<Navigate to="/cards" replace />} />
+                        </Routes>
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+              
+              <Toaster 
+                position="top-right" 
+                expand={true}
+                richColors
+                closeButton
+              />
+            </div>
+          </Router>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

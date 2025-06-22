@@ -1,3 +1,4 @@
+
 export { CardshowLayout } from './CardshowLayout';
 export { CardshowBottomNav } from './CardshowBottomNav';
 export { CardGrid } from './CardGrid';
@@ -18,3 +19,9 @@ export { MarketplaceFilters } from './marketplace/MarketplaceFilters';
 export { MarketplaceGrid } from './marketplace/MarketplaceGrid';
 export { TrendingCards } from './marketplace/TrendingCards';
 export { QuickActions } from './marketplace/QuickActions';
+
+// Advanced platform components
+export { Advanced3DCardViewer } from '../viewer/Advanced3DCardViewer';
+export { CollectionAnalytics } from '../analytics/CollectionAnalytics';
+export { AdvancedTradingTools } from '../trading/AdvancedTradingTools';
+export { AdvancedCardPreview } from '../platform/AdvancedCardPreview';
