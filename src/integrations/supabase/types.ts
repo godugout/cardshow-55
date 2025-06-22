@@ -798,6 +798,153 @@ export type Database = {
           },
         ]
       }
+      marketplace_listings: {
+        Row: {
+          auction_end_time: string | null
+          card_id: string
+          condition: string
+          created_at: string | null
+          description: string | null
+          estimated_delivery: string | null
+          featured: boolean | null
+          id: string
+          listing_type: string
+          location: string | null
+          price: number
+          quantity: number
+          reserve_price: number | null
+          seller_id: string
+          shipping_cost: number | null
+          status: string
+          updated_at: string | null
+          views: number | null
+          watchers_count: number | null
+        }
+        Insert: {
+          auction_end_time?: string | null
+          card_id: string
+          condition?: string
+          created_at?: string | null
+          description?: string | null
+          estimated_delivery?: string | null
+          featured?: boolean | null
+          id?: string
+          listing_type?: string
+          location?: string | null
+          price: number
+          quantity?: number
+          reserve_price?: number | null
+          seller_id: string
+          shipping_cost?: number | null
+          status?: string
+          updated_at?: string | null
+          views?: number | null
+          watchers_count?: number | null
+        }
+        Update: {
+          auction_end_time?: string | null
+          card_id?: string
+          condition?: string
+          created_at?: string | null
+          description?: string | null
+          estimated_delivery?: string | null
+          featured?: boolean | null
+          id?: string
+          listing_type?: string
+          location?: string | null
+          price?: number
+          quantity?: number
+          reserve_price?: number | null
+          seller_id?: string
+          shipping_cost?: number | null
+          status?: string
+          updated_at?: string | null
+          views?: number | null
+          watchers_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_listings_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_offers: {
+        Row: {
+          amount: number
+          buyer_id: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          listing_id: string
+          message: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          buyer_id: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          listing_id: string
+          message?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          buyer_id?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          listing_id?: string
+          message?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_offers_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_watchers: {
+        Row: {
+          created_at: string | null
+          id: string
+          listing_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          listing_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          listing_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_watchers_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       media: {
         Row: {
           alt_text: string | null
@@ -1079,6 +1226,51 @@ export type Database = {
           },
         ]
       }
+      seller_profiles: {
+        Row: {
+          business_type: string | null
+          charges_enabled: boolean | null
+          created_at: string | null
+          id: string
+          payout_enabled: boolean | null
+          rating: number | null
+          stripe_account_id: string | null
+          total_revenue: number | null
+          total_sales: number | null
+          updated_at: string | null
+          user_id: string
+          verification_status: string | null
+        }
+        Insert: {
+          business_type?: string | null
+          charges_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          payout_enabled?: boolean | null
+          rating?: number | null
+          stripe_account_id?: string | null
+          total_revenue?: number | null
+          total_sales?: number | null
+          updated_at?: string | null
+          user_id: string
+          verification_status?: string | null
+        }
+        Update: {
+          business_type?: string | null
+          charges_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          payout_enabled?: boolean | null
+          rating?: number | null
+          stripe_account_id?: string | null
+          total_revenue?: number | null
+          total_sales?: number | null
+          updated_at?: string | null
+          user_id?: string
+          verification_status?: string | null
+        }
+        Relationships: []
+      }
       sets: {
         Row: {
           created_at: string | null
@@ -1216,6 +1408,65 @@ export type Database = {
         }
         Relationships: []
       }
+      transactions: {
+        Row: {
+          amount: number
+          buyer_id: string
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          listing_id: string
+          platform_fee: number
+          refunded_at: string | null
+          seller_id: string
+          shipping_info: Json | null
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_transfer_id: string | null
+          tracking_number: string | null
+        }
+        Insert: {
+          amount: number
+          buyer_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          listing_id: string
+          platform_fee: number
+          refunded_at?: string | null
+          seller_id: string
+          shipping_info?: Json | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_transfer_id?: string | null
+          tracking_number?: string | null
+        }
+        Update: {
+          amount?: number
+          buyer_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          listing_id?: string
+          platform_fee?: number
+          refunded_at?: string | null
+          seller_id?: string
+          shipping_info?: Json | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_transfer_id?: string | null
+          tracking_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_3d_preferences: {
         Row: {
           accessibility_mode: boolean | null
@@ -1269,6 +1520,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_platform_fee: {
+        Args: { amount: number }
+        Returns: number
+      }
       create_collection_from_template: {
         Args: { template_id: string; collection_title: string; user_id: string }
         Returns: string
@@ -1286,6 +1541,10 @@ export type Database = {
           completion_percentage: number
           last_updated: string
         }[]
+      }
+      increment_listing_views: {
+        Args: { listing_uuid: string }
+        Returns: undefined
       }
       is_admin: {
         Args: { user_uuid?: string }
