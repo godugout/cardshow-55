@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Heart, Star, Share2, ShoppingCart } from 'lucide-react';
 import { Card } from '@/types/cardshow';
@@ -7,8 +6,8 @@ import { useAdvancedTouch } from '@/hooks/useAdvancedTouch';
 interface AdvancedCardItemProps {
   card: Card;
   onFavorite?: (cardId: string) => void;
-  onTrade?: (cardId: string) => void;
-  onShare?: (cardId: string) => void;
+  onTrade?: (card: Card) => void;
+  onShare?: (card: Card) => void;
   onView?: (card: Card) => void;
   onCompare?: (card: Card) => void;
 }
@@ -29,7 +28,7 @@ export const AdvancedCardItem: React.FC<AdvancedCardItemProps> = ({
     onTap: () => onView?.(card),
     onDoubleTap: () => setIsFlipped(!isFlipped),
     onLongPress: () => setShowGestureHint(true),
-    onSwipeLeft: () => onTrade?.(card.id),
+    onSwipeLeft: () => onTrade?.(card),
     onSwipeRight: () => onFavorite?.(card.id),
     onSwipeUp: () => setIsFlipped(!isFlipped),
     onPinch: (newScale) => setScale(Math.max(0.5, Math.min(3, newScale))),
