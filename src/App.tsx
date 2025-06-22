@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { OverlayProvider } from '@/components/overlay/OverlayProvider';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { CardshowLayout } from '@/components/cardshow/CardshowLayout';
 import Index from '@/pages/Index';
 import Gallery from '@/pages/Gallery';
 import Profile from '@/pages/Profile';
@@ -12,6 +13,10 @@ import Collections from '@/pages/Collections';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { UnifiedCardCreator } from '@/components/creator/UnifiedCardCreator';
 import { BackofficeLayout } from '@/components/backoffice/BackofficeLayout';
+import { CardshowApp } from '@/pages/CardshowApp';
+import { CardshowCreate } from '@/pages/CardshowCreate';
+import { CardshowTrade } from '@/pages/CardshowTrade';
+import { CardshowProfile } from '@/pages/CardshowProfile';
 
 function App() {
   const [showBackoffice, setShowBackoffice] = useState(false);
@@ -28,6 +33,7 @@ function App() {
     <OverlayProvider>
       <div className="min-h-screen bg-crd-darkest">
         <Routes>
+          {/* Original CRD routes */}
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Index />} />
             <Route path="studio" element={<Studio />} />
@@ -47,6 +53,14 @@ function App() {
             
             {/* Hidden backoffice route */}
             <Route path="admin/backoffice" element={<div />} />
+          </Route>
+
+          {/* New Cardshow mobile-first app routes */}
+          <Route path="/cardshow" element={<CardshowLayout />}>
+            <Route index element={<CardshowApp />} />
+            <Route path="create" element={<CardshowCreate />} />
+            <Route path="trade" element={<CardshowTrade />} />
+            <Route path="profile" element={<CardshowProfile />} />
           </Route>
         </Routes>
         

@@ -21,6 +21,19 @@ const queryClient = new QueryClient({
   },
 })
 
+// Register service worker for PWA functionality
+if ('serviceWorker' in navigator && window.location.pathname.startsWith('/cardshow')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/cardshow-sw.js')
+      .then((registration) => {
+        console.log('SW registered: ', registration);
+      })
+      .catch((registrationError) => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
+}
+
 const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error('Root element not found');

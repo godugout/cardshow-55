@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -43,6 +44,7 @@
 
 /* Import mobile styles */
 @import './styles/mobile.css';
+@import './styles/cardshow.css';
 
 /* Mobile-first responsive typography */
 @media (max-width: 640px) {
@@ -60,4 +62,12 @@
   .button-touch {
     @apply min-h-[44px] min-w-[44px];
   }
+}
+
+/* Cardshow overrides for mobile-first experience */
+.cardshow-container {
+  padding: 0;
+  margin: 0;
+  max-width: 100%;
+  text-align: left;
 }
