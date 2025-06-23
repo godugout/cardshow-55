@@ -36,6 +36,11 @@ const Card3DSceneFallback: React.FC<{ cards: Card[] }> = ({ cards }) => (
   </div>
 );
 
+// Create a proper fallback component for ErrorBoundary
+const SceneFallbackComponent: React.FC<{ error?: Error; resetError?: () => void }> = ({ resetError }) => (
+  <Card3DSceneFallback cards={[]} />
+);
+
 const Card3DSceneInner: React.FC<Card3DSceneProps> = ({
   cards,
   selectedCardId,
@@ -171,7 +176,7 @@ const Card3DSceneInner: React.FC<Card3DSceneProps> = ({
 
 export const Card3DScene: React.FC<Card3DSceneProps> = (props) => {
   return (
-    <ErrorBoundary fallback={<Card3DSceneFallback cards={props.cards} />}>
+    <ErrorBoundary fallback={SceneFallbackComponent}>
       <Card3DSceneInner {...props} />
     </ErrorBoundary>
   );

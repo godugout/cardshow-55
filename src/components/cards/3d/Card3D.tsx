@@ -57,9 +57,9 @@ export const Card3D: React.FC<Card3DProps> = ({
   const cardDepth = 0.02;
 
   // Spring animation for interactions
-  const { animatedScale, animatedRotation } = useSpring({
+  const { animatedScale, rotationY } = useSpring({
     animatedScale: isSelected ? scale * 1.1 : isHovered ? scale * 1.05 : scale,
-    animatedRotation: isSelected ? [rotation[0], rotation[1] + 0.1, rotation[2]] : rotation,
+    rotationY: isSelected ? rotation[1] + 0.1 : rotation[1],
     config: { tension: 300, friction: 30 }
   });
 
@@ -102,7 +102,7 @@ export const Card3D: React.FC<Card3DProps> = ({
     <animated.group
       ref={groupRef}
       position={position}
-      rotation={animatedRotation}
+      rotation-y={rotationY}
       scale={animatedScale}
       onClick={onClick}
       onPointerOver={() => onHover?.(true)}
