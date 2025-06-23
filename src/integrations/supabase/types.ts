@@ -33,6 +33,50 @@ export type Database = {
         }
         Relationships: []
       }
+      auction_bids: {
+        Row: {
+          amount: number
+          auction_id: string | null
+          bid_time: string | null
+          bid_type: string | null
+          bidder_id: string | null
+          created_at: string | null
+          id: string
+          is_winning_bid: boolean | null
+          proxy_max_amount: number | null
+        }
+        Insert: {
+          amount: number
+          auction_id?: string | null
+          bid_time?: string | null
+          bid_type?: string | null
+          bidder_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_winning_bid?: boolean | null
+          proxy_max_amount?: number | null
+        }
+        Update: {
+          amount?: number
+          auction_id?: string | null
+          bid_time?: string | null
+          bid_type?: string | null
+          bidder_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_winning_bid?: boolean | null
+          proxy_max_amount?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_bids_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       card_favorites: {
         Row: {
           card_id: string
@@ -55,6 +99,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "card_favorites_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      card_recommendations: {
+        Row: {
+          card_id: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          metadata: Json | null
+          recommendation_score: number | null
+          recommendation_type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          card_id?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          recommendation_score?: number | null
+          recommendation_type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          card_id?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          recommendation_score?: number | null
+          recommendation_type?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_recommendations_card_id_fkey"
             columns: ["card_id"]
             isOneToOne: false
             referencedRelation: "cards"
@@ -798,6 +883,53 @@ export type Database = {
           },
         ]
       }
+      market_analytics: {
+        Row: {
+          avg_price: number | null
+          card_id: string | null
+          created_at: string | null
+          date: string
+          id: string
+          liquidity_score: number | null
+          market_cap: number | null
+          price_change_24h: number | null
+          transactions: number | null
+          volume: number | null
+        }
+        Insert: {
+          avg_price?: number | null
+          card_id?: string | null
+          created_at?: string | null
+          date: string
+          id?: string
+          liquidity_score?: number | null
+          market_cap?: number | null
+          price_change_24h?: number | null
+          transactions?: number | null
+          volume?: number | null
+        }
+        Update: {
+          avg_price?: number | null
+          card_id?: string | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          liquidity_score?: number | null
+          market_cap?: number | null
+          price_change_24h?: number | null
+          transactions?: number | null
+          volume?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_analytics_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_listings: {
         Row: {
           auction_end_time: string | null
@@ -912,6 +1044,47 @@ export type Database = {
             columns: ["listing_id"]
             isOneToOne: false
             referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_reviews: {
+        Row: {
+          created_at: string | null
+          id: string
+          rating: number | null
+          review_text: string | null
+          review_type: string | null
+          reviewed_id: string | null
+          reviewer_id: string | null
+          transaction_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          review_text?: string | null
+          review_type?: string | null
+          reviewed_id?: string | null
+          reviewer_id?: string | null
+          transaction_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          review_text?: string | null
+          review_type?: string | null
+          reviewed_id?: string | null
+          reviewer_id?: string | null
+          transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_reviews_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
             referencedColumns: ["id"]
           },
         ]
@@ -1114,6 +1287,50 @@ export type Database = {
             columns: ["recipient_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolio_tracking: {
+        Row: {
+          card_id: string | null
+          created_at: string | null
+          current_value: number | null
+          id: string
+          purchase_date: string | null
+          purchase_price: number | null
+          quantity: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          card_id?: string | null
+          created_at?: string | null
+          current_value?: number | null
+          id?: string
+          purchase_date?: string | null
+          purchase_price?: number | null
+          quantity?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          card_id?: string | null
+          created_at?: string | null
+          current_value?: number | null
+          id?: string
+          purchase_date?: string | null
+          purchase_price?: number | null
+          quantity?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_tracking_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
             referencedColumns: ["id"]
           },
         ]
@@ -1736,6 +1953,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_watchlists: {
+        Row: {
+          alert_conditions: Json | null
+          alert_enabled: boolean | null
+          created_at: string | null
+          id: string
+          name: string
+          search_criteria: Json
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          alert_conditions?: Json | null
+          alert_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          name: string
+          search_criteria?: Json
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          alert_conditions?: Json | null
+          alert_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          search_criteria?: Json
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1774,6 +2024,14 @@ export type Database = {
       is_admin: {
         Args: { user_uuid?: string }
         Returns: boolean
+      }
+      place_bid: {
+        Args: { p_auction_id: string; p_amount: number; p_proxy_max?: number }
+        Returns: string
+      }
+      update_market_analytics: {
+        Args: { p_card_id: string; p_sale_price: number }
+        Returns: undefined
       }
     }
     Enums: {

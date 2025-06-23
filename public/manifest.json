@@ -1,0 +1,148 @@
+
+{
+  "name": "Cardshow - Digital Trading Cards Platform",
+  "short_name": "Cardshow",
+  "description": "Create, collect, trade, and showcase digital trading cards with immersive 3D viewing and social features",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#00C851",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "id": "cardshow-pwa",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["games", "entertainment", "social", "lifestyle", "productivity"],
+  "screenshots": [
+    {
+      "src": "/cardshow-screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile card browsing experience"
+    },
+    {
+      "src": "/cardshow-screenshot-desktop.png", 
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop card creation studio"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/crd-logo-gradient.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/crd-logo-gradient.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/crd-logo-gradient.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/crd-logo-gradient.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/crd-logo-gradient.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/crd-logo-gradient.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create Card",
+      "short_name": "Create",
+      "description": "Create a new trading card",
+      "url": "/create",
+      "icons": [
+        {
+          "src": "/crd-logo-gradient.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Gallery",
+      "short_name": "Gallery",
+      "description": "Browse your card collection",
+      "url": "/gallery", 
+      "icons": [
+        {
+          "src": "/crd-logo-gradient.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Collections",
+      "short_name": "Collections",
+      "description": "Manage your collections",
+      "url": "/collections",
+      "icons": [
+        {
+          "src": "/crd-logo-gradient.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Studio",
+      "short_name": "Studio",
+      "description": "Advanced card creation tools",
+      "url": "/studio",
+      "icons": [
+        {
+          "src": "/crd-logo-gradient.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/create",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+cardshow",
+      "url": "/?action=%s"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "related_applications": [],
+  "prefer_related_applications": false
+}

@@ -6,6 +6,7 @@ import { MobileHeader } from '@/components/mobile/MobileHeader';
 import { CardDebugInfo } from '@/components/debug/CardDebugInfo';
 import { useDebugShortcut } from '@/hooks/useDebugShortcut';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -16,7 +17,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const isHomePage = location.pathname === '/';
   const { isMobile } = useResponsiveLayout();
 
-  // Enable debug keyboard shortcut
+  // Enable keyboard shortcuts and debug shortcut
+  useKeyboardShortcuts();
   useDebugShortcut();
 
   console.log('MainLayout rendering, path:', location.pathname, 'isHomePage:', isHomePage, 'isMobile:', isMobile);

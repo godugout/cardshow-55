@@ -4,15 +4,14 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ThemeProvider } from '@/components/pwa/ThemeProvider';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AuthPage } from '@/components/auth/AuthPage';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { AppShell } from '@/components/pwa/AppShell';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
-import { NetworkStatus } from '@/components/common/NetworkStatus';
-import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt';
-import { OfflineIndicator } from '@/components/pwa/OfflineIndicator';
+import { NetworkStatusBanner } from '@/components/pwa/NetworkStatusBanner';
+import { SyncManager } from '@/components/pwa/SyncManager';
 import { PerformanceMonitor } from '@/components/platform/PerformanceMonitor';
-import { NotificationCenter } from '@/components/platform/NotificationCenter';
 import { SecurityProvider } from '@/components/platform/SecurityProvider';
 import { AnalyticsProvider } from '@/components/platform/AnalyticsProvider';
 
@@ -33,6 +32,7 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     },
   },
 });
@@ -40,66 +40,75 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <ErrorBoundary>
-      <SecurityProvider>
-        <AnalyticsProvider>
-          <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <div className="App">
-                <NetworkStatus />
-                <OfflineIndicator />
-                <PWAInstallPrompt />
-                <PerformanceMonitor />
-                
-                <Routes>
-                  {/* Public routes */}
-                  <Route path="/auth/*" element={<AuthPage />} />
+      <ThemeProvider defaultTheme="dark">
+        <SecurityProvider>
+          <AnalyticsProvider>
+            <QueryClientProvider client={queryClient}>
+              <AuthProvider>
+                <div className="App min-h-screen bg-crd-darkest">
+                  <NetworkStatusBanner />
+                  <SyncManager />
+                  <PerformanceMonitor />
                   
-                  {/* Protected main application routes */}
-                  <Route
-                    path="/*"
-                    element={
-                      <ProtectedRoute>
-                        <MainLayout>
-                          <Routes>
-                            {/* Main pages */}
-                            <Route path="/" element={<HomePage />} />
-                            <Route path="/gallery" element={<GalleryPage />} />
-                            <Route path="/create" element={<CreatePage />} />
-                            <Route path="/collections" element={<CollectionsPage />} />
-                            <Route path="/studio" element={<StudioPage />} />
-                            
-                            {/* Cards management */}
-                            <Route path="/cards/*" element={<CardsPage />} />
-                            
-                            {/* Social feed */}
-                            <Route path="/feed" element={<FeedPage />} />
-                            
-                            {/* Cardshow mobile app */}
-                            <Route path="/cardshow/*" element={<CardshowApp />} />
-                            
-                            {/* Admin/Backoffice */}
-                            <Route path="/admin/*" element={<BackofficeLayout />} />
-                            
-                            {/* Catch all route */}
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                          </Routes>
-                        </MainLayout>
-                      </ProtectedRoute>
-                    }
+                  <Routes>
+                    {/* Public routes */}
+                    <Route path="/auth/*" element={<AuthPage />} />
+                    
+                    {/* Protected main application routes */}
+                    <Route
+                      path="/*"
+                      element={
+                        <ProtectedRoute>
+                          <AppShell>
+                            <Routes>
+                              {/* Main pages */}
+                              <Route path="/" element={<HomePage />} />
+                              <Route path="/gallery" element={<GalleryPage />} />
+                              <Route path="/create" element={<CreatePage />} />
+                              <Route path="/collections" element={<CollectionsPage />} />
+                              <Route path="/studio" element={<StudioPage />} />
+                              
+                              {/* Cards management */}
+                              <Route path="/cards/*" element={<CardsPage />} />
+                              
+                              {/* Social feed */}
+                              <Route path="/feed" element={<FeedPage />} />
+                              
+                              {/* Cardshow mobile app */}
+                              <Route path="/cardshow/*" element={<CardshowApp />} />
+                              
+                              {/* Admin/Backoffice */}
+                              <Route path="/admin/*" element={<BackofficeLayout />} />
+                              
+                              {/* Catch all route */}
+                              <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
+                          </AppShell>
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Routes>
+                  
+                  <Toaster 
+                    position="top-center" 
+                    expand={false}
+                    richColors
+                    closeButton
+                    duration={3000}
+                    theme="dark"
+                    toastOptions={{
+                      style: {
+                        marginTop: '60px', // Avoid overlapping with network banner
+                      },
+                      className: 'toast-cardshow'
+                    }}
                   />
-                </Routes>
-                
-                <Toaster 
-                  position="top-right" 
-                  expand={true}
-                  richColors
-                  closeButton
-                />
-              </div>
-            </AuthProvider>
-          </QueryClientProvider>
-        </AnalyticsProvider>
-      </SecurityProvider>
+                </div>
+              </AuthProvider>
+            </QueryClientProvider>
+          </AnalyticsProvider>
+        </SecurityProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }
