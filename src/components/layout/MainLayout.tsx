@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Outlet } from 'react-router-dom';
 import { Navbar } from '@/components/home/Navbar';
 import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
 import { MobileHeader } from '@/components/mobile/MobileHeader';
@@ -8,7 +7,11 @@ import { CardDebugInfo } from '@/components/debug/CardDebugInfo';
 import { useDebugShortcut } from '@/hooks/useDebugShortcut';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 
-export const MainLayout = () => {
+interface MainLayoutProps {
+  children: React.ReactNode;
+}
+
+export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const location = window.location;
   const isHomePage = location.pathname === '/';
   const { isMobile } = useResponsiveLayout();
@@ -33,7 +36,7 @@ export const MainLayout = () => {
       
       {/* Main content */}
       <main className={`flex-1 ${isMobile ? 'mb-16' : ''} ${isMobile && !isHomePage ? 'pt-16' : ''}`}>
-        <Outlet />
+        {children}
       </main>
       
       {/* Mobile bottom navigation */}

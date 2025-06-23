@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 
@@ -51,7 +52,6 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
     // Check security requirements
     const checkSecurity = () => {
       const isHTTPS = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
-      const hasCSP = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
       
       setIsSecure(isHTTPS);
       
