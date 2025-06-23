@@ -1,152 +1,107 @@
 
-import React, { useEffect, useState } from 'react';
-import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
+import React from 'react';
+import type { EffectValues } from '../../hooks/effects/types';
 
 interface AuroraEffectProps {
   effectValues: EffectValues;
   mousePosition: { x: number; y: number };
 }
 
-export const AuroraEffect: React.FC<AuroraEffectProps> = ({
-  effectValues,
-  mousePosition
-}) => {
-  // Helper function to safely get effect parameter values
-  const getEffectParam = (effectId: string, paramId: string, defaultValue: any = 0) => {
-    return effectValues?.[effectId]?.[paramId] ?? defaultValue;
-  };
-
-  const auroraIntensity = getEffectParam('aurora', 'intensity', 0);
-  const waveSpeed = getEffectParam('aurora', 'waveSpeed', 80);
-  const colorShift = getEffectParam('aurora', 'colorShift', 120);
-
-  // For aurora flare animation
-  const [flarePosition, setFlarePosition] = useState({ x: Math.random(), y: Math.random() });
-  const [flareActive, setFlareActive] = useState(false);
-  const [flareOpacity, setFlareOpacity] = useState(0);
+export const AuroraEffect: React.FC<AuroraEffectProps> = ({ effectValues, mousePosition }) => {
+  const auroraEffect = effectValues.aurora;
+  const intensity = (auroraEffect?.intensity as number) || 0;
   
-  // Trigger aurora flare randomly
-  useEffect(() => {
-    if (auroraIntensity <= 0) return;
-    
-    const flareTimer = setInterval(() => {
-      if (Math.random() > 0.7) {
-        setFlarePosition({ 
-          x: Math.random() * 0.8 + 0.1,
-          y: Math.random() * 0.8 + 0.1
-        });
-        setFlareActive(true);
-        setFlareOpacity(0.6 + Math.random() * 0.3);
-        
-        setTimeout(() => {
-          setFlareActive(false);
-        }, 1500 + Math.random() * 2000);
-      }
-    }, 3000 + Math.random() * 4000);
-    
-    return () => {
-      clearInterval(flareTimer);
-    };
-  }, [auroraIntensity]);
+  if (intensity === 0) return null;
 
-  if (auroraIntensity <= 0) return null;
-
-  const animationDuration = 10000 / (waveSpeed / 100);
-
+  const flow = (auroraEffect?.flow as number) || 40;
+  const colors = (auroraEffect?.colors as number) || 70;
+  
+  // Calculate animation timing based on flow
+  const animationDuration = 8 - (flow / 100) * 6; // 2-8 seconds
+  
+  // Color range based on colors parameter
+  const colorIntensity = colors / 100;
+  
   return (
-    <>
-      {/* Base Aurora Layer - Blue-green waves */}
+    <div 
+      className="absolute inset-0 z-20 rounded-xl overflow-hidden"
+      style={{
+        opacity: intensity / 100,
+        mixBlendMode: 'screen'
+      }}
+    >
+      {/* Primary aurora waves */}
       <div
-        className="absolute inset-0 z-20"
+        className="absolute inset-0"
         style={{
           background: `
             radial-gradient(
-              ellipse at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-              rgba(30, 150, 255, ${(auroraIntensity / 100) * 0.3}) 0%,
-              rgba(20, 180, 120, ${(auroraIntensity / 100) * 0.35}) 40%,
-              rgba(80, 100, 200, ${(auroraIntensity / 100) * 0.25}) 70%,
-              transparent 100%
+              ellipse 200% 100% at ${mousePosition.x}% ${mousePosition.y - 20}%,
+              hsla(180, ${colorIntensity * 80}%, ${colorIntensity * 60}%, ${intensity / 100 * 0.4}) 0%,
+              hsla(200, ${colorIntensity * 90}%, ${colorIntensity * 70}%, ${intensity / 100 * 0.3}) 20%,
+              hsla(280, ${colorIntensity * 85}%, ${colorIntensity * 65}%, ${intensity / 100 * 0.25}) 40%,
+              hsla(320, ${colorIntensity * 80}%, ${colorIntensity * 60}%, ${intensity / 100 * 0.2}) 60%,
+              transparent 80%
             )
           `,
-          mixBlendMode: 'screen',
-          opacity: 0.8
+          animation: `aurora-flow ${animationDuration}s ease-in-out infinite alternate`,
+          transform: `translateY(${Math.sin(Date.now() / 1000) * 10}px)`
         }}
       />
       
-      {/* Aurora Waves - Flowing colors */}
+      {/* Secondary aurora layer */}
       <div
-        className="absolute inset-0 z-21"
+        className="absolute inset-0"
         style={{
           background: `
             linear-gradient(
-              ${180 + mousePosition.y * 40}deg,
+              ${mousePosition.x * 2}deg,
               transparent 0%,
-              rgba(20, 150, 240, ${(auroraIntensity / 100) * 0.2}) 15%,
-              rgba(60, 200, 140, ${(auroraIntensity / 100) * 0.25}) 35%, 
-              rgba(80, 120, 200, ${(auroraIntensity / 100) * 0.2}) 55%,
-              rgba(120, 80, 180, ${(auroraIntensity / 100) * 0.18}) 75%,
-              transparent 100%
+              hsla(120, ${colorIntensity * 70}%, ${colorIntensity * 50}%, ${intensity / 100 * 0.3}) 20%,
+              hsla(160, ${colorIntensity * 75}%, ${colorIntensity * 55}%, ${intensity / 100 * 0.25}) 40%,
+              hsla(240, ${colorIntensity * 80}%, ${colorIntensity * 60}%, ${intensity / 100 * 0.2}) 60%,
+              transparent 80%
             )
           `,
-          backgroundSize: '400% 400%',
-          animation: `aurora-flow ${animationDuration * 2}ms ease infinite`,
-          mixBlendMode: 'screen',
-          opacity: 0.9
+          animation: `aurora-shift ${animationDuration * 1.3}s ease-in-out infinite alternate-reverse`,
+          opacity: 0.7
         }}
       />
-
-      {/* Aurora Flare - Red/orange flashes */}
+      
+      {/* Shimmer overlay */}
       <div
-        className="absolute inset-0 z-22 transition-opacity duration-1000"
+        className="absolute inset-0"
         style={{
           background: `
             radial-gradient(
-              circle at ${flarePosition.x * 100}% ${flarePosition.y * 100}%,
-              rgba(255, 80, 40, ${flareActive ? flareOpacity : 0}) 0%,
-              rgba(255, 140, 60, ${flareActive ? flareOpacity * 0.8 : 0}) 30%,
-              transparent 70%
+              circle at ${mousePosition.x}% ${mousePosition.y}%,
+              hsla(200, ${colorIntensity * 90}%, ${colorIntensity * 80}%, ${intensity / 100 * 0.2}) 0%,
+              transparent 50%
             )
           `,
-          mixBlendMode: 'screen',
-          opacity: flareActive ? 1 : 0,
-          transition: 'opacity 0.8s ease-in-out'
+          animation: `aurora-shimmer ${animationDuration * 0.8}s ease-in-out infinite`,
+          mixBlendMode: 'overlay'
         }}
       />
-
-      {/* Shimmer layer for color shift */}
-      <div
-        className="absolute inset-0 z-23 transition-opacity"
-        style={{
-          background: `
-            linear-gradient(
-              ${colorShift + mousePosition.x * 90}deg,
-              transparent 0%,
-              rgba(100, 220, 180, 0.2) 20%,
-              rgba(60, 200, 150, 0.25) 50%,
-              rgba(100, 220, 180, 0.2) 80%,
-              transparent 100%
-            )
-          `,
-          mixBlendMode: 'overlay',
-          opacity: 0.6,
-          animation: `aurora-shimmer ${animationDuration}ms infinite alternate`
-        }}
-      />
-
-      {/* Style tag for animations */}
-      <style>
-        {`
-          @keyframes aurora-flow {
-            0% { background-position: 0% 0% }
-            50% { background-position: 100% 100% }
-            100% { background-position: 0% 0% }
-          }
-          @keyframes aurora-shimmer {
-            0% { opacity: 0.4 }
-            100% { opacity: 0.8 }
-          }
-        `}
-      </style>
-    </>
+      
+      <style jsx>{`
+        @keyframes aurora-flow {
+          0% { transform: translateY(0px) scaleY(1); }
+          50% { transform: translateY(-5px) scaleY(1.1); }
+          100% { transform: translateY(5px) scaleY(0.9); }
+        }
+        
+        @keyframes aurora-shift {
+          0% { transform: skewX(0deg) translateX(0%); }
+          50% { transform: skewX(2deg) translateX(2%); }
+          100% { transform: skewX(-1deg) translateX(-1%); }
+        }
+        
+        @keyframes aurora-shimmer {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.7; }
+        }
+      `}</style>
+    </div>
   );
 };

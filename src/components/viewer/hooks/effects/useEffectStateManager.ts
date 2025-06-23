@@ -1,56 +1,55 @@
 
 import { useState, useCallback } from 'react';
-import { createDefaultEffectValues, clampEffectValue } from './effectUtils';
 import type { EffectValues } from './types';
+import { ENHANCED_VISUAL_EFFECTS } from './effectConfigs';
 
 export const useEffectStateManager = () => {
   const [effectValues, setEffectValues] = useState<EffectValues>(() => {
-    const defaults = createDefaultEffectValues();
-    // --- FIX: Initialize with a minimal effect to ensure the card back is visible on load.
-    // By setting one effect's intensity > 5, we trigger useMaterialSelector to pick a
-    // non-default material, making the back visible without user interaction.
-    // 'brushedmetal' is chosen as it provides a neutral, metallic default back.
-    if (defaults.brushedmetal) {
-      defaults.brushedmetal.intensity = 6;
-    }
-    return defaults;
+    // Initialize with default values
+    const initialValues: EffectValues = {};
+    ENHANCED_VISUAL_EFFECTS.forEach(effect => {
+      initialValues[effect.id] = {};
+      effect.parameters.forEach(param => {
+        initialValues[effect.id][param.id] = param.defaultValue;
+      });
+    });
+    return initialValues;
   });
 
-  const handleEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string, isPreset?: boolean) => {
-    console.log('🎛️ Effect Change:', { effectId, parameterId, value, isPreset });
-    
-    // Apply clamping for smooth transitions
-    const clampedValue = clampEffectValue(effectId, parameterId, value);
-    
+  const handleEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
     setEffectValues(prev => ({
       ...prev,
       [effectId]: {
         ...prev[effectId],
-        [parameterId]: clampedValue
+        [parameterId]: value
       }
     }));
   }, []);
 
   const resetEffect = useCallback((effectId: string) => {
-    console.log('🔄 Resetting effect:', effectId);
-    const defaultValues = createDefaultEffectValues();
-    
-    if (defaultValues[effectId]) {
-      setEffectValues(prev => ({
-        ...prev,
-        [effectId]: { ...defaultValues[effectId] }
-      }));
-    }
+    const effect = ENHANCED_VISUAL_EFFECTS.find(e => e.id === effectId);
+    if (!effect) return;
+
+    const resetValues: { [key: string]: number | boolean | string } = {};
+    effect.parameters.forEach(param => {
+      resetValues[param.id] = param.defaultValue;
+    });
+
+    setEffectValues(prev => ({
+      ...prev,
+      [effectId]: resetValues
+    }));
   }, []);
 
   const resetAllEffects = useCallback(() => {
-    console.log('🔄 Resetting all effects and ensuring back is visible');
-    // --- FIX: When resetting, re-apply the logic to ensure the back remains visible.
-    const defaults = createDefaultEffectValues();
-    if (defaults.brushedmetal) {
-      defaults.brushedmetal.intensity = 6;
-    }
-    setEffectValues(defaults);
+    const resetValues: EffectValues = {};
+    ENHANCED_VISUAL_EFFECTS.forEach(effect => {
+      resetValues[effect.id] = {};
+      effect.parameters.forEach(param => {
+        resetValues[effect.id][param.id] = param.defaultValue;
+      });
+    });
+    setEffectValues(resetValues);
   }, []);
 
   return {

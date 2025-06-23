@@ -1,13 +1,14 @@
 
+// Core types for the enhanced visual effects system
 export interface EffectParameter {
   id: string;
   name: string;
   type: 'slider' | 'toggle' | 'color' | 'select';
+  defaultValue: number | boolean | string;
   min?: number;
   max?: number;
   step?: number;
-  defaultValue: number | boolean | string;
-  options?: { value: string; label: string }[];
+  options?: Array<{ value: string; label: string }>;
 }
 
 export interface VisualEffectConfig {
@@ -16,6 +17,8 @@ export interface VisualEffectConfig {
   description: string;
   category: 'metallic' | 'prismatic' | 'surface' | 'vintage';
   parameters: EffectParameter[];
+  performanceImpact: 'low' | 'medium' | 'high';
+  mobileSupported: boolean;
 }
 
 export interface EffectValues {
@@ -24,11 +27,10 @@ export interface EffectValues {
   };
 }
 
-// Enhanced state interface with better synchronization
-export interface PresetApplicationState {
-  isApplying: boolean;
-  currentPresetId?: string;
-  appliedAt: number;
-  isLocked: boolean;
-  sequenceId: string;
+export interface RarityMaterialPreset {
+  id: string;
+  name: string;
+  rarity: 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary';
+  effects: EffectValues;
+  performanceScore: number;
 }

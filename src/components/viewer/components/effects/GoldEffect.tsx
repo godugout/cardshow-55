@@ -1,115 +1,99 @@
 
 import React from 'react';
-import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
+import type { EffectValues } from '../../hooks/effects/types';
 
 interface GoldEffectProps {
   effectValues: EffectValues;
   mousePosition: { x: number; y: number };
 }
 
-export const GoldEffect: React.FC<GoldEffectProps> = ({
-  effectValues,
-  mousePosition
-}) => {
-  // Helper function to safely get effect parameter values
-  const getEffectParam = (effectId: string, paramId: string, defaultValue: any = 0) => {
-    return effectValues?.[effectId]?.[paramId] ?? defaultValue;
-  };
-
-  const goldIntensity = getEffectParam('gold', 'intensity', 0);
-  const goldTone = getEffectParam('gold', 'goldTone', 'rich');
-  const shimmerSpeed = getEffectParam('gold', 'shimmerSpeed', 80);
-  const colorEnhancement = getEffectParam('gold', 'colorEnhancement', true);
-
-  if (goldIntensity <= 0) return null;
-
-  // Traditional gold colors based on tone
-  let mainColors, blendMode;
+export const GoldEffect: React.FC<GoldEffectProps> = ({ effectValues, mousePosition }) => {
+  const goldEffect = effectValues.gold;
+  const intensity = (goldEffect?.intensity as number) || 0;
   
-  switch (goldTone) {
-    case 'rose':
-      mainColors = {
-        primary: `rgba(255, 185, 150, ${(goldIntensity / 100) * 0.25})`,
-        secondary: `rgba(255, 155, 120, ${(goldIntensity / 100) * 0.15})`,
-        tertiary: `rgba(184, 134, 100, ${(goldIntensity / 100) * 0.1})`,
-        accent: `rgba(255, 205, 170, ${(goldIntensity / 100) * 0.2})`
-      };
-      break;
-    case 'white':
-      mainColors = {
-        primary: `rgba(245, 245, 245, ${(goldIntensity / 100) * 0.25})`,
-        secondary: `rgba(225, 225, 225, ${(goldIntensity / 100) * 0.15})`,
-        tertiary: `rgba(200, 200, 200, ${(goldIntensity / 100) * 0.1})`,
-        accent: `rgba(255, 255, 255, ${(goldIntensity / 100) * 0.2})`
-      };
-      break;
-    case 'antique':
-      mainColors = {
-        primary: `rgba(205, 175, 120, ${(goldIntensity / 100) * 0.25})`,
-        secondary: `rgba(185, 155, 100, ${(goldIntensity / 100) * 0.15})`,
-        tertiary: `rgba(164, 134, 80, ${(goldIntensity / 100) * 0.1})`,
-        accent: `rgba(225, 195, 140, ${(goldIntensity / 100) * 0.2})`
-      };
-      break;
-    default: // rich gold
-      mainColors = {
-        primary: `rgba(255, 215, 0, ${(goldIntensity / 100) * 0.25})`,
-        secondary: `rgba(255, 165, 0, ${(goldIntensity / 100) * 0.15})`,
-        tertiary: `rgba(184, 134, 11, ${(goldIntensity / 100) * 0.1})`,
-        accent: `rgba(255, 235, 122, ${(goldIntensity / 100) * 0.2})`
-      };
-  }
+  if (intensity === 0) return null;
 
-  blendMode = 'screen';
-  const animationDuration = 10000 / (shimmerSpeed / 100);
-
+  const warmth = (goldEffect?.warmth as number) || 75;
+  const patina = (goldEffect?.patina as number) || 20;
+  
+  // Calculate gold color based on warmth
+  const goldHue = 45 + (warmth / 100) * 15; // 45-60 degrees (yellow to orange)
+  const goldSaturation = 80 + (warmth / 100) * 20; // 80-100%
+  const goldLightness = 50 + (intensity / 100) * 30; // 50-80%
+  
+  // Patina creates darker, aged spots
+  const patinaOpacity = (patina / 100) * 0.3;
+  
   return (
-    <>
-      {/* Base gold layer */}
-      <div
-        className="absolute inset-0 z-20"
-        style={{
-          background: `radial-gradient(
-            ellipse at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-            ${mainColors.primary} 0%,
-            ${mainColors.secondary} 40%,
-            ${mainColors.tertiary} 70%,
+    <div 
+      className="absolute inset-0 z-20 rounded-xl"
+      style={{
+        background: `
+          radial-gradient(
+            ellipse 120% 80% at ${mousePosition.x}% ${mousePosition.y}%,
+            hsla(${goldHue}, ${goldSaturation}%, ${goldLightness + 10}%, ${intensity / 100 * 0.4}) 0%,
+            hsla(${goldHue}, ${goldSaturation}%, ${goldLightness}%, ${intensity / 100 * 0.3}) 30%,
+            hsla(${goldHue - 10}, ${goldSaturation - 20}%, ${goldLightness - 20}%, ${intensity / 100 * 0.2}) 70%,
             transparent 100%
-          )`,
-          mixBlendMode: blendMode,
-          opacity: 0.6
-        }}
-      />
+          ),
+          linear-gradient(
+            135deg,
+            hsla(${goldHue + 5}, ${goldSaturation}%, ${goldLightness + 15}%, ${intensity / 100 * 0.3}) 0%,
+            transparent 50%,
+            hsla(${goldHue - 5}, ${goldSaturation - 10}%, ${goldLightness - 10}%, ${intensity / 100 * 0.2}) 100%
+          )
+        `,
+        opacity: intensity / 100,
+        mixBlendMode: 'soft-light',
+        filter: `
+          drop-shadow(0 0 ${intensity / 10}px hsla(${goldHue}, ${goldSaturation}%, ${goldLightness}%, 0.6))
+        `
+      }}
+    >
+      {/* Patina overlay for aged effect */}
+      {patina > 0 && (
+        <div
+          className="absolute inset-0 rounded-xl"
+          style={{
+            background: `
+              radial-gradient(
+                ellipse 40% 60% at 20% 30%,
+                hsla(${goldHue - 20}, 30%, 20%, ${patinaOpacity}) 0%,
+                transparent 60%
+              ),
+              radial-gradient(
+                ellipse 30% 40% at 80% 70%,
+                hsla(${goldHue - 15}, 40%, 25%, ${patinaOpacity * 0.8}) 0%,
+                transparent 50%
+              ),
+              radial-gradient(
+                ellipse 25% 35% at 60% 20%,
+                hsla(${goldHue - 25}, 35%, 15%, ${patinaOpacity * 0.6}) 0%,
+                transparent 40%
+              )
+            `,
+            mixBlendMode: 'multiply'
+          }}
+        />
+      )}
       
-      {/* Shimmer layer */}
+      {/* Gold highlight streaks */}
       <div
-        className="absolute inset-0 z-21 transition-opacity"
+        className="absolute inset-0 rounded-xl"
         style={{
           background: `
             linear-gradient(
-              ${45 + mousePosition.x * 90}deg,
+              ${mousePosition.x * 1.8}deg,
               transparent 0%,
-              ${mainColors.accent} 20%,
-              rgba(255, 215, 0, 0.2) 50%,
-              ${mainColors.accent} 80%,
+              hsla(${goldHue + 10}, ${goldSaturation}%, ${goldLightness + 20}%, ${intensity / 100 * 0.4}) 45%,
+              hsla(${goldHue + 10}, ${goldSaturation}%, ${goldLightness + 20}%, ${intensity / 100 * 0.4}) 55%,
               transparent 100%
             )
           `,
           mixBlendMode: 'overlay',
-          opacity: 0.5,
-          animation: colorEnhancement ? `gold-pulse ${animationDuration}ms infinite alternate` : 'none'
+          opacity: 0.6
         }}
       />
-
-      {/* Style tag for animations */}
-      <style>
-        {`
-          @keyframes gold-pulse {
-            0% { opacity: 0.4 }
-            100% { opacity: 0.7 }
-          }
-        `}
-      </style>
-    </>
+    </div>
   );
 };

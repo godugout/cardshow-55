@@ -1,128 +1,153 @@
 
 import React from 'react';
-import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
+import type { EffectValues } from '../../hooks/effects/types';
 
 interface IceEffectProps {
   effectValues: EffectValues;
   mousePosition: { x: number; y: number };
 }
 
-export const IceEffect: React.FC<IceEffectProps> = ({
-  effectValues,
-  mousePosition
-}) => {
-  // Helper function to safely get effect parameter values
-  const getEffectParam = (effectId: string, paramId: string, defaultValue: any = 0) => {
-    return effectValues?.[effectId]?.[paramId] ?? defaultValue;
-  };
+export const IceEffect: React.FC<IceEffectProps> = ({ effectValues, mousePosition }) => {
+  const iceEffect = effectValues.ice;
+  const intensity = (iceEffect?.intensity as number) || 0;
+  
+  if (intensity === 0) return null;
 
-  const iceIntensity = getEffectParam('ice', 'intensity', 0);
-
-  if (iceIntensity <= 0) return null;
-
-  const baseOpacity = (iceIntensity / 100) * 0.3;
-  const scratchOpacity = baseOpacity * 0.8;
-
+  const frost = (iceEffect?.frost as number) || 60;
+  const cracks = (iceEffect?.cracks as number) || 30;
+  
   return (
-    <>
-      {/* Ice base layer with frosted effect */}
+    <div 
+      className="absolute inset-0 z-18 rounded-xl overflow-hidden"
+      style={{
+        opacity: intensity / 100
+      }}
+    >
+      {/* Base ice surface */}
       <div
-        className="absolute inset-0 z-16"
+        className="absolute inset-0"
         style={{
-          background: `radial-gradient(
-            ellipse at ${50 + mousePosition.x * 20}% ${50 + mousePosition.y * 20}%,
-            rgba(240, 249, 255, ${baseOpacity}) 0%,
-            rgba(224, 242, 254, ${baseOpacity * 0.8}) 40%,
-            rgba(186, 230, 253, ${baseOpacity * 0.6}) 70%,
-            transparent 100%
-          )`,
+          background: `
+            radial-gradient(
+              ellipse 120% 80% at ${mousePosition.x}% ${mousePosition.y}%,
+              hsla(200, 30%, 95%, ${intensity / 100 * 0.4}) 0%,
+              hsla(210, 40%, 90%, ${intensity / 100 * 0.3}) 40%,
+              hsla(220, 20%, 85%, ${intensity / 100 * 0.2}) 80%,
+              transparent 100%
+            ),
+            linear-gradient(
+              45deg,
+              hsla(190, 25%, 92%, ${intensity / 100 * 0.2}) 0%,
+              hsla(200, 30%, 88%, ${intensity / 100 * 0.15}) 100%
+            )
+          `,
           mixBlendMode: 'overlay'
         }}
       />
-
-      {/* Ice scratches and surface markings */}
-      {Array.from({ length: 8 }, (_, i) => {
-        const angle = (i * 45) + mousePosition.x * 30;
-        const length = 15 + (i * 8) % 30;
-        const x = 20 + (i * 15) % 60;
-        const y = 15 + (i * 12) % 70;
-        
-        return (
-          <div
-            key={`scratch-${i}`}
-            className="absolute z-17"
-            style={{
-              left: `${x}%`,
-              top: `${y}%`,
-              width: `${length}px`,
-              height: '1px',
-              background: `linear-gradient(
-                90deg,
-                transparent 0%,
-                rgba(255, 255, 255, ${scratchOpacity}) 20%,
-                rgba(224, 242, 254, ${scratchOpacity * 1.2}) 50%,
-                rgba(255, 255, 255, ${scratchOpacity}) 80%,
-                transparent 100%
-              )`,
-              transform: `rotate(${angle}deg)`,
-              filter: 'blur(0.3px)',
-              opacity: 0.7 + (i % 3) * 0.1
-            }}
-          />
-        );
-      })}
-
-      {/* Deeper ice cracks */}
-      {Array.from({ length: 4 }, (_, i) => {
-        const angle = (i * 90) + mousePosition.y * 45;
-        const x = 25 + (i * 20);
-        const y = 20 + (i * 15);
-        
-        return (
-          <div
-            key={`crack-${i}`}
-            className="absolute z-18"
-            style={{
-              left: `${x}%`,
-              top: `${y}%`,
-              width: '40px',
-              height: '2px',
-              background: `linear-gradient(
-                90deg,
-                transparent 0%,
-                rgba(186, 230, 253, ${scratchOpacity * 0.6}) 30%,
-                rgba(125, 211, 252, ${scratchOpacity * 0.8}) 50%,
-                rgba(186, 230, 253, ${scratchOpacity * 0.6}) 70%,
-                transparent 100%
-              )`,
-              transform: `rotate(${angle}deg)`,
-              filter: 'blur(0.5px)',
-              boxShadow: `0 0 3px rgba(125, 211, 252, ${scratchOpacity * 0.5})`
-            }}
-          />
-        );
-      })}
-
+      
       {/* Frost patterns */}
       <div
-        className="absolute inset-0 z-19"
+        className="absolute inset-0"
         style={{
-          background: `conic-gradient(
-            from ${mousePosition.x * 180}deg at ${50 + mousePosition.x * 15}% ${50 + mousePosition.y * 15}%,
-            transparent 0deg,
-            rgba(240, 249, 255, ${baseOpacity * 0.4}) 30deg,
-            transparent 60deg,
-            rgba(224, 242, 254, ${baseOpacity * 0.5}) 120deg,
-            transparent 150deg,
-            rgba(186, 230, 253, ${baseOpacity * 0.3}) 210deg,
-            transparent 240deg,
-            rgba(240, 249, 255, ${baseOpacity * 0.4}) 330deg,
-            transparent 360deg
-          )`,
-          mixBlendMode: 'soft-light',
-          filter: 'blur(1px)'
+          background: `
+            radial-gradient(
+              circle at 20% 30%,
+              hsla(200, 20%, 98%, ${frost / 100 * 0.6}) 0%,
+              hsla(210, 15%, 95%, ${frost / 100 * 0.3}) 20%,
+              transparent 40%
+            ),
+            radial-gradient(
+              circle at 80% 20%,
+              hsla(190, 25%, 96%, ${frost / 100 * 0.5}) 0%,
+              hsla(200, 20%, 90%, ${frost / 100 * 0.25}) 25%,
+              transparent 50%
+            ),
+            radial-gradient(
+              circle at 60% 80%,
+              hsla(210, 30%, 94%, ${frost / 100 * 0.7}) 0%,
+              hsla(220, 25%, 88%, ${frost / 100 * 0.35}) 15%,
+              transparent 35%
+            )
+          `,
+          mixBlendMode: 'screen',
+          filter: 'blur(0.5px)'
         }}
       />
-    </>
+      
+      {/* Ice crystal scratches */}
+      {cracks > 0 && (
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `
+              linear-gradient(
+                ${Math.random() * 360}deg,
+                transparent 0%,
+                hsla(200, 10%, 70%, ${cracks / 100 * 0.4}) 48%,
+                hsla(200, 10%, 70%, ${cracks / 100 * 0.4}) 52%,
+                transparent 100%
+              ),
+              linear-gradient(
+                ${Math.random() * 360 + 90}deg,
+                transparent 0%,
+                hsla(210, 15%, 75%, ${cracks / 100 * 0.3}) 47%,
+                hsla(210, 15%, 75%, ${cracks / 100 * 0.3}) 53%,
+                transparent 100%
+              ),
+              linear-gradient(
+                ${Math.random() * 360 + 180}deg,
+                transparent 0%,
+                hsla(190, 20%, 80%, ${cracks / 100 * 0.25}) 49%,
+                hsla(190, 20%, 80%, ${cracks / 100 * 0.25}) 51%,
+                transparent 100%
+              )
+            `,
+            mixBlendMode: 'multiply'
+          }}
+        />
+      )}
+      
+      {/* Ice reflection highlights */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `
+            linear-gradient(
+              ${mousePosition.x * 1.2}deg,
+              transparent 0%,
+              hsla(200, 50%, 95%, ${intensity / 100 * 0.5}) 20%,
+              hsla(210, 60%, 98%, ${intensity / 100 * 0.7}) 40%,
+              hsla(220, 40%, 92%, ${intensity / 100 * 0.3}) 60%,
+              transparent 80%
+            )
+          `,
+          mixBlendMode: 'screen',
+          opacity: 0.8
+        }}
+      />
+      
+      {/* Subtle ice texture */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `
+            repeating-linear-gradient(
+              ${mousePosition.x / 4}deg,
+              transparent 0px,
+              hsla(200, 20%, 90%, ${intensity / 100 * 0.1}) 1px,
+              transparent 3px
+            ),
+            repeating-linear-gradient(
+              ${mousePosition.x / 4 + 90}deg,
+              transparent 0px,
+              hsla(210, 15%, 95%, ${intensity / 100 * 0.08}) 1px,
+              transparent 4px
+            )
+          `,
+          mixBlendMode: 'overlay',
+          opacity: 0.6
+        }}
+      />
+    </div>
   );
 };
