@@ -2,14 +2,12 @@
 import React from 'react';
 import { CardItem } from '@/components/shared/CardItem';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Tables } from '@/integrations/supabase/types';
-
-type DbCard = Tables<'cards'>;
+import type { Card } from '@/types/card';
 
 interface CardsGridProps {
-  cards: DbCard[];
+  cards: Card[];
   loading: boolean;
-  onCardClick: (card: DbCard) => void;
+  onCardClick: (card: Card) => void;
 }
 
 export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClick }) => {
