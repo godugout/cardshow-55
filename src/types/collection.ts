@@ -1,4 +1,5 @@
 
+
 export interface EnhancedCollection {
   id: string;
   title: string;
@@ -14,7 +15,7 @@ export interface EnhancedCollection {
   cover_image_url?: string;
   created_at: string;
   updated_at: string;
-  statistics?: CollectionStatistics;
+  statistics?: CollectionStatistics | null;
   tags?: CollectionTag[];
   memberships?: CollectionMembership[];
 }

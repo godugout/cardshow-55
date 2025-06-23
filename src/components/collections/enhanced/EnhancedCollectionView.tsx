@@ -7,7 +7,7 @@ import { CollectionActivityFeed } from './CollectionActivityFeed';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEnhancedCollections, useCollectionActivityFeed, useCollectionStatistics } from '@/hooks/useEnhancedCollections';
 import { useCollectionRealtime, useCollectionPresence } from '@/hooks/useCollectionRealtime';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export const EnhancedCollectionView: React.FC = () => {
