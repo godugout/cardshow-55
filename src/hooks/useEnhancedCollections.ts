@@ -22,8 +22,9 @@ export const useEnhancedCollections = (userId?: string) => {
         .from('collections')
         .select(`
           *,
-          collection_memberships!inner (
+          collection_memberships (
             id,
+            collection_id,
             user_id,
             role,
             can_view_member_cards,
@@ -44,15 +45,19 @@ export const useEnhancedCollections = (userId?: string) => {
       // Transform the data to match EnhancedCollection interface
       const enhancedCollections: EnhancedCollection[] = (data || []).map(collection => ({
         ...collection,
-        collaboration_enabled: collection.collaboration_enabled || false,
-        max_collaborators: collection.max_collaborators || 10,
-        social_features_enabled: collection.social_features_enabled !== false,
-        public_gallery_enabled: collection.public_gallery_enabled || false,
-        view_count: collection.view_count || 0,
-        like_count: collection.like_count || 0,
+        // Map existing fields or provide defaults for enhanced features
+        collaboration_enabled: collection.is_group || false,
+        max_collaborators: 10,
+        social_features_enabled: collection.is_public !== false,
+        public_gallery_enabled: collection.is_public || false,
+        view_count: 0, // Default since field doesn't exist yet
+        like_count: 0, // Default since field doesn't exist yet
         statistics: null, // Will be loaded separately
         tags: [], // Will be loaded separately
-        memberships: collection.collection_memberships || []
+        memberships: collection.collection_memberships?.map(membership => ({
+          ...membership,
+          collection_id: membership.collection_id || collection.id
+        })) || []
       }));
 
       setCollections(enhancedCollections);
@@ -75,9 +80,8 @@ export const useEnhancedCollections = (userId?: string) => {
           description: collectionData.description,
           user_id: collectionData.user_id,
           visibility: collectionData.visibility || 'private',
-          collaboration_enabled: collectionData.collaboration_enabled || false,
-          social_features_enabled: collectionData.social_features_enabled !== false,
-          public_gallery_enabled: collectionData.public_gallery_enabled || false
+          is_group: collectionData.collaboration_enabled || false,
+          is_public: collectionData.public_gallery_enabled || false
         })
         .select()
         .single();
@@ -96,9 +100,18 @@ export const useEnhancedCollections = (userId?: string) => {
 
   const updateCollection = useCallback(async (id: string, updates: Partial<EnhancedCollection>) => {
     try {
+      // Map enhanced fields to existing schema fields
+      const dbUpdates: any = {};
+      
+      if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.description !== undefined) dbUpdates.description = updates.description;
+      if (updates.visibility !== undefined) dbUpdates.visibility = updates.visibility;
+      if (updates.collaboration_enabled !== undefined) dbUpdates.is_group = updates.collaboration_enabled;
+      if (updates.public_gallery_enabled !== undefined) dbUpdates.is_public = updates.public_gallery_enabled;
+
       const { error } = await supabase
         .from('collections')
-        .update(updates)
+        .update(dbUpdates)
         .eq('id', id);
 
       if (error) throw error;
@@ -152,7 +165,7 @@ export const useCollectionStatistics = (collectionId: string) => {
   useEffect(() => {
     const fetchStatistics = async () => {
       try {
-        // Since collection_statistics table might not exist, we'll calculate stats manually
+        // Calculate stats from collection_cards since collection_statistics table might not exist
         const { data: cardData, error } = await supabase
           .from('collection_cards')
           .select(`
@@ -215,7 +228,7 @@ export const useCollectionActivityFeed = (collectionId: string) => {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        // Since collection_activity_feed table might not exist, we'll use collection_activity_log
+        // Use collection_activity_log table since collection_activity_feed might not exist
         const { data, error } = await supabase
           .from('collection_activity_log')
           .select('*')
@@ -223,7 +236,11 @@ export const useCollectionActivityFeed = (collectionId: string) => {
           .order('created_at', { ascending: false })
           .limit(50);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Activity fetch error:', error);
+          setActivities([]);
+          return;
+        }
 
         // Transform the data to match CollectionActivityFeedItem interface
         const transformedActivities: CollectionActivityFeedItem[] = (data || []).map(activity => ({
@@ -232,7 +249,7 @@ export const useCollectionActivityFeed = (collectionId: string) => {
           user_id: activity.user_id,
           activity_type: activity.action as any,
           target_card_id: activity.target_id,
-          activity_data: activity.metadata || {},
+          activity_data: typeof activity.metadata === 'object' ? activity.metadata || {} : {},
           created_at: activity.created_at,
           is_public: false,
           user_profile: {

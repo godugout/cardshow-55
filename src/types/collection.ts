@@ -1,5 +1,4 @@
 
-
 export interface EnhancedCollection {
   id: string;
   title: string;
