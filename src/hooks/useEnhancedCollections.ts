@@ -5,7 +5,8 @@ import type {
   EnhancedCollection, 
   CollectionStatistics, 
   CollectionActivityFeedItem,
-  CollectionFilters 
+  CollectionFilters,
+  CollectionMembership 
 } from '@/types/collection';
 import { toast } from 'sonner';
 
@@ -54,10 +55,15 @@ export const useEnhancedCollections = (userId?: string) => {
         like_count: 0, // Default since field doesn't exist yet
         statistics: null, // Will be loaded separately
         tags: [], // Will be loaded separately
-        memberships: collection.collection_memberships?.map(membership => ({
-          ...membership,
-          collection_id: membership.collection_id || collection.id
-        })) || []
+        memberships: (collection.collection_memberships || []).map(membership => ({
+          id: membership.id,
+          collection_id: membership.collection_id || collection.id,
+          user_id: membership.user_id,
+          role: (membership.role as CollectionMembership['role']) || 'viewer',
+          can_view_member_cards: membership.can_view_member_cards,
+          invited_by: membership.invited_by,
+          joined_at: membership.joined_at
+        }))
       }));
 
       setCollections(enhancedCollections);
@@ -247,9 +253,9 @@ export const useCollectionActivityFeed = (collectionId: string) => {
           id: activity.id,
           collection_id: activity.collection_id,
           user_id: activity.user_id,
-          activity_type: activity.action as any,
+          activity_type: activity.action as CollectionActivityFeedItem['activity_type'],
           target_card_id: activity.target_id,
-          activity_data: typeof activity.metadata === 'object' ? activity.metadata || {} : {},
+          activity_data: typeof activity.metadata === 'object' && activity.metadata !== null ? activity.metadata as Record<string, any> : {},
           created_at: activity.created_at,
           is_public: false,
           user_profile: {
