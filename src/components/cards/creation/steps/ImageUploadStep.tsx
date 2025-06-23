@@ -105,6 +105,19 @@ export const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
     input.click();
   };
 
+  const handleChooseDifferentImage = () => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = (e) => {
+      const files = Array.from((e.target as HTMLInputElement).files || []);
+      if (files.length > 0) {
+        handleFileSelect(files);
+      }
+    };
+    fileInput.click();
+  };
+
   const displayImage = cardData.image_url || previewUrl;
 
   return (
@@ -151,7 +164,7 @@ export const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
           <div className="text-center">
             <Button
               variant="outline"
-              onClick={() => document.querySelector('input[type="file"]')?.click()}
+              onClick={handleChooseDifferentImage}
               className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white"
             >
               <Upload className="w-4 h-4 mr-2" />

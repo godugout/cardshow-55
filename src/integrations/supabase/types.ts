@@ -479,6 +479,73 @@ export type Database = {
           },
         ]
       }
+      challenge_submissions: {
+        Row: {
+          card_id: string | null
+          challenge_id: string | null
+          creator_id: string | null
+          feedback: string | null
+          id: string
+          is_winner: boolean | null
+          prize_amount: number | null
+          ranking: number | null
+          score: number | null
+          submission_description: string | null
+          submission_title: string | null
+          submitted_at: string | null
+        }
+        Insert: {
+          card_id?: string | null
+          challenge_id?: string | null
+          creator_id?: string | null
+          feedback?: string | null
+          id?: string
+          is_winner?: boolean | null
+          prize_amount?: number | null
+          ranking?: number | null
+          score?: number | null
+          submission_description?: string | null
+          submission_title?: string | null
+          submitted_at?: string | null
+        }
+        Update: {
+          card_id?: string | null
+          challenge_id?: string | null
+          creator_id?: string | null
+          feedback?: string | null
+          id?: string
+          is_winner?: boolean | null
+          prize_amount?: number | null
+          ranking?: number | null
+          score?: number | null
+          submission_description?: string | null
+          submission_title?: string | null
+          submitted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_submissions_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenge_submissions_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "creator_challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenge_submissions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collection_activity_log: {
         Row: {
           action: string
@@ -850,6 +917,205 @@ export type Database = {
           },
         ]
       }
+      course_enrollments: {
+        Row: {
+          certificate_issued: boolean | null
+          completed_at: string | null
+          course_id: string | null
+          creator_id: string | null
+          enrolled_at: string | null
+          id: string
+          progress_percentage: number | null
+          rating: number | null
+          review: string | null
+        }
+        Insert: {
+          certificate_issued?: boolean | null
+          completed_at?: string | null
+          course_id?: string | null
+          creator_id?: string | null
+          enrolled_at?: string | null
+          id?: string
+          progress_percentage?: number | null
+          rating?: number | null
+          review?: string | null
+        }
+        Update: {
+          certificate_issued?: boolean | null
+          completed_at?: string | null
+          course_id?: string | null
+          creator_id?: string | null
+          enrolled_at?: string | null
+          id?: string
+          progress_percentage?: number | null
+          rating?: number | null
+          review?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "creator_courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_enrollments_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_activities: {
+        Row: {
+          activity_data: Json
+          activity_type: string
+          created_at: string | null
+          creator_id: string | null
+          id: string
+          visibility: string | null
+        }
+        Insert: {
+          activity_data?: Json
+          activity_type: string
+          created_at?: string | null
+          creator_id?: string | null
+          id?: string
+          visibility?: string | null
+        }
+        Update: {
+          activity_data?: Json
+          activity_type?: string
+          created_at?: string | null
+          creator_id?: string | null
+          id?: string
+          visibility?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_activities_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_challenges: {
+        Row: {
+          challenge_type: string
+          created_at: string | null
+          created_by: string | null
+          current_participants: number | null
+          description: string
+          difficulty_level: string | null
+          end_date: string | null
+          entry_fee: number | null
+          id: string
+          judging_criteria: Json | null
+          max_participants: number | null
+          prize_pool: number | null
+          rules: Json | null
+          start_date: string | null
+          status: string | null
+          submission_deadline: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          challenge_type: string
+          created_at?: string | null
+          created_by?: string | null
+          current_participants?: number | null
+          description: string
+          difficulty_level?: string | null
+          end_date?: string | null
+          entry_fee?: number | null
+          id?: string
+          judging_criteria?: Json | null
+          max_participants?: number | null
+          prize_pool?: number | null
+          rules?: Json | null
+          start_date?: string | null
+          status?: string | null
+          submission_deadline?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          challenge_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          current_participants?: number | null
+          description?: string
+          difficulty_level?: string | null
+          end_date?: string | null
+          entry_fee?: number | null
+          id?: string
+          judging_criteria?: Json | null
+          max_participants?: number | null
+          prize_pool?: number | null
+          rules?: Json | null
+          start_date?: string | null
+          status?: string | null
+          submission_deadline?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_challenges_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_collaborations: {
+        Row: {
+          collaborators: string[]
+          completion_date: string | null
+          created_at: string | null
+          deadline: string | null
+          id: string
+          ownership_split: Json
+          project_id: string
+          project_type: string
+          revenue_sharing_agreement: Json
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          collaborators?: string[]
+          completion_date?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          id?: string
+          ownership_split?: Json
+          project_id: string
+          project_type: string
+          revenue_sharing_agreement?: Json
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          collaborators?: string[]
+          completion_date?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          id?: string
+          ownership_split?: Json
+          project_id?: string
+          project_type?: string
+          revenue_sharing_agreement?: Json
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       creator_commissions: {
         Row: {
           client_id: string | null
@@ -906,6 +1172,80 @@ export type Database = {
           {
             foreignKeyName: "creator_commissions_creator_id_fkey"
             columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_courses: {
+        Row: {
+          course_materials: Json | null
+          course_type: string | null
+          created_at: string | null
+          description: string | null
+          duration_minutes: number | null
+          enrollment_count: number | null
+          id: string
+          instructor_id: string | null
+          is_free: boolean | null
+          is_published: boolean | null
+          learning_objectives: string[] | null
+          prerequisites: string[] | null
+          price: number | null
+          rating: number | null
+          skill_level: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          video_url: string | null
+        }
+        Insert: {
+          course_materials?: Json | null
+          course_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          enrollment_count?: number | null
+          id?: string
+          instructor_id?: string | null
+          is_free?: boolean | null
+          is_published?: boolean | null
+          learning_objectives?: string[] | null
+          prerequisites?: string[] | null
+          price?: number | null
+          rating?: number | null
+          skill_level?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          course_materials?: Json | null
+          course_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          enrollment_count?: number | null
+          id?: string
+          instructor_id?: string | null
+          is_free?: boolean | null
+          is_published?: boolean | null
+          learning_objectives?: string[] | null
+          prerequisites?: string[] | null
+          price?: number | null
+          rating?: number | null
+          skill_level?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_courses_instructor_id_fkey"
+            columns: ["instructor_id"]
             isOneToOne: false
             referencedRelation: "creator_profiles"
             referencedColumns: ["id"]
@@ -988,6 +1328,209 @@ export type Database = {
           },
         ]
       }
+      creator_follows: {
+        Row: {
+          followed_at: string | null
+          follower_id: string | null
+          following_id: string | null
+          id: string
+          notification_settings: Json | null
+        }
+        Insert: {
+          followed_at?: string | null
+          follower_id?: string | null
+          following_id?: string | null
+          id?: string
+          notification_settings?: Json | null
+        }
+        Update: {
+          followed_at?: string | null
+          follower_id?: string | null
+          following_id?: string | null
+          id?: string
+          notification_settings?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_follows_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_forums: {
+        Row: {
+          category: string
+          created_at: string | null
+          creator_id: string | null
+          description: string | null
+          id: string
+          is_locked: boolean | null
+          is_pinned: boolean | null
+          last_activity: string | null
+          reply_count: number | null
+          skill_level: string | null
+          title: string
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          is_locked?: boolean | null
+          is_pinned?: boolean | null
+          last_activity?: string | null
+          reply_count?: number | null
+          skill_level?: string | null
+          title: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          is_locked?: boolean | null
+          is_pinned?: boolean | null
+          last_activity?: string | null
+          reply_count?: number | null
+          skill_level?: string | null
+          title?: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_forums_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_grants: {
+        Row: {
+          amount: number
+          application_deadline: string | null
+          applications_count: number | null
+          available_slots: number | null
+          created_at: string | null
+          description: string
+          grant_type: string
+          id: string
+          requirements: Json | null
+          selection_criteria: Json | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          application_deadline?: string | null
+          applications_count?: number | null
+          available_slots?: number | null
+          created_at?: string | null
+          description: string
+          grant_type: string
+          id?: string
+          requirements?: Json | null
+          selection_criteria?: Json | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          application_deadline?: string | null
+          applications_count?: number | null
+          available_slots?: number | null
+          created_at?: string | null
+          description?: string
+          grant_type?: string
+          id?: string
+          requirements?: Json | null
+          selection_criteria?: Json | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      creator_mentorships: {
+        Row: {
+          commission_percentage: number | null
+          created_at: string | null
+          feedback_rating: number | null
+          id: string
+          mentee_id: string | null
+          mentor_id: string | null
+          payment_amount: number | null
+          program_type: string
+          sessions_completed: number | null
+          start_date: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          commission_percentage?: number | null
+          created_at?: string | null
+          feedback_rating?: number | null
+          id?: string
+          mentee_id?: string | null
+          mentor_id?: string | null
+          payment_amount?: number | null
+          program_type: string
+          sessions_completed?: number | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          commission_percentage?: number | null
+          created_at?: string | null
+          feedback_rating?: number | null
+          id?: string
+          mentee_id?: string | null
+          mentor_id?: string | null
+          payment_amount?: number | null
+          program_type?: string
+          sessions_completed?: number | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_mentorships_mentee_id_fkey"
+            columns: ["mentee_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_mentorships_mentor_id_fkey"
+            columns: ["mentor_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_profiles: {
         Row: {
           avg_rating: number | null
@@ -1041,6 +1584,74 @@ export type Database = {
           verification_status?: string | null
         }
         Relationships: []
+      }
+      creator_streams: {
+        Row: {
+          actual_start: string | null
+          chat_enabled: boolean | null
+          created_at: string | null
+          creator_id: string | null
+          current_viewers: number | null
+          description: string | null
+          ended_at: string | null
+          id: string
+          max_viewers: number | null
+          recording_url: string | null
+          scheduled_start: string | null
+          status: string | null
+          stream_type: string | null
+          stream_url: string | null
+          thumbnail_url: string | null
+          title: string
+          total_views: number | null
+        }
+        Insert: {
+          actual_start?: string | null
+          chat_enabled?: boolean | null
+          created_at?: string | null
+          creator_id?: string | null
+          current_viewers?: number | null
+          description?: string | null
+          ended_at?: string | null
+          id?: string
+          max_viewers?: number | null
+          recording_url?: string | null
+          scheduled_start?: string | null
+          status?: string | null
+          stream_type?: string | null
+          stream_url?: string | null
+          thumbnail_url?: string | null
+          title: string
+          total_views?: number | null
+        }
+        Update: {
+          actual_start?: string | null
+          chat_enabled?: boolean | null
+          created_at?: string | null
+          creator_id?: string | null
+          current_viewers?: number | null
+          description?: string | null
+          ended_at?: string | null
+          id?: string
+          max_viewers?: number | null
+          recording_url?: string | null
+          scheduled_start?: string | null
+          status?: string | null
+          stream_type?: string | null
+          stream_url?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          total_views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_streams_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       creator_subscriptions: {
         Row: {
@@ -1124,6 +1735,64 @@ export type Database = {
             columns: ["follower_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_replies: {
+        Row: {
+          content: string
+          created_at: string | null
+          creator_id: string | null
+          forum_id: string | null
+          id: string
+          is_solution: boolean | null
+          parent_reply_id: string | null
+          updated_at: string | null
+          upvotes: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          creator_id?: string | null
+          forum_id?: string | null
+          id?: string
+          is_solution?: boolean | null
+          parent_reply_id?: string | null
+          updated_at?: string | null
+          upvotes?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          creator_id?: string | null
+          forum_id?: string | null
+          id?: string
+          is_solution?: boolean | null
+          parent_reply_id?: string | null
+          updated_at?: string | null
+          upvotes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_replies_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_replies_forum_id_fkey"
+            columns: ["forum_id"]
+            isOneToOne: false
+            referencedRelation: "creator_forums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_replies_parent_reply_id_fkey"
+            columns: ["parent_reply_id"]
+            isOneToOne: false
+            referencedRelation: "forum_replies"
             referencedColumns: ["id"]
           },
         ]
@@ -1267,6 +1936,69 @@ export type Database = {
             columns: ["last_card_viewed"]
             isOneToOne: false
             referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grant_applications: {
+        Row: {
+          approved_amount: number | null
+          budget_breakdown: Json
+          creator_id: string | null
+          feedback: string | null
+          grant_id: string | null
+          id: string
+          portfolio_links: string[] | null
+          project_proposal: string
+          reviewed_at: string | null
+          score: number | null
+          status: string | null
+          submitted_at: string | null
+          timeline: Json
+        }
+        Insert: {
+          approved_amount?: number | null
+          budget_breakdown: Json
+          creator_id?: string | null
+          feedback?: string | null
+          grant_id?: string | null
+          id?: string
+          portfolio_links?: string[] | null
+          project_proposal: string
+          reviewed_at?: string | null
+          score?: number | null
+          status?: string | null
+          submitted_at?: string | null
+          timeline: Json
+        }
+        Update: {
+          approved_amount?: number | null
+          budget_breakdown?: Json
+          creator_id?: string | null
+          feedback?: string | null
+          grant_id?: string | null
+          id?: string
+          portfolio_links?: string[] | null
+          project_proposal?: string
+          reviewed_at?: string | null
+          score?: number | null
+          status?: string | null
+          submitted_at?: string | null
+          timeline?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grant_applications_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grant_applications_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "creator_grants"
             referencedColumns: ["id"]
           },
         ]
@@ -1989,6 +2721,48 @@ export type Database = {
           },
         ]
       }
+      stream_interactions: {
+        Row: {
+          id: string
+          interaction_type: string
+          message: string | null
+          stream_id: string | null
+          timestamp: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          id?: string
+          interaction_type: string
+          message?: string | null
+          stream_id?: string | null
+          timestamp?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          id?: string
+          interaction_type?: string
+          message?: string | null
+          stream_id?: string | null
+          timestamp?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stream_interactions_stream_id_fkey"
+            columns: ["stream_id"]
+            isOneToOne: false
+            referencedRelation: "creator_streams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stream_interactions_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tags: {
         Row: {
           category: string | null
@@ -2599,6 +3373,26 @@ export type Database = {
           total_value: number
           completion_percentage: number
           last_updated: string
+        }[]
+      }
+      get_creator_activity_feed: {
+        Args: { creator_uuid: string; limit_count?: number }
+        Returns: {
+          activity_id: string
+          creator_id: string
+          creator_username: string
+          activity_type: string
+          activity_data: Json
+          created_at: string
+        }[]
+      }
+      get_trending_creators: {
+        Args: { days_back?: number }
+        Returns: {
+          creator_id: string
+          username: string
+          activity_count: number
+          follower_count: number
         }[]
       }
       increment_listing_views: {
