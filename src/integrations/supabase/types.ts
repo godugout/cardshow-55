@@ -147,6 +147,62 @@ export type Database = {
           },
         ]
       }
+      card_sets: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string | null
+          creator_id: string
+          description: string | null
+          id: string
+          is_published: boolean | null
+          metadata: Json | null
+          name: string
+          price: number | null
+          release_date: string | null
+          royalty_percentage: number | null
+          total_cards: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          creator_id: string
+          description?: string | null
+          id?: string
+          is_published?: boolean | null
+          metadata?: Json | null
+          name: string
+          price?: number | null
+          release_date?: string | null
+          royalty_percentage?: number | null
+          total_cards?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          creator_id?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean | null
+          metadata?: Json | null
+          name?: string
+          price?: number | null
+          release_date?: string | null
+          royalty_percentage?: number | null
+          total_cards?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_sets_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       card_templates: {
         Row: {
           category: string
@@ -197,16 +253,83 @@ export type Database = {
           },
         ]
       }
+      card_templates_creator: {
+        Row: {
+          category: string
+          created_at: string | null
+          creator_id: string | null
+          description: string | null
+          id: string
+          is_published: boolean | null
+          license_type: string | null
+          name: string
+          preview_images: string[] | null
+          price: number
+          rating: number | null
+          revenue_generated: number | null
+          sales_count: number | null
+          tags: string[] | null
+          template_data: Json
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean | null
+          license_type?: string | null
+          name: string
+          preview_images?: string[] | null
+          price?: number
+          rating?: number | null
+          revenue_generated?: number | null
+          sales_count?: number | null
+          tags?: string[] | null
+          template_data?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean | null
+          license_type?: string | null
+          name?: string
+          preview_images?: string[] | null
+          price?: number
+          rating?: number | null
+          revenue_generated?: number | null
+          sales_count?: number | null
+          tags?: string[] | null
+          template_data?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_templates_creator_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cards: {
         Row: {
           abilities: string[] | null
           base_price: number | null
+          card_set_id: string | null
           card_type: Database["public"]["Enums"]["card_type"] | null
           collection_id: string | null
           crd_catalog_inclusion: boolean | null
           created_at: string | null
           creator_id: string
           current_market_value: number | null
+          current_supply: number | null
           description: string | null
           design_metadata: Json | null
           edition_number: number | null
@@ -214,8 +337,10 @@ export type Database = {
           id: string
           image_url: string | null
           is_public: boolean | null
+          is_tradeable: boolean | null
           mana_cost: Json | null
           marketplace_listing: boolean | null
+          name: string | null
           power: number | null
           price: number | null
           print_available: boolean | null
@@ -240,12 +365,14 @@ export type Database = {
         Insert: {
           abilities?: string[] | null
           base_price?: number | null
+          card_set_id?: string | null
           card_type?: Database["public"]["Enums"]["card_type"] | null
           collection_id?: string | null
           crd_catalog_inclusion?: boolean | null
           created_at?: string | null
           creator_id: string
           current_market_value?: number | null
+          current_supply?: number | null
           description?: string | null
           design_metadata?: Json | null
           edition_number?: number | null
@@ -253,8 +380,10 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_public?: boolean | null
+          is_tradeable?: boolean | null
           mana_cost?: Json | null
           marketplace_listing?: boolean | null
+          name?: string | null
           power?: number | null
           price?: number | null
           print_available?: boolean | null
@@ -279,12 +408,14 @@ export type Database = {
         Update: {
           abilities?: string[] | null
           base_price?: number | null
+          card_set_id?: string | null
           card_type?: Database["public"]["Enums"]["card_type"] | null
           collection_id?: string | null
           crd_catalog_inclusion?: boolean | null
           created_at?: string | null
           creator_id?: string
           current_market_value?: number | null
+          current_supply?: number | null
           description?: string | null
           design_metadata?: Json | null
           edition_number?: number | null
@@ -292,8 +423,10 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_public?: boolean | null
+          is_tradeable?: boolean | null
           mana_cost?: Json | null
           marketplace_listing?: boolean | null
+          name?: string | null
           power?: number | null
           price?: number | null
           print_available?: boolean | null
@@ -316,6 +449,13 @@ export type Database = {
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
         }
         Relationships: [
+          {
+            foreignKeyName: "cards_card_set_id_fkey"
+            columns: ["card_set_id"]
+            isOneToOne: false
+            referencedRelation: "card_sets"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "cards_collection_id_fkey"
             columns: ["collection_id"]
@@ -573,11 +713,13 @@ export type Database = {
           id: string
           is_featured: boolean | null
           is_group: boolean | null
+          is_public: boolean | null
           metadata: Json | null
-          owner_id: string
+          name: string | null
           template_id: string | null
           title: string
           updated_at: string | null
+          user_id: string
           visibility: Database["public"]["Enums"]["visibility_type"] | null
         }
         Insert: {
@@ -589,11 +731,13 @@ export type Database = {
           id?: string
           is_featured?: boolean | null
           is_group?: boolean | null
+          is_public?: boolean | null
           metadata?: Json | null
-          owner_id: string
+          name?: string | null
           template_id?: string | null
           title: string
           updated_at?: string | null
+          user_id: string
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
         }
         Update: {
@@ -605,17 +749,19 @@ export type Database = {
           id?: string
           is_featured?: boolean | null
           is_group?: boolean | null
+          is_public?: boolean | null
           metadata?: Json | null
-          owner_id?: string
+          name?: string | null
           template_id?: string | null
           title?: string
           updated_at?: string | null
+          user_id?: string
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
         }
         Relationships: [
           {
             foreignKeyName: "collections_owner_id_fkey"
-            columns: ["owner_id"]
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -700,6 +846,248 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_commissions: {
+        Row: {
+          client_id: string | null
+          commission_type: string
+          communication_channel: string | null
+          created_at: string | null
+          creator_id: string | null
+          deadline: string | null
+          deliverables: string[] | null
+          description: string
+          final_price: number | null
+          id: string
+          quoted_price: number
+          requirements: Json | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          commission_type: string
+          communication_channel?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          deadline?: string | null
+          deliverables?: string[] | null
+          description: string
+          final_price?: number | null
+          id?: string
+          quoted_price: number
+          requirements?: Json | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          commission_type?: string
+          communication_channel?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          deadline?: string | null
+          deliverables?: string[] | null
+          description?: string
+          final_price?: number | null
+          id?: string
+          quoted_price?: number
+          requirements?: Json | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_commissions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_earnings: {
+        Row: {
+          amount: number
+          card_id: string | null
+          created_at: string | null
+          creator_id: string | null
+          id: string
+          metadata: Json | null
+          net_amount: number | null
+          payout_date: string | null
+          platform_fee: number
+          source_type: string
+          status: string | null
+          stripe_transfer_id: string | null
+          tax_document_id: string | null
+          template_id: string | null
+          transaction_date: string | null
+        }
+        Insert: {
+          amount: number
+          card_id?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          id?: string
+          metadata?: Json | null
+          net_amount?: number | null
+          payout_date?: string | null
+          platform_fee?: number
+          source_type: string
+          status?: string | null
+          stripe_transfer_id?: string | null
+          tax_document_id?: string | null
+          template_id?: string | null
+          transaction_date?: string | null
+        }
+        Update: {
+          amount?: number
+          card_id?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          id?: string
+          metadata?: Json | null
+          net_amount?: number | null
+          payout_date?: string | null
+          platform_fee?: number
+          source_type?: string
+          status?: string | null
+          stripe_transfer_id?: string | null
+          tax_document_id?: string | null
+          template_id?: string | null
+          transaction_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_earnings_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_earnings_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_earnings_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "card_templates_creator"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_profiles: {
+        Row: {
+          avg_rating: number | null
+          bio: string | null
+          cards_created: number | null
+          commission_rates: Json | null
+          created_at: string | null
+          id: string
+          payout_enabled: boolean | null
+          portfolio_url: string | null
+          specialties: string[] | null
+          stripe_account_id: string | null
+          tax_info: Json | null
+          total_earnings: number | null
+          updated_at: string | null
+          user_id: string | null
+          verification_status: string | null
+        }
+        Insert: {
+          avg_rating?: number | null
+          bio?: string | null
+          cards_created?: number | null
+          commission_rates?: Json | null
+          created_at?: string | null
+          id?: string
+          payout_enabled?: boolean | null
+          portfolio_url?: string | null
+          specialties?: string[] | null
+          stripe_account_id?: string | null
+          tax_info?: Json | null
+          total_earnings?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          verification_status?: string | null
+        }
+        Update: {
+          avg_rating?: number | null
+          bio?: string | null
+          cards_created?: number | null
+          commission_rates?: Json | null
+          created_at?: string | null
+          id?: string
+          payout_enabled?: boolean | null
+          portfolio_url?: string | null
+          specialties?: string[] | null
+          stripe_account_id?: string | null
+          tax_info?: Json | null
+          total_earnings?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          verification_status?: string | null
+        }
+        Relationships: []
+      }
+      creator_subscriptions: {
+        Row: {
+          benefits: Json | null
+          created_at: string | null
+          creator_id: string | null
+          end_date: string | null
+          id: string
+          monthly_fee: number
+          start_date: string | null
+          status: string | null
+          stripe_subscription_id: string | null
+          subscriber_id: string | null
+          subscription_type: string
+        }
+        Insert: {
+          benefits?: Json | null
+          created_at?: string | null
+          creator_id?: string | null
+          end_date?: string | null
+          id?: string
+          monthly_fee: number
+          start_date?: string | null
+          status?: string | null
+          stripe_subscription_id?: string | null
+          subscriber_id?: string | null
+          subscription_type: string
+        }
+        Update: {
+          benefits?: Json | null
+          created_at?: string | null
+          creator_id?: string | null
+          end_date?: string | null
+          id?: string
+          monthly_fee?: number
+          start_date?: string | null
+          status?: string | null
+          stripe_subscription_id?: string | null
+          subscriber_id?: string | null
+          subscription_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_subscriptions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1914,6 +2302,193 @@ export type Database = {
         }
         Relationships: []
       }
+      user_card_ownership: {
+        Row: {
+          acquisition_date: string | null
+          acquisition_method: string | null
+          acquisition_price: number | null
+          card_id: string
+          id: string
+          is_favorite: boolean | null
+          quantity: number | null
+          user_id: string
+        }
+        Insert: {
+          acquisition_date?: string | null
+          acquisition_method?: string | null
+          acquisition_price?: number | null
+          card_id: string
+          id?: string
+          is_favorite?: boolean | null
+          quantity?: number | null
+          user_id: string
+        }
+        Update: {
+          acquisition_date?: string | null
+          acquisition_method?: string | null
+          acquisition_price?: number | null
+          card_id?: string
+          id?: string
+          is_favorite?: boolean | null
+          quantity?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_card_ownership_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_card_ownership_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_preferences: {
+        Row: {
+          accessibility_options: Json | null
+          created_at: string | null
+          id: string
+          notifications_enabled: Json | null
+          privacy_settings: Json | null
+          quality_settings: Json | null
+          theme: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          accessibility_options?: Json | null
+          created_at?: string | null
+          id?: string
+          notifications_enabled?: Json | null
+          privacy_settings?: Json | null
+          quality_settings?: Json | null
+          theme?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          accessibility_options?: Json | null
+          created_at?: string | null
+          id?: string
+          notifications_enabled?: Json | null
+          privacy_settings?: Json | null
+          quality_settings?: Json | null
+          theme?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          location: string | null
+          social_links: Json | null
+          updated_at: string | null
+          username: string
+          verification_status: string | null
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          location?: string | null
+          social_links?: Json | null
+          updated_at?: string | null
+          username: string
+          verification_status?: string | null
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          location?: string | null
+          social_links?: Json | null
+          updated_at?: string | null
+          username?: string
+          verification_status?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      user_stats: {
+        Row: {
+          cards_created: number | null
+          cards_owned: number | null
+          created_at: string | null
+          id: string
+          last_active: string | null
+          reputation_score: number | null
+          total_earned: number | null
+          total_spent: number | null
+          trades_completed: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cards_created?: number | null
+          cards_owned?: number | null
+          created_at?: string | null
+          id?: string
+          last_active?: string | null
+          reputation_score?: number | null
+          total_earned?: number | null
+          total_spent?: number | null
+          trades_completed?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cards_created?: number | null
+          cards_owned?: number | null
+          created_at?: string | null
+          id?: string
+          last_active?: string | null
+          reputation_score?: number | null
+          total_earned?: number | null
+          total_spent?: number | null
+          trades_completed?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_trade_preferences: {
         Row: {
           auto_accept_threshold: number | null
@@ -1991,6 +2566,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_creator_earnings: {
+        Args: { creator_uuid: string; start_date?: string; end_date?: string }
+        Returns: {
+          total_earnings: number
+          pending_earnings: number
+          paid_earnings: number
+          transaction_count: number
+        }[]
+      }
       calculate_platform_fee: {
         Args: { amount: number }
         Returns: number
@@ -2028,6 +2612,10 @@ export type Database = {
       place_bid: {
         Args: { p_auction_id: string; p_amount: number; p_proxy_max?: number }
         Returns: string
+      }
+      process_creator_payouts: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       update_market_analytics: {
         Args: { p_card_id: string; p_sale_price: number }

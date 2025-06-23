@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { AuthForm } from './AuthForm';
+import { Sparkles } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,14 +13,17 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00C851]"></div>
+      <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
+        <div className="text-center">
+          <Sparkles className="w-8 h-8 text-crd-green animate-spin mx-auto mb-4" />
+          <p className="text-crd-lightGray">Loading...</p>
+        </div>
       </div>
     );
   }
 
   if (!user) {
-    return <Navigate to="/auth/signin" replace />;
+    return <AuthForm />;
   }
 
   return <>{children}</>;
