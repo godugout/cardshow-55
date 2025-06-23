@@ -479,6 +479,47 @@ export type Database = {
           },
         ]
       }
+      challenge_participations: {
+        Row: {
+          challenge_id: string | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          ranking: number | null
+          score: number | null
+          submission_data: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          challenge_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          ranking?: number | null
+          score?: number | null
+          submission_data?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          challenge_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          ranking?: number | null
+          score?: number | null
+          submission_data?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_participations_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "community_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenge_submissions: {
         Row: {
           card_id: string | null
@@ -916,6 +957,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      community_challenges: {
+        Row: {
+          challenge_type: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          entry_requirements: Json | null
+          id: string
+          max_participants: number | null
+          participant_count: number | null
+          prize_pool: number | null
+          rules: Json | null
+          start_date: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          challenge_type: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          entry_requirements?: Json | null
+          id?: string
+          max_participants?: number | null
+          participant_count?: number | null
+          prize_pool?: number | null
+          rules?: Json | null
+          start_date?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          challenge_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          entry_requirements?: Json | null
+          id?: string
+          max_participants?: number | null
+          participant_count?: number | null
+          prize_pool?: number | null
+          rules?: Json | null
+          start_date?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       content_moderation: {
         Row: {
@@ -3234,6 +3329,51 @@ export type Database = {
           },
         ]
       }
+      social_activities: {
+        Row: {
+          activity_timestamp: string | null
+          activity_type: string
+          created_at: string | null
+          featured_status: boolean | null
+          id: string
+          metadata: Json | null
+          reaction_count: number | null
+          target_id: string | null
+          target_type: string | null
+          updated_at: string | null
+          user_id: string
+          visibility: string | null
+        }
+        Insert: {
+          activity_timestamp?: string | null
+          activity_type: string
+          created_at?: string | null
+          featured_status?: boolean | null
+          id?: string
+          metadata?: Json | null
+          reaction_count?: number | null
+          target_id?: string | null
+          target_type?: string | null
+          updated_at?: string | null
+          user_id: string
+          visibility?: string | null
+        }
+        Update: {
+          activity_timestamp?: string | null
+          activity_type?: string
+          created_at?: string | null
+          featured_status?: boolean | null
+          id?: string
+          metadata?: Json | null
+          reaction_count?: number | null
+          target_id?: string | null
+          target_type?: string | null
+          updated_at?: string | null
+          user_id?: string
+          visibility?: string | null
+        }
+        Relationships: []
+      }
       stream_interactions: {
         Row: {
           id: string
@@ -3589,6 +3729,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_name: string
+          achievement_type: string
+          badge_image_url: string | null
+          description: string | null
+          id: string
+          is_featured: boolean | null
+          metadata: Json | null
+          points_awarded: number | null
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_name: string
+          achievement_type: string
+          badge_image_url?: string | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          metadata?: Json | null
+          points_awarded?: number | null
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_name?: string
+          achievement_type?: string
+          badge_image_url?: string | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          metadata?: Json | null
+          points_awarded?: number | null
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_card_ownership: {
         Row: {
           acquisition_date: string | null
@@ -3687,10 +3866,17 @@ export type Database = {
           bio: string | null
           created_at: string | null
           email: string
+          experience_points: number | null
           full_name: string | null
           id: string
+          is_creator: boolean | null
+          is_verified: boolean | null
+          level: number | null
           location: string | null
+          privacy_settings: Json | null
           social_links: Json | null
+          total_followers: number | null
+          total_following: number | null
           updated_at: string | null
           username: string
           verification_status: string | null
@@ -3701,10 +3887,17 @@ export type Database = {
           bio?: string | null
           created_at?: string | null
           email: string
+          experience_points?: number | null
           full_name?: string | null
           id: string
+          is_creator?: boolean | null
+          is_verified?: boolean | null
+          level?: number | null
           location?: string | null
+          privacy_settings?: Json | null
           social_links?: Json | null
+          total_followers?: number | null
+          total_following?: number | null
           updated_at?: string | null
           username: string
           verification_status?: string | null
@@ -3715,14 +3908,54 @@ export type Database = {
           bio?: string | null
           created_at?: string | null
           email?: string
+          experience_points?: number | null
           full_name?: string | null
           id?: string
+          is_creator?: boolean | null
+          is_verified?: boolean | null
+          level?: number | null
           location?: string | null
+          privacy_settings?: Json | null
           social_links?: Json | null
+          total_followers?: number | null
+          total_following?: number | null
           updated_at?: string | null
           username?: string
           verification_status?: string | null
           website?: string | null
+        }
+        Relationships: []
+      }
+      user_relationships: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+          id: string
+          interaction_count: number | null
+          last_interaction: string | null
+          notification_settings: Json | null
+          relationship_type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+          id?: string
+          interaction_count?: number | null
+          last_interaction?: string | null
+          notification_settings?: Json | null
+          relationship_type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+          id?: string
+          interaction_count?: number | null
+          last_interaction?: string | null
+          notification_settings?: Json | null
+          relationship_type?: string | null
         }
         Relationships: []
       }
@@ -3882,6 +4115,21 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_activity_feed: {
+        Args: { user_uuid: string; limit_count?: number }
+        Returns: {
+          activity_id: string
+          user_id: string
+          username: string
+          avatar_url: string
+          activity_type: string
+          target_id: string
+          target_type: string
+          activity_timestamp: string
+          metadata: Json
+          reaction_count: number
+        }[]
+      }
       get_collection_stats: {
         Args: { collection_uuid: string }
         Returns: {
@@ -3910,6 +4158,18 @@ export type Database = {
           username: string
           activity_count: number
           follower_count: number
+        }[]
+      }
+      get_user_stats: {
+        Args: { user_uuid: string }
+        Returns: {
+          total_cards: number
+          total_collections: number
+          total_followers: number
+          total_following: number
+          experience_points: number
+          level: number
+          achievements_count: number
         }[]
       }
       increment_listing_views: {
