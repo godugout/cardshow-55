@@ -37,7 +37,11 @@ export const useOfflineStorage = () => {
       const db = await openOfflineDB();
       const transaction = db.transaction(['queue'], 'readwrite');
       const store = transaction.objectStore('queue');
-      await store.add(queueItem);
+      await new Promise<void>((resolve, reject) => {
+        const request = store.add(queueItem);
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
       updateQueueSize();
       
       // Try to process immediately if online
@@ -58,22 +62,39 @@ export const useOfflineStorage = () => {
       const db = await openOfflineDB();
       const transaction = db.transaction(['queue'], 'readwrite');
       const store = transaction.objectStore('queue');
-      const items = await store.getAll();
+      
+      const items = await new Promise<OfflineQueueItem[]>((resolve, reject) => {
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
 
       for (const item of items) {
         try {
           await processQueueItem(item);
-          await store.delete(item.id);
+          await new Promise<void>((resolve, reject) => {
+            const deleteRequest = store.delete(item.id);
+            deleteRequest.onsuccess = () => resolve();
+            deleteRequest.onerror = () => reject(deleteRequest.error);
+          });
         } catch (error) {
           console.error('Failed to process queue item:', error);
           
           // Increment retry count
           item.retryCount++;
           if (item.retryCount < 3) {
-            await store.put(item);
+            await new Promise<void>((resolve, reject) => {
+              const putRequest = store.put(item);
+              putRequest.onsuccess = () => resolve();
+              putRequest.onerror = () => reject(putRequest.error);
+            });
           } else {
             // Remove after 3 failed attempts
-            await store.delete(item.id);
+            await new Promise<void>((resolve, reject) => {
+              const deleteRequest = store.delete(item.id);
+              deleteRequest.onsuccess = () => resolve();
+              deleteRequest.onerror = () => reject(deleteRequest.error);
+            });
           }
         }
       }
@@ -119,7 +140,13 @@ export const useOfflineStorage = () => {
       const db = await openOfflineDB();
       const transaction = db.transaction(['queue'], 'readonly');
       const store = transaction.objectStore('queue');
-      const count = await store.count();
+      
+      const count = await new Promise<number>((resolve, reject) => {
+        const request = store.count();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      
       setQueueSize(count);
     } catch (error) {
       console.error('Failed to update queue size:', error);
@@ -131,7 +158,13 @@ export const useOfflineStorage = () => {
       const db = await openOfflineDB();
       const transaction = db.transaction(['queue'], 'readwrite');
       const store = transaction.objectStore('queue');
-      await store.clear();
+      
+      await new Promise<void>((resolve, reject) => {
+        const request = store.clear();
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+      
       updateQueueSize();
     } catch (error) {
       console.error('Failed to clear queue:', error);

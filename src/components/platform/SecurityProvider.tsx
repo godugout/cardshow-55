@@ -1,5 +1,4 @@
-
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 
 interface SecurityConfig {
@@ -24,6 +23,10 @@ interface SecurityContextType {
   generateCSRFToken: () => string;
 }
 
+interface SecurityProviderProps {
+  children: ReactNode;
+}
+
 const SecurityContext = createContext<SecurityContextType | undefined>(undefined);
 
 const defaultConfig: SecurityConfig = {
@@ -39,7 +42,7 @@ const defaultConfig: SecurityConfig = {
   },
 };
 
-export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) => {
   const [config] = useState<SecurityConfig>(defaultConfig);
   const [isSecure, setIsSecure] = useState(false);
   const [rateLimitMap, setRateLimitMap] = useState<Map<string, number[]>>(new Map());

@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 interface AnalyticsEvent {
   name: string;
@@ -16,9 +16,13 @@ interface AnalyticsContextType {
   getMetrics: () => AnalyticsEvent[];
 }
 
+interface AnalyticsProviderProps {
+  children: ReactNode;
+}
+
 const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefined);
 
-export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }) => {
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   const [userId, setUserId] = useState<string>();
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
@@ -37,12 +41,14 @@ export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       window.addEventListener('load', () => {
         setTimeout(() => {
           const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-          track('performance', {
-            loadTime: navigation.loadEventEnd - navigation.navigationStart,
-            domContentLoaded: navigation.domContentLoadedEventEnd - navigation.navigationStart,
-            firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime,
-            firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime,
-          });
+          if (navigation) {
+            track('performance', {
+              loadTime: navigation.loadEventEnd - navigation.fetchStart,
+              domContentLoaded: navigation.domContentLoadedEventEnd - navigation.fetchStart,
+              firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime,
+              firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime,
+            });
+          }
         }, 1000);
       });
     }
