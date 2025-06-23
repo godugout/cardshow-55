@@ -97,7 +97,7 @@ export const CrystalEffect: React.FC<CrystalEffectProps> = ({ effectValues, mous
         }}
       />
       
-      <style jsx>{`
+      <style>{`
         @keyframes crystal-sparkle {
           0%, 100% { 
             opacity: 0.8;

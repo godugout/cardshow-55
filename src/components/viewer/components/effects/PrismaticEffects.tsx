@@ -119,7 +119,7 @@ export const PrismaticEffects: React.FC<PrismaticEffectsProps> = ({
         </div>
       )}
       
-      <style jsx>{`
+      <style>{`
         @keyframes holographic-shift {
           0% { transform: scale(1) rotate(0deg); }
           50% { transform: scale(1.02) rotate(1deg); }

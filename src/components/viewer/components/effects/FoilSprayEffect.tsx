@@ -118,7 +118,7 @@ export const FoilSprayEffect: React.FC<FoilSprayEffectProps> = ({ effectValues, 
         }}
       />
       
-      <style jsx>{`
+      <style>{`
         @keyframes foil-sparkle {
           0%, 100% { 
             opacity: 0.3;

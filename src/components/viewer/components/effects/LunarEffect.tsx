@@ -158,7 +158,7 @@ export const LunarEffect: React.FC<LunarEffectProps> = ({ effectValues, mousePos
         }}
       />
       
-      <style jsx>{`
+      <style>{`
         @keyframes lunar-dust {
           0% { 
             opacity: 0.7;

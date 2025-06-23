@@ -84,7 +84,7 @@ export const AuroraEffect: React.FC<AuroraEffectProps> = ({ effectValues, mouseP
         }}
       />
       
-      <style jsx>{`
+      <style>{`
         @keyframes aurora-flow {
           0% { transform: translateY(0px) scaleY(1); }
           50% { transform: translateY(-5px) scaleY(1.1); }

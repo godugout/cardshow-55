@@ -106,7 +106,7 @@ export const WavesEffect: React.FC<WavesEffectProps> = ({ effectValues, mousePos
         }}
       />
       
-      <style jsx>{`
+      <style>{`
         @keyframes wave-flow {
           0%, 100% { 
             transform: translateY(0px) scaleY(1);
