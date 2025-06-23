@@ -14,32 +14,63 @@ const breakpoints: Record<BreakpointKey, number> = {
 
 export const useResponsiveLayout = () => {
   const [currentBreakpoint, setCurrentBreakpoint] = useState<BreakpointKey>('lg');
-  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const [windowSize, setWindowSize] = useState({ width: 1024, height: 768 }); // Default fallback
+  const [isInitialized, setIsInitialized] = useState(false);
   
   useEffect(() => {
     const updateBreakpoint = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      
-      setWindowSize({ width, height });
-      
-      if (width >= breakpoints['2xl']) setCurrentBreakpoint('2xl');
-      else if (width >= breakpoints.xl) setCurrentBreakpoint('xl');
-      else if (width >= breakpoints.lg) setCurrentBreakpoint('lg');
-      else if (width >= breakpoints.md) setCurrentBreakpoint('md');
-      else if (width >= breakpoints.sm) setCurrentBreakpoint('sm');
-      else setCurrentBreakpoint('xs');
+      try {
+        const width = window.innerWidth || 1024; // Fallback width
+        const height = window.innerHeight || 768; // Fallback height
+        
+        setWindowSize({ width, height });
+        
+        if (width >= breakpoints['2xl']) setCurrentBreakpoint('2xl');
+        else if (width >= breakpoints.xl) setCurrentBreakpoint('xl');
+        else if (width >= breakpoints.lg) setCurrentBreakpoint('lg');
+        else if (width >= breakpoints.md) setCurrentBreakpoint('md');
+        else if (width >= breakpoints.sm) setCurrentBreakpoint('sm');
+        else setCurrentBreakpoint('xs');
+        
+        if (!isInitialized) {
+          setIsInitialized(true);
+        }
+      } catch (error) {
+        console.error('Error updating breakpoint:', error);
+        // Use safe defaults if window is not available
+        setCurrentBreakpoint('lg');
+        setWindowSize({ width: 1024, height: 768 });
+        setIsInitialized(true);
+      }
     };
     
+    // Initial call
     updateBreakpoint();
-    window.addEventListener('resize', updateBreakpoint);
     
-    return () => window.removeEventListener('resize', updateBreakpoint);
-  }, []);
+    // Add event listener with error handling
+    const handleResize = () => {
+      try {
+        updateBreakpoint();
+      } catch (error) {
+        console.error('Error handling resize:', error);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      try {
+        window.removeEventListener('resize', handleResize);
+      } catch (error) {
+        console.error('Error removing resize listener:', error);
+      }
+    };
+  }, [isInitialized]);
   
   return {
     currentBreakpoint,
     windowSize,
+    isInitialized,
     isMobile: ['xs', 'sm'].includes(currentBreakpoint),
     isTablet: currentBreakpoint === 'md',
     isDesktop: ['lg', 'xl', '2xl'].includes(currentBreakpoint),

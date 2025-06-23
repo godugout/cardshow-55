@@ -15,8 +15,8 @@ import { PerformanceMonitor } from '@/components/platform/PerformanceMonitor';
 import { SecurityProvider } from '@/components/platform/SecurityProvider';
 import { AnalyticsProvider } from '@/components/platform/AnalyticsProvider';
 
-// Import page components
-import { HomePage } from '@/pages/HomePage';
+// Import page components - use Index instead of HomePage to simplify
+import Index from '@/pages/Index';
 import { GalleryPage } from '@/pages/GalleryPage';
 import { CreatePage } from '@/pages/CreatePage';
 import { CollectionsPage } from '@/pages/CollectionsPage';
@@ -61,8 +61,8 @@ function App() {
                         <ProtectedRoute>
                           <AppShell>
                             <Routes>
-                              {/* Main pages */}
-                              <Route path="/" element={<HomePage />} />
+                              {/* Use Index component instead of HomePage for simplicity */}
+                              <Route path="/" element={<Index />} />
                               <Route path="/gallery" element={<GalleryPage />} />
                               <Route path="/create" element={<CreatePage />} />
                               <Route path="/collections" element={<CollectionsPage />} />
