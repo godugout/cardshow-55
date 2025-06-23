@@ -24,10 +24,14 @@ interface AuthContextType {
   profile: UserProfile | null;
   session: Session | null;
   loading: boolean;
+  isLoading: boolean; // Add this for compatibility
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, userData?: { username?: string; full_name?: string }) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: any }>;
+  resetPassword: (email: string) => Promise<{ error: any }>;
+  signInWithOAuth: (provider: 'google' | 'github' | 'discord') => Promise<{ error: any }>;
+  signInWithMagicLink: (email: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -190,15 +194,81 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+      
+      if (error) {
+        toast.error(error.message);
+        return { error };
+      }
+      
+      toast.success('Password reset email sent!');
+      return { error: null };
+    } catch (error) {
+      toast.error('An unexpected error occurred');
+      return { error };
+    }
+  };
+
+  const signInWithOAuth = async (provider: 'google' | 'github' | 'discord') => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+      
+      if (error) {
+        toast.error(error.message);
+        return { error };
+      }
+      
+      return { error: null };
+    } catch (error) {
+      toast.error('An unexpected error occurred');
+      return { error };
+    }
+  };
+
+  const signInWithMagicLink = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+        },
+      });
+      
+      if (error) {
+        toast.error(error.message);
+        return { error };
+      }
+      
+      toast.success('Magic link sent to your email!');
+      return { error: null };
+    } catch (error) {
+      toast.error('An unexpected error occurred');
+      return { error };
+    }
+  };
+
   const value = {
     user,
     profile,
     session,
     loading,
+    isLoading: loading, // Alias for compatibility
     signIn,
     signUp,
     signOut,
     updateProfile,
+    resetPassword,
+    signInWithOAuth,
+    signInWithMagicLink,
   };
 
   return (

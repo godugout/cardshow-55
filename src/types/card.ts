@@ -56,19 +56,24 @@ export interface Card {
   series: string | null;
   edition_number: number | null;
   total_supply: number | null;
-  // Additional database fields
-  abilities: string[] | null;
-  base_price: number | null;
-  card_type: CardType | null;
-  current_market_value: number | null;
-  favorite_count: number | null;
-  view_count: number | null;
-  royalty_percentage: number | null;
-  serial_number: number | null;
-  set_id: string | null;
-  mana_cost: Record<string, any> | null;
-  toughness: number | null;
-  power: number | null;
+  // Additional database fields - make them optional for backward compatibility
+  abilities?: string[] | null;
+  base_price?: number | null;
+  card_type?: CardType | null;
+  current_market_value?: number | null;
+  favorite_count?: number | null;
+  view_count?: number | null;
+  royalty_percentage?: number | null;
+  serial_number?: number | null;
+  set_id?: string | null;
+  mana_cost?: Record<string, any> | null;
+  toughness?: number | null;
+  power?: number | null;
+  // Make these optional for backward compatibility
+  card_set_id?: string | null;
+  current_supply?: number | null;
+  is_tradeable?: boolean | null;
+  name?: string | null;
 }
 
 // Update CardCreateParams to match database requirements
@@ -109,6 +114,10 @@ export interface CardCreateParams {
   mana_cost?: Record<string, any> | null;
   toughness?: number | null;
   power?: number | null;
+  card_set_id?: string | null;
+  current_supply?: number | null;
+  is_tradeable?: boolean | null;
+  name?: string | null;
 }
 
 export interface CardData {
@@ -154,4 +163,8 @@ export interface CardData {
   mana_cost?: Record<string, any> | null;
   toughness?: number | null;
   power?: number | null;
+  card_set_id?: string | null;
+  current_supply?: number | null;
+  is_tradeable?: boolean | null;
+  name?: string | null;
 }

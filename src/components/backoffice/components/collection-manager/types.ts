@@ -1,8 +1,8 @@
 
-import type { Card as AppCard } from '@/types/card';
+import type { Card } from '@/types/card';
 
 // Use the main Card interface from types/card.ts
-export interface Card extends AppCard {}
+export { type Card } from '@/types/card';
 
 export interface SearchFilters {
   rarity: '' | 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
