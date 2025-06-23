@@ -7,10 +7,6 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { CardshowApp } from '@/pages/CardshowApp';
-import { CardsPage } from '@/components/cards/CardsPage';
-import { FeedPage } from '@/components/feed/FeedPage';
-import { BackofficeLayout } from '@/components/backoffice/BackofficeLayout';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NetworkStatus } from '@/components/common/NetworkStatus';
 import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt';
@@ -19,6 +15,17 @@ import { PerformanceMonitor } from '@/components/platform/PerformanceMonitor';
 import { NotificationCenter } from '@/components/platform/NotificationCenter';
 import { SecurityProvider } from '@/components/platform/SecurityProvider';
 import { AnalyticsProvider } from '@/components/platform/AnalyticsProvider';
+
+// Import page components
+import { HomePage } from '@/pages/HomePage';
+import { GalleryPage } from '@/pages/GalleryPage';
+import { CreatePage } from '@/pages/CreatePage';
+import { CollectionsPage } from '@/pages/CollectionsPage';
+import { StudioPage } from '@/pages/StudioPage';
+import { CardsPage } from '@/components/cards/CardsPage';
+import { FeedPage } from '@/components/feed/FeedPage';
+import { CardshowApp } from '@/pages/CardshowApp';
+import { BackofficeLayout } from '@/components/backoffice/BackofficeLayout';
 import './App.css';
 
 const queryClient = new QueryClient({
@@ -54,8 +61,12 @@ function App() {
                       <ProtectedRoute>
                         <MainLayout>
                           <Routes>
-                            {/* Default redirect to cards */}
-                            <Route path="/" element={<Navigate to="/cards" replace />} />
+                            {/* Main pages */}
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/gallery" element={<GalleryPage />} />
+                            <Route path="/create" element={<CreatePage />} />
+                            <Route path="/collections" element={<CollectionsPage />} />
+                            <Route path="/studio" element={<StudioPage />} />
                             
                             {/* Cards management */}
                             <Route path="/cards/*" element={<CardsPage />} />
@@ -70,7 +81,7 @@ function App() {
                             <Route path="/admin/*" element={<BackofficeLayout />} />
                             
                             {/* Catch all route */}
-                            <Route path="*" element={<Navigate to="/cards" replace />} />
+                            <Route path="*" element={<Navigate to="/" replace />} />
                           </Routes>
                         </MainLayout>
                       </ProtectedRoute>
