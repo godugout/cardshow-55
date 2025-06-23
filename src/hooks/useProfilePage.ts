@@ -4,6 +4,7 @@ import { useUser } from '@/hooks/use-user';
 import { useProfile } from '@/hooks/useProfile';
 import { useFeed } from '@/hooks/use-feed';
 import { getUserFollowers, getUserFollowing } from '@/repositories/social/follows';
+import type { FeedType } from '@/hooks/use-feed-types';
 
 export const useProfilePage = () => {
   const { user, loading: userLoading } = useUser();
@@ -42,7 +43,7 @@ export const useProfilePage = () => {
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    fetchMemories(nextPage, 'forYou');
+    fetchMemories(nextPage, 'forYou' as FeedType);
   };
 
   const isLoading = userLoading || profileLoading;

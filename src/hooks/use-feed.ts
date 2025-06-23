@@ -1,44 +1,61 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { FeedType } from './use-feed-types';
 import type { Memory } from '@/types/memory';
 
-export function useFeed(feedType: FeedType) {
+export function useFeed(userId?: string) {
   const [memories, setMemories] = useState<Memory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    // Mock data for now - replace with actual API calls
-    const loadFeedData = async () => {
-      setLoading(true);
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock memories data
-        const mockMemories: Memory[] = [];
-        
+  const fetchMemories = useCallback(async (
+    currentPage: number,
+    feedType: FeedType
+  ) => {
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock memories data - replace with actual API calls
+      const mockMemories: Memory[] = [];
+      
+      if (currentPage === 1) {
         setMemories(mockMemories);
-        setHasMore(false);
-        setError(null);
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setLoading(false);
+      } else {
+        setMemories(prev => [...prev, ...mockMemories]);
       }
-    };
+      
+      setHasMore(false); // No more data for now
+      setError(null);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    loadFeedData();
-  }, [feedType]);
+  const resetFeed = useCallback(() => {
+    setPage(1);
+    setMemories([]);
+    setHasMore(true);
+    setError(null);
+  }, []);
 
   const loadMore = () => {
     if (hasMore && !loading) {
-      setPage(prev => prev + 1);
+      const nextPage = page + 1;
+      setPage(nextPage);
+      // fetchMemories would be called externally with the new page
     }
   };
+
+  useEffect(() => {
+    // Auto-fetch when component mounts
+    fetchMemories(1, 'forYou');
+  }, [fetchMemories]);
 
   return {
     memories,
@@ -47,5 +64,8 @@ export function useFeed(feedType: FeedType) {
     hasMore,
     loadMore,
     page,
+    setPage,
+    fetchMemories,
+    resetFeed
   };
 }

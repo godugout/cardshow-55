@@ -26,7 +26,7 @@ export const GalleryPage: React.FC = () => {
     hasMore,
     loadMore,
     page,
-  } = useFeed(activeTab);
+  } = useFeed(user?.id);
 
   return (
     <div className="min-h-screen bg-crd-darkest">
