@@ -1408,6 +1408,188 @@ export type Database = {
         }
         Relationships: []
       }
+      trade_feedback: {
+        Row: {
+          created_at: string | null
+          feedback_text: string | null
+          id: string
+          rating: number | null
+          reviewed_id: string
+          reviewer_id: string
+          trade_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          feedback_text?: string | null
+          id?: string
+          rating?: number | null
+          reviewed_id: string
+          reviewer_id: string
+          trade_id: string
+        }
+        Update: {
+          created_at?: string | null
+          feedback_text?: string | null
+          id?: string
+          rating?: number | null
+          reviewed_id?: string
+          reviewer_id?: string
+          trade_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_feedback_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "trade_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trade_messages: {
+        Row: {
+          attachment_url: string | null
+          id: string
+          message: string
+          message_type: string | null
+          metadata: Json | null
+          read_status: boolean | null
+          sender_id: string
+          timestamp: string | null
+          trade_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          id?: string
+          message: string
+          message_type?: string | null
+          metadata?: Json | null
+          read_status?: boolean | null
+          sender_id: string
+          timestamp?: string | null
+          trade_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          id?: string
+          message?: string
+          message_type?: string | null
+          metadata?: Json | null
+          read_status?: boolean | null
+          sender_id?: string
+          timestamp?: string | null
+          trade_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_messages_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "trade_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trade_offers: {
+        Row: {
+          cash_included: number | null
+          completed_at: string | null
+          counter_offer_id: string | null
+          created_at: string | null
+          expires_at: string
+          id: string
+          initiator_id: string
+          messages_channel_id: string | null
+          metadata: Json | null
+          offered_cards: Json
+          recipient_id: string
+          requested_cards: Json
+          status: string
+          trade_note: string | null
+          trade_value_difference: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          cash_included?: number | null
+          completed_at?: string | null
+          counter_offer_id?: string | null
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          initiator_id: string
+          messages_channel_id?: string | null
+          metadata?: Json | null
+          offered_cards?: Json
+          recipient_id: string
+          requested_cards?: Json
+          status?: string
+          trade_note?: string | null
+          trade_value_difference?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          cash_included?: number | null
+          completed_at?: string | null
+          counter_offer_id?: string | null
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          initiator_id?: string
+          messages_channel_id?: string | null
+          metadata?: Json | null
+          offered_cards?: Json
+          recipient_id?: string
+          requested_cards?: Json
+          status?: string
+          trade_note?: string | null
+          trade_value_difference?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_offers_counter_offer_id_fkey"
+            columns: ["counter_offer_id"]
+            isOneToOne: false
+            referencedRelation: "trade_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trade_participants: {
+        Row: {
+          id: string
+          is_typing: boolean | null
+          last_seen: string | null
+          presence_status: string | null
+          trade_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_typing?: boolean | null
+          last_seen?: string | null
+          presence_status?: string | null
+          trade_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_typing?: boolean | null
+          last_seen?: string | null
+          presence_status?: string | null
+          trade_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_participants_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "trade_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount: number
@@ -1515,6 +1697,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_trade_preferences: {
+        Row: {
+          auto_accept_threshold: number | null
+          blocked_users: string[] | null
+          created_at: string | null
+          id: string
+          notification_preferences: Json | null
+          preferred_trade_types: string[] | null
+          surplus_cards: string[] | null
+          updated_at: string | null
+          user_id: string
+          wishlist_cards: string[] | null
+        }
+        Insert: {
+          auto_accept_threshold?: number | null
+          blocked_users?: string[] | null
+          created_at?: string | null
+          id?: string
+          notification_preferences?: Json | null
+          preferred_trade_types?: string[] | null
+          surplus_cards?: string[] | null
+          updated_at?: string | null
+          user_id: string
+          wishlist_cards?: string[] | null
+        }
+        Update: {
+          auto_accept_threshold?: number | null
+          blocked_users?: string[] | null
+          created_at?: string | null
+          id?: string
+          notification_preferences?: Json | null
+          preferred_trade_types?: string[] | null
+          surplus_cards?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+          wishlist_cards?: string[] | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1527,6 +1748,10 @@ export type Database = {
       create_collection_from_template: {
         Args: { template_id: string; collection_title: string; user_id: string }
         Returns: string
+      }
+      expire_old_trades: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       generate_group_code: {
         Args: Record<PropertyKey, never>

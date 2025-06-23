@@ -6,33 +6,36 @@ import { Input } from '@/components/ui/input';
 import { CollectionCard } from '@/components/collections/CollectionCard';
 import { CreateCollectionModal } from '@/components/collections/CreateCollectionModal';
 
-// Mock collections data
+// Mock collections data matching the Collection type
 const mockCollections = [
   {
     id: '1',
-    name: 'Sports Legends',
+    title: 'Sports Legends', // Changed from 'name' to 'title'
     description: 'A collection of legendary sports cards',
     cardCount: 25,
-    thumbnail: '/lovable-uploads/069c8fac-95c2-4bdf-8e53-f3a732cd5b41.png',
-    isPublic: true,
+    coverImageUrl: '/lovable-uploads/069c8fac-95c2-4bdf-8e53-f3a732cd5b41.png',
+    visibility: 'public' as const, // Added visibility
+    createdAt: '2024-01-15T00:00:00Z', // Added createdAt as string
     updatedAt: new Date('2024-01-15')
   },
   {
     id: '2',
-    name: 'Fantasy Collection',
+    title: 'Fantasy Collection', // Changed from 'name' to 'title'
     description: 'Mystical creatures and fantasy cards',
     cardCount: 18,
-    thumbnail: '/lovable-uploads/22ce728b-dbf0-4534-8ee2-2c79bbe6c0de.png',
-    isPublic: false,
+    coverImageUrl: '/lovable-uploads/22ce728b-dbf0-4534-8ee2-2c79bbe6c0de.png',
+    visibility: 'private' as const, // Added visibility
+    createdAt: '2024-01-10T00:00:00Z', // Added createdAt as string
     updatedAt: new Date('2024-01-10')
   },
   {
     id: '3',
-    name: 'Rare Finds',
+    title: 'Rare Finds', // Changed from 'name' to 'title'
     description: 'Ultra-rare and special edition cards',
     cardCount: 7,
-    thumbnail: '/lovable-uploads/25cbcac9-64c0-4969-9baa-7a3fdf9eb00a.png',
-    isPublic: true,
+    coverImageUrl: '/lovable-uploads/25cbcac9-64c0-4969-9baa-7a3fdf9eb00a.png',
+    visibility: 'public' as const, // Added visibility
+    createdAt: '2024-01-05T00:00:00Z', // Added createdAt as string
     updatedAt: new Date('2024-01-05')
   }
 ];
@@ -43,7 +46,7 @@ export const CollectionsPage: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const filteredCollections = mockCollections.filter(collection =>
-    collection.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    collection.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     collection.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -118,7 +121,9 @@ export const CollectionsPage: React.FC = () => {
               <CollectionCard
                 key={collection.id}
                 collection={collection}
-                viewMode={viewMode}
+                onEdit={(collection) => console.log('Edit:', collection)}
+                onDelete={(id) => console.log('Delete:', id)}
+                onView={(collection) => console.log('View:', collection)}
               />
             ))}
           </div>

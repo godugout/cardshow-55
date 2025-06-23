@@ -39,11 +39,7 @@ export const GalleryPage: React.FC = () => {
               onViewModeChange={setViewMode}
             />
             
-            <CardsTabsContent
-              searchQuery={searchQuery}
-              sortBy={sortBy}
-              viewMode={viewMode}
-            />
+            <CardsTabsContent />
           </div>
         </Tabs>
       </div>
