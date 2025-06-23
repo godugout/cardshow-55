@@ -917,6 +917,62 @@ export type Database = {
           },
         ]
       }
+      content_moderation: {
+        Row: {
+          automated_checks: Json | null
+          community_votes: Json | null
+          confidence_score: number | null
+          content_id: string
+          content_type: string
+          created_at: string | null
+          flags: Json | null
+          id: string
+          moderation_type: string
+          review_notes: string | null
+          reviewer_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          automated_checks?: Json | null
+          community_votes?: Json | null
+          confidence_score?: number | null
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          flags?: Json | null
+          id?: string
+          moderation_type: string
+          review_notes?: string | null
+          reviewer_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          automated_checks?: Json | null
+          community_votes?: Json | null
+          confidence_score?: number | null
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          flags?: Json | null
+          id?: string
+          moderation_type?: string
+          review_notes?: string | null
+          reviewer_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_moderation_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_enrollments: {
         Row: {
           certificate_issued: boolean | null
@@ -996,6 +1052,159 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "creator_activities_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_analytics: {
+        Row: {
+          aggregation_level: string | null
+          created_at: string | null
+          creator_id: string | null
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+        }
+        Insert: {
+          aggregation_level?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+        }
+        Update: {
+          aggregation_level?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          period_end?: string
+          period_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_analytics_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_automation_rules: {
+        Row: {
+          actions: Json
+          conditions: Json
+          created_at: string | null
+          creator_id: string | null
+          execution_count: number | null
+          id: string
+          is_active: boolean | null
+          last_executed: string | null
+          rule_type: string
+          success_rate: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          actions?: Json
+          conditions?: Json
+          created_at?: string | null
+          creator_id?: string | null
+          execution_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_executed?: string | null
+          rule_type: string
+          success_rate?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          actions?: Json
+          conditions?: Json
+          created_at?: string | null
+          creator_id?: string | null
+          execution_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_executed?: string | null
+          rule_type?: string
+          success_rate?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_automation_rules_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_brands: {
+        Row: {
+          brand_description: string | null
+          brand_name: string
+          brand_verification_status: string | null
+          created_at: string | null
+          creator_id: string | null
+          custom_css: string | null
+          custom_domain: string | null
+          id: string
+          logo_url: string | null
+          primary_color: string | null
+          secondary_color: string | null
+          social_links: Json | null
+          updated_at: string | null
+          white_label_enabled: boolean | null
+        }
+        Insert: {
+          brand_description?: string | null
+          brand_name: string
+          brand_verification_status?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          custom_css?: string | null
+          custom_domain?: string | null
+          id?: string
+          logo_url?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          social_links?: Json | null
+          updated_at?: string | null
+          white_label_enabled?: boolean | null
+        }
+        Update: {
+          brand_description?: string | null
+          brand_name?: string
+          brand_verification_status?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          custom_css?: string | null
+          custom_domain?: string | null
+          id?: string
+          logo_url?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          social_links?: Json | null
+          updated_at?: string | null
+          white_label_enabled?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_brands_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
             referencedRelation: "creator_profiles"
@@ -1471,6 +1680,56 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_integrations: {
+        Row: {
+          api_credentials: Json | null
+          config: Json
+          created_at: string | null
+          creator_id: string | null
+          error_log: string | null
+          id: string
+          integration_type: string
+          is_active: boolean | null
+          last_sync: string | null
+          sync_status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          api_credentials?: Json | null
+          config?: Json
+          created_at?: string | null
+          creator_id?: string | null
+          error_log?: string | null
+          id?: string
+          integration_type: string
+          is_active?: boolean | null
+          last_sync?: string | null
+          sync_status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          api_credentials?: Json | null
+          config?: Json
+          created_at?: string | null
+          creator_id?: string | null
+          error_log?: string | null
+          id?: string
+          integration_type?: string
+          is_active?: boolean | null
+          last_sync?: string | null
+          sync_status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_integrations_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_mentorships: {
         Row: {
           commission_percentage: number | null
@@ -1653,6 +1912,45 @@ export type Database = {
           },
         ]
       }
+      creator_subscription_tiers: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          features: Json
+          id: string
+          is_active: boolean | null
+          limits: Json
+          monthly_price: number
+          sort_order: number | null
+          tier_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean | null
+          limits?: Json
+          monthly_price: number
+          sort_order?: number | null
+          tier_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean | null
+          limits?: Json
+          monthly_price?: number
+          sort_order?: number | null
+          tier_name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       creator_subscriptions: {
         Row: {
           benefits: Json | null
@@ -1696,6 +1994,127 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "creator_subscriptions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_tokens: {
+        Row: {
+          created_at: string | null
+          creator_id: string | null
+          expires_at: string | null
+          id: string
+          metadata: Json | null
+          source: string
+          token_type: string
+          token_value: number
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          source: string
+          token_type: string
+          token_value: number
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          source?: string
+          token_type?: string
+          token_value?: number
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_tokens_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      design_assets_library: {
+        Row: {
+          asset_name: string
+          asset_type: string
+          categories: string[] | null
+          created_at: string | null
+          creator_id: string | null
+          description: string | null
+          dimensions: Json | null
+          downloads_count: number | null
+          file_format: string | null
+          file_size: number | null
+          file_url: string
+          id: string
+          is_featured: boolean | null
+          metadata: Json | null
+          price: number | null
+          revenue_generated: number | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          updated_at: string | null
+          usage_rights: string | null
+        }
+        Insert: {
+          asset_name: string
+          asset_type: string
+          categories?: string[] | null
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          dimensions?: Json | null
+          downloads_count?: number | null
+          file_format?: string | null
+          file_size?: number | null
+          file_url: string
+          id?: string
+          is_featured?: boolean | null
+          metadata?: Json | null
+          price?: number | null
+          revenue_generated?: number | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+          usage_rights?: string | null
+        }
+        Update: {
+          asset_name?: string
+          asset_type?: string
+          categories?: string[] | null
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          dimensions?: Json | null
+          downloads_count?: number | null
+          file_format?: string | null
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          is_featured?: boolean | null
+          metadata?: Json | null
+          price?: number | null
+          revenue_generated?: number | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+          usage_rights?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_assets_library_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
             referencedRelation: "creator_profiles"
@@ -2209,6 +2628,59 @@ export type Database = {
           },
         ]
       }
+      marketplace_seo: {
+        Row: {
+          auto_optimization_enabled: boolean | null
+          created_at: string | null
+          id: string
+          keywords: string[] | null
+          last_optimized: string | null
+          listing_id: string | null
+          meta_description: string | null
+          meta_title: string | null
+          og_image_url: string | null
+          seo_score: number | null
+          structured_data: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_optimization_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          keywords?: string[] | null
+          last_optimized?: string | null
+          listing_id?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          og_image_url?: string | null
+          seo_score?: number | null
+          structured_data?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_optimization_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          keywords?: string[] | null
+          last_optimized?: string | null
+          listing_id?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          og_image_url?: string | null
+          seo_score?: number | null
+          structured_data?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_seo_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_watchers: {
         Row: {
           created_at: string | null
@@ -2407,6 +2879,47 @@ export type Database = {
             columns: ["recipient_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      performance_metrics: {
+        Row: {
+          creator_id: string | null
+          id: string
+          measurement_context: string | null
+          metadata: Json | null
+          metric_name: string
+          metric_unit: string | null
+          metric_value: number
+          timestamp: string | null
+        }
+        Insert: {
+          creator_id?: string | null
+          id?: string
+          measurement_context?: string | null
+          metadata?: Json | null
+          metric_name: string
+          metric_unit?: string | null
+          metric_value: number
+          timestamp?: string | null
+        }
+        Update: {
+          creator_id?: string | null
+          id?: string
+          measurement_context?: string | null
+          metadata?: Json | null
+          metric_name?: string
+          metric_unit?: string | null
+          metric_value?: number
+          timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "performance_metrics_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3349,6 +3862,10 @@ export type Database = {
           transaction_count: number
         }[]
       }
+      calculate_creator_performance_score: {
+        Args: { creator_uuid: string }
+        Returns: number
+      }
       calculate_platform_fee: {
         Args: { amount: number }
         Returns: number
@@ -3403,6 +3920,10 @@ export type Database = {
         Args: { user_uuid?: string }
         Returns: boolean
       }
+      optimize_listing_pricing: {
+        Args: { listing_uuid: string }
+        Returns: number
+      }
       place_bid: {
         Args: { p_auction_id: string; p_amount: number; p_proxy_max?: number }
         Returns: string
@@ -3413,6 +3934,10 @@ export type Database = {
       }
       update_market_analytics: {
         Args: { p_card_id: string; p_sale_price: number }
+        Returns: undefined
+      }
+      update_seo_optimization: {
+        Args: { listing_uuid: string }
         Returns: undefined
       }
     }
