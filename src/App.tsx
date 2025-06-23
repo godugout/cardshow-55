@@ -13,6 +13,12 @@ import { FeedPage } from '@/components/feed/FeedPage';
 import { BackofficeLayout } from '@/components/backoffice/BackofficeLayout';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NetworkStatus } from '@/components/common/NetworkStatus';
+import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt';
+import { OfflineIndicator } from '@/components/pwa/OfflineIndicator';
+import { PerformanceMonitor } from '@/components/platform/PerformanceMonitor';
+import { NotificationCenter } from '@/components/platform/NotificationCenter';
+import { SecurityProvider } from '@/components/platform/SecurityProvider';
+import { AnalyticsProvider } from '@/components/platform/AnalyticsProvider';
 import './App.css';
 
 const queryClient = new QueryClient({
@@ -27,54 +33,62 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <div className="App">
-            <NetworkStatus />
-            <Routes>
-              {/* Public routes */}
-              <Route path="/auth/*" element={<AuthPage />} />
-              
-              {/* Protected main application routes */}
-              <Route
-                path="/*"
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <Routes>
-                        {/* Default redirect to cards */}
-                        <Route path="/" element={<Navigate to="/cards" replace />} />
-                        
-                        {/* Cards management */}
-                        <Route path="/cards/*" element={<CardsPage />} />
-                        
-                        {/* Social feed */}
-                        <Route path="/feed" element={<FeedPage />} />
-                        
-                        {/* Cardshow mobile app */}
-                        <Route path="/cardshow/*" element={<CardshowApp />} />
-                        
-                        {/* Admin/Backoffice */}
-                        <Route path="/admin/*" element={<BackofficeLayout />} />
-                        
-                        {/* Catch all route */}
-                        <Route path="*" element={<Navigate to="/cards" replace />} />
-                      </Routes>
-                    </MainLayout>
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-            
-            <Toaster 
-              position="top-right" 
-              expand={true}
-              richColors
-              closeButton
-            />
-          </div>
-        </AuthProvider>
-      </QueryClientProvider>
+      <SecurityProvider>
+        <AnalyticsProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <div className="App">
+                <NetworkStatus />
+                <OfflineIndicator />
+                <PWAInstallPrompt />
+                <PerformanceMonitor />
+                
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/auth/*" element={<AuthPage />} />
+                  
+                  {/* Protected main application routes */}
+                  <Route
+                    path="/*"
+                    element={
+                      <ProtectedRoute>
+                        <MainLayout>
+                          <Routes>
+                            {/* Default redirect to cards */}
+                            <Route path="/" element={<Navigate to="/cards" replace />} />
+                            
+                            {/* Cards management */}
+                            <Route path="/cards/*" element={<CardsPage />} />
+                            
+                            {/* Social feed */}
+                            <Route path="/feed" element={<FeedPage />} />
+                            
+                            {/* Cardshow mobile app */}
+                            <Route path="/cardshow/*" element={<CardshowApp />} />
+                            
+                            {/* Admin/Backoffice */}
+                            <Route path="/admin/*" element={<BackofficeLayout />} />
+                            
+                            {/* Catch all route */}
+                            <Route path="*" element={<Navigate to="/cards" replace />} />
+                          </Routes>
+                        </MainLayout>
+                      </ProtectedRoute>
+                    }
+                  />
+                </Routes>
+                
+                <Toaster 
+                  position="top-right" 
+                  expand={true}
+                  richColors
+                  closeButton
+                />
+              </div>
+            </AuthProvider>
+          </QueryClientProvider>
+        </AnalyticsProvider>
+      </SecurityProvider>
     </ErrorBoundary>
   );
 }

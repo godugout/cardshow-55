@@ -21,18 +21,72 @@ const queryClient = new QueryClient({
   },
 })
 
-// Register service worker for PWA functionality
-if ('serviceWorker' in navigator && window.location.pathname.startsWith('/cardshow')) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/cardshow-sw.js')
-      .then((registration) => {
-        console.log('SW registered: ', registration);
-      })
-      .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
+// Enhanced PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      // Register the main service worker
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/'
       });
+      
+      console.log('SW registered:', registration);
+
+      // Handle service worker updates
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version available
+              console.log('New version available!');
+              window.dispatchEvent(new CustomEvent('sw-update-available'));
+            }
+          });
+        }
+      });
+
+      // Register for background sync if supported
+      if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+        console.log('Background sync supported');
+      }
+
+      // Request notification permission
+      if ('Notification' in window && Notification.permission === 'default') {
+        // Don't auto-request, let the user decide via PWA prompt
+        console.log('Notifications available');
+      }
+
+    } catch (error) {
+      console.log('SW registration failed:', error);
+    }
   });
 }
+
+// Enhanced error tracking
+window.addEventListener('error', (event) => {
+  console.error('Global error:', event.error);
+  // Track error in analytics
+  window.dispatchEvent(new CustomEvent('analytics-error', {
+    detail: {
+      message: event.message,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    }
+  }));
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection:', event.reason);
+  // Track error in analytics
+  window.dispatchEvent(new CustomEvent('analytics-error', {
+    detail: {
+      type: 'unhandledrejection',
+      reason: event.reason?.toString(),
+    }
+  }));
+});
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
