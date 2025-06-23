@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
-import { getRarityConfig } from '../config/cardRarities';
+import { getRarityConfig } from '../../config/cardRarities';
 
 interface MetadataStepProps {
   cardData: Partial<Card>;
@@ -113,16 +113,13 @@ export const MetadataStep: React.FC<MetadataStepProps> = ({
             </label>
             <Select 
               value={cardData.rarity || 'common'} 
-              onValueChange={(value) => onUpdate({ rarity: value })}
+              onValueChange={(value: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic') => onUpdate({ rarity: value })}
             >
               <SelectTrigger className="bg-crd-mediumGray border-crd-mediumGray text-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-crd-mediumGray border-crd-mediumGray">
-                {Object.values(getRarityConfig('common')).map((_, index) => {
-                  const rarities = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
-                  const rarity = rarities[index];
-                  if (!rarity) return null;
+                {(['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'] as const).map((rarity) => {
                   const config = getRarityConfig(rarity);
                   return (
                     <SelectItem key={rarity} value={rarity}>
