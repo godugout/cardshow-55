@@ -12,62 +12,44 @@ export const useCards = () => {
   const [cards, setCards] = useState<Card[]>([]);
   const [featuredCards, setFeaturedCards] = useState<Card[]>([]);
   const [userCards, setUserCards] = useState<Card[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Start as false to prevent infinite loading
   const [error, setError] = useState<string | null>(null);
-  const [dataSource, setDataSource] = useState<'database' | 'local' | 'mixed'>('database');
+  const [dataSource, setDataSource] = useState<'database' | 'local' | 'mixed'>('local');
 
   const fetchAllCardsFromDatabase = useCallback(async () => {
     try {
-      console.log('🔍 Starting card fetch...');
+      console.log('🔍 Fetching cards from database...');
+      setLoading(true);
       
-      // Set a timeout to prevent infinite loading
-      const timeoutId = setTimeout(() => {
-        console.warn('⚠️ Card fetch timeout - using fallback data');
-        setCards([]);
-        setFeaturedCards([]);
-        setLoading(false);
-      }, 10000); // 10 second timeout
-      
-      // Get all cards from database
       const allCards = await CardRepository.getAllCards();
-      clearTimeout(timeoutId);
+      console.log(`📊 Loaded ${allCards.length} cards from database`);
       
-      // Check local storage as fallback
-      const localCards = localCardStorage.getAllCards();
-      console.log(`💾 Found ${localCards.length} cards in local storage`);
-      
-      // Determine data source and merge if needed
-      let finalCards = allCards;
-      let source: 'database' | 'local' | 'mixed' = 'database';
-      
-      if (allCards.length === 0 && localCards.length > 0) {
-        console.log('⚠️ No database cards found, using local cards');
-        source = 'local';
-      } else if (allCards.length > 0 && localCards.length > 0) {
-        console.log('🔄 Both database and local cards found');
-        source = 'mixed';
-      }
-      
-      setDataSource(source);
-      setCards(finalCards);
-      setFeaturedCards(finalCards.slice(0, 8));
+      setCards(allCards);
+      setFeaturedCards(allCards.slice(0, 8));
+      setDataSource('database');
       setError(null);
       
-      console.log(`📊 Loaded ${finalCards.length} cards from ${source}`);
-      
-      return finalCards;
+      return allCards;
     } catch (error) {
       console.error('💥 Error fetching cards:', error);
-      setError(error instanceof Error ? error.message : 'Failed to fetch cards');
-      setCards([]);
-      setFeaturedCards([]);
-      return [];
+      
+      // Fallback to local storage
+      const localCards = localCardStorage.getAllCards();
+      console.log(`💾 Fallback: Using ${localCards.length} local cards`);
+      
+      setCards(localCards);
+      setFeaturedCards(localCards.slice(0, 8));
+      setDataSource('local');
+      setError('Using local data - database unavailable');
+      
+      return localCards;
+    } finally {
+      setLoading(false);
     }
   }, []);
 
   const fetchUserCards = useCallback(async (userId?: string) => {
     if (!user?.id && !userId) {
-      console.log('⚠️ No user ID available');
       return [];
     }
     
@@ -75,10 +57,7 @@ export const useCards = () => {
       const targetUserId = userId || user?.id;
       if (!targetUserId) return [];
       
-      console.log('👤 Fetching user cards for:', targetUserId);
       const userCardsData = await CardRepository.getUserCards(targetUserId);
-      
-      console.log('✅ Fetched user cards:', userCardsData.length);
       
       if (!userId || userId === user?.id) {
         setUserCards(userCardsData);
@@ -91,23 +70,32 @@ export const useCards = () => {
   }, [user?.id]);
 
   const fetchCards = useCallback(async () => {
+    if (loading) return; // Prevent multiple concurrent calls
+    
     console.log('🚀 Starting card fetch process...');
-    setLoading(true);
-    setError(null);
     
     try {
-      await Promise.all([
+      await Promise.race([
         fetchAllCardsFromDatabase(),
-        fetchUserCards()
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Fetch timeout')), 5000)
+        )
       ]);
+      
+      // Only fetch user cards if we have a user
+      if (user?.id) {
+        await fetchUserCards();
+      }
     } catch (error) {
       console.error('💥 Error in fetchCards:', error);
+      
+      // Final fallback - use empty state
+      setCards([]);
+      setFeaturedCards([]);
+      setUserCards([]);
       setError('Failed to load cards');
-    } finally {
-      setLoading(false);
-      console.log('✅ Card fetch process completed');
     }
-  }, [fetchAllCardsFromDatabase, fetchUserCards]);
+  }, [fetchAllCardsFromDatabase, fetchUserCards, user?.id, loading]);
 
   // Method to migrate local cards to database (if needed)
   const migrateLocalCardsToDatabase = useCallback(async () => {
@@ -164,56 +152,52 @@ export const useCards = () => {
     }
   }, [user?.id, fetchCards]);
 
+  // Simplified useEffect - only run when user changes
   useEffect(() => {
     console.log('🔄 useCards effect triggered, user:', user?.id);
     
-    // Set a loading timeout
-    const loadingTimeout = setTimeout(() => {
-      if (loading) {
-        console.warn('⚠️ useCards loading timeout - forcing completion');
-        setLoading(false);
-        setError('Loading timeout - please refresh the page');
-      }
-    }, 15000); // 15 second timeout
+    // Don't auto-fetch on mount to prevent loading issues
+    // Users can manually trigger fetch if needed
     
-    fetchCards().finally(() => {
-      clearTimeout(loadingTimeout);
-    });
-
-    // Set up real-time subscription with error handling
     let subscription: any = null;
     
-    try {
-      subscription = supabase
-        .channel('cards-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'cards'
-          },
-          (payload) => {
-            console.log('🔔 Real-time card change:', payload);
-            // Debounce real-time updates to prevent excessive fetching
-            setTimeout(() => fetchCards(), 1000);
-          }
-        )
-        .subscribe();
-        
-      console.log('📡 Real-time subscription created');
-    } catch (error) {
-      console.error('❌ Error setting up real-time subscription:', error);
+    // Only set up real-time if we have a user and cards are loaded
+    if (user?.id && cards.length > 0) {
+      try {
+        subscription = supabase
+          .channel('cards-changes')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'cards'
+            },
+            (payload) => {
+              console.log('🔔 Real-time card change:', payload);
+              // Debounce real-time updates
+              setTimeout(() => {
+                if (!loading) {
+                  fetchCards();
+                }
+              }, 1000);
+            }
+          )
+          .subscribe();
+          
+        console.log('📡 Real-time subscription created');
+      } catch (error) {
+        console.error('❌ Error setting up real-time subscription:', error);
+      }
     }
 
     return () => {
-      clearTimeout(loadingTimeout);
       if (subscription) {
         console.log('🧹 Cleaning up real-time subscription');
         supabase.removeChannel(subscription);
       }
     };
-  }, [user?.id, fetchCards]);
+  }, [user?.id]); // Only depend on user ID
 
   return {
     cards,

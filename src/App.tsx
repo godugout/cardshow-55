@@ -10,12 +10,8 @@ import { AuthPage } from '@/components/auth/AuthPage';
 import { AppShell } from '@/components/pwa/AppShell';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NetworkStatusBanner } from '@/components/pwa/NetworkStatusBanner';
-import { SyncManager } from '@/components/pwa/SyncManager';
-import { PerformanceMonitor } from '@/components/platform/PerformanceMonitor';
-import { SecurityProvider } from '@/components/platform/SecurityProvider';
-import { AnalyticsProvider } from '@/components/platform/AnalyticsProvider';
 
-// Import page components - use Index instead of HomePage to simplify
+// Import page components
 import Index from '@/pages/Index';
 import { GalleryPage } from '@/pages/GalleryPage';
 import { CreatePage } from '@/pages/CreatePage';
@@ -38,76 +34,61 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  console.log('App component rendering');
+  
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
-        <SecurityProvider>
-          <AnalyticsProvider>
-            <QueryClientProvider client={queryClient}>
-              <AuthProvider>
-                <div className="App min-h-screen bg-crd-darkest">
-                  <NetworkStatusBanner />
-                  <SyncManager />
-                  <PerformanceMonitor />
-                  
-                  <Routes>
-                    {/* Public routes */}
-                    <Route path="/auth/*" element={<AuthPage />} />
-                    
-                    {/* Protected main application routes */}
-                    <Route
-                      path="/*"
-                      element={
-                        <ProtectedRoute>
-                          <AppShell>
-                            <Routes>
-                              {/* Use Index component instead of HomePage for simplicity */}
-                              <Route path="/" element={<Index />} />
-                              <Route path="/gallery" element={<GalleryPage />} />
-                              <Route path="/create" element={<CreatePage />} />
-                              <Route path="/collections" element={<CollectionsPage />} />
-                              <Route path="/studio" element={<StudioPage />} />
-                              
-                              {/* Cards management */}
-                              <Route path="/cards/*" element={<CardsPage />} />
-                              
-                              {/* Social feed */}
-                              <Route path="/feed" element={<FeedPage />} />
-                              
-                              {/* Cardshow mobile app */}
-                              <Route path="/cardshow/*" element={<CardshowApp />} />
-                              
-                              {/* Admin/Backoffice */}
-                              <Route path="/admin/*" element={<BackofficeLayout />} />
-                              
-                              {/* Catch all route */}
-                              <Route path="*" element={<Navigate to="/" replace />} />
-                            </Routes>
-                          </AppShell>
-                        </ProtectedRoute>
-                      }
-                    />
-                  </Routes>
-                  
-                  <Toaster 
-                    position="top-center" 
-                    expand={false}
-                    richColors
-                    closeButton
-                    duration={3000}
-                    theme="dark"
-                    toastOptions={{
-                      style: {
-                        marginTop: '60px', // Avoid overlapping with network banner
-                      },
-                      className: 'toast-cardshow'
-                    }}
-                  />
-                </div>
-              </AuthProvider>
-            </QueryClientProvider>
-          </AnalyticsProvider>
-        </SecurityProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <div className="App min-h-screen bg-crd-darkest">
+              <NetworkStatusBanner />
+              
+              <Routes>
+                {/* Public routes */}
+                <Route path="/auth/*" element={<AuthPage />} />
+                
+                {/* Protected main application routes */}
+                <Route
+                  path="/*"
+                  element={
+                    <ProtectedRoute>
+                      <AppShell>
+                        <Routes>
+                          <Route path="/" element={<Index />} />
+                          <Route path="/gallery" element={<GalleryPage />} />
+                          <Route path="/create" element={<CreatePage />} />
+                          <Route path="/collections" element={<CollectionsPage />} />
+                          <Route path="/studio" element={<StudioPage />} />
+                          <Route path="/cards/*" element={<CardsPage />} />
+                          <Route path="/feed" element={<FeedPage />} />
+                          <Route path="/cardshow/*" element={<CardshowApp />} />
+                          <Route path="/admin/*" element={<BackofficeLayout />} />
+                          <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                      </AppShell>
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+              
+              <Toaster 
+                position="top-center" 
+                expand={false}
+                richColors
+                closeButton
+                duration={3000}
+                theme="dark"
+                toastOptions={{
+                  style: {
+                    marginTop: '60px',
+                  },
+                  className: 'toast-cardshow'
+                }}
+              />
+            </div>
+          </AuthProvider>
+        </QueryClientProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
