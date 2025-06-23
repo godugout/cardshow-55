@@ -102,7 +102,7 @@ export const CardshowApp: React.FC = () => {
     name: cardData.title,
     image: cardData.image_url || '/placeholder-card.jpg',
     rarity: cardData.rarity as Card['rarity'],
-    type: 'creature', // Default type since CardData doesn't have this
+    type: 'creature',
     description: cardData.description
   });
 
@@ -115,7 +115,6 @@ export const CardshowApp: React.FC = () => {
 
   const handleCardTrade = (card: Card) => {
     console.log('Trading card:', card.name);
-    // Implement trading logic
   };
 
   const handleCardShare = (card: Card) => {
@@ -133,7 +132,6 @@ export const CardshowApp: React.FC = () => {
   return (
     <CardshowLayout>
       <Routes>
-        {/* Main Cards View */}
         <Route
           path="/"
           element={
@@ -145,36 +143,22 @@ export const CardshowApp: React.FC = () => {
                 onCardShare={handleCardShare}
               />
               
-              {selectedCard && (
-                <CardDetailModal
-                  card={selectedCard}
-                  onClose={() => setSelectedCard(null)}
-                  onTrade={(card) => console.log('Trading:', card.name)}
-                  onShare={(card) => handleCardShare(card)}
-                />
-              )}
+              <CardDetailModal
+                card={selectedCard}
+                isOpen={!!selectedCard}
+                onClose={() => setSelectedCard(null)}
+                onTrade={(card) => console.log('Trading:', card.name)}
+                onShare={(card) => handleCardShare(card)}
+              />
             </>
           }
         />
         
-        {/* Marketplace */}
         <Route path="/marketplace" element={<CardshowMarketplace />} />
-        
-        {/* Trading */}
         <Route path="/trade" element={<CardshowTrade />} />
-        
-        {/* Card Creation */}
-        <Route
-          path="/create"
-          element={
-            <MobileCreationStudio />
-          }
-        />
-        
-        {/* Advanced Features Demo */}
+        <Route path="/create" element={<MobileCreationStudio />} />
         <Route path="/advanced" element={<CardshowAdvanced />} />
         
-        {/* Profile (placeholder) */}
         <Route
           path="/profile"
           element={
@@ -185,7 +169,6 @@ export const CardshowApp: React.FC = () => {
           }
         />
         
-        {/* Redirect unknown routes */}
         <Route path="*" element={<Navigate to="/cardshow" replace />} />
       </Routes>
     </CardshowLayout>
