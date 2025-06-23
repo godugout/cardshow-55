@@ -4,6 +4,9 @@ import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { CardsTabsNavigation } from '@/components/cards/CardsTabsNavigation';
 import { CardsControlsBar } from '@/components/cards/CardsControlsBar';
 import { CardsTabsContent } from '@/components/cards/CardsTabsContent';
+import { useFeed } from '@/hooks/use-feed';
+import { useUser } from '@/hooks/use-user';
+import type { FeedType } from '@/hooks/use-feed-types';
 
 type ViewMode = 'feed' | 'grid' | 'masonry';
 type SortOption = 'recent' | 'popular' | 'price-high' | 'price-low' | 'trending';
@@ -13,6 +16,17 @@ export const GalleryPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortOption>('recent');
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [activeTab, setActiveTab] = useState<FeedType>('forYou');
+
+  const { user } = useUser();
+  const {
+    memories,
+    loading,
+    error,
+    hasMore,
+    loadMore,
+    page,
+  } = useFeed(activeTab);
 
   return (
     <div className="min-h-screen bg-crd-darkest">
@@ -39,7 +53,18 @@ export const GalleryPage: React.FC = () => {
               onViewModeChange={setViewMode}
             />
             
-            <CardsTabsContent />
+            <CardsTabsContent
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              viewMode={viewMode}
+              memories={memories}
+              loading={loading}
+              hasMore={hasMore}
+              error={error}
+              user={user}
+              onLoadMore={loadMore}
+              page={page}
+            />
           </div>
         </Tabs>
       </div>
