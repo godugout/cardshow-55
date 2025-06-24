@@ -6,24 +6,25 @@ interface LoadingStateProps {
   message?: string;
   size?: 'sm' | 'md' | 'lg';
   fullPage?: boolean;
-  timeout?: number; // Add timeout option
+  timeout?: number;
 }
 
 export const LoadingState: React.FC<LoadingStateProps> = ({ 
   message = 'Loading...', 
   size = 'md', 
   fullPage = false,
-  timeout = 30000 // 30 second default timeout
+  timeout = 15000 // Reduced from 30s to 15s
 }) => {
   const [timedOut, setTimedOut] = useState(false);
   
   useEffect(() => {
     const timer = setTimeout(() => {
+      console.warn('LoadingState: Timeout reached for:', message);
       setTimedOut(true);
     }, timeout);
     
     return () => clearTimeout(timer);
-  }, [timeout]);
+  }, [timeout, message]);
   
   const sizeClasses = {
     sm: 'w-4 h-4',
@@ -38,9 +39,10 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
   if (timedOut) {
     return (
       <div className={containerClasses}>
-        <div className="flex flex-col items-center space-y-4">
+        <div className="flex flex-col items-center space-y-4 max-w-md text-center">
           <div className="text-red-400 text-lg">⚠️</div>
-          <p className="text-crd-lightGray text-center">Loading timed out</p>
+          <h3 className="text-white text-lg">Loading timed out</h3>
+          <p className="text-crd-lightGray text-sm">The content is taking longer than expected to load.</p>
           <button 
             onClick={() => window.location.reload()}
             className="bg-crd-green hover:bg-crd-green/90 text-white px-4 py-2 rounded text-sm"

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
@@ -109,12 +108,13 @@ export const useCards = () => {
     console.log('🚀 Starting card fetch process...');
     
     try {
-      await Promise.race([
-        fetchAllCardsFromDatabase(),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Fetch timeout')), 5000)
-        )
-      ]);
+      // Add timeout to prevent hanging
+      const fetchPromise = fetchAllCardsFromDatabase();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Fetch timeout')), 8000) // 8 second timeout
+      );
+      
+      await Promise.race([fetchPromise, timeoutPromise]);
       
       if (user?.id) {
         await fetchUserCards();
@@ -122,13 +122,22 @@ export const useCards = () => {
     } catch (error) {
       console.error('💥 Error in fetchCards:', error);
       
-      // Final fallback - use empty state
-      setCards([]);
-      setFeaturedCards([]);
-      setUserCards([]);
-      setError('Failed to load cards');
+      // Final fallback - use empty state with better error message
+      const localCards = localCardStorage.getAllCards();
+      if (localCards.length > 0) {
+        const convertedCards = localCards.map(convertCardDataToCard);
+        setCards(convertedCards);
+        setFeaturedCards(convertedCards.slice(0, 8));
+        setDataSource('local');
+        setError('Using local cards - server unavailable');
+      } else {
+        setCards([]);
+        setFeaturedCards([]);
+        setUserCards([]);
+        setError('Unable to load cards');
+      }
     }
-  }, [fetchAllCardsFromDatabase, fetchUserCards, user?.id, loading]);
+  }, [fetchAllCardsFromDatabase, fetchUserCards, user?.id, loading, convertCardDataToCard]);
 
   // Method to migrate local cards to database (if needed)
   const migrateLocalCardsToDatabase = useCallback(async () => {
@@ -184,13 +193,13 @@ export const useCards = () => {
     }
   }, [user?.id, fetchCards]);
 
-  // Simplified useEffect - only run when user changes
+  // Don't auto-fetch on mount to prevent loading loops
   useEffect(() => {
     console.log('🔄 useCards effect triggered, user:', user?.id);
     
     let subscription: any = null;
     
-    // Only set up real-time if we have a user and cards are loaded
+    // Only set up real-time if we have cards loaded and a user
     if (user?.id && cards.length > 0) {
       try {
         subscription = supabase
@@ -204,11 +213,12 @@ export const useCards = () => {
             },
             (payload) => {
               console.log('🔔 Real-time card change:', payload);
+              // Debounce real-time updates to prevent loops
               setTimeout(() => {
                 if (!loading) {
                   fetchCards();
                 }
-              }, 1000);
+              }, 2000); // Increased debounce time
             }
           )
           .subscribe();
@@ -225,7 +235,7 @@ export const useCards = () => {
         supabase.removeChannel(subscription);
       }
     };
-  }, [user?.id]);
+  }, [user?.id, cards.length]); // Added cards.length dependency
 
   return {
     cards,
@@ -237,6 +247,57 @@ export const useCards = () => {
     fetchCards,
     fetchAllCardsFromDatabase,
     fetchUserCards,
-    migrateLocalCardsToDatabase
+    migrateLocalCardsToDatabase: async () => {
+      if (!user?.id) {
+        toast.error('Please sign in to migrate cards');
+        return;
+      }
+      
+      const localCards = localCardStorage.getAllCards();
+      if (localCards.length === 0) {
+        toast.info('No local cards to migrate');
+        return;
+      }
+      
+      console.log(`🔄 Migrating ${localCards.length} local cards to database...`);
+      let migratedCount = 0;
+      
+      for (const localCard of localCards) {
+        try {
+          let dbRarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' = 'common';
+          if (localCard.rarity === 'legendary') dbRarity = 'legendary';
+          else if (localCard.rarity === 'epic') dbRarity = 'epic';
+          else if (localCard.rarity === 'mythic') dbRarity = 'mythic';
+          else if (localCard.rarity === 'rare') dbRarity = 'rare';
+          else if (localCard.rarity === 'uncommon') dbRarity = 'uncommon';
+
+          const cardData = {
+            title: localCard.title,
+            description: localCard.description || 'No description provided',
+            creator_id: user.id,
+            image_url: localCard.image_url || '',
+            thumbnail_url: localCard.thumbnail_url || localCard.image_url || '',
+            rarity: dbRarity,
+            tags: localCard.tags || [],
+            design_metadata: localCard.design_metadata || {},
+            is_public: localCard.visibility === 'public',
+            visibility: localCard.visibility || 'private',
+            marketplace_listing: false
+          };
+          
+          const result = await CardRepository.createCard(cardData);
+          if (result) {
+            migratedCount++;
+          }
+        } catch (error) {
+          console.error(`Failed to migrate card "${localCard.title}":`, error);
+        }
+      }
+      
+      if (migratedCount > 0) {
+        toast.success(`Migrated ${migratedCount} cards to database`);
+        await fetchCards();
+      }
+    }
   };
 };
