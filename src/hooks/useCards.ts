@@ -12,9 +12,42 @@ export const useCards = () => {
   const [cards, setCards] = useState<Card[]>([]);
   const [featuredCards, setFeaturedCards] = useState<Card[]>([]);
   const [userCards, setUserCards] = useState<Card[]>([]);
-  const [loading, setLoading] = useState(false); // Start as false to prevent infinite loading
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<'database' | 'local' | 'mixed'>('local');
+
+  // Helper function to convert CardData to Card
+  const convertCardDataToCard = useCallback((cardData: any): Card => {
+    const now = new Date().toISOString();
+    return {
+      id: cardData.id || crypto.randomUUID(),
+      title: cardData.title || 'Untitled Card',
+      description: cardData.description || null,
+      image_url: cardData.image_url || null,
+      thumbnail_url: cardData.thumbnail_url || cardData.image_url || null,
+      creator_id: cardData.creator_id || user?.id || '',
+      rarity: cardData.rarity || 'common',
+      tags: cardData.tags || [],
+      design_metadata: cardData.design_metadata || {},
+      visibility: cardData.visibility || 'private',
+      is_public: cardData.is_public || false,
+      created_at: cardData.created_at || now,
+      updated_at: cardData.updated_at || now,
+      template_id: cardData.template_id || null,
+      collection_id: cardData.collection_id || null,
+      team_id: cardData.team_id || null,
+      price: cardData.price || null,
+      edition_size: cardData.edition_size || null,
+      marketplace_listing: cardData.marketplace_listing || false,
+      crd_catalog_inclusion: cardData.crd_catalog_inclusion || null,
+      print_available: cardData.print_available || null,
+      verification_status: cardData.verification_status || null,
+      print_metadata: cardData.print_metadata || null,
+      series: cardData.series || null,
+      edition_number: cardData.edition_number || null,
+      total_supply: cardData.total_supply || null,
+    };
+  }, [user?.id]);
 
   const fetchAllCardsFromDatabase = useCallback(async () => {
     try {
@@ -33,20 +66,21 @@ export const useCards = () => {
     } catch (error) {
       console.error('💥 Error fetching cards:', error);
       
-      // Fallback to local storage
+      // Fallback to local storage with proper type conversion
       const localCards = localCardStorage.getAllCards();
-      console.log(`💾 Fallback: Using ${localCards.length} local cards`);
+      const convertedCards = localCards.map(convertCardDataToCard);
+      console.log(`💾 Fallback: Using ${convertedCards.length} local cards`);
       
-      setCards(localCards);
-      setFeaturedCards(localCards.slice(0, 8));
+      setCards(convertedCards);
+      setFeaturedCards(convertedCards.slice(0, 8));
       setDataSource('local');
       setError('Using local data - database unavailable');
       
-      return localCards;
+      return convertedCards;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [convertCardDataToCard]);
 
   const fetchUserCards = useCallback(async (userId?: string) => {
     if (!user?.id && !userId) {
@@ -70,7 +104,7 @@ export const useCards = () => {
   }, [user?.id]);
 
   const fetchCards = useCallback(async () => {
-    if (loading) return; // Prevent multiple concurrent calls
+    if (loading) return;
     
     console.log('🚀 Starting card fetch process...');
     
@@ -82,7 +116,6 @@ export const useCards = () => {
         )
       ]);
       
-      // Only fetch user cards if we have a user
       if (user?.id) {
         await fetchUserCards();
       }
@@ -115,7 +148,6 @@ export const useCards = () => {
     
     for (const localCard of localCards) {
       try {
-        // Map rarity to database enum
         let dbRarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' = 'common';
         if (localCard.rarity === 'legendary') dbRarity = 'legendary';
         else if (localCard.rarity === 'epic') dbRarity = 'epic';
@@ -156,9 +188,6 @@ export const useCards = () => {
   useEffect(() => {
     console.log('🔄 useCards effect triggered, user:', user?.id);
     
-    // Don't auto-fetch on mount to prevent loading issues
-    // Users can manually trigger fetch if needed
-    
     let subscription: any = null;
     
     // Only set up real-time if we have a user and cards are loaded
@@ -175,7 +204,6 @@ export const useCards = () => {
             },
             (payload) => {
               console.log('🔔 Real-time card change:', payload);
-              // Debounce real-time updates
               setTimeout(() => {
                 if (!loading) {
                   fetchCards();
@@ -197,7 +225,7 @@ export const useCards = () => {
         supabase.removeChannel(subscription);
       }
     };
-  }, [user?.id]); // Only depend on user ID
+  }, [user?.id]);
 
   return {
     cards,
