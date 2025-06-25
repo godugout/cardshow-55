@@ -26,10 +26,11 @@ export interface Memory {
 }
 
 export interface MemoryFormData {
-  userId?: string;
+  userId: string;
   title: string;
   description?: string;
   teamId?: string;
+  gameId?: string;
   visibility: Visibility;
   tags?: string[];
   metadata?: Record<string, any>;
