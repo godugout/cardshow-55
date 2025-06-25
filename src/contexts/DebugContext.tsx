@@ -1,21 +1,12 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-interface DebugContextType {
+interface DebugContextValue {
   isDebugMode: boolean;
   toggleDebugMode: () => void;
-  setDebugMode: (enabled: boolean) => void;
 }
 
-const DebugContext = createContext<DebugContextType | undefined>(undefined);
-
-export const useDebug = () => {
-  const context = useContext(DebugContext);
-  if (context === undefined) {
-    throw new Error('useDebug must be used within a DebugProvider');
-  }
-  return context;
-};
+const DebugContext = createContext<DebugContextValue | null>(null);
 
 interface DebugProviderProps {
   children: React.ReactNode;
@@ -25,33 +16,29 @@ export const DebugProvider: React.FC<DebugProviderProps> = ({ children }) => {
   const [isDebugMode, setIsDebugMode] = useState(false);
 
   useEffect(() => {
-    // Load debug mode preference from localStorage
-    const savedDebugMode = localStorage.getItem('crd-debug-mode');
-    if (savedDebugMode === 'true') {
-      setIsDebugMode(true);
-    }
+    // Enable debug mode in development or if explicitly enabled
+    const debugEnabled = process.env.NODE_ENV === 'development' || 
+                        localStorage.getItem('cardshow-debug') === 'true';
+    setIsDebugMode(debugEnabled);
   }, []);
 
   const toggleDebugMode = () => {
-    const newDebugMode = !isDebugMode;
-    setIsDebugMode(newDebugMode);
-    localStorage.setItem('crd-debug-mode', newDebugMode.toString());
-  };
-
-  const setDebugMode = (enabled: boolean) => {
-    setIsDebugMode(enabled);
-    localStorage.setItem('crd-debug-mode', enabled.toString());
-  };
-
-  const value: DebugContextType = {
-    isDebugMode,
-    toggleDebugMode,
-    setDebugMode,
+    const newValue = !isDebugMode;
+    setIsDebugMode(newValue);
+    localStorage.setItem('cardshow-debug', newValue.toString());
   };
 
   return (
-    <DebugContext.Provider value={value}>
+    <DebugContext.Provider value={{ isDebugMode, toggleDebugMode }}>
       {children}
     </DebugContext.Provider>
   );
+};
+
+export const useDebugContext = () => {
+  const context = useContext(DebugContext);
+  if (!context) {
+    throw new Error('useDebugContext must be used within DebugProvider');
+  }
+  return context;
 };

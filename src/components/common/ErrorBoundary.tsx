@@ -25,15 +25,18 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ error, errorInfo });
     
-    // Log error to console and analytics
     console.error('Error Boundary caught an error:', error, errorInfo);
     
-    // Report to error tracking service
-    if (window.gtag) {
-      window.gtag('event', 'exception', {
-        description: error.toString(),
-        fatal: true
-      });
+    // Report to error tracking service if available
+    try {
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'exception', {
+          description: error.toString(),
+          fatal: true
+        });
+      }
+    } catch (e) {
+      console.warn('Failed to report error to analytics:', e);
     }
   }
 

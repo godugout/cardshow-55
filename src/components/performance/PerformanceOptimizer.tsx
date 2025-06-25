@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useDebugContext } from '@/contexts/DebugContext';
 
@@ -38,23 +39,15 @@ export const PerformanceOptimizer: React.FC = () => {
   }, []);
 
   const initializePerformanceOptimizations = () => {
-    // Preload critical resources
     preloadCriticalResources();
-    
-    // Setup image optimization
     setupImageOptimization();
-    
-    // Initialize 3D performance optimization
     setup3DOptimization();
-    
-    // Setup memory management
     setupMemoryManagement();
   };
 
   const preloadCriticalResources = () => {
     const criticalResources = [
       '/crd-logo-gradient.png',
-      // Add other critical assets
     ];
 
     criticalResources.forEach(resource => {
@@ -67,7 +60,6 @@ export const PerformanceOptimizer: React.FC = () => {
   };
 
   const setupImageOptimization = () => {
-    // Implement intersection observer for lazy loading
     const imageObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -84,14 +76,12 @@ export const PerformanceOptimizer: React.FC = () => {
       threshold: 0.1
     });
 
-    // Apply to all lazy images
     document.querySelectorAll('img[data-src]').forEach(img => {
       imageObserver.observe(img);
     });
   };
 
   const setup3DOptimization = () => {
-    // Detect GPU capabilities
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
     
@@ -99,35 +89,29 @@ export const PerformanceOptimizer: React.FC = () => {
       const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
       const renderer = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : '';
       
-      // Adjust 3D quality based on GPU
       const isMobileGPU = /Adreno|Mali|PowerVR/i.test(renderer);
       const isLowEndGPU = /4[0-9][0-9]|5[0-9][0-9]/.test(renderer);
       
       if (isMobileGPU || isLowEndGPU) {
-        // Reduce 3D quality for mobile/low-end GPUs
         document.documentElement.style.setProperty('--3d-quality', 'medium');
       }
     }
   };
 
   const setupMemoryManagement = () => {
-    // Monitor memory usage
     if ('memory' in performance) {
       const memoryInfo = (performance as any).memory;
       const usageRatio = memoryInfo.usedJSHeapSize / memoryInfo.jsHeapSizeLimit;
       
       if (usageRatio > 0.8) {
-        // Trigger garbage collection optimizations
         triggerMemoryOptimizations();
       }
     }
   };
 
   const triggerMemoryOptimizations = () => {
-    // Clear unused image caches
     caches.open('cardshow-images-v1').then(cache => {
       cache.keys().then(keys => {
-        // Keep only recent images
         const recentKeys = keys.slice(-50);
         keys.forEach(key => {
           if (!recentKeys.includes(key)) {
@@ -139,36 +123,35 @@ export const PerformanceOptimizer: React.FC = () => {
   };
 
   const startPerformanceMonitoring = () => {
-    // Web Vitals monitoring
-    import('web-vitals').then(({ getFCP, getLCP, getFID, getCLS, getTTFB }) => {
+    // Try to use web-vitals if available, otherwise use manual measurement
+    import('web-vitals').then(({ onFCP, onLCP, onFID, onCLS, onTTFB }) => {
       const metrics: Partial<PerformanceMetrics> = {};
 
-      getFCP((metric) => {
+      onFCP((metric) => {
         metrics.fcp = metric.value;
         updateMetrics(metrics);
       });
 
-      getLCP((metric) => {
+      onLCP((metric) => {
         metrics.lcp = metric.value;
         updateMetrics(metrics);
       });
 
-      getFID((metric) => {
+      onFID((metric) => {
         metrics.fid = metric.value;
         updateMetrics(metrics);
       });
 
-      getCLS((metric) => {
+      onCLS((metric) => {
         metrics.cls = metric.value;
         updateMetrics(metrics);
       });
 
-      getTTFB((metric) => {
+      onTTFB((metric) => {
         metrics.ttfb = metric.value;
         updateMetrics(metrics);
       });
     }).catch(() => {
-      // Fallback manual measurement
       measurePerformanceManually();
     });
   };
@@ -177,12 +160,12 @@ export const PerformanceOptimizer: React.FC = () => {
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     if (navigation) {
       const metrics: PerformanceMetrics = {
-        fcp: 0, // Will be updated by paint observer
-        lcp: 0, // Will be updated by largest-contentful-paint observer
-        fid: 0, // Will be updated by first-input observer
-        cls: 0, // Will be updated by layout-shift observer
+        fcp: 0,
+        lcp: 0,
+        fid: 0,
+        cls: 0,
         ttfb: navigation.responseStart - navigation.requestStart,
-        tti: navigation.loadEventEnd - navigation.navigationStart,
+        tti: navigation.loadEventEnd - navigation.fetchStart,
       };
       setMetrics(metrics);
     }
@@ -193,19 +176,16 @@ export const PerformanceOptimizer: React.FC = () => {
   };
 
   const setupAdaptiveOptimizations = () => {
-    // Battery API optimization
     if ('getBattery' in navigator) {
       (navigator as any).getBattery().then((battery: any) => {
         const updateBatteryOptimization = () => {
           if (battery.level < 0.2 || !battery.charging) {
-            // Enable aggressive battery optimization
             setOptimizations(prev => ({
               ...prev,
               batteryOptimization: true,
               adaptiveQuality: true
             }));
             
-            // Reduce animation frame rate
             document.documentElement.style.setProperty('--animation-duration', '0.6s');
           }
         };
@@ -216,12 +196,10 @@ export const PerformanceOptimizer: React.FC = () => {
       });
     }
 
-    // Network-aware optimizations
     if ('connection' in navigator) {
       const connection = (navigator as any).connection;
       const updateNetworkOptimization = () => {
         if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
-          // Enable aggressive data saving
           setOptimizations(prev => ({
             ...prev,
             enableImageOptimization: true,
@@ -235,7 +213,6 @@ export const PerformanceOptimizer: React.FC = () => {
     }
   };
 
-  // Don't render anything in production
   if (!isDebugMode) return null;
 
   return (

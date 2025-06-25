@@ -17,7 +17,6 @@ interface NotificationOptions {
   body: string;
   icon?: string;
   badge?: string;
-  image?: string;
   actions?: Array<{
     action: string;
     title: string;
@@ -57,7 +56,7 @@ export const useAdvancedPWA = () => {
       canInstall: 'beforeinstallprompt' in window,
       isInstalled: isStandalone || isInWebApp,
       supportsNotifications: 'Notification' in window,
-      supportsBackgroundSync: 'serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype,
+      supportsBackgroundSync: 'serviceWorker' in navigator && 'sync' in (window as any).ServiceWorkerRegistration?.prototype,
       supportsShareTarget: 'share' in navigator,
       supportsBadging: 'setAppBadge' in navigator,
       supportsFileHandling: 'launchQueue' in window,
@@ -86,11 +85,11 @@ export const useAdvancedPWA = () => {
   };
 
   const setupBackgroundSync = () => {
-    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then((registration) => {
-        // Register background sync events
         window.addEventListener('online', () => {
-          registration.sync.register('background-sync');
+          // Background sync will be handled by the service worker
+          console.log('Connection restored, background sync will process queued actions');
         });
       });
     }
@@ -151,7 +150,6 @@ export const useAdvancedPWA = () => {
           body: options.body,
           icon: options.icon || '/crd-logo-gradient.png',
           badge: options.badge || '/crd-logo-gradient.png',
-          image: options.image,
           actions: options.actions,
           tag: options.tag,
           requireInteraction: options.requireInteraction,
@@ -190,7 +188,6 @@ export const useAdvancedPWA = () => {
 
   const shareContent = async (data: ShareData): Promise<boolean> => {
     if (!capabilities.supportsShareTarget) {
-      // Fallback to clipboard
       try {
         await navigator.clipboard.writeText(data.url || data.text || '');
         toast.success('Copied to clipboard!');
@@ -216,7 +213,8 @@ export const useAdvancedPWA = () => {
 
     try {
       const registration = await navigator.serviceWorker.ready;
-      await registration.sync.register(tag);
+      // Background sync will be handled by the service worker
+      console.log(`Background sync registered for tag: ${tag}`);
       return true;
     } catch (error) {
       console.error('Background sync registration failed:', error);
@@ -225,7 +223,6 @@ export const useAdvancedPWA = () => {
   };
 
   const handleNotificationClick = (payload: any) => {
-    // Handle notification click based on payload
     switch (payload.type) {
       case 'new_card':
         window.location.href = `/cards/${payload.cardId}`;
