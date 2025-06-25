@@ -92,7 +92,7 @@ export const useCards = () => {
         }
         
         console.log(`📊 Loaded ${publicCards?.length || 0} public cards`);
-        const dbCards = publicCards || [];
+        const dbCards = (publicCards || []).map(convertCardDataToCard);
         setCards(dbCards);
         setFeaturedCards(dbCards.slice(0, 8));
         setDataSource('database');
@@ -103,11 +103,14 @@ export const useCards = () => {
       const allCards = await CardRepository.getAllCards();
       console.log(`📊 Loaded ${allCards.length} cards from database for user ${user.id}`);
       
-      setCards(allCards);
-      setFeaturedCards(allCards.slice(0, 8));
+      // Convert database cards to proper Card type
+      const convertedCards = allCards.map(convertCardDataToCard);
+      
+      setCards(convertedCards);
+      setFeaturedCards(convertedCards.slice(0, 8));
       setDataSource('database');
       
-      return allCards;
+      return convertedCards;
     } catch (error) {
       console.error('💥 Error fetching cards:', error);
       
@@ -148,15 +151,18 @@ export const useCards = () => {
       console.log('👤 Fetching user cards for:', targetUserId);
       const userCardsData = await CardRepository.getUserCards(targetUserId);
       
+      // Convert user cards to proper Card type
+      const convertedUserCards = userCardsData.map(convertCardDataToCard);
+      
       if (!userId || userId === user?.id) {
-        setUserCards(userCardsData);
+        setUserCards(convertedUserCards);
       }
-      return userCardsData;
+      return convertedUserCards;
     } catch (error) {
       console.error('💥 Error fetching user cards:', error);
       return [];
     }
-  }, [user?.id, authLoading]);
+  }, [user?.id, authLoading, convertCardDataToCard]);
 
   const fetchCards = useCallback(async () => {
     if (loading || authLoading) {
