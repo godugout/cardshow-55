@@ -1,35 +1,80 @@
 
-import type { User } from './user';
-
-export interface Reaction {
+export interface SocialActivity {
   id: string;
-  userId: string;
-  memoryId?: string;
-  collectionId?: string;
-  commentId?: string;
-  type: string;
-  createdAt: string;
-  removed?: boolean;
-  user?: Partial<User>; // Add user property
+  user_id: string;
+  activity_type: string;
+  target_id?: string;
+  target_type?: string;
+  content?: string;
+  metadata: Record<string, any>;
+  visibility: 'public' | 'friends' | 'private';
+  activity_timestamp: string;
+  reaction_count: number;
+  comment_count: number;
+  share_count: number;
+  created_at: string;
+  updated_at: string;
+  user?: {
+    id: string;
+    username: string;
+    avatar_url?: string;
+  };
+  reactions?: SocialReaction[];
+  user_reaction?: SocialReaction;
 }
 
-export interface ReactionCount {
-  type: string;
-  count: number;
+export interface SocialReaction {
+  id: string;
+  user_id: string;
+  target_id: string;
+  target_type: 'activity' | 'card' | 'collection' | 'comment';
+  reaction_type: 'like' | 'love' | 'wow' | 'rare_find' | 'celebrate';
+  created_at: string;
+  user?: {
+    id: string;
+    username: string;
+    avatar_url?: string;
+  };
 }
 
-export interface Comment {
+export interface UserRelationship {
   id: string;
-  userId: string;
-  cardId?: string; // Changed from memoryId to cardId to match existing code
-  collectionId?: string;
-  teamId?: string;
-  parentId?: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  user?: Partial<User>;
-  replies?: Comment[];
-  replyCount?: number; // Add replyCount property
-  reactions?: Reaction[]; // Add reactions property
+  follower_id: string;
+  following_id: string;
+  relationship_type: 'follow' | 'block';
+  created_at: string;
+}
+
+export interface SocialNotification {
+  id: string;
+  user_id: string;
+  from_user_id?: string;
+  notification_type: string;
+  title: string;
+  message: string;
+  target_id?: string;
+  target_type?: string;
+  metadata: Record<string, any>;
+  read_at?: string;
+  created_at: string;
+  from_user?: {
+    id: string;
+    username: string;
+    avatar_url?: string;
+  };
+}
+
+export interface Hashtag {
+  id: string;
+  name: string;
+  usage_count: number;
+  created_at: string;
+}
+
+export interface ActivityFeedOptions {
+  type?: string;
+  user_id?: string;
+  limit?: number;
+  offset?: number;
+  following_only?: boolean;
 }

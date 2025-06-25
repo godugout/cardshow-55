@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -25,6 +24,7 @@ import { CardsPage } from '@/components/cards/CardsPage';
 import { FeedPage } from '@/components/feed/FeedPage';
 import { CardshowApp } from '@/pages/CardshowApp';
 import { BackofficeLayout } from '@/components/backoffice/BackofficeLayout';
+import { SocialPage } from '@/pages/SocialPage';
 import './App.css';
 
 const queryClient = new QueryClient({
@@ -73,6 +73,7 @@ function App() {
                               
                               {/* Social feed */}
                               <Route path="/feed" element={<FeedPage />} />
+                              <Route path="/social" element={<SocialPage />} />
                               
                               {/* Cardshow mobile app */}
                               <Route path="/cardshow/*" element={<CardshowApp />} />

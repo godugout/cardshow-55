@@ -4635,6 +4635,10 @@ export type Database = {
           achievements_count: number
         }[]
       }
+      increment_article_views: {
+        Args: { article_id: string }
+        Returns: undefined
+      }
       increment_listing_views: {
         Args: { listing_uuid: string }
         Returns: undefined
