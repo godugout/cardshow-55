@@ -9,6 +9,59 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_permissions: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          permission_name: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          permission_name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          permission_name?: string
+        }
+        Relationships: []
+      }
+      admin_role_permissions: {
+        Row: {
+          granted_at: string | null
+          id: string
+          permission_id: string | null
+          role: string
+        }
+        Insert: {
+          granted_at?: string | null
+          id?: string
+          permission_id?: string | null
+          role: string
+        }
+        Update: {
+          granted_at?: string | null
+          id?: string
+          permission_id?: string | null
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_role_permissions_permission_id_fkey"
+            columns: ["permission_id"]
+            isOneToOne: false
+            referencedRelation: "admin_permissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_roles: {
         Row: {
           created_at: string | null
@@ -122,6 +175,7 @@ export type Database = {
       audit_logs: {
         Row: {
           action: string
+          automated_action: boolean | null
           created_at: string | null
           id: string
           ip_address: unknown | null
@@ -129,11 +183,16 @@ export type Database = {
           old_values: Json | null
           resource_id: string | null
           resource_type: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          risk_score: number | null
+          session_id: string | null
           user_agent: string | null
           user_id: string | null
         }
         Insert: {
           action: string
+          automated_action?: boolean | null
           created_at?: string | null
           id?: string
           ip_address?: unknown | null
@@ -141,11 +200,16 @@ export type Database = {
           old_values?: Json | null
           resource_id?: string | null
           resource_type: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          risk_score?: number | null
+          session_id?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
         Update: {
           action?: string
+          automated_action?: boolean | null
           created_at?: string | null
           id?: string
           ip_address?: unknown | null
@@ -153,6 +217,10 @@ export type Database = {
           old_values?: Json | null
           resource_id?: string | null
           resource_type?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          risk_score?: number | null
+          session_id?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
@@ -1291,6 +1359,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      content_moderation_queue: {
+        Row: {
+          ai_flags: Json | null
+          assigned_to: string | null
+          content_id: string
+          content_type: string
+          created_at: string | null
+          id: string
+          moderator_notes: string | null
+          priority: string | null
+          reported_by: string | null
+          resolution_reason: string | null
+          resolved_at: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_flags?: Json | null
+          assigned_to?: string | null
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          id?: string
+          moderator_notes?: string | null
+          priority?: string | null
+          reported_by?: string | null
+          resolution_reason?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_flags?: Json | null
+          assigned_to?: string | null
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          id?: string
+          moderator_notes?: string | null
+          priority?: string | null
+          reported_by?: string | null
+          resolution_reason?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       course_enrollments: {
         Row: {
@@ -2628,6 +2744,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      financial_analytics: {
+        Row: {
+          avg_transaction_value: number | null
+          created_at: string | null
+          id: string
+          total_fees: number | null
+          total_payouts: number | null
+          total_revenue: number | null
+          transaction_count: number | null
+          transaction_date: string
+        }
+        Insert: {
+          avg_transaction_value?: number | null
+          created_at?: string | null
+          id?: string
+          total_fees?: number | null
+          total_payouts?: number | null
+          total_revenue?: number | null
+          transaction_count?: number | null
+          transaction_date: string
+        }
+        Update: {
+          avg_transaction_value?: number | null
+          created_at?: string | null
+          id?: string
+          total_fees?: number | null
+          total_payouts?: number | null
+          total_revenue?: number | null
+          transaction_count?: number | null
+          transaction_date?: string
+        }
+        Relationships: []
       }
       follows: {
         Row: {
@@ -4054,6 +4203,44 @@ export type Database = {
           },
         ]
       }
+      support_ticket_messages: {
+        Row: {
+          attachments: Json | null
+          created_at: string | null
+          id: string
+          is_internal: boolean | null
+          message: string
+          ticket_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          attachments?: Json | null
+          created_at?: string | null
+          id?: string
+          is_internal?: boolean | null
+          message: string
+          ticket_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          attachments?: Json | null
+          created_at?: string | null
+          id?: string
+          is_internal?: boolean | null
+          message?: string
+          ticket_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       support_tickets: {
         Row: {
           assigned_agent_id: string | null
@@ -4126,6 +4313,33 @@ export type Database = {
           status?: string | null
           threshold_critical?: number | null
           threshold_warning?: number | null
+        }
+        Relationships: []
+      }
+      system_metrics: {
+        Row: {
+          id: string
+          metric_name: string
+          metric_type: string | null
+          metric_value: number
+          recorded_at: string | null
+          tags: Json | null
+        }
+        Insert: {
+          id?: string
+          metric_name: string
+          metric_type?: string | null
+          metric_value: number
+          recorded_at?: string | null
+          tags?: Json | null
+        }
+        Update: {
+          id?: string
+          metric_name?: string
+          metric_type?: string | null
+          metric_value?: number
+          recorded_at?: string | null
+          tags?: Json | null
         }
         Relationships: []
       }
@@ -4478,6 +4692,51 @@ export type Database = {
           points_awarded?: number | null
           unlocked_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_analytics: {
+        Row: {
+          cards_created: number | null
+          cards_viewed: number | null
+          created_at: string | null
+          id: string
+          last_activity: string | null
+          login_count: number | null
+          metric_date: string
+          session_duration_minutes: number | null
+          total_earned: number | null
+          total_spent: number | null
+          transactions_count: number | null
+          user_id: string | null
+        }
+        Insert: {
+          cards_created?: number | null
+          cards_viewed?: number | null
+          created_at?: string | null
+          id?: string
+          last_activity?: string | null
+          login_count?: number | null
+          metric_date: string
+          session_duration_minutes?: number | null
+          total_earned?: number | null
+          total_spent?: number | null
+          transactions_count?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          cards_created?: number | null
+          cards_viewed?: number | null
+          created_at?: string | null
+          id?: string
+          last_activity?: string | null
+          login_count?: number | null
+          metric_date?: string
+          session_duration_minutes?: number | null
+          total_earned?: number | null
+          total_spent?: number | null
+          transactions_count?: number | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -4897,6 +5156,10 @@ export type Database = {
           level: number
           achievements_count: number
         }[]
+      }
+      has_admin_permission: {
+        Args: { permission_name: string }
+        Returns: boolean
       }
       increment_article_views: {
         Args: { article_id: string }
