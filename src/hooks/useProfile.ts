@@ -15,6 +15,10 @@ interface UserProfile {
   social_links?: Record<string, any>;
   verification_status: 'unverified' | 'pending' | 'verified';
   preferences?: Record<string, any>;
+  total_followers?: number;
+  total_following?: number;
+  experience_points?: number;
+  level?: number;
   created_at: string;
   updated_at: string;
 }
@@ -50,8 +54,8 @@ export const useProfile = (userId?: string) => {
           // Convert database types to expected types
           const profileData: UserProfile = {
             ...data,
-            social_links: typeof data.social_links === 'object' ? data.social_links as Record<string, any> : {},
-            preferences: typeof data.preferences === 'object' ? data.preferences as Record<string, any> : {}
+            social_links: typeof data.social_links === 'object' && data.social_links !== null ? data.social_links as Record<string, any> : {},
+            preferences: typeof data.preferences === 'object' && data.preferences !== null ? data.preferences as Record<string, any> : {}
           };
           setProfile(profileData);
           setError(null);
@@ -101,8 +105,8 @@ export const useProfile = (userId?: string) => {
       if (updatedData) {
         const profileData: UserProfile = {
           ...updatedData,
-          social_links: typeof updatedData.social_links === 'object' ? updatedData.social_links as Record<string, any> : {},
-          preferences: typeof updatedData.preferences === 'object' ? updatedData.preferences as Record<string, any> : {}
+          social_links: typeof updatedData.social_links === 'object' && updatedData.social_links !== null ? updatedData.social_links as Record<string, any> : {},
+          preferences: typeof updatedData.preferences === 'object' && updatedData.preferences !== null ? updatedData.preferences as Record<string, any> : {}
         };
         setProfile(profileData);
       }
