@@ -6,7 +6,7 @@ import { CardDetailsStep } from '../../wizard/CardDetailsStep';
 import { PublishingOptionsStep } from '../../wizard/PublishingOptionsStep';
 import { SimpleCardForm } from '../../SimpleCardForm';
 import { SimpleEditor } from '../../SimpleEditor';
-import { BulkUpload } from '@/pages/BulkUpload';
+import BulkUpload from '@/pages/BulkUpload';
 import type { CreationStep, CreationMode } from '../types';
 import type { CardData } from '@/hooks/useCardEditor';
 
@@ -82,7 +82,7 @@ export const StepContent = ({
       return (
         <PublishingOptionsStep
           publishingOptions={cardData.publishing_options}
-          selectedTemplate={cardData.template_id}
+          selectedTemplate={cardData.template_id || ''}
           onPublishingUpdate={(key, value) => {
             onFieldUpdate('publishing_options', {
               ...cardData.publishing_options,

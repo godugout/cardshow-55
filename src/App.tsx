@@ -17,6 +17,7 @@ import Community from '@/pages/Community';
 import BulkUpload from '@/pages/BulkUpload';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { CardCreationFlow } from '@/components/editor/CardCreationFlow';
+import { UnifiedCardCreator } from '@/components/editor/unified/UnifiedCardCreator';
 
 function App() {
   return (

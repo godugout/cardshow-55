@@ -32,14 +32,14 @@ export const UnifiedCardCreator = ({
   });
 
   const handlePhotoSelect = (photo: string) => {
-    cardEditor.updateField('image_url', photo);
+    cardEditor.updateCardField('image_url', photo);
     if (state.mode === 'quick') {
       actions.nextStep();
     }
   };
 
   const handleFieldUpdate = (field: keyof CardData, value: any) => {
-    cardEditor.updateField(field, value);
+    cardEditor.updateCardField(field, value);
   };
 
   const handleModeSelect = (mode: CreationMode) => {
