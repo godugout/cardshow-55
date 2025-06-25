@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { CRDButton } from '@/components/ui/design-system/Button';
+import { CRDCard } from '@/components/ui/design-system/Card';
 import { ArrowRight, Upload, Check } from 'lucide-react';
 
 interface CreateCardWizardProps {
@@ -24,7 +24,6 @@ export const CreateCardWizard: React.FC<CreateCardWizardProps> = ({ className = 
   };
 
   const handleAdvancedCrop = () => {
-    // Handle advanced cropping functionality
     console.log('Advanced crop clicked');
   };
 
@@ -37,7 +36,7 @@ export const CreateCardWizard: React.FC<CreateCardWizardProps> = ({ className = 
       {/* Header */}
       <div className="bg-crd-darker border-b border-crd-mediumGray/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">Create New Card</h1>
+          <h1 className="text-2xl font-bold text-crd-white">Create New Card</h1>
           <div className="text-crd-lightGray text-sm">
             Upload your image and let AI suggest the perfect details ✨ AI analysis complete!
           </div>
@@ -60,7 +59,7 @@ export const CreateCardWizard: React.FC<CreateCardWizardProps> = ({ className = 
                   }`}>
                     {step.number < currentStep ? <Check className="w-5 h-5" /> : step.number}
                   </div>
-                  <div className="text-white text-sm mt-2 text-center">
+                  <div className="text-crd-white text-sm mt-2 text-center">
                     {step.title}
                   </div>
                 </div>
@@ -84,13 +83,13 @@ export const CreateCardWizard: React.FC<CreateCardWizardProps> = ({ className = 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {currentStep === 1 && (
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">Upload Your Photo</h2>
+            <h2 className="text-3xl font-bold text-crd-white mb-4">Upload Your Photo</h2>
             <p className="text-crd-lightGray mb-8">
               Choose the image that will be featured on your card
             </p>
 
             {/* Card Preview Area */}
-            <Card className="bg-crd-darkGray border-crd-mediumGray/30 p-8 mb-8 max-w-md mx-auto">
+            <CRDCard className="bg-crd-darkGray border-crd-mediumGray/30 p-8 mb-8 max-w-md mx-auto">
               <div className="bg-crd-mediumGray rounded-lg p-8 border-2 border-dashed border-crd-lightGray/30">
                 {uploadedImage ? (
                   <div className="space-y-4">
@@ -111,37 +110,37 @@ export const CreateCardWizard: React.FC<CreateCardWizardProps> = ({ className = 
                 ) : (
                   <div className="text-center">
                     <Upload className="w-16 h-16 text-crd-lightGray mx-auto mb-4" />
-                    <p className="text-white text-lg mb-2">Drop your image here</p>
+                    <p className="text-crd-white text-lg mb-2">Drop your image here</p>
                     <p className="text-crd-lightGray text-sm">or click to browse</p>
                   </div>
                 )}
               </div>
-            </Card>
+            </CRDCard>
 
             {/* Upload Actions */}
             <div className="flex justify-center gap-4 mb-8">
-              <Button 
+              <CRDButton 
                 variant="outline"
                 className="bg-transparent border-crd-lightGray text-crd-lightGray hover:bg-crd-lightGray hover:text-black"
               >
                 Choose File
-              </Button>
+              </CRDButton>
               {uploadedImage && (
-                <Button 
+                <CRDButton 
                   onClick={handleAdvancedCrop}
-                  className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
+                  variant="primary"
                 >
                   Advanced Crop
-                </Button>
+                </CRDButton>
               )}
             </div>
 
             {/* Ready Section */}
             {uploadedImage && (
-              <Card className="bg-crd-darkGray border-crd-mediumGray/30 p-6">
+              <CRDCard className="bg-crd-darkGray border-crd-mediumGray/30 p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Check className="w-5 h-5 text-crd-green" />
-                  <h3 className="text-white font-semibold">Ready for Card Creation</h3>
+                  <h3 className="text-crd-white font-semibold">Ready for Card Creation</h3>
                 </div>
                 <p className="text-crd-lightGray text-sm mb-6">
                   Your image has been processed and optimized for the standard trading card format. 
@@ -151,14 +150,14 @@ export const CreateCardWizard: React.FC<CreateCardWizardProps> = ({ className = 
                 {/* Features */}
                 <div className="grid grid-cols-2 gap-6 mb-6">
                   <div>
-                    <h4 className="text-white font-medium mb-2">Supported Formats & Features</h4>
+                    <h4 className="text-crd-white font-medium mb-2">Supported Formats & Features</h4>
                     <div className="text-crd-lightGray text-sm space-y-1">
                       <div>File Types:</div>
                       <div>JPG, PNG, WebP, GIF</div>
                     </div>
                   </div>
                   <div>
-                    <h4 className="text-white font-medium mb-2">Advanced Features:</h4>
+                    <h4 className="text-crd-white font-medium mb-2">Advanced Features:</h4>
                     <div className="text-crd-lightGray text-sm space-y-1">
                       <div>Multi-element cropping, Frame extraction</div>
                     </div>
@@ -166,14 +165,15 @@ export const CreateCardWizard: React.FC<CreateCardWizardProps> = ({ className = 
                 </div>
 
                 {/* Next Step Button */}
-                <Button 
+                <CRDButton 
                   onClick={handleSkipToDetails}
-                  className="w-full bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
+                  variant="primary"
+                  className="w-full"
                 >
                   Skip to Details
                   <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Card>
+                </CRDButton>
+              </CRDCard>
             )}
           </div>
         )}

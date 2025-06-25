@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { CRDButton } from '@/components/ui/design-system/Button';
+import { CRDCard } from '@/components/ui/design-system/Card';
 import { Progress } from '@/components/ui/progress';
 import { Upload, X, Check, Sparkles, AlertCircle } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
@@ -199,21 +198,21 @@ const BulkUpload = () => {
       {/* Header */}
       <div className="bg-crd-darker border-b border-crd-mediumGray/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">Bulk Card Upload</h1>
-          <Button
+          <h1 className="text-2xl font-bold text-crd-white">Bulk Card Upload</h1>
+          <CRDButton
             onClick={() => navigate('/gallery')}
             variant="outline"
-            className="border-crd-mediumGray/20 text-white"
+            className="border-crd-mediumGray/20 text-crd-white hover:bg-crd-mediumGray hover:text-crd-white"
           >
             View Gallery
-          </Button>
+          </CRDButton>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Upload Area */}
         {uploadedFiles.length === 0 && (
-          <Card className="bg-crd-darker border-crd-mediumGray/20 p-8">
+          <CRDCard className="bg-crd-darker border-crd-mediumGray/20 p-8">
             <div
               {...getRootProps()}
               className={`border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer ${
@@ -224,7 +223,7 @@ const BulkUpload = () => {
             >
               <input {...getInputProps()} />
               <Upload className="w-16 h-16 text-crd-lightGray mx-auto mb-4" />
-              <h3 className="text-2xl font-semibold text-white mb-2">
+              <h3 className="text-2xl font-semibold text-crd-white mb-2">
                 {isDragActive ? 'Drop images here' : 'Upload Card Images'}
               </h3>
               <p className="text-crd-lightGray text-lg">
@@ -234,7 +233,7 @@ const BulkUpload = () => {
                 AI will automatically analyze and create cards with metadata
               </p>
             </div>
-          </Card>
+          </CRDCard>
         )}
 
         {/* File Grid */}
@@ -243,7 +242,7 @@ const BulkUpload = () => {
             {/* Controls */}
             <div className="flex items-center justify-between bg-crd-darker rounded-lg p-4 border border-crd-mediumGray/20">
               <div className="flex items-center gap-4">
-                <span className="text-white font-medium">
+                <span className="text-crd-white font-medium">
                   {uploadedFiles.length} images uploaded
                 </span>
                 <div className="flex gap-4 text-sm">
@@ -254,23 +253,23 @@ const BulkUpload = () => {
               </div>
               
               <div className="flex gap-3">
-                <Button
+                <CRDButton
                   onClick={processAllFiles}
                   disabled={isProcessing || pendingCount === 0}
-                  className="bg-crd-green hover:bg-crd-green/90 text-black"
+                  variant="primary"
                 >
                   <Sparkles className="w-4 h-4 mr-2" />
                   {isProcessing ? 'Processing...' : `Create ${pendingCount} Cards`}
-                </Button>
+                </CRDButton>
                 
                 {completedCount > 0 && (
-                  <Button
+                  <CRDButton
                     onClick={viewInGallery}
                     variant="outline"
-                    className="border-crd-mediumGray/20 text-white"
+                    className="border-crd-mediumGray/20 text-crd-white hover:bg-crd-mediumGray hover:text-crd-white"
                   >
                     View in Gallery
-                  </Button>
+                  </CRDButton>
                 )}
               </div>
             </div>
@@ -279,7 +278,7 @@ const BulkUpload = () => {
             {isProcessing && (
               <div className="bg-crd-darker rounded-lg p-4 border border-crd-mediumGray/20">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-white">Processing cards...</span>
+                  <span className="text-crd-white">Processing cards...</span>
                   <span className="text-crd-lightGray">{Math.round(progress)}%</span>
                 </div>
                 <Progress value={progress} className="w-full" />
@@ -289,7 +288,7 @@ const BulkUpload = () => {
             {/* Files Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {uploadedFiles.map((fileData) => (
-                <Card key={fileData.id} className="bg-crd-darker border-crd-mediumGray/20 overflow-hidden">
+                <CRDCard key={fileData.id} className="bg-crd-darker border-crd-mediumGray/20 overflow-hidden">
                   <div className="relative">
                     <img
                       src={fileData.preview}
@@ -300,34 +299,34 @@ const BulkUpload = () => {
                     {/* Status Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                       {fileData.status === 'pending' && (
-                        <Button
+                        <CRDButton
                           size="sm"
                           variant="ghost"
                           onClick={() => removeFile(fileData.id)}
-                          className="absolute top-2 right-2 text-white hover:bg-red-500"
+                          className="absolute top-2 right-2 text-crd-white hover:bg-red-500"
                         >
                           <X className="w-4 h-4" />
-                        </Button>
+                        </CRDButton>
                       )}
                       
                       {fileData.status === 'analyzing' && (
                         <div className="text-center">
                           <Sparkles className="w-8 h-8 text-crd-green animate-pulse mx-auto mb-2" />
-                          <span className="text-white text-sm">Analyzing...</span>
+                          <span className="text-crd-white text-sm">Analyzing...</span>
                         </div>
                       )}
                       
                       {fileData.status === 'complete' && (
                         <div className="text-center">
                           <Check className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                          <span className="text-white text-sm">Complete</span>
+                          <span className="text-crd-white text-sm">Complete</span>
                         </div>
                       )}
                       
                       {fileData.status === 'error' && (
                         <div className="text-center">
                           <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-2" />
-                          <span className="text-white text-sm">Error</span>
+                          <span className="text-crd-white text-sm">Error</span>
                         </div>
                       )}
                     </div>
@@ -335,7 +334,7 @@ const BulkUpload = () => {
                   
                   {/* File Info */}
                   <div className="p-3">
-                    <p className="text-white text-sm font-medium truncate">
+                    <p className="text-crd-white text-sm font-medium truncate">
                       {fileData.file.name}
                     </p>
                     <p className="text-crd-lightGray text-xs">
@@ -359,7 +358,7 @@ const BulkUpload = () => {
                       </p>
                     )}
                   </div>
-                </Card>
+                </CRDCard>
               ))}
             </div>
 
