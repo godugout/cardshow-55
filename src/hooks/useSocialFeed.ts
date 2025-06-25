@@ -56,7 +56,8 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
         comment_count: activity.comment_count || 0,
         share_count: activity.share_count || 0,
         reactions: [],
-        user_reaction: undefined
+        user_reaction: undefined,
+        metadata: (activity.metadata || {}) as Record<string, any>
       }));
 
       if (offset === 0) {
@@ -95,7 +96,8 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
         comment_count: 0,
         share_count: 0,
         reactions: [],
-        user_reaction: undefined
+        user_reaction: undefined,
+        metadata: (payload.new.metadata || {}) as Record<string, any>
       } as SocialActivity;
       setActivities(prev => [newActivity, ...prev]);
     },
@@ -103,7 +105,11 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
       // Update existing activity
       setActivities(prev =>
         prev.map(activity =>
-          activity.id === payload.new.id ? { ...activity, ...payload.new } : activity
+          activity.id === payload.new.id ? { 
+            ...activity, 
+            ...payload.new,
+            metadata: (payload.new.metadata || {}) as Record<string, any>
+          } : activity
         )
       );
     },

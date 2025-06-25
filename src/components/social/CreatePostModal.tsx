@@ -38,7 +38,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ open, onOpenCh
   ];
 
   // Get user display properties safely
-  const userAvatar = user?.avatar_url || user?.user_metadata?.avatar_url;
+  const userAvatar = user?.user_metadata?.avatar_url;
   const userName = user?.user_metadata?.username || user?.email?.split('@')[0] || 'User';
 
   return (

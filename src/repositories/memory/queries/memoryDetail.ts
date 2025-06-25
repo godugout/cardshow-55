@@ -23,13 +23,13 @@ export const getMemoryById = async (id: string): Promise<Memory | null> => {
       .select('type')
       .eq('card_id', id);
       
-    // Count reactions by type manually
-    const reactionCounts: Record<string, number> = {};
-    if (reactionData) {
-      reactionData.forEach(reaction => {
-        reactionCounts[reaction.type] = (reactionCounts[reaction.type] || 0) + 1;
-      });
-    }
+    // Convert to our expected reaction format
+    const reactions = reactionData?.map(reaction => ({
+      id: `${reaction.type}-${id}`,
+      userId: 'system',
+      type: reaction.type,
+      createdAt: new Date().toISOString()
+    })) || [];
       
     // Count comments
     const { count: commentCount } = await supabase
@@ -43,15 +43,13 @@ export const getMemoryById = async (id: string): Promise<Memory | null> => {
       title: data.title,
       description: data.description,
       teamId: data.team_id,
-      gameId: data.game_id,
-      location: data.location,
       visibility: data.visibility,
       createdAt: data.created_at,
       tags: data.tags,
       metadata: data.metadata,
-      media: data.media,
+      mediaItems: data.media,
       commentCount: commentCount || 0,
-      reactions: Object.entries(reactionCounts).map(([type, count]) => ({ type, count }))
+      reactions: reactions
     };
   } catch (error) {
     console.error('Error in getMemoryById:', error);
