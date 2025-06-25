@@ -82,7 +82,7 @@ export const StepContent = ({
       return (
         <PublishingOptionsStep
           publishingOptions={cardData.publishing_options}
-          selectedTemplate={cardData.template_id || ''}
+          selectedTemplate={null}
           onPublishingUpdate={(key, value) => {
             onFieldUpdate('publishing_options', {
               ...cardData.publishing_options,
