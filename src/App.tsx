@@ -4,7 +4,6 @@ import { Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
-import { DebugProvider } from '@/contexts/DebugContext';
 import { AppShell } from '@/components/pwa/AppShell';
 import { PerformanceOptimizer } from '@/components/performance/PerformanceOptimizer';
 
@@ -14,11 +13,13 @@ const AuthPage = React.lazy(() => import('@/pages/AuthPage'));
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'));
 const StudioPage = React.lazy(() => import('@/pages/StudioPage'));
 const CreatePage = React.lazy(() => import('@/pages/CreatePage'));
+const CardsPage = React.lazy(() => import('@/pages/CardsPage'));
 const GalleryPage = React.lazy(() => import('@/pages/GalleryPage'));
 const TradingPage = React.lazy(() => import('@/pages/TradingPage'));
 const MarketplacePage = React.lazy(() => import('@/pages/MarketplacePage'));
 const CollectionsPage = React.lazy(() => import('@/pages/CollectionsPage'));
 const AdminDashboard = React.lazy(() => import('@/pages/AdminDashboard'));
+const Settings = React.lazy(() => import('@/pages/Settings'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,28 +39,28 @@ const LoadingFallback = () => (
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <DebugProvider>
-        <AuthProvider>
-          <AppShell>
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/studio" element={<StudioPage />} />
-                <Route path="/create" element={<CreatePage />} />
-                <Route path="/gallery" element={<GalleryPage />} />
-                <Route path="/trading" element={<TradingPage />} />
-                <Route path="/marketplace" element={<MarketplacePage />} />
-                <Route path="/collections" element={<CollectionsPage />} />
-                <Route path="/admin/*" element={<AdminDashboard />} />
-              </Routes>
-            </Suspense>
-          </AppShell>
-          <Toaster />
-          <PerformanceOptimizer />
-        </AuthProvider>
-      </DebugProvider>
+      <AuthProvider>
+        <AppShell>
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/studio" element={<StudioPage />} />
+              <Route path="/create" element={<CreatePage />} />
+              <Route path="/cards/*" element={<CardsPage />} />
+              <Route path="/gallery" element={<GalleryPage />} />
+              <Route path="/trading" element={<TradingPage />} />
+              <Route path="/marketplace" element={<MarketplacePage />} />
+              <Route path="/collections" element={<CollectionsPage />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/admin/*" element={<AdminDashboard />} />
+            </Routes>
+          </Suspense>
+        </AppShell>
+        <Toaster />
+        <PerformanceOptimizer />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

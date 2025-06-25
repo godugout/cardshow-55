@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { CardRepository } from '@/repositories/cardRepository';
@@ -13,6 +14,7 @@ export const useCards = () => {
   const [userCards, setUserCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [dataSource, setDataSource] = useState<'database' | 'local' | 'mixed'>('database');
+  const subscriptionRef = useRef<any>(null);
 
   const fetchAllCardsFromDatabase = async () => {
     try {
@@ -189,12 +191,17 @@ export const useCards = () => {
     console.log('🔄 useCards effect triggered, user:', user?.id);
     fetchCards();
 
+    // Clean up existing subscription first
+    if (subscriptionRef.current) {
+      console.log('🧹 Cleaning up existing subscription');
+      supabase.removeChannel(subscriptionRef.current);
+      subscriptionRef.current = null;
+    }
+
     // Set up real-time subscription
-    let subscription: any = null;
-    
     try {
-      subscription = supabase
-        .channel('cards-changes')
+      subscriptionRef.current = supabase
+        .channel(`cards-changes-${Date.now()}`) // Unique channel name to prevent conflicts
         .on(
           'postgres_changes',
           {
@@ -207,7 +214,9 @@ export const useCards = () => {
             fetchCards(); // Refresh cards when changes occur
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log('📡 Real-time subscription status:', status);
+        });
         
       console.log('📡 Real-time subscription created');
     } catch (error) {
@@ -215,9 +224,10 @@ export const useCards = () => {
     }
 
     return () => {
-      if (subscription) {
+      if (subscriptionRef.current) {
         console.log('🧹 Cleaning up real-time subscription');
-        supabase.removeChannel(subscription);
+        supabase.removeChannel(subscriptionRef.current);
+        subscriptionRef.current = null;
       }
     };
   }, [user?.id]);
