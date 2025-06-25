@@ -51,25 +51,28 @@ export const useProfile = (userId?: string) => {
           setProfile(null);
         } else {
           console.log('✅ Profile loaded:', data.username);
+          // Cast data to any to avoid TypeScript issues with generated types
+          const rawData = data as any;
+          
           // Convert database types to expected types
           const profileData: UserProfile = {
-            id: data.id,
-            username: data.username || '',
-            email: data.email || '',
-            full_name: data.full_name || '',
-            avatar_url: data.avatar_url || '',
-            bio: data.bio || '',
-            location: data.location || '',
-            website: data.website || '',
-            social_links: typeof data.social_links === 'object' && data.social_links !== null ? data.social_links as Record<string, any> : {},
-            verification_status: (data.verification_status === 'verified' || data.verification_status === 'pending') ? data.verification_status : 'unverified',
-            preferences: typeof data.preferences === 'object' && data.preferences !== null ? data.preferences as Record<string, any> : {},
-            total_followers: data.total_followers || 0,
-            total_following: data.total_following || 0,
-            experience_points: data.experience_points || 0,
-            level: data.level || 1,
-            created_at: data.created_at || new Date().toISOString(),
-            updated_at: data.updated_at || new Date().toISOString()
+            id: rawData.id,
+            username: rawData.username || '',
+            email: rawData.email || '',
+            full_name: rawData.full_name || '',
+            avatar_url: rawData.avatar_url || '',
+            bio: rawData.bio || '',
+            location: rawData.location || '',
+            website: rawData.website || '',
+            social_links: typeof rawData.social_links === 'object' && rawData.social_links !== null ? rawData.social_links as Record<string, any> : {},
+            verification_status: (rawData.verification_status === 'verified' || rawData.verification_status === 'pending') ? rawData.verification_status : 'unverified',
+            preferences: typeof rawData.preferences === 'object' && rawData.preferences !== null ? rawData.preferences as Record<string, any> : {},
+            total_followers: rawData.total_followers || 0,
+            total_following: rawData.total_following || 0,
+            experience_points: rawData.experience_points || 0,
+            level: rawData.level || 1,
+            created_at: rawData.created_at || new Date().toISOString(),
+            updated_at: rawData.updated_at || new Date().toISOString()
           };
           setProfile(profileData);
           setError(null);
@@ -117,24 +120,27 @@ export const useProfile = (userId?: string) => {
         .single();
 
       if (updatedData) {
+        // Cast data to any to avoid TypeScript issues with generated types
+        const rawData = updatedData as any;
+        
         const profileData: UserProfile = {
-          id: updatedData.id,
-          username: updatedData.username || '',
-          email: updatedData.email || '',
-          full_name: updatedData.full_name || '',
-          avatar_url: updatedData.avatar_url || '',
-          bio: updatedData.bio || '',
-          location: updatedData.location || '',
-          website: updatedData.website || '',
-          social_links: typeof updatedData.social_links === 'object' && updatedData.social_links !== null ? updatedData.social_links as Record<string, any> : {},
-          verification_status: (updatedData.verification_status === 'verified' || updatedData.verification_status === 'pending') ? updatedData.verification_status : 'unverified',
-          preferences: typeof updatedData.preferences === 'object' && updatedData.preferences !== null ? updatedData.preferences as Record<string, any> : {},
-          total_followers: updatedData.total_followers || 0,
-          total_following: updatedData.total_following || 0,
-          experience_points: updatedData.experience_points || 0,
-          level: updatedData.level || 1,
-          created_at: updatedData.created_at || new Date().toISOString(),
-          updated_at: updatedData.updated_at || new Date().toISOString()
+          id: rawData.id,
+          username: rawData.username || '',
+          email: rawData.email || '',
+          full_name: rawData.full_name || '',
+          avatar_url: rawData.avatar_url || '',
+          bio: rawData.bio || '',
+          location: rawData.location || '',
+          website: rawData.website || '',
+          social_links: typeof rawData.social_links === 'object' && rawData.social_links !== null ? rawData.social_links as Record<string, any> : {},
+          verification_status: (rawData.verification_status === 'verified' || rawData.verification_status === 'pending') ? rawData.verification_status : 'unverified',
+          preferences: typeof rawData.preferences === 'object' && rawData.preferences !== null ? rawData.preferences as Record<string, any> : {},
+          total_followers: rawData.total_followers || 0,
+          total_following: rawData.total_following || 0,
+          experience_points: rawData.experience_points || 0,
+          level: rawData.level || 1,
+          created_at: rawData.created_at || new Date().toISOString(),
+          updated_at: rawData.updated_at || new Date().toISOString()
         };
         setProfile(profileData);
       }
