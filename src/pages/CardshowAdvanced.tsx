@@ -31,7 +31,7 @@ const mockCard: CardData = {
   }
 };
 
-export const CardshowAdvanced: React.FC = () => {
+const CardshowAdvanced: React.FC = () => {
   const [showPreview, setShowPreview] = useState(true);
   
   if (!showPreview) {
@@ -54,3 +54,5 @@ export const CardshowAdvanced: React.FC = () => {
     />
   );
 };
+
+export default CardshowAdvanced;
