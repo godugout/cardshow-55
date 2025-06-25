@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Grid, List, RefreshCw, Plus } from 'lucide-react';
 import { useAllCollections } from '@/hooks/useCollections';
 import { useCards } from '@/hooks/useCards';
+import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { GallerySection } from './Gallery/components/GallerySection';
 import { GalleryHeader } from './Gallery/components/GalleryHeader';
 import { CollectionsGrid } from './Gallery/components/CollectionsGrid';
@@ -19,11 +20,13 @@ const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
   const [catalogView, setCatalogView] = useState<'grid' | 'table'>('grid');
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const { collections, loading: collectionsLoading } = useAllCollections(1, 6);
   const { 
     featuredCards, 
     cards: allCards,
+    userCards,
     loading: cardsLoading, 
     error: cardsError,
     dataSource, 
@@ -34,10 +37,25 @@ const Gallery = () => {
   console.log('🎨 Gallery: Card data debug', {
     featuredCards: featuredCards?.length || 0,
     allCards: allCards?.length || 0,
+    userCards: userCards?.length || 0,
     cardsLoading,
     cardsError,
-    dataSource
+    dataSource,
+    user: user?.id
   });
+
+  // Filter cards to show user's own cards plus public cards from others
+  const displayedCards = React.useMemo(() => {
+    if (!user) {
+      // Not authenticated - show only public cards
+      return allCards.filter(card => card.is_public);
+    }
+    
+    // Authenticated - show user's cards (regardless of public status) plus others' public cards
+    return allCards.filter(card => 
+      card.creator_id === user.id || card.is_public
+    );
+  }, [allCards, user]);
 
   const handleCreateCollection = () => {
     console.log('Create collection clicked');
@@ -83,6 +101,12 @@ const Gallery = () => {
                 All Cards: {allCards?.length || 0}
               </span>
               <span className="text-xs bg-blue-600 px-2 py-1 rounded">
+                Displayed: {displayedCards?.length || 0}
+              </span>
+              <span className="text-xs bg-green-600 px-2 py-1 rounded">
+                User Cards: {userCards?.length || 0}
+              </span>
+              <span className="text-xs bg-purple-600 px-2 py-1 rounded">
                 Featured: {featuredCards?.length || 0}
               </span>
               {cardsError && (
@@ -141,6 +165,17 @@ const Gallery = () => {
             )}
           </GallerySection>
 
+          {/* My Cards Section - Show user's cards if authenticated */}
+          {user && userCards && userCards.length > 0 && (
+            <GallerySection title="My Cards">
+              <CardsGrid 
+                cards={userCards.slice(0, 8)} // Show first 8 user cards
+                loading={cardsLoading}
+                onCardClick={handleCardClick}
+              />
+            </GallerySection>
+          )}
+
           {/* Featured Cards - Limited to 1 Row */}
           <GallerySection title="Featured Cards">
             {featuredCards && featuredCards.length > 0 ? (
@@ -175,7 +210,12 @@ const Gallery = () => {
           <GallerySection title="CRD Catalog">
             <div className="mb-6 flex items-center justify-between">
               <p className="text-crd-lightGray">
-                Browse all {allCards?.length || 0} cards in the catalog
+                Browse all {displayedCards?.length || 0} cards in the catalog
+                {user && (
+                  <span className="text-crd-green ml-2">
+                    (including your {userCards?.length || 0} private cards)
+                  </span>
+                )}
                 {cardsError && <span className="text-red-400 ml-2">(Database Error)</span>}
               </p>
               <div className="flex items-center gap-2">
@@ -198,11 +238,11 @@ const Gallery = () => {
               </div>
             </div>
 
-            {allCards && allCards.length > 0 ? (
+            {displayedCards && displayedCards.length > 0 ? (
               <>
                 {catalogView === 'grid' ? (
                   <CardsGrid 
-                    cards={allCards}
+                    cards={displayedCards}
                     loading={cardsLoading}
                     onCardClick={handleCardClick}
                   />
@@ -220,7 +260,7 @@ const Gallery = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {allCards.map((card) => (
+                        {displayedCards.map((card) => (
                           <TableRow 
                             key={card.id}
                             className="border-crd-mediumGray hover:bg-crd-mediumGray/20 cursor-pointer"
@@ -240,7 +280,14 @@ const Gallery = () => {
                             </TableCell>
                             <TableCell>
                               <div>
-                                <div className="text-crd-white font-medium">{card.title}</div>
+                                <div className="text-crd-white font-medium">
+                                  {card.title}
+                                  {card.creator_id === user?.id && (
+                                    <Badge variant="secondary" className="ml-2 text-xs">
+                                      Mine
+                                    </Badge>
+                                  )}
+                                </div>
                                 {card.description && (
                                   <div className="text-crd-lightGray text-sm truncate max-w-xs">
                                     {card.description}
@@ -254,7 +301,7 @@ const Gallery = () => {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-crd-lightGray">
-                              {card.creator_id ? card.creator_id.substring(0, 8) + '...' : 'Unknown'}
+                              {card.creator_id === user?.id ? 'You' : (card.creator_id ? card.creator_id.substring(0, 8) + '...' : 'Unknown')}
                             </TableCell>
                             <TableCell className="text-crd-lightGray">
                               {formatDate(card.created_at)}

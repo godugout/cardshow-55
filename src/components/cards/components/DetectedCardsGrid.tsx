@@ -3,7 +3,8 @@ import React, { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, Eye, Crop, RotateCw } from 'lucide-react';
+import { Download, Eye, Crop, RotateCw, Edit, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { CardDetectionResult } from '@/services/cardDetection';
 
 interface DetectedCardsGridProps {
@@ -17,6 +18,7 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
   onStartOver,
   onAdvancedCrop
 }) => {
+  const navigate = useNavigate();
   const totalCards = results.reduce((sum, result) => sum + result.detectedCards.length, 0);
 
   // Convert File objects to object URLs for display
@@ -49,6 +51,34 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
     }
   };
 
+  const handleContinueToEditor = () => {
+    // For now, navigate to the main create page which has enhanced editor capabilities
+    // Later we can pass the detected card data through state or localStorage
+    console.log('🎨 Continuing to enhanced editor with detected cards:', results);
+    
+    // Store detected cards in sessionStorage to pass to the editor
+    sessionStorage.setItem('detectedCards', JSON.stringify(results));
+    
+    // Navigate to create page or directly to enhanced editor
+    navigate('/create?mode=editor&source=detection');
+  };
+
+  const handleEditCard = (result: CardDetectionResult, cardIndex: number) => {
+    console.log('🎨 Editing individual card:', { result, cardIndex });
+    
+    // Store the specific card data for editing
+    const cardData = {
+      originalImage: resultsWithUrls.find(r => r === result)?.originalImageUrl,
+      croppedImage: result.detectedCards[cardIndex].croppedImageUrl,
+      confidence: result.detectedCards[cardIndex].confidence,
+      resultIndex: results.indexOf(result),
+      cardIndex
+    };
+    
+    sessionStorage.setItem('editingCard', JSON.stringify(cardData));
+    navigate('/create?mode=editor&source=single');
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -60,6 +90,13 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
           </p>
         </div>
         <div className="flex gap-3">
+          <Button
+            onClick={handleContinueToEditor}
+            className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Continue to Editor
+          </Button>
           <Button
             onClick={handleDownloadAll}
             className="bg-crd-blue hover:bg-crd-blue/90 text-white"
@@ -74,6 +111,25 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
           >
             <RotateCw className="w-4 h-4 mr-2" />
             Start Over
+          </Button>
+        </div>
+      </div>
+
+      {/* Call to Action Banner */}
+      <div className="bg-gradient-to-r from-crd-green/20 to-crd-blue/20 border border-crd-green/30 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-white font-semibold mb-1">Ready to customize your cards?</h3>
+            <p className="text-crd-lightGray text-sm">
+              Use our enhanced editor to add effects, adjust rarity, and personalize your detected cards.
+            </p>
+          </div>
+          <Button
+            onClick={handleContinueToEditor}
+            className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
+          >
+            <Edit className="w-4 h-4 mr-2" />
+            Enhance Cards
           </Button>
         </div>
       </div>
@@ -119,14 +175,22 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
                       className="w-full h-full object-cover"
                     />
                     
+                    {/* Confidence Badge */}
+                    <div className="absolute top-2 right-2">
+                      <Badge className="bg-black/70 text-white text-xs">
+                        {Math.round(card.confidence * 100)}%
+                      </Badge>
+                    </div>
+
                     {/* Overlay Actions */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                       <Button
                         size="sm"
-                        className="bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm"
-                        onClick={() => window.open(card.croppedImageUrl, '_blank')}
+                        onClick={() => handleEditCard(result, index)}
+                        className="bg-crd-green hover:bg-crd-green/90 text-black"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Edit className="w-4 h-4 mr-1" />
+                        Edit
                       </Button>
                       <Button
                         size="sm"
@@ -134,25 +198,23 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
                         onClick={() => {
                           const link = document.createElement('a');
                           link.href = card.croppedImageUrl;
-                          link.download = `detected-card-${resultIndex}-${index + 1}.png`;
-                          document.body.appendChild(link);
+                          link.download = `card-${resultIndex}-${index + 1}.png`;
                           link.click();
-                          document.body.removeChild(link);
                         }}
                       >
                         <Download className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
-                  
+
                   {/* Card Info */}
                   <div className="p-3">
                     <div className="flex items-center justify-between">
                       <span className="text-white text-sm font-medium">
                         Card {index + 1}
                       </span>
-                      <Badge className="bg-crd-green/20 text-crd-green border-crd-green/30">
-                        {Math.round(card.confidence * 100)}%
+                      <Badge variant="secondary" className="text-xs">
+                        Detected
                       </Badge>
                     </div>
                   </div>
@@ -161,6 +223,29 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Bottom Action Bar */}
+      <div className="flex items-center justify-center pt-6 border-t border-crd-mediumGray/30">
+        <div className="flex gap-4">
+          <Button
+            onClick={handleContinueToEditor}
+            size="lg"
+            className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
+          >
+            <Sparkles className="w-5 h-5 mr-2" />
+            Continue to Enhanced Editor
+          </Button>
+          <Button
+            onClick={onStartOver}
+            size="lg"
+            variant="outline"
+            className="bg-transparent border-crd-lightGray text-crd-lightGray hover:bg-crd-lightGray hover:text-black"
+          >
+            <RotateCw className="w-5 h-5 mr-2" />
+            Upload Different Images
+          </Button>
+        </div>
       </div>
     </div>
   );
