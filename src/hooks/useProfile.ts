@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface UserProfile {
   id: string;
@@ -13,6 +14,7 @@ interface UserProfile {
   website?: string;
   social_links?: Record<string, any>;
   verification_status: 'unverified' | 'pending' | 'verified';
+  preferences?: Record<string, any>;
   created_at: string;
   updated_at: string;
 }
@@ -20,6 +22,7 @@ interface UserProfile {
 export const useProfile = (userId?: string) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -44,7 +47,13 @@ export const useProfile = (userId?: string) => {
           setProfile(null);
         } else {
           console.log('✅ Profile loaded:', data.username);
-          setProfile(data);
+          // Convert database types to expected types
+          const profileData: UserProfile = {
+            ...data,
+            social_links: typeof data.social_links === 'object' ? data.social_links as Record<string, any> : {},
+            preferences: typeof data.preferences === 'object' ? data.preferences as Record<string, any> : {}
+          };
+          setProfile(profileData);
           setError(null);
         }
       } catch (err) {
@@ -59,5 +68,55 @@ export const useProfile = (userId?: string) => {
     fetchProfile();
   }, [userId]);
 
-  return { profile, isLoading, error };
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    if (!userId) {
+      return { error: new Error('No user ID provided') };
+    }
+
+    try {
+      console.log('📝 Updating profile for user:', userId);
+      setIsUpdating(true);
+      
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('❌ Profile update error:', error);
+        toast.error('Failed to update profile');
+        return { error };
+      }
+
+      // Refresh profile data
+      const { data: updatedData } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (updatedData) {
+        const profileData: UserProfile = {
+          ...updatedData,
+          social_links: typeof updatedData.social_links === 'object' ? updatedData.social_links as Record<string, any> : {},
+          preferences: typeof updatedData.preferences === 'object' ? updatedData.preferences as Record<string, any> : {}
+        };
+        setProfile(profileData);
+      }
+      
+      toast.success('Profile updated successfully!');
+      return { error: null };
+    } catch (error) {
+      console.error('❌ Profile update exception:', error);
+      toast.error('An unexpected error occurred');
+      return { error };
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return { profile, isLoading, isUpdating, error, updateProfile };
 };
