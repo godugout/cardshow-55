@@ -11,7 +11,7 @@ export interface CardCreateParams {
   creator_id: string;
   image_url?: string;
   thumbnail_url?: string;
-  rarity?: string; // Changed to string to handle any rarity value
+  rarity?: string;
   tags?: string[];
   design_metadata?: Record<string, any>;
   price?: number;
@@ -20,7 +20,7 @@ export interface CardCreateParams {
   verification_status?: string;
   print_metadata?: Record<string, any>;
   series?: string;
-  visibility?: string; // Changed to string to handle any visibility value
+  visibility?: string;
   marketplace_listing?: boolean;
   edition_number?: number;
   total_supply?: number;
@@ -62,25 +62,32 @@ export interface PaginatedCards {
   total: number;
 }
 
+// Valid database rarity values based on the schema
+type ValidRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
+
+// Valid database visibility values based on the schema
+type ValidVisibility = 'public' | 'private' | 'shared';
+
 // Map external rarity values to valid database values
-const mapRarityToValidType = (rarity: string): string => {
-  const rarityMap: Record<string, string> = {
+const mapRarityToValidType = (rarity: string): ValidRarity => {
+  const rarityMap: Record<string, ValidRarity> = {
     'common': 'common',
     'uncommon': 'uncommon', 
     'rare': 'rare',
-    'epic': 'rare', // Map epic to rare since epic might not be in the database
+    'epic': 'epic',
     'legendary': 'legendary',
-    'ultra-rare': 'legendary', // Map ultra-rare to legendary
-    'mythic': 'legendary' // Map mythic to legendary
+    'ultra-rare': 'legendary', // Map ultra-rare to legendary if epic isn't available
+    'mythic': 'mythic'
   };
   
   return rarityMap[rarity.toLowerCase()] || 'common';
 };
 
 // Map visibility values to valid database values
-const mapVisibilityToValidType = (visibility: string): string => {
-  const validVisibilities = ['public', 'private', 'shared'];
-  return validVisibilities.includes(visibility.toLowerCase()) ? visibility.toLowerCase() : 'private';
+const mapVisibilityToValidType = (visibility: string): ValidVisibility => {
+  const validVisibilities: ValidVisibility[] = ['public', 'private', 'shared'];
+  const mapped = visibility.toLowerCase() as ValidVisibility;
+  return validVisibilities.includes(mapped) ? mapped : 'private';
 };
 
 export const CardRepository = {
@@ -119,6 +126,7 @@ export const CardRepository = {
         mappedVisibility 
       });
 
+      // Prepare the insert data with properly typed values
       const insertData = {
         title: params.title,
         description: params.description || null,
