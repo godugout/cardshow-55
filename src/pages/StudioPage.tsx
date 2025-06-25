@@ -1,9 +1,22 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sparkles, Wand2, Palette, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const StudioPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleLaunchAdvancedEditor = () => {
+    navigate('/create');
+  };
+
+  const handleViewTutorial = () => {
+    // Navigate to a tutorial section or open help
+    // For now, we'll navigate to the gallery which has examples
+    navigate('/gallery');
+  };
+
   return (
     <div className="min-h-screen bg-crd-darkest">
       {/* Header */}
@@ -72,6 +85,7 @@ export const StudioPage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
+                onClick={handleLaunchAdvancedEditor}
                 size="lg"
                 className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
               >
@@ -79,6 +93,7 @@ export const StudioPage: React.FC = () => {
                 Launch Advanced Editor
               </Button>
               <Button
+                onClick={handleViewTutorial}
                 variant="outline"
                 size="lg"
                 className="border-crd-green text-crd-green hover:bg-crd-green/10"
