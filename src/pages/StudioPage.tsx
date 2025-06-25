@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Wand2, Palette, Settings } from 'lucide-react';
@@ -8,7 +7,7 @@ export const StudioPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLaunchAdvancedEditor = () => {
-    navigate('/create');
+    navigate('/studio');
   };
 
   const handleViewTutorial = () => {

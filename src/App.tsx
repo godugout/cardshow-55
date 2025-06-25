@@ -14,6 +14,7 @@ import { GalleryPage } from '@/pages/GalleryPage';
 import { CreatePage } from '@/pages/CreatePage';
 import { CollectionsPage } from '@/pages/CollectionsPage';
 import { StudioPage } from '@/pages/StudioPage';
+import Studio from '@/pages/Studio';
 import { CardsPage } from '@/components/cards/CardsPage';
 import { FeedPage } from '@/components/feed/FeedPage';
 import { CardshowApp } from '@/pages/CardshowApp';
@@ -43,7 +44,8 @@ function App() {
                     <Route path="/gallery" element={<GalleryPage />} />
                     <Route path="/create" element={<CreatePage />} />
                     <Route path="/collections" element={<CollectionsPage />} />
-                    <Route path="/studio" element={<StudioPage />} />
+                    <Route path="/studio" element={<Studio />} />
+                    <Route path="/studio/welcome" element={<StudioPage />} />
                     <Route path="/cards/*" element={<CardsPage />} />
                     <Route path="/feed" element={<FeedPage />} />
                     <Route path="/cardshow/*" element={<CardshowApp />} />
