@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system';
-import { useAuth } from '@/features/auth';
+import { useAuth } from '@/contexts/AuthContext';
 import { Mail, ArrowLeft } from 'lucide-react';
 import { EmailField } from './components/EmailField';
 import { useAuthForm } from './hooks/useAuthForm';
@@ -10,15 +11,11 @@ interface ForgotPasswordFormData {
   email: string;
 }
 
-interface ForgotPasswordFormProps {
-  onModeChange?: (mode: 'signin' | 'signup' | 'forgot-password' | 'reset-password' | 'magic-link') => void;
-}
-
-export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onModeChange }) => {
+export const ForgotPasswordForm: React.FC = () => {
   const [isEmailSent, setIsEmailSent] = useState(false);
-  const { resetPassword, isLoading } = useAuth();
+  const { resetPassword } = useAuth();
 
-  const { formData, handleInputChange, handleSubmit } = useAuthForm<ForgotPasswordFormData>({
+  const { formData, isLoading, handleInputChange, handleSubmit } = useAuthForm<ForgotPasswordFormData>({
     initialValues: { email: '' },
     onSubmit: async (data) => {
       const { error } = await resetPassword(data.email);
@@ -31,8 +28,8 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onModeCh
   if (isEmailSent) {
     return (
       <div className="text-center space-y-4">
-        <div className="w-16 h-16 bg-crd-green/20 rounded-full flex items-center justify-center mx-auto">
-          <Mail className="h-8 w-8 text-crd-green" />
+        <div className="w-16 h-16 bg-crd-blue/20 rounded-full flex items-center justify-center mx-auto">
+          <Mail className="h-8 w-8 text-crd-blue" />
         </div>
         <div className="space-y-2">
           <h3 className="text-lg font-semibold text-crd-white">Check your email</h3>
@@ -49,15 +46,12 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onModeCh
           >
             Try another email
           </CRDButton>
-          <CRDButton 
-            variant="outline" 
-            size="lg" 
-            className="w-full"
-            onClick={() => onModeChange?.('signin')}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Sign In
-          </CRDButton>
+          <Link to="/auth/signin" className="block">
+            <CRDButton variant="outline" size="lg" className="w-full">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Sign In
+            </CRDButton>
+          </Link>
         </div>
       </div>
     );
@@ -90,14 +84,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onModeCh
       </form>
 
       <div className="text-center">
-        <button
-          type="button"
-          onClick={() => onModeChange?.('signin')}
-          className="text-crd-lightGray hover:text-crd-white text-sm flex items-center justify-center mx-auto"
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" />
+        <Link to="/auth/signin" className="text-crd-blue hover:text-crd-blue/80 text-sm">
+          <ArrowLeft className="h-4 w-4 inline mr-1" />
           Back to Sign In
-        </button>
+        </Link>
       </div>
     </div>
   );

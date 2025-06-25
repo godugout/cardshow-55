@@ -1,68 +1,112 @@
 
 import { useState, useCallback, useRef } from 'react';
-import type { EffectValues } from './types';
-
-interface PresetState {
-  isApplying: boolean;
-  appliedAt: number;
-  currentPresetId?: string;
-  isLocked: boolean;
-  sequenceId: string;
-}
+import { startTransition } from 'react';
+import { createDefaultEffectValues } from './effectUtils';
+import { clampEffectValue } from './effectUtils';
+import type { EffectValues, PresetApplicationState } from './types';
 
 export const usePresetApplication = () => {
-  const [presetState, setPresetState] = useState<PresetState>({
+  // Enhanced preset application state with sequence tracking
+  const [presetState, setPresetState] = useState<PresetApplicationState>({
     isApplying: false,
     appliedAt: 0,
     isLocked: false,
     sequenceId: ''
   });
 
-  const timeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
+  // Refs for cleanup and state validation
+  const presetTimeoutRef = useRef<NodeJS.Timeout>();
+  const lockTimeoutRef = useRef<NodeJS.Timeout>();
+  const validationTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const clearTimeouts = useCallback(() => {
-    timeoutsRef.current.forEach(timeout => clearTimeout(timeout));
-    timeoutsRef.current.clear();
-  }, []);
+  // Memoize default values
+  const defaultEffectValues = createDefaultEffectValues();
 
+  // Enhanced atomic preset application with sequence tracking
   const applyPreset = useCallback((
     preset: EffectValues, 
-    setEffectValues: (values: EffectValues) => void,
+    setEffectValues: (values: EffectValues | ((prev: EffectValues) => EffectValues)) => void, 
     presetId?: string
   ) => {
-    const sequenceId = `preset-${Date.now()}`;
+    const sequenceId = `preset-${presetId}-${Date.now()}`;
+    console.log('🎨 Applying preset with enhanced synchronization:', { presetId, preset, sequenceId });
     
-    setPresetState({
-      isApplying: true,
+    // Prevent overlapping applications
+    if (presetState.isLocked) {
+      console.log('⚠️ Preset application blocked - currently locked');
+      return;
+    }
+    
+    // Clear any existing timeouts
+    clearTimeouts();
+    
+    // Set enhanced synchronization lock
+    setPresetState({ 
+      isApplying: true, 
+      currentPresetId: presetId, 
       appliedAt: Date.now(),
-      currentPresetId: presetId,
       isLocked: true,
       sequenceId
     });
+    
+    // Enhanced atomic application with state validation
+    startTransition(() => {
+      // Step 1: Complete reset with material clearing
+      const resetValues = JSON.parse(JSON.stringify(defaultEffectValues)); // Deep copy
+      setEffectValues(resetValues);
+      
+      // Step 2: Apply preset effects with clamping
+      presetTimeoutRef.current = setTimeout(() => {
+        const newEffectValues = JSON.parse(JSON.stringify(defaultEffectValues)); // Deep copy
+        
+        // Apply preset effects with enhanced validation and clamping
+        Object.entries(preset).forEach(([effectId, effectParams]) => {
+          if (newEffectValues[effectId] && effectParams) {
+            Object.entries(effectParams).forEach(([paramId, value]) => {
+              if (newEffectValues[effectId][paramId] !== undefined) {
+                // Apply clamping during preset application
+                const clampedValue = clampEffectValue(effectId, paramId, value);
+                newEffectValues[effectId][paramId] = clampedValue;
+              }
+            });
+          }
+        });
+        
+        // Apply atomically
+        setEffectValues(newEffectValues);
+        
+        // Step 3: State validation and cleanup
+        validationTimeoutRef.current = setTimeout(() => {
+          console.log('🔍 Validating preset application state:', sequenceId);
+          
+          // Release lock after validation
+          lockTimeoutRef.current = setTimeout(() => {
+            setPresetState(prev => ({ 
+              ...prev, 
+              isApplying: false, 
+              isLocked: false 
+            }));
+            console.log('✅ Preset application complete:', sequenceId);
+          }, 200); // Extended for material recalculation
+          
+        }, 100); // Validation delay
+        
+      }, 150); // Increased reset delay
+    });
+  }, [presetState.isLocked, defaultEffectValues]);
 
-    // Clear any existing timeouts
-    clearTimeouts();
-
-    // Apply the preset values
-    setEffectValues(preset);
-
-    // Unlock after a short delay to prevent immediate manual overrides
-    const unlockTimeout = setTimeout(() => {
-      setPresetState(prev => ({
-        ...prev,
-        isApplying: false,
-        isLocked: false
-      }));
-    }, 1000);
-
-    timeoutsRef.current.add(unlockTimeout);
-  }, [clearTimeouts]);
+  // Clear all timeouts for cleanup
+  const clearTimeouts = useCallback(() => {
+    if (presetTimeoutRef.current) clearTimeout(presetTimeoutRef.current);
+    if (lockTimeoutRef.current) clearTimeout(lockTimeoutRef.current);
+    if (validationTimeoutRef.current) clearTimeout(validationTimeoutRef.current);
+  }, []);
 
   return {
     presetState,
-    setPresetState,
     applyPreset,
-    isApplyingPreset: presetState.isApplying,
+    setPresetState,
+    isApplyingPreset: presetState.isApplying || presetState.isLocked,
     clearTimeouts
   };
 };

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useCardEditor, CardData } from '@/hooks/useCardEditor';
-import { ADAPTIVE_TEMPLATES, convertAdaptiveToDesignTemplate } from '@/data/adaptiveTemplates';
+import { DEFAULT_TEMPLATES } from './wizardConfig';
 import type { WizardState, WizardHandlers } from './types';
 import type { CardAnalysisResult } from '@/services/cardAnalyzer';
 
@@ -35,9 +35,6 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     }
   });
 
-  // Convert adaptive templates to design templates for compatibility
-  const compatibleTemplates = ADAPTIVE_TEMPLATES.map(convertAdaptiveToDesignTemplate);
-
   const handlers: WizardHandlers = {
     handlePhotoSelect: (photo: string) => {
       setWizardState(prev => ({ ...prev, selectedPhoto: photo }));
@@ -56,12 +53,10 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       
       setWizardState(prev => ({ ...prev, aiAnalysisComplete: true }));
       
-      // Find template based on tags using adaptive templates
-      const suggestedAdaptiveTemplate = ADAPTIVE_TEMPLATES.find(t => 
+      // Find template based on tags only since category field doesn't exist in database
+      const suggestedTemplate = DEFAULT_TEMPLATES.find(t => 
         analysis.tags.some(tag => t.tags.includes(tag))
-      ) || ADAPTIVE_TEMPLATES[0];
-      
-      const suggestedTemplate = convertAdaptiveToDesignTemplate(suggestedAdaptiveTemplate);
+      ) || DEFAULT_TEMPLATES[0];
       
       setWizardState(prev => ({ ...prev, selectedTemplate: suggestedTemplate }));
       updateCardField('template_id', suggestedTemplate.id);
@@ -76,13 +71,12 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       updateCardField('design_metadata', template.template_data);
     },
 
-    handleNext: (targetStep?: number) => {
-      // Validation for each step
+    handleNext: () => {
       if (wizardState.currentStep === 1 && !wizardState.selectedPhoto) {
         toast.error('Please upload a photo first');
         return;
       }
-      if (wizardState.currentStep === 1 && !wizardState.selectedTemplate) {
+      if (wizardState.currentStep === 2 && !wizardState.selectedTemplate) {
         toast.error('Please select a template');
         return;
       }
@@ -91,12 +85,10 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
         return;
       }
       
-      // Always progress sequentially - no step skipping
-      if (targetStep) {
-        setWizardState(prev => ({ ...prev, currentStep: targetStep }));
+      if (wizardState.currentStep === 1 && wizardState.aiAnalysisComplete && wizardState.selectedTemplate) {
+        setWizardState(prev => ({ ...prev, currentStep: 3 }));
       } else {
-        // Normal progression: 1 -> 2 -> 3
-        setWizardState(prev => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, 3) }));
+        setWizardState(prev => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, 4) }));
       }
     },
 
@@ -105,12 +97,6 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     },
 
     handleComplete: async () => {
-      // Only allow completion from step 3
-      if (wizardState.currentStep !== 3) {
-        toast.error('Please complete all steps before finishing');
-        return;
-      }
-      
       try {
         const success = await saveCard();
         if (success) {
@@ -122,17 +108,17 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       }
     },
 
-    updatePublishingOptions: (updates) => {
+    updatePublishingOptions: (key, value) => {
       updateCardField('publishing_options', {
         ...cardData.publishing_options,
-        ...updates
+        [key]: value
       });
     },
 
-    updateCreatorAttribution: (updates) => {
+    updateCreatorAttribution: (key, value) => {
       updateCardField('creator_attribution', {
         ...cardData.creator_attribution,
-        ...updates
+        [key]: value
       });
     },
 
@@ -144,7 +130,7 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     cardData,
     handlers,
     isSaving,
-    templates: compatibleTemplates,
+    templates: DEFAULT_TEMPLATES,
     updateCardField
   };
 };

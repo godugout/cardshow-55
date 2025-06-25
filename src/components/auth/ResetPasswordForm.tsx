@@ -12,11 +12,7 @@ interface ResetPasswordFormData {
   confirmPassword: string;
 }
 
-interface ResetPasswordFormProps {
-  onModeChange?: (mode: 'signin' | 'signup' | 'forgot-password' | 'reset-password' | 'magic-link') => void;
-}
-
-export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onModeChange }) => {
+export const ResetPasswordForm: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -80,9 +76,9 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onModeChan
         description: 'This password reset link is invalid or has expired.',
         variant: 'destructive',
       });
-      onModeChange?.('forgot-password');
+      navigate('/auth/forgot-password');
     }
-  }, [searchParams, onModeChange]);
+  }, [searchParams, navigate]);
 
   return (
     <div className="space-y-6">

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Rect, FabricText, FabricImage, Line } from 'fabric';
 import { useCardEditor } from '@/hooks/useCardEditor';
@@ -47,7 +48,7 @@ export const FabricCanvasComponent = ({
     canvas.on('object:modified', () => {
       if (cardEditor) {
         const canvasData = JSON.stringify(canvas.toJSON());
-        cardEditor.updateDesignMetadata({ canvasData });
+        cardEditor.updateDesignMetadata('canvasData', canvasData);
       }
     });
 

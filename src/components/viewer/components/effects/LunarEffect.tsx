@@ -1,179 +1,128 @@
 
 import React from 'react';
-import type { EffectValues } from '../../hooks/effects/types';
+import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 
 interface LunarEffectProps {
   effectValues: EffectValues;
   mousePosition: { x: number; y: number };
 }
 
-export const LunarEffect: React.FC<LunarEffectProps> = ({ effectValues, mousePosition }) => {
-  const lunarEffect = effectValues.lunar;
-  const intensity = (lunarEffect?.intensity as number) || 0;
-  
-  if (intensity === 0) return null;
+export const LunarEffect: React.FC<LunarEffectProps> = ({
+  effectValues,
+  mousePosition
+}) => {
+  // Helper function to safely get effect parameter values
+  const getEffectParam = (effectId: string, paramId: string, defaultValue: any = 0) => {
+    return effectValues?.[effectId]?.[paramId] ?? defaultValue;
+  };
 
-  const dust = (lunarEffect?.dust as number) || 50;
-  const craters = (lunarEffect?.craters as number) || 40;
-  
+  const lunarIntensity = getEffectParam('lunar', 'intensity', 0);
+
+  if (lunarIntensity <= 0) return null;
+
+  const baseOpacity = (lunarIntensity / 100) * 0.4;
+  const dustOpacity = baseOpacity * 0.6;
+
   return (
-    <div 
-      className="absolute inset-0 z-18 rounded-xl overflow-hidden"
-      style={{
-        opacity: intensity / 100
-      }}
-    >
-      {/* Base lunar surface */}
+    <>
+      {/* Lunar surface base - dull NASA gray */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 z-16"
         style={{
-          background: `
-            radial-gradient(
-              ellipse 150% 100% at ${mousePosition.x}% ${mousePosition.y}%,
-              hsla(45, 15%, 85%, ${intensity / 100 * 0.3}) 0%,
-              hsla(40, 20%, 75%, ${intensity / 100 * 0.25}) 40%,
-              hsla(35, 10%, 65%, ${intensity / 100 * 0.2}) 80%,
-              transparent 100%
-            ),
-            linear-gradient(
-              135deg,
-              hsla(50, 12%, 80%, ${intensity / 100 * 0.2}) 0%,
-              hsla(45, 15%, 70%, ${intensity / 100 * 0.15}) 100%
-            )
-          `,
-          mixBlendMode: 'overlay'
+          background: `radial-gradient(
+            ellipse at ${50 + mousePosition.x * 10}% ${50 + mousePosition.y * 10}%,
+            rgba(75, 85, 99, ${baseOpacity}) 0%,
+            rgba(107, 114, 128, ${baseOpacity * 0.8}) 50%,
+            rgba(156, 163, 175, ${baseOpacity * 0.6}) 80%,
+            transparent 100%
+          )`,
+          mixBlendMode: 'multiply'
         }}
       />
-      
-      {/* Moon dust particles */}
+
+      {/* Moon dust particles scattered across surface */}
+      {Array.from({ length: 20 }, (_, i) => {
+        const x = 5 + (i * 7) % 90;
+        const y = 8 + (i * 11) % 84;
+        const size = 1 + (i % 4) * 0.5;
+        
+        return (
+          <div
+            key={`dust-${i}`}
+            className="absolute z-17"
+            style={{
+              left: `${x}%`,
+              top: `${y}%`,
+              width: `${size}px`,
+              height: `${size}px`,
+              background: `rgba(156, 163, 175, ${dustOpacity * (0.5 + (i % 3) * 0.2)})`,
+              borderRadius: '50%',
+              filter: 'blur(0.2px)',
+              transform: 'translate(-50%, -50%)'
+            }}
+          />
+        );
+      })}
+
+      {/* Larger moon dust clusters */}
+      {Array.from({ length: 8 }, (_, i) => {
+        const x = 15 + (i * 12) % 70;
+        const y = 20 + (i * 9) % 60;
+        const size = 2 + (i % 3);
+        
+        return (
+          <div
+            key={`cluster-${i}`}
+            className="absolute z-18"
+            style={{
+              left: `${x}%`,
+              top: `${y}%`,
+              width: `${size}px`,
+              height: `${size}px`,
+              background: `radial-gradient(
+                circle,
+                rgba(107, 114, 128, ${dustOpacity * 1.2}) 0%,
+                rgba(156, 163, 175, ${dustOpacity * 0.8}) 60%,
+                transparent 100%
+              )`,
+              borderRadius: '50%',
+              filter: 'blur(0.4px)',
+              transform: 'translate(-50%, -50%)'
+            }}
+          />
+        );
+      })}
+
+      {/* Retro space texture overlay */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 z-19"
         style={{
-          background: `
-            radial-gradient(
-              circle at 15% 25%,
-              hsla(50, 20%, 90%, ${dust / 100 * 0.4}) 0%,
-              hsla(45, 15%, 85%, ${dust / 100 * 0.2}) 3%,
-              transparent 8%
-            ),
-            radial-gradient(
-              circle at 30% 60%,
-              hsla(40, 25%, 88%, ${dust / 100 * 0.35}) 0%,
-              hsla(45, 20%, 80%, ${dust / 100 * 0.18}) 2%,
-              transparent 6%
-            ),
-            radial-gradient(
-              circle at 70% 20%,
-              hsla(55, 18%, 92%, ${dust / 100 * 0.4}) 0%,
-              hsla(50, 15%, 87%, ${dust / 100 * 0.2}) 2%,
-              transparent 7%
-            ),
-            radial-gradient(
-              circle at 85% 75%,
-              hsla(35, 22%, 85%, ${dust / 100 * 0.3}) 0%,
-              hsla(40, 18%, 78%, ${dust / 100 * 0.15}) 3%,
-              transparent 9%
-            ),
-            radial-gradient(
-              circle at 50% 40%,
-              hsla(45, 20%, 89%, ${dust / 100 * 0.25}) 0%,
-              hsla(40, 15%, 82%, ${dust / 100 * 0.12}) 2%,
-              transparent 5%
-            )
-          `,
-          mixBlendMode: 'screen',
-          animation: `lunar-dust 8s ease-in-out infinite alternate`
+          background: `linear-gradient(
+            ${mousePosition.x * 90 + 45}deg,
+            transparent 0%,
+            rgba(75, 85, 99, ${baseOpacity * 0.3}) 25%,
+            rgba(107, 114, 128, ${baseOpacity * 0.4}) 50%,
+            rgba(75, 85, 99, ${baseOpacity * 0.3}) 75%,
+            transparent 100%
+          )`,
+          mixBlendMode: 'overlay',
+          filter: 'blur(2px)'
         }}
       />
-      
-      {/* Crater-like surface texture */}
-      {craters > 0 && (
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `
-              radial-gradient(
-                ellipse 25% 15% at 20% 30%,
-                hsla(35, 10%, 50%, ${craters / 100 * 0.3}) 0%,
-                hsla(40, 15%, 60%, ${craters / 100 * 0.15}) 50%,
-                transparent 80%
-              ),
-              radial-gradient(
-                ellipse 20% 30% at 75% 20%,
-                hsla(30, 12%, 45%, ${craters / 100 * 0.35}) 0%,
-                hsla(35, 18%, 55%, ${craters / 100 * 0.18}) 60%,
-                transparent 90%
-              ),
-              radial-gradient(
-                ellipse 30% 20% at 60% 80%,
-                hsla(40, 8%, 52%, ${craters / 100 * 0.28}) 0%,
-                hsla(45, 12%, 62%, ${craters / 100 * 0.14}) 55%,
-                transparent 85%
-              )
-            `,
-            mixBlendMode: 'multiply'
-          }}
-        />
-      )}
-      
-      {/* Retro space-age highlighting */}
+
+      {/* Subtle retro space grid pattern */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 z-20"
         style={{
-          background: `
-            linear-gradient(
-              ${mousePosition.x * 0.8}deg,
-              transparent 0%,
-              hsla(60, 30%, 95%, ${intensity / 100 * 0.4}) 25%,
-              hsla(55, 25%, 90%, ${intensity / 100 * 0.3}) 50%,
-              hsla(50, 20%, 85%, ${intensity / 100 * 0.2}) 75%,
-              transparent 100%
-            )
+          backgroundImage: `
+            linear-gradient(rgba(156, 163, 175, ${dustOpacity * 0.1}) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(156, 163, 175, ${dustOpacity * 0.1}) 1px, transparent 1px)
           `,
-          mixBlendMode: 'screen',
-          opacity: 0.7
+          backgroundSize: '20px 20px',
+          opacity: 0.3,
+          mixBlendMode: 'soft-light'
         }}
       />
-      
-      {/* Subtle lunar surface texture */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            repeating-radial-gradient(
-              circle at 30% 40%,
-              transparent 0px,
-              hsla(45, 8%, 70%, ${intensity / 100 * 0.08}) 2px,
-              transparent 8px
-            ),
-            repeating-radial-gradient(
-              circle at 70% 60%,
-              transparent 0px,
-              hsla(40, 10%, 75%, ${intensity / 100 * 0.06}) 1px,
-              transparent 6px
-            )
-          `,
-          mixBlendMode: 'multiply',
-          opacity: 0.5
-        }}
-      />
-      
-      <style>{`
-        @keyframes lunar-dust {
-          0% { 
-            opacity: 0.7;
-            transform: scale(1);
-          }
-          50% { 
-            opacity: 1;
-            transform: scale(1.05);
-          }
-          100% { 
-            opacity: 0.8;
-            transform: scale(0.98);
-          }
-        }
-      `}</style>
-    </div>
+    </>
   );
 };

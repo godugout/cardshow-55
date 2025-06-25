@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 import type { User } from '@/types/user';
 import type { Team } from '@/types/team';

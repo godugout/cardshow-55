@@ -78,7 +78,7 @@ export const EnhancedCardWizard = ({ onComplete, onCancel }: EnhancedCardWizardP
               isSaving={isSaving}
               onCancel={onCancel}
               onBack={handlers.handleBack}
-              onNext={() => handlers.handleNext()}
+              onNext={handlers.handleNext}
               onComplete={handlers.handleComplete}
               canSkipToEnd={wizardState.aiAnalysisComplete && !!wizardState.selectedTemplate}
             />

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useUser } from '@/hooks/use-user';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,7 +7,8 @@ import { Loader, AlertCircle } from 'lucide-react';
 import { useFeed } from '@/hooks/use-feed';
 import { MemoryCard } from '@/components/memory/MemoryCard';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import type { FeedType } from '@/hooks/use-feed-types';
+
+type FeedType = 'forYou' | 'following' | 'trending';
 
 export const FeedPage = () => {
   console.log('FeedPage component rendering');

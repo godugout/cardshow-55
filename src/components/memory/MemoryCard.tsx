@@ -67,10 +67,10 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory, onReaction }) =>
       </CardHeader>
       
       <CardContent className="pt-0">
-        {memory.mediaItems && memory.mediaItems.length > 0 && (
+        {memory.media && memory.media.length > 0 && (
           <div className="mb-3 rounded-md overflow-hidden bg-muted/20">
             <img 
-              src={memory.mediaItems[0].thumbnailUrl || memory.mediaItems[0].url} 
+              src={memory.media[0].thumbnailUrl || memory.media[0].url} 
               alt={memory.title}
               className="w-full h-auto object-cover max-h-[300px]"
             />

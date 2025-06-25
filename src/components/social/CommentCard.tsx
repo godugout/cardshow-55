@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, Reply } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { updateComment, deleteComment, getCommentReplies, addComment } from '@/repositories/social/comments';
+import * as socialRepository from '@/repositories/social';
 import type { Comment } from '@/types/social';
 import { ReactionBar } from './ReactionBar';
 
@@ -40,8 +40,12 @@ export const CommentCard = ({ comment, onUpdate, onDelete }: CommentCardProps) =
   const fetchReplies = async () => {
     try {
       setLoading(true);
-      const response = await getCommentReplies(comment.id);
-      setReplies(response);
+      const response = await socialRepository.getComments({
+        parentId: comment.id,
+        page: 1,
+        limit: 10
+      });
+      setReplies(response.comments);
     } catch (error) {
       toast({
         title: "Error",
@@ -61,10 +65,12 @@ export const CommentCard = ({ comment, onUpdate, onDelete }: CommentCardProps) =
 
     try {
       setSubmitting(true);
-      const updatedComment = await updateComment(comment.id, editContent);
-      if (updatedComment && onUpdate) {
-        onUpdate(updatedComment);
-      }
+      const updatedComment = await socialRepository.updateComment(
+        comment.id,
+        user.id,
+        editContent
+      );
+      if (onUpdate) onUpdate(updatedComment);
       setIsEditing(false);
       toast({
         description: "Comment updated successfully",
@@ -84,10 +90,8 @@ export const CommentCard = ({ comment, onUpdate, onDelete }: CommentCardProps) =
     if (!user) return;
 
     try {
-      const success = await deleteComment(comment.id);
-      if (success && onDelete) {
-        onDelete(comment.id);
-      }
+      await socialRepository.deleteComment(comment.id, user.id);
+      if (onDelete) onDelete(comment.id);
       toast({
         description: "Comment deleted successfully",
       });
@@ -105,7 +109,7 @@ export const CommentCard = ({ comment, onUpdate, onDelete }: CommentCardProps) =
 
     try {
       setSubmitting(true);
-      const newReply = await addComment({
+      const newReply = await socialRepository.addComment({
         userId: user.id,
         content: replyContent,
         parentId: comment.id,

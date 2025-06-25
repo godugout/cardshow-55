@@ -1,15 +1,15 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import type { PublishingOptions } from '@/types/card';
-import type { DesignTemplate } from '@/hooks/useCardEditor';
+import type { PublishingOptions, DesignTemplate } from '@/hooks/useCardEditor';
 
 interface PublishingOptionsStepProps {
   publishingOptions: PublishingOptions;
   selectedTemplate: DesignTemplate | null;
-  onPublishingUpdate: (updates: Partial<PublishingOptions>) => void;
+  onPublishingUpdate: (key: keyof PublishingOptions, value: any) => void;
 }
 
 export const PublishingOptionsStep = ({ publishingOptions, selectedTemplate, onPublishingUpdate }: PublishingOptionsStepProps) => {
@@ -33,7 +33,7 @@ export const PublishingOptionsStep = ({ publishingOptions, selectedTemplate, onP
               </div>
               <Switch
                 checked={publishingOptions.marketplace_listing}
-                onCheckedChange={(checked) => onPublishingUpdate({ marketplace_listing: checked })}
+                onCheckedChange={(checked) => onPublishingUpdate('marketplace_listing', checked)}
               />
             </div>
 
@@ -44,7 +44,7 @@ export const PublishingOptionsStep = ({ publishingOptions, selectedTemplate, onP
               </div>
               <Switch
                 checked={publishingOptions.crd_catalog_inclusion}
-                onCheckedChange={(checked) => onPublishingUpdate({ crd_catalog_inclusion: checked })}
+                onCheckedChange={(checked) => onPublishingUpdate('crd_catalog_inclusion', checked)}
               />
             </div>
 
@@ -55,7 +55,7 @@ export const PublishingOptionsStep = ({ publishingOptions, selectedTemplate, onP
               </div>
               <Switch
                 checked={publishingOptions.print_available}
-                onCheckedChange={(checked) => onPublishingUpdate({ print_available: checked })}
+                onCheckedChange={(checked) => onPublishingUpdate('print_available', checked)}
               />
             </div>
           </CardContent>
@@ -73,11 +73,9 @@ export const PublishingOptionsStep = ({ publishingOptions, selectedTemplate, onP
               </div>
               <Switch
                 checked={publishingOptions.distribution?.limited_edition}
-                onCheckedChange={(checked) => onPublishingUpdate({ 
-                  distribution: {
-                    ...publishingOptions.distribution,
-                    limited_edition: checked
-                  }
+                onCheckedChange={(checked) => onPublishingUpdate('distribution', {
+                  ...publishingOptions.distribution,
+                  limited_edition: checked
                 })}
               />
             </div>
@@ -91,11 +89,9 @@ export const PublishingOptionsStep = ({ publishingOptions, selectedTemplate, onP
                   max="10000"
                   placeholder="100"
                   className="bg-crd-darkGray border-crd-mediumGray text-white"
-                  onChange={(e) => onPublishingUpdate({
-                    distribution: {
-                      ...publishingOptions.distribution,
-                      edition_size: parseInt(e.target.value) || undefined
-                    }
+                  onChange={(e) => onPublishingUpdate('distribution', {
+                    ...publishingOptions.distribution,
+                    edition_size: parseInt(e.target.value) || undefined
                   })}
                 />
               </div>

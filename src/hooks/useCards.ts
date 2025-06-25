@@ -1,11 +1,14 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { CardRepository } from '@/repositories/cardRepository';
 import { localCardStorage } from '@/lib/localCardStorage';
 import { toast } from 'sonner';
-import type { Card } from '@/types/card';
+import type { Tables } from '@/integrations/supabase/types';
+
+// Use the database type directly instead of custom interface
+type Card = Tables<'cards'>;
 
 export const useCards = () => {
   const { user } = useAuth();
@@ -14,7 +17,6 @@ export const useCards = () => {
   const [userCards, setUserCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [dataSource, setDataSource] = useState<'database' | 'local' | 'mixed'>('database');
-  const subscriptionRef = useRef<any>(null);
 
   const fetchAllCardsFromDatabase = async () => {
     try {
@@ -69,10 +71,9 @@ export const useCards = () => {
       
       setDataSource(source);
       setCards(finalCards);
-      // Keep featured cards as first 8 for other parts of the app
       setFeaturedCards(finalCards.slice(0, 8));
       
-      console.log(`📊 Final result: ${finalCards.length} total cards, ${finalCards.slice(0, 8).length} featured from ${source} source(s)`);
+      console.log(`📊 Final result: ${finalCards.length} cards from ${source} source(s)`);
       
       return finalCards;
     } catch (error) {
@@ -92,9 +93,14 @@ export const useCards = () => {
     
     try {
       console.log('👤 Fetching user cards for:', targetUserId);
-      const userCardsData = await CardRepository.getUserCards(targetUserId);
+      const result = await CardRepository.getCards({
+        creator_id: targetUserId,
+        includePrivate: true,
+        pageSize: 100
+      });
       
-      console.log('✅ Fetched user cards:', userCardsData.length);
+      console.log('✅ Fetched user cards:', result.cards.length);
+      const userCardsData = result.cards;
       
       if (!userId || userId === user?.id) {
         setUserCards(userCardsData);
@@ -141,14 +147,12 @@ export const useCards = () => {
     
     for (const localCard of localCards) {
       try {
-        // Map rarity to database enum (handle all variants)
-        let dbRarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' = 'common';
+        // Map rarity to database enum (remove epic, map ultra-rare to legendary)
+        let dbRarity: 'common' | 'uncommon' | 'rare' | 'legendary' = 'common';
         if (localCard.rarity === 'legendary') {
           dbRarity = 'legendary';
-        } else if (localCard.rarity === 'epic') {
-          dbRarity = 'epic';
-        } else if (localCard.rarity === 'mythic') {
-          dbRarity = 'mythic';
+        } else if (localCard.rarity === 'ultra-rare') {
+          dbRarity = 'legendary'; // Map ultra-rare to legendary
         } else if (localCard.rarity === 'rare') {
           dbRarity = 'rare';
         } else if (localCard.rarity === 'uncommon') {
@@ -159,16 +163,15 @@ export const useCards = () => {
 
         const cardData = {
           title: localCard.title,
-          description: localCard.description || 'No description provided',
+          description: localCard.description,
           creator_id: user.id,
-          image_url: localCard.image_url || '',
-          thumbnail_url: localCard.thumbnail_url || localCard.image_url || '',
+          image_url: localCard.image_url,
+          thumbnail_url: localCard.thumbnail_url,
           rarity: dbRarity,
-          tags: localCard.tags || [],
-          design_metadata: localCard.design_metadata || {},
+          tags: localCard.tags,
+          design_metadata: localCard.design_metadata,
           is_public: localCard.visibility === 'public',
-          visibility: localCard.visibility || 'private',
-          marketplace_listing: false // Required field - default to false
+          visibility: localCard.visibility
         };
         
         const result = await CardRepository.createCard(cardData);
@@ -191,17 +194,12 @@ export const useCards = () => {
     console.log('🔄 useCards effect triggered, user:', user?.id);
     fetchCards();
 
-    // Clean up existing subscription first
-    if (subscriptionRef.current) {
-      console.log('🧹 Cleaning up existing subscription');
-      supabase.removeChannel(subscriptionRef.current);
-      subscriptionRef.current = null;
-    }
-
     // Set up real-time subscription
+    let subscription: any = null;
+    
     try {
-      subscriptionRef.current = supabase
-        .channel(`cards-changes-${Date.now()}`) // Unique channel name to prevent conflicts
+      subscription = supabase
+        .channel('cards-changes')
         .on(
           'postgres_changes',
           {
@@ -214,9 +212,7 @@ export const useCards = () => {
             fetchCards(); // Refresh cards when changes occur
           }
         )
-        .subscribe((status) => {
-          console.log('📡 Real-time subscription status:', status);
-        });
+        .subscribe();
         
       console.log('📡 Real-time subscription created');
     } catch (error) {
@@ -224,17 +220,16 @@ export const useCards = () => {
     }
 
     return () => {
-      if (subscriptionRef.current) {
+      if (subscription) {
         console.log('🧹 Cleaning up real-time subscription');
-        supabase.removeChannel(subscriptionRef.current);
-        subscriptionRef.current = null;
+        supabase.removeChannel(subscription);
       }
     };
   }, [user?.id]);
 
   return {
-    cards, // All cards - now available for Studio
-    featuredCards, // First 8 cards - for other parts of the app
+    cards,
+    featuredCards,
     userCards,
     loading,
     dataSource,

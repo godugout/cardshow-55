@@ -1,91 +1,152 @@
 
 import React from 'react';
-import type { EffectValues } from '../../hooks/effects/types';
+import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 
 interface MetallicEffectsProps {
   effectValues: EffectValues;
   mousePosition: { x: number; y: number };
 }
 
-export const MetallicEffects: React.FC<MetallicEffectsProps> = ({ effectValues, mousePosition }) => {
-  const chromeEffect = effectValues.chrome;
-  const brushedMetalEffect = effectValues.brushedmetal;
-  
-  const chromeIntensity = (chromeEffect?.intensity as number) || 0;
-  const brushedIntensity = (brushedMetalEffect?.intensity as number) || 0;
-  
-  if (chromeIntensity === 0 && brushedIntensity === 0) return null;
-  
+export const MetallicEffects: React.FC<MetallicEffectsProps> = ({
+  effectValues,
+  mousePosition
+}) => {
+  // Helper function to safely get effect parameter values
+  const getEffectParam = (effectId: string, paramId: string, defaultValue: any = 0) => {
+    return effectValues?.[effectId]?.[paramId] ?? defaultValue;
+  };
+
+  const chromeIntensity = getEffectParam('chrome', 'intensity', 0);
+  const brushedmetalIntensity = getEffectParam('brushedmetal', 'intensity', 0);
+
   return (
     <>
-      {/* Chrome Effect */}
+      {/* Chrome Mirror Effect - Smooth, Bright, Highly Reflective */}
       {chromeIntensity > 0 && (
-        <div 
-          className="absolute inset-0 z-20 rounded-xl"
-          style={{
-            opacity: chromeIntensity / 100,
-            mixBlendMode: 'screen'
-          }}
-        >
+        <>
+          {/* Base chrome reflection - bright white/silver */}
           <div
+            className="absolute inset-0 z-20"
+            style={{
+              background: `
+                linear-gradient(
+                  ${45 + mousePosition.x * 90}deg,
+                  rgba(245, 248, 252, ${(chromeIntensity / 100) * 0.4}) 0%,
+                  rgba(255, 255, 255, ${(chromeIntensity / 100) * 0.5}) 25%,
+                  rgba(240, 244, 248, ${(chromeIntensity / 100) * 0.3}) 50%,
+                  rgba(252, 254, 255, ${(chromeIntensity / 100) * 0.6}) 75%,
+                  rgba(248, 250, 252, ${(chromeIntensity / 100) * 0.35}) 100%
+                )
+              `,
+              mixBlendMode: 'screen',
+              opacity: 0.8
+            }}
+          />
+          
+          {/* Mirror-like highlights - no lines, pure reflection */}
+          <div
+            className="absolute inset-0 z-21"
             style={{
               background: `
                 radial-gradient(
-                  ellipse 150% 100% at ${mousePosition.x}% ${mousePosition.y}%,
-                  hsla(0, 0%, 95%, ${chromeIntensity / 100 * 0.6}) 0%,
-                  hsla(0, 0%, 85%, ${chromeIntensity / 100 * 0.4}) 30%,
-                  hsla(0, 0%, 75%, ${chromeIntensity / 100 * 0.2}) 60%,
-                  transparent 100%
-                ),
-                linear-gradient(
-                  ${mousePosition.x * 1.8}deg,
-                  hsla(0, 0%, 100%, ${chromeIntensity / 100 * 0.8}) 0%,
-                  hsla(0, 0%, 90%, ${chromeIntensity / 100 * 0.4}) 50%,
-                  hsla(0, 0%, 100%, ${chromeIntensity / 100 * 0.6}) 100%
+                  ellipse at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
+                  rgba(255, 255, 255, ${(chromeIntensity / 100) * 0.7}) 0%,
+                  rgba(248, 252, 255, ${(chromeIntensity / 100) * 0.4}) 30%,
+                  transparent 60%
                 )
               `,
-              position: 'absolute',
-              inset: 0,
-              borderRadius: 'inherit',
-              filter: `blur(${Math.max(0, 2 - chromeIntensity / 50)}px)`
+              mixBlendMode: 'overlay',
+              opacity: 0.9
             }}
           />
-        </div>
-      )}
-      
-      {/* Brushed Metal Effect */}
-      {brushedIntensity > 0 && (
-        <div 
-          className="absolute inset-0 z-19 rounded-xl"
-          style={{
-            opacity: brushedIntensity / 100,
-            mixBlendMode: 'overlay'
-          }}
-        >
+          
+          {/* Chrome depth reflection */}
           <div
+            className="absolute inset-0 z-22"
             style={{
               background: `
-                repeating-linear-gradient(
-                  ${(brushedMetalEffect?.direction as number) || 0}deg,
-                  transparent 0px,
-                  hsla(0, 0%, 100%, ${brushedIntensity / 100 * 0.3}) 1px,
-                  hsla(0, 0%, 80%, ${brushedIntensity / 100 * 0.2}) 2px,
-                  transparent 3px,
-                  transparent 4px
-                ),
                 linear-gradient(
-                  ${mousePosition.x * 0.5}deg,
-                  hsla(0, 0%, 90%, ${brushedIntensity / 100 * 0.4}) 0%,
-                  hsla(0, 0%, 70%, ${brushedIntensity / 100 * 0.2}) 50%,
-                  hsla(0, 0%, 85%, ${brushedIntensity / 100 * 0.3}) 100%
+                  ${90 + mousePosition.y * 90}deg,
+                  transparent 0%,
+                  rgba(255, 255, 255, ${(chromeIntensity / 100) * 0.8}) 40%,
+                  rgba(250, 250, 250, ${(chromeIntensity / 100) * 0.6}) 60%,
+                  transparent 100%
                 )
               `,
-              position: 'absolute',
-              inset: 0,
-              borderRadius: 'inherit'
+              mixBlendMode: 'screen',
+              opacity: 0.5
             }}
           />
-        </div>
+        </>
+      )}
+
+      {/* Brushed Steel Effect - Dull, Textured, Matte Gray */}
+      {brushedmetalIntensity > 0 && (
+        <>
+          {/* Base steel - dull gray */}
+          <div
+            className="absolute inset-0 z-20"
+            style={{
+              background: `
+                linear-gradient(
+                  ${getEffectParam('brushedmetal', 'direction', 45)}deg,
+                  rgba(120, 125, 130, ${(brushedmetalIntensity / 100) * 0.3}) 0%,
+                  rgba(135, 140, 145, ${(brushedmetalIntensity / 100) * 0.25}) 50%,
+                  rgba(110, 115, 120, ${(brushedmetalIntensity / 100) * 0.3}) 100%
+                )
+              `,
+              mixBlendMode: 'multiply',
+              opacity: 0.7
+            }}
+          />
+          
+          {/* Prominent brush texture lines */}
+          <div
+            className="absolute inset-0 z-21"
+            style={{
+              backgroundImage: `
+                repeating-linear-gradient(
+                  ${getEffectParam('brushedmetal', 'direction', 45)}deg,
+                  transparent 0px,
+                  rgba(100, 105, 110, ${(brushedmetalIntensity / 100) * 0.25}) 1px,
+                  transparent 2px,
+                  transparent 3px,
+                  rgba(130, 135, 140, ${(brushedmetalIntensity / 100) * 0.2}) 4px,
+                  transparent 5px
+                )
+              `,
+              mixBlendMode: 'overlay',
+              opacity: 0.6
+            }}
+          />
+          
+          {/* Additional texture for roughness */}
+          <div
+            className="absolute inset-0 z-22"
+            style={{
+              backgroundImage: `
+                repeating-linear-gradient(
+                  ${getEffectParam('brushedmetal', 'direction', 45) + 2}deg,
+                  transparent 0px,
+                  rgba(90, 95, 100, ${(brushedmetalIntensity / 100) * 0.15}) 0.5px,
+                  transparent 1.5px
+                )
+              `,
+              mixBlendMode: 'multiply',
+              opacity: 0.4
+            }}
+          />
+          
+          {/* Matte finish overlay */}
+          <div
+            className="absolute inset-0 z-23"
+            style={{
+              background: `rgba(105, 110, 115, ${(brushedmetalIntensity / 100) * 0.1})`,
+              mixBlendMode: 'darken',
+              opacity: 0.5
+            }}
+          />
+        </>
       )}
     </>
   );

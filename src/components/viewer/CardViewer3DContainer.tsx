@@ -31,6 +31,10 @@ const CardViewer3DFallback: React.FC<{ card: CardData }> = ({ card }) => (
   </div>
 );
 
+const ErrorFallback: React.FC<{ error?: Error; resetError?: () => void; card: CardData }> = ({ card }) => (
+  <CardViewer3DFallback card={card} />
+);
+
 export const CardViewer3DContainer: React.FC<CardViewer3DContainerProps> = ({
   card,
   environment = 'studio',
@@ -40,7 +44,7 @@ export const CardViewer3DContainer: React.FC<CardViewer3DContainerProps> = ({
 }) => {
   return (
     <div className={`w-full h-full ${className}`}>
-      <ErrorBoundary>
+      <ErrorBoundary fallback={(props) => <ErrorFallback {...props} card={card} />}>
         <Suspense fallback={<CardViewer3DFallback card={card} />}>
           <CardViewer3D
             card={card}

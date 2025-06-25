@@ -7,7 +7,7 @@ export const deleteMemory = async (id: string): Promise<void> => {
   const memory = await getMemoryById(id);
   if (!memory) throw new Error(`Memory not found: ${id}`);
 
-  const deleteMediaPromises = memory.mediaItems?.map(media => 
+  const deleteMediaPromises = memory.media?.map(media => 
     deleteMedia(media.id, memory.userId)
   ) || [];
 
@@ -20,3 +20,4 @@ export const deleteMemory = async (id: string): Promise<void> => {
 
   if (error) throw new Error(`Failed to delete memory: ${error.message}`);
 };
+

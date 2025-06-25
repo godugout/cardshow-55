@@ -18,14 +18,16 @@ export const ViewerHeader: React.FC<ViewerHeaderProps> = ({
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    console.log('🔙 Back button clicked');
-    
     if (onClose) {
-      console.log('📞 Calling onClose callback');
       onClose();
     } else {
-      console.log('🏠 Navigating to gallery');
-      navigate('/gallery');
+      // Use browser history to go back to previous page
+      // If there's no history (direct access), fallback to gallery
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate('/gallery');
+      }
     }
   };
 

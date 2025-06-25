@@ -25,12 +25,12 @@ export const ToolbarButton = ({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button 
-            variant="outline" 
+            variant="ghost" 
             size="icon" 
             className={`h-8 w-8 p-1.5 ${
               active 
-                ? 'bg-crd-blue border-crd-blue text-white hover:bg-crd-blue/90' 
-                : 'border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray/40 hover:text-white'
+                ? 'bg-editor-tool text-white' 
+                : 'text-gray-400 hover:text-white'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={onClick}
             disabled={disabled}

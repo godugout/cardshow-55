@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getComments, addComment } from '@/repositories/social/comments';
+import * as socialRepository from '@/repositories/social';
 import type { Comment } from '@/types/social';
 import { CommentCard } from './CommentCard';
 
@@ -24,18 +24,28 @@ export const CommentSection = ({ memoryId, collectionId, expanded = false }: Com
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [isExpanded, setIsExpanded] = useState(expanded);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
 
-  const fetchComments = async () => {
-    if (!memoryId && !collectionId) return;
-    
+  const fetchComments = async (pageNum: number) => {
     try {
       setLoading(true);
-      const targetType = memoryId ? 'memory' : 'collection';
-      const targetId = memoryId || collectionId || '';
+      const response = await socialRepository.getComments({
+        cardId: memoryId, // Changed memoryId to cardId
+        collectionId,
+        page: pageNum,
+        limit: 10
+      });
       
-      const result = await getComments(targetId, targetType);
-      setComments(result);
-      setTotalComments(result.length);
+      if (pageNum === 1) {
+        setComments(response.comments);
+      } else {
+        setComments(prev => [...prev, ...response.comments]);
+      }
+      
+      setTotalComments(response.total);
+      setHasMore(response.hasMore);
+      setPage(pageNum);
     } catch (error) {
       toast({
         title: "Error",
@@ -51,7 +61,7 @@ export const CommentSection = ({ memoryId, collectionId, expanded = false }: Com
     if (!memoryId && !collectionId) return;
     if (expanded) {
       setIsExpanded(true);
-      fetchComments();
+      fetchComments(1);
     }
   }, [memoryId, collectionId, expanded]);
 
@@ -61,10 +71,10 @@ export const CommentSection = ({ memoryId, collectionId, expanded = false }: Com
 
     try {
       setSubmitting(true);
-      const comment = await addComment({
+      const comment = await socialRepository.addComment({
         userId: user.id,
         content: newComment,
-        cardId: memoryId, // Using cardId for memories for now
+        cardId: memoryId, // Changed memoryId to cardId
         collectionId
       });
       
@@ -140,6 +150,17 @@ export const CommentSection = ({ memoryId, collectionId, expanded = false }: Com
                   onDelete={handleDelete}
                 />
               ))}
+              
+              {hasMore && (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => fetchComments(page + 1)}
+                  disabled={loading}
+                >
+                  Load more
+                </Button>
+              )}
             </>
           )}
         </div>

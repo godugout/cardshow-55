@@ -4,45 +4,31 @@ import type { EffectValues } from './types';
 import { ENHANCED_VISUAL_EFFECTS } from './effectConfigs';
 
 export const useEffectValidation = (effectValues: EffectValues) => {
+  // Enhanced state validation
   const validateEffectState = useCallback(() => {
-    console.log('🔍 Validating effect state...');
+    console.log('🔍 Validating effect state consistency');
     
-    let validationErrors: string[] = [];
-    let totalActiveEffects = 0;
-
-    ENHANCED_VISUAL_EFFECTS.forEach(effect => {
-      const effectData = effectValues[effect.id];
-      if (!effectData) {
-        validationErrors.push(`Missing effect data for ${effect.id}`);
-        return;
-      }
-
-      const intensity = effectData.intensity;
-      if (typeof intensity === 'number' && intensity > 0) {
-        totalActiveEffects++;
-      }
-
-      // Validate parameters
-      effect.parameters.forEach(param => {
-        const value = effectData[param.id];
-        if (value === undefined || value === null) {
-          validationErrors.push(`Missing parameter ${param.id} for effect ${effect.id}`);
+    // Check that all effects have their required parameters
+    const validationIssues = ENHANCED_VISUAL_EFFECTS.flatMap(effect => {
+      const currentEffect = effectValues[effect.id];
+      if (!currentEffect) return [];
+      
+      return effect.parameters.flatMap(param => {
+        if (currentEffect[param.id] === undefined) {
+          return [`Missing parameter ${param.id} in effect ${effect.id}`];
         }
+        return [];
       });
     });
-
-    if (validationErrors.length > 0) {
-      console.warn('⚠️ Effect validation errors:', validationErrors);
-    } else {
-      console.log(`✅ Effect validation passed. ${totalActiveEffects} active effects.`);
+    
+    if (validationIssues.length > 0) {
+      console.warn('⚠️ Effect validation issues:', validationIssues);
     }
-
-    return {
-      isValid: validationErrors.length === 0,
-      errors: validationErrors,
-      activeEffectsCount: totalActiveEffects
-    };
+    
+    return validationIssues.length === 0;
   }, [effectValues]);
 
-  return { validateEffectState };
+  return {
+    validateEffectState
+  };
 };

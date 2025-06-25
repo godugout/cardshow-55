@@ -16,8 +16,7 @@ export const useStudioState = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<'database' | 'mock' | 'none'>('none');
 
-  // Use ALL cards instead of just featured cards for Studio
-  const { cards, loading: cardsLoading } = useCards();
+  const { featuredCards, loading: cardsLoading } = useCards();
   const { convertCardsToCardData } = useCardConversion();
 
   // Load card data based on URL params and available data
@@ -28,20 +27,11 @@ export const useStudioState = () => {
     }
 
     console.log('🏗️ Studio: Processing card data...');
-    console.log('📊 All cards from database:', cards?.length || 0);
+    console.log('📊 Featured cards from database:', featuredCards?.length || 0);
 
-    // Convert database cards to CardData format - handle type safety
-    let dbCards: CardData[] = [];
-    if (cards && cards.length > 0) {
-      try {
-        // Cast cards to any to bypass type checking since we know the conversion handles missing fields
-        dbCards = convertCardsToCardData(cards as any);
-        console.log('🔄 Converted database cards:', dbCards.length);
-      } catch (error) {
-        console.error('Failed to convert cards:', error);
-        dbCards = [];
-      }
-    }
+    // Convert database cards to CardData format
+    const dbCards = convertCardsToCardData(featuredCards || []);
+    console.log('🔄 Converted database cards:', dbCards.length);
 
     // Determine which card set to use (prioritize database cards)
     let availableCards: CardData[] = [];
@@ -109,7 +99,7 @@ export const useStudioState = () => {
     }
     
     setIsLoading(false);
-  }, [cardId, navigate, cards, cardsLoading, convertCardsToCardData]);
+  }, [cardId, navigate, featuredCards, cardsLoading, convertCardsToCardData]);
 
   // Handle card navigation
   const handleCardChange = (index: number) => {
@@ -148,10 +138,15 @@ export const useStudioState = () => {
     }
   };
 
-  // Handle closing studio - navigate to gallery
+  // Handle closing studio - use browser history when possible
   const handleClose = () => {
-    console.log('🚪 Closing studio, navigating to gallery');
-    navigate('/gallery');
+    // Use browser history to go back to previous page
+    // If there's no history (direct access), fallback to gallery
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/gallery');
+    }
   };
 
   return {

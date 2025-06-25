@@ -1,174 +1,252 @@
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
+import React, { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Chrome, Gem, Clock } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { FilterButton, EffectCard } from '@/components/ui/design-system';
+import { ChevronDown, Palette, Zap, Layers, Eye, EyeOff } from 'lucide-react';
 import { ENHANCED_VISUAL_EFFECTS } from '../hooks/effects/effectConfigs';
-import type { EffectValues } from '../hooks/effects/types';
+import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 
 interface EnhancedEffectsListProps {
   effectValues: EffectValues;
   onEffectChange: (effectId: string, parameterId: string, value: number | boolean | string) => void;
+  selectedPresetId?: string;
   searchQuery?: string;
 }
 
-const getCategoryIcon = (category: string) => {
-  switch (category) {
-    case 'prismatic': return Sparkles;
-    case 'metallic': return Chrome;
-    case 'surface': return Gem;
-    case 'vintage': return Clock;
-    default: return Sparkles;
-  }
+const EFFECT_EMOJIS: Record<string, string> = {
+  holographic: '🌈',
+  chrome: '🪞',
+  crystal: '💎',
+  gold: '🏆',
+  vintage: '📜',
+  aurora: '🌌',
+  waves: '🌊',
+  interference: '🫧',
+  prizm: '🔮',
+  brushedmetal: '⚙️',
+  foilspray: '✨',
+  ice: '❄️',
+  lunar: '🌙'
 };
 
-const getCategoryColor = (category: string) => {
-  switch (category) {
-    case 'prismatic': return 'text-purple-400';
-    case 'metallic': return 'text-yellow-400';
-    case 'surface': return 'text-blue-400';
-    case 'vintage': return 'text-orange-400';
-    default: return 'text-gray-400';
-  }
+const CATEGORY_INFO = {
+  prismatic: { name: 'Holographic & Light', icon: Palette, color: 'text-purple-400' },
+  metallic: { name: 'Metallic Finishes', icon: Zap, color: 'text-blue-400' },
+  surface: { name: 'Surface Effects', icon: Layers, color: 'text-green-400' },
+  vintage: { name: 'Vintage & Classic', icon: Eye, color: 'text-amber-400' }
 };
 
 export const EnhancedEffectsList: React.FC<EnhancedEffectsListProps> = ({
   effectValues,
   onEffectChange,
+  selectedPresetId,
   searchQuery = ''
 }) => {
-  const filteredEffects = ENHANCED_VISUAL_EFFECTS.filter(effect =>
-    effect.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    effect.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['prismatic']));
+  const [showOnlyActive, setShowOnlyActive] = useState(false);
 
-  const groupedEffects = filteredEffects.reduce((acc, effect) => {
-    if (!acc[effect.category]) {
-      acc[effect.category] = [];
+  // Group effects by category
+  const effectsByCategory = useMemo(() => {
+    const grouped = ENHANCED_VISUAL_EFFECTS.reduce((acc, effect) => {
+      if (!acc[effect.category]) {
+        acc[effect.category] = [];
+      }
+      acc[effect.category].push(effect);
+      return acc;
+    }, {} as Record<string, typeof ENHANCED_VISUAL_EFFECTS>);
+
+    // Filter by search query
+    if (searchQuery) {
+      Object.keys(grouped).forEach(category => {
+        grouped[category] = grouped[category].filter(effect =>
+          effect.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          effect.description.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      });
     }
-    acc[effect.category].push(effect);
-    return acc;
-  }, {} as Record<string, typeof filteredEffects>);
+
+    return grouped;
+  }, [searchQuery]);
+
+  // Get active effects
+  const activeEffects = useMemo(() => {
+    return Object.entries(effectValues).filter(([_, params]) => 
+      params && typeof params === 'object' && 'intensity' in params && 
+      typeof params.intensity === 'number' && params.intensity > 0
+    );
+  }, [effectValues]);
+
+  const toggleCategory = (category: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(category)) {
+      newExpanded.delete(category);
+    } else {
+      newExpanded.add(category);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
+  const getEffectIntensity = (effectId: string): number => {
+    const params = effectValues[effectId];
+    if (params && typeof params === 'object' && 'intensity' in params) {
+      const intensity = params.intensity;
+      return typeof intensity === 'number' ? intensity : 0;
+    }
+    return 0;
+  };
+
+  const isEffectActive = (effectId: string): boolean => {
+    return getEffectIntensity(effectId) > 0;
+  };
 
   return (
     <div className="space-y-6">
-      {Object.entries(groupedEffects).map(([category, effects]) => {
-        const Icon = getCategoryIcon(category);
-        const colorClass = getCategoryColor(category);
-        
-        return (
-          <div key={category} className="space-y-3">
-            <div className="flex items-center space-x-2">
-              <Icon className={`w-4 h-4 ${colorClass}`} />
-              <h4 className="text-white font-medium capitalize">{category} Effects</h4>
-              <Badge variant="outline" className="text-xs">
-                {effects.length}
-              </Badge>
-            </div>
-            
-            <div className="space-y-4">
-              {effects.map(effect => {
-                const effectData = effectValues[effect.id] || {};
-                const intensity = typeof effectData.intensity === 'number' ? effectData.intensity : 0;
-                const isActive = intensity > 0;
-                
-                return (
-                  <div
-                    key={effect.id}
-                    className={`p-4 rounded-lg border transition-all ${
-                      isActive 
-                        ? 'bg-white/5 border-crd-green/50' 
-                        : 'bg-white/5 border-white/10 hover:border-white/20'
-                    }`}
-                  >
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-white font-medium">{effect.name}</span>
-                          {!effect.mobileSupported && (
-                            <Badge variant="secondary" className="text-xs">Desktop Only</Badge>
-                          )}
-                          <Badge 
-                            variant={effect.performanceImpact === 'high' ? 'destructive' : 
-                                   effect.performanceImpact === 'medium' ? 'secondary' : 'outline'}
-                            className="text-xs"
-                          >
-                            {effect.performanceImpact} impact
-                          </Badge>
-                        </div>
-                      </div>
-                      <Switch
-                        checked={isActive}
-                        onCheckedChange={(checked) => 
-                          onEffectChange(effect.id, 'intensity', checked ? 50 : 0)
-                        }
-                      />
-                    </div>
-                    
-                    <p className="text-crd-lightGray text-sm mb-4">{effect.description}</p>
-                    
-                    {/* Parameters */}
-                    {isActive && (
-                      <div className="space-y-3">
-                        {effect.parameters.map(param => {
-                          const value = effectData[param.id] ?? param.defaultValue;
-                          
-                          if (param.type === 'slider') {
-                            return (
-                              <div key={param.id} className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <Label className="text-white text-sm">{param.name}</Label>
-                                  <span className="text-crd-lightGray text-xs">
-                                    {typeof value === 'number' ? Math.round(value) : value}
-                                    {param.id.includes('direction') ? '°' : 
-                                     param.id === 'intensity' ? '%' : ''}
-                                  </span>
-                                </div>
-                                <Slider
-                                  value={[value as number]}
-                                  onValueChange={([newValue]) => onEffectChange(effect.id, param.id, newValue)}
-                                  min={param.min || 0}
-                                  max={param.max || 100}
-                                  step={param.step || 1}
-                                  className="w-full"
-                                />
-                              </div>
-                            );
-                          }
-                          
-                          if (param.type === 'toggle') {
-                            return (
-                              <div key={param.id} className="flex items-center justify-between">
-                                <Label className="text-white text-sm">{param.name}</Label>
-                                <Switch
-                                  checked={value as boolean}
-                                  onCheckedChange={(checked) => onEffectChange(effect.id, param.id, checked)}
-                                />
-                              </div>
-                            );
-                          }
-                          
-                          return null;
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+      {/* Header with controls */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="text-white font-semibold text-base">Effects Library</h4>
+          <p className="text-crd-lightGray text-xs mt-0.5">
+            Individual effect controls and customization
+          </p>
+        </div>
+        <FilterButton
+          onClick={() => setShowOnlyActive(!showOnlyActive)}
+          isActive={showOnlyActive}
+          count={showOnlyActive ? undefined : activeEffects.length}
+        >
+          {showOnlyActive ? (
+            <>
+              <Eye className="w-3 h-3 mr-1" />
+              All
+            </>
+          ) : (
+            <>
+              <EyeOff className="w-3 h-3 mr-1" />
+              Active
+            </>
+          )}
+        </FilterButton>
+      </div>
+
+      {/* Active Effects Section */}
+      {activeEffects.length > 0 && !showOnlyActive && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h5 className="text-crd-green font-medium text-sm">
+              Active Effects
+            </h5>
+            <Badge variant="outline" className="bg-crd-green/20 border-crd-green text-crd-green text-xs">
+              {activeEffects.length}
+            </Badge>
           </div>
-        );
-      })}
-      
-      {filteredEffects.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-crd-lightGray">No effects found matching "{searchQuery}"</p>
+          
+          <div className="space-y-2">
+            {activeEffects.map(([effectId]) => {
+              const effect = ENHANCED_VISUAL_EFFECTS.find(e => e.id === effectId);
+              if (!effect) return null;
+
+              const intensity = getEffectIntensity(effectId);
+              const emoji = EFFECT_EMOJIS[effectId] || '⚡';
+
+              return (
+                <EffectCard
+                  key={effectId}
+                  variant="compact"
+                  title={effect.name}
+                  emoji={emoji}
+                  intensity={intensity}
+                  isActive={true}
+                  className="border-crd-green/30 bg-crd-green/5"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-crd-green text-xs font-medium">
+                      {Math.round(intensity)}%
+                    </span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={intensity}
+                      onChange={(e) => onEffectChange(effectId, 'intensity', parseInt(e.target.value))}
+                      className="w-20 h-1 accent-crd-green"
+                    />
+                  </div>
+                </EffectCard>
+              );
+            })}
+          </div>
         </div>
       )}
+
+      {/* Effects by Category */}
+      <div className="space-y-4">
+        {Object.entries(effectsByCategory).map(([category, effects]) => {
+          if (effects.length === 0) return null;
+          if (showOnlyActive && !effects.some(e => isEffectActive(e.id))) return null;
+
+          const categoryInfo = CATEGORY_INFO[category as keyof typeof CATEGORY_INFO];
+          const isExpanded = expandedCategories.has(category);
+          const activeCount = effects.filter(e => isEffectActive(e.id)).length;
+
+          return (
+            <Collapsible key={category} open={isExpanded} onOpenChange={() => toggleCategory(category)}>
+              <CollapsibleTrigger asChild>
+                <FilterButton
+                  className="w-full justify-between h-10 px-4 rounded-lg"
+                  count={activeCount}
+                >
+                  <div className="flex items-center space-x-3">
+                    {categoryInfo && <categoryInfo.icon className={`w-4 h-4 ${categoryInfo.color}`} />}
+                    <span className="font-medium">
+                      {categoryInfo?.name || category}
+                    </span>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${
+                    isExpanded ? 'rotate-180' : ''
+                  }`} />
+                </FilterButton>
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent className="space-y-3 mt-3">
+                {effects.map((effect) => {
+                  if (showOnlyActive && !isEffectActive(effect.id)) return null;
+
+                  const intensity = getEffectIntensity(effect.id);
+                  const isActive = intensity > 0;
+                  const emoji = EFFECT_EMOJIS[effect.id] || '⚡';
+
+                  return (
+                    <EffectCard
+                      key={effect.id}
+                      title={effect.name}
+                      description={effect.description}
+                      emoji={emoji}
+                      intensity={intensity}
+                      isActive={isActive}
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-crd-lightGray text-xs">Intensity</span>
+                          <span className="text-white text-xs font-medium">{Math.round(intensity)}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={intensity}
+                          onChange={(e) => onEffectChange(effect.id, 'intensity', parseInt(e.target.value))}
+                          className="w-full h-2 accent-crd-green rounded-lg"
+                        />
+                      </div>
+                    </EffectCard>
+                  );
+                })}
+              </CollapsibleContent>
+            </Collapsible>
+          );
+        })}
+      </div>
     </div>
   );
 };

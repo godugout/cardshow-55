@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useDropzone } from 'react-dropzone';
@@ -58,7 +59,7 @@ export const UploadSection = ({ cardEditor }: UploadSectionProps) => {
         cardEditor.updateCardField('image_url', result.url);
         if (result.thumbnailUrl) {
           cardEditor.updateCardField('thumbnail_url', result.thumbnailUrl);
-          cardEditor.updateDesignMetadata({ thumbnailUrl: result.thumbnailUrl });
+          cardEditor.updateDesignMetadata('thumbnailUrl', result.thumbnailUrl);
         }
         
         toast.success('Image uploaded successfully', {

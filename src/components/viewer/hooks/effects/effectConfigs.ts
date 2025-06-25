@@ -1,182 +1,160 @@
-
 import type { VisualEffectConfig } from './types';
 
+// Define all visual effects with their unique parameters
 export const ENHANCED_VISUAL_EFFECTS: VisualEffectConfig[] = [
-  // Prismatic Effects
   {
     id: 'holographic',
     name: 'Holographic',
-    description: 'Rainbow interference patterns that shift with viewing angle',
+    description: 'Dynamic rainbow shifting with prismatic effects',
     category: 'prismatic',
-    performanceImpact: 'medium',
-    mobileSupported: true,
     parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'shiftSpeed', name: 'Shift Speed', type: 'slider', defaultValue: 50, min: 0, max: 300, step: 10 },
-      { id: 'rainbowSpread', name: 'Rainbow Spread', type: 'slider', defaultValue: 180, min: 0, max: 360, step: 10 },
-      { id: 'prismaticDepth', name: 'Prismatic Depth', type: 'slider', defaultValue: 50, min: 0, max: 100, step: 5 }
-    ]
-  },
-  {
-    id: 'interference',
-    name: 'Interference',
-    description: 'Optical interference patterns with wave-like distortions',
-    category: 'prismatic',
-    performanceImpact: 'medium',
-    mobileSupported: true,
-    parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'frequency', name: 'Frequency', type: 'slider', defaultValue: 50, min: 0, max: 100, step: 5 },
-      { id: 'amplitude', name: 'Amplitude', type: 'slider', defaultValue: 30, min: 0, max: 100, step: 5 }
-    ]
-  },
-  {
-    id: 'prizm',
-    name: 'Prizm',
-    description: 'Prismatic refraction effects with color separation',
-    category: 'prismatic',
-    performanceImpact: 'high',
-    mobileSupported: false,
-    parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'refraction', name: 'Refraction', type: 'slider', defaultValue: 60, min: 0, max: 100, step: 5 },
-      { id: 'dispersion', name: 'Dispersion', type: 'slider', defaultValue: 40, min: 0, max: 100, step: 5 }
-    ]
-  },
-
-  // Metallic Effects
-  {
-    id: 'chrome',
-    name: 'Chrome',
-    description: 'Mirror-like metallic finish with environment reflections',
-    category: 'metallic',
-    performanceImpact: 'medium',
-    mobileSupported: true,
-    parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'sharpness', name: 'Sharpness', type: 'slider', defaultValue: 70, min: 0, max: 100, step: 5 },
-      { id: 'reflectivity', name: 'Reflectivity', type: 'slider', defaultValue: 80, min: 0, max: 100, step: 5 }
-    ]
-  },
-  {
-    id: 'brushedmetal',
-    name: 'Brushed Metal',
-    description: 'Anisotropic metal finish with directional highlights',
-    category: 'metallic',
-    performanceImpact: 'low',
-    mobileSupported: true,
-    parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'direction', name: 'Direction', type: 'slider', defaultValue: 0, min: 0, max: 360, step: 15 },
-      { id: 'roughness', name: 'Roughness', type: 'slider', defaultValue: 30, min: 0, max: 100, step: 5 }
-    ]
-  },
-  {
-    id: 'gold',
-    name: 'Gold',
-    description: 'Luxurious gold finish with warm metallic highlights',
-    category: 'metallic',
-    performanceImpact: 'medium',
-    mobileSupported: true,
-    parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'warmth', name: 'Warmth', type: 'slider', defaultValue: 75, min: 0, max: 100, step: 5 },
-      { id: 'patina', name: 'Patina', type: 'slider', defaultValue: 20, min: 0, max: 100, step: 5 }
-    ]
-  },
-
-  // Surface Effects
-  {
-    id: 'crystal',
-    name: 'Crystal',
-    description: 'Crystalline surface with faceted reflections',
-    category: 'surface',
-    performanceImpact: 'high',
-    mobileSupported: false,
-    parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'facets', name: 'Facets', type: 'slider', defaultValue: 8, min: 3, max: 20, step: 1 },
-      { id: 'clarity', name: 'Clarity', type: 'slider', defaultValue: 85, min: 0, max: 100, step: 5 }
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'shiftSpeed', name: 'Color Shift Speed', type: 'slider', min: 0, max: 200, step: 5, defaultValue: 100 },
+      { id: 'rainbowSpread', name: 'Rainbow Spread', type: 'slider', min: 0, max: 360, step: 10, defaultValue: 180 },
+      { id: 'animated', name: 'Animated', type: 'toggle', defaultValue: true }
     ]
   },
   {
     id: 'foilspray',
     name: 'Foil Spray',
-    description: 'Scattered metallic particles with sparkle effects',
-    category: 'surface',
-    performanceImpact: 'medium',
-    mobileSupported: true,
+    description: 'Metallic spray pattern with directional flow',
+    category: 'metallic',
     parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'density', name: 'Density', type: 'slider', defaultValue: 50, min: 0, max: 100, step: 5 },
-      { id: 'size', name: 'Size', type: 'slider', defaultValue: 30, min: 0, max: 100, step: 5 }
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'density', name: 'Metallic Density', type: 'slider', min: 10, max: 100, step: 5, defaultValue: 50 },
+      { id: 'direction', name: 'Flow Direction', type: 'slider', min: 0, max: 360, step: 15, defaultValue: 45 }
+    ]
+  },
+  {
+    id: 'prizm',
+    name: 'Prizm',
+    description: 'Rainbow spectrum patterns with smooth gradients',
+    category: 'prismatic',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'complexity', name: 'Pattern Complexity', type: 'slider', min: 1, max: 10, step: 1, defaultValue: 5 },
+      { id: 'colorSeparation', name: 'Color Separation', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 60 }
+    ]
+  },
+  {
+    id: 'chrome',
+    name: 'Chrome',
+    description: 'Metallic chrome finish with mirror-like reflections',
+    category: 'metallic',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'sharpness', name: 'Reflection Sharpness', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 70 },
+      { id: 'highlightSize', name: 'Highlight Size', type: 'slider', min: 10, max: 90, step: 5, defaultValue: 40 }
+    ]
+  },
+  {
+    id: 'interference',
+    name: 'Interference',
+    description: 'Soap bubble interference patterns',
+    category: 'surface',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'frequency', name: 'Wave Frequency', type: 'slider', min: 1, max: 20, step: 1, defaultValue: 8 },
+      { id: 'thickness', name: 'Bubble Thickness', type: 'slider', min: 1, max: 10, step: 0.5, defaultValue: 3 }
+    ]
+  },
+  {
+    id: 'brushedmetal',
+    name: 'Brushed Metal',
+    description: 'Brushed metallic surface with directional grain',
+    category: 'metallic',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'direction', name: 'Brush Direction', type: 'slider', min: 0, max: 180, step: 15, defaultValue: 45 },
+      { id: 'grainDensity', name: 'Grain Density', type: 'slider', min: 1, max: 20, step: 1, defaultValue: 8 }
+    ]
+  },
+  {
+    id: 'crystal',
+    name: 'Crystal',
+    description: 'Transparent crystal with diamond glitter facets',
+    category: 'prismatic',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'facets', name: 'Facet Count', type: 'slider', min: 3, max: 20, step: 1, defaultValue: 8 },
+      { id: 'dispersion', name: 'Light Dispersion', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 60 },
+      { id: 'clarity', name: 'Crystal Clarity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 60 },
+      { id: 'sparkle', name: 'Sparkle Effect', type: 'toggle', defaultValue: true }
+    ]
+  },
+  {
+    id: 'vintage',
+    name: 'Vintage',
+    description: 'Aged patina with wear patterns',
+    category: 'vintage',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'aging', name: 'Aging Level', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 40 },
+      { id: 'patina', name: 'Patina Color', type: 'color', defaultValue: '#8b7355' }
+    ]
+  },
+  {
+    id: 'gold',
+    name: 'Gold',
+    description: 'Luxurious gold plating with authentic shimmer',
+    category: 'metallic',
+    parameters: [
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'shimmerSpeed', name: 'Shimmer Speed', type: 'slider', min: 0, max: 200, step: 5, defaultValue: 80 },
+      { id: 'platingThickness', name: 'Plating Thickness', type: 'slider', min: 1, max: 10, step: 0.5, defaultValue: 5 },
+      { id: 'goldTone', name: 'Gold Tone', type: 'select', defaultValue: 'rich', 
+        options: [
+          { value: 'rich', label: 'Rich Gold' },
+          { value: 'rose', label: 'Rose Gold' },
+          { value: 'white', label: 'White Gold' },
+          { value: 'antique', label: 'Antique Gold' }
+        ]
+      },
+      { id: 'reflectivity', name: 'Reflectivity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 85 },
+      { id: 'colorEnhancement', name: 'Yellow Enhancement', type: 'toggle', defaultValue: true }
     ]
   },
   {
     id: 'aurora',
     name: 'Aurora',
-    description: 'Northern lights effect with flowing colors',
-    category: 'surface',
-    performanceImpact: 'high',
-    mobileSupported: false,
+    description: 'Natural aurora borealis with dancing lights',
+    category: 'prismatic',
     parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'flow', name: 'Flow Speed', type: 'slider', defaultValue: 40, min: 0, max: 100, step: 5 },
-      { id: 'colors', name: 'Color Range', type: 'slider', defaultValue: 70, min: 0, max: 100, step: 5 }
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'waveSpeed', name: 'Wave Speed', type: 'slider', min: 0, max: 200, step: 5, defaultValue: 80 },
+      { id: 'colorShift', name: 'Color Shift', type: 'slider', min: 0, max: 360, step: 15, defaultValue: 120 }
     ]
   },
   {
     id: 'waves',
     name: 'Waves',
-    description: 'Flowing wave patterns with depth and movement',
+    description: 'Dynamic wave patterns with wobble and interference effects',
     category: 'surface',
-    performanceImpact: 'medium',
-    mobileSupported: true,
     parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'speed', name: 'Wave Speed', type: 'slider', defaultValue: 30, min: 0, max: 100, step: 5 },
-      { id: 'amplitude', name: 'Amplitude', type: 'slider', defaultValue: 40, min: 0, max: 100, step: 5 }
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 },
+      { id: 'frequency', name: 'Wave Frequency', type: 'slider', min: 1, max: 50, step: 1, defaultValue: 10 },
+      { id: 'amplitude', name: 'Wave Amplitude', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 30 },
+      { id: 'direction', name: 'Flow Direction', type: 'slider', min: 0, max: 360, step: 15, defaultValue: 45 },
+      { id: 'complexity', name: 'Wave Layers', type: 'slider', min: 1, max: 10, step: 1, defaultValue: 3 },
+      { id: 'wobble', name: 'Wobble Intensity', type: 'slider', min: 0, max: 100, step: 5, defaultValue: 50 }
     ]
   },
   {
     id: 'ice',
     name: 'Ice',
-    description: 'Frozen surface with crystalline scratches and frost',
+    description: 'Natural ice surface with scratches and frost patterns',
     category: 'surface',
-    performanceImpact: 'medium',
-    mobileSupported: true,
     parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'frost', name: 'Frost Level', type: 'slider', defaultValue: 60, min: 0, max: 100, step: 5 },
-      { id: 'cracks', name: 'Ice Cracks', type: 'slider', defaultValue: 30, min: 0, max: 100, step: 5 }
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 }
     ]
   },
   {
     id: 'lunar',
     name: 'Lunar',
-    description: 'Moon dust and retro space aesthetic',
-    category: 'surface',
-    performanceImpact: 'low',
-    mobileSupported: true,
-    parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'dust', name: 'Moon Dust', type: 'slider', defaultValue: 50, min: 0, max: 100, step: 5 },
-      { id: 'craters', name: 'Surface Texture', type: 'slider', defaultValue: 40, min: 0, max: 100, step: 5 }
-    ]
-  },
-
-  // Vintage Effects
-  {
-    id: 'vintage',
-    name: 'Vintage',
-    description: 'Aged cardstock with realistic wear patterns',
+    description: 'Retro space surface with moon dust and NASA gray aesthetic',
     category: 'vintage',
-    performanceImpact: 'low',
-    mobileSupported: true,
     parameters: [
-      { id: 'intensity', name: 'Intensity', type: 'slider', defaultValue: 0, min: 0, max: 100, step: 1 },
-      { id: 'aging', name: 'Paper Aging', type: 'slider', defaultValue: 40, min: 0, max: 100, step: 5 },
-      { id: 'wear', name: 'Edge Wear', type: 'slider', defaultValue: 30, min: 0, max: 100, step: 5 }
+      { id: 'intensity', name: 'Intensity', type: 'slider', min: 0, max: 100, step: 1, defaultValue: 0 }
     ]
   }
 ];

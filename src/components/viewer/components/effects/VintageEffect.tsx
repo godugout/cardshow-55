@@ -1,138 +1,136 @@
 
 import React from 'react';
-import type { EffectValues } from '../../hooks/effects/types';
+import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 
 interface VintageEffectProps {
   effectValues: EffectValues;
   mousePosition: { x: number; y: number };
 }
 
-export const VintageEffect: React.FC<VintageEffectProps> = ({ effectValues, mousePosition }) => {
-  const vintageEffect = effectValues.vintage;
-  const intensity = (vintageEffect?.intensity as number) || 0;
-  
-  if (intensity === 0) return null;
+export const VintageEffect: React.FC<VintageEffectProps> = ({
+  effectValues,
+  mousePosition
+}) => {
+  // Helper function to safely get effect parameter values
+  const getEffectParam = (effectId: string, paramId: string, defaultValue: any = 0) => {
+    return effectValues?.[effectId]?.[paramId] ?? defaultValue;
+  };
 
-  const aging = (vintageEffect?.aging as number) || 40;
-  const wear = (vintageEffect?.wear as number) || 30;
-  
+  const vintageIntensity = getEffectParam('vintage', 'intensity', 0);
+
+  if (vintageIntensity <= 0) return null;
+
+  // Reduce overall effect intensity to prevent overwhelming the image
+  const effectScale = Math.min(vintageIntensity / 100 * 0.6, 0.6); // Max 60% instead of 100%
+
   return (
-    <div 
-      className="absolute inset-0 z-18 rounded-xl overflow-hidden"
-      style={{
-        opacity: intensity / 100
-      }}
-    >
-      {/* Paper aging overlay */}
+    <>
+      {/* Subtle cardstock base texture with reduced opacity */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 z-20"
         style={{
           background: `
-            radial-gradient(
-              ellipse 80% 60% at 30% 40%,
-              hsla(30, 40%, 75%, ${aging / 100 * 0.3}) 0%,
-              hsla(35, 35%, 80%, ${aging / 100 * 0.2}) 40%,
-              transparent 70%
-            ),
-            radial-gradient(
-              ellipse 60% 80% at 70% 20%,
-              hsla(25, 45%, 70%, ${aging / 100 * 0.25}) 0%,
-              hsla(30, 40%, 75%, ${aging / 100 * 0.15}) 50%,
-              transparent 80%
-            ),
             linear-gradient(
-              45deg,
-              hsla(35, 30%, 85%, ${aging / 100 * 0.1}) 0%,
-              hsla(40, 25%, 88%, ${aging / 100 * 0.05}) 100%
-            )
-          `,
-          mixBlendMode: 'multiply'
-        }}
-      />
-      
-      {/* Edge wear and corner damage */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            radial-gradient(
-              ellipse 20% 30% at 0% 0%,
-              hsla(20, 30%, 60%, ${wear / 100 * 0.4}) 0%,
-              hsla(25, 25%, 70%, ${wear / 100 * 0.2}) 50%,
-              transparent 80%
-            ),
-            radial-gradient(
-              ellipse 25% 20% at 100% 0%,
-              hsla(15, 35%, 65%, ${wear / 100 * 0.35}) 0%,
-              hsla(20, 30%, 75%, ${wear / 100 * 0.15}) 60%,
-              transparent 90%
-            ),
-            radial-gradient(
-              ellipse 20% 25% at 0% 100%,
-              hsla(25, 40%, 70%, ${wear / 100 * 0.3}) 0%,
-              hsla(30, 35%, 80%, ${wear / 100 * 0.1}) 70%,
-              transparent 95%
-            ),
-            radial-gradient(
-              ellipse 30% 25% at 100% 100%,
-              hsla(20, 35%, 65%, ${wear / 100 * 0.4}) 0%,
-              hsla(25, 30%, 75%, ${wear / 100 * 0.2}) 60%,
-              transparent 85%
-            )
-          `,
-          mixBlendMode: 'multiply'
-        }}
-      />
-      
-      {/* Subtle cardstock texture */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            repeating-linear-gradient(
               0deg,
-              transparent 0px,
-              hsla(0, 0%, 0%, ${intensity / 100 * 0.02}) 1px,
-              transparent 2px
-            ),
-            repeating-linear-gradient(
-              90deg,
-              transparent 0px,
-              hsla(0, 0%, 0%, ${intensity / 100 * 0.015}) 1px,
-              transparent 2px
+              rgba(245, 240, 230, ${effectScale * 0.2}) 0%,
+              rgba(250, 245, 235, ${effectScale * 0.15}) 50%,
+              rgba(248, 243, 233, ${effectScale * 0.18}) 100%
             )
           `,
-          mixBlendMode: 'multiply',
-          opacity: 0.5
+          mixBlendMode: 'soft-light', // Changed from 'multiply' to 'soft-light'
+          opacity: 0.7
         }}
       />
       
-      {/* Age spots and discoloration */}
-      {aging > 50 && (
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `
-              radial-gradient(
-                circle at 25% 30%,
-                hsla(35, 20%, 60%, ${(aging - 50) / 50 * 0.15}) 0%,
-                transparent 8%
-              ),
-              radial-gradient(
-                circle at 75% 60%,
-                hsla(40, 25%, 65%, ${(aging - 50) / 50 * 0.12}) 0%,
-                transparent 6%
-              ),
-              radial-gradient(
-                circle at 40% 80%,
-                hsla(30, 30%, 70%, ${(aging - 50) / 50 * 0.1}) 0%,
-                transparent 5%
-              )
-            `,
-            mixBlendMode: 'multiply'
-          }}
-        />
-      )}
-    </div>
+      {/* Very subtle paper fiber grain texture */}
+      <div
+        className="absolute inset-0 z-21"
+        style={{
+          backgroundImage: `
+            repeating-linear-gradient(
+              ${getEffectParam('vintage', 'aging', 40) > 50 ? 88 : 92}deg,
+              transparent 0px,
+              rgba(220, 210, 190, ${effectScale * 0.08}) 0.5px,
+              transparent 1px,
+              transparent 2px,
+              rgba(235, 225, 205, ${effectScale * 0.05}) 2.5px,
+              transparent 3px
+            ),
+            repeating-linear-gradient(
+              ${getEffectParam('vintage', 'aging', 40) > 50 ? 2 : -2}deg,
+              transparent 0px,
+              rgba(210, 200, 180, ${effectScale * 0.04}) 1px,
+              transparent 3px
+            )
+          `,
+          mixBlendMode: 'overlay', // Changed from 'multiply' to 'overlay'
+          opacity: 0.4
+        }}
+      />
+      
+      {/* Reduced aging spots and discoloration */}
+      <div
+        className="absolute inset-0 z-22"
+        style={{
+          backgroundImage: `
+            radial-gradient(
+              ellipse at 20% 30%, 
+              rgba(200, 180, 140, ${effectScale * 0.1}) 0%, 
+              transparent 3%
+            ),
+            radial-gradient(
+              ellipse at 70% 80%, 
+              rgba(190, 170, 130, ${effectScale * 0.08}) 0%, 
+              transparent 4%
+            ),
+            radial-gradient(
+              ellipse at 85% 15%, 
+              rgba(210, 190, 150, ${effectScale * 0.09}) 0%, 
+              transparent 2%
+            ),
+            radial-gradient(
+              ellipse at 15% 85%, 
+              rgba(180, 160, 120, ${effectScale * 0.06}) 0%, 
+              transparent 3%
+            )
+          `,
+          mixBlendMode: 'soft-light', // Changed from 'multiply' to 'soft-light'
+          opacity: Math.min(getEffectParam('vintage', 'aging', 40) / 150, 0.4) // Reduced max opacity
+        }}
+      />
+      
+      {/* Subtle edge wear and patina */}
+      <div
+        className="absolute inset-0 z-23"
+        style={{
+          background: `
+            radial-gradient(
+              ellipse at center,
+              transparent 70%,
+              rgba(160, 140, 100, ${effectScale * 0.12}) 90%,
+              rgba(140, 120, 80, ${effectScale * 0.08}) 100%
+            )
+          `,
+          mixBlendMode: 'overlay', // Changed from 'multiply' to 'overlay'
+          opacity: Math.min(getEffectParam('vintage', 'aging', 40) / 200, 0.3) // Reduced max opacity
+        }}
+      />
+      
+      {/* Very subtle paper texture noise */}
+      <div
+        className="absolute inset-0 z-24"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 30% 30%, rgba(230, 220, 200, ${effectScale * 0.04}) 1px, transparent 1px),
+            radial-gradient(circle at 70% 70%, rgba(240, 230, 210, ${effectScale * 0.03}) 1px, transparent 1px),
+            radial-gradient(circle at 20% 80%, rgba(225, 215, 195, ${effectScale * 0.035}) 1px, transparent 1px)
+          `,
+          backgroundSize: '15px 15px, 20px 20px, 18px 18px',
+          backgroundPosition: '0 0, 10px 10px, 5px 15px',
+          mixBlendMode: 'overlay',
+          opacity: 0.3
+        }}
+      />
+    </>
   );
 };

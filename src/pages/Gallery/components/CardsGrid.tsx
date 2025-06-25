@@ -2,12 +2,14 @@
 import React from 'react';
 import { CardItem } from '@/components/shared/CardItem';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Card } from '@/types/card';
+import type { Tables } from '@/integrations/supabase/types';
+
+type DbCard = Tables<'cards'>;
 
 interface CardsGridProps {
-  cards: Card[];
+  cards: DbCard[];
   loading: boolean;
-  onCardClick: (card: Card) => void;
+  onCardClick: (card: DbCard) => void;
 }
 
 export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClick }) => {
@@ -16,7 +18,7 @@ export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClic
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {Array.from({ length: 8 }).map((_, index) => (
           <div key={index} className="space-y-3">
-            <Skeleton className="w-full aspect-[2.5/3.5] rounded-lg" />
+            <Skeleton className="w-full aspect-[3/4] rounded-lg" />
             <Skeleton className="h-4 w-3/4" />
             <Skeleton className="h-3 w-1/2" />
           </div>

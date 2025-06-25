@@ -1,29 +1,31 @@
 
 import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
-import { AuthForm } from './AuthForm';
-import { Sparkles } from 'lucide-react';
+import { LoadingState } from '@/components/common/LoadingState';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  requireAuth?: boolean;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+  children, 
+  requireAuth = true 
+}) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
-        <div className="text-center">
-          <Sparkles className="w-8 h-8 text-crd-green animate-spin mx-auto mb-4" />
-          <p className="text-crd-lightGray">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoadingState message="Authenticating..." fullPage size="lg" />;
   }
 
-  if (!user) {
-    return <AuthForm />;
+  if (requireAuth && !user) {
+    return <Navigate to="/auth/signin" state={{ from: location }} replace />;
+  }
+
+  if (!requireAuth && user) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

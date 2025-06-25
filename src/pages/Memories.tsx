@@ -10,10 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import { MemoryCreator } from '@/components/memory/MemoryCreator';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { useUser } from '@/hooks/use-user';
 
 const Memories = () => {
-  const { user } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -44,18 +42,8 @@ const Memories = () => {
   };
 
   const handleReaction = async (memoryId: string, reactionType: 'heart' | 'thumbs-up' | 'party' | 'baseball') => {
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "Please sign in to react",
-        variant: "destructive"
-      });
-      return;
-    }
-
     try {
       await socialRepository.addReaction({
-        userId: user.id,
         targetId: memoryId,
         targetType: 'memory',
         type: reactionType

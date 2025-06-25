@@ -61,7 +61,7 @@ export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardP
             wizardState={wizardState}
             cardData={cardData}
             templates={templates}
-            handlers={handlers}
+            handlers={{...handlers, onBulkUpload}}
           />
         </div>
 
@@ -80,7 +80,7 @@ export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardP
           <div className="flex space-x-3">
             {wizardState.currentStep < 4 ? (
               <Button
-                onClick={() => handlers.handleNext()}
+                onClick={handlers.handleNext}
                 className="bg-crd-green hover:bg-crd-green/90 text-black font-semibold"
                 disabled={isSaving}
               >

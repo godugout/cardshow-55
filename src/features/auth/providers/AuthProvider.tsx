@@ -1,274 +1,30 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-
-interface UserProfile {
-  id: string;
-  username: string;
-  email: string;
-  full_name?: string;
-  avatar_url?: string;
-  bio?: string;
-  location?: string;
-  website?: string;
-  social_links?: Record<string, any>;
-  verification_status: 'unverified' | 'pending' | 'verified';
-  created_at: string;
-  updated_at: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  profile: UserProfile | null;
-  session: Session | null;
-  loading: boolean;
-  isLoading: boolean; // Add this for compatibility
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, userData?: { username?: string; full_name?: string }) => Promise<{ error: any }>;
-  signOut: () => Promise<void>;
-  updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: any }>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
-  signInWithOAuth: (provider: 'google' | 'github' | 'discord') => Promise<{ error: any }>;
-  signInWithMagicLink: (email: string) => Promise<{ error: any }>;
-}
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useAuthState } from '../hooks/useAuthState';
+import { useAuthActions } from '../hooks/useAuthActions';
+import type { AuthContextType } from '../types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-  const fetchProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const authState = useAuthState();
+  const authActions = useAuthActions(authState.user?.id);
 
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return null;
-      }
-
-      return data as UserProfile;
-    } catch (error) {
-      console.error('Error in fetchProfile:', error);
-      return null;
-    }
-  };
-
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        fetchProfile(session.user.id).then(setProfile);
-      }
-      
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          const userProfile = await fetchProfile(session.user.id);
-          setProfile(userProfile);
-        } else {
-          setProfile(null);
-        }
-        
-        setLoading(false);
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
-      
-      toast.success('Successfully signed in!');
-      return { error: null };
-    } catch (error) {
-      toast.error('An unexpected error occurred');
-      return { error };
-    }
-  };
-
-  const signUp = async (
-    email: string, 
-    password: string, 
-    userData?: { username?: string; full_name?: string }
-  ) => {
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            username: userData?.username || email.split('@')[0],
-            full_name: userData?.full_name || '',
-          },
-        },
-      });
-      
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
-      
-      toast.success('Account created! Check your email to confirm your account.');
-      return { error: null };
-    } catch (error) {
-      toast.error('An unexpected error occurred');
-      return { error };
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        toast.error(error.message);
-      } else {
-        toast.success('Successfully signed out!');
-      }
-    } catch (error) {
-      toast.error('An unexpected error occurred');
-    }
-  };
-
-  const updateProfile = async (updates: Partial<UserProfile>) => {
-    if (!user) {
-      return { error: new Error('No user logged in') };
-    }
-
-    try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .update(updates)
-        .eq('id', user.id);
-
-      if (error) {
-        toast.error('Failed to update profile');
-        return { error };
-      }
-
-      // Refresh profile data
-      const updatedProfile = await fetchProfile(user.id);
-      setProfile(updatedProfile);
-      
-      toast.success('Profile updated successfully!');
-      return { error: null };
-    } catch (error) {
-      toast.error('An unexpected error occurred');
-      return { error };
-    }
-  };
-
-  const resetPassword = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
-      });
-      
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
-      
-      toast.success('Password reset email sent!');
-      return { error: null };
-    } catch (error) {
-      toast.error('An unexpected error occurred');
-      return { error };
-    }
-  };
-
-  const signInWithOAuth = async (provider: 'google' | 'github' | 'discord') => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
-      
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
-      
-      return { error: null };
-    } catch (error) {
-      toast.error('An unexpected error occurred');
-      return { error };
-    }
-  };
-
-  const signInWithMagicLink = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-        },
-      });
-      
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
-      
-      toast.success('Magic link sent to your email!');
-      return { error: null };
-    } catch (error) {
-      toast.error('An unexpected error occurred');
-      return { error };
-    }
-  };
-
-  const value = {
-    user,
-    profile,
-    session,
-    loading,
-    isLoading: loading, // Alias for compatibility
-    signIn,
-    signUp,
-    signOut,
-    updateProfile,
-    resetPassword,
-    signInWithOAuth,
-    signInWithMagicLink,
+  const value: AuthContextType = {
+    ...authState,
+    ...authActions,
   };
 
   return (
