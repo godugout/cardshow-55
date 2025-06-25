@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { CardshowLayout } from '@/components/cardshow/CardshowLayout';
 import { CardshowMarketplace } from './CardshowMarketplace';
 import { CardshowTrade } from './CardshowTrade';
-import { CardshowAdvanced } from './CardshowAdvanced';
+import CardshowAdvanced from './CardshowAdvanced';
 import { CardGrid } from '@/components/cardshow/CardGrid';
 import { CardDetailModal } from '@/components/cardshow/CardDetailModal';
 import { MobileCreationStudio } from '@/components/cardshow/creation/MobileCreationStudio';
