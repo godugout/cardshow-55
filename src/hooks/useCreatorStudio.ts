@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
@@ -59,8 +58,8 @@ export const useCreatorStudio = (projectId?: string) => {
           .single();
         
         if (template) {
-          newProject.layers = (template.layers as DesignLayer[]) || [];
-          newProject.canvas = (template.canvas as CanvasSettings) || newProject.canvas;
+          newProject.layers = (template.layers as unknown as DesignLayer[]) || [];
+          newProject.canvas = (template.canvas as unknown as CanvasSettings) || newProject.canvas;
         }
       }
 
@@ -93,8 +92,8 @@ export const useCreatorStudio = (projectId?: string) => {
         title: project.title,
         description: project.description || '',
         templateId: project.template_id,
-        layers: (project.layers as DesignLayer[]) || [],
-        canvas: (project.canvas as CanvasSettings) || {
+        layers: (project.layers as unknown as DesignLayer[]) || [],
+        canvas: (project.canvas as unknown as CanvasSettings) || {
           width: 320,
           height: 448,
           backgroundColor: '#ffffff',
@@ -103,10 +102,10 @@ export const useCreatorStudio = (projectId?: string) => {
         },
         version: project.version,
         status: project.status as 'draft' | 'published' | 'archived',
-        collaborators: (project.collaborators as any[]) || [],
+        collaborators: (project.collaborators as unknown as any[]) || [],
         lastModified: project.last_modified,
         createdAt: project.created_at,
-        metadata: (project.metadata as any) || {
+        metadata: (project.metadata as unknown as any) || {
           category: 'trading-card',
           tags: [],
           difficulty: 'beginner',
@@ -149,14 +148,14 @@ export const useCreatorStudio = (projectId?: string) => {
           title: updatedProject.title,
           description: updatedProject.description,
           template_id: updatedProject.templateId,
-          layers: updatedProject.layers,
-          canvas: updatedProject.canvas,
+          layers: updatedProject.layers as any,
+          canvas: updatedProject.canvas as any,
           version: updatedProject.version,
           status: updatedProject.status,
-          collaborators: updatedProject.collaborators,
+          collaborators: updatedProject.collaborators as any,
           last_modified: updatedProject.lastModified,
           created_at: updatedProject.createdAt,
-          metadata: updatedProject.metadata
+          metadata: updatedProject.metadata as any
         });
 
       if (error) throw error;
