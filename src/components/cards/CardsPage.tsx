@@ -1,11 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
 import { CardsImageUpload } from './components/CardsImageUpload';
 import { SimpleCardDetector } from './components/SimpleCardDetector';
 import { DetectedCardsGrid } from './components/DetectedCardsGrid';
 import { StreamlinedAdvancedCropper } from '@/components/editor/StreamlinedAdvancedCropper';
-import { UnifiedCardWizard } from '@/components/editor/wizard/UnifiedCardWizard';
 import type { CardDetectionResult } from '@/services/cardDetection';
 
 interface UploadedImage {
@@ -16,48 +14,11 @@ interface UploadedImage {
 }
 
 export const CardsPage: React.FC = () => {
-  const [searchParams] = useSearchParams();
-  const mode = searchParams.get('mode');
-  const source = searchParams.get('source');
-
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [detectionResults, setDetectionResults] = useState<CardDetectionResult[]>([]);
   const [isDetecting, setIsDetecting] = useState(false);
   const [showCropper, setShowCropper] = useState(false);
   const [selectedImageForCropping, setSelectedImageForCropping] = useState<string | null>(null);
-  const [showEditor, setShowEditor] = useState(false);
-
-  // Check if we should show the editor directly (from URL params or stored data)
-  useEffect(() => {
-    if (mode === 'editor') {
-      if (source === 'detection') {
-        // Load detected cards from sessionStorage
-        const storedCards = sessionStorage.getItem('detectedCards');
-        if (storedCards) {
-          try {
-            const parsedCards = JSON.parse(storedCards);
-            console.log('🎨 Loading detected cards for editor:', parsedCards);
-            setDetectionResults(parsedCards);
-          } catch (error) {
-            console.error('Failed to parse stored cards:', error);
-          }
-        }
-      } else if (source === 'single') {
-        // Load single card for editing from sessionStorage
-        const storedCard = sessionStorage.getItem('editingCard');
-        if (storedCard) {
-          try {
-            const parsedCard = JSON.parse(storedCard);
-            console.log('🎨 Loading single card for editor:', parsedCard);
-            // Set up state for single card editing
-          } catch (error) {
-            console.error('Failed to parse stored card:', error);
-          }
-        }
-      }
-      setShowEditor(true);
-    }
-  }, [mode, source]);
 
   const handleImagesUploaded = (images: UploadedImage[]): void => {
     setUploadedImages(images);
@@ -86,50 +47,13 @@ export const CardsPage: React.FC = () => {
     setSelectedImageForCropping(null);
   };
 
-  const handleEditorComplete = (cardData: any) => {
-    console.log('🎨 Card creation completed:', cardData);
-    // Clear stored data
-    sessionStorage.removeItem('detectedCards');
-    sessionStorage.removeItem('editingCard');
-    setShowEditor(false);
-    // Navigate back to gallery or show success message
-    window.location.href = '/gallery';
-  };
-
-  const handleEditorCancel = () => {
-    console.log('🎨 Card editor cancelled');
-    // Clear stored data
-    sessionStorage.removeItem('detectedCards');
-    sessionStorage.removeItem('editingCard');
-    setShowEditor(false);
-    // Go back to previous step or clear all
-    clearAll();
-  };
-
   const clearAll = (): void => {
     setUploadedImages([]);
     setDetectionResults([]);
     setIsDetecting(false);
     setShowCropper(false);
     setSelectedImageForCropping(null);
-    setShowEditor(false);
-    // Clear session storage
-    sessionStorage.removeItem('detectedCards');
-    sessionStorage.removeItem('editingCard');
   };
-
-  // Show enhanced editor if requested
-  if (showEditor) {
-    return (
-      <div className="h-screen">
-        <UnifiedCardWizard
-          mode="advanced"
-          onComplete={handleEditorComplete}
-          onCancel={handleEditorCancel}
-        />
-      </div>
-    );
-  }
 
   // Show cropper if active
   if (showCropper && selectedImageForCropping) {

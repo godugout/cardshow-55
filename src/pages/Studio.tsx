@@ -29,7 +29,7 @@ const Studio = () => {
     handleClose
   } = useStudioState();
 
-  // Check if database has cards and show seed prompt if needed (only if no cards found)
+  // Check if database has cards and show seed prompt if needed
   useEffect(() => {
     const checkDatabase = async () => {
       if (!user || hasCheckedDatabase) return;
@@ -37,9 +37,7 @@ const Studio = () => {
       try {
         const hasCards = await checkIfDatabaseHasCards();
         console.log('🔍 Database check result:', hasCards ? 'Has cards' : 'Empty');
-        
-        // Only show seed prompt if we have no cards from any source
-        if (!hasCards && mockCards.length === 0 && dataSource === 'none') {
+        if (!hasCards) {
           setShowSeedPrompt(true);
         }
         setHasCheckedDatabase(true);
@@ -49,11 +47,8 @@ const Studio = () => {
       }
     };
 
-    // Only check if we don't have any cards loaded
-    if (dataSource === 'none' || (!isLoading && mockCards.length === 0)) {
-      checkDatabase();
-    }
-  }, [user, hasCheckedDatabase, mockCards.length, dataSource, isLoading]);
+    checkDatabase();
+  }, [user, hasCheckedDatabase]);
 
   const handleSeedComplete = () => {
     setShowSeedPrompt(false);
@@ -66,8 +61,8 @@ const Studio = () => {
     return <LoadingState message="Loading studio..." fullPage />;
   }
 
-  // Show seed prompt if database is empty and we have no cards from any source
-  if (showSeedPrompt && user && dataSource === 'none' && mockCards.length === 0) {
+  // Show seed prompt if database is empty and user is authenticated
+  if (showSeedPrompt && user && dataSource !== 'database') {
     return <DatabaseSeedPrompt onSeedComplete={handleSeedComplete} />;
   }
 

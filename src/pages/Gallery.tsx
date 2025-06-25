@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Grid, List, RefreshCw, Plus } from 'lucide-react';
 import { useAllCollections } from '@/hooks/useCollections';
 import { useCards } from '@/hooks/useCards';
-import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { GallerySection } from './Gallery/components/GallerySection';
 import { GalleryHeader } from './Gallery/components/GalleryHeader';
 import { CollectionsGrid } from './Gallery/components/CollectionsGrid';
@@ -20,42 +19,16 @@ const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
   const [catalogView, setCatalogView] = useState<'grid' | 'table'>('grid');
   const navigate = useNavigate();
-  const { user } = useAuth();
   
   const { collections, loading: collectionsLoading } = useAllCollections(1, 6);
   const { 
     featuredCards, 
     cards: allCards,
-    userCards,
     loading: cardsLoading, 
-    error: cardsError,
     dataSource, 
     fetchCards,
     migrateLocalCardsToDatabase 
   } = useCards();
-
-  console.log('🎨 Gallery: Card data debug', {
-    featuredCards: featuredCards?.length || 0,
-    allCards: allCards?.length || 0,
-    userCards: userCards?.length || 0,
-    cardsLoading,
-    cardsError,
-    dataSource,
-    user: user?.id
-  });
-
-  // Filter cards to show user's own cards plus public cards from others
-  const displayedCards = React.useMemo(() => {
-    if (!user) {
-      // Not authenticated - show only public cards
-      return allCards.filter(card => card.is_public);
-    }
-    
-    // Authenticated - show user's cards (regardless of public status) plus others' public cards
-    return allCards.filter(card => 
-      card.creator_id === user.id || card.is_public
-    );
-  }, [allCards, user]);
 
   const handleCreateCollection = () => {
     console.log('Create collection clicked');
@@ -78,9 +51,7 @@ const Gallery = () => {
       common: 'bg-gray-500',
       uncommon: 'bg-green-500', 
       rare: 'bg-blue-500',
-      epic: 'bg-yellow-500',
       legendary: 'bg-purple-500',
-      mythic: 'bg-red-500',
     };
     return colors[rarity as keyof typeof colors] || colors.common;
   };
@@ -98,33 +69,17 @@ const Gallery = () => {
             <div className="flex items-center gap-2">
               <span className="text-sm text-yellow-400">Development Mode - Data Source: {dataSource}</span>
               <span className="text-xs bg-yellow-600 px-2 py-1 rounded">
-                All Cards: {allCards?.length || 0}
+                Cards: {allCards?.length || 0}
               </span>
-              <span className="text-xs bg-blue-600 px-2 py-1 rounded">
-                Displayed: {displayedCards?.length || 0}
-              </span>
-              <span className="text-xs bg-green-600 px-2 py-1 rounded">
-                User Cards: {userCards?.length || 0}
-              </span>
-              <span className="text-xs bg-purple-600 px-2 py-1 rounded">
-                Featured: {featuredCards?.length || 0}
-              </span>
-              {cardsError && (
-                <span className="text-xs bg-red-600 px-2 py-1 rounded">
-                  Error: {cardsError}
-                </span>
-              )}
             </div>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" onClick={handleRefreshData}>
                 <RefreshCw className="w-4 h-4 mr-1" />
                 Refresh
               </Button>
-              {dataSource === 'local' && (
-                <Button size="sm" variant="outline" onClick={migrateLocalCardsToDatabase}>
-                  Migrate Local
-                </Button>
-              )}
+              <Button size="sm" variant="outline" onClick={migrateLocalCardsToDatabase}>
+                Migrate Local
+              </Button>
             </div>
           </div>
         </div>
@@ -165,17 +120,6 @@ const Gallery = () => {
             )}
           </GallerySection>
 
-          {/* My Cards Section - Show user's cards if authenticated */}
-          {user && userCards && userCards.length > 0 && (
-            <GallerySection title="My Cards">
-              <CardsGrid 
-                cards={userCards.slice(0, 8)} // Show first 8 user cards
-                loading={cardsLoading}
-                onCardClick={handleCardClick}
-              />
-            </GallerySection>
-          )}
-
           {/* Featured Cards - Limited to 1 Row */}
           <GallerySection title="Featured Cards">
             {featuredCards && featuredCards.length > 0 ? (
@@ -184,22 +128,13 @@ const Gallery = () => {
                 loading={cardsLoading}
                 onCardClick={handleCardClick}
               />
-            ) : cardsLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <div key={index} className="animate-pulse">
-                    <div className="w-full aspect-[2.5/3.5] bg-gray-700 rounded-lg"></div>
-                    <div className="h-4 bg-gray-700 rounded mt-2"></div>
-                  </div>
-                ))}
-              </div>
             ) : (
               <EmptyState
                 title="No Featured Cards"
-                description={cardsError ? "Error loading cards from database" : "Featured cards will appear here once available"}
+                description="Featured cards will appear here once available"
                 action={{
-                  label: dataSource === 'local' ? "Migrate Local Cards" : cardsError ? "Try Refresh" : "Create Card",
-                  onClick: cardsError ? handleRefreshData : dataSource === 'local' ? migrateLocalCardsToDatabase : () => navigate('/create'),
+                  label: dataSource === 'local' ? "Migrate Local Cards" : "Create Card",
+                  onClick: dataSource === 'local' ? migrateLocalCardsToDatabase : () => window.location.href = '/create',
                   icon: <Plus className="mr-2 h-4 w-4" />
                 }}
               />
@@ -210,13 +145,7 @@ const Gallery = () => {
           <GallerySection title="CRD Catalog">
             <div className="mb-6 flex items-center justify-between">
               <p className="text-crd-lightGray">
-                Browse all {displayedCards?.length || 0} cards in the catalog
-                {user && (
-                  <span className="text-crd-green ml-2">
-                    (including your {userCards?.length || 0} private cards)
-                  </span>
-                )}
-                {cardsError && <span className="text-red-400 ml-2">(Database Error)</span>}
+                Browse all {allCards?.length || 0} cards in the catalog
               </p>
               <div className="flex items-center gap-2">
                 <Button
@@ -238,11 +167,11 @@ const Gallery = () => {
               </div>
             </div>
 
-            {displayedCards && displayedCards.length > 0 ? (
+            {allCards && allCards.length > 0 ? (
               <>
                 {catalogView === 'grid' ? (
                   <CardsGrid 
-                    cards={displayedCards}
+                    cards={allCards}
                     loading={cardsLoading}
                     onCardClick={handleCardClick}
                   />
@@ -260,7 +189,7 @@ const Gallery = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {displayedCards.map((card) => (
+                        {allCards.map((card) => (
                           <TableRow 
                             key={card.id}
                             className="border-crd-mediumGray hover:bg-crd-mediumGray/20 cursor-pointer"
@@ -280,14 +209,7 @@ const Gallery = () => {
                             </TableCell>
                             <TableCell>
                               <div>
-                                <div className="text-crd-white font-medium">
-                                  {card.title}
-                                  {card.creator_id === user?.id && (
-                                    <Badge variant="secondary" className="ml-2 text-xs">
-                                      Mine
-                                    </Badge>
-                                  )}
-                                </div>
+                                <div className="text-crd-white font-medium">{card.title}</div>
                                 {card.description && (
                                   <div className="text-crd-lightGray text-sm truncate max-w-xs">
                                     {card.description}
@@ -301,7 +223,7 @@ const Gallery = () => {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-crd-lightGray">
-                              {card.creator_id === user?.id ? 'You' : (card.creator_id ? card.creator_id.substring(0, 8) + '...' : 'Unknown')}
+                              {card.creator_id ? card.creator_id.substring(0, 8) + '...' : 'Unknown'}
                             </TableCell>
                             <TableCell className="text-crd-lightGray">
                               {formatDate(card.created_at)}
@@ -318,23 +240,13 @@ const Gallery = () => {
                   </div>
                 )}
               </>
-            ) : cardsLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {Array.from({ length: 12 }).map((_, index) => (
-                  <div key={index} className="animate-pulse">
-                    <div className="w-full aspect-[2.5/3.5] bg-gray-700 rounded-lg"></div>
-                    <div className="h-4 bg-gray-700 rounded mt-2"></div>
-                    <div className="h-3 bg-gray-700 rounded mt-1 w-3/4"></div>
-                  </div>
-                ))}
-              </div>
             ) : (
               <EmptyState
                 title="No Cards in Catalog"
-                description={cardsError ? "Error connecting to database. Check your connection." : "The catalog is empty. Create some cards to get started!"}
+                description="The catalog is empty. Create some cards to get started!"
                 action={{
-                  label: cardsError ? "Retry Connection" : "Create Card",
-                  onClick: cardsError ? handleRefreshData : () => navigate('/create'),
+                  label: "Create Card",
+                  onClick: () => window.location.href = '/create',
                   icon: <Plus className="mr-2 h-4 w-4" />
                 }}
               />

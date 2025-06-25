@@ -16,7 +16,9 @@ export const useUser = () => {
     bio: profile.bio || '',
     team_id: '',
     createdAt: profile.created_at || new Date().toISOString(),
-    preferences: profile.preferences || {},
+    preferences: (typeof profile.preferences === 'object' && profile.preferences !== null) 
+      ? profile.preferences as Record<string, any>
+      : {} as Record<string, any>,
     profileImage: profile.avatar_url || '',
   } : null;
 
