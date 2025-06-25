@@ -9,8 +9,9 @@ import { CollectionsGrid } from './Gallery/components/CollectionsGrid';
 import { CardsGrid } from './Gallery/components/CardsGrid';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Button } from '@/components/ui/button';
-import { Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw, Upload, Database } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { localCardStorage } from '@/lib/localCardStorage';
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -29,6 +30,10 @@ const Gallery = () => {
     migrateLocalCardsToDatabase 
   } = useCards();
 
+  // Check if there are local cards that could be migrated
+  const localCards = localCardStorage.getAllCards();
+  const hasLocalCards = localCards.length > 0;
+
   const handleCreateCollection = () => {
     console.log('Create collection clicked');
   };
@@ -46,6 +51,11 @@ const Gallery = () => {
     }
   };
 
+  const handleMigrateCards = async () => {
+    console.log('🔄 Starting card migration...');
+    await migrateLocalCardsToDatabase();
+  };
+
   return (
     <div className="container mx-auto p-6 max-w-7xl bg-[#121212]">
       {/* Debug Controls - Development Only */}
@@ -57,17 +67,34 @@ const Gallery = () => {
               <span className="text-xs bg-yellow-600 px-2 py-1 rounded">
                 Cards: {featuredCards?.length || 0}
               </span>
+              {hasLocalCards && (
+                <span className="text-xs bg-orange-600 px-2 py-1 rounded">
+                  Local: {localCards.length}
+                </span>
+              )}
             </div>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" onClick={handleRefreshData}>
                 <RefreshCw className="w-4 h-4 mr-1" />
                 Refresh
               </Button>
-              <Button size="sm" variant="outline" onClick={migrateLocalCardsToDatabase}>
-                Migrate Local
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={handleMigrateCards}
+                disabled={!hasLocalCards}
+                className={hasLocalCards ? 'text-orange-400 border-orange-400 hover:bg-orange-400/10' : ''}
+              >
+                <Database className="w-4 h-4 mr-1" />
+                Migrate Local ({localCards.length})
               </Button>
             </div>
           </div>
+          {hasLocalCards && (
+            <div className="mt-2 text-xs text-orange-300">
+              💡 You have {localCards.length} cards stored locally. Click "Migrate Local" to save them to the database.
+            </div>
+          )}
         </div>
       )}
 
@@ -118,13 +145,13 @@ const Gallery = () => {
               <EmptyState
                 title="No Cards Found"
                 description={
-                  dataSource === 'local' 
-                    ? "Cards found in local storage. Consider migrating them to the database."
-                    : "No cards available in the database. Create some cards to get started!"
+                  hasLocalCards
+                    ? `Found ${localCards.length} cards in local storage. Click "Migrate Local" above to save them to the database and see them here.`
+                    : "No cards available. Create some cards to get started!"
                 }
                 action={{
-                  label: dataSource === 'local' ? "Migrate Local Cards" : "Create Card",
-                  onClick: dataSource === 'local' ? migrateLocalCardsToDatabase : () => window.location.href = '/create',
+                  label: hasLocalCards ? "Create More Cards" : "Create Card",
+                  onClick: () => navigate('/editor'),
                   icon: <Plus className="mr-2 h-4 w-4" />
                 }}
               />

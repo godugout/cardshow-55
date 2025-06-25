@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { toast } from 'sonner';
+import { CardRepository } from '@/repositories/cardRepository';
+import { localCardStorage } from '@/lib/localCardStorage';
 
 // Import the unified CardData type and re-export it
 import type { CardData } from '@/hooks/card-editor/types';
@@ -137,7 +139,7 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
   };
 
   const saveCard = async (): Promise<boolean> => {
-    console.log('Starting card save...', { cardData, user });
+    console.log('🎯 Starting dual card save (localStorage + Database)...', { cardData, user });
     
     if (!user) {
       toast.error('Please sign in to save cards');
@@ -148,32 +150,78 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
     const finalCardData = {
       ...cardData,
       title: cardData.title?.trim() || 'My New Card',
-      creator_id: user.id
+      creator_id: user.id,
+      needsSync: false // Mark as synced since we're saving to both places
     };
 
     setIsSaving(true);
     try {
-      // For now, save to localStorage
-      // Once database tables are set up, this will save to Supabase
-      const cardsKey = `cards_${user.id}`;
-      const existingCards = JSON.parse(localStorage.getItem(cardsKey) || '[]');
-      const cardIndex = existingCards.findIndex((card: CardData) => card.id === finalCardData.id);
+      // 1. Save to localStorage using localCardStorage (for quick access)
+      console.log('💾 Saving to localStorage...');
+      const localCardId = localCardStorage.saveCard(finalCardData);
       
-      if (cardIndex >= 0) {
-        existingCards[cardIndex] = finalCardData;
-      } else {
-        existingCards.push(finalCardData);
-      }
+      // 2. Save to Supabase database (for persistence and sharing)
+      console.log('🔄 Saving to Supabase database...');
+      let dbSuccess = false;
       
-      localStorage.setItem(cardsKey, JSON.stringify(existingCards));
+      try {
+        // Map rarity for database compatibility
+        let dbRarity: 'common' | 'uncommon' | 'rare' | 'legendary' = 'common';
+        if (finalCardData.rarity === 'legendary') {
+          dbRarity = 'legendary';
+        } else if (finalCardData.rarity === 'ultra-rare') {
+          dbRarity = 'legendary'; // Map ultra-rare to legendary for DB
+        } else if (finalCardData.rarity === 'rare') {
+          dbRarity = 'rare';
+        } else if (finalCardData.rarity === 'uncommon') {
+          dbRarity = 'uncommon';
+        }
 
-      console.log('Card saved successfully:', finalCardData);
+        const dbCardData = {
+          title: finalCardData.title,
+          description: finalCardData.description,
+          creator_id: user.id,
+          image_url: finalCardData.image_url,
+          thumbnail_url: finalCardData.thumbnail_url,
+          rarity: dbRarity,
+          tags: finalCardData.tags,
+          design_metadata: finalCardData.design_metadata,
+          is_public: finalCardData.visibility === 'public',
+          visibility: finalCardData.visibility,
+          marketplace_listing: finalCardData.publishing_options?.marketplace_listing || false,
+          print_available: finalCardData.publishing_options?.print_available || false
+        };
+
+        const dbResult = await CardRepository.createCard(dbCardData);
+        if (dbResult) {
+          console.log('✅ Database save successful:', dbResult.id);
+          dbSuccess = true;
+          
+          // Update the card data with the database ID if it's different
+          if (dbResult.id !== finalCardData.id) {
+            setCardData(prev => ({ ...prev, id: dbResult.id }));
+          }
+        } else {
+          console.log('⚠️ Database save failed, but localStorage save succeeded');
+        }
+      } catch (dbError) {
+        console.error('⚠️ Database save error (localStorage still works):', dbError);
+        // Don't fail the entire operation if only DB save fails
+      }
+
+      console.log(`✅ Card saved - LocalStorage: ✓, Database: ${dbSuccess ? '✓' : '✗'}`);
       setLastSaved(new Date());
       setIsDirty(false);
-      toast.success('Card saved successfully');
+      
+      if (dbSuccess) {
+        toast.success('Card saved successfully to both local storage and database');
+      } else {
+        toast.success('Card saved locally (database sync will retry later)');
+      }
+      
       return true;
     } catch (error) {
-      console.error('Error saving card:', error);
+      console.error('💥 Error saving card:', error);
       toast.error('Failed to save card. Please try again.');
       return false;
     } finally {

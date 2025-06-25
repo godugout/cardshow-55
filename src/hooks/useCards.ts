@@ -129,23 +129,45 @@ export const useCards = () => {
     }
   };
 
-  // Method to migrate local cards to database (if needed)
+  // Enhanced method to migrate local cards to database
   const migrateLocalCardsToDatabase = async () => {
     if (!user?.id) {
       toast.error('Please sign in to migrate cards');
       return;
     }
     
-    const localCards = localCardStorage.getAllCards();
-    if (localCards.length === 0) {
+    // Check both storage locations for cards
+    const standardLocalCards = localCardStorage.getAllCards();
+    let userSpecificCards = [];
+    
+    // Also check the user-specific storage that useCardEditor was using
+    try {
+      const userCardsKey = `cards_${user.id}`;
+      const userStoredCards = JSON.parse(localStorage.getItem(userCardsKey) || '[]');
+      userSpecificCards = Array.isArray(userStoredCards) ? userStoredCards : [];
+      console.log(`🔍 Found ${userSpecificCards.length} cards in user-specific storage`);
+    } catch (error) {
+      console.error('Error reading user-specific storage:', error);
+    }
+    
+    // Combine all local cards, removing duplicates by ID
+    const allLocalCards = [...standardLocalCards, ...userSpecificCards];
+    const uniqueLocalCards = allLocalCards.filter((card, index, self) => 
+      index === self.findIndex(c => c.id === card.id)
+    );
+    
+    if (uniqueLocalCards.length === 0) {
       toast.info('No local cards to migrate');
       return;
     }
     
-    console.log(`🔄 Migrating ${localCards.length} local cards to database...`);
-    let migratedCount = 0;
+    console.log(`🔄 Migrating ${uniqueLocalCards.length} unique local cards to database...`);
+    toast.loading(`Migrating ${uniqueLocalCards.length} cards to database...`);
     
-    for (const localCard of localCards) {
+    let migratedCount = 0;
+    let errorCount = 0;
+    
+    for (const localCard of uniqueLocalCards) {
       try {
         // Map rarity to database enum (remove epic, map ultra-rare to legendary)
         let dbRarity: 'common' | 'uncommon' | 'rare' | 'legendary' = 'common';
@@ -171,22 +193,41 @@ export const useCards = () => {
           tags: localCard.tags,
           design_metadata: localCard.design_metadata,
           is_public: localCard.visibility === 'public',
-          visibility: localCard.visibility
+          visibility: localCard.visibility || 'private',
+          marketplace_listing: localCard.publishing_options?.marketplace_listing || false,
+          print_available: localCard.publishing_options?.print_available || false
         };
         
         const result = await CardRepository.createCard(cardData);
         if (result) {
           migratedCount++;
+          console.log(`✅ Migrated "${localCard.title}" to database`);
+          
+          // Update the local card to mark it as synced
+          localCardStorage.markAsSynced(localCard.id);
+        } else {
+          errorCount++;
+          console.error(`❌ Failed to migrate "${localCard.title}"`);
         }
       } catch (error) {
-        console.error(`Failed to migrate card "${localCard.title}":`, error);
+        errorCount++;
+        console.error(`❌ Failed to migrate card "${localCard.title}":`, error);
       }
     }
     
+    toast.dismiss();
+    
     if (migratedCount > 0) {
-      toast.success(`Migrated ${migratedCount} cards to database`);
+      toast.success(`Successfully migrated ${migratedCount} cards to database${errorCount > 0 ? ` (${errorCount} failed)` : ''}`);
+      // Clear user-specific storage after successful migration
+      if (userSpecificCards.length > 0) {
+        localStorage.removeItem(`cards_${user.id}`);
+        console.log('🧹 Cleaned up user-specific storage');
+      }
       // Refresh cards after migration
       await fetchCards();
+    } else {
+      toast.error(`Migration failed for all ${uniqueLocalCards.length} cards`);
     }
   };
 
