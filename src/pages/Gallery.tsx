@@ -25,10 +25,19 @@ const Gallery = () => {
     featuredCards, 
     cards: allCards,
     loading: cardsLoading, 
+    error: cardsError,
     dataSource, 
     fetchCards,
     migrateLocalCardsToDatabase 
   } = useCards();
+
+  console.log('🎨 Gallery: Card data debug', {
+    featuredCards: featuredCards?.length || 0,
+    allCards: allCards?.length || 0,
+    cardsLoading,
+    cardsError,
+    dataSource
+  });
 
   const handleCreateCollection = () => {
     console.log('Create collection clicked');
@@ -51,7 +60,9 @@ const Gallery = () => {
       common: 'bg-gray-500',
       uncommon: 'bg-green-500', 
       rare: 'bg-blue-500',
+      epic: 'bg-yellow-500',
       legendary: 'bg-purple-500',
+      mythic: 'bg-red-500',
     };
     return colors[rarity as keyof typeof colors] || colors.common;
   };
@@ -69,17 +80,27 @@ const Gallery = () => {
             <div className="flex items-center gap-2">
               <span className="text-sm text-yellow-400">Development Mode - Data Source: {dataSource}</span>
               <span className="text-xs bg-yellow-600 px-2 py-1 rounded">
-                Cards: {allCards?.length || 0}
+                All Cards: {allCards?.length || 0}
               </span>
+              <span className="text-xs bg-blue-600 px-2 py-1 rounded">
+                Featured: {featuredCards?.length || 0}
+              </span>
+              {cardsError && (
+                <span className="text-xs bg-red-600 px-2 py-1 rounded">
+                  Error: {cardsError}
+                </span>
+              )}
             </div>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" onClick={handleRefreshData}>
                 <RefreshCw className="w-4 h-4 mr-1" />
                 Refresh
               </Button>
-              <Button size="sm" variant="outline" onClick={migrateLocalCardsToDatabase}>
-                Migrate Local
-              </Button>
+              {dataSource === 'local' && (
+                <Button size="sm" variant="outline" onClick={migrateLocalCardsToDatabase}>
+                  Migrate Local
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -128,13 +149,22 @@ const Gallery = () => {
                 loading={cardsLoading}
                 onCardClick={handleCardClick}
               />
+            ) : cardsLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div key={index} className="animate-pulse">
+                    <div className="w-full aspect-[2.5/3.5] bg-gray-700 rounded-lg"></div>
+                    <div className="h-4 bg-gray-700 rounded mt-2"></div>
+                  </div>
+                ))}
+              </div>
             ) : (
               <EmptyState
                 title="No Featured Cards"
-                description="Featured cards will appear here once available"
+                description={cardsError ? "Error loading cards from database" : "Featured cards will appear here once available"}
                 action={{
-                  label: dataSource === 'local' ? "Migrate Local Cards" : "Create Card",
-                  onClick: dataSource === 'local' ? migrateLocalCardsToDatabase : () => window.location.href = '/create',
+                  label: dataSource === 'local' ? "Migrate Local Cards" : cardsError ? "Try Refresh" : "Create Card",
+                  onClick: cardsError ? handleRefreshData : dataSource === 'local' ? migrateLocalCardsToDatabase : () => navigate('/create'),
                   icon: <Plus className="mr-2 h-4 w-4" />
                 }}
               />
@@ -146,6 +176,7 @@ const Gallery = () => {
             <div className="mb-6 flex items-center justify-between">
               <p className="text-crd-lightGray">
                 Browse all {allCards?.length || 0} cards in the catalog
+                {cardsError && <span className="text-red-400 ml-2">(Database Error)</span>}
               </p>
               <div className="flex items-center gap-2">
                 <Button
@@ -240,13 +271,23 @@ const Gallery = () => {
                   </div>
                 )}
               </>
+            ) : cardsLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {Array.from({ length: 12 }).map((_, index) => (
+                  <div key={index} className="animate-pulse">
+                    <div className="w-full aspect-[2.5/3.5] bg-gray-700 rounded-lg"></div>
+                    <div className="h-4 bg-gray-700 rounded mt-2"></div>
+                    <div className="h-3 bg-gray-700 rounded mt-1 w-3/4"></div>
+                  </div>
+                ))}
+              </div>
             ) : (
               <EmptyState
                 title="No Cards in Catalog"
-                description="The catalog is empty. Create some cards to get started!"
+                description={cardsError ? "Error connecting to database. Check your connection." : "The catalog is empty. Create some cards to get started!"}
                 action={{
-                  label: "Create Card",
-                  onClick: () => window.location.href = '/create',
+                  label: cardsError ? "Retry Connection" : "Create Card",
+                  onClick: cardsError ? handleRefreshData : () => navigate('/create'),
                   icon: <Plus className="mr-2 h-4 w-4" />
                 }}
               />

@@ -16,17 +16,35 @@ export const useCardConversion = () => {
       const safeJsonToRecord = (json: any): Record<string, any> => {
         if (!json) return {};
         if (typeof json === 'object' && json !== null) return json as Record<string, any>;
-        return {};
+        try {
+          return typeof json === 'string' ? JSON.parse(json) : {};
+        } catch {
+          return {};
+        }
+      };
+      
+      // Helper function to safely get array values
+      const safeArray = (arr: any): string[] => {
+        if (Array.isArray(arr)) return arr.map(String);
+        if (typeof arr === 'string') {
+          try {
+            const parsed = JSON.parse(arr);
+            return Array.isArray(parsed) ? parsed.map(String) : [];
+          } catch {
+            return [arr];
+          }
+        }
+        return [];
       };
       
       const convertedCard: CardData = {
         id: card.id,
-        title: card.title,
+        title: card.title || 'Untitled Card',
         description: card.description || undefined,
         rarity: (card.rarity as any) || 'common',
-        tags: Array.isArray(card.tags) ? card.tags : [],
+        tags: safeArray(card.tags),
         image_url: card.image_url || card.thumbnail_url || '',
-        thumbnail_url: card.thumbnail_url || undefined,
+        thumbnail_url: card.thumbnail_url || card.image_url || undefined,
         design_metadata: safeJsonToRecord(card.design_metadata),
         visibility: card.is_public ? 'public' : 'private',
         template_id: card.template_id || undefined,
@@ -45,23 +63,23 @@ export const useCardConversion = () => {
         verification_status: (card.verification_status as any) || 'pending',
         print_metadata: safeJsonToRecord(card.print_metadata),
         creator_id: card.creator_id,
-        // Add missing fields from database
-        abilities: card.abilities,
-        base_price: card.base_price,
-        card_type: card.card_type as any,
-        current_market_value: card.current_market_value,
-        favorite_count: card.favorite_count,
-        view_count: card.view_count,
-        royalty_percentage: card.royalty_percentage,
-        serial_number: card.serial_number,
-        set_id: card.set_id,
+        // Add missing fields from database with safe defaults
+        abilities: safeArray(card.abilities),
+        base_price: card.base_price || undefined,
+        card_type: (card.card_type as any) || 'character',
+        current_market_value: card.current_market_value || undefined,
+        favorite_count: card.favorite_count || 0,
+        view_count: card.view_count || 0,
+        royalty_percentage: card.royalty_percentage || 5,
+        serial_number: card.serial_number || undefined,
+        set_id: card.set_id || undefined,
         mana_cost: safeJsonToRecord(card.mana_cost),
-        toughness: card.toughness,
-        power: card.power,
+        toughness: card.toughness || undefined,
+        power: card.power || undefined,
         edition_size: card.price || undefined, // Use price as fallback since edition_size doesn't exist in DB
-        series: card.series,
-        edition_number: card.edition_number,
-        total_supply: card.total_supply,
+        series: card.series || undefined,
+        edition_number: card.edition_number || undefined,
+        total_supply: card.total_supply || undefined,
       };
       
       console.log('✅ Converted card:', convertedCard.title, 'with image:', convertedCard.image_url);

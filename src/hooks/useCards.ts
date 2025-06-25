@@ -14,7 +14,7 @@ export const useCards = () => {
   const [userCards, setUserCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [dataSource, setDataSource] = useState<'database' | 'local' | 'mixed'>('local');
+  const [dataSource, setDataSource] = useState<'database' | 'local' | 'mixed'>('database');
 
   // Helper function to convert CardData to Card
   const convertCardDataToCard = useCallback((cardData: any): Card => {
@@ -60,8 +60,31 @@ export const useCards = () => {
       setLoading(true);
       setError(null);
       
+      // First check if user is authenticated
+      if (!user) {
+        console.log('👤 No authenticated user - fetching public cards only');
+        // Try to fetch public cards
+        const { data: publicCards, error: publicError } = await supabase
+          .from('cards')
+          .select('*')
+          .eq('is_public', true)
+          .limit(20);
+          
+        if (publicError) {
+          throw publicError;
+        }
+        
+        console.log(`📊 Loaded ${publicCards?.length || 0} public cards`);
+        const dbCards = publicCards || [];
+        setCards(dbCards);
+        setFeaturedCards(dbCards.slice(0, 8));
+        setDataSource('database');
+        return dbCards;
+      }
+      
+      // User is authenticated - fetch all accessible cards
       const allCards = await CardRepository.getAllCards();
-      console.log(`📊 Loaded ${allCards.length} cards from database`);
+      console.log(`📊 Loaded ${allCards.length} cards from database for user ${user.id}`);
       
       setCards(allCards);
       setFeaturedCards(allCards.slice(0, 8));
@@ -71,6 +94,16 @@ export const useCards = () => {
     } catch (error) {
       console.error('💥 Error fetching cards:', error);
       
+      // More specific error handling
+      let errorMessage = 'Unknown error occurred';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = String(error.message);
+      }
+      
+      setError(errorMessage);
+      
       // Fallback to local storage with proper type conversion
       const localCards = localCardStorage.getAllCards();
       const convertedCards = localCards.map(convertCardDataToCard);
@@ -79,13 +112,12 @@ export const useCards = () => {
       setCards(convertedCards);
       setFeaturedCards(convertedCards.slice(0, 8));
       setDataSource('local');
-      setError('Using local data - database unavailable');
       
       return convertedCards;
     } finally {
       setLoading(false);
     }
-  }, [convertCardDataToCard, authLoading]);
+  }, [convertCardDataToCard, authLoading, user]);
 
   const fetchUserCards = useCallback(async (userId?: string) => {
     if (authLoading || (!user?.id && !userId)) {
@@ -207,7 +239,7 @@ export const useCards = () => {
 
   // Set up real-time subscriptions only after initial load
   useEffect(() => {
-    if (!user?.id || cards.length === 0 || loading) {
+    if (loading || authLoading) {
       return;
     }
 
@@ -238,7 +270,7 @@ export const useCards = () => {
       console.log('🧹 Cleaning up real-time subscription');
       supabase.removeChannel(subscription);
     };
-  }, [user?.id, cards.length, loading]);
+  }, [loading, authLoading]);
 
   return {
     cards,

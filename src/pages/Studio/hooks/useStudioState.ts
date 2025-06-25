@@ -17,7 +17,7 @@ export const useStudioState = () => {
   const [dataSource, setDataSource] = useState<'database' | 'mock' | 'none'>('none');
 
   // Use ALL cards instead of just featured cards for Studio
-  const { cards, loading: cardsLoading } = useCards();
+  const { cards, loading: cardsLoading, error: cardsError } = useCards();
   const { convertCardsToCardData } = useCardConversion();
 
   // Load card data based on URL params and available data
@@ -28,7 +28,8 @@ export const useStudioState = () => {
     }
 
     console.log('🏗️ Studio: Processing card data...');
-    console.log('📊 All cards from database:', cards?.length || 0);
+    console.log('📊 Raw cards from database:', cards?.length || 0);
+    console.log('⚠️ Cards loading error:', cardsError);
 
     // Convert database cards to CardData format - handle type safety
     let dbCards: CardData[] = [];
@@ -37,8 +38,18 @@ export const useStudioState = () => {
         // Cast cards to any to bypass type checking since we know the conversion handles missing fields
         dbCards = convertCardsToCardData(cards as any);
         console.log('🔄 Converted database cards:', dbCards.length);
+        
+        // Log first card for debugging
+        if (dbCards.length > 0) {
+          console.log('🃏 First converted card:', {
+            id: dbCards[0].id,
+            title: dbCards[0].title,
+            image_url: dbCards[0].image_url,
+            creator_id: dbCards[0].creator_id
+          });
+        }
       } catch (error) {
-        console.error('Failed to convert cards:', error);
+        console.error('❌ Failed to convert cards:', error);
         dbCards = [];
       }
     }
@@ -55,6 +66,13 @@ export const useStudioState = () => {
       availableCards = fallbackMockCards;
       source = 'mock';
       console.log('⚠️ Falling back to mock cards');
+      
+      // Show helpful message if we have database connection issues
+      if (cardsError) {
+        toast.error('Database connection issue. Using sample cards.');
+      } else if (cards && cards.length === 0) {
+        toast.info('No cards found in database. Using sample cards.');
+      }
     }
 
     setAllCards(availableCards);
@@ -73,7 +91,7 @@ export const useStudioState = () => {
       } else {
         // Card not found - show helpful error message
         console.warn(`❌ Card with ID "${cardId}" not found in ${source} cards`);
-        console.log('🔍 Available card IDs:', availableCards.map(c => `${c.title}:${c.id}`));
+        console.log('🔍 Available card IDs:', availableCards.map(c => `${c.title}:${c.id}`).slice(0, 5));
         
         // Default to first available card
         cardToSelect = availableCards[0];
@@ -103,13 +121,13 @@ export const useStudioState = () => {
     } else {
       // This case happens if no cards are available at all
       console.error('💥 No cards are available to display');
-      toast.error('No cards are available to display.');
+      toast.error('No cards are available to display. Please create or upload some cards first.');
       setDataSource('none');
-      navigate('/gallery');
+      // Don't redirect to gallery, show the empty state in Studio
     }
     
     setIsLoading(false);
-  }, [cardId, navigate, cards, cardsLoading, convertCardsToCardData]);
+  }, [cardId, navigate, cards, cardsLoading, cardsError, convertCardsToCardData]);
 
   // Handle card navigation
   const handleCardChange = (index: number) => {
