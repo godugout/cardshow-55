@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
@@ -7,7 +8,7 @@ import { toast } from 'sonner';
 import type { Card } from '@/types/card';
 
 export const useCards = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [cards, setCards] = useState<Card[]>([]);
   const [featuredCards, setFeaturedCards] = useState<Card[]>([]);
   const [userCards, setUserCards] = useState<Card[]>([]);
@@ -49,9 +50,15 @@ export const useCards = () => {
   }, [user?.id]);
 
   const fetchAllCardsFromDatabase = useCallback(async () => {
+    if (authLoading) {
+      console.log('🔄 Waiting for auth to complete before fetching cards');
+      return [];
+    }
+
     try {
       console.log('🔍 Fetching cards from database...');
       setLoading(true);
+      setError(null);
       
       const allCards = await CardRepository.getAllCards();
       console.log(`📊 Loaded ${allCards.length} cards from database`);
@@ -59,7 +66,6 @@ export const useCards = () => {
       setCards(allCards);
       setFeaturedCards(allCards.slice(0, 8));
       setDataSource('database');
-      setError(null);
       
       return allCards;
     } catch (error) {
@@ -79,10 +85,10 @@ export const useCards = () => {
     } finally {
       setLoading(false);
     }
-  }, [convertCardDataToCard]);
+  }, [convertCardDataToCard, authLoading]);
 
   const fetchUserCards = useCallback(async (userId?: string) => {
-    if (!user?.id && !userId) {
+    if (authLoading || (!user?.id && !userId)) {
       return [];
     }
     
@@ -90,6 +96,7 @@ export const useCards = () => {
       const targetUserId = userId || user?.id;
       if (!targetUserId) return [];
       
+      console.log('👤 Fetching user cards for:', targetUserId);
       const userCardsData = await CardRepository.getUserCards(targetUserId);
       
       if (!userId || userId === user?.id) {
@@ -100,21 +107,18 @@ export const useCards = () => {
       console.error('💥 Error fetching user cards:', error);
       return [];
     }
-  }, [user?.id]);
+  }, [user?.id, authLoading]);
 
   const fetchCards = useCallback(async () => {
-    if (loading) return;
+    if (loading || authLoading) {
+      console.log('🔄 Already loading or auth in progress, skipping fetch');
+      return;
+    }
     
     console.log('🚀 Starting card fetch process...');
     
     try {
-      // Add timeout to prevent hanging
-      const fetchPromise = fetchAllCardsFromDatabase();
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Fetch timeout')), 8000) // 8 second timeout
-      );
-      
-      await Promise.race([fetchPromise, timeoutPromise]);
+      await fetchAllCardsFromDatabase();
       
       if (user?.id) {
         await fetchUserCards();
@@ -122,7 +126,7 @@ export const useCards = () => {
     } catch (error) {
       console.error('💥 Error in fetchCards:', error);
       
-      // Final fallback - use empty state with better error message
+      // Final fallback - use local storage or empty state
       const localCards = localCardStorage.getAllCards();
       if (localCards.length > 0) {
         const convertedCards = localCards.map(convertCardDataToCard);
@@ -134,10 +138,10 @@ export const useCards = () => {
         setCards([]);
         setFeaturedCards([]);
         setUserCards([]);
-        setError('Unable to load cards');
+        setError('No cards available');
       }
     }
-  }, [fetchAllCardsFromDatabase, fetchUserCards, user?.id, loading, convertCardDataToCard]);
+  }, [fetchAllCardsFromDatabase, fetchUserCards, user?.id, loading, authLoading, convertCardDataToCard]);
 
   // Method to migrate local cards to database (if needed)
   const migrateLocalCardsToDatabase = useCallback(async () => {
@@ -193,49 +197,48 @@ export const useCards = () => {
     }
   }, [user?.id, fetchCards]);
 
-  // Don't auto-fetch on mount to prevent loading loops
+  // Auto-fetch when auth completes but don't create loading loops
   useEffect(() => {
-    console.log('🔄 useCards effect triggered, user:', user?.id);
-    
-    let subscription: any = null;
-    
-    // Only set up real-time if we have cards loaded and a user
-    if (user?.id && cards.length > 0) {
-      try {
-        subscription = supabase
-          .channel('cards-changes')
-          .on(
-            'postgres_changes',
-            {
-              event: '*',
-              schema: 'public',
-              table: 'cards'
-            },
-            (payload) => {
-              console.log('🔔 Real-time card change:', payload);
-              // Debounce real-time updates to prevent loops
-              setTimeout(() => {
-                if (!loading) {
-                  fetchCards();
-                }
-              }, 2000); // Increased debounce time
-            }
-          )
-          .subscribe();
-          
-        console.log('📡 Real-time subscription created');
-      } catch (error) {
-        console.error('❌ Error setting up real-time subscription:', error);
-      }
+    if (!authLoading && !loading && cards.length === 0) {
+      console.log('🔄 Auth completed, fetching initial cards');
+      fetchCards();
+    }
+  }, [authLoading]); // Only trigger when auth loading state changes
+
+  // Set up real-time subscriptions only after initial load
+  useEffect(() => {
+    if (!user?.id || cards.length === 0 || loading) {
+      return;
     }
 
+    console.log('📡 Setting up real-time subscription');
+    
+    const subscription = supabase
+      .channel('cards-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'cards'
+        },
+        (payload) => {
+          console.log('🔔 Real-time card change:', payload);
+          // Debounce real-time updates
+          setTimeout(() => {
+            if (!loading) {
+              fetchCards();
+            }
+          }, 1000);
+        }
+      )
+      .subscribe();
+
     return () => {
-      if (subscription) {
-        console.log('🧹 Cleaning up real-time subscription');
-        supabase.removeChannel(subscription);
-      }
+      console.log('🧹 Cleaning up real-time subscription');
+      supabase.removeChannel(subscription);
     };
-  }, [user?.id, cards.length]); // Added cards.length dependency
+  }, [user?.id, cards.length, loading]);
 
   return {
     cards,
@@ -247,57 +250,6 @@ export const useCards = () => {
     fetchCards,
     fetchAllCardsFromDatabase,
     fetchUserCards,
-    migrateLocalCardsToDatabase: async () => {
-      if (!user?.id) {
-        toast.error('Please sign in to migrate cards');
-        return;
-      }
-      
-      const localCards = localCardStorage.getAllCards();
-      if (localCards.length === 0) {
-        toast.info('No local cards to migrate');
-        return;
-      }
-      
-      console.log(`🔄 Migrating ${localCards.length} local cards to database...`);
-      let migratedCount = 0;
-      
-      for (const localCard of localCards) {
-        try {
-          let dbRarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' = 'common';
-          if (localCard.rarity === 'legendary') dbRarity = 'legendary';
-          else if (localCard.rarity === 'epic') dbRarity = 'epic';
-          else if (localCard.rarity === 'mythic') dbRarity = 'mythic';
-          else if (localCard.rarity === 'rare') dbRarity = 'rare';
-          else if (localCard.rarity === 'uncommon') dbRarity = 'uncommon';
-
-          const cardData = {
-            title: localCard.title,
-            description: localCard.description || 'No description provided',
-            creator_id: user.id,
-            image_url: localCard.image_url || '',
-            thumbnail_url: localCard.thumbnail_url || localCard.image_url || '',
-            rarity: dbRarity,
-            tags: localCard.tags || [],
-            design_metadata: localCard.design_metadata || {},
-            is_public: localCard.visibility === 'public',
-            visibility: localCard.visibility || 'private',
-            marketplace_listing: false
-          };
-          
-          const result = await CardRepository.createCard(cardData);
-          if (result) {
-            migratedCount++;
-          }
-        } catch (error) {
-          console.error(`Failed to migrate card "${localCard.title}":`, error);
-        }
-      }
-      
-      if (migratedCount > 0) {
-        toast.success(`Migrated ${migratedCount} cards to database`);
-        await fetchCards();
-      }
-    }
+    migrateLocalCardsToDatabase
   };
 };

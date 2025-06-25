@@ -1,53 +1,63 @@
 
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from '@/hooks/use-toast';
-import { profileService, type ProfileData } from '@/features/auth/services/profileService';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  full_name?: string;
+  avatar_url?: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  social_links?: Record<string, any>;
+  verification_status: 'unverified' | 'pending' | 'verified';
+  created_at: string;
+  updated_at: string;
+}
 
 export const useProfile = (userId?: string) => {
-  const queryClient = useQueryClient();
-  
-  // Get user profile from database
-  const {
-    data: profile,
-    isLoading,
-    error,
-    refetch
-  } = useQuery({
-    queryKey: ['profile', userId],
-    queryFn: () => profileService.getProfile(userId!),
-    enabled: !!userId,
-    retry: 1
-  });
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  // Update profile mutation
-  const updateProfileMutation = useMutation({
-    mutationFn: async (updates: ProfileData) => {
-      if (!userId) throw new Error('User ID is required');
-      return await profileService.updateProfile(userId, updates);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile', userId] });
-      toast({
-        title: 'Profile Updated',
-        description: 'Your profile has been updated successfully'
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: 'Error',
-        description: `Failed to update profile: ${error.message}`,
-        variant: 'destructive'
-      });
+  useEffect(() => {
+    if (!userId) {
+      setIsLoading(false);
+      return;
     }
-  });
 
-  return {
-    profile,
-    isLoading,
-    error,
-    refetch,
-    updateProfile: updateProfileMutation.mutate,
-    isUpdating: updateProfileMutation.isPending
-  };
+    const fetchProfile = async () => {
+      try {
+        console.log('🔍 Fetching profile for:', userId);
+        
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+
+        if (error) {
+          console.error('❌ Profile fetch error:', error);
+          setError(new Error(error.message));
+          setProfile(null);
+        } else {
+          console.log('✅ Profile loaded:', data.username);
+          setProfile(data);
+          setError(null);
+        }
+      } catch (err) {
+        console.error('❌ Profile fetch exception:', err);
+        setError(err instanceof Error ? err : new Error('Unknown error'));
+        setProfile(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [userId]);
+
+  return { profile, isLoading, error };
 };
