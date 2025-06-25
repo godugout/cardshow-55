@@ -53,9 +53,23 @@ export const useProfile = (userId?: string) => {
           console.log('✅ Profile loaded:', data.username);
           // Convert database types to expected types
           const profileData: UserProfile = {
-            ...data,
+            id: data.id,
+            username: data.username || '',
+            email: data.email || '',
+            full_name: data.full_name || '',
+            avatar_url: data.avatar_url || '',
+            bio: data.bio || '',
+            location: data.location || '',
+            website: data.website || '',
             social_links: typeof data.social_links === 'object' && data.social_links !== null ? data.social_links as Record<string, any> : {},
-            preferences: typeof data.preferences === 'object' && data.preferences !== null ? data.preferences as Record<string, any> : {}
+            verification_status: (data.verification_status === 'verified' || data.verification_status === 'pending') ? data.verification_status : 'unverified',
+            preferences: typeof data.preferences === 'object' && data.preferences !== null ? data.preferences as Record<string, any> : {},
+            total_followers: data.total_followers || 0,
+            total_following: data.total_following || 0,
+            experience_points: data.experience_points || 0,
+            level: data.level || 1,
+            created_at: data.created_at || new Date().toISOString(),
+            updated_at: data.updated_at || new Date().toISOString()
           };
           setProfile(profileData);
           setError(null);
@@ -104,9 +118,23 @@ export const useProfile = (userId?: string) => {
 
       if (updatedData) {
         const profileData: UserProfile = {
-          ...updatedData,
+          id: updatedData.id,
+          username: updatedData.username || '',
+          email: updatedData.email || '',
+          full_name: updatedData.full_name || '',
+          avatar_url: updatedData.avatar_url || '',
+          bio: updatedData.bio || '',
+          location: updatedData.location || '',
+          website: updatedData.website || '',
           social_links: typeof updatedData.social_links === 'object' && updatedData.social_links !== null ? updatedData.social_links as Record<string, any> : {},
-          preferences: typeof updatedData.preferences === 'object' && updatedData.preferences !== null ? updatedData.preferences as Record<string, any> : {}
+          verification_status: (updatedData.verification_status === 'verified' || updatedData.verification_status === 'pending') ? updatedData.verification_status : 'unverified',
+          preferences: typeof updatedData.preferences === 'object' && updatedData.preferences !== null ? updatedData.preferences as Record<string, any> : {},
+          total_followers: updatedData.total_followers || 0,
+          total_following: updatedData.total_following || 0,
+          experience_points: updatedData.experience_points || 0,
+          level: updatedData.level || 1,
+          created_at: updatedData.created_at || new Date().toISOString(),
+          updated_at: updatedData.updated_at || new Date().toISOString()
         };
         setProfile(profileData);
       }
