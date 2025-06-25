@@ -6,7 +6,7 @@ export const ProductionOptimizer = () => {
     // Core Web Vitals tracking
     const trackWebVitals = async () => {
       try {
-        const { onCLS, onFID, onFCP, onLCP, onTTFB } = await import('web-vitals');
+        const { onCLS, onINP, onFCP, onLCP, onTTFB } = await import('web-vitals');
         
         const sendToAnalytics = (metric: any) => {
           // Only track if gtag is available
@@ -23,7 +23,7 @@ export const ProductionOptimizer = () => {
         };
 
         onCLS(sendToAnalytics);
-        onFID(sendToAnalytics);
+        onINP(sendToAnalytics); // Using INP instead of deprecated FID
         onFCP(sendToAnalytics);
         onLCP(sendToAnalytics);
         onTTFB(sendToAnalytics);
