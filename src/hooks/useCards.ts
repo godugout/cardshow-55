@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
@@ -37,7 +36,7 @@ export const useCards = () => {
       collection_id: cardData.collection_id || null,
       team_id: cardData.team_id || null,
       price: cardData.price || null,
-      edition_size: cardData.edition_size || null,
+      edition_size: cardData.edition_size || cardData.price || null, // Ensure edition_size is included
       marketplace_listing: cardData.marketplace_listing || false,
       crd_catalog_inclusion: cardData.crd_catalog_inclusion || null,
       print_available: cardData.print_available || null,
@@ -46,6 +45,24 @@ export const useCards = () => {
       series: cardData.series || null,
       edition_number: cardData.edition_number || null,
       total_supply: cardData.total_supply || null,
+      // Additional database fields - ensure they're all included
+      abilities: cardData.abilities || [],
+      base_price: cardData.base_price || null,
+      card_type: cardData.card_type || null,
+      current_market_value: cardData.current_market_value || null,
+      favorite_count: cardData.favorite_count || 0,
+      view_count: cardData.view_count || 0,
+      royalty_percentage: cardData.royalty_percentage || null,
+      serial_number: cardData.serial_number || null,
+      set_id: cardData.set_id || null,
+      mana_cost: cardData.mana_cost || null,
+      toughness: cardData.toughness || null,
+      power: cardData.power || null,
+      // Additional optional fields for backward compatibility
+      card_set_id: cardData.card_set_id || null,
+      current_supply: cardData.current_supply || null,
+      is_tradeable: cardData.is_tradeable || null,
+      name: cardData.name || null,
     };
   }, [user?.id]);
 
