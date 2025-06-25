@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -10,7 +11,7 @@ export interface CardCreateParams {
   creator_id: string;
   image_url?: string;
   thumbnail_url?: string;
-  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
+  rarity?: string; // Changed to string to handle any rarity value
   tags?: string[];
   design_metadata?: Record<string, any>;
   price?: number;
@@ -19,7 +20,7 @@ export interface CardCreateParams {
   verification_status?: string;
   print_metadata?: Record<string, any>;
   series?: string;
-  visibility?: 'public' | 'private' | 'shared';
+  visibility?: string; // Changed to string to handle any visibility value
   marketplace_listing?: boolean;
   edition_number?: number;
   total_supply?: number;
@@ -31,7 +32,7 @@ export interface CardUpdateParams {
   description?: string;
   image_url?: string;
   thumbnail_url?: string;
-  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
+  rarity?: string;
   tags?: string[];
   design_metadata?: Record<string, any>;
   price?: number;
@@ -40,7 +41,7 @@ export interface CardUpdateParams {
   verification_status?: string;
   print_metadata?: Record<string, any>;
   series?: string;
-  visibility?: 'public' | 'private' | 'shared';
+  visibility?: string;
   marketplace_listing?: boolean;
   edition_number?: number;
   total_supply?: number;
@@ -60,6 +61,27 @@ export interface PaginatedCards {
   cards: Card[];
   total: number;
 }
+
+// Map external rarity values to valid database values
+const mapRarityToValidType = (rarity: string): string => {
+  const rarityMap: Record<string, string> = {
+    'common': 'common',
+    'uncommon': 'uncommon', 
+    'rare': 'rare',
+    'epic': 'rare', // Map epic to rare since epic might not be in the database
+    'legendary': 'legendary',
+    'ultra-rare': 'legendary', // Map ultra-rare to legendary
+    'mythic': 'legendary' // Map mythic to legendary
+  };
+  
+  return rarityMap[rarity.toLowerCase()] || 'common';
+};
+
+// Map visibility values to valid database values
+const mapVisibilityToValidType = (visibility: string): string => {
+  const validVisibilities = ['public', 'private', 'shared'];
+  return validVisibilities.includes(visibility.toLowerCase()) ? visibility.toLowerCase() : 'private';
+};
 
 export const CardRepository = {
   async getCardById(id: string): Promise<Card | null> {
@@ -84,35 +106,56 @@ export const CardRepository = {
 
   async createCard(params: CardCreateParams): Promise<Card | null> {
     try {
-      console.log('🎨 Creating new card:', params.title);
+      console.log('🎨 Creating new card with params:', params);
       
+      // Map and validate the data before insertion
+      const mappedRarity = mapRarityToValidType(params.rarity || 'common');
+      const mappedVisibility = mapVisibilityToValidType(params.visibility || 'private');
+      
+      console.log('📊 Mapped values:', { 
+        originalRarity: params.rarity, 
+        mappedRarity,
+        originalVisibility: params.visibility,
+        mappedVisibility 
+      });
+
+      const insertData = {
+        title: params.title,
+        description: params.description || null,
+        creator_id: params.creator_id,
+        image_url: params.image_url || null,
+        thumbnail_url: params.thumbnail_url || null,
+        rarity: mappedRarity,
+        tags: params.tags || [],
+        design_metadata: params.design_metadata || {},
+        price: params.price || null,
+        is_public: params.is_public !== undefined ? params.is_public : false,
+        template_id: params.template_id || null,
+        verification_status: params.verification_status || 'pending',
+        print_metadata: params.print_metadata || {},
+        series: params.series || null,
+        visibility: mappedVisibility,
+        marketplace_listing: params.marketplace_listing !== undefined ? params.marketplace_listing : false,
+        edition_number: params.edition_number || null,
+        total_supply: params.total_supply || null
+      };
+
+      console.log('💾 Final insert data:', insertData);
+
       const { data, error } = await supabase
         .from('cards')
-        .insert({
-          title: params.title,
-          description: params.description,
-          creator_id: params.creator_id,
-          image_url: params.image_url,
-          thumbnail_url: params.thumbnail_url,
-          rarity: params.rarity || 'common',
-          tags: params.tags || [],
-          design_metadata: params.design_metadata || {},
-          price: params.price,
-          is_public: params.is_public || false,
-          template_id: params.template_id,
-          verification_status: params.verification_status || 'pending',
-          print_metadata: params.print_metadata || {},
-          series: params.series,
-          visibility: params.visibility || 'private',
-          marketplace_listing: params.marketplace_listing || false,
-          edition_number: params.edition_number,
-          total_supply: params.total_supply
-        })
+        .insert(insertData)
         .select()
         .single();
 
       if (error) {
-        console.error('❌ Failed to create card:', error.message);
+        console.error('❌ Failed to create card - Supabase error:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        console.error('📋 Insert data that failed:', insertData);
         return null;
       }
 
@@ -120,18 +163,30 @@ export const CardRepository = {
       return data;
     } catch (error) {
       console.error('💥 Error in createCard:', error);
+      if (error instanceof Error) {
+        console.error('💥 Error details:', {
+          message: error.message,
+          stack: error.stack
+        });
+      }
       return null;
     }
   },
 
   async updateCard(params: CardUpdateParams): Promise<Card | null> {
     try {
-      const updates: Partial<Card> = {};
+      const updates: Record<string, any> = {};
       
       // Only include defined values in the update
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && key !== 'id') {
-          (updates as any)[key] = value;
+          if (key === 'rarity') {
+            updates[key] = mapRarityToValidType(value as string);
+          } else if (key === 'visibility') {
+            updates[key] = mapVisibilityToValidType(value as string);
+          } else {
+            updates[key] = value;
+          }
         }
       });
 
@@ -182,21 +237,9 @@ export const CardRepository = {
       }
       
       if (rarity) {
-        // Map rarity values and filter to only valid database rarities
-        const rarityMapping: Record<string, 'common' | 'uncommon' | 'rare' | 'legendary'> = {
-          'ultra-rare': 'legendary'
-        };
-        
-        // Get the mapped rarity or use the original if it's already valid
-        const mappedRarity = rarityMapping[rarity] || rarity;
-        
-        // Only query if it's a valid database rarity
-        const validRarities = ['common', 'uncommon', 'rare', 'legendary'] as const;
-        if (validRarities.includes(mappedRarity as any)) {
-          query = query.eq('rarity', mappedRarity as typeof validRarities[number]);
-        } else {
-          console.warn(`Invalid rarity "${rarity}" ignored in query`);
-        }
+        // Map the rarity and only filter if it's valid
+        const mappedRarity = mapRarityToValidType(rarity);
+        query = query.eq('rarity', mappedRarity);
       }
       
       if (tags && tags.length > 0) {

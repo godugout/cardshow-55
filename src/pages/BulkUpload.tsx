@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -18,19 +19,6 @@ interface UploadedFile {
   analysis?: any;
   error?: string;
 }
-
-// Helper function to map AI analysis rarity to valid database rarity types
-const mapRarityToValidType = (rarity: string): 'common' | 'uncommon' | 'rare' | 'legendary' => {
-  const rarityMap: Record<string, 'common' | 'uncommon' | 'rare' | 'legendary'> = {
-    'common': 'common',
-    'uncommon': 'uncommon', 
-    'rare': 'rare',
-    'epic': 'rare', // Map epic to rare since epic is not in the database type
-    'legendary': 'legendary'
-  };
-  
-  return rarityMap[rarity.toLowerCase()] || 'common';
-};
 
 const BulkUpload = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
@@ -103,45 +91,58 @@ const BulkUpload = () => {
       return;
     }
 
+    console.log('🚀 Starting bulk upload process for user:', user.id);
     setIsProcessing(true);
     setProgress(0);
     
     const pendingFiles = uploadedFiles.filter(f => f.status === 'pending');
+    console.log(`📊 Processing ${pendingFiles.length} files`);
     let completed = 0;
 
     for (const fileData of pendingFiles) {
       try {
+        console.log(`🔄 Processing file: ${fileData.file.name}`);
+        
         // Update status to analyzing
         setUploadedFiles(prev => prev.map(f => 
           f.id === fileData.id ? { ...f, status: 'analyzing' } : f
         ));
 
         // Convert image to data URL
+        console.log('🖼️ Converting image to data URL...');
         const imageDataUrl = await processImageToDataUrl(fileData.file);
         
         // Analyze with AI
+        console.log('🤖 Analyzing image with AI...');
         const analysis = await analyzeCardImage(imageDataUrl);
+        console.log('📋 AI Analysis result:', analysis);
         
-        // Create card in database with proper rarity mapping
-        const cardResult = await CardRepository.createCard({
-          title: analysis.title || 'Untitled Card',
+        // Prepare card data with proper validation
+        const cardData = {
+          title: analysis.title || `Card ${Date.now()}`,
           description: analysis.description || 'A unique trading card.',
           creator_id: user.id,
           image_url: imageDataUrl,
           thumbnail_url: imageDataUrl,
-          rarity: mapRarityToValidType(analysis.rarity || 'common'),
+          rarity: analysis.rarity || 'common', // Let the repository handle mapping
           tags: analysis.tags || ['custom'],
           design_metadata: {
             aiGenerated: true,
             originalFilename: fileData.file.name,
             analysis: analysis
           },
-          visibility: 'public',
+          visibility: 'public', // Use string, let repository handle mapping
           is_public: true,
           series: analysis.series || 'AI Collection'
-        });
+        };
+
+        console.log('💾 Creating card with data:', cardData);
+        
+        // Create card in database
+        const cardResult = await CardRepository.createCard(cardData);
 
         if (cardResult) {
+          console.log('✅ Successfully created card:', cardResult.id);
           // Update status to complete
           setUploadedFiles(prev => prev.map(f => 
             f.id === fileData.id ? { 
@@ -150,19 +151,18 @@ const BulkUpload = () => {
               analysis: { ...analysis, cardId: cardResult.id }
             } : f
           ));
-          
-          console.log(`✅ Created card: ${analysis.title} (${cardResult.id})`);
         } else {
-          throw new Error('Failed to create card in database');
+          throw new Error('Failed to create card in database - CardRepository returned null');
         }
 
       } catch (error) {
-        console.error('Error processing file:', error);
+        console.error('❌ Error processing file:', fileData.file.name, error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         setUploadedFiles(prev => prev.map(f => 
           f.id === fileData.id ? { 
             ...f, 
             status: 'error', 
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: errorMessage
           } : f
         ));
       }
@@ -176,11 +176,13 @@ const BulkUpload = () => {
     const successCount = uploadedFiles.filter(f => f.status === 'complete').length;
     const errorCount = uploadedFiles.filter(f => f.status === 'error').length;
     
+    console.log(`📊 Upload complete: ${successCount} successful, ${errorCount} failed`);
+    
     if (successCount > 0) {
       toast.success(`Successfully created ${successCount} cards!`);
     }
     if (errorCount > 0) {
-      toast.error(`${errorCount} cards failed to process`);
+      toast.error(`${errorCount} cards failed to process. Check console for details.`);
     }
   };
 
@@ -352,8 +354,8 @@ const BulkUpload = () => {
                     )}
                     
                     {fileData.error && (
-                      <p className="text-red-400 text-xs mt-2">
-                        {fileData.error}
+                      <p className="text-red-400 text-xs mt-2" title={fileData.error}>
+                        {fileData.error.length > 50 ? fileData.error.substring(0, 50) + '...' : fileData.error}
                       </p>
                     )}
                   </div>
