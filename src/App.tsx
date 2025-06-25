@@ -20,6 +20,7 @@ const MarketplacePage = React.lazy(() => import('@/pages/MarketplacePage'));
 const CollectionsPage = React.lazy(() => import('@/pages/CollectionsPage'));
 const AdminDashboard = React.lazy(() => import('@/pages/AdminDashboard'));
 const Settings = React.lazy(() => import('@/pages/Settings'));
+const CardshowAdvanced = React.lazy(() => import('@/pages/CardshowAdvanced'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,6 +56,7 @@ function App() {
               <Route path="/collections" element={<CollectionsPage />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/admin/*" element={<AdminDashboard />} />
+              <Route path="/advanced" element={<CardshowAdvanced />} />
             </Routes>
           </Suspense>
         </AppShell>
