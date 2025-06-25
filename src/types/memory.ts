@@ -26,6 +26,7 @@ export interface Memory {
 }
 
 export interface MemoryFormData {
+  userId?: string;
   title: string;
   description?: string;
   teamId?: string;

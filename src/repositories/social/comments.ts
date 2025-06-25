@@ -9,10 +9,7 @@ export const getComments = async (
   try {
     let query = supabase
       .from('comments')
-      .select(`
-        *,
-        author:user_profiles!comments_author_id_fkey(id, username, avatar_url)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
 
     // Apply the correct filter based on target type
@@ -37,11 +34,11 @@ export const getComments = async (
       content: comment.content,
       createdAt: comment.created_at,
       updatedAt: comment.updated_at,
-      user: comment.author ? {
-        id: comment.author.id,
-        username: comment.author.username,
-        profileImage: comment.author.avatar_url
-      } : undefined,
+      user: {
+        id: comment.author_id,
+        username: 'User', // Default fallback
+        profileImage: undefined
+      },
       reactions: [],
       replyCount: 0
     }));
@@ -79,10 +76,7 @@ export const createComment = async (
     const { data, error } = await supabase
       .from('comments')
       .insert(insertData)
-      .select(`
-        *,
-        author:user_profiles!comments_author_id_fkey(id, username, avatar_url)
-      `)
+      .select()
       .single();
 
     if (error) throw error;
@@ -96,11 +90,11 @@ export const createComment = async (
       content: data.content,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
-      user: data.author ? {
-        id: data.author.id,
-        username: data.author.username,
-        profileImage: data.author.avatar_url
-      } : undefined,
+      user: {
+        id: data.author_id,
+        username: 'User', // Default fallback
+        profileImage: undefined
+      },
       reactions: [],
       replyCount: 0
     };
@@ -119,10 +113,7 @@ export const updateComment = async (
       .from('comments')
       .update({ content, is_edited: true })
       .eq('id', commentId)
-      .select(`
-        *,
-        author:user_profiles!comments_author_id_fkey(id, username, avatar_url)
-      `)
+      .select()
       .single();
 
     if (error) throw error;
@@ -136,11 +127,11 @@ export const updateComment = async (
       content: data.content,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
-      user: data.author ? {
-        id: data.author.id,
-        username: data.author.username,
-        profileImage: data.author.avatar_url
-      } : undefined,
+      user: {
+        id: data.author_id,
+        username: 'User', // Default fallback
+        profileImage: undefined
+      },
       reactions: [],
       replyCount: 0
     };
@@ -169,10 +160,7 @@ export const getCommentReplies = async (parentId: string): Promise<Comment[]> =>
   try {
     const { data, error } = await supabase
       .from('comments')
-      .select(`
-        *,
-        author:user_profiles!comments_author_id_fkey(id, username, avatar_url)
-      `)
+      .select('*')
       .eq('parent_id', parentId)
       .order('created_at', { ascending: true });
 
@@ -187,11 +175,11 @@ export const getCommentReplies = async (parentId: string): Promise<Comment[]> =>
       content: comment.content,
       createdAt: comment.created_at,
       updatedAt: comment.updated_at,
-      user: comment.author ? {
-        id: comment.author.id,
-        username: comment.author.username,
-        profileImage: comment.author.avatar_url
-      } : undefined,
+      user: {
+        id: comment.author_id,
+        username: 'User', // Default fallback
+        profileImage: undefined
+      },
       reactions: [],
       replyCount: 0
     }));

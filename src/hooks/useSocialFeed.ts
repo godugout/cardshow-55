@@ -16,10 +16,7 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
     try {
       let query = supabase
         .from('social_activities')
-        .select(`
-          *,
-          user:user_profiles!social_activities_user_id_fkey(id, username, avatar_url)
-        `)
+        .select('*')
         .order('activity_timestamp', { ascending: false })
         .range(offset, offset + limit - 1);
 
@@ -53,12 +50,17 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
       // Transform the data to match our SocialActivity interface
       const transformedActivities = (data || []).map(activity => ({
         ...activity,
-        comment_count: 0, // Default values since these columns don't exist in schema
+        comment_count: 0,
         share_count: 0,
         reactions: [],
         user_reaction: undefined,
         metadata: (activity.metadata || {}) as Record<string, any>,
-        visibility: (activity.visibility || 'public') as 'public' | 'friends' | 'private'
+        visibility: (activity.visibility || 'public') as 'public' | 'friends' | 'private',
+        user: {
+          id: activity.user_id,
+          username: 'User',
+          avatar_url: undefined
+        }
       }));
 
       if (offset === 0) {
@@ -91,7 +93,6 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
   useRealTimeUpdates({
     table: 'social_activities',
     onInsert: (payload) => {
-      // Add new activity to the beginning of the feed
       const newActivity = {
         ...payload.new,
         comment_count: 0,
@@ -99,25 +100,33 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
         reactions: [],
         user_reaction: undefined,
         metadata: (payload.new.metadata || {}) as Record<string, any>,
-        visibility: (payload.new.visibility || 'public') as 'public' | 'friends' | 'private'
+        visibility: (payload.new.visibility || 'public') as 'public' | 'friends' | 'private',
+        user: {
+          id: payload.new.user_id,
+          username: 'User',
+          avatar_url: undefined
+        }
       } as SocialActivity;
       setActivities(prev => [newActivity, ...prev]);
     },
     onUpdate: (payload) => {
-      // Update existing activity
       setActivities(prev =>
         prev.map(activity =>
           activity.id === payload.new.id ? { 
             ...activity, 
             ...payload.new,
             metadata: (payload.new.metadata || {}) as Record<string, any>,
-            visibility: (payload.new.visibility || 'public') as 'public' | 'friends' | 'private'
+            visibility: (payload.new.visibility || 'public') as 'public' | 'friends' | 'private',
+            user: {
+              id: payload.new.user_id,
+              username: 'User',
+              avatar_url: undefined
+            }
           } : activity
         )
       );
     },
     onDelete: (payload) => {
-      // Remove deleted activity
       setActivities(prev =>
         prev.filter(activity => activity.id !== payload.old.id)
       );
