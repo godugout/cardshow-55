@@ -124,11 +124,12 @@ export const PerformanceOptimizer: React.FC = () => {
 
   const startPerformanceMonitoring = () => {
     // Try to use web-vitals if available, otherwise use manual measurement
-    import('web-vitals').then(({ onFCP, onLCP, onFID, onCLS, onTTFB }) => {
+    import('web-vitals').then(({ onCLS, onLCP }) => {
       const metrics: Partial<PerformanceMetrics> = {};
 
-      onFCP((metric) => {
-        metrics.fcp = metric.value;
+      // Only use the available functions
+      onCLS((metric) => {
+        metrics.cls = metric.value;
         updateMetrics(metrics);
       });
 
@@ -137,20 +138,12 @@ export const PerformanceOptimizer: React.FC = () => {
         updateMetrics(metrics);
       });
 
-      onFID((metric) => {
-        metrics.fid = metric.value;
+      // Get other metrics manually
+      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      if (navigation) {
+        metrics.ttfb = navigation.responseStart - navigation.requestStart;
         updateMetrics(metrics);
-      });
-
-      onCLS((metric) => {
-        metrics.cls = metric.value;
-        updateMetrics(metrics);
-      });
-
-      onTTFB((metric) => {
-        metrics.ttfb = metric.value;
-        updateMetrics(metrics);
-      });
+      }
     }).catch(() => {
       measurePerformanceManually();
     });
@@ -221,27 +214,21 @@ export const PerformanceOptimizer: React.FC = () => {
       {metrics && (
         <div className="space-y-1 text-white">
           <div className="flex justify-between">
-            <span>FCP:</span>
-            <span className={metrics.fcp > 1800 ? 'text-red-400' : 'text-green-400'}>
-              {metrics.fcp?.toFixed(0)}ms
-            </span>
-          </div>
-          <div className="flex justify-between">
             <span>LCP:</span>
             <span className={metrics.lcp > 2500 ? 'text-red-400' : 'text-green-400'}>
               {metrics.lcp?.toFixed(0)}ms
             </span>
           </div>
           <div className="flex justify-between">
-            <span>FID:</span>
-            <span className={metrics.fid > 100 ? 'text-red-400' : 'text-green-400'}>
-              {metrics.fid?.toFixed(0)}ms
-            </span>
-          </div>
-          <div className="flex justify-between">
             <span>CLS:</span>
             <span className={metrics.cls > 0.1 ? 'text-red-400' : 'text-green-400'}>
               {metrics.cls?.toFixed(3)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span>TTFB:</span>
+            <span className={metrics.ttfb > 800 ? 'text-red-400' : 'text-green-400'}>
+              {metrics.ttfb?.toFixed(0)}ms
             </span>
           </div>
         </div>

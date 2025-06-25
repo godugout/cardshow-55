@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 interface DebugContextValue {
   isDebugMode: boolean;
   toggleDebugMode: () => void;
+  setDebugMode: (enabled: boolean) => void;
 }
 
 const DebugContext = createContext<DebugContextValue | null>(null);
@@ -28,8 +29,13 @@ export const DebugProvider: React.FC<DebugProviderProps> = ({ children }) => {
     localStorage.setItem('cardshow-debug', newValue.toString());
   };
 
+  const setDebugMode = (enabled: boolean) => {
+    setIsDebugMode(enabled);
+    localStorage.setItem('cardshow-debug', enabled.toString());
+  };
+
   return (
-    <DebugContext.Provider value={{ isDebugMode, toggleDebugMode }}>
+    <DebugContext.Provider value={{ isDebugMode, toggleDebugMode, setDebugMode }}>
       {children}
     </DebugContext.Provider>
   );
@@ -42,3 +48,6 @@ export const useDebugContext = () => {
   }
   return context;
 };
+
+// Export useDebug as an alias for compatibility
+export const useDebug = useDebugContext;

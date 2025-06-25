@@ -2,6 +2,8 @@
 import React from 'react';
 import { CardsPage } from '@/components/cards/CardsPage';
 
-export const CreatePage: React.FC = () => {
+const CreatePage: React.FC = () => {
   return <CardsPage />;
 };
+
+export default CreatePage;

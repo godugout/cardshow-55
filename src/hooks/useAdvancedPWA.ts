@@ -17,11 +17,6 @@ interface NotificationOptions {
   body: string;
   icon?: string;
   badge?: string;
-  actions?: Array<{
-    action: string;
-    title: string;
-    icon?: string;
-  }>;
   tag?: string;
   requireInteraction?: boolean;
   silent?: boolean;
@@ -56,7 +51,7 @@ export const useAdvancedPWA = () => {
       canInstall: 'beforeinstallprompt' in window,
       isInstalled: isStandalone || isInWebApp,
       supportsNotifications: 'Notification' in window,
-      supportsBackgroundSync: 'serviceWorker' in navigator && 'sync' in (window as any).ServiceWorkerRegistration?.prototype,
+      supportsBackgroundSync: 'serviceWorker' in navigator,
       supportsShareTarget: 'share' in navigator,
       supportsBadging: 'setAppBadge' in navigator,
       supportsFileHandling: 'launchQueue' in window,
@@ -150,7 +145,6 @@ export const useAdvancedPWA = () => {
           body: options.body,
           icon: options.icon || '/crd-logo-gradient.png',
           badge: options.badge || '/crd-logo-gradient.png',
-          actions: options.actions,
           tag: options.tag,
           requireInteraction: options.requireInteraction,
           silent: options.silent,
