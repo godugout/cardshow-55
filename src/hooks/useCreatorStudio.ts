@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
@@ -58,8 +59,8 @@ export const useCreatorStudio = (projectId?: string) => {
           .single();
         
         if (template) {
-          newProject.layers = template.layers || [];
-          newProject.canvas = template.canvas || newProject.canvas;
+          newProject.layers = (template.layers as DesignLayer[]) || [];
+          newProject.canvas = (template.canvas as CanvasSettings) || newProject.canvas;
         }
       }
 
@@ -85,14 +86,42 @@ export const useCreatorStudio = (projectId?: string) => {
 
       if (error) throw error;
 
-      setCurrentProject(project);
-      addToHistory(project);
+      // Type cast the project data
+      const typedProject: DesignProject = {
+        id: project.id,
+        creatorId: project.creator_id,
+        title: project.title,
+        description: project.description || '',
+        templateId: project.template_id,
+        layers: (project.layers as DesignLayer[]) || [],
+        canvas: (project.canvas as CanvasSettings) || {
+          width: 320,
+          height: 448,
+          backgroundColor: '#ffffff',
+          dpi: 300,
+          format: 'card'
+        },
+        version: project.version,
+        status: project.status as 'draft' | 'published' | 'archived',
+        collaborators: (project.collaborators as any[]) || [],
+        lastModified: project.last_modified,
+        createdAt: project.created_at,
+        metadata: (project.metadata as any) || {
+          category: 'trading-card',
+          tags: [],
+          difficulty: 'beginner',
+          estimatedTime: 30
+        }
+      };
+
+      setCurrentProject(typedProject);
+      addToHistory(typedProject);
       
       // Load collaborators and comments
       loadCollaborators(id);
       loadComments(id);
       
-      return project;
+      return typedProject;
     } catch (error) {
       console.error('Error loading project:', error);
       throw error;
@@ -114,7 +143,21 @@ export const useCreatorStudio = (projectId?: string) => {
 
       const { error } = await supabase
         .from('design_projects')
-        .upsert(updatedProject);
+        .upsert({
+          id: updatedProject.id,
+          creator_id: updatedProject.creatorId,
+          title: updatedProject.title,
+          description: updatedProject.description,
+          template_id: updatedProject.templateId,
+          layers: updatedProject.layers,
+          canvas: updatedProject.canvas,
+          version: updatedProject.version,
+          status: updatedProject.status,
+          collaborators: updatedProject.collaborators,
+          last_modified: updatedProject.lastModified,
+          created_at: updatedProject.createdAt,
+          metadata: updatedProject.metadata
+        });
 
       if (error) throw error;
 
@@ -273,6 +316,34 @@ export const useCreatorStudio = (projectId?: string) => {
     }
   }, []);
 
+  // Helper function to map blend modes to Canvas API compatible values
+  const getCanvasBlendMode = (blendMode: string): GlobalCompositeOperation => {
+    const blendModeMap: Record<string, GlobalCompositeOperation> = {
+      'normal': 'source-over',
+      'multiply': 'multiply',
+      'screen': 'screen',
+      'overlay': 'overlay',
+      'soft-light': 'soft-light',
+      'hard-light': 'hard-light',
+      'color-dodge': 'color-dodge',
+      'color-burn': 'color-burn',
+      'darken': 'darken',
+      'lighten': 'lighten'
+    };
+    return blendModeMap[blendMode] || 'source-over';
+  };
+
+  // Helper function to map text align to Canvas API compatible values
+  const getCanvasTextAlign = (textAlign: string): CanvasTextAlign => {
+    const textAlignMap: Record<string, CanvasTextAlign> = {
+      'left': 'left',
+      'center': 'center',
+      'right': 'right',
+      'justify': 'left' // Canvas doesn't support justify, fallback to left
+    };
+    return textAlignMap[textAlign] || 'left';
+  };
+
   const exportProject = useCallback(async (format: 'png' | 'jpg' | 'svg' | 'pdf', quality: number = 1) => {
     if (!currentProject || !canvasRef.current) return null;
 
@@ -291,7 +362,7 @@ export const useCreatorStudio = (projectId?: string) => {
         
         ctx.save();
         ctx.globalAlpha = layer.opacity;
-        ctx.globalCompositeOperation = layer.blendMode;
+        ctx.globalCompositeOperation = getCanvasBlendMode(layer.blendMode);
         
         // Apply transformations
         ctx.translate(layer.position.x + layer.size.width / 2, layer.position.y + layer.size.height / 2);
@@ -316,7 +387,7 @@ export const useCreatorStudio = (projectId?: string) => {
             if (layer.properties.text) {
               ctx.font = `${layer.properties.fontWeight || 'normal'} ${layer.properties.fontSize || 16}px ${layer.properties.fontFamily || 'Arial'}`;
               ctx.fillStyle = layer.properties.color || '#000000';
-              ctx.textAlign = layer.properties.textAlign || 'left';
+              ctx.textAlign = getCanvasTextAlign(layer.properties.textAlign || 'left');
               ctx.fillText(layer.properties.text, 0, layer.properties.fontSize || 16);
             }
             break;

@@ -123,7 +123,11 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                   <Checkbox
                     id="transparency"
                     checked={includeTransparency}
-                    onCheckedChange={setIncludeTransparency}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === 'boolean') {
+                        setIncludeTransparency(checked);
+                      }
+                    }}
                   />
                   <Label htmlFor="transparency" className="text-sm">
                     Include transparency

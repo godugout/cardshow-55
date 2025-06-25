@@ -158,6 +158,60 @@ export type Database = {
         }
         Relationships: []
       }
+      beta_feedback: {
+        Row: {
+          actual_behavior: string | null
+          browser_info: Json | null
+          category: string
+          created_at: string | null
+          description: string
+          expected_behavior: string | null
+          feedback_type: string
+          id: string
+          priority: string
+          status: string
+          steps_to_reproduce: string | null
+          title: string
+          updated_at: string | null
+          user_id: string | null
+          user_rating: number | null
+        }
+        Insert: {
+          actual_behavior?: string | null
+          browser_info?: Json | null
+          category?: string
+          created_at?: string | null
+          description: string
+          expected_behavior?: string | null
+          feedback_type: string
+          id?: string
+          priority?: string
+          status?: string
+          steps_to_reproduce?: string | null
+          title: string
+          updated_at?: string | null
+          user_id?: string | null
+          user_rating?: number | null
+        }
+        Update: {
+          actual_behavior?: string | null
+          browser_info?: Json | null
+          category?: string
+          created_at?: string | null
+          description?: string
+          expected_behavior?: string | null
+          feedback_type?: string
+          id?: string
+          priority?: string
+          status?: string
+          steps_to_reproduce?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string | null
+          user_rating?: number | null
+        }
+        Relationships: []
+      }
       bi_reports: {
         Row: {
           config: Json
@@ -703,6 +757,56 @@ export type Database = {
             columns: ["creator_id"]
             isOneToOne: false
             referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collaboration_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          layer_id: string | null
+          position: Json | null
+          project_id: string
+          replies: Json
+          resolved: boolean
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          layer_id?: string | null
+          position?: Json | null
+          project_id: string
+          replies?: Json
+          resolved?: boolean
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          layer_id?: string | null
+          position?: Json | null
+          project_id?: string
+          replies?: Json
+          resolved?: boolean
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaboration_comments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "design_projects"
             referencedColumns: ["id"]
           },
         ]
@@ -2216,6 +2320,72 @@ export type Database = {
           },
         ]
       }
+      creator_templates: {
+        Row: {
+          canvas: Json
+          category: string
+          compatibility: string[]
+          created_at: string
+          creator_id: string
+          description: string | null
+          download_count: number
+          file_size: number
+          id: string
+          last_updated: string
+          layers: Json
+          license: string
+          preview_images: string[]
+          price: number
+          rating: number
+          review_count: number
+          tags: string[]
+          thumbnail_url: string | null
+          title: string
+        }
+        Insert: {
+          canvas?: Json
+          category: string
+          compatibility?: string[]
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          download_count?: number
+          file_size?: number
+          id?: string
+          last_updated?: string
+          layers?: Json
+          license?: string
+          preview_images?: string[]
+          price?: number
+          rating?: number
+          review_count?: number
+          tags?: string[]
+          thumbnail_url?: string | null
+          title: string
+        }
+        Update: {
+          canvas?: Json
+          category?: string
+          compatibility?: string[]
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          download_count?: number
+          file_size?: number
+          id?: string
+          last_updated?: string
+          layers?: Json
+          license?: string
+          preview_images?: string[]
+          price?: number
+          rating?: number
+          review_count?: number
+          tags?: string[]
+          thumbnail_url?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       creator_tokens: {
         Row: {
           created_at: string | null
@@ -2336,6 +2506,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      design_projects: {
+        Row: {
+          canvas: Json
+          collaborators: Json
+          created_at: string
+          creator_id: string
+          description: string | null
+          id: string
+          last_modified: string
+          layers: Json
+          metadata: Json
+          status: string
+          template_id: string | null
+          title: string
+          version: number
+        }
+        Insert: {
+          canvas?: Json
+          collaborators?: Json
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          id?: string
+          last_modified?: string
+          layers?: Json
+          metadata?: Json
+          status?: string
+          template_id?: string | null
+          title: string
+          version?: number
+        }
+        Update: {
+          canvas?: Json
+          collaborators?: Json
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          id?: string
+          last_modified?: string
+          layers?: Json
+          metadata?: Json
+          status?: string
+          template_id?: string | null
+          title?: string
+          version?: number
+        }
+        Relationships: []
       }
       enterprise_organizations: {
         Row: {
@@ -3442,6 +3660,47 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      project_collaborators: {
+        Row: {
+          id: string
+          invited_at: string
+          joined_at: string | null
+          permissions: string[]
+          project_id: string
+          role: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          id?: string
+          invited_at?: string
+          joined_at?: string | null
+          permissions?: string[]
+          project_id: string
+          role?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          id?: string
+          invited_at?: string
+          joined_at?: string | null
+          permissions?: string[]
+          project_id?: string
+          role?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_collaborators_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "design_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reactions: {
         Row: {
