@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
-import type { TradeOffer, LiveAuction, TradingSession, UserPresence } from '@/types/trading';
+import type { TradeOffer, LiveAuction, TradingSession, UserPresence, TradeMessage } from '@/types/trading';
 
 interface UseRealTimeTradingProps {
   sessionId?: string;
@@ -51,11 +51,11 @@ export const useRealTimeTrading = ({ sessionId, auctionId }: UseRealTimeTradingP
         },
         (payload) => {
           console.log('Trade update:', payload);
-          if (payload.eventType === 'INSERT') {
+          if (payload.eventType === 'INSERT' && payload.new) {
             setActiveTrades(prev => [...prev, payload.new as TradeOffer]);
-          } else if (payload.eventType === 'UPDATE') {
+          } else if (payload.eventType === 'UPDATE' && payload.new) {
             setActiveTrades(prev => 
-              prev.map(trade => trade.id === payload.new.id ? payload.new as TradeOffer : trade)
+              prev.map(trade => trade.id === (payload.new as any).id ? payload.new as TradeOffer : trade)
             );
           }
         }
@@ -83,9 +83,11 @@ export const useRealTimeTrading = ({ sessionId, auctionId }: UseRealTimeTradingP
         },
         (payload) => {
           console.log('Auction update:', payload);
-          setActiveAuctions(prev => 
-            prev.map(auction => auction.id === auctionId ? payload.new as LiveAuction : auction)
-          );
+          if (payload.new) {
+            setActiveAuctions(prev => 
+              prev.map(auction => auction.id === auctionId ? payload.new as LiveAuction : auction)
+            );
+          }
         }
       )
       .on(
@@ -98,20 +100,23 @@ export const useRealTimeTrading = ({ sessionId, auctionId }: UseRealTimeTradingP
         },
         (payload) => {
           console.log('New bid:', payload);
-          // Update auction with new bid
-          setActiveAuctions(prev => 
-            prev.map(auction => {
-              if (auction.id === auctionId) {
-                return {
-                  ...auction,
-                  currentBid: payload.new.amount,
-                  bidCount: auction.bidCount + 1,
-                  currentBidderId: payload.new.bidder_id
-                };
-              }
-              return auction;
-            })
-          );
+          if (payload.new) {
+            const newBid = payload.new as any;
+            // Update auction with new bid
+            setActiveAuctions(prev => 
+              prev.map(auction => {
+                if (auction.id === auctionId) {
+                  return {
+                    ...auction,
+                    currentBid: newBid.amount,
+                    bidCount: auction.bidCount + 1,
+                    currentBidderId: newBid.bidder_id
+                  };
+                }
+                return auction;
+              })
+            );
+          }
         }
       )
       .subscribe();
@@ -135,7 +140,7 @@ export const useRealTimeTrading = ({ sessionId, auctionId }: UseRealTimeTradingP
           table: 'trading_sessions'
         },
         (payload) => {
-          if (payload.new?.id === sessionId) {
+          if (payload.new && (payload.new as any).id === sessionId) {
             setCurrentSession(payload.new as TradingSession);
           }
         }
@@ -149,13 +154,16 @@ export const useRealTimeTrading = ({ sessionId, auctionId }: UseRealTimeTradingP
           filter: `session_id=eq.${sessionId}`
         },
         (payload) => {
-          setCurrentSession(prev => {
-            if (!prev) return prev;
-            return {
-              ...prev,
-              messages: [...prev.messages, payload.new]
-            };
-          });
+          if (payload.new) {
+            const newMessage = payload.new as TradeMessage;
+            setCurrentSession(prev => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                messages: [...prev.messages, newMessage]
+              };
+            });
+          }
         }
       )
       .subscribe();
