@@ -1,6 +1,7 @@
-
 import { useState, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
+import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { CreationMode, CreationStep, CreationIntent, CreationState } from '../types';
 
@@ -15,6 +16,7 @@ export const useUnifiedCreator = ({
   onComplete,
   onCancel
 }: UseUnifiedCreatorProps = {}) => {
+  const navigate = useNavigate();
   const [state, setState] = useState<CreationState>({
     mode: initialMode,
     currentStep: 'intent',
@@ -24,6 +26,9 @@ export const useUnifiedCreator = ({
     progress: 0,
     errors: {}
   });
+
+  const [isCreating, setIsCreating] = useState(false);
+  const [creationError, setCreationError] = useState<string | null>(null);
 
   const cardEditor = useCardEditor({
     autoSave: true,
@@ -135,20 +140,67 @@ export const useUnifiedCreator = ({
     }
   }, [state.currentStep, cardEditor.cardData]);
 
-  const completeCreation = useCallback(() => {
-    if (onComplete) {
-      onComplete(cardEditor.cardData);
+  const completeCreation = useCallback(async () => {
+    setIsCreating(true);
+    setCreationError(null);
+
+    try {
+      // Save the card
+      const success = await cardEditor.saveCard();
+      
+      if (success) {
+        // Move to complete step
+        updateState({ currentStep: 'complete' });
+        
+        // Call onComplete callback if provided
+        if (onComplete) {
+          onComplete(cardEditor.cardData);
+        }
+        
+        toast.success('Card created successfully!');
+      } else {
+        throw new Error('Failed to save card');
+      }
+    } catch (error) {
+      console.error('Error creating card:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create card';
+      setCreationError(errorMessage);
+      toast.error('Failed to create card', {
+        description: errorMessage
+      });
+    } finally {
+      setIsCreating(false);
     }
-  }, [cardEditor.cardData, onComplete]);
+  }, [cardEditor, onComplete, updateState]);
 
   const cancelCreation = useCallback(() => {
     if (onCancel) {
       onCancel();
+    } else {
+      navigate('/gallery');
     }
-  }, [onCancel]);
+  }, [onCancel, navigate]);
+
+  const goToGallery = useCallback(() => {
+    navigate('/gallery');
+  }, [navigate]);
+
+  const startOver = useCallback(() => {
+    // Reset to initial state
+    setMode(initialMode);
+    setCreationError(null);
+    // Clear card data
+    cardEditor.updateCardField('title', 'My New Card');
+    cardEditor.updateCardField('description', '');
+    cardEditor.updateCardField('image_url', undefined);
+  }, [setMode, initialMode, cardEditor]);
 
   return {
-    state,
+    state: {
+      ...state,
+      isCreating,
+      creationError
+    },
     cardEditor,
     modeConfigs,
     currentConfig,
@@ -160,7 +212,9 @@ export const useUnifiedCreator = ({
       validateStep,
       completeCreation,
       cancelCreation,
-      updateState
+      updateState,
+      goToGallery,
+      startOver
     }
   };
 };

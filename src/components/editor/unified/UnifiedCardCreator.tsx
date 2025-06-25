@@ -98,6 +98,15 @@ export const UnifiedCardCreator = ({
         </div>
       )}
 
+      {/* Error Display */}
+      {state.creationError && (
+        <div className="bg-red-900/20 border border-red-500/30 text-red-200 px-4 py-3 mx-4 mt-4 rounded">
+          <p className="text-sm">
+            <strong>Error:</strong> {state.creationError}
+          </p>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <StepContent
@@ -109,6 +118,8 @@ export const UnifiedCardCreator = ({
           onPhotoSelect={handlePhotoSelect}
           onFieldUpdate={handleFieldUpdate}
           onBulkUpload={() => actions.setMode('bulk')}
+          onGoToGallery={actions.goToGallery}
+          onStartOver={actions.startOver}
         />
       </div>
 
@@ -134,9 +145,10 @@ export const UnifiedCardCreator = ({
               <CRDButton
                 variant="primary"
                 onClick={actions.completeCreation}
-                disabled={!canProceed}
+                disabled={!canProceed || state.isCreating}
+                className="bg-crd-green hover:bg-crd-green/80 text-black"
               >
-                Create Card
+                {state.isCreating ? 'Creating...' : 'Create Card'}
               </CRDButton>
             ) : (
               <CRDButton
