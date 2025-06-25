@@ -6,7 +6,7 @@ export const ProductionOptimizer = () => {
     // Core Web Vitals tracking
     const trackWebVitals = async () => {
       try {
-        const { getCLS, getFID, getFCP, getLCP, getTTFB } = await import('web-vitals');
+        const { onCLS, onFID, onFCP, onLCP, onTTFB } = await import('web-vitals');
         
         const sendToAnalytics = (metric: any) => {
           // Only track if gtag is available
@@ -22,11 +22,11 @@ export const ProductionOptimizer = () => {
           console.log('Web Vital:', metric);
         };
 
-        getCLS(sendToAnalytics);
-        getFID(sendToAnalytics);
-        getFCP(sendToAnalytics);
-        getLCP(sendToAnalytics);
-        getTTFB(sendToAnalytics);
+        onCLS(sendToAnalytics);
+        onFID(sendToAnalytics);
+        onFCP(sendToAnalytics);
+        onLCP(sendToAnalytics);
+        onTTFB(sendToAnalytics);
       } catch (error) {
         console.warn('Web Vitals tracking failed:', error);
       }
@@ -41,10 +41,12 @@ export const ProductionOptimizer = () => {
           if (entry.entryType === 'navigation') {
             const navEntry = entry as PerformanceNavigationTiming;
             
-            // Track page load performance
+            // Track page load performance using modern timing API
+            const loadTime = navEntry.loadEventEnd - navEntry.fetchStart;
+            
             if (typeof window !== 'undefined' && window.gtag) {
               window.gtag('event', 'page_load_time', {
-                value: Math.round(navEntry.loadEventEnd - navEntry.navigationStart),
+                value: Math.round(loadTime),
                 event_category: 'Performance',
               });
             }
