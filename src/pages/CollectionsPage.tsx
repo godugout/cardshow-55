@@ -6,26 +6,26 @@ const CollectionsPage: React.FC = () => {
   const [collections] = useState([
     {
       id: '1',
-      name: 'My First Collection',
+      title: 'My First Collection',
       description: 'A collection of my favorite cards',
       cardCount: 12,
-      coverImage: '/crd-logo-gradient.png',
-      isPublic: true,
+      coverImageUrl: '/crd-logo-gradient.png',
+      visibility: 'public' as const,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
   ]);
 
-  const handleEdit = (id: string) => {
-    console.log('Edit collection:', id);
+  const handleEdit = (collection: any) => {
+    console.log('Edit collection:', collection.id);
   };
 
-  const handleDelete = (id: string) => {
-    console.log('Delete collection:', id);
+  const handleDelete = (collectionId: string) => {
+    console.log('Delete collection:', collectionId);
   };
 
-  const handleView = (id: string) => {
-    console.log('View collection:', id);
+  const handleView = (collection: any) => {
+    console.log('View collection:', collection.id);
   };
 
   return (

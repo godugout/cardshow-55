@@ -20,7 +20,6 @@ interface NotificationOptions {
   tag?: string;
   requireInteraction?: boolean;
   silent?: boolean;
-  vibrate?: number[];
 }
 
 export const useAdvancedPWA = () => {
@@ -148,7 +147,6 @@ export const useAdvancedPWA = () => {
           tag: options.tag,
           requireInteraction: options.requireInteraction,
           silent: options.silent,
-          vibrate: options.vibrate || [200, 100, 200],
           data: { timestamp: Date.now() }
         });
       } else {
