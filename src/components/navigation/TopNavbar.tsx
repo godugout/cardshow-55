@@ -37,6 +37,12 @@ export const TopNavbar: React.FC = () => {
           >
             Collections
           </Link>
+          <Link 
+            to="/viewer" 
+            className="text-crd-lightGray hover:text-white transition-colors"
+          >
+            3D Viewer
+          </Link>
           {user && (
             <>
               <Link 
@@ -50,6 +56,18 @@ export const TopNavbar: React.FC = () => {
                 className="text-crd-lightGray hover:text-white transition-colors"
               >
                 Studio
+              </Link>
+              <Link 
+                to="/trading" 
+                className="text-crd-lightGray hover:text-white transition-colors"
+              >
+                Trading
+              </Link>
+              <Link 
+                to="/advanced" 
+                className="text-crd-lightGray hover:text-white transition-colors"
+              >
+                Advanced Tools
               </Link>
             </>
           )}
