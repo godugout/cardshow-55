@@ -37,6 +37,10 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ open, onOpenCh
     { value: 'private', label: 'Private', icon: Lock }
   ];
 
+  // Get user display properties safely
+  const userAvatar = user?.avatar_url || user?.user_metadata?.avatar_url;
+  const userName = user?.user_metadata?.username || user?.email?.split('@')[0] || 'User';
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-crd-darker border-crd-mediumGray/20 max-w-lg">
@@ -48,13 +52,13 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ open, onOpenCh
           {/* User Info */}
           <div className="flex items-center gap-3">
             <Avatar className="w-10 h-10">
-              <AvatarImage src={user?.profileImage} />
+              <AvatarImage src={userAvatar} />
               <AvatarFallback className="bg-crd-green text-black">
-                {user?.username?.[0]?.toUpperCase() || 'U'}
+                {userName[0]?.toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium text-white">{user?.username || 'User'}</p>
+              <p className="font-medium text-white">{userName}</p>
               <Select value={visibility} onValueChange={(value: any) => setVisibility(value)}>
                 <SelectTrigger className="w-32 h-8 text-xs bg-crd-darkest border-crd-mediumGray/20">
                   <SelectValue />

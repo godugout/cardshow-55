@@ -18,11 +18,7 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
         .from('social_activities')
         .select(`
           *,
-          user:user_profiles!social_activities_user_id_fkey(id, username, avatar_url),
-          reactions:reactions!reactions_target_id_fkey(
-            id, user_id, reaction_type,
-            user:user_profiles!reactions_user_id_fkey(id, username, avatar_url)
-          )
+          user:user_profiles!social_activities_user_id_fkey(id, username, avatar_url)
         `)
         .order('activity_timestamp', { ascending: false })
         .range(offset, offset + limit - 1);
@@ -54,15 +50,19 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
 
       if (error) throw error;
 
-      const activitiesWithUserReactions = data?.map(activity => ({
+      // Transform the data to match our SocialActivity interface
+      const transformedActivities = (data || []).map(activity => ({
         ...activity,
-        user_reaction: activity.reactions?.find((r: any) => r.user_id === user?.id)
-      })) || [];
+        comment_count: activity.comment_count || 0,
+        share_count: activity.share_count || 0,
+        reactions: [],
+        user_reaction: undefined
+      }));
 
       if (offset === 0) {
-        setActivities(activitiesWithUserReactions);
+        setActivities(transformedActivities);
       } else {
-        setActivities(prev => [...prev, ...activitiesWithUserReactions]);
+        setActivities(prev => [...prev, ...transformedActivities]);
       }
 
       setHasMore(data?.length === limit);
@@ -90,7 +90,14 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
     table: 'social_activities',
     onInsert: (payload) => {
       // Add new activity to the beginning of the feed
-      setActivities(prev => [payload.new as SocialActivity, ...prev]);
+      const newActivity = {
+        ...payload.new,
+        comment_count: 0,
+        share_count: 0,
+        reactions: [],
+        user_reaction: undefined
+      } as SocialActivity;
+      setActivities(prev => [newActivity, ...prev]);
     },
     onUpdate: (payload) => {
       // Update existing activity

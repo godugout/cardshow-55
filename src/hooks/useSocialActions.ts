@@ -34,7 +34,14 @@ export const useSocialActions = () => {
 
       if (error) throw error;
 
-      return data;
+      return {
+        id: data.id,
+        user_id: data.user_id,
+        target_id: data.target_id,
+        target_type: data.target_type,
+        reaction_type: data.reaction_type,
+        created_at: data.created_at
+      };
     } catch (err) {
       console.error('Error adding reaction:', err);
       toast.error('Failed to add reaction');
@@ -84,6 +91,7 @@ export const useSocialActions = () => {
       if (error) throw error;
 
       // Create notification for the followed user
+      const userName = user.user_metadata?.username || user.email?.split('@')[0] || 'Someone';
       await supabase
         .from('notifications')
         .insert({
@@ -91,7 +99,7 @@ export const useSocialActions = () => {
           from_user_id: user.id,
           notification_type: 'follow',
           title: 'New Follower',
-          message: `${user.username || user.email} started following you`,
+          message: `${userName} started following you`,
           metadata: { follower_id: user.id }
         });
 

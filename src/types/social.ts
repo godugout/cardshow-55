@@ -78,3 +78,38 @@ export interface ActivityFeedOptions {
   offset?: number;
   following_only?: boolean;
 }
+
+// Additional types for compatibility
+export interface Comment {
+  id: string;
+  userId: string;
+  cardId?: string;
+  collectionId?: string;
+  parentId?: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  user?: {
+    id: string;
+    username: string;
+    profileImage?: string;
+  };
+  reactions?: Reaction[];
+  replyCount?: number;
+  replies?: Comment[];
+}
+
+export interface Reaction {
+  id: string;
+  userId: string;
+  memoryId?: string;
+  collectionId?: string;
+  commentId?: string;
+  type: string;
+  createdAt: string;
+}
+
+export interface ReactionCount {
+  type: string;
+  count: number;
+}
