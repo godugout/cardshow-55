@@ -21,14 +21,25 @@ export const useSocialActions = () => {
 
     setLoading(true);
     try {
+      // Map targetType to the correct column name
+      const insertData: any = {
+        user_id: user.id,
+        type: reactionType
+      };
+
+      if (targetType === 'card') {
+        insertData.card_id = targetId;
+      } else if (targetType === 'collection') {
+        insertData.collection_id = targetId;
+      } else if (targetType === 'comment') {
+        insertData.comment_id = targetId;
+      } else if (targetType === 'activity') {
+        insertData.memory_id = targetId; // Using memory_id for activities for now
+      }
+
       const { data, error } = await supabase
         .from('reactions')
-        .insert({
-          user_id: user.id,
-          target_id: targetId,
-          target_type: targetType,
-          reaction_type: reactionType
-        })
+        .insert(insertData)
         .select()
         .single();
 
@@ -37,9 +48,9 @@ export const useSocialActions = () => {
       return {
         id: data.id,
         user_id: data.user_id,
-        target_id: data.target_id,
-        target_type: data.target_type,
-        reaction_type: data.reaction_type,
+        target_id: targetId,
+        target_type: targetType,
+        reaction_type: reactionType,
         created_at: data.created_at
       };
     } catch (err) {
@@ -95,12 +106,11 @@ export const useSocialActions = () => {
       await supabase
         .from('notifications')
         .insert({
-          user_id: userId,
-          from_user_id: user.id,
-          notification_type: 'follow',
+          recipient_id: userId,
+          actor_id: user.id,
+          type: 'follow',
           title: 'New Follower',
-          message: `${userName} started following you`,
-          metadata: { follower_id: user.id }
+          message: `${userName} started following you`
         });
 
       toast.success('User followed successfully');

@@ -53,11 +53,12 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
       // Transform the data to match our SocialActivity interface
       const transformedActivities = (data || []).map(activity => ({
         ...activity,
-        comment_count: activity.comment_count || 0,
-        share_count: activity.share_count || 0,
+        comment_count: 0, // Default values since these columns don't exist in schema
+        share_count: 0,
         reactions: [],
         user_reaction: undefined,
-        metadata: (activity.metadata || {}) as Record<string, any>
+        metadata: (activity.metadata || {}) as Record<string, any>,
+        visibility: (activity.visibility || 'public') as 'public' | 'friends' | 'private'
       }));
 
       if (offset === 0) {
@@ -97,7 +98,8 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
         share_count: 0,
         reactions: [],
         user_reaction: undefined,
-        metadata: (payload.new.metadata || {}) as Record<string, any>
+        metadata: (payload.new.metadata || {}) as Record<string, any>,
+        visibility: (payload.new.visibility || 'public') as 'public' | 'friends' | 'private'
       } as SocialActivity;
       setActivities(prev => [newActivity, ...prev]);
     },
@@ -108,7 +110,8 @@ export const useSocialFeed = (options: ActivityFeedOptions = {}) => {
           activity.id === payload.new.id ? { 
             ...activity, 
             ...payload.new,
-            metadata: (payload.new.metadata || {}) as Record<string, any>
+            metadata: (payload.new.metadata || {}) as Record<string, any>,
+            visibility: (payload.new.visibility || 'public') as 'public' | 'friends' | 'private'
           } : activity
         )
       );

@@ -7,14 +7,24 @@ export const getComments = async (
   targetType: 'card' | 'collection' | 'memory'
 ): Promise<Comment[]> => {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('comments')
       .select(`
         *,
         author:user_profiles!comments_author_id_fkey(id, username, avatar_url)
       `)
-      .eq(`${targetType}_id`, targetId)
       .order('created_at', { ascending: false });
+
+    // Apply the correct filter based on target type
+    if (targetType === 'card') {
+      query = query.eq('card_id', targetId);
+    } else if (targetType === 'collection') {
+      query = query.eq('collection_id', targetId);
+    } else if (targetType === 'memory') {
+      query = query.eq('memory_id', targetId);
+    }
+
+    const { data, error } = await query;
 
     if (error) throw error;
 
@@ -189,4 +199,22 @@ export const getCommentReplies = async (parentId: string): Promise<Comment[]> =>
     console.error('Error fetching comment replies:', error);
     return [];
   }
+};
+
+// Helper function for CommentSection component
+export const addComment = async (params: {
+  userId: string;
+  content: string;
+  cardId?: string;
+  collectionId?: string;
+  parentId?: string;
+}): Promise<Comment> => {
+  const targetType = params.cardId ? 'card' : params.collectionId ? 'collection' : 'memory';
+  const targetId = params.cardId || params.collectionId || '';
+  
+  const comment = await createComment(params.content, targetId, targetType, params.parentId);
+  if (!comment) {
+    throw new Error('Failed to create comment');
+  }
+  return comment;
 };
