@@ -12,7 +12,7 @@ import type { CardData } from '@/hooks/useCardEditor';
 interface StepContentProps {
   step: CreationStep;
   mode: CreationMode;
-  cardData: CardData;
+  cardData?: CardData;
   onModeSelect: (mode: CreationMode) => void;
   onPhotoSelect: (photo: string) => void;
   onFieldUpdate: (field: keyof CardData, value: any) => void;
@@ -32,6 +32,8 @@ export const StepContent = ({
   onGoToGallery,
   onStartOver
 }: StepContentProps) => {
+  console.log('🎯 StepContent: Rendering step:', step, 'with mode:', mode);
+
   switch (step) {
     case 'intent':
       return (
@@ -40,18 +42,25 @@ export const StepContent = ({
           onBulkUpload={onBulkUpload}
         />
       );
-    
+
     case 'upload':
       return (
         <PhotoStep
           mode={mode}
-          selectedPhoto={cardData.image_url}
+          selectedPhoto={cardData?.image_url}
           onPhotoSelect={onPhotoSelect}
           cardData={cardData}
         />
       );
-    
+
     case 'details':
+      if (!cardData) {
+        return (
+          <div className="text-center py-8">
+            <p className="text-crd-lightGray">Loading card data...</p>
+          </div>
+        );
+      }
       return (
         <DetailsStep
           mode={mode}
@@ -59,8 +68,15 @@ export const StepContent = ({
           onFieldUpdate={onFieldUpdate}
         />
       );
-    
+
     case 'design':
+      if (!cardData) {
+        return (
+          <div className="text-center py-8">
+            <p className="text-crd-lightGray">Loading card data...</p>
+          </div>
+        );
+      }
       return (
         <DesignStep
           mode={mode}
@@ -68,8 +84,15 @@ export const StepContent = ({
           onFieldUpdate={onFieldUpdate}
         />
       );
-    
+
     case 'publish':
+      if (!cardData) {
+        return (
+          <div className="text-center py-8">
+            <p className="text-crd-lightGray">Loading card data...</p>
+          </div>
+        );
+      }
       return (
         <PublishStep
           mode={mode}
@@ -77,17 +100,29 @@ export const StepContent = ({
           onFieldUpdate={onFieldUpdate}
         />
       );
-    
+
     case 'complete':
+      if (!cardData) {
+        return (
+          <div className="text-center py-8">
+            <p className="text-crd-lightGray">Loading completion data...</p>
+          </div>
+        );
+      }
       return (
         <CompleteStep
+          mode={mode}
           cardData={cardData}
           onGoToGallery={onGoToGallery}
           onStartOver={onStartOver}
         />
       );
-    
+
     default:
-      return <div className="text-center text-crd-lightGray">Step not found</div>;
+      return (
+        <div className="text-center py-8">
+          <p className="text-crd-lightGray">Unknown step: {step}</p>
+        </div>
+      );
   }
 };

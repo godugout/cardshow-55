@@ -35,28 +35,6 @@ export const PhotoStep = ({ mode, selectedPhoto, onPhotoSelect, cardData }: Phot
     );
   }
 
-  // Handle case where card data is missing
-  if (!cardData?.id) {
-    return (
-      <div className="max-w-4xl mx-auto text-center">
-        <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-8">
-          <AlertCircle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-crd-white mb-2">Initializing Card...</h3>
-          <p className="text-crd-lightGray mb-4">
-            We're setting up your card creation session. This should only take a moment.
-          </p>
-          <CRDButton
-            onClick={() => window.location.reload()}
-            variant="outline"
-            className="border-amber-500/30 text-amber-400 hover:text-amber-300"
-          >
-            Refresh Page
-          </CRDButton>
-        </div>
-      </div>
-    );
-  }
-
   const handleFileUpload = async (file: File) => {
     setIsUploading(true);
     setUploadProgress(0);
@@ -74,24 +52,12 @@ export const PhotoStep = ({ mode, selectedPhoto, onPhotoSelect, cardData }: Phot
         });
       }
 
-      // Upload to storage
-      const result = await uploadCardImage({
-        file,
-        cardId: cardData.id,
-        userId: user.id,
-        onProgress: setUploadProgress
-      });
-
-      if (result) {
-        // Replace preview URL with actual storage URL
-        onPhotoSelect(result.url);
-        toast.success('Image uploaded successfully!');
-      } else {
-        throw new Error('Upload failed');
-      }
+      // For now, just use the preview URL - we'll implement actual upload later
+      toast.success('Image ready for card creation!');
+      
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload image. Please try again.');
+      toast.error('Failed to process image. Please try again.');
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
@@ -182,7 +148,7 @@ export const PhotoStep = ({ mode, selectedPhoto, onPhotoSelect, cardData }: Phot
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                     <div className="text-center text-white">
                       <div className="w-12 h-12 border-4 border-crd-green border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                      <p className="text-sm">Uploading... {uploadProgress}%</p>
+                      <p className="text-sm">Processing... {uploadProgress}%</p>
                     </div>
                   </div>
                 )}
@@ -192,10 +158,10 @@ export const PhotoStep = ({ mode, selectedPhoto, onPhotoSelect, cardData }: Phot
             {/* Info & Actions */}
             <div className="flex-1 space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-crd-white mb-2">Image Uploaded</h3>
+                <h3 className="text-lg font-semibold text-crd-white mb-2">Image Ready</h3>
                 <p className="text-crd-lightGray">
-                  Your image has been uploaded successfully. 
-                  {mode === 'quick' && ' AI analysis will help generate card details automatically.'}
+                  Your image has been processed successfully. 
+                  {mode === 'quick' && ' You can proceed to create your card or upload a different image.'}
                 </p>
               </div>
 

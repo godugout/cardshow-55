@@ -567,6 +567,7 @@ export type Database = {
           card_set_id: string | null
           card_type: Database["public"]["Enums"]["card_type"] | null
           collection_id: string | null
+          completed_at: string | null
           crd_catalog_inclusion: boolean | null
           created_at: string | null
           creator_id: string
@@ -610,6 +611,7 @@ export type Database = {
           card_set_id?: string | null
           card_type?: Database["public"]["Enums"]["card_type"] | null
           collection_id?: string | null
+          completed_at?: string | null
           crd_catalog_inclusion?: boolean | null
           created_at?: string | null
           creator_id: string
@@ -653,6 +655,7 @@ export type Database = {
           card_set_id?: string | null
           card_type?: Database["public"]["Enums"]["card_type"] | null
           collection_id?: string | null
+          completed_at?: string | null
           crd_catalog_inclusion?: boolean | null
           created_at?: string | null
           creator_id?: string

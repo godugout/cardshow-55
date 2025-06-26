@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
@@ -11,7 +12,7 @@ interface UseUniversalCreatorProps {
   onCancel?: () => void;
 }
 
-// Stable mode configurations - memoized outside component to prevent re-creation
+// Stable mode configurations - defined outside component to prevent re-creation
 const MODE_CONFIGS = [
   {
     id: 'quick' as CreationMode,
@@ -56,13 +57,13 @@ export const useUniversalCreator = ({
   
   const navigate = useNavigate();
   
-  // Refs to prevent unnecessary re-renders
+  // Stable refs to prevent unnecessary re-renders
   const onCompleteRef = useRef(onComplete);
   const onCancelRef = useRef(onCancel);
   onCompleteRef.current = onComplete;
   onCancelRef.current = onCancel;
   
-  // Simple state management - no nested objects to prevent reference issues
+  // Simple state management - no nested objects
   const [mode, setMode] = useState<CreationMode>(initialMode);
   const [currentStep, setCurrentStep] = useState<CreationStep>('intent');
   const [isCreating, setIsCreating] = useState(false);
@@ -70,20 +71,18 @@ export const useUniversalCreator = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isInitializing, setIsInitializing] = useState(false);
 
-  // Initialize card editor with minimal config
+  // Initialize card editor with minimal config - DON'T auto-save during creation
   const cardEditor = useCardEditor({
     autoSave: false,
-    autoSaveInterval: 30000
+    autoSaveInterval: 0
   });
 
   // Memoized current config - stable reference
   const currentConfig = useMemo(() => {
-    const config = MODE_CONFIGS.find(config => config.id === mode);
-    console.log('🎛️ useUniversalCreator: Current config:', config?.id || 'none');
-    return config;
+    return MODE_CONFIGS.find(config => config.id === mode);
   }, [mode]);
 
-  // Memoized progress calculation - stable dependencies
+  // Memoized progress calculation
   const progress = useMemo(() => {
     if (!currentConfig) return 0;
     const currentIndex = currentConfig.steps.indexOf(currentStep);
@@ -103,47 +102,18 @@ export const useUniversalCreator = ({
   }, [currentConfig, currentStep]);
 
   // Stable callback functions
-  const handleSetMode = useCallback(async (newMode: CreationMode) => {
+  const handleSetMode = useCallback((newMode: CreationMode) => {
     console.log('🎯 useUniversalCreator: Setting mode to', newMode);
     const config = MODE_CONFIGS.find(c => c.id === newMode);
     if (config) {
-      setIsInitializing(true);
-      
-      try {
-        // Ensure card is properly initialized before progressing
-        if (!cardEditor.cardData.id || cardEditor.cardData.title === 'My New Card') {
-          console.log('🔧 useUniversalCreator: Initializing card data...');
-          
-          // Initialize card with basic data
-          if (!cardEditor.cardData.id) {
-            cardEditor.updateCardField('title', `${config.title} Card`);
-          }
-          
-          // Save the card to get a proper ID
-          const saved = await cardEditor.saveCard();
-          if (!saved) {
-            throw new Error('Failed to initialize card');
-          }
-        }
-        
-        setMode(newMode);
-        // Progress to the next step after intent selection (index 1, or fallback to index 0)
-        const nextStep = config.steps.length > 1 ? config.steps[1] : config.steps[0] || 'intent';
-        console.log('➡️ useUniversalCreator: Progressing to step:', nextStep);
-        setCurrentStep(nextStep);
-        setErrors({});
-        
-      } catch (error) {
-        console.error('❌ useUniversalCreator: Error initializing card:', error);
-        setCreationError('Failed to initialize card. Please try again.');
-        toast.error('Failed to initialize card');
-      } finally {
-        setIsInitializing(false);
-      }
-    } else {
-      console.warn('⚠️ useUniversalCreator: Config not found for mode:', newMode);
+      setMode(newMode);
+      // Move to first step after intent
+      const nextStep = config.steps.length > 1 ? config.steps[1] : 'upload';
+      setCurrentStep(nextStep);
+      setErrors({});
+      setCreationError(null);
     }
-  }, [cardEditor]);
+  }, []);
 
   const nextStep = useCallback(() => {
     if (!currentConfig) return;
@@ -180,6 +150,8 @@ export const useUniversalCreator = ({
         const hasImage = !!cardData.image_url;
         if (!hasImage) {
           setErrors({ upload: 'Please upload an image to continue' });
+        } else {
+          setErrors({});
         }
         return hasImage;
         
@@ -188,6 +160,8 @@ export const useUniversalCreator = ({
         const titleValid = hasTitle && cardData.title !== 'My New Card';
         if (!titleValid) {
           setErrors({ details: 'Please provide a meaningful title for your card' });
+        } else {
+          setErrors({});
         }
         return titleValid;
         
@@ -204,14 +178,16 @@ export const useUniversalCreator = ({
     setCreationError(null);
 
     try {
+      // Ensure we have the required data
       if (!cardEditor.cardData.image_url) {
         throw new Error('Card must have an image');
       }
 
-      if (!cardEditor.cardData.title || cardEditor.cardData.title.trim() === '') {
-        throw new Error('Card must have a title');
+      if (!cardEditor.cardData.title || cardEditor.cardData.title.trim() === '' || cardEditor.cardData.title === 'My New Card') {
+        throw new Error('Card must have a meaningful title');
       }
 
+      // Save the card
       const success = await cardEditor.saveCard();
       
       if (success) {
@@ -246,17 +222,19 @@ export const useUniversalCreator = ({
 
   const startOver = useCallback(() => {
     console.log('🔄 useUniversalCreator: Starting over');
+    // Reset card data to initial state
     cardEditor.updateCardField('title', 'My New Card');
     cardEditor.updateCardField('description', '');
     cardEditor.updateCardField('image_url', undefined);
     cardEditor.updateCardField('thumbnail_url', undefined);
     
-    const config = MODE_CONFIGS.find(c => c.id === initialMode);
+    // Reset UI state
     setMode(initialMode);
-    setCurrentStep(config?.steps[0] || 'intent');
+    setCurrentStep('intent');
     setCreationError(null);
     setErrors({});
     setIsCreating(false);
+    setIsInitializing(false);
   }, [cardEditor, initialMode]);
 
   const updateState = useCallback((updates: Partial<CreationState>) => {
