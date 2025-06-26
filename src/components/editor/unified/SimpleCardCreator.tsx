@@ -13,16 +13,36 @@ import { StepRenderer } from './components/StepRenderer';
 
 const MODE_CONFIGS: Record<CreationMode, ModeConfig> = {
   quick: {
+    id: 'quick',
+    title: 'Quick Create',
+    description: 'Simple form-based card creation',
+    icon: 'Zap',
     steps: ['intent', 'upload', 'details', 'publish'],
-    title: 'Quick Create'
+    features: ['AI assistance', 'Smart defaults', 'One-click publish']
   },
   guided: {
+    id: 'guided',
+    title: 'Guided Create',
+    description: 'Step-by-step wizard with help',
+    icon: 'Navigation',
     steps: ['intent', 'upload', 'details', 'design', 'publish'],
-    title: 'Guided Create'
+    features: ['Progressive guidance', 'Templates', 'Live preview']
   },
   advanced: {
+    id: 'advanced',
+    title: 'Advanced Create',
+    description: 'Full editor with all features',
+    icon: 'Settings',
     steps: ['intent', 'upload', 'design', 'details', 'publish'],
-    title: 'Advanced Create'
+    features: ['Advanced cropping', 'Custom effects', 'Collaboration']
+  },
+  bulk: {
+    id: 'bulk',
+    title: 'Bulk Create',
+    description: 'Create multiple cards at once',
+    icon: 'Copy',
+    steps: ['intent', 'upload', 'complete'],
+    features: ['Batch processing', 'AI analysis', 'Template application']
   }
 };
 
