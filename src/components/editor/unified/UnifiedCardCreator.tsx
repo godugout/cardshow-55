@@ -113,7 +113,6 @@ export const UnifiedCardCreator = ({
           step={state.currentStep}
           mode={state.mode}
           cardData={cardEditor.cardData}
-          modeConfigs={modeConfigs}
           onModeSelect={handleModeSelect}
           onPhotoSelect={handlePhotoSelect}
           onFieldUpdate={handleFieldUpdate}
