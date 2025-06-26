@@ -28,6 +28,7 @@ export interface CreationState {
   errors: Record<string, string>;
   isCreating?: boolean;
   creationError?: string | null;
+  isInitializing?: boolean;
 }
 
 export interface ModeConfig {

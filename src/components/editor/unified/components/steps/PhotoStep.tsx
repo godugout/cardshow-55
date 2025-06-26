@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Camera, Sparkles } from 'lucide-react';
+import { Upload, Camera, Sparkles, AlertCircle } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { toast } from 'sonner';
 import { uploadCardImage } from '@/lib/cardImageUploader';
@@ -22,17 +22,47 @@ export const PhotoStep = ({ mode, selectedPhoto, onPhotoSelect, cardData }: Phot
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { user } = useCustomAuth();
 
-  const handleFileUpload = async (file: File) => {
-    if (!user || !cardData?.id) {
-      toast.error('Please ensure you are logged in and have a valid card session');
-      return;
-    }
+  // Handle case where auth is still loading
+  if (!user) {
+    return (
+      <div className="max-w-4xl mx-auto text-center">
+        <div className="bg-crd-darker rounded-xl border border-crd-mediumGray/20 p-8">
+          <div className="w-12 h-12 border-4 border-crd-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <h3 className="text-lg font-semibold text-crd-white mb-2">Loading...</h3>
+          <p className="text-crd-lightGray">Please wait while we prepare your creation session.</p>
+        </div>
+      </div>
+    );
+  }
 
+  // Handle case where card data is missing
+  if (!cardData?.id) {
+    return (
+      <div className="max-w-4xl mx-auto text-center">
+        <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-8">
+          <AlertCircle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-crd-white mb-2">Initializing Card...</h3>
+          <p className="text-crd-lightGray mb-4">
+            We're setting up your card creation session. This should only take a moment.
+          </p>
+          <CRDButton
+            onClick={() => window.location.reload()}
+            variant="outline"
+            className="border-amber-500/30 text-amber-400 hover:text-amber-300"
+          >
+            Refresh Page
+          </CRDButton>
+        </div>
+      </div>
+    );
+  }
+
+  const handleFileUpload = async (file: File) => {
     setIsUploading(true);
     setUploadProgress(0);
 
     try {
-      // First create a preview URL for immediate display
+      // Create a preview URL for immediate display
       const previewUrl = URL.createObjectURL(file);
       onPhotoSelect(previewUrl);
 

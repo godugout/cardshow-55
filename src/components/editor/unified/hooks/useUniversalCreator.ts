@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
@@ -69,6 +68,7 @@ export const useUniversalCreator = ({
   const [isCreating, setIsCreating] = useState(false);
   const [creationError, setCreationError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isInitializing, setIsInitializing] = useState(false);
 
   // Initialize card editor with minimal config
   const cardEditor = useCardEditor({
@@ -103,20 +103,47 @@ export const useUniversalCreator = ({
   }, [currentConfig, currentStep]);
 
   // Stable callback functions
-  const handleSetMode = useCallback((newMode: CreationMode) => {
+  const handleSetMode = useCallback(async (newMode: CreationMode) => {
     console.log('🎯 useUniversalCreator: Setting mode to', newMode);
     const config = MODE_CONFIGS.find(c => c.id === newMode);
     if (config) {
-      setMode(newMode);
-      // Progress to the next step after intent selection (index 1, or fallback to index 0)
-      const nextStep = config.steps.length > 1 ? config.steps[1] : config.steps[0] || 'intent';
-      console.log('➡️ useUniversalCreator: Progressing to step:', nextStep);
-      setCurrentStep(nextStep);
-      setErrors({});
+      setIsInitializing(true);
+      
+      try {
+        // Ensure card is properly initialized before progressing
+        if (!cardEditor.cardData.id || cardEditor.cardData.title === 'My New Card') {
+          console.log('🔧 useUniversalCreator: Initializing card data...');
+          
+          // Initialize card with basic data
+          if (!cardEditor.cardData.id) {
+            cardEditor.updateCardField('title', `${config.title} Card`);
+          }
+          
+          // Save the card to get a proper ID
+          const saved = await cardEditor.saveCard();
+          if (!saved) {
+            throw new Error('Failed to initialize card');
+          }
+        }
+        
+        setMode(newMode);
+        // Progress to the next step after intent selection (index 1, or fallback to index 0)
+        const nextStep = config.steps.length > 1 ? config.steps[1] : config.steps[0] || 'intent';
+        console.log('➡️ useUniversalCreator: Progressing to step:', nextStep);
+        setCurrentStep(nextStep);
+        setErrors({});
+        
+      } catch (error) {
+        console.error('❌ useUniversalCreator: Error initializing card:', error);
+        setCreationError('Failed to initialize card. Please try again.');
+        toast.error('Failed to initialize card');
+      } finally {
+        setIsInitializing(false);
+      }
     } else {
       console.warn('⚠️ useUniversalCreator: Config not found for mode:', newMode);
     }
-  }, []);
+  }, [cardEditor]);
 
   const nextStep = useCallback(() => {
     if (!currentConfig) return;
@@ -248,8 +275,9 @@ export const useUniversalCreator = ({
     progress,
     errors,
     isCreating,
-    creationError
-  }), [mode, currentStep, navigationState, progress, errors, isCreating, creationError]);
+    creationError,
+    isInitializing
+  }), [mode, currentStep, navigationState, progress, errors, isCreating, creationError, isInitializing]);
 
   console.log('✅ useUniversalCreator: Hook setup complete, current step:', currentStep);
 
