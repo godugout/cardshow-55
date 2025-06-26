@@ -1,6 +1,6 @@
 
 import type { Tables } from '@/integrations/supabase/types';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/hooks/card-editor/types';
 
 // Use the database type directly
 type DbCard = Tables<'cards'>;

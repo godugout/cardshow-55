@@ -1,6 +1,6 @@
 
 import { CardStorageService } from '@/services/cardStorage';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/hooks/card-editor/types';
 
 // Simplified wrapper for backward compatibility
 export const localCardStorage = {
