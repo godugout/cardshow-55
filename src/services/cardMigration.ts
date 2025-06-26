@@ -244,15 +244,15 @@ export class CardMigrationService {
           const dbCard = this.prepareCardForDatabase(card, userId);
           console.log(`💾 Attempting database insertion for "${card.title}"`);
           
-          // Attempt database insertion with timeout
+          // Attempt database insertion with timeout and proper typing
           const dbResult = await Promise.race([
             CardRepository.createCard(dbCard),
             new Promise((_, reject) => 
               setTimeout(() => reject(new Error('Database timeout after 10 seconds')), 10000)
             )
-          ]);
+          ]) as any; // Type assertion to handle the Promise.race result
           
-          if (dbResult) {
+          if (dbResult && typeof dbResult === 'object' && 'id' in dbResult) {
             result.migratedCount++;
             console.log(`✅ Successfully migrated "${card.title}" (DB ID: ${dbResult.id})`);
           } else {
