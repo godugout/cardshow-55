@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { SimpleCardCreator } from '@/components/editor/unified/SimpleCardCreator';
+import { EnhancedCardCreator } from '@/components/editor/unified/EnhancedCardCreator';
 
 const CreateCard = () => {
-  return <SimpleCardCreator />;
+  return <EnhancedCardCreator />;
 };
 
 export default CreateCard;
