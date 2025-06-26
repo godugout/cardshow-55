@@ -45,8 +45,9 @@ export const PublishingSection: React.FC<PublishingSectionProps> = ({
     cardEditor.updateCardField('publishing_options', {
       ...cardEditor.cardData.publishing_options,
       pricing: {
-        currency: 'USD',
-        base_price: newPrice ? parseFloat(newPrice) : undefined
+        ...cardEditor.cardData.publishing_options?.pricing,
+        base_price: newPrice ? parseFloat(newPrice) : undefined,
+        currency: 'USD'
       }
     });
   };
