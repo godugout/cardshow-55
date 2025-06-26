@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { CardMigrationService } from '@/services/cardMigration';
 import { CardFetchingService } from '@/services/cardFetching';
@@ -21,14 +21,14 @@ export const useCards = () => {
     updateDataSource
   } = useCardsState();
 
-  const fetchAllCardsFromDatabase = async () => {
+  const fetchAllCardsFromDatabase = useCallback(async () => {
     const { cards: fetchedCards, dataSource: source } = await CardFetchingService.fetchAllCardsFromDatabase();
     updateCards(fetchedCards);
     updateDataSource(source);
     return fetchedCards;
-  };
+  }, [updateCards, updateDataSource]);
 
-  const fetchUserCards = async (userId?: string) => {
+  const fetchUserCards = useCallback(async (userId?: string) => {
     const targetUserId = userId || user?.id;
     if (!targetUserId) return [];
     
@@ -37,9 +37,9 @@ export const useCards = () => {
       updateUserCards(userCardsData);
     }
     return userCardsData;
-  };
+  }, [user?.id, updateUserCards]);
 
-  const fetchCards = async () => {
+  const fetchCards = useCallback(async () => {
     setLoading(true);
     try {
       await Promise.all([
@@ -51,10 +51,10 @@ export const useCards = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchAllCardsFromDatabase, fetchUserCards, setLoading]);
 
   // Enhanced migration with detailed error reporting
-  const migrateLocalCardsToDatabase = async () => {
+  const migrateLocalCardsToDatabase = useCallback(async () => {
     if (!user?.id) {
       toast.error('Please sign in to migrate cards');
       return;
@@ -122,7 +122,7 @@ export const useCards = () => {
       console.error('💥 Migration system error:', error);
       toast.error('Migration system error. Check console for details.');
     }
-  };
+  }, [user?.id, fetchCards]);
 
   // Set up real-time subscription
   useRealtimeCardSubscription(fetchCards, user?.id);
@@ -130,7 +130,7 @@ export const useCards = () => {
   useEffect(() => {
     // Initial fetch
     fetchCards();
-  }, [user?.id]);
+  }, [fetchCards]);
 
   return {
     cards,

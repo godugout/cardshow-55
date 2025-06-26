@@ -1,19 +1,12 @@
 
 export type CreationMode = 'quick' | 'guided' | 'advanced' | 'bulk';
+
 export type CreationStep = 'intent' | 'upload' | 'details' | 'design' | 'publish' | 'complete';
 
 export interface CreationIntent {
   mode: CreationMode;
   description?: string;
-}
-
-export interface ModeConfig {
-  id: CreationMode;
-  title: string;
-  description: string;
-  icon: string;
-  steps: CreationStep[];
-  features: string[];
+  goals?: string[];
 }
 
 export interface CreationState {
@@ -24,4 +17,15 @@ export interface CreationState {
   canGoBack: boolean;
   progress: number;
   errors: Record<string, string>;
+  isCreating?: boolean;
+  creationError?: string | null;
+}
+
+export interface ModeConfig {
+  id: CreationMode;
+  title: string;
+  description: string;
+  icon: string;
+  steps: CreationStep[];
+  features: string[];
 }
