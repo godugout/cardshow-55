@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import Gallery from './pages/Gallery';
 import Studio from './pages/Studio';
 import CreateCard from './pages/CreateCard';
+import Creators from './pages/Creators';
 
 // Create missing pages
 import CardsPage from './pages/CardsPage';
@@ -70,6 +71,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Studio />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="creators" 
+            element={
+              <ProtectedRoute>
+                <Creators />
               </ProtectedRoute>
             } 
           />
