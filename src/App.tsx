@@ -1,56 +1,86 @@
-
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { OverlayProvider } from '@/components/overlay/OverlayProvider';
-import { MainLayout } from '@/components/layout/MainLayout';
-import Index from '@/pages/Index';
-import Gallery from '@/pages/Gallery';
-import Profile from '@/pages/Profile';
-import AccountSettings from '@/pages/AccountSettings';
-import Creators from '@/pages/Creators';
-import Studio from '@/pages/Studio';
-import Collections from '@/pages/Collections';
-import Memories from '@/pages/Memories';
-import HelpCenter from '@/pages/HelpCenter';
-import GettingStarted from '@/pages/GettingStarted';
-import ContactUs from '@/pages/ContactUs';
-import Community from '@/pages/Community';
-import BulkUpload from '@/pages/BulkUpload';
-import NotFound from '@/pages/NotFound';
-import { AuthPage } from '@/components/auth/AuthPage';
-import { UniversalCardCreator } from '@/components/editor/unified/UniversalCardCreator';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ThemeProvider } from './components/ui/theme-provider';
+import { Home } from './pages/Home';
+import { AuthPage } from './pages/AuthPage';
+import { Profile } from './pages/Profile';
+import { Gallery } from './pages/Gallery';
+import { CardsPage } from './pages/CardsPage';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { AuthProvider } from './features/auth/providers/AuthProvider';
+import { Toaster } from "@/components/ui/toaster"
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { Studio } from './pages/Studio';
+import { FeedPage } from './pages/FeedPage';
+import CreateCard from '@/pages/CreateCard';
 
 function App() {
+  const queryClient = new QueryClient();
+
   return (
-    <OverlayProvider>
-      <div className="min-h-screen bg-crd-darkest">
-        <Routes>
-          <Route path="/" element={<MainLayout />}>
-            <Route index element={<Index />} />
-            <Route path="studio" element={<Studio />} />
-            <Route path="studio/:cardId" element={<Studio />} />
-            <Route path="studio/:cardId/preset/:presetId" element={<Studio />} />
-            <Route path="cards" element={<Navigate to="/cards/create" replace />} />
-            <Route path="cards/create" element={<UniversalCardCreator />} />
-            <Route path="cards/upload" element={<Navigate to="/cards/create" replace />} />
-            <Route path="cards/bulk-upload" element={<BulkUpload />} />
-            <Route path="crdmkr" element={<UniversalCardCreator />} />
-            <Route path="editor" element={<Navigate to="/cards/create" replace />} />
-            <Route path="gallery" element={<Gallery />} />
-            <Route path="collections" element={<Collections />} />
-            <Route path="memories" element={<Memories />} />
-            <Route path="help" element={<HelpCenter />} />
-            <Route path="getting-started" element={<GettingStarted />} />
-            <Route path="contact" element={<ContactUs />} />
-            <Route path="community" element={<Community />} />
-            <Route path="auth" element={<AuthPage />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<AccountSettings />} />
-            <Route path="creators" element={<Creators />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </div>
-    </OverlayProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Toaster />
+        <Router>
+          <AuthProvider>
+            <div className="min-h-screen bg-crd-darkest">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route 
+                  path="/profile" 
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/gallery" 
+                  element={
+                    <ProtectedRoute>
+                      <Gallery />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/cards" 
+                  element={
+                    <ProtectedRoute>
+                      <CardsPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/cards/create" 
+                  element={
+                    <ProtectedRoute>
+                      <CreateCard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/studio" 
+                  element={
+                    <ProtectedRoute>
+                      <Studio />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/feed" 
+                  element={
+                    <ProtectedRoute>
+                      <FeedPage />
+                    </ProtectedRoute>
+                  } 
+                />
+              </Routes>
+            </div>
+          </AuthProvider>
+        </Router>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
