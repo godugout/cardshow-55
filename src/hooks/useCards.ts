@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { CardRepository } from '@/repositories/cardRepository';
-import { localCardStorage } from '@/lib/localCardStorage';
+import { CardStorageService } from '@/services/cardStorage';
+import { CardMigrationService } from '@/services/cardMigration';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -20,64 +21,33 @@ export const useCards = () => {
 
   const fetchAllCardsFromDatabase = async () => {
     try {
-      console.log('🔍 Comprehensive card investigation...');
+      console.log('🔍 Fetching all cards from database...');
       
-      // Get all cards from database
       const allCards = await CardRepository.getAllCards();
       
-      // Also check if there are cards stored locally (including consolidated check)
-      const { allCards: localCards } = localCardStorage.getAllCardsFromAllLocations();
-      console.log(`💾 Found ${localCards.length} total cards across all local storage locations`);
+      // Check local storage situation
+      const storageReport = CardStorageService.getStorageReport();
+      console.log(`💾 Local storage report:`, storageReport);
       
-      // Check collections table for any linked cards
-      const { data: collectionsData, error: collectionsError } = await supabase
-        .from('collections')
-        .select(`
-          *,
-          collection_cards (
-            card_id,
-            cards (*)
-          )
-        `);
-      
-      if (!collectionsError && collectionsData) {
-        console.log(`📚 Found ${collectionsData.length} collections`);
-        collectionsData.forEach(collection => {
-          console.log(`Collection "${collection.title}": ${collection.collection_cards?.length || 0} cards`);
-        });
-      }
-      
-      // Check memories table (in case cards were stored there)
-      const { data: memoriesData, error: memoriesError } = await supabase
-        .from('memories')
-        .select('*');
-        
-      if (!memoriesError && memoriesData) {
-        console.log(`🧠 Found ${memoriesData.length} memories`);
-      }
-      
-      // Determine data source and merge if needed
-      let finalCards = allCards;
+      // Determine data source
       let source: 'database' | 'local' | 'mixed' = 'database';
       
-      if (allCards.length === 0 && localCards.length > 0) {
-        console.log('⚠️ No database cards found, but local cards exist. Consider migrating local cards to database.');
+      if (allCards.length === 0 && storageReport.totalCards > 0) {
+        console.log('⚠️ No database cards found, but local cards exist');
         source = 'local';
-        // Could potentially migrate local cards here if needed
-      } else if (allCards.length > 0 && localCards.length > 0) {
+      } else if (allCards.length > 0 && storageReport.totalCards > 0) {
         console.log('🔄 Both database and local cards found');
         source = 'mixed';
       }
       
       setDataSource(source);
-      setCards(finalCards);
-      setFeaturedCards(finalCards.slice(0, 8));
+      setCards(allCards);
+      setFeaturedCards(allCards.slice(0, 8));
       
-      console.log(`📊 Final result: ${finalCards.length} cards from ${source} source(s)`);
-      
-      return finalCards;
+      console.log(`📊 Final result: ${allCards.length} cards from ${source} source`);
+      return allCards;
     } catch (error) {
-      console.error('💥 Error in comprehensive card investigation:', error);
+      console.error('💥 Error fetching cards:', error);
       setCards([]);
       setFeaturedCards([]);
       return [];
@@ -86,22 +56,16 @@ export const useCards = () => {
 
   const fetchUserCards = async (userId?: string) => {
     const targetUserId = userId || user?.id;
-    if (!targetUserId) {
-      console.log('⚠️ No user ID available for fetching user cards');
-      return [];
-    }
+    if (!targetUserId) return [];
     
     try {
-      console.log('👤 Fetching user cards for:', targetUserId);
       const result = await CardRepository.getCards({
         creator_id: targetUserId,
         includePrivate: true,
         pageSize: 100
       });
       
-      console.log('✅ Fetched user cards:', result.cards.length);
       const userCardsData = result.cards;
-      
       if (!userId || userId === user?.id) {
         setUserCards(userCardsData);
       }
@@ -113,9 +77,7 @@ export const useCards = () => {
   };
 
   const fetchCards = async () => {
-    console.log('🚀 Starting comprehensive card fetch process...');
     setLoading(true);
-    
     try {
       await Promise.all([
         fetchAllCardsFromDatabase(),
@@ -125,134 +87,98 @@ export const useCards = () => {
       console.error('💥 Error in fetchCards:', error);
     } finally {
       setLoading(false);
-      console.log('✅ Card fetch process completed');
     }
   };
 
-  // Enhanced method to migrate local cards to database with improved consolidation
+  // Enhanced migration with detailed error reporting
   const migrateLocalCardsToDatabase = async () => {
     if (!user?.id) {
       toast.error('Please sign in to migrate cards');
       return;
     }
-    
-    console.log('🔄 Starting enhanced card migration...');
-    
-    // First, consolidate all localStorage locations
-    const { consolidated, cleaned } = localCardStorage.consolidateAllStorage();
-    if (consolidated > 0) {
-      toast.success(`Consolidated ${consolidated} cards from different storage locations`);
-      console.log(`🔄 Consolidated ${consolidated} cards, cleaned up: ${cleaned.join(', ')}`);
-    }
-    
-    // Now get all cards from the consolidated storage
-    const { allCards: uniqueLocalCards } = localCardStorage.getAllCardsFromAllLocations();
-    
-    if (uniqueLocalCards.length === 0) {
-      toast.info('No local cards to migrate');
-      return;
-    }
-    
-    console.log(`🔄 Migrating ${uniqueLocalCards.length} unique local cards to database...`);
-    toast.loading(`Migrating ${uniqueLocalCards.length} cards to database...`);
-    
-    let migratedCount = 0;
-    let errorCount = 0;
-    
-    for (const localCard of uniqueLocalCards) {
-      try {
-        // Map rarity to database enum (remove epic, map ultra-rare to legendary)
-        let dbRarity: 'common' | 'uncommon' | 'rare' | 'legendary' = 'common';
-        if (localCard.rarity === 'legendary') {
-          dbRarity = 'legendary';
-        } else if (localCard.rarity === 'ultra-rare') {
-          dbRarity = 'legendary'; // Map ultra-rare to legendary
-        } else if (localCard.rarity === 'rare') {
-          dbRarity = 'rare';
-        } else if (localCard.rarity === 'uncommon') {
-          dbRarity = 'uncommon';
-        } else {
-          dbRarity = 'common';
-        }
 
-        const cardData = {
-          title: localCard.title,
-          description: localCard.description,
-          creator_id: user.id,
-          image_url: localCard.image_url,
-          thumbnail_url: localCard.thumbnail_url,
-          rarity: dbRarity,
-          tags: localCard.tags,
-          design_metadata: localCard.design_metadata,
-          is_public: localCard.visibility === 'public',
-          visibility: localCard.visibility || 'private',
-          marketplace_listing: localCard.publishing_options?.marketplace_listing || false,
-          print_available: localCard.publishing_options?.print_available || false
-        };
-        
-        const result = await CardRepository.createCard(cardData);
-        if (result) {
-          migratedCount++;
-          console.log(`✅ Migrated "${localCard.title}" to database`);
-          
-          // Update the local card to mark it as synced
-          localCardStorage.markAsSynced(localCard.id);
-        } else {
-          errorCount++;
-          console.error(`❌ Failed to migrate "${localCard.title}"`);
-        }
-      } catch (error) {
-        errorCount++;
-        console.error(`❌ Failed to migrate card "${localCard.title}":`, error);
+    try {
+      console.log('🔄 Starting enhanced card migration...');
+      
+      // First, preview the migration
+      const preview = await CardMigrationService.previewMigration(user.id);
+      
+      if (preview.report.totalCards === 0) {
+        toast.info('No local cards found to migrate');
+        return;
       }
-    }
-    
-    toast.dismiss();
-    
-    if (migratedCount > 0) {
-      toast.success(`Successfully migrated ${migratedCount} cards to database${errorCount > 0 ? ` (${errorCount} failed)` : ''}`);
-      console.log('🧹 Keeping local cards as backup, but marking them as synced');
-      // Refresh cards after migration
-      await fetchCards();
-    } else {
-      toast.error(`Migration failed for all ${uniqueLocalCards.length} cards`);
+
+      console.log('📋 Migration preview:', preview);
+      
+      // Show preview to user
+      if (preview.invalidCards > 0) {
+        toast.warning(`Found ${preview.invalidCards} cards with validation issues. Check console for details.`);
+        console.warn('Validation issues:', preview.validationIssues);
+      }
+
+      // Execute migration
+      toast.loading(`Migrating ${preview.report.totalCards} cards...`, { id: 'migration' });
+      
+      const result = await CardMigrationService.executeMigration(user.id);
+      
+      toast.dismiss('migration');
+      
+      if (result.success) {
+        const message = `Successfully migrated ${result.migratedCount} cards${
+          result.failedCount > 0 ? ` (${result.failedCount} failed)` : ''
+        }`;
+        toast.success(message);
+        
+        if (result.warnings.length > 0) {
+          console.warn('Migration warnings:', result.warnings);
+        }
+        
+        // Refresh cards after successful migration
+        await fetchCards();
+      } else {
+        toast.error(`Migration failed: ${result.failedCount} cards could not be migrated`);
+      }
+      
+      // Log detailed results
+      if (result.errors.length > 0) {
+        console.group('❌ Migration Errors');
+        result.errors.forEach(error => {
+          console.error(`${error.cardTitle} (${error.cardId}): ${error.error}`);
+        });
+        console.groupEnd();
+      }
+      
+      console.log('🎯 Migration completed:', {
+        total: result.totalCards,
+        migrated: result.migratedCount,
+        failed: result.failedCount,
+        success: result.success
+      });
+      
+    } catch (error) {
+      console.error('💥 Migration system error:', error);
+      toast.error('Migration system error. Check console for details.');
     }
   };
 
   useEffect(() => {
-    console.log('🔄 useCards effect triggered, user:', user?.id);
     fetchCards();
 
     // Set up real-time subscription
-    let subscription: any = null;
-    
-    try {
-      subscription = supabase
-        .channel('cards-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'cards'
-          },
-          (payload) => {
-            console.log('🔔 Real-time card change:', payload);
-            fetchCards(); // Refresh cards when changes occur
-          }
-        )
-        .subscribe();
-        
-      console.log('📡 Real-time subscription created');
-    } catch (error) {
-      console.error('❌ Error setting up real-time subscription:', error);
-    }
+    const subscription = supabase
+      .channel('cards-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'cards'
+      }, (payload) => {
+        console.log('🔔 Real-time card change:', payload);
+        fetchCards();
+      })
+      .subscribe();
 
     return () => {
-      if (subscription) {
-        console.log('🧹 Cleaning up real-time subscription');
-        supabase.removeChannel(subscription);
-      }
+      supabase.removeChannel(subscription);
     };
   }, [user?.id]);
 
