@@ -14,7 +14,7 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     aiAnalysisComplete: false
   });
 
-  const { cardData, updateCardField, saveCard, isSaving } = useCardEditor({
+  const cardEditor = useCardEditor({
     initialData: {
       creator_attribution: {
         creator_name: '',
@@ -34,6 +34,8 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
       }
     }
   });
+
+  const { cardData, updateCardField, saveCard, isSaving } = cardEditor;
 
   const handlers: WizardHandlers = {
     handlePhotoSelect: (photo: string) => {
@@ -131,6 +133,7 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     handlers,
     isSaving,
     templates: DEFAULT_TEMPLATES,
-    updateCardField
+    updateCardField,
+    cardEditor
   };
 };

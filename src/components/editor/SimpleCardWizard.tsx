@@ -15,7 +15,7 @@ interface SimpleCardWizardProps {
 }
 
 export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardProps) => {
-  const { wizardState, cardData, handlers, isSaving, templates, updateCardField } = useWizardState(onComplete);
+  const { wizardState, cardData, handlers, isSaving, templates, updateCardField, cardEditor } = useWizardState(onComplete);
   const [currentStep, setCurrentStep] = useState(1);
 
   const steps = [
@@ -76,7 +76,7 @@ export const SimpleCardWizard = ({ onComplete, onBulkUpload }: SimpleCardWizardP
             <EffectsTab 
               searchQuery=""
               onEffectsComplete={() => {}}
-              cardEditor={{ cardData, updateCardField }}
+              cardEditor={cardEditor}
             />
           </div>
         );

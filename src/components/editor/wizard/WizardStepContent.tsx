@@ -14,6 +14,7 @@ interface WizardStepContentProps {
   cardData: CardData;
   templates: DesignTemplate[];
   handlers: WizardHandlers & { onBulkUpload?: () => void };
+  cardEditor: ReturnType<typeof import('@/hooks/useCardEditor').useCardEditor>;
 }
 
 export const WizardStepContent = ({ 
@@ -21,7 +22,8 @@ export const WizardStepContent = ({
   wizardState, 
   cardData, 
   templates, 
-  handlers 
+  handlers,
+  cardEditor
 }: WizardStepContentProps) => {
   switch (currentStep) {
     case 1:
@@ -60,7 +62,7 @@ export const WizardStepContent = ({
           <EffectsTab 
             searchQuery=""
             onEffectsComplete={() => {}}
-            cardEditor={{ cardData, updateCardField: handlers.updateCardField }}
+            cardEditor={cardEditor}
           />
         </div>
       );
