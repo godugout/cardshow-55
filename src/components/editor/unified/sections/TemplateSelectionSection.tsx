@@ -16,8 +16,6 @@ import {
   Grid,
   List
 } from 'lucide-react';
-import { useFrames } from '@/hooks/useFrames';
-import type { CardEditor } from '@/hooks/useCardEditor';
 
 interface TemplateSelectionSectionProps {
   cardEditor: ReturnType<typeof import('@/hooks/useCardEditor').useCardEditor>;
@@ -35,9 +33,43 @@ export const TemplateSelectionSection: React.FC<TemplateSelectionSectionProps> =
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   
-  const { frames, trendingFrames, categories, loading } = useFrames(
-    selectedCategory === 'all' ? undefined : selectedCategory
-  );
+  // Mock data until useFrames hook is available
+  const frames = [
+    {
+      id: 'classic-gold',
+      name: 'Classic Gold',
+      description: 'Traditional gold-bordered frame',
+      price: 0,
+      sales_count: 1234,
+      rating: 4.8,
+      preview_images: [],
+      template_data: { border: 'gold', style: 'classic' }
+    },
+    {
+      id: 'holographic',
+      name: 'Holographic',
+      description: 'Shimmering holographic effect',
+      price: 5,
+      sales_count: 567,
+      rating: 4.9,
+      preview_images: [],
+      template_data: { border: 'holographic', style: 'modern' }
+    },
+    {
+      id: 'legendary',
+      name: 'Legendary',
+      description: 'Premium legendary card frame',
+      price: 25,
+      sales_count: 89,
+      rating: 5.0,
+      preview_images: [],
+      template_data: { border: 'legendary', style: 'premium' }
+    }
+  ];
+  
+  const trendingFrames = frames.slice(0, 2);
+  const categories = ['fantasy', 'modern', 'classic', 'premium'];
+  const loading = false;
 
   const getRarityIcon = (rarity: string) => {
     switch (rarity) {
@@ -233,57 +265,6 @@ export const TemplateSelectionSection: React.FC<TemplateSelectionSectionProps> =
               const frameRarity = getFrameRarity(frame.price);
               const isSelected = selectedTemplate === frame.id;
               
-              if (viewMode === 'list') {
-                return (
-                  <Card
-                    key={frame.id}
-                    className={`cursor-pointer transition-all ${
-                      isSelected 
-                        ? 'ring-2 ring-crd-green bg-crd-green/10' 
-                        : 'bg-crd-mediumGray/20 hover:bg-crd-mediumGray/30'
-                    } border-crd-mediumGray/30`}
-                    onClick={() => handleTemplateSelect(frame.id)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-16 h-20 rounded bg-crd-darkGray flex-shrink-0 overflow-hidden">
-                          {frame.preview_images && frame.preview_images.length > 0 ? (
-                            <img 
-                              src={frame.preview_images[0]} 
-                              alt={frame.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <div className="w-6 h-6 bg-gradient-to-br from-purple-400 to-blue-600 rounded" />
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <h5 className="font-medium text-crd-white truncate">{frame.name}</h5>
-                            <div className="flex items-center space-x-2">
-                              {getRarityIcon(frameRarity)}
-                              <span className={`text-sm font-medium ${
-                                frame.price === 0 ? 'text-crd-green' : 'text-crd-orange'
-                              }`}>
-                                {frame.price === 0 ? 'Free' : `$${frame.price}`}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-sm text-crd-lightGray truncate">{frame.description}</p>
-                          <div className="flex items-center space-x-4 mt-2 text-xs text-crd-mediumGray">
-                            <span>{frame.sales_count} uses</span>
-                            <span>★ {frame.rating.toFixed(1)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              }
-
               return (
                 <Card
                   key={frame.id}

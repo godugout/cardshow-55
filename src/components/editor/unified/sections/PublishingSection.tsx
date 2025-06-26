@@ -11,7 +11,7 @@ import {
   Share2, 
   Globe, 
   DollarSign, 
-  Print, 
+  Pin, 
   Users,
   Star,
   Trophy,
@@ -19,7 +19,6 @@ import {
   Heart,
   MessageCircle
 } from 'lucide-react';
-import type { CardEditor } from '@/hooks/useCardEditor';
 
 interface PublishingSectionProps {
   cardEditor: ReturnType<typeof import('@/hooks/useCardEditor').useCardEditor>;
@@ -46,7 +45,7 @@ export const PublishingSection: React.FC<PublishingSectionProps> = ({
     cardEditor.updateCardField('publishing_options', {
       ...cardEditor.cardData.publishing_options,
       pricing: {
-        ...cardEditor.cardData.publishing_options.pricing,
+        currency: 'USD',
         base_price: newPrice ? parseFloat(newPrice) : undefined
       }
     });

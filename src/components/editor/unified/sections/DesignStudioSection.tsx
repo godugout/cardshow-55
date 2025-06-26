@@ -18,9 +18,9 @@ import {
   Wand2,
   Chrome,
   Gem,
-  Zap
+  Zap,
+  Eye
 } from 'lucide-react';
-import type { CardEditor } from '@/hooks/useCardEditor';
 
 interface DesignStudioSectionProps {
   cardEditor: ReturnType<typeof import('@/hooks/useCardEditor').useCardEditor>;

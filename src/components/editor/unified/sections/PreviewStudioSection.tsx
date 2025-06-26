@@ -17,8 +17,6 @@ import {
   Palette,
   Settings
 } from 'lucide-react';
-import { EnhancedCardViewer } from '@/components/viewer/EnhancedCardViewer';
-import type { CardEditor } from '@/hooks/useCardEditor';
 
 interface PreviewStudioSectionProps {
   cardEditor: ReturnType<typeof import('@/hooks/useCardEditor').useCardEditor>;
@@ -65,6 +63,36 @@ export const PreviewStudioSection: React.FC<PreviewStudioSectionProps> = ({
     console.log('Sharing card...');
   };
 
+  // Mock 3D card viewer component until EnhancedCardViewer is available
+  const MockCardViewer = () => (
+    <div className="w-full h-full bg-gradient-to-br from-purple-900 via-black to-blue-900 rounded-lg flex items-center justify-center relative overflow-hidden">
+      {cardEditor.cardData.image_url ? (
+        <div className="relative w-48 h-64 transform rotate-y-12 hover:rotate-y-0 transition-transform duration-500">
+          <div className="w-full h-full rounded-lg overflow-hidden shadow-2xl border border-crd-green/30">
+            <img 
+              src={cardEditor.cardData.image_url} 
+              alt="3D Card Preview" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-4 left-4 right-4">
+              <h3 className="text-white font-bold text-sm mb-1">{cardEditor.cardData.title}</h3>
+              <p className="text-white/80 text-xs">{cardEditor.cardData.rarity}</p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="text-center">
+          <div className="w-16 h-16 bg-crd-mediumGray/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
+            <Eye className="w-8 h-8 text-crd-mediumGray" />
+          </div>
+          <p className="text-crd-lightGray">Upload an image to see 3D preview</p>
+        </div>
+      )}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-pulse" />
+    </div>
+  );
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -101,12 +129,7 @@ export const PreviewStudioSection: React.FC<PreviewStudioSectionProps> = ({
               
               {/* 3D Card Viewer */}
               <div className="aspect-video rounded-lg overflow-hidden bg-crd-darkest">
-                <EnhancedCardViewer 
-                  card={cardEditor.cardData}
-                  selectedEnvironment={environments.find(e => e.id === selectedEnvironment)!}
-                  lightingIntensity={lightingIntensity[0]}
-                  effectIntensity={effectIntensity[0]}
-                />
+                <MockCardViewer />
               </div>
               
               {/* Quick Controls */}

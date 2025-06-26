@@ -18,8 +18,6 @@ import {
   FileImage,
   Zap
 } from 'lucide-react';
-import type { CardEditor } from '@/hooks/useCardEditor';
-import { AdvancedCropper } from '../../AdvancedCropper';
 
 interface PhotoUploadSectionProps {
   cardEditor: ReturnType<typeof import('@/hooks/useCardEditor').useCardEditor>;
@@ -273,13 +271,24 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         </CRDButton>
       </div>
 
-      {/* Advanced Cropper Modal */}
-      {showCropper && (
-        <AdvancedCropper
-          imageUrl={cardEditor.cardData.image_url!}
-          onComplete={handleCropComplete}
-          onCancel={() => setShowCropper(false)}
-        />
+      {/* Simple cropper fallback instead of AdvancedCropper */}
+      {showCropper && cardEditor.cardData.image_url && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <div className="bg-crd-darkGray p-6 rounded-lg max-w-2xl w-full mx-4">
+            <h3 className="text-crd-white text-lg font-semibold mb-4">Crop Image</h3>
+            <div className="aspect-video bg-crd-mediumGray/20 rounded-lg flex items-center justify-center mb-4">
+              <p className="text-crd-lightGray">Cropping interface will be implemented</p>
+            </div>
+            <div className="flex justify-end space-x-3">
+              <CRDButton variant="outline" onClick={() => setShowCropper(false)}>
+                Cancel
+              </CRDButton>
+              <CRDButton onClick={() => handleCropComplete(cardEditor.cardData.image_url!)}>
+                Apply Crop
+              </CRDButton>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
