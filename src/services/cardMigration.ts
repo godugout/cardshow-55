@@ -244,17 +244,31 @@ export class CardMigrationService {
           const dbCard = this.prepareCardForDatabase(card, userId);
           console.log(`💾 Attempting database insertion for "${card.title}"`);
           
-          // Attempt database insertion with timeout and proper typing
-          const dbResult = await Promise.race([
-            CardRepository.createCard(dbCard),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Database timeout after 10 seconds')), 10000)
-            )
-          ]) as any; // Type assertion to handle the Promise.race result
+          // Attempt database insertion with timeout and proper error handling
+          let dbResult: any;
+          try {
+            dbResult = await Promise.race([
+              CardRepository.createCard(dbCard),
+              new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Database timeout after 10 seconds')), 10000)
+              )
+            ]);
+          } catch (timeoutError) {
+            const errorDetail = {
+              cardId: card.id || 'unknown',
+              cardTitle: card.title || 'Untitled',
+              error: timeoutError instanceof Error ? timeoutError.message : 'Database operation timeout',
+              validationDetails: validation
+            };
+            result.errors.push(errorDetail);
+            result.failedCount++;
+            console.error(`❌ Database timeout for "${card.title}"`);
+            continue;
+          }
           
           if (dbResult && typeof dbResult === 'object' && 'id' in dbResult) {
             result.migratedCount++;
-            console.log(`✅ Successfully migrated "${card.title}" (DB ID: ${dbResult.id})`);
+            console.log(`✅ Successfully migrated "${card.title}" (DB ID: ${(dbResult as any).id})`);
           } else {
             const errorDetail = {
               cardId: card.id || 'unknown',
