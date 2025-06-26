@@ -7,37 +7,72 @@ type Card = Tables<'cards'>;
 
 export const useCardConversion = () => {
   const convertCardsToCardData = useCallback((cards: Card[]): CardData[] => {
-    return cards.map(card => ({
-      id: card.id,
-      title: card.title,
-      description: card.description || '',
-      image_url: card.image_url,
-      rarity: card.rarity || 'common',
-      creator_id: card.creator_id,
-      created_at: card.created_at,
-      updated_at: card.updated_at,
-      tags: card.tags || [],
-      visibility: card.visibility || 'private',
-      is_public: card.is_public || false,
-      design_metadata: card.design_metadata || {},
-      current_market_value: card.current_market_value,
-      view_count: card.view_count || 0,
-      favorite_count: card.favorite_count || 0
-    }));
+    return cards.map(card => {
+      // Map database rarity to CardData rarity
+      const mapRarity = (dbRarity: string): CardData['rarity'] => {
+        switch (dbRarity) {
+          case 'epic': return 'ultra-rare';
+          case 'mythic': return 'legendary';
+          default: return dbRarity as CardData['rarity'];
+        }
+      };
+
+      return {
+        id: card.id,
+        title: card.title,
+        description: card.description || '',
+        image_url: card.image_url,
+        rarity: mapRarity(card.rarity || 'common'),
+        tags: card.tags || [],
+        design_metadata: card.design_metadata || {},
+        visibility: card.visibility === 'public' ? 'public' : card.visibility === 'shared' ? 'shared' : 'private',
+        template_id: card.template_id,
+        creator_attribution: {
+          creator_name: '',
+          creator_id: card.creator_id,
+          collaboration_type: 'solo'
+        },
+        publishing_options: {
+          marketplace_listing: card.marketplace_listing || false,
+          crd_catalog_inclusion: card.crd_catalog_inclusion || false,
+          print_available: card.print_available || false,
+          pricing: {
+            base_price: card.price ? Number(card.price) : undefined,
+            currency: 'USD'
+          },
+          distribution: {
+            limited_edition: false
+          }
+        }
+      };
+    });
   }, []);
 
   const convertCardDataToCard = useCallback((cardData: CardData): Partial<Card> => {
+    // Map CardData rarity back to database rarity
+    const mapRarityToDb = (rarity: CardData['rarity']): string => {
+      switch (rarity) {
+        case 'ultra-rare': return 'epic';
+        case 'legendary': return 'mythic';
+        default: return rarity;
+      }
+    };
+
     return {
       id: cardData.id,
       title: cardData.title,
       description: cardData.description,
       image_url: cardData.image_url,
-      rarity: cardData.rarity,
-      creator_id: cardData.creator_id,
+      rarity: mapRarityToDb(cardData.rarity) as any,
       tags: cardData.tags,
-      visibility: cardData.visibility,
-      is_public: cardData.is_public,
-      design_metadata: cardData.design_metadata
+      visibility: cardData.visibility as any,
+      design_metadata: cardData.design_metadata,
+      template_id: cardData.template_id,
+      creator_id: cardData.creator_attribution?.creator_id,
+      marketplace_listing: cardData.publishing_options?.marketplace_listing,
+      crd_catalog_inclusion: cardData.publishing_options?.crd_catalog_inclusion,
+      print_available: cardData.publishing_options?.print_available,
+      price: cardData.publishing_options?.pricing?.base_price
     };
   }, []);
 

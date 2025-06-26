@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Card3D, Plus } from 'lucide-react';
+import { Layers, Plus } from 'lucide-react';
 
 export const NoCardSelected = () => {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ export const NoCardSelected = () => {
     <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
       <div className="text-center max-w-md mx-auto px-6">
         <div className="mb-8">
-          <Card3D className="w-24 h-24 text-crd-mediumGray mx-auto mb-4" />
+          <Layers className="w-24 h-24 text-crd-mediumGray mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-crd-white mb-2">
             No Card Selected
           </h1>
@@ -26,7 +26,7 @@ export const NoCardSelected = () => {
             onClick={() => navigate('/gallery')}
             className="w-full"
           >
-            <Card3D className="w-4 h-4 mr-2" />
+            <Layers className="w-4 h-4 mr-2" />
             Browse Gallery
           </CRDButton>
 
