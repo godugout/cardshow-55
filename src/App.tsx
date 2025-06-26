@@ -3,6 +3,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster"
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { MainLayout } from './components/layout/MainLayout';
 
 // Import pages with correct syntax
 import Home from './pages/Index';
@@ -21,56 +22,58 @@ function App() {
     <div className="min-h-screen bg-crd-darkest">
       <Toaster />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth" element={<AuthPage />} />
-        <Route 
-          path="/profile" 
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/gallery" 
-          element={
-            <ProtectedRoute>
-              <Gallery />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/cards" 
-          element={
-            <ProtectedRoute>
-              <CardsPage />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/cards/create" 
-          element={
-            <ProtectedRoute>
-              <CreateCard />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/studio" 
-          element={
-            <ProtectedRoute>
-              <Studio />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/feed" 
-          element={
-            <ProtectedRoute>
-              <FeedPage />
-            </ProtectedRoute>
-          } 
-        />
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Home />} />
+          <Route path="auth" element={<AuthPage />} />
+          <Route 
+            path="profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="gallery" 
+            element={
+              <ProtectedRoute>
+                <Gallery />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="cards" 
+            element={
+              <ProtectedRoute>
+                <CardsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="cards/create" 
+            element={
+              <ProtectedRoute>
+                <CreateCard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="studio" 
+            element={
+              <ProtectedRoute>
+                <Studio />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="feed" 
+            element={
+              <ProtectedRoute>
+                <FeedPage />
+              </ProtectedRoute>
+            } 
+          />
+        </Route>
       </Routes>
     </div>
   );
