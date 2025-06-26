@@ -6,6 +6,7 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 interface CreationErrorBoundaryState {
   hasError: boolean;
   error?: Error;
+  errorInfo?: React.ErrorInfo;
 }
 
 interface CreationErrorBoundaryProps {
@@ -23,11 +24,21 @@ export class CreationErrorBoundary extends React.Component<
   }
 
   static getDerivedStateFromError(error: Error): CreationErrorBoundaryState {
+    console.error('🚨 CreationErrorBoundary: Error caught:', error);
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Card creation error:', error, errorInfo);
+    console.error('💥 CreationErrorBoundary: Component error details:', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack
+    });
+    
+    this.setState(prev => ({
+      ...prev,
+      errorInfo
+    }));
   }
 
   render() {
@@ -40,17 +51,18 @@ export class CreationErrorBoundary extends React.Component<
             </div>
             
             <h2 className="text-2xl font-bold text-crd-white mb-2">
-              Something went wrong
+              Card Creation Error
             </h2>
             
             <p className="text-crd-lightGray mb-6">
-              We encountered an error while creating your card. Don't worry, your progress may still be saved.
+              We encountered an error while loading the card creator. This might be due to missing components or configuration issues.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
               <CRDButton
                 onClick={() => {
-                  this.setState({ hasError: false, error: undefined });
+                  console.log('🔄 CreationErrorBoundary: Resetting error boundary');
+                  this.setState({ hasError: false, error: undefined, errorInfo: undefined });
                   this.props.onReset?.();
                 }}
                 variant="primary"
@@ -60,7 +72,10 @@ export class CreationErrorBoundary extends React.Component<
               </CRDButton>
               
               <CRDButton
-                onClick={() => window.location.href = '/'}
+                onClick={() => {
+                  console.log('🏠 CreationErrorBoundary: Going home');
+                  window.location.href = '/';
+                }}
                 variant="outline"
                 className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
               >
@@ -70,12 +85,26 @@ export class CreationErrorBoundary extends React.Component<
             
             {this.state.error && (
               <details className="mt-6 text-left">
-                <summary className="text-sm text-crd-lightGray cursor-pointer hover:text-crd-white">
-                  Technical Details
+                <summary className="text-sm text-crd-lightGray cursor-pointer hover:text-crd-white mb-2">
+                  Technical Details (Click to expand)
                 </summary>
-                <pre className="mt-2 text-xs text-red-300 bg-red-900/20 p-3 rounded border border-red-500/30 overflow-auto">
-                  {this.state.error.message}
-                </pre>
+                <div className="text-xs text-red-300 bg-red-900/20 p-3 rounded border border-red-500/30 overflow-auto">
+                  <div className="mb-2">
+                    <strong>Error:</strong> {this.state.error.message}
+                  </div>
+                  {this.state.error.stack && (
+                    <div className="mb-2">
+                      <strong>Stack:</strong>
+                      <pre className="mt-1 whitespace-pre-wrap">{this.state.error.stack}</pre>
+                    </div>
+                  )}
+                  {this.state.errorInfo?.componentStack && (
+                    <div>
+                      <strong>Component Stack:</strong>
+                      <pre className="mt-1 whitespace-pre-wrap">{this.state.errorInfo.componentStack}</pre>
+                    </div>
+                  )}
+                </div>
               </details>
             )}
           </div>
