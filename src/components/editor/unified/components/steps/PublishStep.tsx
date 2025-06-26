@@ -3,9 +3,8 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Eye, EyeOff, DollarSign, Users, Globe } from 'lucide-react';
+import { Eye, EyeOff, Globe } from 'lucide-react';
 import type { CreationMode } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
 
@@ -17,12 +16,7 @@ interface PublishStepProps {
 
 export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps) => {
   const handleVisibilityChange = (isPublic: boolean) => {
-    onFieldUpdate('is_public', isPublic);
     onFieldUpdate('visibility', isPublic ? 'public' : 'private');
-  };
-
-  const handleMarketplaceToggle = (enabled: boolean) => {
-    onFieldUpdate('marketplace_listing', enabled);
   };
 
   return (
@@ -82,7 +76,7 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  {cardData.is_public ? (
+                  {cardData.visibility === 'public' ? (
                     <Eye className="w-5 h-5 text-crd-green" />
                   ) : (
                     <EyeOff className="w-5 h-5 text-crd-mediumGray" />
@@ -90,7 +84,7 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
                   <div>
                     <Label className="text-crd-white">Public Card</Label>
                     <p className="text-sm text-crd-lightGray">
-                      {cardData.is_public 
+                      {cardData.visibility === 'public'
                         ? 'Visible to everyone in the gallery'
                         : 'Only visible to you'
                       }
@@ -98,59 +92,17 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
                   </div>
                 </div>
                 <Switch
-                  checked={cardData.is_public || false}
+                  checked={cardData.visibility === 'public'}
                   onCheckedChange={handleVisibilityChange}
                 />
               </div>
             </CardContent>
           </Card>
 
-          {/* Marketplace Settings */}
-          {mode !== 'quick' && (
-            <Card className="bg-crd-darker border-crd-mediumGray/20">
-              <CardHeader>
-                <CardTitle className="text-crd-white flex items-center gap-2">
-                  <DollarSign className="w-5 h-5" />
-                  Marketplace
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-crd-white">List for Sale</Label>
-                    <p className="text-sm text-crd-lightGray">
-                      Make your card available for purchase
-                    </p>
-                  </div>
-                  <Switch
-                    checked={cardData.marketplace_listing || false}
-                    onCheckedChange={handleMarketplaceToggle}
-                  />
-                </div>
-
-                {cardData.marketplace_listing && (
-                  <div className="space-y-2">
-                    <Label className="text-crd-white">Sale Price</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={cardData.price || ''}
-                      onChange={(e) => onFieldUpdate('price', parseFloat(e.target.value) || null)}
-                      placeholder="0.00"
-                      className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white"
-                    />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
           {/* Publishing Info */}
           <Card className="bg-crd-darker border-crd-mediumGray/20">
             <CardHeader>
               <CardTitle className="text-crd-white flex items-center gap-2">
-                <Users className="w-5 h-5" />
                 Publishing Info
               </CardTitle>
             </CardHeader>
@@ -159,18 +111,18 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
                 <div className="flex justify-between text-crd-lightGray">
                   <span>Visibility:</span>
                   <span className="text-crd-white capitalize">
-                    {cardData.is_public ? 'Public' : 'Private'}
+                    {cardData.visibility || 'Private'}
                   </span>
                 </div>
                 <div className="flex justify-between text-crd-lightGray">
                   <span>Rarity:</span>
                   <span className="text-crd-white capitalize">{cardData.rarity || 'Common'}</span>
                 </div>
-                {cardData.marketplace_listing && (
+                {cardData.tags && cardData.tags.length > 0 && (
                   <div className="flex justify-between text-crd-lightGray">
-                    <span>Price:</span>
+                    <span>Tags:</span>
                     <span className="text-crd-white">
-                      ${cardData.price || '0.00'}
+                      {cardData.tags.length} tag{cardData.tags.length !== 1 ? 's' : ''}
                     </span>
                   </div>
                 )}

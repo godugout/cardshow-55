@@ -70,7 +70,6 @@ export const DetailsStep = ({ mode, cardData, onFieldUpdate }: DetailsStepProps)
                 <SelectItem value="rare" className="text-crd-white">Rare</SelectItem>
                 <SelectItem value="epic" className="text-crd-white">Epic</SelectItem>
                 <SelectItem value="legendary" className="text-crd-white">Legendary</SelectItem>
-                <SelectItem value="mythic" className="text-crd-white">Mythic</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -82,24 +81,24 @@ export const DetailsStep = ({ mode, cardData, onFieldUpdate }: DetailsStepProps)
                 <Label htmlFor="series" className="text-crd-white">Series</Label>
                 <Input
                   id="series"
-                  value={cardData.series || ''}
-                  onChange={(e) => onFieldUpdate('series', e.target.value)}
+                  value={cardData.type || ''}
+                  onChange={(e) => onFieldUpdate('type', e.target.value)}
                   placeholder="Card series or collection name"
                   className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white"
                 />
               </div>
 
-              {/* Price */}
+              {/* Tags */}
               <div className="space-y-2">
-                <Label htmlFor="price" className="text-crd-white">Price (Optional)</Label>
+                <Label htmlFor="tags" className="text-crd-white">Tags</Label>
                 <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={cardData.price || ''}
-                  onChange={(e) => onFieldUpdate('price', parseFloat(e.target.value) || null)}
-                  placeholder="0.00"
+                  id="tags"
+                  value={cardData.tags?.join(', ') || ''}
+                  onChange={(e) => {
+                    const tags = e.target.value.split(',').map(tag => tag.trim()).filter(Boolean);
+                    onFieldUpdate('tags', tags);
+                  }}
+                  placeholder="Enter tags separated by commas"
                   className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white"
                 />
               </div>

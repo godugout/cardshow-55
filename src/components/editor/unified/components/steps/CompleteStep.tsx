@@ -36,7 +36,7 @@ export const CompleteStep = ({ mode, cardData, onGoToGallery, onStartOver }: Com
         </div>
         <h2 className="text-3xl font-bold text-crd-white mb-2">Card Created Successfully!</h2>
         <p className="text-crd-lightGray">
-          Your card "{cardData.title}" has been {cardData.is_public ? 'published' : 'saved'} to your collection.
+          Your card "{cardData.title}" has been {cardData.visibility === 'public' ? 'published' : 'saved'} to your collection.
         </p>
       </div>
 
@@ -69,15 +69,15 @@ export const CompleteStep = ({ mode, cardData, onGoToGallery, onStartOver }: Com
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-crd-green">
-            {cardData.is_public ? '✓' : '○'}
+            {cardData.visibility === 'public' ? '✓' : '○'}
           </div>
           <p className="text-sm text-crd-lightGray">Published</p>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-crd-green">
-            {cardData.marketplace_listing ? '✓' : '○'}
+            {cardData.template_id ? '✓' : '○'}
           </div>
-          <p className="text-sm text-crd-lightGray">Listed</p>
+          <p className="text-sm text-crd-lightGray">Template</p>
         </div>
       </div>
 
@@ -92,7 +92,7 @@ export const CompleteStep = ({ mode, cardData, onGoToGallery, onStartOver }: Com
           View in Gallery
         </CRDButton>
         
-        {cardData.is_public && (
+        {cardData.visibility === 'public' && (
           <CRDButton
             onClick={handleShare}
             variant="outline"
@@ -120,7 +120,7 @@ export const CompleteStep = ({ mode, cardData, onGoToGallery, onStartOver }: Com
           <p>• Visit your gallery to manage all your cards</p>
           <p>• Share your card with the community</p>
           <p>• Create more cards to build your collection</p>
-          {cardData.marketplace_listing && <p>• Monitor your card's performance in the marketplace</p>}
+          {cardData.template_id && <p>• Use this template for future cards</p>}
         </div>
       </div>
     </div>
