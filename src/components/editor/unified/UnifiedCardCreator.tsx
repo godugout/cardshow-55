@@ -47,7 +47,7 @@ export const UnifiedCardCreator = ({
     actions.nextStep();
   };
 
-  const canProceed = actions.validateStep();
+  const canProceed = actions.validateStep(state.currentStep);
   const showNavigation = state.currentStep !== 'intent' && state.currentStep !== 'complete';
   const showModeSwitch = state.currentStep !== 'intent' && state.currentStep !== 'complete';
 

@@ -67,7 +67,15 @@ export const useCreationActions = ({
   }, [onCancel]);
 
   const startOver = useCallback(() => {
-    cardEditor.resetCard();
+    // Reset card data to initial state
+    cardEditor.updateCardField('title', 'My New Card');
+    cardEditor.updateCardField('description', '');
+    cardEditor.updateCardField('image_url', undefined);
+    cardEditor.updateCardField('tags', []);
+    cardEditor.updateCardField('rarity', 'common');
+    cardEditor.updateCardField('visibility', 'private');
+    cardEditor.updateCardField('is_public', false);
+    
     updateState({
       currentStep: 'intent',
       progress: 0,
