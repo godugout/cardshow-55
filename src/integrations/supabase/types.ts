@@ -5196,10 +5196,6 @@ export type Database = {
         Args: { total_xp: number }
         Returns: Json
       }
-      can_view_collection: {
-        Args: { collection_id: string; user_id?: string }
-        Returns: boolean
-      }
       create_collection_from_template: {
         Args: { template_id: string; collection_title: string; user_id: string }
         Returns: string
@@ -5296,10 +5292,6 @@ export type Database = {
       }
       is_admin: {
         Args: { user_uuid?: string }
-        Returns: boolean
-      }
-      is_collection_owner: {
-        Args: { collection_id: string; user_id?: string }
         Returns: boolean
       }
       log_audit_event: {

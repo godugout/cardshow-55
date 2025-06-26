@@ -1,51 +1,48 @@
 
+import { useCallback } from 'react';
 import type { Tables } from '@/integrations/supabase/types';
-import type { CardData } from '@/hooks/card-editor/types';
+import type { CardData } from '@/hooks/useCardEditor';
 
-// Use the database type directly
-type DbCard = Tables<'cards'>;
+type Card = Tables<'cards'>;
 
 export const useCardConversion = () => {
-  const convertCardsToCardData = (dbCards: DbCard[]): CardData[] => {
-    console.log('🔄 Converting database cards to CardData:', dbCards.length, 'cards');
-    
-    return dbCards.map(card => {
-      console.log('🃏 Converting card:', card.title, 'ID:', card.id);
-      
-      const convertedCard: CardData = {
-        id: card.id,
-        title: card.title,
-        description: card.description || undefined,
-        rarity: (card.rarity as any) || 'common',
-        tags: Array.isArray(card.tags) ? card.tags : [],
-        image_url: card.image_url || card.thumbnail_url || '',
-        thumbnail_url: card.thumbnail_url || undefined,
-        design_metadata: (typeof card.design_metadata === 'object' && card.design_metadata) ? 
-          card.design_metadata as Record<string, any> : {},
-        visibility: card.is_public ? 'public' : 'private',
-        template_id: card.template_id || undefined,
-        creator_attribution: {
-          creator_name: 'Creator',
-          creator_id: card.creator_id,
-          collaboration_type: 'solo'
-        },
-        publishing_options: {
-          marketplace_listing: card.marketplace_listing || false,
-          crd_catalog_inclusion: true,
-          print_available: false,
-          pricing: { currency: 'USD' },
-          distribution: { limited_edition: false }
-        },
-        verification_status: (card.verification_status as any) || 'pending',
-        print_metadata: (typeof card.print_metadata === 'object' && card.print_metadata) ? 
-          card.print_metadata as Record<string, any> : {},
-        creator_id: card.creator_id
-      };
-      
-      console.log('✅ Converted card:', convertedCard.title, 'with image:', convertedCard.image_url);
-      return convertedCard;
-    });
-  };
+  const convertCardsToCardData = useCallback((cards: Card[]): CardData[] => {
+    return cards.map(card => ({
+      id: card.id,
+      title: card.title,
+      description: card.description || '',
+      image_url: card.image_url,
+      rarity: card.rarity || 'common',
+      creator_id: card.creator_id,
+      created_at: card.created_at,
+      updated_at: card.updated_at,
+      tags: card.tags || [],
+      visibility: card.visibility || 'private',
+      is_public: card.is_public || false,
+      design_metadata: card.design_metadata || {},
+      current_market_value: card.current_market_value,
+      view_count: card.view_count || 0,
+      favorite_count: card.favorite_count || 0
+    }));
+  }, []);
 
-  return { convertCardsToCardData };
+  const convertCardDataToCard = useCallback((cardData: CardData): Partial<Card> => {
+    return {
+      id: cardData.id,
+      title: cardData.title,
+      description: cardData.description,
+      image_url: cardData.image_url,
+      rarity: cardData.rarity,
+      creator_id: cardData.creator_id,
+      tags: cardData.tags,
+      visibility: cardData.visibility,
+      is_public: cardData.is_public,
+      design_metadata: cardData.design_metadata
+    };
+  }, []);
+
+  return {
+    convertCardsToCardData,
+    convertCardDataToCard
+  };
 };

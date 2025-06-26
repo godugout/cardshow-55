@@ -3,131 +3,59 @@ import type { CardData } from '@/hooks/useCardEditor';
 
 export const mockCards: CardData[] = [
   {
-    id: 'card-1',
-    title: 'LeBron James',
-    description: 'Los Angeles Lakers - Forward',
-    rarity: 'legendary',
-    tags: ['basketball', 'nba', 'lebron', 'lakers'],
-    image_url: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=600&fit=crop',
+    id: 'mock-1',
+    title: 'Mystic Dragon',
+    description: 'A powerful dragon with ancient magic flowing through its veins.',
+    image_url: '/lovable-uploads/cd4cf59d-5ff5-461d-92e9-61b6e2c63e2e.png',
+    rarity: 'legendary' as const,
+    creator_id: 'mock-creator',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    tags: ['dragon', 'magic', 'legendary'],
+    visibility: 'public' as const,
+    is_public: true,
     design_metadata: {
-      player: {
-        name: 'LeBron James',
-        team: 'Los Angeles Lakers',
-        position: 'Forward',
-        stats: {
-          points: 27.2,
-          rebounds: 7.5,
-          assists: 7.3
-        }
-      },
       effects: {
-        holographic: true,
-        chrome: false,
-        foil: true,
-        intensity: 0.8
-      }
-    },
-    visibility: 'public',
-    creator_attribution: {
-      creator_name: 'CRD Studio',
-      creator_id: 'crd-studio-1',
-      collaboration_type: 'solo'
-    },
-    publishing_options: {
-      marketplace_listing: false,
-      crd_catalog_inclusion: true,
-      print_available: false,
-      pricing: {
-        currency: 'USD'
-      },
-      distribution: {
-        limited_edition: false
+        holographic: { intensity: 80 },
+        chrome: { intensity: 60 }
       }
     }
   },
   {
-    id: 'card-2',
-    title: 'Stephen Curry',
-    description: 'Golden State Warriors - Point Guard',
-    rarity: 'legendary', // Changed from 'epic' to 'legendary'
-    tags: ['basketball', 'nba', 'curry', 'warriors'],
-    image_url: 'https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=400&h=600&fit=crop',
+    id: 'mock-2',
+    title: 'Crystal Guardian',
+    description: 'A guardian spirit made of pure crystal energy.',
+    image_url: '/lovable-uploads/49889392-623d-4c17-9677-1b076902479a.png',
+    rarity: 'epic' as const,
+    creator_id: 'mock-creator',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    tags: ['crystal', 'guardian', 'spirit'],
+    visibility: 'public' as const,
+    is_public: true,
     design_metadata: {
-      player: {
-        name: 'Stephen Curry',
-        team: 'Golden State Warriors',
-        position: 'Point Guard',
-        stats: {
-          points: 29.5,
-          rebounds: 5.1,
-          assists: 6.3
-        }
-      },
       effects: {
-        holographic: false,
-        chrome: true,
-        foil: false,
-        intensity: 0.6
-      }
-    },
-    visibility: 'public',
-    creator_attribution: {
-      creator_name: 'CRD Studio',
-      creator_id: 'crd-studio-1',
-      collaboration_type: 'solo'
-    },
-    publishing_options: {
-      marketplace_listing: false,
-      crd_catalog_inclusion: true,
-      print_available: false,
-      pricing: {
-        currency: 'USD'
-      },
-      distribution: {
-        limited_edition: false
+        crystal: { intensity: 90 },
+        prizm: { intensity: 70 }
       }
     }
   },
   {
-    id: 'card-3',
-    title: 'Kevin Durant',
-    description: 'Phoenix Suns - Forward',
-    rarity: 'rare',
-    tags: ['basketball', 'nba', 'durant', 'suns'],
-    image_url: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&h=600&fit=crop',
+    id: 'mock-3',
+    title: 'Shadow Assassin',
+    description: 'A stealthy warrior that strikes from the darkness.',
+    image_url: '/lovable-uploads/25cbcac9-64c0-4969-9baa-7a3fdf9eb00a.png',
+    rarity: 'rare' as const,
+    creator_id: 'mock-creator',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    tags: ['assassin', 'shadow', 'stealth'],
+    visibility: 'public' as const,
+    is_public: true,
     design_metadata: {
-      player: {
-        name: 'Kevin Durant',
-        team: 'Phoenix Suns',
-        position: 'Forward',
-        stats: {
-          points: 26.8,
-          rebounds: 6.7,
-          assists: 5.0
-        }
-      },
       effects: {
-        holographic: false,
-        chrome: false,
-        foil: true,
-        intensity: 0.7
-      }
-    },
-    visibility: 'public',
-    creator_attribution: {
-      creator_name: 'CRD Studio',
-      creator_id: 'crd-studio-1',
-      collaboration_type: 'solo'
-    },
-    publishing_options: {
-      marketplace_listing: false,
-      crd_catalog_inclusion: true,
-      print_available: false,
-      pricing: {
-        currency: 'USD'
-      },
-      distribution: {
-        limited_edition: false
+        vintage: { intensity: 50 },
+        gold: { intensity: 30 }
       }
     }
   }

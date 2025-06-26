@@ -66,6 +66,14 @@ function App() {
             } 
           />
           <Route 
+            path="studio/:cardId" 
+            element={
+              <ProtectedRoute>
+                <Studio />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="feed" 
             element={
               <ProtectedRoute>
