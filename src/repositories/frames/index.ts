@@ -10,20 +10,12 @@ export interface FrameWithCreator extends FrameTemplate {
 }
 
 export const FrameRepository = {
-  // Get frames by category with creator info
+  // Get frames by category with basic creator info
   getFramesByCategory: async (category?: string, limit = 20): Promise<FrameWithCreator[]> => {
     try {
       let query = supabase
         .from('card_templates_creator')
-        .select(`
-          *,
-          creator_profiles!inner (
-            user_profiles!inner (
-              username,
-              avatar_url
-            )
-          )
-        `)
+        .select('*')
         .eq('is_published', true)
         .order('created_at', { ascending: false })
         .limit(limit);
@@ -36,11 +28,12 @@ export const FrameRepository = {
       
       if (error) throw error;
       
-      // Transform the data to include creator info
+      // For now, return frames without creator details
+      // TODO: Add proper creator info once user profiles are properly linked
       return (data || []).map(frame => ({
         ...frame,
-        creator_name: frame.creator_profiles?.user_profiles?.username || 'Unknown Creator',
-        creator_avatar: frame.creator_profiles?.user_profiles?.avatar_url
+        creator_name: 'Creator', // Placeholder
+        creator_avatar: undefined
       }));
     } catch (error) {
       console.error('Error fetching frames:', error);
@@ -53,15 +46,7 @@ export const FrameRepository = {
     try {
       const { data, error } = await supabase
         .from('card_templates_creator')
-        .select(`
-          *,
-          creator_profiles!inner (
-            user_profiles!inner (
-              username,
-              avatar_url
-            )
-          )
-        `)
+        .select('*')
         .eq('is_published', true)
         .order('sales_count', { ascending: false })
         .order('rating', { ascending: false })
@@ -71,8 +56,8 @@ export const FrameRepository = {
       
       return (data || []).map(frame => ({
         ...frame,
-        creator_name: frame.creator_profiles?.user_profiles?.username || 'Unknown Creator',
-        creator_avatar: frame.creator_profiles?.user_profiles?.avatar_url
+        creator_name: 'Creator', // Placeholder
+        creator_avatar: undefined
       }));
     } catch (error) {
       console.error('Error fetching trending frames:', error);
@@ -85,15 +70,7 @@ export const FrameRepository = {
     try {
       const { data, error } = await supabase
         .from('card_templates_creator')
-        .select(`
-          *,
-          creator_profiles!inner (
-            user_profiles!inner (
-              username,
-              avatar_url
-            )
-          )
-        `)
+        .select('*')
         .eq('creator_id', creatorId)
         .eq('is_published', true)
         .order('created_at', { ascending: false })
@@ -103,8 +80,8 @@ export const FrameRepository = {
       
       return (data || []).map(frame => ({
         ...frame,
-        creator_name: frame.creator_profiles?.user_profiles?.username || 'Unknown Creator',
-        creator_avatar: frame.creator_profiles?.user_profiles?.avatar_url
+        creator_name: 'Creator', // Placeholder
+        creator_avatar: undefined
       }));
     } catch (error) {
       console.error('Error fetching creator frames:', error);
