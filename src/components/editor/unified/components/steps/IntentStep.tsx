@@ -64,6 +64,14 @@ export const IntentStep = ({ onModeSelect, onBulkUpload }: IntentStepProps) => {
               key={option.id}
               className="relative bg-crd-darker border border-crd-mediumGray/20 rounded-xl p-6 hover:border-crd-green/30 transition-all cursor-pointer group"
               onClick={() => handleModeSelect(option.id)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleModeSelect(option.id);
+                }
+              }}
             >
               {option.recommended && (
                 <div className="absolute -top-2 left-4 bg-crd-green text-black text-xs font-bold px-2 py-1 rounded">
@@ -81,27 +89,25 @@ export const IntentStep = ({ onModeSelect, onBulkUpload }: IntentStepProps) => {
                 </div>
               </div>
 
-              <ul className="space-y-2">
+              <ul className="space-y-2 mb-6">
                 {option.features.map((feature, index) => (
                   <li key={index} className="text-crd-lightGray text-sm flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-crd-green rounded-full" />
+                    <div className="w-1.5 h-1.5 bg-crd-green rounded-full flex-shrink-0" />
                     {feature}
                   </li>
                 ))}
               </ul>
 
-              <div className="mt-6">
-                <CRDButton
-                  variant="outline"
-                  className="w-full border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white group-hover:border-crd-green/30"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleModeSelect(option.id);
-                  }}
-                >
-                  Select {option.title}
-                </CRDButton>
-              </div>
+              <CRDButton
+                variant="outline"
+                className="w-full border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white group-hover:border-crd-green/30"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleModeSelect(option.id);
+                }}
+              >
+                Select {option.title}
+              </CRDButton>
             </div>
           );
         })}

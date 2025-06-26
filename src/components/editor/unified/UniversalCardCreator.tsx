@@ -40,6 +40,17 @@ export const UniversalCardCreator = ({
   const showNavigation = state.currentStep !== 'intent' && state.currentStep !== 'complete';
   const showModeSwitch = state.currentStep !== 'intent' && state.currentStep !== 'complete';
 
+  // Add debug logging for mode selection
+  const handleModeSelect = (mode: CreationMode) => {
+    console.log('🎯 UniversalCardCreator: Mode selected:', mode);
+    actions.setMode(mode);
+  };
+
+  const handleBulkUpload = () => {
+    console.log('📦 UniversalCardCreator: Bulk upload selected');
+    navigate('/cards/bulk-upload');
+  };
+
   return (
     <CreationErrorBoundary onReset={actions.startOver}>
       <div className="min-h-screen bg-crd-darkest">
@@ -112,10 +123,10 @@ export const UniversalCardCreator = ({
             step={state.currentStep}
             mode={state.mode}
             cardData={cardEditor.cardData}
-            onModeSelect={actions.setMode}
+            onModeSelect={handleModeSelect}
             onPhotoSelect={(photo) => cardEditor.updateCardField('image_url', photo)}
             onFieldUpdate={cardEditor.updateCardField}
-            onBulkUpload={() => navigate('/cards/bulk-upload')}
+            onBulkUpload={handleBulkUpload}
             onGoToGallery={actions.goToGallery}
             onStartOver={actions.startOver}
           />
