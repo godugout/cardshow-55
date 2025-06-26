@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { CardRepository } from '@/repositories/cardRepository';
@@ -11,6 +11,9 @@ import type { Tables } from '@/integrations/supabase/types';
 // Use the database type directly instead of custom interface
 type Card = Tables<'cards'>;
 
+// Generate unique channel names to prevent subscription conflicts
+const generateChannelId = () => `cards-changes-${Math.random().toString(36).substr(2, 9)}`;
+
 export const useCards = () => {
   const { user } = useAuth();
   const [cards, setCards] = useState<Card[]>([]);
@@ -18,6 +21,10 @@ export const useCards = () => {
   const [userCards, setUserCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [dataSource, setDataSource] = useState<'database' | 'local' | 'mixed'>('database');
+  
+  // Track subscription state to prevent duplicates
+  const subscriptionRef = useRef<any>(null);
+  const channelIdRef = useRef<string>(generateChannelId());
 
   const fetchAllCardsFromDatabase = async () => {
     try {
@@ -164,21 +171,42 @@ export const useCards = () => {
   useEffect(() => {
     fetchCards();
 
-    // Set up real-time subscription
-    const subscription = supabase
-      .channel('cards-changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'cards'
-      }, (payload) => {
-        console.log('🔔 Real-time card change:', payload);
-        fetchCards();
-      })
-      .subscribe();
+    // Clean up any existing subscription before creating a new one
+    if (subscriptionRef.current) {
+      console.log('🧹 Cleaning up existing subscription');
+      supabase.removeChannel(subscriptionRef.current);
+      subscriptionRef.current = null;
+    }
+
+    // Set up real-time subscription with unique channel name
+    const channelName = channelIdRef.current;
+    console.log(`📡 Setting up subscription with channel: ${channelName}`);
+    
+    try {
+      subscriptionRef.current = supabase
+        .channel(channelName)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'cards'
+        }, (payload) => {
+          console.log('🔔 Real-time card change:', payload);
+          fetchCards();
+        })
+        .subscribe((status) => {
+          console.log(`📡 Subscription status for ${channelName}:`, status);
+        });
+    } catch (error) {
+      console.error('💥 Error setting up subscription:', error);
+    }
 
     return () => {
-      supabase.removeChannel(subscription);
+      // Cleanup subscription on unmount
+      if (subscriptionRef.current) {
+        console.log(`🧹 Cleaning up subscription: ${channelName}`);
+        supabase.removeChannel(subscriptionRef.current);
+        subscriptionRef.current = null;
+      }
     };
   }, [user?.id]);
 
