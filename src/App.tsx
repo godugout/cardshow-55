@@ -1,25 +1,29 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { ThemeProvider } from './components/ui/theme-provider';
-import { Home } from './pages/Home';
-import { AuthPage } from './pages/AuthPage';
-import { Profile } from './pages/Profile';
-import { Gallery } from './pages/Gallery';
-import { CardsPage } from './pages/CardsPage';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { AuthProvider } from './features/auth/providers/AuthProvider';
 import { Toaster } from "@/components/ui/toaster"
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { Studio } from './pages/Studio';
-import { FeedPage } from './pages/FeedPage';
-import CreateCard from '@/pages/CreateCard';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from './features/auth/providers/AuthProvider';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+
+// Import pages with correct syntax
+import Home from './pages/Index';
+import AuthPage from './pages/auth/SignIn';
+import Profile from './pages/Profile';
+import Gallery from './pages/Gallery';
+import Studio from './pages/Studio';
+import CreateCard from './pages/CreateCard';
+
+// Create missing pages
+import CardsPage from './pages/CardsPage';
+import FeedPage from './pages/FeedPage';
 
 function App() {
   const queryClient = new QueryClient();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <div className="min-h-screen bg-slate-950 text-white">
         <Toaster />
         <Router>
           <AuthProvider>
@@ -79,7 +83,7 @@ function App() {
             </div>
           </AuthProvider>
         </Router>
-      </ThemeProvider>
+      </div>
     </QueryClientProvider>
   );
 }
