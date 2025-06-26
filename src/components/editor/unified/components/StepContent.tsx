@@ -47,6 +47,7 @@ export const StepContent = ({
           mode={mode}
           selectedPhoto={cardData.image_url}
           onPhotoSelect={onPhotoSelect}
+          cardData={cardData}
         />
       );
     
