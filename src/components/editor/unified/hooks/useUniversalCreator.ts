@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
@@ -90,28 +91,6 @@ export const useUniversalCreator = ({
       return config;
     }, [modeConfigs, state.mode]);
 
-    // Calculate progress based on current step
-    useEffect(() => {
-      if (currentConfig) {
-        const currentIndex = currentConfig.steps.indexOf(state.currentStep);
-        const progress = currentIndex >= 0 ? (currentIndex / (currentConfig.steps.length - 1)) * 100 : 0;
-        
-        console.log('📊 useUniversalCreator: Progress updated:', {
-          currentStep: state.currentStep,
-          currentIndex,
-          progress,
-          canGoBack: currentIndex > 0
-        });
-        
-        setState(prev => ({
-          ...prev,
-          progress,
-          canGoBack: currentIndex > 0,
-          canAdvance: currentIndex < currentConfig.steps.length - 1
-        }));
-      }
-    }, [state.currentStep, currentConfig]);
-
     const updateState = useCallback((updates: Partial<CreationState>) => {
       console.log('🔄 useUniversalCreator: State update:', updates);
       setState(prev => ({ ...prev, ...updates }));
@@ -121,16 +100,17 @@ export const useUniversalCreator = ({
       console.log('🎯 useUniversalCreator: Setting mode to', mode);
       const config = modeConfigs.find(c => c.id === mode);
       if (config) {
-        updateState({
+        setState(prev => ({
+          ...prev,
           mode,
           currentStep: config.steps[1] || 'upload',
-          intent: { ...state.intent, mode },
+          intent: { ...prev.intent, mode },
           errors: {}
-        });
+        }));
       } else {
         console.error('❌ useUniversalCreator: Config not found for mode:', mode);
       }
-    }, [modeConfigs, state.intent, updateState]);
+    }, [modeConfigs]);
 
     const nextStep = useCallback(() => {
       if (!currentConfig) {
@@ -182,9 +162,10 @@ export const useUniversalCreator = ({
           case 'upload':
             const hasImage = !!cardData.image_url;
             if (!hasImage) {
-              updateState({ 
+              setState(prev => ({
+                ...prev,
                 errors: { upload: 'Please upload an image to continue' }
-              });
+              }));
             }
             return hasImage;
             
@@ -192,9 +173,10 @@ export const useUniversalCreator = ({
             const hasTitle = cardData.title && cardData.title.trim().length > 0;
             const titleValid = hasTitle && cardData.title !== 'My New Card';
             if (!titleValid) {
-              updateState({ 
+              setState(prev => ({
+                ...prev,
                 errors: { details: 'Please provide a meaningful title for your card' }
-              });
+              }));
             }
             return titleValid;
             
@@ -211,11 +193,11 @@ export const useUniversalCreator = ({
         console.error('❌ useUniversalCreator: Step validation error:', error);
         return false;
       }
-    }, [state.currentStep, cardEditor.cardData, updateState]);
+    }, [state.currentStep, cardEditor.cardData]);
 
     const completeCreation = useCallback(async () => {
       console.log('🚀 useUniversalCreator: Starting card creation');
-      updateState({ isCreating: true, creationError: null });
+      setState(prev => ({ ...prev, isCreating: true, creationError: null }));
 
       try {
         if (!cardEditor.cardData.image_url) {
@@ -229,7 +211,7 @@ export const useUniversalCreator = ({
         const success = await cardEditor.saveCard();
         
         if (success) {
-          updateState({ currentStep: 'complete' });
+          setState(prev => ({ ...prev, currentStep: 'complete' }));
           
           if (onComplete) {
             onComplete(cardEditor.cardData);
@@ -244,14 +226,14 @@ export const useUniversalCreator = ({
       } catch (error) {
         console.error('❌ useUniversalCreator: Error creating card:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to create card';
-        updateState({ creationError: errorMessage });
+        setState(prev => ({ ...prev, creationError: errorMessage }));
         toast.error('Failed to create card', {
           description: errorMessage
         });
       } finally {
-        updateState({ isCreating: false });
+        setState(prev => ({ ...prev, isCreating: false }));
       }
-    }, [cardEditor, onComplete, updateState]);
+    }, [cardEditor, onComplete]);
 
     const goToGallery = useCallback(() => {
       console.log('🏠 useUniversalCreator: Navigating to gallery');
@@ -266,19 +248,43 @@ export const useUniversalCreator = ({
       cardEditor.updateCardField('thumbnail_url', undefined);
       
       const config = modeConfigs.find(c => c.id === initialMode);
-      updateState({ 
+      setState(prev => ({ 
+        ...prev,
         mode: initialMode,
         currentStep: config?.steps[0] || 'intent',
         creationError: null,
         errors: {},
         isCreating: false
-      });
-    }, [cardEditor, initialMode, modeConfigs, updateState]);
+      }));
+    }, [cardEditor, initialMode, modeConfigs]);
+
+    // Calculate progress and navigation state based on current step and config
+    const calculatedState = useMemo(() => {
+      if (!currentConfig) {
+        return {
+          progress: 0,
+          canGoBack: false,
+          canAdvance: false
+        };
+      }
+
+      const currentIndex = currentConfig.steps.indexOf(state.currentStep);
+      const progress = currentIndex >= 0 ? (currentIndex / (currentConfig.steps.length - 1)) * 100 : 0;
+      
+      return {
+        progress,
+        canGoBack: currentIndex > 0,
+        canAdvance: currentIndex < currentConfig.steps.length - 1
+      };
+    }, [currentConfig, state.currentStep]);
 
     console.log('✅ useUniversalCreator: Hook setup complete, returning state and actions');
 
     return {
-      state,
+      state: {
+        ...state,
+        ...calculatedState
+      },
       cardEditor,
       modeConfigs,
       currentConfig,
