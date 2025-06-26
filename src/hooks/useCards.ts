@@ -1,87 +1,42 @@
 
-import { useState, useEffect, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useEffect } from 'react';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
-import { CardRepository } from '@/repositories/cardRepository';
-import { CardStorageService } from '@/services/cardStorage';
 import { CardMigrationService } from '@/services/cardMigration';
+import { CardFetchingService } from '@/services/cardFetching';
+import { useCardsState } from './useCardsState';
+import { useRealtimeCardSubscription } from './useRealtimeCardSubscription';
 import { toast } from 'sonner';
-import type { Tables } from '@/integrations/supabase/types';
-
-// Use the database type directly instead of custom interface
-type Card = Tables<'cards'>;
-
-// Generate unique channel names to prevent subscription conflicts
-const generateChannelId = () => `cards-changes-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
 
 export const useCards = () => {
   const { user } = useAuth();
-  const [cards, setCards] = useState<Card[]>([]);
-  const [featuredCards, setFeaturedCards] = useState<Card[]>([]);
-  const [userCards, setUserCards] = useState<Card[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [dataSource, setDataSource] = useState<'database' | 'local' | 'mixed'>('database');
-  
-  // Track subscription state to prevent duplicates
-  const subscriptionRef = useRef<any>(null);
-  const channelIdRef = useRef<string | null>(null);
-  const isSubscribedRef = useRef(false);
+  const {
+    cards,
+    featuredCards,
+    userCards,
+    loading,
+    dataSource,
+    setLoading,
+    updateCards,
+    updateUserCards,
+    updateDataSource
+  } = useCardsState();
 
   const fetchAllCardsFromDatabase = async () => {
-    try {
-      console.log('🔍 Fetching all cards from database...');
-      
-      const allCards = await CardRepository.getAllCards();
-      
-      // Check local storage situation
-      const storageReport = CardStorageService.getStorageReport();
-      console.log(`💾 Local storage report:`, storageReport);
-      
-      // Determine data source
-      let source: 'database' | 'local' | 'mixed' = 'database';
-      
-      if (allCards.length === 0 && storageReport.totalCards > 0) {
-        console.log('⚠️ No database cards found, but local cards exist');
-        source = 'local';
-      } else if (allCards.length > 0 && storageReport.totalCards > 0) {
-        console.log('🔄 Both database and local cards found');
-        source = 'mixed';
-      }
-      
-      setDataSource(source);
-      setCards(allCards);
-      setFeaturedCards(allCards.slice(0, 8));
-      
-      console.log(`📊 Final result: ${allCards.length} cards from ${source} source`);
-      return allCards;
-    } catch (error) {
-      console.error('💥 Error fetching cards:', error);
-      setCards([]);
-      setFeaturedCards([]);
-      return [];
-    }
+    const { cards: fetchedCards, dataSource: source } = await CardFetchingService.fetchAllCardsFromDatabase();
+    updateCards(fetchedCards);
+    updateDataSource(source);
+    return fetchedCards;
   };
 
   const fetchUserCards = async (userId?: string) => {
     const targetUserId = userId || user?.id;
     if (!targetUserId) return [];
     
-    try {
-      const result = await CardRepository.getCards({
-        creator_id: targetUserId,
-        includePrivate: true,
-        pageSize: 100
-      });
-      
-      const userCardsData = result.cards;
-      if (!userId || userId === user?.id) {
-        setUserCards(userCardsData);
-      }
-      return userCardsData;
-    } catch (error) {
-      console.error('💥 Error fetching user cards:', error);
-      return [];
+    const userCardsData = await CardFetchingService.fetchUserCards(targetUserId);
+    if (!userId || userId === user?.id) {
+      updateUserCards(userCardsData);
     }
+    return userCardsData;
   };
 
   const fetchCards = async () => {
@@ -169,66 +124,12 @@ export const useCards = () => {
     }
   };
 
-  // Cleanup function to properly remove subscription
-  const cleanupSubscription = () => {
-    if (subscriptionRef.current && channelIdRef.current) {
-      console.log(`🧹 Cleaning up subscription: ${channelIdRef.current}`);
-      try {
-        supabase.removeChannel(subscriptionRef.current);
-      } catch (error) {
-        console.warn('Warning during subscription cleanup:', error);
-      }
-      subscriptionRef.current = null;
-      channelIdRef.current = null;
-      isSubscribedRef.current = false;
-    }
-  };
+  // Set up real-time subscription
+  useRealtimeCardSubscription(fetchCards, user?.id);
 
   useEffect(() => {
     // Initial fetch
     fetchCards();
-
-    // Clean up any existing subscription before creating a new one
-    cleanupSubscription();
-
-    // Create unique channel name for this instance
-    const channelName = generateChannelId();
-    channelIdRef.current = channelName;
-    
-    console.log(`📡 Setting up subscription with channel: ${channelName}`);
-    
-    try {
-      const channel = supabase.channel(channelName);
-      
-      subscriptionRef.current = channel
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'cards'
-        }, (payload) => {
-          console.log('🔔 Real-time card change:', payload);
-          // Debounce rapid changes by using a timeout
-          setTimeout(() => {
-            fetchCards();
-          }, 100);
-        })
-        .subscribe((status) => {
-          console.log(`📡 Subscription status for ${channelName}:`, status);
-          isSubscribedRef.current = status === 'SUBSCRIBED';
-          
-          if (status === 'CHANNEL_ERROR') {
-            console.error(`❌ Channel error for ${channelName}`);
-            cleanupSubscription();
-          }
-        });
-    } catch (error) {
-      console.error('💥 Error setting up subscription:', error);
-    }
-
-    // Cleanup function
-    return () => {
-      cleanupSubscription();
-    };
   }, [user?.id]);
 
   return {
