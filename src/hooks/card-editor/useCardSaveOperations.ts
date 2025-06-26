@@ -6,15 +6,20 @@ import { CardRepository } from '@/repositories/cardRepository';
 import { CardStorageService } from '@/services/cardStorage';
 import type { CardData } from './types';
 
+export interface SaveResult {
+  success: boolean;
+  cardId?: string;
+}
+
 export const useCardSaveOperations = () => {
   const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  const saveCard = async (cardData: CardData): Promise<boolean> => {
+  const saveCard = async (cardData: CardData): Promise<SaveResult> => {
     if (!user) {
       toast.error('Please sign in to save cards');
-      return false;
+      return { success: false };
     }
 
     const finalCardData = {
@@ -96,8 +101,8 @@ export const useCardSaveOperations = () => {
       visibility: 'public' as const
     };
     
-    const saved = await saveCard(updatedCard);
-    if (!saved.success) return false;
+    const result = await saveCard(updatedCard);
+    if (!result.success) return false;
 
     try {
       toast.success('Card published successfully');
