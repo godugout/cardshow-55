@@ -923,24 +923,33 @@ export type Database = {
       collection_cards: {
         Row: {
           added_at: string | null
+          added_by: string | null
           card_id: string
           collection_id: string
           display_order: number | null
           id: string
+          notes: string | null
+          quantity: number | null
         }
         Insert: {
           added_at?: string | null
+          added_by?: string | null
           card_id: string
           collection_id: string
           display_order?: number | null
           id?: string
+          notes?: string | null
+          quantity?: number | null
         }
         Update: {
           added_at?: string | null
+          added_by?: string | null
           card_id?: string
           collection_id?: string
           display_order?: number | null
           id?: string
+          notes?: string | null
+          quantity?: number | null
         }
         Relationships: [
           {
@@ -1116,7 +1125,6 @@ export type Database = {
           id: string
           is_featured: boolean | null
           is_group: boolean | null
-          is_public: boolean | null
           metadata: Json | null
           name: string | null
           template_id: string | null
@@ -1134,7 +1142,6 @@ export type Database = {
           id?: string
           is_featured?: boolean | null
           is_group?: boolean | null
-          is_public?: boolean | null
           metadata?: Json | null
           name?: string | null
           template_id?: string | null
@@ -1152,7 +1159,6 @@ export type Database = {
           id?: string
           is_featured?: boolean | null
           is_group?: boolean | null
-          is_public?: boolean | null
           metadata?: Json | null
           name?: string | null
           template_id?: string | null
@@ -5226,6 +5232,14 @@ export type Database = {
           metadata: Json
           reaction_count: number
         }[]
+      }
+      get_collection_card_count: {
+        Args: { collection_uuid: string }
+        Returns: number
+      }
+      get_collection_follower_count: {
+        Args: { collection_uuid: string }
+        Returns: number
       }
       get_collection_stats: {
         Args: { collection_uuid: string }
