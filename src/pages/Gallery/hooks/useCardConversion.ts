@@ -17,6 +17,15 @@ export const useCardConversion = () => {
         }
       };
 
+      // Safely convert design_metadata to Record<string, any>
+      const safeDesignMetadata = (): Record<string, any> => {
+        if (!card.design_metadata) return {};
+        if (typeof card.design_metadata === 'object' && !Array.isArray(card.design_metadata)) {
+          return card.design_metadata as Record<string, any>;
+        }
+        return {};
+      };
+
       return {
         id: card.id,
         title: card.title,
@@ -24,7 +33,7 @@ export const useCardConversion = () => {
         image_url: card.image_url,
         rarity: mapRarity(card.rarity || 'common'),
         tags: card.tags || [],
-        design_metadata: card.design_metadata || {},
+        design_metadata: safeDesignMetadata(),
         visibility: card.visibility === 'public' ? 'public' : card.visibility === 'shared' ? 'shared' : 'private',
         template_id: card.template_id,
         creator_attribution: {
