@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
@@ -86,7 +87,9 @@ export const useUnifiedCreator = ({
         mode,
         currentStep: config.steps[0],
         intent: { ...state.intent, mode },
-        progress: 0
+        progress: 0,
+        canGoBack: false,
+        canAdvance: true
       });
     }
   }, [modeConfigs, state.intent, updateState]);
