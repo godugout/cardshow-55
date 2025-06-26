@@ -59,6 +59,9 @@ export const UniversalCardCreator = ({
       currentStep: state.currentStep
     });
 
+    // Move console.log outside of JSX
+    console.log('📄 UniversalCardCreator: Rendering StepContent');
+
     return (
       <CreationErrorBoundary onReset={actions.startOver}>
         <div className="min-h-screen bg-crd-darkest">
@@ -133,7 +136,6 @@ export const UniversalCardCreator = ({
 
           {/* Main Content */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {console.log('📄 UniversalCardCreator: Rendering StepContent')}
             <StepContent
               step={state.currentStep}
               mode={state.mode}
