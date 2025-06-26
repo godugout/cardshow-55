@@ -151,7 +151,7 @@ const Gallery = () => {
                 }
                 action={{
                   label: hasLocalCards ? "Create More Cards" : "Create Card",
-                  onClick: () => navigate('/editor'),
+                  onClick: () => navigate('/crdmkr'),
                   icon: <Plus className="mr-2 h-4 w-4" />
                 }}
               />

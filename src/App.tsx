@@ -33,7 +33,8 @@ function App() {
             <Route path="cards/create" element={<CardCreationFlow />} />
             <Route path="cards/upload" element={<Navigate to="/cards/create" replace />} />
             <Route path="cards/bulk-upload" element={<BulkUpload />} />
-            <Route path="editor" element={<UnifiedCardCreator />} />
+            <Route path="crdmkr" element={<UnifiedCardCreator />} />
+            <Route path="editor" element={<Navigate to="/crdmkr" replace />} />
             <Route path="gallery" element={<Gallery />} />
             <Route path="collections" element={<Collections />} />
             <Route path="memories" element={<Memories />} />

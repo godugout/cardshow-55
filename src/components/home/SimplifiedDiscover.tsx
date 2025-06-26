@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
@@ -121,7 +122,7 @@ export const SimplifiedDiscover: React.FC = () => {
         </div>
         
         <div className="text-center">
-          <Link to="/editor">
+          <Link to="/crdmkr">
             <CRDButton 
               variant="secondary" 
               size="lg"
@@ -130,7 +131,7 @@ export const SimplifiedDiscover: React.FC = () => {
               Browse All Cards
             </CRDButton>
           </Link>
-          <Link to="/editor">
+          <Link to="/crdmkr">
             <CRDButton 
               variant="primary" 
               size="lg"
