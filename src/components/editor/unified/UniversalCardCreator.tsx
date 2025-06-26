@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { useUniversalCreator } from './hooks/useUniversalCreator';
 import { ProgressIndicator } from './components/ProgressIndicator';
@@ -20,6 +21,8 @@ export const UniversalCardCreator = ({
   onComplete,
   onCancel
 }: UniversalCardCreatorProps) => {
+  const navigate = useNavigate();
+  
   const {
     state,
     cardEditor,
@@ -28,7 +31,7 @@ export const UniversalCardCreator = ({
   } = useUniversalCreator({
     initialMode,
     onComplete,
-    onCancel
+    onCancel: onCancel || (() => navigate('/gallery'))
   });
 
   const canProceed = actions.validateStep();
@@ -58,15 +61,13 @@ export const UniversalCardCreator = ({
               )}
             </div>
 
-            {onCancel && (
-              <CRDButton
-                variant="outline"
-                onClick={onCancel}
-                className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
-              >
-                Cancel
-              </CRDButton>
-            )}
+            <CRDButton
+              variant="outline"
+              onClick={() => navigate('/gallery')}
+              className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
+            >
+              Cancel
+            </CRDButton>
           </div>
         </div>
 
@@ -112,7 +113,7 @@ export const UniversalCardCreator = ({
             onModeSelect={actions.setMode}
             onPhotoSelect={(photo) => cardEditor.updateCardField('image_url', photo)}
             onFieldUpdate={cardEditor.updateCardField}
-            onBulkUpload={() => actions.setMode('bulk')}
+            onBulkUpload={() => navigate('/cards/bulk-upload')}
             onGoToGallery={actions.goToGallery}
             onStartOver={actions.startOver}
           />

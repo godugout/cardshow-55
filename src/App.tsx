@@ -15,9 +15,9 @@ import GettingStarted from '@/pages/GettingStarted';
 import ContactUs from '@/pages/ContactUs';
 import Community from '@/pages/Community';
 import BulkUpload from '@/pages/BulkUpload';
+import NotFound from '@/pages/NotFound';
 import { AuthPage } from '@/components/auth/AuthPage';
-import { CardCreationFlow } from '@/components/editor/CardCreationFlow';
-import { UnifiedCardCreator } from '@/components/editor/unified/UnifiedCardCreator';
+import { UniversalCardCreator } from '@/components/editor/unified/UniversalCardCreator';
 
 function App() {
   return (
@@ -30,11 +30,11 @@ function App() {
             <Route path="studio/:cardId" element={<Studio />} />
             <Route path="studio/:cardId/preset/:presetId" element={<Studio />} />
             <Route path="cards" element={<Navigate to="/cards/create" replace />} />
-            <Route path="cards/create" element={<CardCreationFlow />} />
+            <Route path="cards/create" element={<UniversalCardCreator />} />
             <Route path="cards/upload" element={<Navigate to="/cards/create" replace />} />
             <Route path="cards/bulk-upload" element={<BulkUpload />} />
-            <Route path="crdmkr" element={<UnifiedCardCreator />} />
-            <Route path="editor" element={<Navigate to="/crdmkr" replace />} />
+            <Route path="crdmkr" element={<UniversalCardCreator />} />
+            <Route path="editor" element={<Navigate to="/cards/create" replace />} />
             <Route path="gallery" element={<Gallery />} />
             <Route path="collections" element={<Collections />} />
             <Route path="memories" element={<Memories />} />
@@ -46,6 +46,7 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<AccountSettings />} />
             <Route path="creators" element={<Creators />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </div>

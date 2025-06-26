@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
@@ -95,11 +94,12 @@ export const useUniversalCreator = ({
   }, []);
 
   const setMode = useCallback((mode: CreationMode) => {
+    console.log('useUniversalCreator: Setting mode to', mode);
     const config = modeConfigs.find(c => c.id === mode);
     if (config) {
       updateState({
         mode,
-        currentStep: config.steps[1] || 'upload', // Skip intent step when switching modes
+        currentStep: config.steps[1] || 'upload', // Skip intent step when mode is selected
         intent: { ...state.intent, mode },
         errors: {} // Clear any previous errors
       });
@@ -112,6 +112,7 @@ export const useUniversalCreator = ({
     const currentIndex = currentConfig.steps.indexOf(state.currentStep);
     if (currentIndex < currentConfig.steps.length - 1) {
       const nextStep = currentConfig.steps[currentIndex + 1];
+      console.log('useUniversalCreator: Moving to next step:', nextStep);
       
       setState(prev => ({
         ...prev,
@@ -127,6 +128,7 @@ export const useUniversalCreator = ({
     const currentIndex = currentConfig.steps.indexOf(state.currentStep);
     if (currentIndex > 0) {
       const prevStep = currentConfig.steps[currentIndex - 1];
+      console.log('useUniversalCreator: Moving to previous step:', prevStep);
       
       setState(prev => ({
         ...prev,

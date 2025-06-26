@@ -35,6 +35,16 @@ const modeOptions = [
 ];
 
 export const IntentStep = ({ onModeSelect, onBulkUpload }: IntentStepProps) => {
+  const handleModeSelect = (mode: CreationMode) => {
+    console.log('IntentStep: Mode selected:', mode);
+    onModeSelect(mode);
+  };
+
+  const handleBulkUpload = () => {
+    console.log('IntentStep: Bulk upload selected');
+    onBulkUpload();
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="text-center mb-12">
@@ -53,7 +63,7 @@ export const IntentStep = ({ onModeSelect, onBulkUpload }: IntentStepProps) => {
             <div
               key={option.id}
               className="relative bg-crd-darker border border-crd-mediumGray/20 rounded-xl p-6 hover:border-crd-green/30 transition-all cursor-pointer group"
-              onClick={() => onModeSelect(option.id)}
+              onClick={() => handleModeSelect(option.id)}
             >
               {option.recommended && (
                 <div className="absolute -top-2 left-4 bg-crd-green text-black text-xs font-bold px-2 py-1 rounded">
@@ -84,6 +94,10 @@ export const IntentStep = ({ onModeSelect, onBulkUpload }: IntentStepProps) => {
                 <CRDButton
                   variant="outline"
                   className="w-full border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white group-hover:border-crd-green/30"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModeSelect(option.id);
+                  }}
                 >
                   Select {option.title}
                 </CRDButton>
@@ -107,7 +121,7 @@ export const IntentStep = ({ onModeSelect, onBulkUpload }: IntentStepProps) => {
           </div>
           <CRDButton
             variant="outline"
-            onClick={onBulkUpload}
+            onClick={handleBulkUpload}
             className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
           >
             <Upload className="w-4 h-4 mr-2" />
