@@ -2546,6 +2546,42 @@ export type Database = {
           },
         ]
       }
+      daily_challenges: {
+        Row: {
+          challenge_type: string
+          created_at: string | null
+          description: string
+          expires_at: string
+          id: string
+          is_active: boolean | null
+          points_reward: number
+          target_value: number
+          title: string
+        }
+        Insert: {
+          challenge_type: string
+          created_at?: string | null
+          description: string
+          expires_at: string
+          id?: string
+          is_active?: boolean | null
+          points_reward?: number
+          target_value?: number
+          title: string
+        }
+        Update: {
+          challenge_type?: string
+          created_at?: string | null
+          description?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean | null
+          points_reward?: number
+          target_value?: number
+          title?: string
+        }
+        Relationships: []
+      }
       design_assets_library: {
         Row: {
           asset_name: string
@@ -4788,6 +4824,74 @@ export type Database = {
           },
         ]
       }
+      user_challenge_progress: {
+        Row: {
+          challenge_id: string
+          completed_at: string | null
+          created_at: string | null
+          current_progress: number | null
+          id: string
+          is_completed: boolean | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          current_progress?: number | null
+          id?: string
+          is_completed?: boolean | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          current_progress?: number | null
+          id?: string
+          is_completed?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenge_progress_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "daily_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_experience_points: {
+        Row: {
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          points_earned: number
+          points_source: string
+          source_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          points_earned?: number
+          points_source: string
+          source_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          points_earned?: number
+          points_source?: string
+          source_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           accessibility_options: Json | null
@@ -5058,6 +5162,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_user_xp: {
+        Args: {
+          user_uuid: string
+          points: number
+          source: string
+          source_ref_id?: string
+          xp_metadata?: Json
+        }
+        Returns: Json
+      }
       calculate_creator_earnings: {
         Args: { creator_uuid: string; start_date?: string; end_date?: string }
         Returns: {
@@ -5075,11 +5189,19 @@ export type Database = {
         Args: { amount: number }
         Returns: number
       }
+      calculate_user_level: {
+        Args: { total_xp: number }
+        Returns: Json
+      }
       create_collection_from_template: {
         Args: { template_id: string; collection_title: string; user_id: string }
         Returns: string
       }
       expire_old_trades: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      generate_daily_challenges: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
@@ -5194,6 +5316,17 @@ export type Database = {
       process_gdpr_export: {
         Args: { user_uuid: string }
         Returns: Json
+      }
+      unlock_achievement: {
+        Args: {
+          user_uuid: string
+          achievement_type_param: string
+          achievement_name_param: string
+          description_param: string
+          points_param: number
+          metadata_param?: Json
+        }
+        Returns: boolean
       }
       update_market_analytics: {
         Args: { p_card_id: string; p_sale_price: number }

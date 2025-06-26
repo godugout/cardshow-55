@@ -25,9 +25,9 @@ export const useCards = () => {
       // Get all cards from database
       const allCards = await CardRepository.getAllCards();
       
-      // Also check if there are cards stored locally
-      const localCards = localCardStorage.getAllCards();
-      console.log(`💾 Found ${localCards.length} cards in local storage`);
+      // Also check if there are cards stored locally (including consolidated check)
+      const { allCards: localCards } = localCardStorage.getAllCardsFromAllLocations();
+      console.log(`💾 Found ${localCards.length} total cards across all local storage locations`);
       
       // Check collections table for any linked cards
       const { data: collectionsData, error: collectionsError } = await supabase
@@ -129,32 +129,24 @@ export const useCards = () => {
     }
   };
 
-  // Enhanced method to migrate local cards to database
+  // Enhanced method to migrate local cards to database with improved consolidation
   const migrateLocalCardsToDatabase = async () => {
     if (!user?.id) {
       toast.error('Please sign in to migrate cards');
       return;
     }
     
-    // Check both storage locations for cards
-    const standardLocalCards = localCardStorage.getAllCards();
-    let userSpecificCards = [];
+    console.log('🔄 Starting enhanced card migration...');
     
-    // Also check the user-specific storage that useCardEditor was using
-    try {
-      const userCardsKey = `cards_${user.id}`;
-      const userStoredCards = JSON.parse(localStorage.getItem(userCardsKey) || '[]');
-      userSpecificCards = Array.isArray(userStoredCards) ? userStoredCards : [];
-      console.log(`🔍 Found ${userSpecificCards.length} cards in user-specific storage`);
-    } catch (error) {
-      console.error('Error reading user-specific storage:', error);
+    // First, consolidate all localStorage locations
+    const { consolidated, cleaned } = localCardStorage.consolidateAllStorage();
+    if (consolidated > 0) {
+      toast.success(`Consolidated ${consolidated} cards from different storage locations`);
+      console.log(`🔄 Consolidated ${consolidated} cards, cleaned up: ${cleaned.join(', ')}`);
     }
     
-    // Combine all local cards, removing duplicates by ID
-    const allLocalCards = [...standardLocalCards, ...userSpecificCards];
-    const uniqueLocalCards = allLocalCards.filter((card, index, self) => 
-      index === self.findIndex(c => c.id === card.id)
-    );
+    // Now get all cards from the consolidated storage
+    const { allCards: uniqueLocalCards } = localCardStorage.getAllCardsFromAllLocations();
     
     if (uniqueLocalCards.length === 0) {
       toast.info('No local cards to migrate');
@@ -219,11 +211,7 @@ export const useCards = () => {
     
     if (migratedCount > 0) {
       toast.success(`Successfully migrated ${migratedCount} cards to database${errorCount > 0 ? ` (${errorCount} failed)` : ''}`);
-      // Clear user-specific storage after successful migration
-      if (userSpecificCards.length > 0) {
-        localStorage.removeItem(`cards_${user.id}`);
-        console.log('🧹 Cleaned up user-specific storage');
-      }
+      console.log('🧹 Keeping local cards as backup, but marking them as synced');
       // Refresh cards after migration
       await fetchCards();
     } else {

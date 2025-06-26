@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
@@ -139,7 +138,7 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
   };
 
   const saveCard = async (): Promise<boolean> => {
-    console.log('🎯 Starting dual card save (localStorage + Database)...', { cardData, user });
+    console.log('🎯 Starting enhanced dual card save (localStorage + Database)...', { cardData, user });
     
     if (!user) {
       toast.error('Please sign in to save cards');
@@ -156,8 +155,8 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
 
     setIsSaving(true);
     try {
-      // 1. Save to localStorage using localCardStorage (for quick access)
-      console.log('💾 Saving to localStorage...');
+      // 1. Save to consolidated localStorage using localCardStorage
+      console.log('💾 Saving to consolidated localStorage...');
       const localCardId = localCardStorage.saveCard(finalCardData);
       
       // 2. Save to Supabase database (for persistence and sharing)
