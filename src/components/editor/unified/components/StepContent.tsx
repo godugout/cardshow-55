@@ -1,14 +1,11 @@
 
 import React from 'react';
-import { CheckCircle, Plus, Eye, ArrowLeft } from 'lucide-react';
-import { CRDButton } from '@/components/ui/design-system/Button';
-import { ModeSelector } from './ModeSelector';
-import { PhotoUploadStep } from '../../wizard/PhotoUploadStep';
-import { CardDetailsStep } from '../../wizard/CardDetailsStep';
-import { PublishingOptionsStep } from '../../wizard/PublishingOptionsStep';
-import { SimpleCardForm } from '../../SimpleCardForm';
-import { SimpleEditor } from '../../SimpleEditor';
-import BulkUpload from '@/pages/BulkUpload';
+import { IntentStep } from './steps/IntentStep';
+import { PhotoStep } from './steps/PhotoStep';
+import { DetailsStep } from './steps/DetailsStep';
+import { DesignStep } from './steps/DesignStep';
+import { PublishStep } from './steps/PublishStep';
+import { CompleteStep } from './steps/CompleteStep';
 import type { CreationStep, CreationMode } from '../types';
 import type { CardData } from '@/hooks/useCardEditor';
 
@@ -16,20 +13,18 @@ interface StepContentProps {
   step: CreationStep;
   mode: CreationMode;
   cardData: CardData;
-  modeConfigs: any[];
   onModeSelect: (mode: CreationMode) => void;
   onPhotoSelect: (photo: string) => void;
   onFieldUpdate: (field: keyof CardData, value: any) => void;
-  onBulkUpload?: () => void;
-  onGoToGallery?: () => void;
-  onStartOver?: () => void;
+  onBulkUpload: () => void;
+  onGoToGallery: () => void;
+  onStartOver: () => void;
 }
 
 export const StepContent = ({
   step,
   mode,
   cardData,
-  modeConfigs,
   onModeSelect,
   onPhotoSelect,
   onFieldUpdate,
@@ -40,109 +35,58 @@ export const StepContent = ({
   switch (step) {
     case 'intent':
       return (
-        <ModeSelector
-          configs={modeConfigs}
-          selectedMode={mode}
+        <IntentStep
           onModeSelect={onModeSelect}
-        />
-      );
-
-    case 'upload':
-      if (mode === 'bulk') {
-        return <BulkUpload />;
-      }
-      return (
-        <PhotoUploadStep
-          selectedPhoto={cardData.image_url || ''}
-          onPhotoSelect={onPhotoSelect}
           onBulkUpload={onBulkUpload}
         />
       );
-
-    case 'details':
-      if (mode === 'quick') {
-        return <SimpleCardForm />;
-      }
+    
+    case 'upload':
       return (
-        <CardDetailsStep
+        <PhotoStep
+          mode={mode}
+          selectedPhoto={cardData.image_url}
+          onPhotoSelect={onPhotoSelect}
+        />
+      );
+    
+    case 'details':
+      return (
+        <DetailsStep
+          mode={mode}
           cardData={cardData}
           onFieldUpdate={onFieldUpdate}
-          onCreatorAttributionUpdate={(key, value) => {
-            onFieldUpdate('creator_attribution', {
-              ...cardData.creator_attribution,
-              [key]: value
-            });
-          }}
         />
       );
-
+    
     case 'design':
       return (
-        <SimpleEditor
-          initialData={cardData}
-          onStartOver={() => onModeSelect('quick')}
+        <DesignStep
+          mode={mode}
+          cardData={cardData}
+          onFieldUpdate={onFieldUpdate}
         />
       );
-
+    
     case 'publish':
       return (
-        <PublishingOptionsStep
-          publishingOptions={cardData.publishing_options}
-          selectedTemplate={null}
-          onPublishingUpdate={(key, value) => {
-            onFieldUpdate('publishing_options', {
-              ...cardData.publishing_options,
-              [key]: value
-            });
-          }}
+        <PublishStep
+          mode={mode}
+          cardData={cardData}
+          onFieldUpdate={onFieldUpdate}
         />
       );
-
+    
     case 'complete':
       return (
-        <div className="text-center py-12">
-          <div className="max-w-md mx-auto">
-            <div className="w-16 h-16 bg-crd-green rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-8 h-8 text-black" />
-            </div>
-            <h2 className="text-2xl font-bold text-crd-white mb-4">
-              {mode === 'bulk' ? 'Cards Created Successfully!' : 'Card Created Successfully!'}
-            </h2>
-            <p className="text-crd-lightGray mb-8">
-              {mode === 'bulk' 
-                ? 'Your cards have been processed and are now available in your gallery.'
-                : `"${cardData.title}" has been created and saved to your collection.`
-              }
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {onGoToGallery && (
-                <CRDButton
-                  variant="primary"
-                  onClick={onGoToGallery}
-                  className="bg-crd-green hover:bg-crd-green/80 text-black"
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  View in Gallery
-                </CRDButton>
-              )}
-              
-              {onStartOver && (
-                <CRDButton
-                  variant="outline"
-                  onClick={onStartOver}
-                  className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Another Card
-                </CRDButton>
-              )}
-            </div>
-          </div>
-        </div>
+        <CompleteStep
+          cardData={cardData}
+          onGoToGallery={onGoToGallery}
+          onStartOver={onStartOver}
+        />
       );
-
+    
     default:
-      return null;
+      return <div className="text-center text-crd-lightGray">Step not found</div>;
   }
 };

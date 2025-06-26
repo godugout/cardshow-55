@@ -2,19 +2,20 @@
 export type CreationMode = 'quick' | 'guided' | 'advanced' | 'bulk';
 
 export type CreationStep = 
-  | 'intent'      // Choose creation mode
-  | 'upload'      // Photo upload and processing
-  | 'details'     // Card information
-  | 'design'      // Visual customization
-  | 'publish'     // Publishing options
-  | 'complete';   // Finalization
+  | 'intent'
+  | 'upload'
+  | 'details'
+  | 'design'
+  | 'publish'
+  | 'complete';
 
 export interface CreationIntent {
   mode: CreationMode;
-  cardType?: 'standard' | 'sports' | 'gaming' | 'art' | 'custom';
-  complexity?: 'simple' | 'advanced';
-  hasImage?: boolean;
-  isBulk?: boolean;
+  preferences?: {
+    skipTutorial?: boolean;
+    defaultTemplate?: string;
+    autoPublish?: boolean;
+  };
 }
 
 export interface CreationState {
@@ -25,6 +26,8 @@ export interface CreationState {
   canGoBack: boolean;
   progress: number;
   errors: Record<string, string>;
+  isCreating?: boolean;
+  creationError?: string | null;
 }
 
 export interface ModeConfig {
