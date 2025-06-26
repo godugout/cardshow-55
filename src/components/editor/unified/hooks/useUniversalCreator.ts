@@ -108,8 +108,13 @@ export const useUniversalCreator = ({
     const config = MODE_CONFIGS.find(c => c.id === newMode);
     if (config) {
       setMode(newMode);
-      setCurrentStep(config.steps[0] || 'intent');
+      // Progress to the next step after intent selection (index 1, or fallback to index 0)
+      const nextStep = config.steps.length > 1 ? config.steps[1] : config.steps[0] || 'intent';
+      console.log('➡️ useUniversalCreator: Progressing to step:', nextStep);
+      setCurrentStep(nextStep);
       setErrors({});
+    } else {
+      console.warn('⚠️ useUniversalCreator: Config not found for mode:', newMode);
     }
   }, []);
 
@@ -246,7 +251,7 @@ export const useUniversalCreator = ({
     creationError
   }), [mode, currentStep, navigationState, progress, errors, isCreating, creationError]);
 
-  console.log('✅ useUniversalCreator: Hook setup complete');
+  console.log('✅ useUniversalCreator: Hook setup complete, current step:', currentStep);
 
   return {
     state,
