@@ -37,6 +37,14 @@ export const TrophyPlaque: React.FC<TrophyPlaqueProps> = ({
 
   const woodMaterial = woodMaterials[woodType];
 
+  // Define corner positions as proper tuples
+  const cornerPositions: [number, number, number][] = [
+    [-baseWidth/2 + 0.15, -cardHeight/2 - 0.2, baseHeight/2 - 0.15],
+    [baseWidth/2 - 0.15, -cardHeight/2 - 0.2, baseHeight/2 - 0.15],
+    [-baseWidth/2 + 0.15, -cardHeight/2 - 0.2, -baseHeight/2 + 0.15],
+    [baseWidth/2 - 0.15, -cardHeight/2 - 0.2, -baseHeight/2 + 0.15]
+  ];
+
   return (
     <group>
       {/* Enhanced Wooden Base with grain texture */}
@@ -117,12 +125,7 @@ export const TrophyPlaque: React.FC<TrophyPlaqueProps> = ({
       </mesh>
 
       {/* Corner Decorations */}
-      {[
-        [-baseWidth/2 + 0.15, -cardHeight/2 - 0.2, baseHeight/2 - 0.15],
-        [baseWidth/2 - 0.15, -cardHeight/2 - 0.2, baseHeight/2 - 0.15],
-        [-baseWidth/2 + 0.15, -cardHeight/2 - 0.2, -baseHeight/2 + 0.15],
-        [baseWidth/2 - 0.15, -cardHeight/2 - 0.2, -baseHeight/2 + 0.15]
-      ].map((position, index) => (
+      {cornerPositions.map((position, index) => (
         <mesh key={index} position={position}>
           <octahedronGeometry args={[0.05]} />
           <meshPhysicalMaterial
