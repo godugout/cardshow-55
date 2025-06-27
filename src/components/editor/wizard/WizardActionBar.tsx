@@ -40,7 +40,7 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({ onComplete }) 
   };
 
   return (
-    <div className="bg-crd-darker border-t border-crd-mediumGray/20 p-4">
+    <div className="fixed bottom-0 left-0 right-0 bg-crd-darker border-t border-crd-mediumGray/20 p-4 z-50">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         {/* Left Side - Back Button */}
         <div className="flex items-center gap-3">
@@ -49,7 +49,7 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({ onComplete }) 
             disabled={!canGoBack}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
               canGoBack
-                ? 'bg-crd-mediumGray text-white hover:bg-crd-mediumGray/80'
+                ? 'bg-crd-mediumGray text-white hover:bg-crd-mediumGray/80 cursor-pointer'
                 : 'bg-crd-mediumGray/30 text-crd-lightGray/50 cursor-not-allowed'
             }`}
           >
@@ -59,7 +59,7 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({ onComplete }) 
 
           <button
             onClick={handleSave}
-            className="flex items-center gap-2 px-3 py-2 text-crd-lightGray hover:text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-crd-lightGray hover:text-white transition-colors cursor-pointer"
             title="Save Progress"
           >
             <Save size={16} />
@@ -94,7 +94,7 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({ onComplete }) 
             <button
               onClick={handleComplete}
               disabled={!validateCurrentStep() || state.isLoading}
-              className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all duration-200 ${
+              className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all duration-200 cursor-pointer ${
                 validateCurrentStep() && !state.isLoading
                   ? 'bg-crd-green text-black hover:bg-crd-green/90'
                   : 'bg-crd-green/30 text-black/50 cursor-not-allowed'
@@ -107,7 +107,7 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({ onComplete }) 
             <button
               onClick={handleNext}
               disabled={!canGoNext || state.isLoading}
-              className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all duration-200 ${
+              className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all duration-200 cursor-pointer ${
                 canGoNext && !state.isLoading
                   ? 'bg-crd-green text-black hover:bg-crd-green/90'
                   : 'bg-crd-green/30 text-black/50 cursor-not-allowed'

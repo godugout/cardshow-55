@@ -34,7 +34,7 @@ export const WizardProgressIndicator: React.FC = () => {
                     <button
                       onClick={() => navigateToStep(step.id)}
                       disabled={!canNavigate}
-                      className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200 ${
+                      className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200 cursor-pointer ${
                         isActive 
                           ? 'bg-crd-green text-black ring-2 ring-crd-green/50' 
                           : isCompleted 
