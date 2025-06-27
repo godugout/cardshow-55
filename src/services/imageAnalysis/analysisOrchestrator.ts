@@ -1,6 +1,5 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { simpleKeywordDetector } from './simpleKeywordDetector';
 
 export interface AnalysisResult {
   title: string;
@@ -11,14 +10,15 @@ export interface AnalysisResult {
   objects: string[];
   detectionMethod?: string;
   matchedKeywords?: string[];
+  category?: string;
 }
 
 export class AnalysisOrchestrator {
   async analyzeImage(imageUrl: string): Promise<AnalysisResult> {
     try {
-      console.log('🚀 Starting real image analysis for:', imageUrl);
+      console.log('🚀 Starting advanced multi-modal image analysis for:', imageUrl);
       
-      // Call the Supabase edge function for image analysis
+      // Call the enhanced Supabase edge function for image analysis
       const { data, error } = await supabase.functions.invoke('analyze-card-image', {
         body: { imageData: imageUrl }
       });
@@ -28,40 +28,31 @@ export class AnalysisOrchestrator {
         return this.getFallbackResult();
       }
 
-      console.log('📊 Analysis response:', data);
+      console.log('📊 Advanced analysis response:', data);
 
-      // Extract detected objects from the response
+      // Extract data from the enhanced response
       const detectedObjects = data.extractedText || data.subjects || [];
+      const rarity = this.mapRarityFromResponse(data.rarity || 'uncommon');
+      const category = data.visualAnalysis?.theme?.toLowerCase() || 'general';
       
-      if (detectedObjects.length > 0) {
-        // Use the first detected object to generate card concept
-        const primaryObject = detectedObjects[0];
-        console.log('🎯 Primary detected object:', primaryObject);
-        
-        // Use the keyword detector with the real detected object
-        const keywordResult = simpleKeywordDetector.detectFromKeywords(primaryObject);
-        
-        console.log('✅ Real analysis complete:', {
-          method: 'huggingface_resnet50',
-          detected: primaryObject,
-          result: keywordResult.title,
-          confidence: keywordResult.confidence
-        });
-        
-        return {
-          title: keywordResult.title,
-          description: keywordResult.description,
-          rarity: keywordResult.rarity,
-          tags: keywordResult.tags,
-          confidence: Math.min(keywordResult.confidence + 0.2, 1.0), // Boost confidence for real detection
-          objects: detectedObjects,
-          detectionMethod: 'huggingface_resnet50',
-          matchedKeywords: keywordResult.matchedKeywords
-        };
-      } else {
-        console.log('⚠️ No objects detected, using creative fallback');
-        return this.getCreativeFallback(data);
-      }
+      console.log('✅ Advanced analysis complete:', {
+        method: data.analysisMethod,
+        detected: detectedObjects,
+        title: data.creativeTitle || data.playerName,
+        confidence: data.confidence,
+        category: category
+      });
+      
+      return {
+        title: data.creativeTitle || data.playerName || 'Unknown Entity',
+        description: data.creativeDescription || 'A mysterious entity with unknown powers.',
+        rarity: rarity,
+        tags: this.generateTagsFromAnalysis(data, detectedObjects),
+        confidence: data.confidence || 0.5,
+        objects: detectedObjects,
+        detectionMethod: data.analysisMethod || 'advanced_analysis',
+        category: category
+      };
       
     } catch (error) {
       console.error('❌ Analysis failed:', error);
@@ -69,44 +60,72 @@ export class AnalysisOrchestrator {
     }
   }
   
-  private getCreativeFallback(analysisData: any): AnalysisResult {
-    // Use creative title from the analysis if available
-    const creativeTitle = analysisData?.creativeTitle || analysisData?.playerName;
-    const creativeDescription = analysisData?.creativeDescription;
+  private mapRarityFromResponse(rarity: string): 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary' {
+    const rarityMap: { [key: string]: 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary' } = {
+      'common': 'common',
+      'uncommon': 'uncommon', 
+      'rare': 'rare',
+      'epic': 'ultra-rare',
+      'legendary': 'legendary',
+      'mythic': 'legendary'
+    };
     
-    if (creativeTitle) {
-      return {
-        title: creativeTitle,
-        description: creativeDescription || 'A unique creation with extraordinary characteristics and hidden potential.',
-        rarity: 'uncommon',
-        tags: ['creative', 'unique', 'mysterious'],
-        confidence: 0.7,
-        objects: ['creative_entity'],
-        detectionMethod: 'creative_analysis'
-      };
+    return rarityMap[rarity.toLowerCase()] || 'uncommon';
+  }
+  
+  private generateTagsFromAnalysis(data: any, objects: string[]): string[] {
+    const tags = new Set<string>();
+    
+    // Add category-based tags
+    if (data.sport && data.sport !== 'Fantasy') {
+      tags.add(data.sport.toLowerCase());
     }
     
-    return this.getFallbackResult();
+    // Add theme-based tags
+    if (data.visualAnalysis?.theme) {
+      tags.add(data.visualAnalysis.theme.toLowerCase());
+    }
+    
+    // Add detected objects as tags
+    objects.forEach(obj => {
+      if (obj && obj !== 'mysterious_entity' && obj !== 'unique_creation') {
+        tags.add(obj.toLowerCase().replace(/_/g, ' '));
+      }
+    });
+    
+    // Add mood and style tags
+    if (data.visualAnalysis?.mood) {
+      tags.add(data.visualAnalysis.mood.toLowerCase());
+    }
+    
+    // Ensure we have at least some basic tags
+    if (tags.size === 0) {
+      tags.add('unique');
+      tags.add('mysterious');
+      tags.add('collectible');
+    }
+    
+    return Array.from(tags).slice(0, 8); // Limit to 8 tags
   }
   
   private getFallbackResult(): AnalysisResult {
     const fallbackTypes = [
       {
-        title: 'Mysterious Discovery',
-        description: 'A unique finding with hidden potential and untold stories.',
-        tags: ['mysterious', 'discovery', 'unique'],
+        title: 'Enigmatic Entity',
+        description: 'A mysterious being with untold powers and hidden secrets.',
+        tags: ['mysterious', 'enigmatic', 'powerful'],
         rarity: 'uncommon' as const
       },
       {
         title: 'Legendary Artifact',
-        description: 'An ancient relic imbued with mystical powers and rich history.',
-        tags: ['legendary', 'artifact', 'mystical'],
+        description: 'An ancient relic imbued with mystical energies and rich history.',
+        tags: ['legendary', 'artifact', 'ancient', 'mystical'],
         rarity: 'rare' as const
       },
       {
-        title: 'Enchanted Creation',
-        description: 'A magical entity brought to life through creative energy.',
-        tags: ['enchanted', 'magical', 'creative'],
+        title: 'Unknown Hero',
+        description: 'A heroic figure whose true identity remains shrouded in mystery.',
+        tags: ['hero', 'unknown', 'mysterious', 'brave'],
         rarity: 'uncommon' as const
       }
     ];
@@ -118,9 +137,10 @@ export class AnalysisOrchestrator {
       description: selected.description,
       rarity: selected.rarity,
       tags: selected.tags,
-      confidence: 0.5,
-      objects: ['unknown'],
-      detectionMethod: 'fallback'
+      confidence: 0.4,
+      objects: ['unknown_entity'],
+      detectionMethod: 'fallback',
+      category: 'mystery'
     };
   }
 }
