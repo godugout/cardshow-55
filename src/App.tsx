@@ -5,7 +5,7 @@ import { Toaster } from 'sonner';
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Navbar } from '@/components/layout/Navbar';
-import Home from '@/pages/Home';
+import Index from '@/pages/Index';
 import CreateCard from '@/pages/CreateCard';
 import Gallery from '@/pages/Gallery';
 import Studio from '@/pages/Studio';
@@ -18,7 +18,7 @@ const App = () => {
           <div className="min-h-screen bg-crd-darkest">
             <Navbar />
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Index />} />
               <Route path="/create" element={<CreateCard />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/studio" element={<Studio />} />
