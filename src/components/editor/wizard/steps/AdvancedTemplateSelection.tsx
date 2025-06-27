@@ -83,8 +83,7 @@ export const AdvancedTemplateSelection: React.FC = () => {
     dispatch({ 
       type: 'UPDATE_CARD_DATA', 
       payload: { 
-        template_id: template.id,
-        template_name: template.name 
+        template_id: template.id
       } 
     });
   };
