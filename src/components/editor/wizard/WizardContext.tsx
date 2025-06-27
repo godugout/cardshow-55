@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 
 export interface WizardStep {
@@ -106,33 +106,46 @@ const WizardContext = createContext<WizardContextType | null>(null);
 export const WizardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(wizardReducer, initialState);
 
-  // Auto-save functionality
+  // Throttled auto-save functionality
   useEffect(() => {
-    const saveInterval = setInterval(() => {
+    let timeoutId: NodeJS.Timeout;
+    
+    const saveState = () => {
       if (state.cardData && Object.keys(state.cardData).length > 0) {
         localStorage.setItem('cardshow-wizard-state', JSON.stringify(state));
         dispatch({ type: 'MARK_SAVED' });
       }
-    }, 30000); // Save every 30 seconds
+    };
 
-    return () => clearInterval(saveInterval);
-  }, [state]);
+    // Debounce saves to prevent too frequent localStorage writes
+    timeoutId = setTimeout(saveState, 1000);
 
-  // Restore from localStorage on mount
+    return () => clearTimeout(timeoutId);
+  }, [state.cardData]);
+
+  // Restore from localStorage on mount (only once)
   useEffect(() => {
     const savedState = localStorage.getItem('cardshow-wizard-state');
     if (savedState) {
       try {
         const parsedState = JSON.parse(savedState);
-        dispatch({ type: 'RESTORE_FROM_STORAGE', payload: parsedState });
+        // Only restore if it's a valid state
+        if (parsedState.currentStepId && parsedState.steps) {
+          dispatch({ type: 'RESTORE_FROM_STORAGE', payload: parsedState });
+        }
       } catch (error) {
         console.error('Failed to restore wizard state:', error);
       }
     }
-  }, []);
+  }, []); // Empty dependency array - run only once
+
+  const contextValue = React.useMemo(() => ({
+    state,
+    dispatch
+  }), [state, dispatch]);
 
   return (
-    <WizardContext.Provider value={{ state, dispatch }}>
+    <WizardContext.Provider value={contextValue}>
       {children}
     </WizardContext.Provider>
   );

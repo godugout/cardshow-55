@@ -1,72 +1,19 @@
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useWizardContext } from '../WizardContext';
 
 export const useWizardNavigation = () => {
   const { state, dispatch } = useWizardContext();
 
-  const getCurrentStep = useCallback(() => {
+  const currentStep = useMemo(() => {
     return state.steps.find(step => step.id === state.currentStepId);
   }, [state.steps, state.currentStepId]);
 
-  const getCurrentStepIndex = useCallback(() => {
+  const currentStepIndex = useMemo(() => {
     return state.steps.findIndex(step => step.id === state.currentStepId);
   }, [state.steps, state.currentStepId]);
 
-  const canNavigateToStep = useCallback((stepId: string) => {
-    const targetStep = state.steps.find(step => step.id === stepId);
-    const currentIndex = getCurrentStepIndex();
-    const targetIndex = state.steps.findIndex(step => step.id === stepId);
-    
-    if (!targetStep) return false;
-    
-    // Can always navigate backward to completed steps
-    if (targetIndex < currentIndex && targetStep.completed) {
-      return true;
-    }
-    
-    // Can navigate forward only to the next step if current step is valid
-    if (targetIndex === currentIndex + 1) {
-      const currentStep = getCurrentStep();
-      return currentStep?.valid || false;
-    }
-    
-    // Can navigate to current step
-    return targetIndex === currentIndex;
-  }, [state.steps, getCurrentStepIndex, getCurrentStep]);
-
-  const navigateToStep = useCallback((stepId: string) => {
-    if (canNavigateToStep(stepId)) {
-      dispatch({ type: 'SET_CURRENT_STEP', payload: stepId });
-      return true;
-    }
-    return false;
-  }, [canNavigateToStep, dispatch]);
-
-  const nextStep = useCallback(() => {
-    const currentIndex = getCurrentStepIndex();
-    const nextStepIndex = currentIndex + 1;
-    
-    if (nextStepIndex < state.steps.length) {
-      const nextStep = state.steps[nextStepIndex];
-      return navigateToStep(nextStep.id);
-    }
-    return false;
-  }, [getCurrentStepIndex, state.steps, navigateToStep]);
-
-  const previousStep = useCallback(() => {
-    const currentIndex = getCurrentStepIndex();
-    const prevStepIndex = currentIndex - 1;
-    
-    if (prevStepIndex >= 0) {
-      const prevStep = state.steps[prevStepIndex];
-      return navigateToStep(prevStep.id);
-    }
-    return false;
-  }, [getCurrentStepIndex, state.steps, navigateToStep]);
-
   const validateCurrentStep = useCallback(() => {
-    const currentStep = getCurrentStep();
     if (!currentStep) return false;
 
     let isValid = false;
@@ -91,38 +38,88 @@ export const useWizardNavigation = () => {
         isValid = false;
     }
 
-    dispatch({ 
-      type: 'SET_STEP_VALIDITY', 
-      payload: { stepId: currentStep.id, valid: isValid } 
-    });
+    // Only update if validity has changed
+    if (currentStep.valid !== isValid) {
+      dispatch({ 
+        type: 'SET_STEP_VALIDITY', 
+        payload: { stepId: currentStep.id, valid: isValid } 
+      });
+    }
 
     return isValid;
-  }, [getCurrentStep, state.cardData, dispatch]);
+  }, [currentStep, state.cardData, dispatch]);
+
+  const canNavigateToStep = useCallback((stepId: string) => {
+    const targetStep = state.steps.find(step => step.id === stepId);
+    const targetIndex = state.steps.findIndex(step => step.id === stepId);
+    
+    if (!targetStep) return false;
+    
+    // Can always navigate backward to completed steps
+    if (targetIndex < currentStepIndex && targetStep.completed) {
+      return true;
+    }
+    
+    // Can navigate forward only to the next step if current step is valid
+    if (targetIndex === currentStepIndex + 1) {
+      return currentStep?.valid || false;
+    }
+    
+    // Can navigate to current step
+    return targetIndex === currentStepIndex;
+  }, [state.steps, currentStepIndex, currentStep?.valid]);
+
+  const navigateToStep = useCallback((stepId: string) => {
+    if (canNavigateToStep(stepId)) {
+      dispatch({ type: 'SET_CURRENT_STEP', payload: stepId });
+      return true;
+    }
+    return false;
+  }, [canNavigateToStep, dispatch]);
+
+  const nextStep = useCallback(() => {
+    const nextStepIndex = currentStepIndex + 1;
+    
+    if (nextStepIndex < state.steps.length) {
+      const nextStep = state.steps[nextStepIndex];
+      return navigateToStep(nextStep.id);
+    }
+    return false;
+  }, [currentStepIndex, state.steps, navigateToStep]);
+
+  const previousStep = useCallback(() => {
+    const prevStepIndex = currentStepIndex - 1;
+    
+    if (prevStepIndex >= 0) {
+      const prevStep = state.steps[prevStepIndex];
+      return navigateToStep(prevStep.id);
+    }
+    return false;
+  }, [currentStepIndex, state.steps, navigateToStep]);
 
   const completeCurrentStep = useCallback(() => {
-    const currentStep = getCurrentStep();
     if (currentStep && validateCurrentStep()) {
       dispatch({ type: 'MARK_STEP_COMPLETED', payload: currentStep.id });
       return true;
     }
     return false;
-  }, [getCurrentStep, validateCurrentStep, dispatch]);
+  }, [currentStep, validateCurrentStep, dispatch]);
 
-  const canGoNext = useCallback(() => {
-    return getCurrentStepIndex() < state.steps.length - 1 && validateCurrentStep();
-  }, [getCurrentStepIndex, state.steps.length, validateCurrentStep]);
+  const canGoNext = useMemo(() => {
+    return currentStepIndex < state.steps.length - 1 && (currentStep?.valid || false);
+  }, [currentStepIndex, state.steps.length, currentStep?.valid]);
 
-  const canGoBack = useCallback(() => {
-    return getCurrentStepIndex() > 0;
-  }, [getCurrentStepIndex]);
+  const canGoBack = useMemo(() => {
+    return currentStepIndex > 0;
+  }, [currentStepIndex]);
 
-  const isLastStep = useCallback(() => {
-    return getCurrentStepIndex() === state.steps.length - 1;
-  }, [getCurrentStepIndex, state.steps.length]);
+  const isLastStep = useMemo(() => {
+    return currentStepIndex === state.steps.length - 1;
+  }, [currentStepIndex, state.steps.length]);
 
   return {
-    currentStep: getCurrentStep(),
-    currentStepIndex: getCurrentStepIndex(),
+    currentStep,
+    currentStepIndex,
     steps: state.steps,
     navigateToStep,
     nextStep,

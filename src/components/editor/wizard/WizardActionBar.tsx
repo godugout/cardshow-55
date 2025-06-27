@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ArrowLeft, ArrowRight, Save, Check } from 'lucide-react';
 import { useWizardContext } from './WizardContext';
 import { useWizardNavigation } from './hooks/useWizardNavigation';
@@ -20,24 +20,38 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({ onComplete }) 
     completeCurrentStep
   } = useWizardNavigation();
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (validateCurrentStep()) {
       completeCurrentStep();
       nextStep();
     }
-  };
+  }, [validateCurrentStep, completeCurrentStep, nextStep]);
 
-  const handleComplete = () => {
+  const handleComplete = useCallback(() => {
     if (validateCurrentStep() && onComplete) {
       completeCurrentStep();
       onComplete(state.cardData);
     }
-  };
+  }, [validateCurrentStep, onComplete, completeCurrentStep, state.cardData]);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     localStorage.setItem('cardshow-wizard-state', JSON.stringify(state));
     dispatch({ type: 'MARK_SAVED' });
-  };
+  }, [state, dispatch]);
+
+  const currentStepInfo = useMemo(() => {
+    const stepIndex = state.steps.findIndex(s => s.id === state.currentStepId);
+    const currentStep = state.steps[stepIndex];
+    return {
+      index: stepIndex,
+      step: currentStep,
+      title: currentStep?.title || ''
+    };
+  }, [state.steps, state.currentStepId]);
+
+  const isValid = useMemo(() => {
+    return validateCurrentStep();
+  }, [validateCurrentStep]);
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-crd-darker border-t border-crd-mediumGray/20 p-4 z-50">
@@ -74,10 +88,10 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({ onComplete }) 
         {/* Center - Step Info */}
         <div className="hidden md:block text-center">
           <p className="text-crd-lightGray text-sm">
-            Step {state.steps.findIndex(s => s.id === state.currentStepId) + 1} of {state.steps.length}
+            Step {currentStepInfo.index + 1} of {state.steps.length}
           </p>
           <p className="text-white font-medium">
-            {state.steps.find(s => s.id === state.currentStepId)?.title}
+            {currentStepInfo.title}
           </p>
         </div>
 
@@ -93,9 +107,9 @@ export const WizardActionBar: React.FC<WizardActionBarProps> = ({ onComplete }) 
           {isLastStep ? (
             <button
               onClick={handleComplete}
-              disabled={!validateCurrentStep() || state.isLoading}
+              disabled={!isValid || state.isLoading}
               className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all duration-200 cursor-pointer ${
-                validateCurrentStep() && !state.isLoading
+                isValid && !state.isLoading
                   ? 'bg-crd-green text-black hover:bg-crd-green/90'
                   : 'bg-crd-green/30 text-black/50 cursor-not-allowed'
               }`}
