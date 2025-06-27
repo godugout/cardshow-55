@@ -57,12 +57,214 @@ export const mapObjectsToCardConcept = (
       description: 'The most famous Wookiee warrior, co-pilot of the Millennium Falcon.',
       tags: ['star-wars', 'rebel', 'pilot', 'hero', 'millennium-falcon', 'legendary']
     },
-    'furry': {
-      title: 'Mystical Forest Guardian',
+    'ewok': {
+      title: 'Forest Moon Protector',
       rarity: 'rare',
-      description: 'A creature of ancient wisdom, covered in protective fur.',
-      tags: ['mystical', 'forest', 'guardian', 'ancient', 'wisdom']
+      description: 'Small but brave inhabitants of Endor, fierce defenders of their forest home.',
+      tags: ['star-wars', 'endor', 'forest', 'protector', 'brave', 'tribal']
     },
+    'jawa': {
+      title: 'Desert Scavenger',
+      rarity: 'uncommon',
+      description: 'Hooded traders from Tatooine, masters of salvage and technology.',
+      tags: ['star-wars', 'tatooine', 'desert', 'trader', 'scavenger', 'technology']
+    },
+    'tusken': {
+      title: 'Sand People Raider',
+      rarity: 'rare',
+      description: 'Mysterious nomads of the desert, fierce warriors of the dunes.',
+      tags: ['star-wars', 'tatooine', 'desert', 'raider', 'nomad', 'warrior']
+    },
+    'gamorrean': {
+      title: 'Palace Guard',
+      rarity: 'uncommon',
+      description: 'Brutish pig-like guards known for their strength and loyalty.',
+      tags: ['star-wars', 'guard', 'strong', 'loyal', 'palace', 'brutish']
+    },
+    'rodian': {
+      title: 'Bounty Hunter',
+      rarity: 'rare',
+      description: 'Green-skinned humanoids known for their hunting skills.',
+      tags: ['star-wars', 'bounty-hunter', 'hunter', 'skilled', 'tracking']
+    },
+    'twi\'lek': {
+      title: 'Galactic Diplomat',
+      rarity: 'rare',
+      description: 'Elegant humanoids with distinctive head-tails, known for diplomacy.',
+      tags: ['star-wars', 'diplomat', 'elegant', 'charismatic', 'galactic']
+    },
+
+    // Fantasy Creatures
+    'dragon': {
+      title: 'Ancient Wyrm',
+      rarity: 'legendary',
+      description: 'A legendary dragon of immense power and ancient wisdom.',
+      tags: ['fantasy', 'dragon', 'ancient', 'powerful', 'magical', 'legendary']
+    },
+    'elf': {
+      title: 'Woodland Ranger',
+      rarity: 'rare',
+      description: 'An elegant forest dweller with keen senses and magical abilities.',
+      tags: ['fantasy', 'elf', 'ranger', 'magical', 'forest', 'elegant']
+    },
+    'dwarf': {
+      title: 'Mountain Warrior',
+      rarity: 'uncommon',
+      description: 'A stout mountain dweller known for craftsmanship and combat prowess.',
+      tags: ['fantasy', 'dwarf', 'warrior', 'mountain', 'craftsman', 'strong']
+    },
+    'orc': {
+      title: 'Savage Raider',
+      rarity: 'common',
+      description: 'A fierce warrior from the wastelands, known for brutal combat.',
+      tags: ['fantasy', 'orc', 'raider', 'savage', 'warrior', 'brutal']
+    },
+    'goblin': {
+      title: 'Cave Lurker',
+      rarity: 'common',
+      description: 'A small but cunning creature that dwells in dark places.',
+      tags: ['fantasy', 'goblin', 'cunning', 'cave', 'sneaky', 'small']
+    },
+    'troll': {
+      title: 'Bridge Guardian',
+      rarity: 'rare',
+      description: 'A massive creature of stone and sinew, guardian of ancient places.',
+      tags: ['fantasy', 'troll', 'guardian', 'massive', 'ancient', 'stone']
+    },
+    'centaur': {
+      title: 'Forest Sage',
+      rarity: 'rare',
+      description: 'Half-human, half-horse beings known for wisdom and archery.',
+      tags: ['fantasy', 'centaur', 'sage', 'wisdom', 'archery', 'nature']
+    },
+    'phoenix': {
+      title: 'Eternal Flame',
+      rarity: 'legendary',
+      description: 'A magnificent bird of fire that rises from its own ashes.',
+      tags: ['fantasy', 'phoenix', 'fire', 'eternal', 'rebirth', 'magnificent']
+    },
+    'unicorn': {
+      title: 'Pure Spirit',
+      rarity: 'legendary',
+      description: 'A mystical horse with a spiraled horn, symbol of purity and magic.',
+      tags: ['fantasy', 'unicorn', 'pure', 'mystical', 'magic', 'noble']
+    },
+    'griffin': {
+      title: 'Sky Sovereign',
+      rarity: 'rare',
+      description: 'A majestic creature with the body of a lion and wings of an eagle.',
+      tags: ['fantasy', 'griffin', 'majestic', 'sky', 'sovereign', 'noble']
+    },
+
+    // Animals & Creatures
+    'wolf': {
+      title: 'Pack Leader',
+      rarity: 'uncommon',
+      description: 'A fierce wolf with keen intelligence and natural leadership.',
+      tags: ['animal', 'wolf', 'leader', 'pack', 'fierce', 'intelligent']
+    },
+    'bear': {
+      title: 'Forest Titan',
+      rarity: 'rare',
+      description: 'A powerful bear with immense strength and protective instincts.',
+      tags: ['animal', 'bear', 'titan', 'powerful', 'protector', 'forest']
+    },
+    'lion': {
+      title: 'Savanna King',
+      rarity: 'rare',
+      description: 'The king of beasts, a majestic predator with regal bearing.',
+      tags: ['animal', 'lion', 'king', 'majestic', 'predator', 'regal']
+    },
+    'tiger': {
+      title: 'Striped Hunter',
+      rarity: 'rare',
+      description: 'A solitary hunter with distinctive stripes and deadly grace.',
+      tags: ['animal', 'tiger', 'hunter', 'solitary', 'graceful', 'deadly']
+    },
+    'eagle': {
+      title: 'Sky Hunter',
+      rarity: 'uncommon',
+      description: 'A majestic bird of prey with keen eyesight and powerful wings.',
+      tags: ['animal', 'eagle', 'hunter', 'majestic', 'keen', 'powerful']
+    },
+    'shark': {
+      title: 'Ocean Predator',
+      rarity: 'rare',
+      description: 'An apex predator of the deep, perfectly evolved for hunting.',
+      tags: ['animal', 'shark', 'predator', 'ocean', 'apex', 'evolved']
+    },
+    'elephant': {
+      title: 'Gentle Giant',
+      rarity: 'rare',
+      description: 'A massive creature known for intelligence, memory, and gentle nature.',
+      tags: ['animal', 'elephant', 'giant', 'intelligent', 'gentle', 'memory']
+    },
+    'whale': {
+      title: 'Ocean Leviathan',
+      rarity: 'legendary',
+      description: 'The largest creature of the seas, a gentle giant of the deep.',
+      tags: ['animal', 'whale', 'leviathan', 'massive', 'gentle', 'ocean']
+    },
+
+    // Sci-Fi Characters
+    'robot': {
+      title: 'Mechanical Guardian',
+      rarity: 'uncommon',
+      description: 'An artificial being designed to serve and protect.',
+      tags: ['sci-fi', 'robot', 'mechanical', 'guardian', 'artificial', 'protector']
+    },
+    'android': {
+      title: 'Synthetic Human',
+      rarity: 'rare',
+      description: 'An artificial being designed to mimic human appearance and behavior.',
+      tags: ['sci-fi', 'android', 'synthetic', 'human', 'artificial', 'advanced']
+    },
+    'cyborg': {
+      title: 'Enhanced Being',
+      rarity: 'rare',
+      description: 'A being augmented with cybernetic enhancements and technology.',
+      tags: ['sci-fi', 'cyborg', 'enhanced', 'augmented', 'technology', 'hybrid']
+    },
+    'alien': {
+      title: 'Extraterrestrial Visitor',
+      rarity: 'rare',
+      description: 'A being from another world with unknown powers and intentions.',
+      tags: ['sci-fi', 'alien', 'extraterrestrial', 'visitor', 'unknown', 'otherworldly']
+    },
+
+    // Mythological Beings
+    'angel': {
+      title: 'Divine Messenger',
+      rarity: 'legendary',
+      description: 'A celestial being of pure light and divine purpose.',
+      tags: ['mythological', 'angel', 'divine', 'celestial', 'pure', 'messenger']
+    },
+    'demon': {
+      title: 'Infernal Entity',
+      rarity: 'rare',
+      description: 'A dark being from the underworld with sinister powers.',
+      tags: ['mythological', 'demon', 'infernal', 'dark', 'sinister', 'underworld']
+    },
+    'vampire': {
+      title: 'Blood Lord',
+      rarity: 'rare',
+      description: 'An undead being with supernatural powers and an eternal thirst.',
+      tags: ['mythological', 'vampire', 'undead', 'supernatural', 'eternal', 'aristocratic']
+    },
+    'werewolf': {
+      title: 'Moon Cursed',
+      rarity: 'rare',
+      description: 'A human cursed to transform under the full moon.',
+      tags: ['mythological', 'werewolf', 'cursed', 'transformation', 'moon', 'beast']
+    },
+    'sphinx': {
+      title: 'Riddle Keeper',
+      rarity: 'legendary',
+      description: 'An ancient guardian who speaks in riddles and guards sacred knowledge.',
+      tags: ['mythological', 'sphinx', 'guardian', 'ancient', 'riddles', 'knowledge']
+    },
+
+    // Common Animals
     'cat': {
       title: 'Feline Mystic',
       rarity: 'rare',
@@ -74,29 +276,93 @@ export const mapObjectsToCardConcept = (
       rarity: 'uncommon',
       description: 'A faithful companion with unwavering loyalty.',
       tags: ['canine', 'guardian', 'loyal', 'protector', 'companion']
+    },
+    'horse': {
+      title: 'Noble Steed',
+      rarity: 'uncommon',
+      description: 'A majestic horse with speed, grace, and noble bearing.',
+      tags: ['equine', 'noble', 'majestic', 'speed', 'grace']
+    },
+    'rabbit': {
+      title: 'Swift Runner',
+      rarity: 'common',
+      description: 'A quick and agile creature known for speed and cunning.',
+      tags: ['animal', 'rabbit', 'swift', 'agile', 'cunning']
+    },
+
+    // Generic but Enhanced Fallbacks
+    'person': {
+      title: 'Human Champion',
+      rarity: 'uncommon',
+      description: 'A skilled individual with unique talents and determination.',
+      tags: ['human', 'champion', 'skilled', 'determined', 'talented']
+    },
+    'warrior': {
+      title: 'Battle Master',
+      rarity: 'rare',
+      description: 'A seasoned fighter with exceptional combat skills.',
+      tags: ['warrior', 'battle', 'master', 'combat', 'skilled']
+    },
+    'mage': {
+      title: 'Arcane Scholar',
+      rarity: 'rare',
+      description: 'A wielder of magical forces and ancient knowledge.',
+      tags: ['mage', 'arcane', 'scholar', 'magical', 'knowledge']
     }
   };
 
-  // Enhanced pattern matching
+  // Enhanced pattern matching with fuzzy logic and visual features
   const patterns = [
-    { keywords: ['fur', 'tall', 'brown'], match: 'wookiee' },
-    { keywords: ['hairy', 'humanoid'], match: 'wookiee' },
-    { keywords: ['bear', 'standing'], match: 'wookiee' }
+    // Wookiee detection patterns
+    { keywords: ['fur', 'tall', 'brown', 'humanoid'], match: 'wookiee', weight: 0.9 },
+    { keywords: ['hairy', 'standing', 'large'], match: 'wookiee', weight: 0.8 },
+    { keywords: ['bear', 'upright', 'bipedal'], match: 'wookiee', weight: 0.7 },
+    { keywords: ['furry', 'giant', 'warrior'], match: 'wookiee', weight: 0.8 },
+    
+    // Star Wars creatures
+    { keywords: ['small', 'hood', 'desert'], match: 'jawa', weight: 0.8 },
+    { keywords: ['green', 'hunter', 'reptilian'], match: 'rodian', weight: 0.7 },
+    { keywords: ['pig', 'guard', 'axe'], match: 'gamorrean', weight: 0.8 },
+    
+    // Fantasy patterns
+    { keywords: ['wings', 'fire', 'large'], match: 'dragon', weight: 0.9 },
+    { keywords: ['pointed', 'ears', 'bow'], match: 'elf', weight: 0.8 },
+    { keywords: ['short', 'beard', 'axe'], match: 'dwarf', weight: 0.8 },
+    { keywords: ['horn', 'horse', 'white'], match: 'unicorn', weight: 0.9 },
+    
+    // Animal patterns
+    { keywords: ['mane', 'roar', 'golden'], match: 'lion', weight: 0.8 },
+    { keywords: ['stripes', 'orange', 'predator'], match: 'tiger', weight: 0.8 },
+    { keywords: ['pack', 'howl', 'gray'], match: 'wolf', weight: 0.7 },
+    { keywords: ['trunk', 'large', 'gray'], match: 'elephant', weight: 0.9 }
   ];
 
-  // Try pattern matching first
-  for (const pattern of patterns) {
-    if (pattern.keywords.some(keyword => objects.join(' ').toLowerCase().includes(keyword))) {
-      if (concepts[pattern.match]) {
-        return concepts[pattern.match];
-      }
+  // Calculate pattern matches with weights
+  const patternMatches = patterns
+    .map(pattern => {
+      const matchScore = pattern.keywords.reduce((score, keyword) => {
+        const objectMatch = objects.some(obj => obj.toLowerCase().includes(keyword));
+        const featureMatch = visualFeatures && JSON.stringify(visualFeatures).toLowerCase().includes(keyword);
+        return score + (objectMatch ? 1 : 0) + (featureMatch ? 0.5 : 0);
+      }, 0);
+      
+      const normalizedScore = (matchScore / pattern.keywords.length) * pattern.weight;
+      return { pattern, score: normalizedScore };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  // Use best pattern match if score is high enough
+  if (patternMatches[0]?.score > 0.5) {
+    const bestMatch = patternMatches[0].pattern.match;
+    if (concepts[bestMatch]) {
+      return concepts[bestMatch];
     }
   }
 
-  // Direct object matching
+  // Direct object matching with fuzzy search
   const bestMatch = Object.keys(concepts).find(key => 
     mainObject.includes(key) || key.includes(mainObject) ||
-    objects.some(obj => obj.toLowerCase().includes(key))
+    objects.some(obj => obj.toLowerCase().includes(key) || key.includes(obj.toLowerCase()))
   );
 
   if (bestMatch) {
