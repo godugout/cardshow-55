@@ -16,29 +16,38 @@ serve(async (req) => {
 
   try {
     const { imageData } = await req.json();
-
-    console.log('Starting enhanced free image analysis...');
+    console.log('🚀 Starting enhanced image analysis...');
     
+    // Try HuggingFace analysis first
     let detectedObjects = await analyzeImageWithHuggingFace(imageData);
     
+    let analysisMethod = 'huggingface_resnet50';
+    let confidence = 0.8;
+    
     if (detectedObjects.length === 0) {
-      console.log('Using enhanced fallback analysis...');
-      detectedObjects = ['mysterious entity'];
+      console.log('⚠️ HuggingFace analysis failed, using intelligent fallback...');
+      // Instead of "mysterious entity", try to extract something from the image URL or use better defaults
+      detectedObjects = ['unique_creation'];
+      analysisMethod = 'intelligent_fallback';
+      confidence = 0.4;
     }
 
-    console.log('Enhanced detected objects:', detectedObjects);
+    console.log('🎯 Using detected objects for card generation:', detectedObjects);
 
+    // Generate card concept from the detected objects
     const cardConcept = enhancedObjectToCardConcept(detectedObjects);
     
     const extractionResult = {
       extractedText: detectedObjects,
+      subjects: detectedObjects,
       playerName: cardConcept.title,
       team: 'Legendary Collection',
       year: new Date().getFullYear().toString(),
       sport: 'Fantasy',
       cardNumber: '',
-      confidence: detectedObjects.length > 0 && detectedObjects[0] !== 'mysterious entity' ? 0.8 : 0.6,
+      confidence: confidence,
       analysisType: 'visual' as const,
+      analysisMethod: analysisMethod,
       visualAnalysis: {
         subjects: detectedObjects,
         colors: ['Mixed'],
@@ -51,34 +60,36 @@ serve(async (req) => {
       creativeDescription: cardConcept.description
     };
 
-    console.log('Enhanced analysis complete:', extractionResult);
+    console.log('✅ Enhanced analysis complete:', extractionResult);
 
     return new Response(JSON.stringify(extractionResult), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error in enhanced image analysis:', error);
+    console.error('❌ Error in enhanced image analysis:', error);
     
     return new Response(JSON.stringify({
-      extractedText: [],
-      playerName: 'Legendary Entity',
-      team: 'Mythical Collection',
+      extractedText: ['artistic_creation'],
+      subjects: ['artistic_creation'],
+      playerName: 'Artistic Creation',
+      team: 'Creative Collection',
       year: new Date().getFullYear().toString(),
       sport: 'Fantasy',
       cardNumber: '',
-      confidence: 0.5,
+      confidence: 0.3,
       analysisType: 'fallback',
+      analysisMethod: 'error_fallback',
       visualAnalysis: {
-        subjects: ['Legendary Being'],
-        colors: ['Mystical'],
-        mood: 'Epic',
-        style: 'Cinematic',
-        theme: 'Legend',
-        setting: 'Mythical Realm'
+        subjects: ['Artistic Creation'],
+        colors: ['Vibrant'],
+        mood: 'Creative',
+        style: 'Artistic',
+        theme: 'Creativity',
+        setting: 'Studio'
       },
-      creativeTitle: 'Legendary Entity',
-      creativeDescription: 'A powerful being of legend, possessing extraordinary abilities.',
-      error: 'Analysis enhanced with creative interpretation'
+      creativeTitle: 'Artistic Creation',
+      creativeDescription: 'A unique artistic creation with distinctive characteristics.',
+      error: 'Analysis failed, using creative interpretation'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
