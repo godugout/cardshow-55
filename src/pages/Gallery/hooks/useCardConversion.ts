@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 import type { Tables } from '@/integrations/supabase/types';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/hooks/card-editor/types';
 
 type Card = Tables<'cards'>;
 
