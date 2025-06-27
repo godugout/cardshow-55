@@ -130,7 +130,7 @@ export async function runMultiModalAnalysis(imageData: string): Promise<Advanced
         }
         
         // Enhanced fallback: Apply intelligent character detection rules
-        characterMatch = applyIntelligentCharacterDetection(resnetResults, fullDescription);
+        characterMatch = await applyIntelligentCharacterDetection(resnetResults, fullDescription);
         
         if (characterMatch) {
           console.log('🧠 Character identified via intelligent detection:', characterMatch.key);
@@ -199,7 +199,7 @@ export async function runMultiModalAnalysis(imageData: string): Promise<Advanced
   };
 }
 
-function applyIntelligentCharacterDetection(detectedObjects: string[], fullDescription: string): any | null {
+async function applyIntelligentCharacterDetection(detectedObjects: string[], fullDescription: string): Promise<any | null> {
   const allContext = (detectedObjects.join(' ') + ' ' + fullDescription).toLowerCase();
   console.log('🧠 Applying intelligent character detection to:', allContext);
   
