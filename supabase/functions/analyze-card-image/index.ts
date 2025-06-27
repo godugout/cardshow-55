@@ -11,8 +11,8 @@ const corsHeaders = {
 const CHARACTER_DATABASE = {
   'yoda': {
     id: 'yoda',
-    patterns: ['green', 'small', 'ears', 'jedi', 'master', 'wise', 'old', 'force', 'staff', 'cane'],
-    fallbackPatterns: ['mask', 'toy', 'figure', 'doll', 'puppet'],
+    patterns: ['green', 'ears', 'jedi', 'master', 'wise', 'old', 'force', 'staff', 'cane'],
+    fallbackPatterns: ['toy', 'figure', 'doll', 'puppet'],
     contextualPatterns: ['robe', 'cloak', 'lightsaber'],
     visualContext: {
       dominantColors: ['green', 'brown', 'beige'],
@@ -21,7 +21,7 @@ const CHARACTER_DATABASE = {
       distinctiveFeatures: ['large_ears', 'wrinkled_skin']
     },
     exclusionRules: ['black', 'tall', 'armor', 'helmet', 'cape'],
-    disambiguationScore: 0.9,
+    disambiguationScore: 0.95,
     title: 'Master Yoda',
     description: 'Ancient Jedi Grand Master with 900 years of wisdom and unparalleled mastery of the Force.',
     rarity: 'legendary',
@@ -40,7 +40,7 @@ const CHARACTER_DATABASE = {
       distinctiveFeatures: ['mask_helmet', 'chest_panel', 'cape']
     },
     exclusionRules: ['green', 'small', 'ears', 'wise'],
-    disambiguationScore: 0.95,
+    disambiguationScore: 0.90,
     title: 'Darth Vader',
     description: 'Dark Lord of the Sith, fallen Jedi encased in black mechanical armor.',
     rarity: 'legendary',
@@ -77,50 +77,6 @@ interface AnalysisResult {
   visualContext?: any;
   disambiguationLog?: string[];
   error?: string;
-}
-
-// Enhanced visual context analysis
-function analyzeVisualContext(imageData: string): any {
-  try {
-    console.log('🎨 Analyzing visual context from image data...');
-    
-    // Basic analysis from data URL characteristics
-    const context = {
-      dominantColors: [],
-      brightness: 'unknown',
-      contrast: 'unknown',
-      imageSize: 'unknown'
-    };
-    
-    // Analyze image format and size hints
-    if (imageData.includes('jpeg') || imageData.includes('jpg')) {
-      context.imageSize = 'photograph';
-    }
-    
-    const base64Content = imageData.split(',')[1] || '';
-    const contentLength = base64Content.length;
-    
-    if (contentLength > 100000) {
-      context.imageSize = 'high_resolution';
-    } else if (contentLength < 50000) {
-      context.imageSize = 'low_resolution';
-    }
-    
-    // Simple color analysis from base64 patterns (basic heuristic)
-    const base64Sample = base64Content.substring(0, 1000);
-    if (base64Sample.includes('AA') || base64Sample.includes('BB')) {
-      context.dominantColors.push('dark');
-    }
-    if (base64Sample.includes('//') || base64Sample.includes('++')) {
-      context.dominantColors.push('light');
-    }
-    
-    console.log('🎨 Visual context analysis:', context);
-    return context;
-  } catch (error) {
-    console.error('❌ Visual context analysis failed:', error);
-    return { dominantColors: [], brightness: 'unknown', contrast: 'unknown' };
-  }
 }
 
 // Enhanced character matching with disambiguation
@@ -280,8 +236,7 @@ async function primaryAnalysis(imageData: string): Promise<AnalysisResult> {
         .map(item => item.label.toLowerCase())
         .slice(0, 10);
       
-      const visualContext = analyzeVisualContext(imageData);
-      const characterMatch = findCharacterMatch(detectedObjects, visualContext);
+      const characterMatch = findCharacterMatch(detectedObjects);
       
       return {
         success: true,
@@ -289,7 +244,6 @@ async function primaryAnalysis(imageData: string): Promise<AnalysisResult> {
         confidence: characterMatch ? characterMatch.confidence : Math.max(...result.map(r => r.score)),
         detectedObjects,
         characterMatch,
-        visualContext,
         disambiguationLog: characterMatch?.disambiguationLog
       };
     }
@@ -365,8 +319,7 @@ async function secondaryAnalysis(imageData: string): Promise<AnalysisResult> {
       .filter((item: string) => item.length > 0)
       .slice(0, 15);
     
-    const visualContext = analyzeVisualContext(imageData);
-    const characterMatch = findCharacterMatch(detectedObjects, visualContext);
+    const characterMatch = findCharacterMatch(detectedObjects);
     
     return {
       success: true,
@@ -374,7 +327,6 @@ async function secondaryAnalysis(imageData: string): Promise<AnalysisResult> {
       confidence: characterMatch ? characterMatch.confidence : 0.7,
       detectedObjects,
       characterMatch,
-      visualContext,
       disambiguationLog: characterMatch?.disambiguationLog
     };
   } catch (error) {
@@ -389,61 +341,21 @@ async function secondaryAnalysis(imageData: string): Promise<AnalysisResult> {
   }
 }
 
-// Tertiary Analysis Method: Basic heuristics
-async function tertiaryAnalysis(imageData: string): Promise<AnalysisResult> {
-  try {
-    console.log('🎯 Tertiary Analysis: Basic heuristics starting...');
-    
-    const detectedObjects = ['unknown_subject', 'digital_content'];
-    const visualContext = analyzeVisualContext(imageData);
-    
-    // Add basic descriptors based on image characteristics
-    if (visualContext.dominantColors.includes('dark')) {
-      detectedObjects.push('dark_figure');
-    }
-    if (visualContext.dominantColors.includes('light')) {
-      detectedObjects.push('light_figure');
-    }
-    
-    return {
-      success: true,
-      method: 'basic_heuristics',
-      confidence: 0.2,
-      detectedObjects,
-      visualContext,
-      disambiguationLog: ['Basic analysis - minimal confidence']
-    };
-  } catch (error) {
-    console.error('❌ Tertiary analysis failed:', error);
-    return {
-      success: false,
-      method: 'basic_heuristics',
-      confidence: 0,
-      detectedObjects: [],
-      error: error.message
-    };
-  }
-}
-
-// Robust analysis orchestrator with enhanced fallback chain
+// Analysis orchestrator with proper fallback chain
 async function analyzeImageRobustly(imageData: string) {
   console.log('🚀 Starting enhanced multi-tier image analysis...');
   
-  // Try primary analysis
+  // Try primary analysis first
   let result = await primaryAnalysis(imageData);
   
+  // Only try secondary if primary failed or confidence is very low
   if (!result.success || result.confidence < 0.5) {
     console.log('⚠️ Primary analysis failed or low confidence, trying secondary...');
     result = await secondaryAnalysis(imageData);
   }
   
-  if (!result.success || result.confidence < 0.3) {
-    console.log('⚠️ Secondary analysis failed or low confidence, trying tertiary...');
-    result = await tertiaryAnalysis(imageData);
-  }
-  
-  // Enhanced confidence check with disambiguation
-  if (!result.success || result.confidence < 0.2) {
+  // If both failed, return null (no fake fallback)
+  if (!result.success || result.confidence < 0.5) {
     console.log('❌ All analysis methods failed or confidence too low');
     return null;
   }
@@ -454,63 +366,35 @@ async function analyzeImageRobustly(imageData: string) {
   return result;
 }
 
-// Generate response based on enhanced analysis
+// Generate response based on analysis
 function generateCardResponse(analysisResult: AnalysisResult | null, detectedObjects: string[]) {
   if (!analysisResult || !analysisResult.characterMatch) {
-    // Return null result when confidence is too low
-    if (!analysisResult || analysisResult.confidence < 0.2) {
-      return {
-        extractedText: ['unknown'],
-        subjects: ['unknown'],
-        playerName: null,
-        team: null,
-        year: new Date().getFullYear().toString(),
-        sport: null,
-        cardNumber: '',
-        confidence: 0,
-        analysisType: 'failed',
-        analysisMethod: analysisResult?.method || 'none',
-        visualAnalysis: {
-          subjects: ['Unknown'],
-          colors: ['Unknown'],
-          mood: 'Unknown',
-          style: 'Unknown',
-          theme: 'Unknown',
-          setting: 'Unknown'
-        },
-        creativeTitle: null,
-        creativeDescription: null,
-        rarity: null,
-        requiresManualReview: true,
-        error: true,
-        message: 'Image analysis was inconclusive. Please try a different image or provide manual details.'
-      };
-    }
-    
-    // Low confidence generic result
+    // Return error when no confident result
     return {
-      extractedText: detectedObjects,
-      subjects: detectedObjects,
-      playerName: 'Unknown Subject',
-      team: 'Unidentified',
+      extractedText: ['unknown'],
+      subjects: ['unknown'],
+      playerName: null,
+      team: null,
       year: new Date().getFullYear().toString(),
-      sport: 'General',
+      sport: null,
       cardNumber: '',
-      confidence: analysisResult.confidence,
-      analysisType: 'generic',
-      analysisMethod: analysisResult.method,
+      confidence: 0,
+      analysisType: 'failed',
+      analysisMethod: analysisResult?.method || 'none',
       visualAnalysis: {
-        subjects: detectedObjects,
-        colors: analysisResult.visualContext?.dominantColors || ['Mixed'],
-        mood: 'Neutral',
+        subjects: ['Unknown'],
+        colors: ['Unknown'],
+        mood: 'Unknown',
         style: 'Unknown',
-        theme: 'General',
+        theme: 'Unknown',
         setting: 'Unknown'
       },
-      creativeTitle: 'Mysterious Subject',
-      creativeDescription: 'An unidentified subject with unclear characteristics.',
-      rarity: 'common',
-      requiresManualReview: true
+      creativeTitle: null,
+      creativeDescription: null,
+      rarity: null,
+      requiresManualReview: true,
+      error: true,
+      message: 'Image analysis was inconclusive. Please try a different image or provide manual details.'
     };
   }
   
@@ -529,7 +413,7 @@ function generateCardResponse(analysisResult: AnalysisResult | null, detectedObj
     analysisMethod: analysisResult.method,
     visualAnalysis: {
       subjects: detectedObjects,
-      colors: analysisResult.visualContext?.dominantColors || ['Mixed'],
+      colors: ['Mixed'],
       mood: character.category === 'star_wars' ? 'Epic' : 'Mysterious',
       style: 'Cinematic',
       theme: character.category || 'Adventure',
@@ -550,16 +434,16 @@ serve(async (req) => {
 
   try {
     const { imageData } = await req.json();
-    console.log('🚀 Starting enhanced robust image analysis system...');
+    console.log('🚀 Starting robust image analysis system...');
     
-    // Perform enhanced analysis with improved disambiguation
+    // Perform analysis with proper fallback
     const analysisResult = await analyzeImageRobustly(imageData);
     const detectedObjects = analysisResult?.detectedObjects || ['unknown'];
     
     // Generate appropriate response
     const response = generateCardResponse(analysisResult, detectedObjects);
     
-    console.log('✅ Final enhanced analysis result:', {
+    console.log('✅ Final analysis result:', {
       method: analysisResult?.method || 'failed',
       confidence: response.confidence,
       requiresManualReview: response.requiresManualReview,
