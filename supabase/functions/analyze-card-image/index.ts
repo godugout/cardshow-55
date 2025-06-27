@@ -21,6 +21,7 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
+    // Use OpenAI Vision to analyze the trading card image
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -32,20 +33,22 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert trading card analyzer. Analyze the uploaded image and provide card details in JSON format. Focus on:
-            - What's depicted in the image (character, object, scene)
-            - Visual style and artistic elements
-            - Potential rarity based on artwork quality
-            - Appropriate categories and tags
+            content: `You are an expert trading card analyzer. Analyze the image and extract information about the trading card. Look for:
+            - Player/character name
+            - Team/franchise
+            - Year/set
+            - Card number
+            - Sport/category
+            - Any visible text or logos
             
-            Return JSON with: title, description, rarity (common/uncommon/rare/epic/legendary), tags (array), category, type, series`
+            Respond with a JSON object containing: extractedText (array of all visible text), playerName, team, year, sport, cardNumber, confidence (0-1).`
           },
           {
             role: 'user',
             content: [
               {
                 type: 'text',
-                text: 'Analyze this trading card image and provide suggested details:'
+                text: 'Analyze this trading card image and extract all relevant information:'
               },
               {
                 type: 'image_url',
@@ -57,7 +60,7 @@ serve(async (req) => {
           }
         ],
         max_tokens: 500,
-        temperature: 0.7
+        temperature: 0.3
       }),
     });
 
@@ -70,40 +73,38 @@ serve(async (req) => {
     const aiResponse = data.choices[0].message.content;
     
     // Try to parse JSON response
-    let analysisResult;
+    let extractionResult;
     try {
-      analysisResult = JSON.parse(aiResponse);
+      extractionResult = JSON.parse(aiResponse);
     } catch {
       // If JSON parsing fails, create structured response from text
-      analysisResult = {
-        title: 'AI-Analyzed Card',
-        description: aiResponse.substring(0, 200) + '...',
-        rarity: 'common',
-        tags: ['ai-analyzed', 'custom'],
-        category: 'Custom',
-        type: 'Character',
-        series: 'AI Collection'
+      extractionResult = {
+        extractedText: [aiResponse.substring(0, 100)],
+        playerName: '',
+        team: '',
+        year: '',
+        sport: '',
+        cardNumber: '',
+        confidence: 0.5
       };
     }
 
-    return new Response(JSON.stringify(analysisResult), {
+    return new Response(JSON.stringify(extractionResult), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('Error analyzing image:', error);
     
-    // Return default values on error
-    const defaultResponse = {
-      title: 'Custom Trading Card',
-      description: 'A unique collectible card with custom artwork.',
-      rarity: 'common',
-      tags: ['custom', 'trading-card'],
-      category: 'Trading Card',
-      type: 'Character',
-      series: 'Custom Collection'
-    };
-
-    return new Response(JSON.stringify(defaultResponse), {
+    return new Response(JSON.stringify({
+      error: 'Failed to analyze image',
+      extractedText: [],
+      playerName: '',
+      team: '',
+      year: '',
+      sport: '',
+      cardNumber: '',
+      confidence: 0
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

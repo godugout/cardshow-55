@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface CardSearchResult {
   title: string;
@@ -12,6 +13,16 @@ export interface CardSearchResult {
   confidence: number;
 }
 
+interface ImageAnalysisResult {
+  extractedText: string[];
+  playerName: string;
+  team: string;
+  year: string;
+  sport: string;
+  cardNumber: string;
+  confidence: number;
+}
+
 export const useCardWebSearch = () => {
   const [isSearching, setIsSearching] = useState(false);
 
@@ -19,48 +30,64 @@ export const useCardWebSearch = () => {
     setIsSearching(true);
     
     try {
-      // Simulate web search API call - in production, this would call a real service
-      // like Google Vision API + custom card database lookup
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock results based on image analysis
-      const mockResults: CardSearchResult[] = [
-        {
-          title: "Legendary Champion Card",
-          description: "A powerful trading card featuring an elite athlete or character with exceptional abilities and rare statistics.",
-          type: "Sports",
-          series: "Championship Series",
-          rarity: "legendary",
-          tags: ["champion", "elite", "rare", "collectible"],
-          confidence: 0.85
-        },
-        {
-          title: "Action Hero Trading Card",
-          description: "Dynamic action card showcasing heroic poses and special abilities with premium holographic effects.",
-          type: "Entertainment",
-          series: "Action Heroes",
-          rarity: "ultra-rare",
-          tags: ["action", "hero", "dynamic", "premium"],
-          confidence: 0.78
-        },
-        {
-          title: "Vintage Collectible Card",
-          description: "Classic vintage-style trading card with retro design elements and nostalgic appeal.",
-          type: "Vintage",
-          series: "Retro Collection",
-          rarity: "uncommon",
-          tags: ["vintage", "classic", "retro", "nostalgia"],
-          confidence: 0.72
+      // Step 1: Analyze the image to extract text and card information
+      console.log('Analyzing card image...');
+      const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-card-image', {
+        body: { imageData: imageUrl }
+      });
+
+      if (analysisError) {
+        console.error('Image analysis error:', analysisError);
+        toast.error('Failed to analyze card image');
+        return null;
+      }
+
+      const imageAnalysis: ImageAnalysisResult = analysisData;
+      console.log('Image analysis result:', imageAnalysis);
+
+      // Step 2: Create search query from extracted information
+      const searchTerms = [
+        imageAnalysis.playerName,
+        imageAnalysis.team,
+        imageAnalysis.year,
+        imageAnalysis.sport,
+        ...imageAnalysis.extractedText.slice(0, 3) // Include some extracted text
+      ].filter(Boolean).join(' ');
+
+      if (!searchTerms.trim()) {
+        toast.error('Could not extract enough information from the image');
+        return null;
+      }
+
+      // Step 3: Search for card information using web search + AI
+      console.log('Searching for card info with query:', searchTerms);
+      const { data: searchData, error: searchError } = await supabase.functions.invoke('search-card-info', {
+        body: { 
+          query: searchTerms,
+          extractedData: imageAnalysis
         }
-      ];
+      });
+
+      if (searchError || !searchData.success) {
+        console.error('Search error:', searchError || searchData.error);
+        toast.error('Failed to find card information');
+        return null;
+      }
+
+      const cardInfo = searchData.cardInfo;
+      const confidencePercentage = Math.round(cardInfo.confidence * 100);
       
-      // Return the highest confidence result
-      const bestMatch = mockResults.reduce((prev, current) => 
-        current.confidence > prev.confidence ? current : prev
-      );
+      toast.success(`Found card match with ${confidencePercentage}% confidence!`);
       
-      toast.success(`Found card match with ${Math.round(bestMatch.confidence * 100)}% confidence!`);
-      return bestMatch;
+      return {
+        title: cardInfo.title,
+        description: cardInfo.description,
+        type: cardInfo.type,
+        series: cardInfo.series,
+        rarity: cardInfo.rarity,
+        tags: cardInfo.tags,
+        confidence: cardInfo.confidence
+      };
       
     } catch (error) {
       console.error('Card search error:', error);
@@ -75,22 +102,32 @@ export const useCardWebSearch = () => {
     setIsSearching(true);
     
     try {
-      // Simulate text-based search
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('Searching by text query:', query);
       
-      const mockResults: CardSearchResult[] = [
-        {
-          title: `${query} Trading Card`,
-          description: `Official trading card featuring ${query} with authentic design and premium quality.`,
-          type: "Official",
-          series: "Main Series",
-          rarity: "ultra-rare",
-          tags: [query.toLowerCase(), "official", "premium"],
-          confidence: 0.90
+      const { data: searchData, error: searchError } = await supabase.functions.invoke('search-card-info', {
+        body: { 
+          query,
+          extractedData: { extractedText: [query], confidence: 0.8 }
         }
-      ];
+      });
+
+      if (searchError || !searchData.success) {
+        console.error('Text search error:', searchError || searchData.error);
+        toast.error('Failed to search for card information');
+        return [];
+      }
+
+      const cardInfo = searchData.cardInfo;
+      return [{
+        title: cardInfo.title,
+        description: cardInfo.description,
+        type: cardInfo.type,
+        series: cardInfo.series,
+        rarity: cardInfo.rarity,
+        tags: cardInfo.tags,
+        confidence: cardInfo.confidence
+      }];
       
-      return mockResults;
     } catch (error) {
       console.error('Text search error:', error);
       toast.error('Failed to search for card information');
