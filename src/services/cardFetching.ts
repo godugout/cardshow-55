@@ -14,6 +14,16 @@ export class CardFetchingService {
       console.log('🔍 Fetching all cards from database...');
       
       const allCards = await CardRepository.getAllCards();
+      console.log(`✅ Database query returned ${allCards.length} cards`);
+      
+      if (allCards.length > 0) {
+        console.log('📋 Recent cards:', allCards.slice(0, 5).map(c => ({
+          id: c.id,
+          title: c.title,
+          created_at: c.created_at,
+          is_public: c.is_public
+        })));
+      }
       
       // Check local storage situation
       const storageReport = CardStorageService.getStorageReport();
@@ -42,12 +52,14 @@ export class CardFetchingService {
     if (!userId) return [];
     
     try {
+      console.log(`🔍 Fetching cards for user: ${userId}`);
       const result = await CardRepository.getCards({
         creator_id: userId,
         includePrivate: true,
         pageSize: 100
       });
       
+      console.log(`✅ Found ${result.cards.length} user cards`);
       return result.cards;
     } catch (error) {
       console.error('💥 Error fetching user cards:', error);

@@ -34,6 +34,17 @@ const Gallery = () => {
   const localCards = localCardStorage.getAllCards();
   const hasLocalCards = localCards.length > 0;
 
+  // Debug logging
+  React.useEffect(() => {
+    console.log('🎨 Gallery rendered with:', {
+      featuredCards: featuredCards?.length || 0,
+      cardsLoading,
+      dataSource,
+      hasLocalCards,
+      localCardsCount: localCards.length
+    });
+  }, [featuredCards, cardsLoading, dataSource, hasLocalCards, localCards.length]);
+
   const handleCreateCollection = () => {
     console.log('Create collection clicked');
   };
@@ -135,7 +146,11 @@ const Gallery = () => {
 
           {/* Featured Cards Section */}
           <GallerySection title="Featured Cards">
-            {featuredCards && featuredCards.length > 0 ? (
+            {cardsLoading ? (
+              <div className="text-center py-8">
+                <p className="text-crd-lightGray">Loading cards...</p>
+              </div>
+            ) : featuredCards && featuredCards.length > 0 ? (
               <CardsGrid 
                 cards={featuredCards} 
                 loading={cardsLoading}

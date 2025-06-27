@@ -22,7 +22,10 @@ export const useCards = () => {
   } = useCardsState();
 
   const fetchAllCardsFromDatabase = useCallback(async () => {
+    console.log('🔍 Starting fetchAllCardsFromDatabase...');
     const { cards: fetchedCards, dataSource: source } = await CardFetchingService.fetchAllCardsFromDatabase();
+    console.log(`📊 Fetched ${fetchedCards.length} cards from ${source}`);
+    console.log('🔍 First few cards:', fetchedCards.slice(0, 3).map(c => ({ id: c.id, title: c.title, created_at: c.created_at })));
     updateCards(fetchedCards);
     updateDataSource(source);
     return fetchedCards;
@@ -32,7 +35,9 @@ export const useCards = () => {
     const targetUserId = userId || user?.id;
     if (!targetUserId) return [];
     
+    console.log(`🔍 Fetching user cards for: ${targetUserId}`);
     const userCardsData = await CardFetchingService.fetchUserCards(targetUserId);
+    console.log(`📊 Fetched ${userCardsData.length} user cards`);
     if (!userId || userId === user?.id) {
       updateUserCards(userCardsData);
     }
@@ -40,12 +45,14 @@ export const useCards = () => {
   }, [user?.id, updateUserCards]);
 
   const fetchCards = useCallback(async () => {
+    console.log('🔄 Starting card fetch process...');
     setLoading(true);
     try {
       await Promise.all([
         fetchAllCardsFromDatabase(),
         fetchUserCards()
       ]);
+      console.log('✅ Card fetch completed successfully');
     } catch (error) {
       console.error('💥 Error in fetchCards:', error);
     } finally {
@@ -129,8 +136,20 @@ export const useCards = () => {
 
   useEffect(() => {
     // Initial fetch
+    console.log('🚀 useCards mounted, starting initial fetch...');
     fetchCards();
   }, [fetchCards]);
+
+  // Debug log current state
+  useEffect(() => {
+    console.log('📊 Current card state:', {
+      totalCards: cards.length,
+      featuredCards: featuredCards.length,
+      userCards: userCards.length,
+      loading,
+      dataSource
+    });
+  }, [cards.length, featuredCards.length, userCards.length, loading, dataSource]);
 
   return {
     cards,
