@@ -2,24 +2,9 @@
 import React from 'react';
 import { useWizardContext } from './WizardContext';
 import { AdvancedTemplateSelection } from './steps/AdvancedTemplateSelection';
+import { PhotoUploadStep } from './steps/PhotoUploadStep';
 
 // Placeholder step components for other steps
-const PhotoUploadStep = () => (
-  <div className="text-center space-y-6">
-    <h2 className="text-3xl font-bold text-white">Upload Your Photo</h2>
-    <p className="text-crd-lightGray text-lg">Add the main image for your trading card</p>
-    <div className="max-w-md mx-auto">
-      <div className="bg-crd-darkGray border-2 border-dashed border-crd-mediumGray/50 rounded-lg p-12 hover:border-crd-green/50 transition-colors">
-        <div className="text-crd-lightGray">
-          <div className="text-4xl mb-4">📁</div>
-          <p className="text-lg mb-2">Drop your image here</p>
-          <p className="text-sm">or click to browse</p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
 const CardDetailsStep = () => (
   <div className="max-w-2xl mx-auto space-y-6">
     <div className="text-center">
