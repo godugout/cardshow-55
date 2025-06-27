@@ -7,12 +7,21 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Enhanced character database with confidence scoring
+// Enhanced character database with disambiguation rules
 const CHARACTER_DATABASE = {
   'yoda': {
+    id: 'yoda',
     patterns: ['green', 'small', 'ears', 'jedi', 'master', 'wise', 'old', 'force', 'staff', 'cane'],
     fallbackPatterns: ['mask', 'toy', 'figure', 'doll', 'puppet'],
     contextualPatterns: ['robe', 'cloak', 'lightsaber'],
+    visualContext: {
+      dominantColors: ['green', 'brown', 'beige'],
+      size: 'small',
+      proportions: 'short_wide',
+      distinctiveFeatures: ['large_ears', 'wrinkled_skin']
+    },
+    exclusionRules: ['black', 'tall', 'armor', 'helmet', 'cape'],
+    disambiguationScore: 0.9,
     title: 'Master Yoda',
     description: 'Ancient Jedi Grand Master with 900 years of wisdom and unparalleled mastery of the Force.',
     rarity: 'legendary',
@@ -20,9 +29,18 @@ const CHARACTER_DATABASE = {
     confidence: 0.9
   },
   'darth_vader': {
-    patterns: ['mask', 'black', 'helmet', 'breathing', 'cape', 'armor', 'dark'],
-    fallbackPatterns: ['suit', 'robot', 'machine'],
+    id: 'darth_vader',
+    patterns: ['black', 'helmet', 'breathing', 'cape', 'armor', 'dark', 'tall'],
+    fallbackPatterns: ['mask', 'suit', 'robot', 'machine'],
     contextualPatterns: ['lightsaber', 'empire', 'sith'],
+    visualContext: {
+      dominantColors: ['black', 'grey', 'silver'],
+      size: 'large',
+      proportions: 'tall_imposing',
+      distinctiveFeatures: ['mask_helmet', 'chest_panel', 'cape']
+    },
+    exclusionRules: ['green', 'small', 'ears', 'wise'],
+    disambiguationScore: 0.95,
     title: 'Darth Vader',
     description: 'Dark Lord of the Sith, fallen Jedi encased in black mechanical armor.',
     rarity: 'legendary',
@@ -30,9 +48,18 @@ const CHARACTER_DATABASE = {
     confidence: 0.95
   },
   'chewbacca': {
+    id: 'chewbacca',
     patterns: ['furry', 'hair', 'brown', 'tall', 'wookiee', 'hairy'],
     fallbackPatterns: ['bear', 'dog', 'beast', 'animal'],
     contextualPatterns: ['millennium', 'falcon', 'han', 'solo'],
+    visualContext: {
+      dominantColors: ['brown', 'tan', 'russet'],
+      size: 'large',
+      proportions: 'tall_furry',
+      distinctiveFeatures: ['full_body_fur', 'bandolier', 'height']
+    },
+    exclusionRules: ['mask', 'helmet', 'armor'],
+    disambiguationScore: 0.85,
     title: 'Chewbacca',
     description: 'Loyal Wookiee warrior and co-pilot of the Millennium Falcon.',
     rarity: 'rare',
@@ -47,7 +74,166 @@ interface AnalysisResult {
   confidence: number;
   detectedObjects: string[];
   characterMatch?: any;
+  visualContext?: any;
+  disambiguationLog?: string[];
   error?: string;
+}
+
+// Enhanced visual context analysis
+function analyzeVisualContext(imageData: string): any {
+  try {
+    console.log('🎨 Analyzing visual context from image data...');
+    
+    // Basic analysis from data URL characteristics
+    const context = {
+      dominantColors: [],
+      brightness: 'unknown',
+      contrast: 'unknown',
+      imageSize: 'unknown'
+    };
+    
+    // Analyze image format and size hints
+    if (imageData.includes('jpeg') || imageData.includes('jpg')) {
+      context.imageSize = 'photograph';
+    }
+    
+    const base64Content = imageData.split(',')[1] || '';
+    const contentLength = base64Content.length;
+    
+    if (contentLength > 100000) {
+      context.imageSize = 'high_resolution';
+    } else if (contentLength < 50000) {
+      context.imageSize = 'low_resolution';
+    }
+    
+    // Simple color analysis from base64 patterns (basic heuristic)
+    const base64Sample = base64Content.substring(0, 1000);
+    if (base64Sample.includes('AA') || base64Sample.includes('BB')) {
+      context.dominantColors.push('dark');
+    }
+    if (base64Sample.includes('//') || base64Sample.includes('++')) {
+      context.dominantColors.push('light');
+    }
+    
+    console.log('🎨 Visual context analysis:', context);
+    return context;
+  } catch (error) {
+    console.error('❌ Visual context analysis failed:', error);
+    return { dominantColors: [], brightness: 'unknown', contrast: 'unknown' };
+  }
+}
+
+// Enhanced character matching with disambiguation
+function findCharacterMatch(detectedObjects: string[], visualContext?: any): any | null {
+  const searchText = detectedObjects.join(' ').toLowerCase();
+  console.log('🔍 Enhanced character matching for:', searchText);
+  console.log('🎨 Visual context:', visualContext);
+  
+  const matches = [];
+  const disambiguationLog = [];
+  
+  // Score all characters
+  for (const [key, character] of Object.entries(CHARACTER_DATABASE)) {
+    let score = 0;
+    let exclusionTriggered = false;
+    const matchDetails = [];
+    
+    // Check exclusion rules first
+    for (const exclusionRule of character.exclusionRules) {
+      if (searchText.includes(exclusionRule.toLowerCase())) {
+        exclusionTriggered = true;
+        disambiguationLog.push(`❌ ${key}: Excluded by rule '${exclusionRule}'`);
+        break;
+      }
+    }
+    
+    if (exclusionTriggered) continue;
+    
+    // Primary patterns (high weight)
+    const primaryMatches = character.patterns.filter(pattern => 
+      searchText.includes(pattern.toLowerCase())
+    );
+    score += primaryMatches.length * 3;
+    if (primaryMatches.length > 0) {
+      matchDetails.push(`primary: ${primaryMatches.join(', ')}`);
+    }
+    
+    // Fallback patterns (medium weight)
+    const fallbackMatches = character.fallbackPatterns.filter(pattern => 
+      searchText.includes(pattern.toLowerCase())
+    );
+    score += fallbackMatches.length * 2;
+    if (fallbackMatches.length > 0) {
+      matchDetails.push(`fallback: ${fallbackMatches.join(', ')}`);
+    }
+    
+    // Contextual patterns (low weight)
+    const contextualMatches = character.contextualPatterns?.filter(pattern => 
+      searchText.includes(pattern.toLowerCase())
+    ).length || 0;
+    score += contextualMatches * 1;
+    if (contextualMatches > 0) {
+      matchDetails.push(`contextual: ${contextualMatches} matches`);
+    }
+    
+    // Visual context bonus
+    let visualBonus = 0;
+    if (visualContext && character.visualContext) {
+      // Color matching bonus
+      const colorMatches = character.visualContext.dominantColors.filter(color =>
+        visualContext.dominantColors?.includes(color) || 
+        searchText.includes(color.toLowerCase())
+      ).length;
+      visualBonus += colorMatches * 1.5;
+      
+      if (colorMatches > 0) {
+        matchDetails.push(`visual_colors: ${colorMatches} matches`);
+      }
+    }
+    
+    const totalScore = score + visualBonus;
+    
+    if (totalScore >= 2) { // Minimum threshold
+      matches.push({
+        key,
+        character,
+        score: totalScore,
+        matchDetails,
+        confidence: Math.min(character.confidence * (totalScore / 6), 0.95)
+      });
+      
+      disambiguationLog.push(`✅ ${key}: score=${totalScore.toFixed(1)} (${matchDetails.join(', ')})`);
+    } else {
+      disambiguationLog.push(`⚪ ${key}: score=${totalScore.toFixed(1)} - below threshold`);
+    }
+  }
+  
+  // Sort by score and apply disambiguation
+  matches.sort((a, b) => b.score - a.score);
+  
+  console.log('🎯 Disambiguation log:');
+  disambiguationLog.forEach(log => console.log(log));
+  
+  if (matches.length === 0) {
+    console.log('❌ No character matches found');
+    return null;
+  }
+  
+  // Handle ambiguous matches
+  if (matches.length > 1 && matches[0].score === matches[1].score) {
+    console.log('⚠️ Ambiguous match detected, using disambiguation score');
+    matches.sort((a, b) => b.character.disambiguationScore - a.character.disambiguationScore);
+  }
+  
+  const bestMatch = matches[0];
+  console.log(`🏆 Best match: ${bestMatch.key} (score: ${bestMatch.score}, confidence: ${bestMatch.confidence})`);
+  
+  return {
+    ...bestMatch.character,
+    matchScore: bestMatch.score,
+    confidence: bestMatch.confidence,
+    disambiguationLog
+  };
 }
 
 // Primary Analysis Method: HuggingFace ResNet-50
@@ -94,14 +280,17 @@ async function primaryAnalysis(imageData: string): Promise<AnalysisResult> {
         .map(item => item.label.toLowerCase())
         .slice(0, 10);
       
-      const characterMatch = findCharacterMatch(detectedObjects);
+      const visualContext = analyzeVisualContext(imageData);
+      const characterMatch = findCharacterMatch(detectedObjects, visualContext);
       
       return {
         success: true,
         method: 'huggingface_resnet50',
         confidence: characterMatch ? characterMatch.confidence : Math.max(...result.map(r => r.score)),
         detectedObjects,
-        characterMatch
+        characterMatch,
+        visualContext,
+        disambiguationLog: characterMatch?.disambiguationLog
       };
     }
     
@@ -118,7 +307,7 @@ async function primaryAnalysis(imageData: string): Promise<AnalysisResult> {
   }
 }
 
-// Secondary Analysis Method: OpenAI Vision (if available)
+// Secondary Analysis Method: OpenAI Vision
 async function secondaryAnalysis(imageData: string): Promise<AnalysisResult> {
   const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
   
@@ -149,7 +338,7 @@ async function secondaryAnalysis(imageData: string): Promise<AnalysisResult> {
             content: [
               {
                 type: 'text',
-                text: 'Analyze this image and identify any characters, objects, or notable features. Return a comma-separated list of detected items.'
+                text: 'Analyze this image and identify any characters, objects, colors, and notable features. Focus on distinguishing characteristics. Return a detailed comma-separated list.'
               },
               {
                 type: 'image_url',
@@ -174,16 +363,19 @@ async function secondaryAnalysis(imageData: string): Promise<AnalysisResult> {
       .split(/[,\n]/)
       .map((item: string) => item.trim())
       .filter((item: string) => item.length > 0)
-      .slice(0, 10);
+      .slice(0, 15);
     
-    const characterMatch = findCharacterMatch(detectedObjects);
+    const visualContext = analyzeVisualContext(imageData);
+    const characterMatch = findCharacterMatch(detectedObjects, visualContext);
     
     return {
       success: true,
       method: 'openai_vision',
       confidence: characterMatch ? characterMatch.confidence : 0.7,
       detectedObjects,
-      characterMatch
+      characterMatch,
+      visualContext,
+      disambiguationLog: characterMatch?.disambiguationLog
     };
   } catch (error) {
     console.error('❌ Secondary analysis failed:', error);
@@ -197,48 +389,35 @@ async function secondaryAnalysis(imageData: string): Promise<AnalysisResult> {
   }
 }
 
-// Tertiary Analysis Method: Image Characteristics Analysis
+// Tertiary Analysis Method: Basic heuristics
 async function tertiaryAnalysis(imageData: string): Promise<AnalysisResult> {
   try {
-    console.log('🎯 Tertiary Analysis: Image characteristics starting...');
+    console.log('🎯 Tertiary Analysis: Basic heuristics starting...');
     
-    // Basic image analysis based on data URL characteristics
-    const detectedObjects: string[] = [];
+    const detectedObjects = ['unknown_subject', 'digital_content'];
+    const visualContext = analyzeVisualContext(imageData);
     
-    // Analyze image size and format
-    if (imageData.includes('jpeg') || imageData.includes('jpg')) {
-      detectedObjects.push('photograph');
+    // Add basic descriptors based on image characteristics
+    if (visualContext.dominantColors.includes('dark')) {
+      detectedObjects.push('dark_figure');
     }
-    if (imageData.includes('png')) {
-      detectedObjects.push('digital_image');
+    if (visualContext.dominantColors.includes('light')) {
+      detectedObjects.push('light_figure');
     }
-    
-    // Simple base64 content analysis for common patterns
-    const base64Content = imageData.split(',')[1] || '';
-    const contentLength = base64Content.length;
-    
-    if (contentLength > 100000) {
-      detectedObjects.push('high_resolution');
-    }
-    if (contentLength < 50000) {
-      detectedObjects.push('small_image');
-    }
-    
-    // Add generic descriptors
-    detectedObjects.push('unknown_subject', 'digital_content');
     
     return {
       success: true,
-      method: 'image_characteristics',
-      confidence: 0.3,
+      method: 'basic_heuristics',
+      confidence: 0.2,
       detectedObjects,
-      characterMatch: null
+      visualContext,
+      disambiguationLog: ['Basic analysis - minimal confidence']
     };
   } catch (error) {
     console.error('❌ Tertiary analysis failed:', error);
     return {
       success: false,
-      method: 'image_characteristics',
+      method: 'basic_heuristics',
       confidence: 0,
       detectedObjects: [],
       error: error.message
@@ -246,60 +425,9 @@ async function tertiaryAnalysis(imageData: string): Promise<AnalysisResult> {
   }
 }
 
-// Enhanced character matching with confidence scoring
-function findCharacterMatch(detectedObjects: string[]): any | null {
-  const searchText = detectedObjects.join(' ').toLowerCase();
-  console.log('🔍 Searching for character matches in:', searchText);
-  
-  let bestMatch = null;
-  let bestScore = 0;
-  
-  for (const [key, character] of Object.entries(CHARACTER_DATABASE)) {
-    let score = 0;
-    
-    // Primary patterns (high weight)
-    const primaryMatches = character.patterns.filter(pattern => 
-      searchText.includes(pattern.toLowerCase())
-    ).length;
-    score += primaryMatches * 3;
-    
-    // Fallback patterns (medium weight)
-    const fallbackMatches = character.fallbackPatterns.filter(pattern => 
-      searchText.includes(pattern.toLowerCase())
-    ).length;
-    score += fallbackMatches * 2;
-    
-    // Contextual patterns (low weight)
-    const contextualMatches = character.contextualPatterns?.filter(pattern => 
-      searchText.includes(pattern.toLowerCase())
-    ).length || 0;
-    score += contextualMatches * 1;
-    
-    console.log(`🎯 ${key}: primary=${primaryMatches}, fallback=${fallbackMatches}, contextual=${contextualMatches}, total_score=${score}`);
-    
-    if (score > bestScore && score >= 2) { // Minimum threshold
-      bestScore = score;
-      bestMatch = { 
-        key, 
-        ...character, 
-        matchScore: score,
-        confidence: Math.min(character.confidence * (score / 5), 0.95)
-      };
-    }
-  }
-  
-  if (bestMatch) {
-    console.log(`✅ Best character match: ${bestMatch.key} (score: ${bestScore}, confidence: ${bestMatch.confidence})`);
-  } else {
-    console.log('❌ No character match found');
-  }
-  
-  return bestMatch;
-}
-
-// Robust analysis orchestrator with fallback chain
+// Robust analysis orchestrator with enhanced fallback chain
 async function analyzeImageRobustly(imageData: string) {
-  console.log('🚀 Starting robust multi-tier image analysis...');
+  console.log('🚀 Starting enhanced multi-tier image analysis...');
   
   // Try primary analysis
   let result = await primaryAnalysis(imageData);
@@ -314,20 +442,22 @@ async function analyzeImageRobustly(imageData: string) {
     result = await tertiaryAnalysis(imageData);
   }
   
-  // If all methods fail or confidence is too low, return null result
+  // Enhanced confidence check with disambiguation
   if (!result.success || result.confidence < 0.2) {
     console.log('❌ All analysis methods failed or confidence too low');
     return null;
   }
   
-  console.log(`✅ Analysis complete using ${result.method} with confidence ${result.confidence}`);
+  console.log(`✅ Enhanced analysis complete using ${result.method} with confidence ${result.confidence}`);
+  console.log('🎯 Final disambiguation log:', result.disambiguationLog);
+  
   return result;
 }
 
-// Generate response based on analysis result
+// Generate response based on enhanced analysis
 function generateCardResponse(analysisResult: AnalysisResult | null, detectedObjects: string[]) {
   if (!analysisResult || !analysisResult.characterMatch) {
-    // Return null result instead of fake data when confidence is too low
+    // Return null result when confidence is too low
     if (!analysisResult || analysisResult.confidence < 0.2) {
       return {
         extractedText: ['unknown'],
@@ -352,6 +482,7 @@ function generateCardResponse(analysisResult: AnalysisResult | null, detectedObj
         creativeDescription: null,
         rarity: null,
         requiresManualReview: true,
+        error: true,
         message: 'Image analysis was inconclusive. Please try a different image or provide manual details.'
       };
     }
@@ -370,7 +501,7 @@ function generateCardResponse(analysisResult: AnalysisResult | null, detectedObj
       analysisMethod: analysisResult.method,
       visualAnalysis: {
         subjects: detectedObjects,
-        colors: ['Mixed'],
+        colors: analysisResult.visualContext?.dominantColors || ['Mixed'],
         mood: 'Neutral',
         style: 'Unknown',
         theme: 'General',
@@ -398,7 +529,7 @@ function generateCardResponse(analysisResult: AnalysisResult | null, detectedObj
     analysisMethod: analysisResult.method,
     visualAnalysis: {
       subjects: detectedObjects,
-      colors: ['Mixed'],
+      colors: analysisResult.visualContext?.dominantColors || ['Mixed'],
       mood: character.category === 'star_wars' ? 'Epic' : 'Mysterious',
       style: 'Cinematic',
       theme: character.category || 'Adventure',
@@ -407,7 +538,8 @@ function generateCardResponse(analysisResult: AnalysisResult | null, detectedObj
     creativeTitle: character.title,
     creativeDescription: character.description,
     rarity: character.rarity,
-    requiresManualReview: false
+    requiresManualReview: false,
+    disambiguationLog: character.disambiguationLog
   };
 }
 
@@ -418,19 +550,20 @@ serve(async (req) => {
 
   try {
     const { imageData } = await req.json();
-    console.log('🚀 Starting robust image analysis system...');
+    console.log('🚀 Starting enhanced robust image analysis system...');
     
-    // Perform robust analysis with fallback chain
+    // Perform enhanced analysis with improved disambiguation
     const analysisResult = await analyzeImageRobustly(imageData);
     const detectedObjects = analysisResult?.detectedObjects || ['unknown'];
     
     // Generate appropriate response
     const response = generateCardResponse(analysisResult, detectedObjects);
     
-    console.log('✅ Final analysis result:', {
+    console.log('✅ Final enhanced analysis result:', {
       method: analysisResult?.method || 'failed',
       confidence: response.confidence,
-      requiresManualReview: response.requiresManualReview
+      requiresManualReview: response.requiresManualReview,
+      character: response.creativeTitle
     });
     
     return new Response(JSON.stringify(response), {
