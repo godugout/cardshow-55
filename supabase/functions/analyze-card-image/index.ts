@@ -349,13 +349,13 @@ async function analyzeImageRobustly(imageData: string) {
   let result = await primaryAnalysis(imageData);
   
   // Only try secondary if primary failed or confidence is very low
-  if (!result.success || result.confidence < 0.5) {
+  if (!result.success || result.confidence < 0.6) {
     console.log('⚠️ Primary analysis failed or low confidence, trying secondary...');
     result = await secondaryAnalysis(imageData);
   }
   
-  // If both failed, return null (no fake fallback)
-  if (!result.success || result.confidence < 0.5) {
+  // If both failed or confidence is still too low, return null
+  if (!result.success || result.confidence < 0.6) {
     console.log('❌ All analysis methods failed or confidence too low');
     return null;
   }
@@ -366,13 +366,13 @@ async function analyzeImageRobustly(imageData: string) {
   return result;
 }
 
-// Generate response based on analysis
+// Generate response based on analysis - NO FAKE DATA
 function generateCardResponse(analysisResult: AnalysisResult | null, detectedObjects: string[]) {
   if (!analysisResult || !analysisResult.characterMatch) {
-    // Return error when no confident result
+    // Return NULL values when no confident result - no fake data
     return {
-      extractedText: ['unknown'],
-      subjects: ['unknown'],
+      extractedText: detectedObjects.length > 0 ? detectedObjects : ['unknown'],
+      subjects: detectedObjects.length > 0 ? detectedObjects : ['unknown'],
       playerName: null,
       team: null,
       year: new Date().getFullYear().toString(),
@@ -382,7 +382,7 @@ function generateCardResponse(analysisResult: AnalysisResult | null, detectedObj
       analysisType: 'failed',
       analysisMethod: analysisResult?.method || 'none',
       visualAnalysis: {
-        subjects: ['Unknown'],
+        subjects: detectedObjects.length > 0 ? detectedObjects : ['Unknown'],
         colors: ['Unknown'],
         mood: 'Unknown',
         style: 'Unknown',
@@ -394,11 +394,11 @@ function generateCardResponse(analysisResult: AnalysisResult | null, detectedObj
       rarity: null,
       requiresManualReview: true,
       error: true,
-      message: 'Image analysis was inconclusive. Please try a different image or provide manual details.'
+      message: 'Image analysis was inconclusive. Please provide card details manually.'
     };
   }
   
-  // High confidence character match
+  // High confidence character match - use real data
   const character = analysisResult.characterMatch;
   return {
     extractedText: detectedObjects,
@@ -440,7 +440,7 @@ serve(async (req) => {
     const analysisResult = await analyzeImageRobustly(imageData);
     const detectedObjects = analysisResult?.detectedObjects || ['unknown'];
     
-    // Generate appropriate response
+    // Generate appropriate response - NO FAKE DATA
     const response = generateCardResponse(analysisResult, detectedObjects);
     
     console.log('✅ Final analysis result:', {
@@ -481,7 +481,7 @@ serve(async (req) => {
       rarity: null,
       requiresManualReview: true,
       error: true,
-      message: 'Analysis system encountered an error. Please try again or provide manual details.'
+      message: 'Analysis system encountered an error. Please provide card details manually.'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
