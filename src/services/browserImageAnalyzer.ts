@@ -7,10 +7,14 @@ export interface ImageAnalysisResult {
   analysisType: 'browser' | 'fallback';
   detectionMethod?: string;
   matchedKeywords?: string[];
+  title: string;
+  description: string;
+  rarity: 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary';
+  tags: string[];
 }
 
 class BrowserImageAnalyzer {
-  async analyzeImage(imageUrl: string) {
+  async analyzeImage(imageUrl: string): Promise<ImageAnalysisResult> {
     console.log('🔍 Browser analyzer using simplified Step 1 approach');
     const result = await analysisOrchestrator.analyzeImage(imageUrl);
     
@@ -20,8 +24,10 @@ class BrowserImageAnalyzer {
       analysisType: 'browser' as const,
       detectionMethod: result.detectionMethod,
       matchedKeywords: result.matchedKeywords,
-      // Include full result for debugging
-      fullResult: result
+      title: result.title,
+      description: result.description,
+      rarity: result.rarity,
+      tags: result.tags
     };
   }
 }
