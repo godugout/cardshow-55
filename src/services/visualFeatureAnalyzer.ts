@@ -25,17 +25,15 @@ export interface EnhancedDetectionResult {
 
 class VisualFeatureAnalyzer {
   private colorAnalyzer: any = null;
-  private poseDetector: any = null;
 
   async initialize() {
     try {
-      // Initialize color and feature detection models
       console.log('Initializing visual feature analysis...');
       
-      // Note: Using multiple specialized models for comprehensive analysis
+      // Use a simpler, more reliable model
       this.colorAnalyzer = await pipeline(
         'image-classification',
-        'google/vit-base-patch16-224'
+        'microsoft/resnet-50'
       );
       
       console.log('Visual feature analyzer ready!');
@@ -47,83 +45,89 @@ class VisualFeatureAnalyzer {
   async analyzeImage(imageUrl: string): Promise<EnhancedDetectionResult> {
     await this.initialize();
     
-    // Run multiple analysis passes
-    const [objectResults, colorAnalysis, figureAnalysis] = await Promise.all([
-      this.detectObjects(imageUrl),
-      this.analyzeColors(imageUrl),
-      this.analyzeFigureType(imageUrl)
-    ]);
-
-    const visualFeatures = this.extractVisualFeatures(objectResults, colorAnalysis, figureAnalysis);
-    const characterArchetype = this.identifyCharacterArchetype(objectResults, visualFeatures);
-    
-    return {
-      primaryObjects: objectResults.map(r => r.label),
-      visualFeatures,
-      characterArchetype,
-      confidence: this.calculateConfidence(objectResults, visualFeatures, characterArchetype),
-      reasoningPath: this.buildReasoningPath(objectResults, visualFeatures, characterArchetype)
-    };
-  }
-
-  private async detectObjects(imageUrl: string) {
-    if (!this.colorAnalyzer) return [];
-    
     try {
-      const results = await this.colorAnalyzer(imageUrl);
-      return results.filter((r: any) => r.score > 0.1).slice(0, 10);
+      // Run basic object detection
+      const objectResults = await this.detectObjects(imageUrl);
+      console.log('Object detection results:', objectResults);
+      
+      // Enhanced pattern analysis
+      const visualFeatures = this.extractVisualFeatures(objectResults);
+      const characterArchetype = this.identifyCharacterArchetype(objectResults, visualFeatures);
+      
+      const result = {
+        primaryObjects: objectResults.map(r => r.label),
+        visualFeatures,
+        characterArchetype,
+        confidence: this.calculateConfidence(objectResults, visualFeatures, characterArchetype),
+        reasoningPath: this.buildReasoningPath(objectResults, visualFeatures, characterArchetype)
+      };
+      
+      console.log('Enhanced analysis result:', result);
+      return result;
     } catch (error) {
-      console.warn('Object detection failed:', error);
-      return [];
+      console.warn('Enhanced analysis failed, using fallback:', error);
+      return this.createFallbackResult();
     }
   }
 
-  private async analyzeColors(imageUrl: string): Promise<string[]> {
-    // Simplified color analysis - in production, this would use more sophisticated color detection
-    const colorKeywords = [
-      'brown', 'tan', 'beige', 'chestnut', 'auburn',
-      'black', 'white', 'gray', 'silver',
-      'red', 'blue', 'green', 'yellow',
-      'golden', 'bronze'
-    ];
+  private async detectObjects(imageUrl: string) {
+    if (!this.colorAnalyzer) {
+      return [{ label: 'unknown', score: 0.5 }];
+    }
     
-    // This is a placeholder - real implementation would analyze actual pixel data
-    return ['brown', 'tan']; // Default for demonstration
+    try {
+      const results = await this.colorAnalyzer(imageUrl);
+      console.log('Raw object detection:', results);
+      return results.filter((r: any) => r.score > 0.05).slice(0, 15);
+    } catch (error) {
+      console.warn('Object detection failed:', error);
+      return [{ label: 'unknown', score: 0.5 }];
+    }
   }
 
-  private async analyzeFigureType(imageUrl: string): Promise<any> {
-    // Placeholder for figure type analysis
-    return {
-      isHumanoid: true,
-      hasLimbs: true,
-      isUpright: true,
-      hasFur: true
-    };
-  }
-
-  private extractVisualFeatures(objectResults: any[], colorAnalysis: string[], figureAnalysis: any): VisualFeatures {
+  private extractVisualFeatures(objectResults: any[]): VisualFeatures {
     const labels = objectResults.map(r => r.label.toLowerCase());
+    console.log('Analyzing labels for visual features:', labels);
     
     return {
-      dominantColors: colorAnalysis,
-      figureType: this.determineFigureType(labels, figureAnalysis),
+      dominantColors: this.identifyColors(labels),
+      figureType: this.determineFigureType(labels),
       texturePatterns: this.identifyTextures(labels),
       sizeCategory: this.determineSizeCategory(labels),
-      postureType: this.determinePosture(labels, figureAnalysis),
+      postureType: this.determinePosture(labels),
       facialFeatures: this.identifyFacialFeatures(labels),
       bodyProportions: {
-        isHumanoid: this.isHumanoidFigure(labels, figureAnalysis),
+        isHumanoid: this.isHumanoidFigure(labels),
         isTall: this.isTallFigure(labels),
         isBroad: this.isBroadFigure(labels)
       }
     };
   }
 
-  private determineFigureType(labels: string[], figureAnalysis: any): VisualFeatures['figureType'] {
-    const humanoidKeywords = ['person', 'human', 'man', 'woman', 'humanoid', 'figure', 'character'];
-    const quadrupedKeywords = ['dog', 'cat', 'horse', 'bear', 'animal'];
+  private identifyColors(labels: string[]): string[] {
+    const colorMap: { [key: string]: string[] } = {
+      'brown': ['brown', 'chestnut', 'tan', 'sepia', 'chocolate', 'coffee', 'russet'],
+      'black': ['black', 'dark', 'ebony', 'coal', 'onyx'],
+      'white': ['white', 'cream', 'ivory', 'pearl', 'snow'],
+      'gray': ['gray', 'grey', 'silver', 'ash', 'steel'],
+      'golden': ['golden', 'yellow', 'amber', 'honey', 'blonde']
+    };
     
-    if (labels.some(label => humanoidKeywords.some(kw => label.includes(kw))) || figureAnalysis.isHumanoid) {
+    const colors: string[] = [];
+    Object.entries(colorMap).forEach(([color, keywords]) => {
+      if (labels.some(label => keywords.some(kw => label.includes(kw)))) {
+        colors.push(color);
+      }
+    });
+    
+    return colors.length > 0 ? colors : ['mixed'];
+  }
+
+  private determineFigureType(labels: string[]): VisualFeatures['figureType'] {
+    const humanoidKeywords = ['person', 'human', 'man', 'woman', 'humanoid', 'figure', 'character', 'people', 'individual', 'being', 'primate'];
+    const quadrupedKeywords = ['dog', 'cat', 'horse', 'bear', 'animal', 'mammal', 'creature', 'beast'];
+    
+    if (labels.some(label => humanoidKeywords.some(kw => label.includes(kw)))) {
       return 'humanoid';
     }
     if (labels.some(label => quadrupedKeywords.some(kw => label.includes(kw)))) {
@@ -134,10 +138,10 @@ class VisualFeatureAnalyzer {
 
   private identifyTextures(labels: string[]): string[] {
     const textureMap: { [key: string]: string[] } = {
-      'furry': ['fur', 'hairy', 'fuzzy', 'fluffy'],
-      'smooth': ['smooth', 'sleek', 'polished'],
-      'rough': ['rough', 'coarse', 'textured'],
-      'scaly': ['scale', 'reptile', 'scaly']
+      'furry': ['fur', 'hairy', 'fuzzy', 'fluffy', 'woolly', 'shaggy', 'bushy', 'hirsute'],
+      'smooth': ['smooth', 'sleek', 'polished', 'glossy'],
+      'rough': ['rough', 'coarse', 'textured', 'rugged'],
+      'scaly': ['scale', 'reptile', 'scaly', 'lizard']
     };
     
     const textures: string[] = [];
@@ -152,9 +156,9 @@ class VisualFeatureAnalyzer {
 
   private determineSizeCategory(labels: string[]): VisualFeatures['sizeCategory'] {
     const sizeKeywords = {
-      large: ['large', 'big', 'huge', 'giant', 'massive', 'tall'],
-      small: ['small', 'tiny', 'little', 'miniature'],
-      medium: ['medium', 'average', 'normal']
+      large: ['large', 'big', 'huge', 'giant', 'massive', 'tall', 'enormous', 'immense'],
+      small: ['small', 'tiny', 'little', 'miniature', 'petite'],
+      medium: ['medium', 'average', 'normal', 'regular']
     };
     
     for (const [size, keywords] of Object.entries(sizeKeywords)) {
@@ -165,12 +169,12 @@ class VisualFeatureAnalyzer {
     return 'unknown';
   }
 
-  private determinePosture(labels: string[], figureAnalysis: any): VisualFeatures['postureType'] {
+  private determinePosture(labels: string[]): VisualFeatures['postureType'] {
     const postureKeywords = {
-      standing: ['standing', 'upright', 'erect'],
-      sitting: ['sitting', 'seated', 'crouching'],
-      lying: ['lying', 'prone', 'resting'],
-      action: ['running', 'jumping', 'moving', 'walking']
+      standing: ['standing', 'upright', 'erect', 'vertical'],
+      sitting: ['sitting', 'seated', 'crouching', 'squatting'],
+      lying: ['lying', 'prone', 'resting', 'horizontal'],
+      action: ['running', 'jumping', 'moving', 'walking', 'dancing']
     };
     
     for (const [posture, keywords] of Object.entries(postureKeywords)) {
@@ -179,15 +183,15 @@ class VisualFeatureAnalyzer {
       }
     }
     
-    return figureAnalysis.isUpright ? 'standing' : 'unknown';
+    return 'standing'; // Default assumption
   }
 
   private identifyFacialFeatures(labels: string[]): string[] {
     const facialFeatures: string[] = [];
     const featureKeywords = {
-      'bearded': ['beard', 'facial hair'],
-      'long-haired': ['long hair', 'mane'],
-      'expressive': ['eyes', 'face', 'expression']
+      'bearded': ['beard', 'facial hair', 'whiskers'],
+      'long-haired': ['long hair', 'mane', 'flowing'],
+      'expressive': ['eyes', 'face', 'expression', 'smile', 'frown']
     };
     
     Object.entries(featureKeywords).forEach(([feature, keywords]) => {
@@ -199,33 +203,73 @@ class VisualFeatureAnalyzer {
     return facialFeatures;
   }
 
-  private isHumanoidFigure(labels: string[], figureAnalysis: any): boolean {
-    return figureAnalysis.isHumanoid || 
-           labels.some(label => ['person', 'human', 'humanoid', 'figure', 'character'].some(kw => label.includes(kw)));
+  private isHumanoidFigure(labels: string[]): boolean {
+    const humanoidKeywords = ['person', 'human', 'humanoid', 'figure', 'character', 'people', 'individual', 'being', 'primate', 'anthropomorphic'];
+    return labels.some(label => humanoidKeywords.some(kw => label.includes(kw)));
   }
 
   private isTallFigure(labels: string[]): boolean {
-    return labels.some(label => ['tall', 'large', 'big', 'giant', 'towering'].some(kw => label.includes(kw)));
+    const tallKeywords = ['tall', 'large', 'big', 'giant', 'towering', 'massive', 'huge', 'enormous'];
+    return labels.some(label => tallKeywords.some(kw => label.includes(kw)));
   }
 
   private isBroadFigure(labels: string[]): boolean {
-    return labels.some(label => ['broad', 'wide', 'muscular', 'stocky', 'bulky'].some(kw => label.includes(kw)));
+    const broadKeywords = ['broad', 'wide', 'muscular', 'stocky', 'bulky', 'robust', 'hefty'];
+    return labels.some(label => broadKeywords.some(kw => label.includes(kw)));
   }
 
   private identifyCharacterArchetype(objectResults: any[], visualFeatures: VisualFeatures): string | null {
     const { dominantColors, figureType, texturePatterns, bodyProportions } = visualFeatures;
+    const labels = objectResults.map(r => r.label.toLowerCase());
     
-    // Wookie detection pattern
-    if (figureType === 'humanoid' && 
-        texturePatterns.includes('furry') &&
-        dominantColors.some(color => ['brown', 'tan', 'chestnut'].includes(color)) &&
-        bodyProportions.isTall) {
+    console.log('Character archetype analysis:', {
+      labels,
+      figureType,
+      texturePatterns,
+      dominantColors,
+      bodyProportions
+    });
+    
+    // Enhanced Wookie detection with multiple patterns
+    const wookiePatterns = [
+      // Direct matches
+      labels.some(l => l.includes('wookiee') || l.includes('chewbacca')),
+      
+      // Pattern 1: Furry humanoid with brown colors
+      figureType === 'humanoid' && 
+      texturePatterns.includes('furry') &&
+      dominantColors.some(color => ['brown', 'golden'].includes(color)),
+      
+      // Pattern 2: Large hairy primate-like being
+      (labels.some(l => ['primate', 'ape', 'gorilla', 'orangutan'].some(kw => l.includes(kw))) ||
+       bodyProportions.isHumanoid) &&
+      texturePatterns.includes('furry') &&
+      bodyProportions.isTall,
+      
+      // Pattern 3: Bear-like humanoid
+      labels.some(l => l.includes('bear')) && 
+      figureType === 'humanoid',
+      
+      // Pattern 4: Any furry tall humanoid with brown coloring
+      figureType === 'humanoid' &&
+      texturePatterns.includes('furry') &&
+      bodyProportions.isTall &&
+      dominantColors.includes('brown'),
+      
+      // Pattern 5: Generic "creature" or "being" with right characteristics
+      labels.some(l => ['creature', 'being', 'monster', 'beast'].some(kw => l.includes(kw))) &&
+      texturePatterns.includes('furry') &&
+      bodyProportions.isHumanoid
+    ];
+    
+    if (wookiePatterns.some(pattern => pattern)) {
+      console.log('🎯 WOOKIE DETECTED! Matching patterns:', wookiePatterns.map((p, i) => p ? i+1 : null).filter(Boolean));
       return 'wookiee';
     }
     
     // Bear-like creature detection
     if (texturePatterns.includes('furry') && 
-        dominantColors.includes('brown') &&
+        (dominantColors.includes('brown') || labels.some(l => l.includes('bear'))) &&
         bodyProportions.isBroad) {
       return 'bear-creature';
     }
@@ -241,14 +285,16 @@ class VisualFeatureAnalyzer {
   }
 
   private calculateConfidence(objectResults: any[], visualFeatures: VisualFeatures, characterArchetype: string | null): number {
-    let confidence = 0.5; // Base confidence
+    let confidence = 0.3; // Lower base confidence
     
-    // Boost confidence for character archetype matches
-    if (characterArchetype) {
+    // Major boost for character archetype matches
+    if (characterArchetype === 'wookiee') {
+      confidence += 0.5; // Big boost for Wookie detection
+    } else if (characterArchetype) {
       confidence += 0.3;
     }
     
-    // Boost confidence for clear visual patterns
+    // Boost for clear visual patterns
     if (visualFeatures.texturePatterns.length > 0) {
       confidence += 0.1;
     }
@@ -258,7 +304,8 @@ class VisualFeatureAnalyzer {
     }
     
     // Consider object detection quality
-    const avgObjectConfidence = objectResults.reduce((sum, r) => sum + r.score, 0) / Math.max(objectResults.length, 1);
+    const avgObjectConfidence = objectResults.length > 0 ? 
+      objectResults.reduce((sum, r) => sum + r.score, 0) / objectResults.length : 0.3;
     confidence = (confidence + avgObjectConfidence) / 2;
     
     return Math.min(confidence, 0.95); // Cap at 95%
@@ -267,16 +314,41 @@ class VisualFeatureAnalyzer {
   private buildReasoningPath(objectResults: any[], visualFeatures: VisualFeatures, characterArchetype: string | null): string[] {
     const reasoning: string[] = [];
     
-    reasoning.push(`Detected objects: ${objectResults.map(r => r.label).join(', ')}`);
+    reasoning.push(`Detected objects: ${objectResults.map(r => `${r.label} (${(r.score * 100).toFixed(1)}%)`).join(', ')}`);
     reasoning.push(`Figure type: ${visualFeatures.figureType}`);
     reasoning.push(`Dominant colors: ${visualFeatures.dominantColors.join(', ')}`);
-    reasoning.push(`Texture patterns: ${visualFeatures.texturePatterns.join(', ')}`);
+    reasoning.push(`Texture patterns: ${visualFeatures.texturePatterns.join(', ') || 'none detected'}`);
+    reasoning.push(`Body proportions: humanoid=${visualFeatures.bodyProportions.isHumanoid}, tall=${visualFeatures.bodyProportions.isTall}, broad=${visualFeatures.bodyProportions.isBroad}`);
     
     if (characterArchetype) {
-      reasoning.push(`Character archetype identified: ${characterArchetype}`);
+      reasoning.push(`🎯 Character archetype identified: ${characterArchetype}`);
+    } else {
+      reasoning.push('No specific character archetype identified');
     }
     
     return reasoning;
+  }
+
+  private createFallbackResult(): EnhancedDetectionResult {
+    return {
+      primaryObjects: ['unknown entity'],
+      visualFeatures: {
+        dominantColors: ['mixed'],
+        figureType: 'unknown',
+        texturePatterns: [],
+        sizeCategory: 'unknown',
+        postureType: 'unknown',
+        facialFeatures: [],
+        bodyProportions: {
+          isHumanoid: false,
+          isTall: false,
+          isBroad: false
+        }
+      },
+      characterArchetype: null,
+      confidence: 0.3,
+      reasoningPath: ['Fallback analysis due to detection failure']
+    };
   }
 }
 

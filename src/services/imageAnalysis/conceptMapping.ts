@@ -1,4 +1,3 @@
-
 export interface CardConcept {
   title: string;
   description: string;
@@ -12,13 +11,16 @@ export const mapObjectsToCardConcept = (
   characterArchetype?: string | null
 ): CardConcept => {
   
-  // Priority matching based on character archetype
+  console.log('🎯 Mapping objects to card concept:', { objects, characterArchetype, visualFeatures });
+  
+  // PRIORITY: Direct character archetype matching
   if (characterArchetype === 'wookiee') {
+    console.log('✨ WOOKIEE ARCHETYPE DETECTED - Creating legendary card!');
     return {
       title: 'Galactic Guardian Wookiee',
       description: 'A legendary warrior from the forest moon of Kashyyyk, this mighty Wookiee stands tall with unwavering loyalty and incredible strength. Known throughout the galaxy for their courage in battle and fierce devotion to their allies.',
       rarity: 'legendary',
-      tags: ['wookiee', 'star-wars', 'warrior', 'loyal', 'strength', 'galactic', 'legendary', 'kashyyyk']
+      tags: ['wookiee', 'star-wars', 'warrior', 'loyal', 'strength', 'galactic', 'legendary', 'kashyyyk', 'guardian']
     };
   }
   
@@ -44,19 +46,57 @@ export const mapObjectsToCardConcept = (
   
   // Enhanced concept database with hundreds of possibilities
   const concepts: { [key: string]: CardConcept } = {
-    // Star Wars Characters & Creatures
+    // Star Wars Characters & Creatures - ENHANCED WOOKIE DETECTION
     'wookiee': {
-      title: 'Galactic Guardian',
+      title: 'Legendary Wookiee Warrior',
       rarity: 'legendary',
-      description: 'A mighty warrior from the forest moon, known for loyalty and incredible strength.',
-      tags: ['star-wars', 'warrior', 'loyal', 'strength', 'galactic', 'legendary']
+      description: 'A mighty warrior from Kashyyyk, towering above others with incredible strength and unwavering loyalty to their companions.',
+      tags: ['star-wars', 'wookiee', 'warrior', 'loyal', 'strength', 'galactic', 'legendary', 'kashyyyk']
+    },
+    'wookie': {
+      title: 'Legendary Wookiee Warrior', 
+      rarity: 'legendary',
+      description: 'A mighty warrior from Kashyyyk, towering above others with incredible strength and unwavering loyalty to their companions.',
+      tags: ['star-wars', 'wookiee', 'warrior', 'loyal', 'strength', 'galactic', 'legendary', 'kashyyyk']
     },
     'chewbacca': {
       title: 'Rebel Alliance Hero',
       rarity: 'legendary',
-      description: 'The most famous Wookiee warrior, co-pilot of the Millennium Falcon.',
-      tags: ['star-wars', 'rebel', 'pilot', 'hero', 'millennium-falcon', 'legendary']
+      description: 'The most famous Wookiee warrior, co-pilot of the Millennium Falcon and hero of the Rebellion.',
+      tags: ['star-wars', 'rebel', 'pilot', 'hero', 'millennium-falcon', 'legendary', 'wookiee']
     },
+    // Additional fuzzy matches for Wookie-like terms
+    'hairy': {
+      title: 'Furry Forest Guardian',
+      rarity: 'rare',
+      description: 'A towering, hair-covered guardian with incredible strength and protective instincts.',
+      tags: ['furry', 'guardian', 'forest', 'strength', 'protective']
+    },
+    'furry': {
+      title: 'Primal Beast Warrior',
+      rarity: 'rare', 
+      description: 'A fur-covered warrior with primal strength and ancient wisdom.',
+      tags: ['furry', 'warrior', 'primal', 'strength', 'ancient']
+    },
+    'ape': {
+      title: 'Mighty Primate Guardian',
+      rarity: 'rare',
+      description: 'A powerful primate-like being with incredible strength and intelligence.',
+      tags: ['primate', 'guardian', 'strength', 'intelligent', 'mighty']
+    },
+    'gorilla': {
+      title: 'Mountain Silverback',
+      rarity: 'rare',
+      description: 'A massive, intelligent primate with incredible strength and leadership abilities.',
+      tags: ['primate', 'silverback', 'mountain', 'strength', 'leader']
+    },
+    'primate': {
+      title: 'Ancient Primate Sage',
+      rarity: 'rare',
+      description: 'An evolved primate with ancient wisdom and remarkable intelligence.',
+      tags: ['primate', 'sage', 'ancient', 'wisdom', 'intelligent']
+    },
+    
     'ewok': {
       title: 'Forest Moon Protector',
       rarity: 'rare',
@@ -312,12 +352,18 @@ export const mapObjectsToCardConcept = (
   };
 
   // Enhanced pattern matching with fuzzy logic and visual features
+  const allText = objects.join(' ').toLowerCase() + ' ' + JSON.stringify(visualFeatures || {}).toLowerCase();
+  
   const patterns = [
-    // Wookiee detection patterns
+    // ENHANCED WOOKIE DETECTION PATTERNS
+    { keywords: ['wookiee', 'wookie', 'chewbacca'], match: 'wookiee', weight: 1.0 },
     { keywords: ['fur', 'tall', 'brown', 'humanoid'], match: 'wookiee', weight: 0.9 },
-    { keywords: ['hairy', 'standing', 'large'], match: 'wookiee', weight: 0.8 },
-    { keywords: ['bear', 'upright', 'bipedal'], match: 'wookiee', weight: 0.7 },
-    { keywords: ['furry', 'giant', 'warrior'], match: 'wookiee', weight: 0.8 },
+    { keywords: ['hairy', 'standing', 'large', 'primate'], match: 'wookiee', weight: 0.9 },
+    { keywords: ['bear', 'upright', 'bipedal', 'human'], match: 'wookiee', weight: 0.8 },
+    { keywords: ['furry', 'giant', 'warrior', 'brown'], match: 'wookiee', weight: 0.9 },
+    { keywords: ['ape', 'humanoid', 'furry'], match: 'wookiee', weight: 0.8 },
+    { keywords: ['gorilla', 'standing', 'tall'], match: 'wookiee', weight: 0.8 },
+    { keywords: ['primate', 'bipedal', 'large'], match: 'wookiee', weight: 0.8 },
     
     // Star Wars creatures
     { keywords: ['small', 'hood', 'desert'], match: 'jawa', weight: 0.8 },
@@ -337,13 +383,11 @@ export const mapObjectsToCardConcept = (
     { keywords: ['trunk', 'large', 'gray'], match: 'elephant', weight: 0.9 }
   ];
 
-  // Calculate pattern matches with weights
   const patternMatches = patterns
     .map(pattern => {
       const matchScore = pattern.keywords.reduce((score, keyword) => {
-        const objectMatch = objects.some(obj => obj.toLowerCase().includes(keyword));
-        const featureMatch = visualFeatures && JSON.stringify(visualFeatures).toLowerCase().includes(keyword);
-        return score + (objectMatch ? 1 : 0) + (featureMatch ? 0.5 : 0);
+        const textMatch = allText.includes(keyword) ? 1 : 0;
+        return score + textMatch;
       }, 0);
       
       const normalizedScore = (matchScore / pattern.keywords.length) * pattern.weight;
@@ -351,22 +395,26 @@ export const mapObjectsToCardConcept = (
     })
     .sort((a, b) => b.score - a.score);
 
+  console.log('🔍 Pattern matching results:', patternMatches.slice(0, 5));
+
   // Use best pattern match if score is high enough
-  if (patternMatches[0]?.score > 0.5) {
+  if (patternMatches[0]?.score > 0.3) {
     const bestMatch = patternMatches[0].pattern.match;
+    console.log(`🎯 Best pattern match: ${bestMatch} (score: ${patternMatches[0].score})`);
     if (concepts[bestMatch]) {
       return concepts[bestMatch];
     }
   }
 
   // Direct object matching with fuzzy search
-  const bestMatch = Object.keys(concepts).find(key => 
+  const bestDirectMatch = Object.keys(concepts).find(key => 
     mainObject.includes(key) || key.includes(mainObject) ||
     objects.some(obj => obj.toLowerCase().includes(key) || key.includes(obj.toLowerCase()))
   );
 
-  if (bestMatch) {
-    return concepts[bestMatch];
+  if (bestDirectMatch) {
+    console.log(`📋 Direct match found: ${bestDirectMatch}`);
+    return concepts[bestDirectMatch];
   }
 
   // Enhanced fallback with visual feature consideration
