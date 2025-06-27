@@ -1,23 +1,9 @@
 
 import React from 'react';
 import { useWizardContext } from './WizardContext';
+import { AdvancedTemplateSelection } from './steps/AdvancedTemplateSelection';
 
-// Placeholder step components - will be implemented in subsequent prompts
-const TemplateSelectionStep = () => (
-  <div className="text-center space-y-6">
-    <h2 className="text-3xl font-bold text-white">Choose Your Template</h2>
-    <p className="text-crd-lightGray text-lg">Select a template to get started with your card design</p>
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="bg-crd-darkGray border border-crd-mediumGray/30 rounded-lg p-6 hover:border-crd-green/50 transition-colors cursor-pointer">
-          <div className="aspect-[3/4] bg-crd-mediumGray rounded-lg mb-3"></div>
-          <p className="text-white text-center">Template {i + 1}</p>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
+// Placeholder step components for other steps
 const PhotoUploadStep = () => (
   <div className="text-center space-y-6">
     <h2 className="text-3xl font-bold text-white">Upload Your Photo</h2>
@@ -95,7 +81,7 @@ export const WizardStepRenderer: React.FC = () => {
   const renderStep = () => {
     switch (state.currentStepId) {
       case 'template':
-        return <TemplateSelectionStep />;
+        return <AdvancedTemplateSelection />;
       case 'upload':
         return <PhotoUploadStep />;
       case 'details':
