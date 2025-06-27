@@ -22,6 +22,12 @@ export const NavLinks = () => {
         Studio
       </Link>
       <Link 
+        to="/showcase" 
+        className={`nav-item ${location.pathname.startsWith('/showcase') ? 'active' : ''}`}
+      >
+        Showcase
+      </Link>
+      <Link 
         to="/cards" 
         className={`nav-item ${location.pathname.startsWith('/cards') ? 'active' : ''}`}
       >

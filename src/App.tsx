@@ -13,6 +13,7 @@ import Gallery from './pages/Gallery';
 import Studio from './pages/Studio';
 import CreateCard from './pages/CreateCard';
 import Creators from './pages/Creators';
+import Showcase from './pages/Showcase';
 
 // Create missing pages
 import CardsPage from './pages/CardsPage';
@@ -71,6 +72,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Studio />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="showcase" 
+            element={
+              <ProtectedRoute>
+                <Showcase />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="showcase/:cardId" 
+            element={
+              <ProtectedRoute>
+                <Showcase />
               </ProtectedRoute>
             } 
           />
