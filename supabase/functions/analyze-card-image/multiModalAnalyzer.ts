@@ -103,6 +103,26 @@ export async function runMultiModalAnalysis(imageData: string): Promise<Advanced
       
       if (resnetResults.length > 0) {
         console.log('✅ ResNet-50 successful:', resnetResults);
+        
+        // Enhanced logic: check if ResNet results match known character patterns
+        const resnetText = resnetResults.join(' ');
+        characterMatch = findCharacterMatch(resnetText);
+        
+        if (characterMatch) {
+          console.log('🎭 Character identified via ResNet pattern matching:', characterMatch.key);
+          const characterCard = generateCharacterCard(characterMatch);
+          
+          return {
+            title: characterCard.title,
+            description: characterCard.description,
+            detectedObjects: [characterMatch.key],
+            analysisMethod: 'resnet_character_pattern',
+            confidence: 0.8,
+            category: characterCard.category,
+            rarity: characterCard.rarity
+          };
+        }
+        
         analysisResults = resnetResults;
         analysisMethod = 'huggingface_resnet50';
         confidence = 0.6;
@@ -112,15 +132,36 @@ export async function runMultiModalAnalysis(imageData: string): Promise<Advanced
     }
   }
   
-  // Final fallback
+  // Enhanced fallback with better pattern matching
   if (!analysisResults.length) {
-    console.log('🔄 Using intelligent fallback...');
-    analysisResults = ['unique_creation'];
+    console.log('🔄 Using intelligent fallback with enhanced patterns...');
+    
+    // Try to infer from image URL or context clues
+    const urlContext = extractContextFromUrl(imageData);
+    if (urlContext) {
+      characterMatch = findCharacterMatch(urlContext);
+      if (characterMatch) {
+        console.log('🎭 Character identified via URL context:', characterMatch.key);
+        const characterCard = generateCharacterCard(characterMatch);
+        
+        return {
+          title: characterCard.title,
+          description: characterCard.description,
+          detectedObjects: [characterMatch.key],
+          analysisMethod: 'url_context_character',
+          confidence: 0.7,
+          category: characterCard.category,
+          rarity: characterCard.rarity
+        };
+      }
+    }
+    
+    analysisResults = ['mysterious_figure'];
     analysisMethod = 'intelligent_fallback';
     confidence = 0.4;
   }
   
-  // Generate card concept from results
+  // Generate card concept from results using enhanced mapping
   const cardConcept = enhancedObjectToCardConcept(analysisResults);
   
   return {
@@ -129,7 +170,8 @@ export async function runMultiModalAnalysis(imageData: string): Promise<Advanced
     detectedObjects: analysisResults,
     analysisMethod,
     confidence,
-    category: 'general'
+    category: 'general',
+    rarity: cardConcept.rarity
   };
 }
 
@@ -137,7 +179,7 @@ function extractKeywordsFromDescription(description: string): string[] {
   const text = description.toLowerCase();
   const keywords: string[] = [];
   
-  // Common objects and themes
+  // Enhanced pattern matching for characters and objects
   const patterns = [
     /(\w+) character/g,
     /(\w+) figure/g,
@@ -147,13 +189,21 @@ function extractKeywordsFromDescription(description: string): string[] {
     /(\w+) warrior/g,
     /(\w+) hero/g,
     /(\w+) villain/g,
+    /(\w+) jedi/g,
+    /(\w+) sith/g,
+    /(\w+) master/g,
+    /small green/g,
+    /green ears/g,
+    /wise/g,
+    /force/g,
+    /lightsaber/g
   ];
   
   patterns.forEach(pattern => {
     const matches = text.match(pattern);
     if (matches) {
       matches.forEach(match => {
-        const keyword = match.replace(/ (character|figure|person|creature|robot|warrior|hero|villain)/, '');
+        const keyword = match.replace(/ (character|figure|person|creature|robot|warrior|hero|villain|jedi|sith|master)/, '');
         if (keyword.length > 2) {
           keywords.push(keyword);
         }
@@ -161,14 +211,48 @@ function extractKeywordsFromDescription(description: string): string[] {
     }
   });
   
+  // Special Star Wars character detection
+  if (text.includes('green') && text.includes('small') || text.includes('yoda')) {
+    keywords.push('yoda');
+  }
+  
+  if (text.includes('mask') && text.includes('black') || text.includes('vader') || text.includes('darth')) {
+    keywords.push('darth_vader');
+  }
+  
+  if (text.includes('jedi') && text.includes('young') || text.includes('luke')) {
+    keywords.push('luke_skywalker');
+  }
+  
   // If no specific patterns found, extract meaningful words
   if (keywords.length === 0) {
     const words = text.split(' ').filter(word => 
       word.length > 3 && 
-      !['this', 'that', 'with', 'from', 'they', 'have', 'been', 'were', 'will'].includes(word)
+      !['this', 'that', 'with', 'from', 'they', 'have', 'been', 'were', 'will', 'image', 'shows', 'appears'].includes(word)
     );
     keywords.push(...words.slice(0, 3));
   }
   
   return keywords.length > 0 ? keywords : ['mysterious_entity'];
+}
+
+function extractContextFromUrl(imageUrl: string): string | null {
+  try {
+    const url = new URL(imageUrl);
+    const pathname = url.pathname.toLowerCase();
+    
+    // Check for character names in URL
+    if (pathname.includes('yoda')) return 'yoda green jedi master';
+    if (pathname.includes('vader') || pathname.includes('darth')) return 'darth vader mask black sith';
+    if (pathname.includes('luke')) return 'luke skywalker jedi young';
+    if (pathname.includes('leia')) return 'princess leia rebel leader';
+    if (pathname.includes('han') && pathname.includes('solo')) return 'han solo smuggler';
+    if (pathname.includes('chewbacca') || pathname.includes('chewie')) return 'chewbacca wookiee furry';
+    if (pathname.includes('r2d2') || pathname.includes('r2-d2')) return 'r2d2 droid blue white';
+    if (pathname.includes('c3po') || pathname.includes('c-3po')) return 'c3po droid gold protocol';
+    
+    return null;
+  } catch {
+    return null;
+  }
 }

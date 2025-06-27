@@ -1,135 +1,289 @@
 
-// Enhanced creative mapping from detected objects to trading card concepts
-export function enhancedObjectToCardConcept(detectedObjects: string[]) {
+// Enhanced creative mapping for better character and object recognition
+export interface CardConcept {
+  title: string;
+  description: string;
+  rarity: 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary';
+  tags: string[];
+}
+
+const CHARACTER_PATTERNS = {
+  // Star Wars patterns
+  yoda: [
+    'green', 'ears', 'small', 'jedi', 'master', 'wise', 'old', 'force',
+    'lightsaber', 'dagobah', 'swamp', 'robes', 'staff', 'cane'
+  ],
+  'darth vader': [
+    'mask', 'black', 'helmet', 'cape', 'breathing', 'sith', 'dark',
+    'empire', 'armor', 'red lightsaber', 'chest panel'
+  ],
+  'luke skywalker': [
+    'jedi', 'blonde', 'young', 'lightsaber', 'rebel', 'pilot',
+    'tatooine', 'farmboy', 'x-wing'
+  ],
+  'princess leia': [
+    'buns', 'hair', 'white dress', 'rebel', 'princess', 'leader',
+    'blaster', 'alderan'
+  ],
+  'han solo': [
+    'smuggler', 'vest', 'blaster', 'falcon', 'pilot', 'cocky',
+    'scoundrel', 'carbonite'
+  ],
+  'chewbacca': [
+    'wookiee', 'furry', 'tall', 'brown', 'bowcaster', 'roar',
+    'hair', 'beast', 'loyal'
+  ],
+  'r2d2': [
+    'droid', 'blue', 'white', 'beeps', 'astromech', 'short',
+    'cylindrical', 'robot'
+  ],
+  'c3po': [
+    'droid', 'gold', 'protocol', 'tall', 'humanoid', 'worried',
+    'fussy', 'golden'
+  ],
+  // Marvel patterns
+  'spider-man': [
+    'web', 'red', 'blue', 'mask', 'spider', 'new york', 'hero',
+    'wall crawler', 'spidey'
+  ],
+  'iron man': [
+    'armor', 'red', 'gold', 'arc reactor', 'tony stark', 'tech',
+    'suit', 'repulsors'
+  ],
+  'captain america': [
+    'shield', 'star', 'red white blue', 'super soldier', 'steve rogers',
+    'america', 'patriot'
+  ],
+  'hulk': [
+    'green', 'big', 'angry', 'smash', 'muscles', 'bruce banner',
+    'rage', 'strong'
+  ],
+  'thor': [
+    'hammer', 'mjolnir', 'cape', 'asgard', 'god', 'thunder',
+    'blonde', 'armor'
+  ],
+  'batman': [
+    'cape', 'cowl', 'dark', 'gotham', 'bat', 'utility belt',
+    'grappling hook', 'bruce wayne'
+  ],
+  'superman': [
+    'cape', 'red', 'blue', 'S symbol', 'clark kent', 'flight',
+    'strong', 'krypton'
+  ]
+};
+
+const CREATIVE_TITLES = {
+  // Enhanced Star Wars titles
+  yoda: [
+    'Jedi Grand Master Yoda',
+    'Yoda the Wise',
+    'Master Yoda of Dagobah',
+    'The Ancient Jedi Master',
+    'Yoda, Teacher of Jedi'
+  ],
+  'darth vader': [
+    'Darth Vader, Dark Lord of the Sith',
+    'Vader the Fallen',
+    'The Dark Lord Vader',
+    'Sith Lord Darth Vader',
+    'Vader, Chosen One Turned Dark'
+  ],
+  'luke skywalker': [
+    'Luke Skywalker, Jedi Knight',
+    'The Last Hope',
+    'Skywalker the Hero',
+    'Jedi Master Luke',
+    'Luke, Son of Anakin'
+  ],
+  // General object-based titles
+  mask: [
+    'The Mysterious Masked Figure',
+    'Guardian of Secrets',
+    'The Hidden Identity',
+    'Masked Protector',
+    'The Enigmatic One'
+  ],
+  sword: [
+    'Legendary Blade Master',
+    'The Sword Bearer',
+    'Warrior of the Blade',
+    'Ancient Swordsman',
+    'Master of Steel'
+  ],
+  armor: [
+    'The Armored Guardian',
+    'Knight of Protection',
+    'Defender in Steel',
+    'The Shielded Warrior',
+    'Armored Champion'
+  ],
+  robot: [
+    'Mechanical Guardian',
+    'The Steel Sentinel',
+    'Robotic Protector',
+    'Machine Warrior',
+    'The Automated Hero'
+  ],
+  // Fallback creative titles
+  unknown: [
+    'The Mysterious Entity',
+    'Guardian of the Unknown',
+    'The Enigmatic Presence',
+    'Keeper of Secrets',
+    'The Hidden Power'
+  ]
+};
+
+const CREATIVE_DESCRIPTIONS = {
+  yoda: [
+    'Ancient Jedi Master with 900 years of wisdom and unparalleled Force abilities.',
+    'The wisest of all Jedi, teacher to generations of Force users.',
+    'Small in stature but mighty in the Force, this legendary master guides all Jedi.',
+    'From the swamps of Dagobah, this green sage holds the secrets of the Force.'
+  ],
+  'darth vader': [
+    'Once the chosen one, now a dark lord consumed by the power of the Sith.',
+    'Fallen Jedi Knight encased in black armor, breathing mechanically through the Force.',
+    'The Emperor\'s right hand, feared across the galaxy for his ruthless power.',
+    'Former Anakin Skywalker, now twisted by darkness and mechanical augmentation.'
+  ],
+  mask: [
+    'A mysterious figure whose true identity remains hidden behind an enigmatic mask.',
+    'The concealed guardian whose face is known to none but whose legend echoes through time.',
+    'Behind this mask lies power unknown, secrets untold, and mysteries unsolved.',
+    'A protector whose identity is sacred, whose purpose is noble, whose face is forbidden.'
+  ],
+  unknown: [
+    'An enigmatic presence with powers beyond mortal comprehension.',
+    'A mysterious entity whose origins are lost to time but whose influence shapes destiny.',
+    'The guardian of secrets, keeper of ancient knowledge, protector of the unknown.',
+    'A figure of legend whose true nature transcends ordinary understanding.'
+  ]
+};
+
+export function enhancedObjectToCardConcept(detectedObjects: string[]): CardConcept {
   console.log('🎨 Creating card concept from objects:', detectedObjects);
   
   if (!detectedObjects || detectedObjects.length === 0) {
-    return getRandomCreativeCard();
+    return getFallbackConcept();
   }
-  
+
+  // Try to match against character patterns first
+  const characterMatch = findCharacterByPatterns(detectedObjects);
+  if (characterMatch) {
+    console.log('🎭 Character match found:', characterMatch);
+    return generateCharacterConcept(characterMatch);
+  }
+
+  // Use the primary detected object
   const primaryObject = detectedObjects[0].toLowerCase();
   console.log('🎯 Primary object for card generation:', primaryObject);
+
+  // Generate concept based on primary object
+  return generateObjectConcept(primaryObject);
+}
+
+function findCharacterByPatterns(detectedObjects: string[]): string | null {
+  const searchTerms = detectedObjects.join(' ').toLowerCase();
   
-  // Enhanced object mapping with more variety
-  const objectMappings: { [key: string]: Array<{title: string, description: string}> } = {
-    // Animals
-    'cat': [
-      { title: 'Feline Guardian', description: 'A mystical cat with ancient wisdom and protective powers.' },
-      { title: 'Shadow Cat', description: 'A sleek feline that moves between dimensions with grace.' },
-      { title: 'Mystic Feline', description: 'A magical cat blessed with supernatural abilities.' }
-    ],
-    'dog': [
-      { title: 'Loyal Companion', description: 'A faithful guardian with unwavering loyalty and courage.' },
-      { title: 'Alpha Wolf', description: 'A powerful canine leader with pack instincts.' },
-      { title: 'Spirit Hound', description: 'A mystical dog connected to the spiritual realm.' }
-    ],
-    'bird': [
-      { title: 'Sky Sentinel', description: 'A majestic bird soaring through endless skies.' },
-      { title: 'Wind Rider', description: 'A graceful avian master of aerial combat.' },
-      { title: 'Phoenix Rising', description: 'A legendary bird reborn from flames.' }
-    ],
-    'horse': [
-      { title: 'Thunder Steed', description: 'A magnificent horse with the power of storms.' },
-      { title: 'Wind Runner', description: 'A swift horse that races like the wind.' },
-      { title: 'Spirit Horse', description: 'A mystical equine with otherworldly grace.' }
-    ],
+  for (const [character, patterns] of Object.entries(CHARACTER_PATTERNS)) {
+    const matchCount = patterns.filter(pattern => 
+      searchTerms.includes(pattern.toLowerCase())
+    ).length;
     
-    // Vehicles
-    'car': [
-      { title: 'Speed Demon', description: 'A high-performance vehicle built for velocity.' },
-      { title: 'Road Warrior', description: 'A powerful car ready for any challenge.' },
-      { title: 'Thunder Machine', description: 'A mechanical marvel with roaring engines.' }
-    ],
-    'airplane': [
-      { title: 'Sky Cruiser', description: 'A magnificent flying machine conquering the heavens.' },
-      { title: 'Wind Rider', description: 'An aircraft dancing through clouds and storms.' },
-      { title: 'Sky Guardian', description: 'A powerful plane protecting the airways.' }
-    ],
-    'ship': [
-      { title: 'Ocean Master', description: 'A mighty vessel ruling the seven seas.' },
-      { title: 'Wave Crusher', description: 'A ship that conquers the wildest storms.' },
-      { title: 'Deep Explorer', description: 'A vessel seeking treasures in ocean depths.' }
-    ],
+    // If we have multiple pattern matches, it's likely this character
+    if (matchCount >= 2) {
+      return character;
+    }
     
-    // Objects
-    'book': [
-      { title: 'Tome of Wisdom', description: 'An ancient book containing forgotten knowledge.' },
-      { title: 'Magic Codex', description: 'A mystical tome filled with powerful spells.' },
-      { title: 'Scholar\'s Guide', description: 'A comprehensive book of academic excellence.' }
-    ],
-    'flower': [
-      { title: 'Bloom of Power', description: 'A magical flower radiating natural energy.' },
-      { title: 'Eternal Blossom', description: 'A flower that never wilts, symbol of persistence.' },
-      { title: 'Nature\'s Gift', description: 'A beautiful bloom blessed by earth spirits.' }
-    ],
-    'mountain': [
-      { title: 'Stone Guardian', description: 'An ancient mountain watching over the land.' },
-      { title: 'Peak of Power', description: 'A towering mountain reaching toward the heavens.' },
-      { title: 'Earth\'s Crown', description: 'A majestic mountain crowned with snow and glory.' }
-    ],
-    
-    // Abstract/Creative
-    'unique_creation': [
-      { title: 'Artistic Vision', description: 'A unique creation born from pure imagination.' },
-      { title: 'Creative Force', description: 'An original work expressing boundless creativity.' },
-      { title: 'Inspired Masterpiece', description: 'A one-of-a-kind creation with artistic soul.' }
-    ],
-    'artistic_creation': [
-      { title: 'Studio Master', description: 'An artistic creation from a visionary mind.' },
-      { title: 'Creative Expression', description: 'A unique work embodying pure artistic spirit.' },
-      { title: 'Artisan\'s Pride', description: 'A masterful creation crafted with skill and passion.' }
-    ]
-  };
-  
-  // Try exact matches first
-  if (objectMappings[primaryObject]) {
-    const options = objectMappings[primaryObject];
-    const selected = options[Math.floor(Math.random() * options.length)];
-    console.log('✅ Found exact match for:', primaryObject, '→', selected.title);
-    return selected;
-  }
-  
-  // Try partial matches
-  for (const [key, options] of Object.entries(objectMappings)) {
-    if (primaryObject.includes(key) || key.includes(primaryObject)) {
-      const selected = options[Math.floor(Math.random() * options.length)];
-      console.log('✅ Found partial match for:', primaryObject, '→', selected.title);
-      return selected;
+    // Special case for unique identifiers
+    if (patterns.some(pattern => searchTerms.includes(pattern) && pattern.length > 4)) {
+      return character;
     }
   }
   
-  // Generate creative title based on the object name
-  const creativeTitles = [
-    `${capitalizeFirst(primaryObject)} Champion`,
-    `Legendary ${capitalizeFirst(primaryObject)}`,
-    `${capitalizeFirst(primaryObject)} Master`,
-    `Mystic ${capitalizeFirst(primaryObject)}`,
-    `${capitalizeFirst(primaryObject)} Guardian`,
-    `Epic ${capitalizeFirst(primaryObject)}`
-  ];
+  return null;
+}
+
+function generateCharacterConcept(character: string): CardConcept {
+  const titles = CREATIVE_TITLES[character] || CREATIVE_TITLES.unknown;
+  const descriptions = CREATIVE_DESCRIPTIONS[character] || CREATIVE_DESCRIPTIONS.unknown;
   
-  const randomTitle = creativeTitles[Math.floor(Math.random() * creativeTitles.length)];
+  const randomTitle = titles[Math.floor(Math.random() * titles.length)];
+  const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];
   
-  console.log('🎲 Generated creative title for:', primaryObject, '→', randomTitle);
+  console.log('🎲 Generated creative title for:', character, '→', randomTitle);
   
+  // Determine rarity based on character importance
+  let rarity: 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary' = 'uncommon';
+  
+  if (['yoda', 'darth vader', 'luke skywalker'].includes(character)) {
+    rarity = 'legendary';
+  } else if (['han solo', 'princess leia', 'chewbacca', 'spider-man', 'iron man'].includes(character)) {
+    rarity = 'rare';
+  } else if (['r2d2', 'c3po', 'captain america', 'thor'].includes(character)) {
+    rarity = 'uncommon';
+  }
+
   return {
     title: randomTitle,
-    description: `A unique creation featuring ${primaryObject} with extraordinary characteristics and mystical properties.`
+    description: randomDescription,
+    rarity,
+    tags: generateTagsForCharacter(character)
   };
 }
 
-function capitalizeFirst(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1).replace(/_/g, ' ');
+function generateObjectConcept(object: string): CardConcept {
+  const titles = CREATIVE_TITLES[object] || CREATIVE_TITLES.unknown;
+  const descriptions = CREATIVE_DESCRIPTIONS[object] || CREATIVE_DESCRIPTIONS.unknown;
+  
+  const randomTitle = titles[Math.floor(Math.random() * titles.length)];
+  const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];
+  
+  return {
+    title: randomTitle,
+    description: randomDescription,
+    rarity: 'uncommon',
+    tags: [object, 'mysterious', 'legendary', 'unique']
+  };
 }
 
-function getRandomCreativeCard() {
-  const creativeCards = [
-    { title: 'Visionary Creator', description: 'An original masterpiece born from pure imagination.' },
-    { title: 'Artistic Soul', description: 'A creative spirit expressing boundless artistic vision.' },
-    { title: 'Master Craftsman', description: 'A skilled artisan creating works of lasting beauty.' },
-    { title: 'Creative Genius', description: 'An innovative mind pushing the boundaries of art.' },
-    { title: 'Inspired Artist', description: 'A passionate creator channeling divine inspiration.' }
+function generateTagsForCharacter(character: string): string[] {
+  const baseTags = CHARACTER_PATTERNS[character]?.slice(0, 4) || ['mysterious'];
+  
+  // Add universe-specific tags
+  if (['yoda', 'darth vader', 'luke skywalker', 'han solo', 'princess leia', 'chewbacca'].includes(character)) {
+    baseTags.push('star wars', 'galaxy', 'force');
+  } else if (['spider-man', 'iron man', 'captain america', 'hulk', 'thor'].includes(character)) {
+    baseTags.push('marvel', 'superhero', 'avenger');
+  } else if (['batman', 'superman'].includes(character)) {
+    baseTags.push('dc', 'superhero', 'justice league');
+  }
+  
+  return baseTags.slice(0, 6); // Limit to 6 tags
+}
+
+function getFallbackConcept(): CardConcept {
+  const fallbackOptions = [
+    {
+      title: 'The Enigmatic Guardian',
+      description: 'A mysterious protector whose true nature defies understanding.',
+      rarity: 'rare' as const,
+      tags: ['mysterious', 'guardian', 'enigmatic', 'powerful']
+    },
+    {
+      title: 'Ancient Artifact',
+      description: 'A relic of immense power from a forgotten civilization.',
+      rarity: 'ultra-rare' as const,
+      tags: ['ancient', 'artifact', 'power', 'forgotten']
+    },
+    {
+      title: 'The Unknown Hero',
+      description: 'A champion whose deeds echo through eternity, identity shrouded in legend.',
+      rarity: 'legendary' as const,
+      tags: ['hero', 'champion', 'legend', 'eternal']
+    }
   ];
   
-  return creativeCards[Math.floor(Math.random() * creativeCards.length)];
+  return fallbackOptions[Math.floor(Math.random() * fallbackOptions.length)];
 }
