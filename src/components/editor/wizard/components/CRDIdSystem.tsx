@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Search, Sparkles, Globe, Image, Loader, CheckCircle, AlertCircle, Eye, Palette } from 'lucide-react';
+import { Search, Sparkles, Globe, Image, Loader, CheckCircle, AlertCircle, Eye, Palette, Cpu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCardWebSearch, type CardSearchResult } from '../hooks/useCardWebSearch';
@@ -64,11 +63,11 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
       case 'traditional':
         return { icon: Search, label: 'Traditional Analysis', color: 'text-blue-500' };
       case 'visual':
-        return { icon: Eye, label: 'Visual Analysis', color: 'text-purple-500' };
+        return { icon: Eye, label: 'AI Visual Analysis', color: 'text-purple-500' };
       case 'fallback':
         return { icon: Palette, label: 'Creative Generation', color: 'text-orange-500' };
       default:
-        return { icon: Sparkles, label: 'Analysis', color: 'text-crd-green' };
+        return { icon: Cpu, label: 'Browser AI Analysis', color: 'text-crd-green' };
     }
   };
 
@@ -76,11 +75,11 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
     <div className="bg-crd-darkGray/50 border border-crd-mediumGray/30 rounded-xl p-6 space-y-4">
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 text-crd-green">
-          <Sparkles className="w-5 h-5" />
-          <h3 className="text-white font-semibold text-lg">Enhanced CRD ID System</h3>
+          <Cpu className="w-5 h-5" />
+          <h3 className="text-white font-semibold text-lg">Free CRD ID System</h3>
         </div>
         <p className="text-crd-lightGray text-sm">
-          AI-powered card identification with visual analysis and creative generation
+          Browser-based AI image analysis - no API keys required!
         </p>
       </div>
 
@@ -89,8 +88,8 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
         {imageUrl && (
           <div className="space-y-2">
             <label className="text-white text-sm font-medium flex items-center gap-2">
-              <Image className="w-4 h-4" />
-              AI Image Analysis
+              <Cpu className="w-4 h-4" />
+              Browser AI Analysis (Free)
             </label>
             <Button
               onClick={handleImageSearch}
@@ -104,11 +103,14 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
                 </>
               ) : (
                 <>
-                  <Globe className="w-4 h-4 mr-2" />
-                  Identify & Create Card
+                  <Cpu className="w-4 h-4 mr-2" />
+                  Identify Objects & Create Card
                 </>
               )}
             </Button>
+            <p className="text-xs text-crd-lightGray">
+              Powered by Hugging Face Transformers.js - runs locally in your browser
+            </p>
           </div>
         )}
 

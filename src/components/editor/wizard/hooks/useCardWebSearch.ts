@@ -1,7 +1,7 @@
-
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { browserImageAnalyzer } from '@/services/browserImageAnalyzer';
 
 export interface CardSearchResult {
   title: string;
@@ -41,18 +41,41 @@ export const useCardWebSearch = () => {
     setIsSearching(true);
     
     try {
-      // Step 1: Enhanced image analysis
-      console.log('Analyzing card image with enhanced system...');
+      console.log('Starting browser-based image analysis...');
+      
+      // Try browser-based analysis first (primary method)
+      try {
+        const browserResult = await browserImageAnalyzer.analyzeImage(imageUrl);
+        
+        if (browserResult.confidence > 0.5) {
+          const confidencePercentage = Math.round(browserResult.confidence * 100);
+          toast.success(`Object identified: ${browserResult.objects[0]} with ${confidencePercentage}% confidence!`);
+          
+          return {
+            title: browserResult.title,
+            description: browserResult.description,
+            type: 'Visual',
+            series: 'Discovery Collection',
+            rarity: browserResult.rarity,
+            tags: browserResult.tags,
+            confidence: browserResult.confidence
+          };
+        }
+      } catch (browserError) {
+        console.warn('Browser analysis failed, trying edge function fallback:', browserError);
+      }
+
+      // Fallback to edge function analysis
+      console.log('Using edge function fallback...');
       const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-card-image', {
         body: { imageData: imageUrl }
       });
 
       if (analysisError) {
-        console.error('Image analysis error:', analysisError);
-        toast.error('Analysis failed, using creative fallback');
+        console.error('Edge function analysis error:', analysisError);
       }
 
-      const imageAnalysis: EnhancedImageAnalysisResult = analysisData || {
+      const imageAnalysis = analysisData || {
         extractedText: [],
         playerName: 'Creative Subject',
         team: 'Artistic Collection',
@@ -65,46 +88,25 @@ export const useCardWebSearch = () => {
         creativeDescription: 'A one-of-a-kind card with creative potential'
       };
 
-      console.log('Enhanced analysis result:', imageAnalysis);
+      console.log('Analysis result:', imageAnalysis);
 
-      // Step 2: Create search query based on analysis type
-      let searchQuery = '';
-      if (imageAnalysis.analysisType === 'traditional') {
-        searchQuery = [
-          imageAnalysis.playerName,
-          imageAnalysis.team,
-          imageAnalysis.year,
-          imageAnalysis.sport,
-          ...imageAnalysis.extractedText.slice(0, 3)
-        ].filter(Boolean).join(' ');
-      } else {
-        // For visual analysis, use creative title and subjects
-        searchQuery = [
-          imageAnalysis.creativeTitle,
-          ...(imageAnalysis.visualAnalysis?.subjects || []),
-          imageAnalysis.visualAnalysis?.theme
-        ].filter(Boolean).join(' ');
-      }
-
-      // Step 3: Generate enhanced card information
-      console.log('Generating card info with query:', searchQuery);
+      // Generate enhanced card information
       const { data: searchData, error: searchError } = await supabase.functions.invoke('search-card-info', {
         body: { 
-          query: searchQuery,
+          query: imageAnalysis.creativeTitle || 'Creative Discovery',
           extractedData: imageAnalysis
         }
       });
 
       if (searchError && !searchData) {
         console.error('Search error:', searchError);
-        toast.warning('Using creative analysis for card generation');
+        toast.info('Generated creative card concept from image');
       }
 
       const result = searchData || { success: true, cardInfo: null };
       const cardInfo = result.cardInfo;
 
       if (!cardInfo) {
-        // This should rarely happen now, but just in case
         toast.info('Generated creative card concept from image');
         return {
           title: 'Creative Discovery',
@@ -117,15 +119,8 @@ export const useCardWebSearch = () => {
         };
       }
 
-      // Show appropriate success message based on analysis type
       const confidencePercentage = Math.round(cardInfo.confidence * 100);
-      if (imageAnalysis.analysisType === 'traditional') {
-        toast.success(`Traditional card identified with ${confidencePercentage}% confidence!`);
-      } else if (imageAnalysis.analysisType === 'visual') {
-        toast.success(`Creative card concept generated with ${confidencePercentage}% confidence!`);
-      } else {
-        toast.info(`Unique card created with ${confidencePercentage}% confidence!`);
-      }
+      toast.success(`Card concept generated with ${confidencePercentage}% confidence!`);
       
       return {
         title: cardInfo.title,
@@ -141,10 +136,9 @@ export const useCardWebSearch = () => {
       console.error('Card search error:', error);
       toast.info('Generated creative card from image analysis');
       
-      // Always return something useful, never null
       return {
         title: 'Unique Creation',
-        description: 'A distinctive card crafted from your image with creative interpretation and artistic flair.',
+        description: 'A distinctive card crafted from your image with creative interpretation.',
         type: 'Creative',
         series: 'Original Collection',
         rarity: 'uncommon',
