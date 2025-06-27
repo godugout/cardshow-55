@@ -1,32 +1,12 @@
 
 import React from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Globe, Lock, Users, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { CRDIdSystem } from './components/CRDIdSystem';
-import type { CardRarity, CardVisibility, CreatorAttribution } from '@/hooks/useCardEditor';
+import { CardInfoFields } from './components/CardInfoFields';
+import { CreatorAttributionFields } from './components/CreatorAttributionFields';
+import { AIAnalysisSummary } from './components/AIAnalysisSummary';
+import type { CardDetailsStepProps } from './components/types';
 import type { CardSearchResult } from './hooks/useCardWebSearch';
-
-interface CardData {
-  title: string;
-  description?: string;
-  rarity: CardRarity;
-  tags: string[];
-  type?: string;
-  series?: string;
-  image_url?: string;
-  visibility?: CardVisibility;
-  creator_attribution?: CreatorAttribution;
-}
-
-interface CardDetailsStepProps {
-  cardData: Partial<CardData>;
-  onFieldUpdate: <K extends keyof CardData>(field: K, value: any) => void;
-  onCreatorAttributionUpdate: (key: keyof CreatorAttribution, value: any) => void;
-  aiAnalysisComplete?: boolean;
-}
 
 export const CardDetailsStep = ({ 
   cardData, 
@@ -69,144 +49,21 @@ export const CardDetailsStep = ({
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div>
-            <Label className="text-white flex items-center gap-2 mb-2">
-              Card Title *
-              {aiAnalysisComplete && <Sparkles className="w-3 h-3 text-crd-green" />}
-            </Label>
-            <Input
-              value={cardData.title || ''}
-              onChange={(e) => onFieldUpdate('title', e.target.value)}
-              placeholder="Enter card title"
-              className="bg-crd-darkGray border-crd-mediumGray text-white"
-            />
-          </div>
+        <CardInfoFields
+          cardData={cardData}
+          onFieldUpdate={onFieldUpdate}
+          aiAnalysisComplete={aiAnalysisComplete}
+        />
 
-          <div>
-            <Label className="text-white flex items-center gap-2 mb-2">
-              Description
-              {aiAnalysisComplete && <Sparkles className="w-3 h-3 text-crd-green" />}
-            </Label>
-            <Textarea
-              value={cardData.description || ''}
-              onChange={(e) => onFieldUpdate('description', e.target.value)}
-              placeholder="Describe your card..."
-              className="bg-crd-darkGray border-crd-mediumGray text-white"
-              rows={3}
-            />
-          </div>
-
-          <div>
-            <Label className="text-white flex items-center gap-2 mb-2">
-              Rarity
-              {aiAnalysisComplete && <Sparkles className="w-3 h-3 text-crd-green" />}
-            </Label>
-            <Select value={cardData.rarity} onValueChange={(value) => onFieldUpdate('rarity', value as CardRarity)}>
-              <SelectTrigger className="bg-crd-darkGray border-crd-mediumGray text-white">
-                <SelectValue placeholder="Select rarity" />
-              </SelectTrigger>
-              <SelectContent className="bg-crd-darkGray border-crd-mediumGray">
-                <SelectItem value="common">Common</SelectItem>
-                <SelectItem value="uncommon">Uncommon</SelectItem>
-                <SelectItem value="rare">Rare</SelectItem>
-                <SelectItem value="ultra-rare">Ultra Rare</SelectItem>
-                <SelectItem value="legendary">Legendary</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <Label className="text-white mb-2">Creator Attribution</Label>
-            <Select 
-              value={cardData.creator_attribution?.collaboration_type || 'solo'} 
-              onValueChange={(value) => onCreatorAttributionUpdate('collaboration_type', value)}
-            >
-              <SelectTrigger className="bg-crd-darkGray border-crd-mediumGray text-white">
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent className="bg-crd-darkGray border-crd-mediumGray">
-                <SelectItem value="solo">Solo Creation</SelectItem>
-                <SelectItem value="collaboration">Collaboration</SelectItem>
-                <SelectItem value="commission">Commission</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label className="text-white flex items-center gap-2 mb-2">
-              Tags
-              {aiAnalysisComplete && <Sparkles className="w-3 h-3 text-crd-green" />}
-            </Label>
-            <Input
-              value={cardData.tags?.join(', ') || ''}
-              placeholder="Add tags (comma separated)"
-              className="bg-crd-darkGray border-crd-mediumGray text-white"
-              onChange={(e) => {
-                const tags = e.target.value.split(',').map(tag => tag.trim()).filter(Boolean);
-                onFieldUpdate('tags', tags);
-              }}
-            />
-          </div>
-
-          <div>
-            <Label className="text-white mb-2">Visibility</Label>
-            <Select value={cardData.visibility} onValueChange={(value) => onFieldUpdate('visibility', value as CardVisibility)}>
-              <SelectTrigger className="bg-crd-darkGray border-crd-mediumGray text-white">
-                <SelectValue placeholder="Select visibility" />
-              </SelectTrigger>
-              <SelectContent className="bg-crd-darkGray border-crd-mediumGray">
-                <SelectItem value="private">
-                  <div className="flex items-center">
-                    <Lock className="h-4 w-4 mr-2" />
-                    Private
-                  </div>
-                </SelectItem>
-                <SelectItem value="public">
-                  <div className="flex items-center">
-                    <Globe className="h-4 w-4 mr-2" />
-                    Public
-                  </div>
-                </SelectItem>
-                <SelectItem value="shared">
-                  <div className="flex items-center">
-                    <Users className="h-4 w-4 mr-2" />
-                    Shared
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <CreatorAttributionFields
+          cardData={cardData}
+          onFieldUpdate={onFieldUpdate}
+          onCreatorAttributionUpdate={onCreatorAttributionUpdate}
+        />
       </div>
 
       {aiAnalysisComplete && (
-        <div className="bg-crd-darkGray p-4 rounded-lg border border-crd-green/30">
-          <h4 className="text-white font-medium text-sm mb-2 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-crd-green" />
-            AI Analysis Summary
-          </h4>
-          <div className="grid grid-cols-2 gap-4 text-xs">
-            <div>
-              <span className="text-crd-lightGray">Type:</span>
-              <span className="text-white ml-2">{cardData.type}</span>
-            </div>
-            <div>
-              <span className="text-crd-lightGray">Series:</span>
-              <span className="text-white ml-2">{cardData.series}</span>
-            </div>
-            <div>
-              <span className="text-crd-lightGray">Tags:</span>
-              <span className="text-white ml-2">{cardData.tags?.length || 0} generated</span>
-            </div>
-            <div>
-              <span className="text-crd-lightGray">Rarity:</span>
-              <span className="text-white ml-2">{cardData.rarity}</span>
-            </div>
-          </div>
-        </div>
+        <AIAnalysisSummary cardData={cardData} />
       )}
     </div>
   );
