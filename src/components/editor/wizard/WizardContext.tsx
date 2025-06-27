@@ -61,9 +61,39 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
       return { ...state, currentStepId: action.payload };
     
     case 'UPDATE_CARD_DATA':
+      const updatedCardData = { ...state.cardData, ...action.payload };
+      
+      // Auto-validate steps when card data changes
+      const updatedSteps = state.steps.map(step => {
+        let isValid = step.valid;
+        
+        switch (step.id) {
+          case 'template':
+            isValid = !!updatedCardData.template_id;
+            break;
+          case 'upload':
+            isValid = !!updatedCardData.image_url;
+            break;
+          case 'details':
+            isValid = !!(updatedCardData.title && updatedCardData.title.trim());
+            break;
+          case 'effects':
+            isValid = true; // Effects are optional
+            break;
+          case 'publish':
+            isValid = !!(updatedCardData.title && updatedCardData.image_url && updatedCardData.template_id);
+            break;
+          default:
+            break;
+        }
+        
+        return { ...step, valid: isValid };
+      });
+      
       return { 
         ...state, 
-        cardData: { ...state.cardData, ...action.payload }
+        cardData: updatedCardData,
+        steps: updatedSteps
       };
     
     case 'MARK_STEP_COMPLETED':

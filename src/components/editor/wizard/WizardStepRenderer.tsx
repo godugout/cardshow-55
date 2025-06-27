@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { useWizardContext } from './WizardContext';
 import { AdvancedTemplateSelection } from './steps/AdvancedTemplateSelection';
 import { PhotoUploadStep } from './steps/PhotoUploadStep';
+import { CardDetailsStep } from './CardDetailsStep';
 
 // Placeholder step components for other steps
 const CardDetailsStep = () => (
@@ -61,7 +61,32 @@ const PreviewPublishStep = () => (
 );
 
 export const WizardStepRenderer: React.FC = () => {
-  const { state } = useWizardContext();
+  const { state, dispatch } = useWizardContext();
+
+  const handleFieldUpdate = <K extends keyof typeof state.cardData>(field: K, value: typeof state.cardData[K]) => {
+    dispatch({
+      type: 'UPDATE_CARD_DATA',
+      payload: { [field]: value }
+    });
+  };
+
+  const handleCreatorAttributionUpdate = (key: string, value: any) => {
+    const currentAttribution = state.cardData.creator_attribution || {
+      creator_name: '',
+      creator_id: '',
+      collaboration_type: 'solo'
+    };
+    
+    dispatch({
+      type: 'UPDATE_CARD_DATA',
+      payload: {
+        creator_attribution: {
+          ...currentAttribution,
+          [key]: value
+        }
+      }
+    });
+  };
 
   const renderStep = () => {
     switch (state.currentStepId) {
@@ -70,7 +95,13 @@ export const WizardStepRenderer: React.FC = () => {
       case 'upload':
         return <PhotoUploadStep />;
       case 'details':
-        return <CardDetailsStep />;
+        return (
+          <CardDetailsStep
+            cardData={state.cardData as any}
+            onFieldUpdate={handleFieldUpdate}
+            onCreatorAttributionUpdate={handleCreatorAttributionUpdate}
+          />
+        );
       case 'effects':
         return <VisualEffectsStep />;
       case 'publish':

@@ -5,7 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Globe, Lock, Users, Sparkles } from 'lucide-react';
+import { CRDIdSystem } from './components/CRDIdSystem';
 import type { CardData, CardRarity, CardVisibility, CreatorAttribution } from '@/hooks/useCardEditor';
+import type { CardSearchResult } from './hooks/useCardWebSearch';
 
 interface CardDetailsStepProps {
   cardData: CardData;
@@ -20,6 +22,16 @@ export const CardDetailsStep = ({
   onCreatorAttributionUpdate,
   aiAnalysisComplete = false 
 }: CardDetailsStepProps) => {
+  
+  const handleCardInfoFound = (result: CardSearchResult) => {
+    onFieldUpdate('title', result.title);
+    onFieldUpdate('description', result.description);
+    onFieldUpdate('rarity', result.rarity);
+    onFieldUpdate('tags', result.tags);
+    onFieldUpdate('type', result.type);
+    onFieldUpdate('series', result.series);
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -27,7 +39,7 @@ export const CardDetailsStep = ({
         <p className="text-crd-lightGray">
           {aiAnalysisComplete 
             ? 'Review the AI-suggested details below and make any adjustments'
-            : 'Add information about your card'
+            : 'Add information about your card or use CRD ID System to auto-fill'
           }
         </p>
         {aiAnalysisComplete && (
@@ -38,6 +50,12 @@ export const CardDetailsStep = ({
         )}
       </div>
 
+      {/* CRD ID System */}
+      <CRDIdSystem 
+        imageUrl={cardData.image_url}
+        onCardInfoFound={handleCardInfoFound}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div>
@@ -46,7 +64,7 @@ export const CardDetailsStep = ({
               {aiAnalysisComplete && <Sparkles className="w-3 h-3 text-crd-green" />}
             </Label>
             <Input
-              value={cardData.title}
+              value={cardData.title || ''}
               onChange={(e) => onFieldUpdate('title', e.target.value)}
               placeholder="Enter card title"
               className="bg-crd-darkGray border-crd-mediumGray text-white"
@@ -91,7 +109,7 @@ export const CardDetailsStep = ({
           <div>
             <Label className="text-white mb-2">Creator Attribution</Label>
             <Select 
-              value={cardData.creator_attribution.collaboration_type} 
+              value={cardData.creator_attribution?.collaboration_type || 'solo'} 
               onValueChange={(value) => onCreatorAttributionUpdate('collaboration_type', value)}
             >
               <SelectTrigger className="bg-crd-darkGray border-crd-mediumGray text-white">
@@ -111,7 +129,7 @@ export const CardDetailsStep = ({
               {aiAnalysisComplete && <Sparkles className="w-3 h-3 text-crd-green" />}
             </Label>
             <Input
-              value={cardData.tags.join(', ')}
+              value={cardData.tags?.join(', ') || ''}
               placeholder="Add tags (comma separated)"
               className="bg-crd-darkGray border-crd-mediumGray text-white"
               onChange={(e) => {
@@ -169,7 +187,7 @@ export const CardDetailsStep = ({
             </div>
             <div>
               <span className="text-crd-lightGray">Tags:</span>
-              <span className="text-white ml-2">{cardData.tags.length} generated</span>
+              <span className="text-white ml-2">{cardData.tags?.length || 0} generated</span>
             </div>
             <div>
               <span className="text-crd-lightGray">Rarity:</span>
