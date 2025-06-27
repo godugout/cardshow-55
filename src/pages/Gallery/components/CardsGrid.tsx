@@ -35,6 +35,18 @@ export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClic
     );
   }
 
+  const getCardImageUrl = (card: DbCard): string => {
+    // Try image_url first, then thumbnail_url, then fallback to placeholder
+    if (card.image_url && !card.image_url.startsWith('blob:')) {
+      return card.image_url;
+    }
+    if (card.thumbnail_url && !card.thumbnail_url.startsWith('blob:')) {
+      return card.thumbnail_url;
+    }
+    // Return empty string to let CardItem handle the fallback
+    return '';
+  };
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {cards.map((card) => (
@@ -44,9 +56,9 @@ export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClic
           className="cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
         >
           <CardItem
-            title={card.title}
+            title={card.title || 'Untitled Card'}
             price="1.5"
-            image={card.image_url || card.thumbnail_url || ''}
+            image={getCardImageUrl(card)}
           />
         </div>
       ))}
