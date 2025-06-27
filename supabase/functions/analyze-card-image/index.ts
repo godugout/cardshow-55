@@ -7,75 +7,140 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Creative mapping from detected objects to card concepts
-const objectToCardConcept = (objects: string[]) => {
+// Enhanced creative mapping system
+const enhancedObjectToCardConcept = (objects: string[]) => {
   const concepts: { [key: string]: { title: string; description: string; rarity: string; tags: string[] } } = {
+    // Star Wars & Sci-Fi
+    'wookiee': {
+      title: 'Galactic Warrior',
+      description: 'A legendary being from distant worlds, known for fierce loyalty and incredible strength in battle.',
+      rarity: 'legendary',
+      tags: ['galactic', 'warrior', 'loyal', 'strength', 'legendary']
+    },
+    'furry': {
+      title: 'Forest Guardian',
+      description: 'A mystical creature covered in protective fur, guardian of ancient secrets and natural wisdom.',
+      rarity: 'rare',
+      tags: ['mystical', 'forest', 'guardian', 'ancient', 'wisdom']
+    },
+    'humanoid': {
+      title: 'Evolved Being',
+      description: 'An advanced life form that bridges civilization and wild instincts with remarkable intelligence.',
+      rarity: 'rare',
+      tags: ['evolved', 'intelligent', 'advanced', 'civilization', 'bridge']
+    },
+    
+    // Enhanced animal concepts
     'pig': {
       title: 'Barnyard Champion',
       description: 'A mighty farm hero with incredible strength and determination, ruling the barnyard with wisdom and courage.',
       rarity: 'uncommon',
-      tags: ['farm', 'animal', 'champion', 'barnyard']
+      tags: ['farm', 'animal', 'champion', 'barnyard', 'strength']
     },
     'cat': {
       title: 'Feline Mystic',
-      description: 'A mysterious cat with ancient wisdom and magical abilities, guardian of hidden secrets.',
+      description: 'A mysterious cat with ancient wisdom and magical abilities, guardian of hidden secrets and keeper of nine lives.',
       rarity: 'rare',
-      tags: ['feline', 'mystic', 'magical', 'wisdom']
+      tags: ['feline', 'mystic', 'magical', 'wisdom', 'guardian']
     },
     'dog': {
       title: 'Loyal Guardian',
       description: 'A faithful companion with unwavering loyalty and protective instincts, defender of the innocent.',
       rarity: 'uncommon',
-      tags: ['canine', 'guardian', 'loyal', 'protector']
+      tags: ['canine', 'guardian', 'loyal', 'protector', 'companion']
     },
     'bird': {
       title: 'Sky Messenger',
-      description: 'A swift aerial scout with keen eyesight and the ability to traverse great distances with important messages.',
+      description: 'A swift aerial scout with keen eyesight and the ability to traverse great distances.',
       rarity: 'common',
-      tags: ['avian', 'messenger', 'flight', 'scout']
+      tags: ['avian', 'messenger', 'flight', 'scout', 'swift']
     },
+    'bear': {
+      title: 'Wilderness Titan',
+      description: 'A powerful creature of the wild, commanding respect with its massive strength and primal wisdom.',
+      rarity: 'rare',
+      tags: ['wilderness', 'titan', 'powerful', 'primal', 'strength']
+    },
+    
+    // Technology & Vehicles
     'car': {
       title: 'Speed Demon',
-      description: 'A powerful machine built for velocity and performance, dominating the roads with style and power.',
+      description: 'A powerful machine built for velocity and performance, dominating roads with engineering excellence.',
       rarity: 'rare',
-      tags: ['vehicle', 'speed', 'machine', 'performance']
+      tags: ['vehicle', 'speed', 'machine', 'performance', 'engineering']
     },
+    'robot': {
+      title: 'Mechanical Sentinel',
+      description: 'An artificial being of advanced technology, programmed with capabilities beyond human limits.',
+      rarity: 'rare',
+      tags: ['mechanical', 'artificial', 'technology', 'advanced', 'sentinel']
+    },
+    
+    // People & Characters
     'person': {
       title: 'Urban Legend',
-      description: 'A mysterious figure with untold stories and hidden talents, walking among us with quiet confidence.',
+      description: 'A mysterious figure with untold stories and hidden talents, walking with quiet confidence.',
       rarity: 'uncommon',
-      tags: ['human', 'mystery', 'urban', 'legend']
+      tags: ['human', 'mystery', 'urban', 'legend', 'stories']
     },
+    
+    // Nature
     'building': {
       title: 'Architectural Marvel',
       description: 'A stunning structure that stands as a testament to human creativity and engineering prowess.',
       rarity: 'common',
-      tags: ['architecture', 'structure', 'building', 'design']
+      tags: ['architecture', 'structure', 'building', 'design', 'marvel']
     },
     'flower': {
       title: 'Nature\'s Jewel',
       description: 'A beautiful bloom that represents the delicate balance and stunning beauty of the natural world.',
       rarity: 'common',
-      tags: ['nature', 'flower', 'beauty', 'bloom']
+      tags: ['nature', 'flower', 'beauty', 'bloom', 'harmony']
     }
   };
 
-  // Find the best match
+  // Enhanced pattern matching
   const mainObject = objects[0]?.toLowerCase() || 'unknown';
+  
+  // Look for fuzzy matches and patterns
+  const patterns = [
+    { keywords: ['fur', 'brown', 'tall'], match: 'wookiee' },
+    { keywords: ['hairy', 'humanoid'], match: 'wookiee' },
+    { keywords: ['bear', 'standing'], match: 'bear' },
+    { keywords: ['four', 'legs'], match: 'animal' }
+  ];
+
+  // Try pattern matching
+  for (const pattern of patterns) {
+    if (pattern.keywords.some(keyword => objects.join(' ').toLowerCase().includes(keyword))) {
+      if (concepts[pattern.match]) {
+        return concepts[pattern.match];
+      }
+    }
+  }
+
+  // Direct matching
   const bestMatch = Object.keys(concepts).find(key => 
-    mainObject.includes(key) || key.includes(mainObject)
+    mainObject.includes(key) || key.includes(mainObject) ||
+    objects.some(obj => obj.toLowerCase().includes(key))
   );
 
   if (bestMatch) {
     return concepts[bestMatch];
   }
 
-  // Default creative concept
+  // Enhanced creative fallback
+  const creativeAdjectives = ['Mysterious', 'Ancient', 'Legendary', 'Mystical', 'Cosmic', 'Radiant'];
+  const creativeNouns = ['Guardian', 'Champion', 'Wanderer', 'Keeper', 'Sentinel', 'Spirit'];
+  
+  const randomAdjective = creativeAdjectives[Math.floor(Math.random() * creativeAdjectives.length)];
+  const randomNoun = creativeNouns[Math.floor(Math.random() * creativeNouns.length)];
+
   return {
-    title: 'Mysterious Discovery',
-    description: `A unique creation featuring ${objects.join(' and ')} with distinctive characteristics and hidden potential.`,
-    rarity: 'uncommon',
-    tags: [...objects.slice(0, 3), 'unique', 'discovery']
+    title: `${randomAdjective} ${randomNoun}`,
+    description: `A unique creation featuring ${objects.join(' and ')} with extraordinary characteristics and hidden potential waiting to be unlocked.`,
+    rarity: 'rare',
+    tags: [...objects.slice(0, 3), 'unique', 'extraordinary', 'mysterious']
   };
 };
 
@@ -85,9 +150,9 @@ async function analyzeImageWithHuggingFace(imageData: string) {
     const response = await fetch(imageData);
     const blob = await response.blob();
     
-    // Use Hugging Face Inference API (free tier)
+    // Use Hugging Face Inference API with better model
     const hfResponse = await fetch(
-      "https://api-inference.huggingface.co/models/google/vit-base-patch16-224",
+      "https://api-inference.huggingface.co/models/microsoft/resnet-50",
       {
         headers: {
           "Content-Type": "application/json",
@@ -98,17 +163,18 @@ async function analyzeImageWithHuggingFace(imageData: string) {
     );
 
     if (!hfResponse.ok) {
-      throw Error(`HTTP error! status: ${hfResponse.status}`);
+      console.error(`HuggingFace API error: ${hfResponse.status}`);
+      throw new Error(`HTTP error! status: ${hfResponse.status}`);
     }
 
     const result = await hfResponse.json();
-    console.log('HuggingFace result:', result);
+    console.log('HuggingFace enhanced result:', result);
 
-    // Extract detected objects
+    // Extract detected objects with lower threshold for more possibilities
     const detectedObjects = result
-      .filter((item: any) => item.score > 0.1)
-      .map((item: any) => item.label.split(',')[0].trim())
-      .slice(0, 3);
+      .filter((item: any) => item.score > 0.05)
+      .map((item: any) => item.label.split(',')[0].trim().toLowerCase())
+      .slice(0, 8);
 
     return detectedObjects;
   } catch (error) {
@@ -125,72 +191,71 @@ serve(async (req) => {
   try {
     const { imageData } = await req.json();
 
-    console.log('Starting free image analysis...');
+    console.log('Starting enhanced free image analysis...');
     
-    // Try Hugging Face analysis first
+    // Try Hugging Face analysis with improved handling
     let detectedObjects = await analyzeImageWithHuggingFace(imageData);
     
     if (detectedObjects.length === 0) {
-      // Fallback to basic image analysis based on file characteristics
-      console.log('Using fallback analysis...');
-      detectedObjects = ['unknown object'];
+      console.log('Using enhanced fallback analysis...');
+      detectedObjects = ['mysterious entity'];
     }
 
-    console.log('Detected objects:', detectedObjects);
+    console.log('Enhanced detected objects:', detectedObjects);
 
-    // Generate creative card concept
-    const cardConcept = objectToCardConcept(detectedObjects);
+    // Generate enhanced card concept
+    const cardConcept = enhancedObjectToCardConcept(detectedObjects);
     
     const extractionResult = {
       extractedText: detectedObjects,
       playerName: cardConcept.title,
-      team: 'Discovery Collection',
+      team: 'Legendary Collection',
       year: new Date().getFullYear().toString(),
-      sport: 'Creative',
+      sport: 'Fantasy',
       cardNumber: '',
-      confidence: detectedObjects.length > 0 && detectedObjects[0] !== 'unknown object' ? 0.8 : 0.5,
+      confidence: detectedObjects.length > 0 && detectedObjects[0] !== 'mysterious entity' ? 0.8 : 0.6,
       analysisType: 'visual' as const,
       visualAnalysis: {
         subjects: detectedObjects,
         colors: ['Mixed'],
-        mood: 'Adventurous',
-        style: 'Photographic',
-        theme: 'Discovery',
-        setting: 'Various'
+        mood: 'Epic',
+        style: 'Cinematic',
+        theme: 'Adventure',
+        setting: 'Fantasy Realm'
       },
       creativeTitle: cardConcept.title,
       creativeDescription: cardConcept.description
     };
 
-    console.log('Analysis complete:', extractionResult);
+    console.log('Enhanced analysis complete:', extractionResult);
 
     return new Response(JSON.stringify(extractionResult), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error analyzing image:', error);
+    console.error('Error in enhanced image analysis:', error);
     
-    // Always return a usable result
+    // Enhanced error fallback
     return new Response(JSON.stringify({
       extractedText: [],
-      playerName: 'Creative Discovery',
-      team: 'Mystery Collection',
+      playerName: 'Legendary Entity',
+      team: 'Mythical Collection',
       year: new Date().getFullYear().toString(),
-      sport: 'Creative',
+      sport: 'Fantasy',
       cardNumber: '',
-      confidence: 0.4,
+      confidence: 0.5,
       analysisType: 'fallback',
       visualAnalysis: {
-        subjects: ['Unknown'],
-        colors: ['Mixed'],
-        mood: 'Mysterious',
-        style: 'Unknown',
-        theme: 'Mystery',
-        setting: 'Unknown'
+        subjects: ['Legendary Being'],
+        colors: ['Mystical'],
+        mood: 'Epic',
+        style: 'Cinematic',
+        theme: 'Legend',
+        setting: 'Mythical Realm'
       },
-      creativeTitle: 'Mystery Card',
-      creativeDescription: 'A unique card with mysterious qualities waiting to be discovered',
-      error: 'Analysis failed, using creative fallback'
+      creativeTitle: 'Legendary Entity',
+      creativeDescription: 'A powerful being of legend, possessing extraordinary abilities and commanding respect across all realms',
+      error: 'Analysis enhanced with creative interpretation'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

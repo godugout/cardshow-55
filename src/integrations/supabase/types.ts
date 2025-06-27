@@ -2362,6 +2362,8 @@ export type Database = {
           commission_rates: Json | null
           created_at: string | null
           id: string
+          onboarding_completed: boolean | null
+          onboarding_step: string | null
           payout_enabled: boolean | null
           portfolio_url: string | null
           specialties: string[] | null
@@ -2379,6 +2381,8 @@ export type Database = {
           commission_rates?: Json | null
           created_at?: string | null
           id?: string
+          onboarding_completed?: boolean | null
+          onboarding_step?: string | null
           payout_enabled?: boolean | null
           portfolio_url?: string | null
           specialties?: string[] | null
@@ -2396,6 +2400,8 @@ export type Database = {
           commission_rates?: Json | null
           created_at?: string | null
           id?: string
+          onboarding_completed?: boolean | null
+          onboarding_step?: string | null
           payout_enabled?: boolean | null
           portfolio_url?: string | null
           specialties?: string[] | null

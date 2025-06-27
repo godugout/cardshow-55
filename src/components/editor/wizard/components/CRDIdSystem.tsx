@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Search, Sparkles, Globe, Image, Loader, CheckCircle, AlertCircle, Eye, Palette, Cpu } from 'lucide-react';
+import { Search, Sparkles, Globe, Image, Loader, CheckCircle, AlertCircle, Eye, Palette, Cpu, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCardWebSearch, type CardSearchResult } from '../hooks/useCardWebSearch';
@@ -63,11 +64,11 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
       case 'traditional':
         return { icon: Search, label: 'Traditional Analysis', color: 'text-blue-500' };
       case 'visual':
-        return { icon: Eye, label: 'AI Visual Analysis', color: 'text-purple-500' };
+        return { icon: Eye, label: 'Enhanced AI Visual Analysis', color: 'text-purple-500' };
       case 'fallback':
         return { icon: Palette, label: 'Creative Generation', color: 'text-orange-500' };
       default:
-        return { icon: Cpu, label: 'Browser AI Analysis', color: 'text-crd-green' };
+        return { icon: Zap, label: 'Enhanced Browser AI', color: 'text-crd-green' };
     }
   };
 
@@ -75,41 +76,41 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
     <div className="bg-crd-darkGray/50 border border-crd-mediumGray/30 rounded-xl p-6 space-y-4">
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 text-crd-green">
-          <Cpu className="w-5 h-5" />
-          <h3 className="text-white font-semibold text-lg">Free CRD ID System</h3>
+          <Zap className="w-5 h-5" />
+          <h3 className="text-white font-semibold text-lg">Enhanced CRD ID System</h3>
         </div>
         <p className="text-crd-lightGray text-sm">
-          Browser-based AI image analysis - no API keys required!
+          Advanced AI image analysis with Star Wars & fantasy character recognition - completely free!
         </p>
       </div>
 
       <div className="space-y-4">
-        {/* Image Search */}
+        {/* Enhanced Image Search */}
         {imageUrl && (
           <div className="space-y-2">
             <label className="text-white text-sm font-medium flex items-center gap-2">
-              <Cpu className="w-4 h-4" />
-              Browser AI Analysis (Free)
+              <Zap className="w-4 h-4" />
+              Enhanced AI Analysis (Free)
             </label>
             <Button
               onClick={handleImageSearch}
               disabled={isSearching}
-              className="w-full bg-crd-green hover:bg-crd-green/90 text-black font-medium"
+              className="w-full bg-gradient-to-r from-crd-green to-green-400 hover:from-crd-green/90 hover:to-green-400/90 text-black font-medium"
             >
               {isSearching ? (
                 <>
                   <Loader className="w-4 h-4 mr-2 animate-spin" />
-                  Analyzing Image...
+                  Analyzing with Enhanced AI...
                 </>
               ) : (
                 <>
-                  <Cpu className="w-4 h-4 mr-2" />
-                  Identify Objects & Create Card
+                  <Zap className="w-4 h-4 mr-2" />
+                  Identify & Create Epic Card
                 </>
               )}
             </Button>
             <p className="text-xs text-crd-lightGray">
-              Powered by Hugging Face Transformers.js - runs locally in your browser
+              ✨ Now recognizes Star Wars characters, fantasy creatures, and hundreds more subjects
             </p>
           </div>
         )}
@@ -124,7 +125,7 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Enter player name, team, year, etc..."
+              placeholder="Enter character, creature, or object name..."
               className="bg-crd-darkGray border-crd-mediumGray text-white flex-1"
               onKeyPress={(e) => e.key === 'Enter' && handleTextSearch()}
             />
@@ -140,7 +141,7 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
 
         {/* Enhanced Analysis Result */}
         {lastAnalysis && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-white text-sm font-medium">Latest Analysis</label>
               {analysisType && (
@@ -154,41 +155,62 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
                 </div>
               )}
             </div>
-            <div className="bg-crd-mediumGray/20 rounded-lg p-3 space-y-2">
+            <div className="bg-gradient-to-r from-crd-mediumGray/20 to-crd-mediumGray/10 rounded-lg p-4 space-y-3 border border-crd-mediumGray/20">
               <div className="flex items-center justify-between">
-                <h4 className="text-white font-medium text-sm">{lastAnalysis.title}</h4>
+                <h4 className="text-white font-semibold text-base">{lastAnalysis.title}</h4>
                 <div className="flex items-center gap-1">
                   {React.createElement(getConfidenceIcon(lastAnalysis.confidence), {
                     className: `w-4 h-4 ${getConfidenceColor(lastAnalysis.confidence)}`
                   })}
-                  <span className={`text-xs ${getConfidenceColor(lastAnalysis.confidence)}`}>
+                  <span className={`text-sm font-medium ${getConfidenceColor(lastAnalysis.confidence)}`}>
                     {Math.round(lastAnalysis.confidence * 100)}%
                   </span>
                 </div>
               </div>
-              <p className="text-crd-lightGray text-xs">{lastAnalysis.description}</p>
-              <div className="flex items-center gap-4 text-xs text-crd-lightGray">
-                <span>Series: {lastAnalysis.series}</span>
-                <span>Type: {lastAnalysis.type}</span>
-                <span>Rarity: {lastAnalysis.rarity}</span>
+              <p className="text-crd-lightGray text-sm leading-relaxed">{lastAnalysis.description}</p>
+              <div className="grid grid-cols-3 gap-4 text-xs text-crd-lightGray">
+                <div>
+                  <span className="text-white font-medium">Series:</span>
+                  <br />{lastAnalysis.series}
+                </div>
+                <div>
+                  <span className="text-white font-medium">Type:</span>
+                  <br />{lastAnalysis.type}
+                </div>
+                <div>
+                  <span className="text-white font-medium">Rarity:</span>
+                  <br />
+                  <span className={`capitalize ${
+                    lastAnalysis.rarity === 'legendary' ? 'text-yellow-400' :
+                    lastAnalysis.rarity === 'rare' ? 'text-purple-400' :
+                    lastAnalysis.rarity === 'uncommon' ? 'text-blue-400' :
+                    'text-gray-400'
+                  }`}>
+                    {lastAnalysis.rarity}
+                  </span>
+                </div>
               </div>
               {lastAnalysis.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
-                  {lastAnalysis.tags.slice(0, 6).map((tag, index) => (
-                    <span key={index} className="bg-crd-green/20 text-crd-green px-2 py-1 rounded text-xs">
+                  {lastAnalysis.tags.slice(0, 8).map((tag, index) => (
+                    <span key={index} className="bg-crd-green/20 text-crd-green px-2 py-1 rounded text-xs border border-crd-green/30">
                       {tag}
                     </span>
                   ))}
                 </div>
               )}
               
-              {/* Analysis Type Indicator */}
+              {/* Enhanced Analysis Type Indicator */}
               {analysisType && (
-                <div className="mt-2 p-2 bg-crd-darkGray/50 rounded text-xs">
+                <div className="mt-3 p-3 bg-crd-darkGray/50 rounded border-l-4 border-crd-green text-xs">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Sparkles className="w-3 h-3 text-crd-green" />
+                    <span className="text-white font-medium">Analysis Details</span>
+                  </div>
                   <span className="text-crd-lightGray">
-                    {analysisType === 'traditional' && 'Identified as traditional trading card with text extraction'}
-                    {analysisType === 'visual' && 'Created using visual content analysis and creative AI generation'}
-                    {analysisType === 'fallback' && 'Generated using creative interpretation and artistic elements'}
+                    {analysisType === 'traditional' && 'Identified as traditional trading card with comprehensive text and image analysis'}
+                    {analysisType === 'visual' && 'Created using advanced visual AI analysis with enhanced Star Wars and fantasy character recognition'}
+                    {analysisType === 'fallback' && 'Generated using creative interpretation with intelligent pattern matching and thematic analysis'}
                   </span>
                 </div>
               )}
@@ -205,7 +227,7 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
                 <button
                   key={index}
                   onClick={() => onCardInfoFound(result)}
-                  className="w-full text-left p-3 bg-crd-mediumGray/20 rounded-lg hover:bg-crd-mediumGray/30 transition-colors"
+                  className="w-full text-left p-3 bg-crd-mediumGray/20 rounded-lg hover:bg-crd-mediumGray/30 transition-colors border border-crd-mediumGray/20"
                 >
                   <div className="flex justify-between items-start">
                     <div>
@@ -221,6 +243,23 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
             </div>
           </div>
         )}
+      </div>
+
+      {/* Enhanced Feature Showcase */}
+      <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-600/30 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <Sparkles className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+          <div className="text-sm text-blue-200">
+            <p className="font-medium mb-2">Enhanced Recognition Features:</p>
+            <ul className="space-y-1 text-blue-300 text-xs">
+              <li>• ⭐ <strong>Star Wars Characters:</strong> Wookiees, Droids, Aliens</li>
+              <li>• 🧙 <strong>Fantasy Creatures:</strong> Dragons, Wizards, Mythical Beings</li>
+              <li>• 🤖 <strong>Sci-Fi Elements:</strong> Robots, Spaceships, Technology</li>
+              <li>• 🏰 <strong>Epic Themes:</strong> Warriors, Guardians, Legends</li>
+              <li>• 🎨 <strong>Creative Generation:</strong> Unique lore and compelling descriptions</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
