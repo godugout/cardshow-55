@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTexture } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ProtectiveCase } from './slab/displays/ProtectiveCase';
 import { TrophyPlaque } from './slab/displays/TrophyPlaque';
@@ -23,6 +24,7 @@ export const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   exploded
 }) => {
   const [textureError, setTextureError] = useState(false);
+  const cardRef = React.useRef<THREE.Group>(null);
   
   // Validate and clean the image URL
   const getValidImageUrl = (url: string | null | undefined): string => {
@@ -60,24 +62,56 @@ export const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
         console.error('Texture loading failed for:', imageUrl);
         setTextureError(true);
       };
+      // Enhance texture quality
+      texture.generateMipmaps = false;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
     }
   }, [texture, imageUrl]);
+
+  // Add subtle floating animation
+  useFrame((state) => {
+    if (cardRef.current && slabConfig.type === 'museum') {
+      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+    }
+  });
   
-  // Standard trading card dimensions
-  const cardDimensions: [number, number, number] = [2.5, 3.5, 0.02];
+  // Standard trading card dimensions - enhanced for better proportions
+  const cardDimensions: [number, number, number] = [2.5, 3.5, 0.03];
   const cardPosition: [number, number, number] = [0, 0, 0];
 
-  // Create card mesh
+  // Enhanced card material
+  const cardMaterial = useMemo(() => new THREE.MeshPhysicalMaterial({
+    map: texture,
+    roughness: 0.1,
+    metalness: 0.05,
+    clearcoat: 0.3,
+    clearcoatRoughness: 0.1,
+    reflectivity: 0.8,
+    side: THREE.DoubleSide,
+    transparent: false,
+  }), [texture]);
+
+  // Create enhanced card mesh
   const CardMesh = () => (
-    <mesh position={cardPosition} castShadow receiveShadow>
-      <boxGeometry args={cardDimensions} />
-      <meshStandardMaterial
-        map={texture}
-        roughness={0.3}
-        metalness={0.1}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
+    <group ref={cardRef}>
+      <mesh position={cardPosition} castShadow receiveShadow>
+        <boxGeometry args={cardDimensions} />
+        <primitive object={cardMaterial} />
+      </mesh>
+      
+      {/* Card edge highlight */}
+      <mesh position={cardPosition}>
+        <boxGeometry args={[cardDimensions[0] + 0.01, cardDimensions[1] + 0.01, cardDimensions[2]]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          transparent
+          opacity={0.1}
+          side={THREE.BackSide}
+        />
+      </mesh>
+    </group>
   );
 
   // Render appropriate display based on slab config
