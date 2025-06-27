@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -44,11 +43,10 @@ export const PublishingSection: React.FC<PublishingSectionProps> = ({
     setPrice(newPrice);
     cardEditor.updateCardField('publishing_options', {
       ...cardEditor.cardData.publishing_options,
-      pricing: {
-        ...cardEditor.cardData.publishing_options?.pricing,
-        base_price: newPrice ? parseFloat(newPrice) : undefined,
+      pricing: newPrice ? {
+        base_price: parseFloat(newPrice),
         currency: 'USD'
-      }
+      } : undefined
     });
   };
 

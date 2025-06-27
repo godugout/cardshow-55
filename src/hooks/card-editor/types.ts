@@ -21,7 +21,8 @@ export interface CardData {
     marketplace_listing: boolean;
     crd_catalog_inclusion: boolean;
     print_available: boolean;
-    pricing: {
+    pricing?: {
+      base_price?: number;
       currency: string;
     };
     distribution: {

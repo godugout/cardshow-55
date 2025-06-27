@@ -45,10 +45,10 @@ export const useCardConversion = () => {
           marketplace_listing: card.marketplace_listing || false,
           crd_catalog_inclusion: card.crd_catalog_inclusion || false,
           print_available: card.print_available || false,
-          pricing: {
-            base_price: card.price ? Number(card.price) : undefined,
+          pricing: card.price ? {
+            base_price: Number(card.price),
             currency: 'USD'
-          },
+          } : undefined,
           distribution: {
             limited_edition: false
           }
