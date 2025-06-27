@@ -4949,6 +4949,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
+          cover_image_url: string | null
           created_at: string | null
           email: string
           experience_points: number | null
@@ -4960,6 +4961,7 @@ export type Database = {
           location: string | null
           privacy_settings: Json | null
           social_links: Json | null
+          subscription_tier: string | null
           total_followers: number | null
           total_following: number | null
           updated_at: string | null
@@ -4970,6 +4972,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          cover_image_url?: string | null
           created_at?: string | null
           email: string
           experience_points?: number | null
@@ -4981,6 +4984,7 @@ export type Database = {
           location?: string | null
           privacy_settings?: Json | null
           social_links?: Json | null
+          subscription_tier?: string | null
           total_followers?: number | null
           total_following?: number | null
           updated_at?: string | null
@@ -4991,6 +4995,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          cover_image_url?: string | null
           created_at?: string | null
           email?: string
           experience_points?: number | null
@@ -5002,6 +5007,7 @@ export type Database = {
           location?: string | null
           privacy_settings?: Json | null
           social_links?: Json | null
+          subscription_tier?: string | null
           total_followers?: number | null
           total_following?: number | null
           updated_at?: string | null

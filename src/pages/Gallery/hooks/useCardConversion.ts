@@ -81,7 +81,7 @@ export const useCardConversion = () => {
       marketplace_listing: cardData.publishing_options?.marketplace_listing,
       crd_catalog_inclusion: cardData.publishing_options?.crd_catalog_inclusion,
       print_available: cardData.publishing_options?.print_available,
-      price: cardData.publishing_options?.pricing?.base_price?.toString()
+      price: cardData.publishing_options?.pricing?.base_price
     };
   }, []);
 
