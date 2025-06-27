@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, Sparkles, Globe, Image, Loader, CheckCircle, AlertCircle } from 'lucide-react';
+import { Search, Sparkles, Globe, Image, Loader, CheckCircle, AlertCircle, Eye, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCardWebSearch, type CardSearchResult } from '../hooks/useCardWebSearch';
@@ -14,6 +14,7 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<CardSearchResult[]>([]);
   const [lastAnalysis, setLastAnalysis] = useState<CardSearchResult | null>(null);
+  const [analysisType, setAnalysisType] = useState<'traditional' | 'visual' | 'fallback' | null>(null);
   const { searchCardInfo, searchByText, isSearching } = useCardWebSearch();
 
   const handleImageSearch = async () => {
@@ -22,6 +23,14 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
     const result = await searchCardInfo(imageUrl);
     if (result) {
       setLastAnalysis(result);
+      // Determine analysis type based on confidence and content
+      if (result.confidence > 0.8) {
+        setAnalysisType('traditional');
+      } else if (result.confidence > 0.5) {
+        setAnalysisType('visual');
+      } else {
+        setAnalysisType('fallback');
+      }
       onCardInfoFound(result);
     }
   };
@@ -34,6 +43,7 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
     
     if (results.length > 0) {
       setLastAnalysis(results[0]);
+      setAnalysisType('traditional');
       onCardInfoFound(results[0]);
     }
   };
@@ -41,7 +51,7 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
   const getConfidenceColor = (confidence: number) => {
     if (confidence >= 0.8) return 'text-green-500';
     if (confidence >= 0.6) return 'text-yellow-500';
-    return 'text-red-500';
+    return 'text-orange-500';
   };
 
   const getConfidenceIcon = (confidence: number) => {
@@ -49,15 +59,28 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
     return AlertCircle;
   };
 
+  const getAnalysisTypeInfo = (type: 'traditional' | 'visual' | 'fallback' | null) => {
+    switch (type) {
+      case 'traditional':
+        return { icon: Search, label: 'Traditional Analysis', color: 'text-blue-500' };
+      case 'visual':
+        return { icon: Eye, label: 'Visual Analysis', color: 'text-purple-500' };
+      case 'fallback':
+        return { icon: Palette, label: 'Creative Generation', color: 'text-orange-500' };
+      default:
+        return { icon: Sparkles, label: 'Analysis', color: 'text-crd-green' };
+    }
+  };
+
   return (
     <div className="bg-crd-darkGray/50 border border-crd-mediumGray/30 rounded-xl p-6 space-y-4">
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 text-crd-green">
           <Sparkles className="w-5 h-5" />
-          <h3 className="text-white font-semibold text-lg">CRD ID System</h3>
+          <h3 className="text-white font-semibold text-lg">Enhanced CRD ID System</h3>
         </div>
         <p className="text-crd-lightGray text-sm">
-          AI-powered card identification using image analysis and web search
+          AI-powered card identification with visual analysis and creative generation
         </p>
       </div>
 
@@ -82,7 +105,7 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
               ) : (
                 <>
                   <Globe className="w-4 h-4 mr-2" />
-                  Identify Card from Image
+                  Identify & Create Card
                 </>
               )}
             </Button>
@@ -113,10 +136,22 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
           </div>
         </div>
 
-        {/* Last Analysis Result */}
+        {/* Enhanced Analysis Result */}
         {lastAnalysis && (
           <div className="space-y-2">
-            <label className="text-white text-sm font-medium">Latest Analysis</label>
+            <div className="flex items-center justify-between">
+              <label className="text-white text-sm font-medium">Latest Analysis</label>
+              {analysisType && (
+                <div className="flex items-center gap-2">
+                  {React.createElement(getAnalysisTypeInfo(analysisType).icon, {
+                    className: `w-4 h-4 ${getAnalysisTypeInfo(analysisType).color}`
+                  })}
+                  <span className={`text-xs ${getAnalysisTypeInfo(analysisType).color}`}>
+                    {getAnalysisTypeInfo(analysisType).label}
+                  </span>
+                </div>
+              )}
+            </div>
             <div className="bg-crd-mediumGray/20 rounded-lg p-3 space-y-2">
               <div className="flex items-center justify-between">
                 <h4 className="text-white font-medium text-sm">{lastAnalysis.title}</h4>
@@ -137,11 +172,22 @@ export const CRDIdSystem: React.FC<CRDIdSystemProps> = ({ imageUrl, onCardInfoFo
               </div>
               {lastAnalysis.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
-                  {lastAnalysis.tags.slice(0, 4).map((tag, index) => (
+                  {lastAnalysis.tags.slice(0, 6).map((tag, index) => (
                     <span key={index} className="bg-crd-green/20 text-crd-green px-2 py-1 rounded text-xs">
                       {tag}
                     </span>
                   ))}
+                </div>
+              )}
+              
+              {/* Analysis Type Indicator */}
+              {analysisType && (
+                <div className="mt-2 p-2 bg-crd-darkGray/50 rounded text-xs">
+                  <span className="text-crd-lightGray">
+                    {analysisType === 'traditional' && 'Identified as traditional trading card with text extraction'}
+                    {analysisType === 'visual' && 'Created using visual content analysis and creative AI generation'}
+                    {analysisType === 'fallback' && 'Generated using creative interpretation and artistic elements'}
+                  </span>
                 </div>
               )}
             </div>
