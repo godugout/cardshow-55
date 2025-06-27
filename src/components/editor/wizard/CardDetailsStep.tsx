@@ -6,12 +6,22 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Globe, Lock, Users, Sparkles } from 'lucide-react';
 import { CRDIdSystem } from './components/CRDIdSystem';
-import type { CardData, CardRarity, CardVisibility, CreatorAttribution } from '@/hooks/useCardEditor';
+import type { CardRarity, CardVisibility, CreatorAttribution } from '@/hooks/useCardEditor';
 import type { CardSearchResult } from './hooks/useCardWebSearch';
 
 interface CardDetailsStepProps {
-  cardData: CardData;
-  onFieldUpdate: <K extends keyof CardData>(field: K, value: CardData[K]) => void;
+  cardData: Partial<{
+    title: string;
+    description?: string;
+    rarity: CardRarity;
+    tags: string[];
+    type?: string;
+    series?: string;
+    image_url?: string;
+    visibility?: CardVisibility;
+    creator_attribution?: CreatorAttribution;
+  }>;
+  onFieldUpdate: <K extends keyof typeof cardData>(field: K, value: any) => void;
   onCreatorAttributionUpdate: (key: keyof CreatorAttribution, value: any) => void;
   aiAnalysisComplete?: boolean;
 }
@@ -98,7 +108,7 @@ export const CardDetailsStep = ({
                 <SelectItem value="common">Common</SelectItem>
                 <SelectItem value="uncommon">Uncommon</SelectItem>
                 <SelectItem value="rare">Rare</SelectItem>
-                <SelectItem value="epic">Epic</SelectItem>
+                <SelectItem value="ultra-rare">Ultra Rare</SelectItem>
                 <SelectItem value="legendary">Legendary</SelectItem>
               </SelectContent>
             </Select>
