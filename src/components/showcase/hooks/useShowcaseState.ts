@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { useCards } from '@/hooks/useCards';
@@ -19,8 +19,11 @@ export const useShowcaseState = (cardId?: string) => {
     type: 'none'
   });
 
-  // Convert database cards to CardData format
-  const mockCards = convertCardsToCardData([...cards, ...featuredCards, ...userCards]);
+  // Memoize the converted cards to prevent infinite re-renders
+  const mockCards = useMemo(() => {
+    const allCards = [...cards, ...featuredCards, ...userCards];
+    return convertCardsToCardData(allCards);
+  }, [cards, featuredCards, userCards, convertCardsToCardData]);
 
   // Handle card selection and navigation
   useEffect(() => {

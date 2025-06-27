@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { ProtectiveCase } from './slab/displays/ProtectiveCase';
@@ -14,12 +14,54 @@ interface ShowcaseCardProps {
   exploded: boolean;
 }
 
+// Fallback texture URL for when card images fail to load
+const FALLBACK_TEXTURE = '/placeholder.svg';
+
 export const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   card,
   slabConfig,
   exploded
 }) => {
-  const texture = useTexture(card.image_url || '/placeholder-card.jpg');
+  const [textureError, setTextureError] = useState(false);
+  
+  // Validate and clean the image URL
+  const getValidImageUrl = (url: string | null | undefined): string => {
+    if (!url) return FALLBACK_TEXTURE;
+    
+    // Check if it's a blob URL that might be invalid
+    if (url.startsWith('blob:')) {
+      console.warn('Blob URL detected, may cause loading issues:', url);
+      return FALLBACK_TEXTURE;
+    }
+    
+    // Check if it's a valid HTTP/HTTPS URL
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
+      return url;
+    }
+    
+    // If none of the above, use fallback
+    return FALLBACK_TEXTURE;
+  };
+
+  const imageUrl = getValidImageUrl(card.image_url);
+  
+  let texture;
+  try {
+    texture = useTexture(textureError ? FALLBACK_TEXTURE : imageUrl);
+  } catch (error) {
+    console.error('Failed to load texture:', error);
+    texture = useTexture(FALLBACK_TEXTURE);
+  }
+
+  // Handle texture loading errors
+  React.useEffect(() => {
+    if (texture) {
+      texture.onError = () => {
+        console.error('Texture loading failed for:', imageUrl);
+        setTextureError(true);
+      };
+    }
+  }, [texture, imageUrl]);
   
   // Standard trading card dimensions
   const cardDimensions: [number, number, number] = [2.5, 3.5, 0.02];

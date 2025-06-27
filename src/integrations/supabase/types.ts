@@ -1468,6 +1468,126 @@ export type Database = {
           },
         ]
       }
+      crd_elements: {
+        Row: {
+          asset_urls: Json | null
+          category: string | null
+          config: Json
+          created_at: string | null
+          creator_id: string | null
+          description: string | null
+          download_count: number | null
+          element_type: string
+          id: string
+          is_free: boolean | null
+          is_public: boolean | null
+          name: string
+          preview_image_url: string | null
+          price_cents: number | null
+          rating_average: number | null
+          rating_count: number | null
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          asset_urls?: Json | null
+          category?: string | null
+          config?: Json
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          download_count?: number | null
+          element_type: string
+          id?: string
+          is_free?: boolean | null
+          is_public?: boolean | null
+          name: string
+          preview_image_url?: string | null
+          price_cents?: number | null
+          rating_average?: number | null
+          rating_count?: number | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          asset_urls?: Json | null
+          category?: string | null
+          config?: Json
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          download_count?: number | null
+          element_type?: string
+          id?: string
+          is_free?: boolean | null
+          is_public?: boolean | null
+          name?: string
+          preview_image_url?: string | null
+          price_cents?: number | null
+          rating_average?: number | null
+          rating_count?: number | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      crd_frames: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          creator_id: string | null
+          description: string | null
+          download_count: number | null
+          frame_config: Json
+          id: string
+          included_elements: string[] | null
+          is_public: boolean | null
+          name: string
+          preview_image_url: string | null
+          price_cents: number | null
+          rating_average: number | null
+          rating_count: number | null
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          download_count?: number | null
+          frame_config: Json
+          id?: string
+          included_elements?: string[] | null
+          is_public?: boolean | null
+          name: string
+          preview_image_url?: string | null
+          price_cents?: number | null
+          rating_average?: number | null
+          rating_count?: number | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          download_count?: number | null
+          frame_config?: Json
+          id?: string
+          included_elements?: string[] | null
+          is_public?: boolean | null
+          name?: string
+          preview_image_url?: string | null
+          price_cents?: number | null
+          rating_average?: number | null
+          rating_count?: number | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       creator_activities: {
         Row: {
           activity_data: Json
@@ -2288,6 +2408,48 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_progress: {
+        Row: {
+          cards_created_basic: number | null
+          cards_created_studio: number | null
+          created_at: string | null
+          elements_created: number | null
+          frames_created: number | null
+          id: string
+          preferred_mode: string | null
+          studio_unlocked: boolean | null
+          total_earnings_cents: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cards_created_basic?: number | null
+          cards_created_studio?: number | null
+          created_at?: string | null
+          elements_created?: number | null
+          frames_created?: number | null
+          id?: string
+          preferred_mode?: string | null
+          studio_unlocked?: boolean | null
+          total_earnings_cents?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cards_created_basic?: number | null
+          cards_created_studio?: number | null
+          created_at?: string | null
+          elements_created?: number | null
+          frames_created?: number | null
+          id?: string
+          preferred_mode?: string | null
+          studio_unlocked?: boolean | null
+          total_earnings_cents?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       creator_streams: {
         Row: {
           actual_start: string | null
@@ -2715,6 +2877,51 @@ export type Database = {
           version?: number
         }
         Relationships: []
+      }
+      element_downloads: {
+        Row: {
+          amount_paid_cents: number | null
+          download_type: string
+          downloaded_at: string | null
+          element_id: string | null
+          frame_id: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_paid_cents?: number | null
+          download_type: string
+          downloaded_at?: string | null
+          element_id?: string | null
+          frame_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_paid_cents?: number | null
+          download_type?: string
+          downloaded_at?: string | null
+          element_id?: string | null
+          frame_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "element_downloads_element_id_fkey"
+            columns: ["element_id"]
+            isOneToOne: false
+            referencedRelation: "crd_elements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "element_downloads_frame_id_fkey"
+            columns: ["frame_id"]
+            isOneToOne: false
+            referencedRelation: "crd_frames"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       enterprise_organizations: {
         Row: {
