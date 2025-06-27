@@ -1,5 +1,5 @@
-
 import { pipeline } from '@huggingface/transformers';
+import { visualFeatureAnalyzer, type EnhancedDetectionResult } from './visualFeatureAnalyzer';
 
 // Configure transformers.js for browser use
 import { env } from '@huggingface/transformers';
@@ -12,13 +12,42 @@ export interface ImageAnalysisResult {
   analysisType: 'browser' | 'fallback';
 }
 
-// Comprehensive creative mapping from detected objects to card concepts
-const objectToCardConcept = (objects: string[]): {
+// Enhanced concept database with visual feature matching
+const objectToCardConcept = (objects: string[], visualFeatures?: any, characterArchetype?: string | null): {
   title: string;
   description: string;
   rarity: 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary';
   tags: string[];
 } => {
+  
+  // Priority matching based on character archetype
+  if (characterArchetype === 'wookiee') {
+    return {
+      title: 'Galactic Guardian Wookiee',
+      description: 'A legendary warrior from the forest moon of Kashyyyk, this mighty Wookiee stands tall with unwavering loyalty and incredible strength. Known throughout the galaxy for their courage in battle and fierce devotion to their allies.',
+      rarity: 'legendary',
+      tags: ['wookiee', 'star-wars', 'warrior', 'loyal', 'strength', 'galactic', 'legendary', 'kashyyyk']
+    };
+  }
+  
+  if (characterArchetype === 'bear-creature') {
+    return {
+      title: 'Primal Forest Guardian',
+      description: 'A powerful bear-like creature with ancient wisdom and protective instincts. This majestic being commands respect from all who encounter its mighty presence in the wild.',
+      rarity: 'rare',
+      tags: ['bear', 'forest', 'guardian', 'primal', 'wisdom', 'powerful', 'nature']
+    };
+  }
+  
+  if (characterArchetype === 'humanoid-warrior') {
+    return {
+      title: 'Elite Warrior',
+      description: 'A skilled combatant with years of training and battle experience. This warrior stands ready to face any challenge with honor and determination.',
+      rarity: 'rare',
+      tags: ['warrior', 'combat', 'skilled', 'honor', 'battle', 'elite']
+    };
+  }
+
   const mainObject = objects[0]?.toLowerCase() || 'unknown';
   
   // Enhanced concept database with hundreds of possibilities
@@ -253,16 +282,31 @@ const objectToCardConcept = (objects: string[]): {
     return concepts[bestMatch];
   }
 
-  // Enhanced fallback with better creativity
+  // Enhanced fallback with visual feature consideration
   const creativeAdjectives = ['Mysterious', 'Ancient', 'Legendary', 'Mystical', 'Ethereal', 'Cosmic', 'Radiant', 'Shadow'];
   const creativeNouns = ['Guardian', 'Sentinel', 'Champion', 'Wanderer', 'Keeper', 'Oracle', 'Essence', 'Spirit'];
   
   const randomAdjective = creativeAdjectives[Math.floor(Math.random() * creativeAdjectives.length)];
   const randomNoun = creativeNouns[Math.floor(Math.random() * creativeNouns.length)];
 
+  // Use visual features to inform creative generation
+  let enhancedTitle = `${randomAdjective} ${randomNoun}`;
+  let enhancedDescription = `A unique entity with distinctive characteristics featuring ${objects.join(' and ')}.`;
+  
+  if (visualFeatures) {
+    if (visualFeatures.texturePatterns?.includes('furry')) {
+      enhancedTitle = `Furry ${randomNoun}`;
+      enhancedDescription = `A fur-covered being with ${visualFeatures.dominantColors?.join(' and ') || 'natural'} coloring. ${enhancedDescription}`;
+    }
+    
+    if (visualFeatures.figureType === 'humanoid') {
+      enhancedDescription = `A humanoid figure with ${enhancedDescription.toLowerCase()}`;
+    }
+  }
+
   return {
-    title: `${randomAdjective} ${randomNoun}`,
-    description: `A unique entity with distinctive characteristics featuring ${objects.join(' and ')}. This extraordinary being possesses hidden powers and untold stories waiting to be discovered.`,
+    title: enhancedTitle,
+    description: `${enhancedDescription} This extraordinary being possesses hidden powers and untold stories waiting to be discovered.`,
     rarity: 'uncommon' as const,
     tags: [...objects.slice(0, 3), 'unique', 'mysterious', 'discovery']
   };
@@ -313,11 +357,34 @@ class BrowserImageAnalyzer {
     try {
       await this.initialize();
       
+      console.log('Starting enhanced multi-model analysis...');
+      
+      // Run enhanced visual feature analysis
+      const enhancedResults = await visualFeatureAnalyzer.analyzeImage(imageUrl);
+      
+      if (enhancedResults.confidence > 0.6) {
+        console.log('Enhanced analysis successful:', enhancedResults);
+        
+        // Use enhanced results for card concept generation
+        const cardConcept = objectToCardConcept(
+          enhancedResults.primaryObjects,
+          enhancedResults.visualFeatures,
+          enhancedResults.characterArchetype
+        );
+        
+        return {
+          ...cardConcept,
+          confidence: enhancedResults.confidence,
+          objects: enhancedResults.primaryObjects
+        };
+      }
+      
+      // Fallback to original analysis if enhanced analysis fails
       if (!this.classifier) {
         throw new Error('Classifier not available');
       }
 
-      console.log('Analyzing image with enhanced browser AI...');
+      console.log('Using fallback classification...');
       const results = await this.classifier(imageUrl);
       
       // Extract and process multiple predictions for better context
