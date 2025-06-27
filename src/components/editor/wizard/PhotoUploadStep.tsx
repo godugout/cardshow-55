@@ -8,6 +8,7 @@ import { BulkUploadOption } from '../BulkUploadOption';
 import { PhotoPreview } from './components/PhotoPreview';
 import { UploadActions } from './components/UploadActions';
 import { ReadySection } from './components/ReadySection';
+import { AnalysisReviewPrompt } from './components/AnalysisReviewPrompt';
 import { usePhotoUpload } from './hooks/usePhotoUpload';
 
 interface PhotoUploadStepProps {
@@ -24,14 +25,22 @@ export const PhotoUploadStep = ({
   onBulkUpload 
 }: PhotoUploadStepProps) => {
   const [showAdvancedCrop, setShowAdvancedCrop] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [showManualEntry, setShowManualEntry] = useState(false);
+  
   const { isAnalyzing, imageDetails, handleFileUpload } = usePhotoUpload(
     onPhotoSelect, 
-    onAnalysisComplete
+    (analysis) => {
+      setAnalysisResult(analysis);
+      onAnalysisComplete?.(analysis);
+    }
   );
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
+      setAnalysisResult(null);
+      setShowManualEntry(false);
       await handleFileUpload(file);
     }
   }, [handleFileUpload]);
@@ -49,6 +58,8 @@ export const PhotoUploadStep = ({
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setAnalysisResult(null);
+      setShowManualEntry(false);
       await handleFileUpload(file);
     }
     event.target.value = '';
@@ -58,8 +69,48 @@ export const PhotoUploadStep = ({
     if (crops.main) {
       onPhotoSelect(crops.main);
       toast.success('Advanced crop applied to card!');
+      // Re-analyze the cropped image
+      setAnalysisResult(null);
+      handleFileUpload(new File([crops.main], 'cropped.jpg'));
     }
     setShowAdvancedCrop(false);
+  };
+
+  const handleRetryAnalysis = async () => {
+    if (selectedPhoto) {
+      setAnalysisResult(null);
+      // Create a mock file from the selected photo for re-analysis
+      try {
+        const response = await fetch(selectedPhoto);
+        const blob = await response.blob();
+        const file = new File([blob], 'retry.jpg');
+        await handleFileUpload(file);
+      } catch (error) {
+        toast.error('Failed to retry analysis');
+      }
+    }
+  };
+
+  const handleManualEntry = () => {
+    setShowManualEntry(true);
+    // Clear analysis result to allow manual input
+    const manualAnalysis = {
+      title: null,
+      description: null,
+      rarity: null,
+      confidence: 0,
+      requiresManualReview: true,
+      message: 'Manual entry mode activated'
+    };
+    setAnalysisResult(manualAnalysis);
+    onAnalysisComplete?.(manualAnalysis);
+  };
+
+  const handleProceedAnyway = () => {
+    if (analysisResult) {
+      toast.info('Proceeding with current analysis results');
+      onAnalysisComplete?.(analysisResult);
+    }
   };
 
   // Show advanced cropper if active
@@ -82,12 +133,26 @@ export const PhotoUploadStep = ({
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 text-crd-green">
             <Sparkles className="w-4 h-4 animate-pulse" />
-            <span className="text-sm">AI is analyzing your image...</span>
+            <span className="text-sm">AI is analyzing your image with multiple methods...</span>
           </div>
         </div>
       )}
       
       <PhotoPreview selectedPhoto={selectedPhoto} imageDetails={imageDetails} />
+
+      {/* Show analysis review prompt if analysis completed with issues */}
+      {analysisResult && (analysisResult.requiresManualReview || analysisResult.error || analysisResult.confidence < 0.5) && (
+        <AnalysisReviewPrompt
+          confidence={analysisResult.confidence || 0}
+          detectionMethod={analysisResult.detectionMethod || 'unknown'}
+          requiresManualReview={analysisResult.requiresManualReview}
+          error={analysisResult.error}
+          message={analysisResult.message}
+          onRetryAnalysis={handleRetryAnalysis}
+          onManualEntry={handleManualEntry}
+          onProceedAnyway={analysisResult.confidence > 0.2 ? handleProceedAnyway : undefined}
+        />
+      )}
 
       <UploadActions
         selectedPhoto={selectedPhoto}
@@ -103,7 +168,12 @@ export const PhotoUploadStep = ({
         </div>
       )}
 
-      <ReadySection selectedPhoto={selectedPhoto} isAnalyzing={isAnalyzing} />
+      <ReadySection 
+        selectedPhoto={selectedPhoto} 
+        isAnalyzing={isAnalyzing}
+        analysisComplete={!!analysisResult}
+        analysisSuccessful={analysisResult && !analysisResult.error && !analysisResult.requiresManualReview}
+      />
 
       {/* Hidden file input */}
       <input
