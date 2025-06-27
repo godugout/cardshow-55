@@ -3,9 +3,11 @@ export async function analyzeImageWithHuggingFace(imageData: string) {
   const HUGGING_FACE_API_KEY = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
   
   if (!HUGGING_FACE_API_KEY) {
-    console.log('❌ HuggingFace API key not found, skipping real analysis');
-    return [];
+    console.log('❌ HuggingFace API key not found');
+    throw new Error('HuggingFace API key not configured');
   }
+
+  console.log('🔑 HuggingFace API key found, proceeding with analysis');
 
   try {
     console.log('🔗 Fetching image from URL...');
@@ -29,11 +31,13 @@ export async function analyzeImageWithHuggingFace(imageData: string) {
       }
     );
 
+    console.log('📡 HuggingFace response status:', hfResponse.status);
+
     if (!hfResponse.ok) {
-      console.error(`HuggingFace API error: ${hfResponse.status}`);
       const errorText = await hfResponse.text();
+      console.error(`❌ HuggingFace API error: ${hfResponse.status}`);
       console.error('HuggingFace error details:', errorText);
-      throw new Error(`HTTP error! status: ${hfResponse.status}`);
+      throw new Error(`HuggingFace API error: ${hfResponse.status} - ${errorText}`);
     }
 
     const result = await hfResponse.json();
@@ -60,6 +64,6 @@ export async function analyzeImageWithHuggingFace(imageData: string) {
     
   } catch (error) {
     console.error('❌ HuggingFace analysis error:', error);
-    return [];
+    throw error; // Re-throw to be handled by caller
   }
 }

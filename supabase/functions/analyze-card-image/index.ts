@@ -18,15 +18,29 @@ serve(async (req) => {
     const { imageData } = await req.json();
     console.log('🚀 Starting enhanced image analysis...');
     
-    // Try HuggingFace analysis first
-    let detectedObjects = await analyzeImageWithHuggingFace(imageData);
+    let detectedObjects: string[] = [];
+    let analysisMethod = 'fallback';
+    let confidence = 0.3;
     
-    let analysisMethod = 'huggingface_resnet50';
-    let confidence = 0.8;
+    // Try HuggingFace analysis
+    try {
+      detectedObjects = await analyzeImageWithHuggingFace(imageData);
+      
+      if (detectedObjects.length > 0) {
+        analysisMethod = 'huggingface_resnet50';
+        confidence = 0.8;
+        console.log('✅ HuggingFace analysis successful');
+      } else {
+        console.log('⚠️ HuggingFace returned no objects');
+      }
+    } catch (error) {
+      console.error('❌ HuggingFace analysis failed:', error.message);
+      // Continue with fallback
+    }
     
+    // Fallback if no objects detected
     if (detectedObjects.length === 0) {
-      console.log('⚠️ HuggingFace analysis failed, using intelligent fallback...');
-      // Instead of "mysterious entity", try to extract something from the image URL or use better defaults
+      console.log('🔄 Using intelligent fallback...');
       detectedObjects = ['unique_creation'];
       analysisMethod = 'intelligent_fallback';
       confidence = 0.4;
