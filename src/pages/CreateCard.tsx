@@ -7,21 +7,25 @@ import type { CardData } from '@/hooks/useCardEditor';
 const CreateCard = () => {
   const navigate = useNavigate();
 
+  console.log('CreateCard component rendered');
+
   const handleComplete = (cardData: CardData) => {
     console.log('Card created successfully:', cardData);
-    // Navigate to gallery or card detail page
     navigate('/gallery');
   };
 
   const handleCancel = () => {
+    console.log('Card creation cancelled');
     navigate('/');
   };
 
   return (
-    <ProfessionalWizard 
-      onComplete={handleComplete}
-      onCancel={handleCancel}
-    />
+    <div className="min-h-screen bg-crd-darkest">
+      <ProfessionalWizard 
+        onComplete={handleComplete}
+        onCancel={handleCancel}
+      />
+    </div>
   );
 };
 

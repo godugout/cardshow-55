@@ -38,7 +38,7 @@ export const useWizardNavigation = () => {
         isValid = false;
     }
 
-    // Only update if validity has changed
+    // Update step validity if it has changed
     if (currentStep.valid !== isValid) {
       dispatch({ 
         type: 'SET_STEP_VALIDITY', 
@@ -62,14 +62,15 @@ export const useWizardNavigation = () => {
     
     // Can navigate forward only to the next step if current step is valid
     if (targetIndex === currentStepIndex + 1) {
-      return currentStep?.valid || false;
+      return validateCurrentStep();
     }
     
     // Can navigate to current step
     return targetIndex === currentStepIndex;
-  }, [state.steps, currentStepIndex, currentStep?.valid]);
+  }, [state.steps, currentStepIndex, validateCurrentStep]);
 
   const navigateToStep = useCallback((stepId: string) => {
+    console.log('Navigating to step:', stepId);
     if (canNavigateToStep(stepId)) {
       dispatch({ type: 'SET_CURRENT_STEP', payload: stepId });
       return true;
@@ -106,8 +107,8 @@ export const useWizardNavigation = () => {
   }, [currentStep, validateCurrentStep, dispatch]);
 
   const canGoNext = useMemo(() => {
-    return currentStepIndex < state.steps.length - 1 && (currentStep?.valid || false);
-  }, [currentStepIndex, state.steps.length, currentStep?.valid]);
+    return currentStepIndex < state.steps.length - 1 && validateCurrentStep();
+  }, [currentStepIndex, state.steps.length, validateCurrentStep]);
 
   const canGoBack = useMemo(() => {
     return currentStepIndex > 0;

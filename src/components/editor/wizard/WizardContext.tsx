@@ -54,6 +54,8 @@ const initialState: WizardState = {
 };
 
 function wizardReducer(state: WizardState, action: WizardAction): WizardState {
+  console.log('Wizard reducer action:', action.type);
+  
   switch (action.type) {
     case 'SET_CURRENT_STEP':
       return { ...state, currentStepId: action.payload };
@@ -106,43 +108,44 @@ const WizardContext = createContext<WizardContextType | null>(null);
 export const WizardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(wizardReducer, initialState);
 
-  // Throttled auto-save functionality
+  console.log('WizardProvider render, current step:', state.currentStepId);
+
+  // Simplified auto-save - only save if there's meaningful data
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    
     const saveState = () => {
-      if (state.cardData && Object.keys(state.cardData).length > 0) {
-        localStorage.setItem('cardshow-wizard-state', JSON.stringify(state));
-        dispatch({ type: 'MARK_SAVED' });
+      if (state.cardData.title && state.cardData.title.trim()) {
+        try {
+          localStorage.setItem('cardshow-wizard-state', JSON.stringify(state));
+          dispatch({ type: 'MARK_SAVED' });
+        } catch (error) {
+          console.error('Failed to save wizard state:', error);
+        }
       }
     };
 
-    // Debounce saves to prevent too frequent localStorage writes
-    timeoutId = setTimeout(saveState, 1000);
-
+    const timeoutId = setTimeout(saveState, 2000);
     return () => clearTimeout(timeoutId);
-  }, [state.cardData]);
+  }, [state.cardData.title, state.cardData.description]);
 
-  // Restore from localStorage on mount (only once)
+  // Restore from localStorage on mount
   useEffect(() => {
-    const savedState = localStorage.getItem('cardshow-wizard-state');
-    if (savedState) {
-      try {
+    try {
+      const savedState = localStorage.getItem('cardshow-wizard-state');
+      if (savedState) {
         const parsedState = JSON.parse(savedState);
-        // Only restore if it's a valid state
         if (parsedState.currentStepId && parsedState.steps) {
           dispatch({ type: 'RESTORE_FROM_STORAGE', payload: parsedState });
         }
-      } catch (error) {
-        console.error('Failed to restore wizard state:', error);
       }
+    } catch (error) {
+      console.error('Failed to restore wizard state:', error);
     }
-  }, []); // Empty dependency array - run only once
+  }, []);
 
   const contextValue = React.useMemo(() => ({
     state,
     dispatch
-  }), [state, dispatch]);
+  }), [state]);
 
   return (
     <WizardContext.Provider value={contextValue}>
