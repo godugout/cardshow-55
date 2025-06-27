@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { useCards } from '@/hooks/useCards';
+import { useCardConversion } from '@/pages/Gallery/hooks/useCardConversion';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { SlabPresetConfig } from '../SlabPresets';
 
@@ -10,6 +11,7 @@ export const useShowcaseState = (cardId?: string) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { cards, featuredCards, userCards, loading, dataSource } = useCards();
+  const { convertCardsToCardData } = useCardConversion();
   
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -17,8 +19,8 @@ export const useShowcaseState = (cardId?: string) => {
     type: 'none'
   });
 
-  // Combine all available cards
-  const mockCards = [...cards, ...featuredCards, ...userCards];
+  // Convert database cards to CardData format
+  const mockCards = convertCardsToCardData([...cards, ...featuredCards, ...userCards]);
 
   // Handle card selection and navigation
   useEffect(() => {

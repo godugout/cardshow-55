@@ -3659,6 +3659,7 @@ export type Database = {
           id: string
           is_read: boolean | null
           message: string | null
+          metadata: Json | null
           recipient_id: string
           title: string
           type: Database["public"]["Enums"]["notification_type"]
@@ -3671,6 +3672,7 @@ export type Database = {
           id?: string
           is_read?: boolean | null
           message?: string | null
+          metadata?: Json | null
           recipient_id: string
           title: string
           type: Database["public"]["Enums"]["notification_type"]
@@ -3683,6 +3685,7 @@ export type Database = {
           id?: string
           is_read?: boolean | null
           message?: string | null
+          metadata?: Json | null
           recipient_id?: string
           title?: string
           type?: Database["public"]["Enums"]["notification_type"]
