@@ -7,7 +7,7 @@ export interface CardSearchResult {
   description: string;
   type: string;
   series: string;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  rarity: 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary';
   tags: string[];
   confidence: number;
 }
@@ -39,7 +39,7 @@ export const useCardWebSearch = () => {
           description: "Dynamic action card showcasing heroic poses and special abilities with premium holographic effects.",
           type: "Entertainment",
           series: "Action Heroes",
-          rarity: "rare",
+          rarity: "ultra-rare",
           tags: ["action", "hero", "dynamic", "premium"],
           confidence: 0.78
         },
@@ -84,7 +84,7 @@ export const useCardWebSearch = () => {
           description: `Official trading card featuring ${query} with authentic design and premium quality.`,
           type: "Official",
           series: "Main Series",
-          rarity: "rare",
+          rarity: "ultra-rare",
           tags: [query.toLowerCase(), "official", "premium"],
           confidence: 0.90
         }

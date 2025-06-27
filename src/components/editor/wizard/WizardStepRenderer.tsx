@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useWizardContext } from './WizardContext';
 import { AdvancedTemplateSelection } from './steps/AdvancedTemplateSelection';
@@ -5,32 +6,6 @@ import { PhotoUploadStep } from './steps/PhotoUploadStep';
 import { CardDetailsStep } from './CardDetailsStep';
 
 // Placeholder step components for other steps
-const CardDetailsStep = () => (
-  <div className="max-w-2xl mx-auto space-y-6">
-    <div className="text-center">
-      <h2 className="text-3xl font-bold text-white">Card Details</h2>
-      <p className="text-crd-lightGray text-lg">Add information about your trading card</p>
-    </div>
-    <div className="space-y-4">
-      <div>
-        <label className="block text-white font-medium mb-2">Card Title</label>
-        <input 
-          type="text" 
-          className="w-full bg-crd-darkGray border border-crd-mediumGray text-white rounded-lg px-4 py-3 focus:border-crd-green focus:outline-none"
-          placeholder="Enter card title..."
-        />
-      </div>
-      <div>
-        <label className="block text-white font-medium mb-2">Description</label>
-        <textarea 
-          className="w-full bg-crd-darkGray border border-crd-mediumGray text-white rounded-lg px-4 py-3 h-24 focus:border-crd-green focus:outline-none resize-none"
-          placeholder="Describe your card..."
-        />
-      </div>
-    </div>
-  </div>
-);
-
 const VisualEffectsStep = () => (
   <div className="text-center space-y-6">
     <h2 className="text-3xl font-bold text-white">Visual Effects</h2>
@@ -97,7 +72,7 @@ export const WizardStepRenderer: React.FC = () => {
       case 'details':
         return (
           <CardDetailsStep
-            cardData={state.cardData as any}
+            cardData={state.cardData}
             onFieldUpdate={handleFieldUpdate}
             onCreatorAttributionUpdate={handleCreatorAttributionUpdate}
           />
