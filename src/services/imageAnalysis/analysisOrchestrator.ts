@@ -1,7 +1,5 @@
 
-import { visualFeatureAnalyzer } from '../visualFeatureAnalyzer';
-import { modelPipeline } from './modelPipeline';
-import { mapObjectsToCardConcept } from './conceptMapping';
+import { simpleKeywordDetector } from './simpleKeywordDetector';
 
 export interface AnalysisResult {
   title: string;
@@ -10,55 +8,47 @@ export interface AnalysisResult {
   tags: string[];
   confidence: number;
   objects: string[];
+  detectionMethod?: string;
+  matchedKeywords?: string[];
 }
 
 export class AnalysisOrchestrator {
   async analyzeImage(imageUrl: string): Promise<AnalysisResult> {
     try {
-      console.log('Starting enhanced multi-model analysis...');
+      console.log('🚀 Starting SIMPLIFIED analysis (Step 1: Keywords only)');
       
-      // Run enhanced visual feature analysis
-      const enhancedResults = await visualFeatureAnalyzer.analyzeImage(imageUrl);
+      // For Step 1, we'll just use a simple test input
+      // In a real scenario, this would come from image analysis
+      const testInput = 'furry humanoid creature with brown fur standing tall';
       
-      if (enhancedResults.confidence > 0.6) {
-        console.log('Enhanced analysis successful:', enhancedResults);
-        
-        const cardConcept = mapObjectsToCardConcept(
-          enhancedResults.primaryObjects,
-          enhancedResults.visualFeatures,
-          enhancedResults.characterArchetype
-        );
-        
-        return {
-          ...cardConcept,
-          confidence: enhancedResults.confidence,
-          objects: enhancedResults.primaryObjects
-        };
-      }
+      console.log('📝 Test input for keyword detection:', testInput);
       
-      // Fallback to original analysis
-      console.log('Using fallback classification...');
-      const results = await modelPipeline.classifyImage(imageUrl);
-      const objects = results.map(r => r.label);
-      const confidence = Math.max(results[0]?.score || 0.3, 0.4);
-
-      const cardConcept = mapObjectsToCardConcept(objects);
-
+      const result = simpleKeywordDetector.detectFromKeywords(testInput);
+      
+      console.log('✅ Keyword detection result:', result);
+      
       return {
-        ...cardConcept,
-        confidence,
-        objects
+        title: result.title,
+        description: result.description,
+        rarity: result.rarity,
+        tags: result.tags,
+        confidence: result.confidence,
+        objects: result.matchedKeywords || ['test input'],
+        detectionMethod: result.detectionMethod,
+        matchedKeywords: result.matchedKeywords
       };
+      
     } catch (error) {
-      console.error('Enhanced browser analysis failed:', error);
+      console.error('❌ Simplified analysis failed:', error);
       
       return {
-        title: 'Enigmatic Discovery',
-        description: 'A fascinating subject captured in this unique image, possessing mysterious qualities.',
-        rarity: 'rare',
-        tags: ['enigmatic', 'unique', 'mysterious', 'discovery', 'fascinating'],
-        confidence: 0.5,
-        objects: ['mysterious entity']
+        title: 'Analysis Error',
+        description: 'Simple keyword detection failed.',
+        rarity: 'common',
+        tags: ['error', 'step1'],
+        confidence: 0.1,
+        objects: ['error'],
+        detectionMethod: 'error_fallback'
       };
     }
   }
