@@ -13,7 +13,7 @@ export const CHARACTER_DATABASE = {
     rarity: 'legendary',
     tags: ['jedi', 'star wars', 'force', 'master', 'wise', 'green', 'dagobah'],
     category: 'star_wars',
-    patterns: ['green', 'small', 'ears', 'jedi', 'master', 'wise', 'yoda', 'force', 'dagobah']
+    patterns: ['green', 'small', 'ears', 'jedi', 'master', 'wise', 'yoda', 'force', 'dagobah', 'toy', 'figure', 'doll', 'puppet', 'mask']
   },
   'darth vader': {
     titles: ['Darth Vader, Dark Lord of the Sith', 'Vader the Fallen', 'The Dark Lord Vader', 'Sith Lord Darth Vader'],
@@ -26,7 +26,7 @@ export const CHARACTER_DATABASE = {
     rarity: 'legendary',
     tags: ['sith', 'star wars', 'dark side', 'vader', 'empire', 'fallen', 'armor'],
     category: 'star_wars',
-    patterns: ['mask', 'black', 'helmet', 'breathing', 'vader', 'darth', 'sith', 'armor', 'cape']
+    patterns: ['mask', 'black', 'helmet', 'breathing', 'vader', 'darth', 'sith', 'armor', 'cape', 'dark']
   },
   'luke skywalker': {
     titles: ['Luke Skywalker, Jedi Knight', 'The Last Hope', 'Skywalker the Hero', 'Jedi Master Luke'],
@@ -78,9 +78,8 @@ export const CHARACTER_DATABASE = {
     rarity: 'uncommon',
     tags: ['wookiee', 'star wars', 'warrior', 'loyal', 'strength', 'kashyyyk', 'furry'],
     category: 'star_wars',
-    patterns: ['chewbacca', 'chewie', 'wookiee', 'furry', 'tall', 'brown', 'roar', 'loyal']
+    patterns: ['chewbacca', 'chewie', 'wookiee', 'furry', 'tall', 'brown', 'roar', 'loyal', 'bear', 'hair', 'dog']
   },
-  // Add more characters...
   'r2d2': {
     titles: ['R2-D2', 'Artoo-Detoo', 'The Brave Little Droid', 'R2 the Astromech'],
     descriptions: [
@@ -92,7 +91,7 @@ export const CHARACTER_DATABASE = {
     rarity: 'uncommon',
     tags: ['droid', 'star wars', 'astromech', 'loyal', 'brave', 'robot', 'blue'],
     category: 'star_wars',
-    patterns: ['r2d2', 'r2-d2', 'droid', 'blue', 'white', 'beeps', 'astromech', 'short']
+    patterns: ['r2d2', 'r2-d2', 'droid', 'blue', 'white', 'beeps', 'astromech', 'short', 'robot', 'cylinder']
   },
   'c3po': {
     titles: ['C-3PO', 'See-Threepio', 'Protocol Droid C-3PO', 'The Worried Droid'],
@@ -127,14 +126,20 @@ export function findCharacterMatch(text: string): any | null {
       return { key, ...character };
     }
     
-    // Enhanced pattern matching - require multiple pattern matches for accuracy
+    // Enhanced pattern matching - require at least 2 pattern matches for accuracy, but be more flexible
     const patternMatches = character.patterns.filter(pattern => 
       searchText.includes(pattern.toLowerCase())
     );
     
-    if (patternMatches.length >= 2) {
-      console.log('✅ Pattern match found:', key, 'with patterns:', patternMatches);
-      return { key, ...character };
+    if (patternMatches.length >= 1) {
+      // Special boost for unique identifiers
+      const uniquePatterns = ['yoda', 'vader', 'darth', 'luke', 'leia', 'chewbacca', 'r2d2', 'c3po'];
+      const hasUniquePattern = patternMatches.some(p => uniquePatterns.includes(p.toLowerCase()));
+      
+      if (hasUniquePattern || patternMatches.length >= 2) {
+        console.log('✅ Pattern match found:', key, 'with patterns:', patternMatches);
+        return { key, ...character };
+      }
     }
   }
   
@@ -144,11 +149,18 @@ export function findCharacterMatch(text: string): any | null {
     return { key: 'darth vader', ...CHARACTER_DATABASE['darth vader'] };
   }
   
-  if ((searchText.includes('green') && searchText.includes('small')) || 
-      (searchText.includes('ears') && searchText.includes('wise')) ||
-      (searchText.includes('jedi') && searchText.includes('master') && searchText.includes('old'))) {
-    console.log('✅ Contextual match: Yoda (green + small or ears + wise)');
+  if ((searchText.includes('green') && (searchText.includes('small') || searchText.includes('ears'))) || 
+      (searchText.includes('toy') && searchText.includes('green')) ||
+      (searchText.includes('figure') && searchText.includes('green')) ||
+      (searchText.includes('mask') && searchText.includes('green'))) {
+    console.log('✅ Contextual match: Yoda (green + small/ears/toy/figure/mask)');
     return { key: 'yoda', ...CHARACTER_DATABASE['yoda'] };
+  }
+  
+  if ((searchText.includes('bear') || searchText.includes('furry') || searchText.includes('hair')) && 
+      (searchText.includes('brown') || searchText.includes('tall'))) {
+    console.log('✅ Contextual match: Chewbacca (bear/furry + brown/tall)');
+    return { key: 'chewbacca', ...CHARACTER_DATABASE['chewbacca'] };
   }
   
   console.log('❌ No character match found');

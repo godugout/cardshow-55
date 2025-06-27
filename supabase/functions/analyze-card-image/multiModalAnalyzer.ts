@@ -21,6 +21,7 @@ export async function runMultiModalAnalysis(imageData: string): Promise<Advanced
   let analysisMethod = 'fallback';
   let confidence = 0.3;
   let characterMatch = null;
+  let fullDescription = '';
   
   // Try OpenAI Vision first (best for character recognition)
   try {
@@ -29,12 +30,13 @@ export async function runMultiModalAnalysis(imageData: string): Promise<Advanced
     
     if (visionDescription) {
       console.log('✅ OpenAI Vision successful:', visionDescription);
+      fullDescription = visionDescription;
       
       // Check for character matches in the description
       characterMatch = findCharacterMatch(visionDescription);
       
       if (characterMatch) {
-        console.log('🎭 Character identified:', characterMatch.key);
+        console.log('🎭 Character identified via OpenAI Vision:', characterMatch.key);
         const characterCard = generateCharacterCard(characterMatch);
         
         return {
@@ -65,6 +67,7 @@ export async function runMultiModalAnalysis(imageData: string): Promise<Advanced
       
       if (caption) {
         console.log('✅ BLIP successful:', caption);
+        if (!fullDescription) fullDescription = caption;
         
         // Check for character matches in caption
         characterMatch = findCharacterMatch(caption);
@@ -104,20 +107,41 @@ export async function runMultiModalAnalysis(imageData: string): Promise<Advanced
       if (resnetResults.length > 0) {
         console.log('✅ ResNet-50 successful:', resnetResults);
         
-        // Enhanced logic: check if ResNet results match known character patterns
-        const resnetText = resnetResults.join(' ');
-        characterMatch = findCharacterMatch(resnetText);
+        // ENHANCED LOGIC: Use ResNet results with full description for better matching
+        const combinedContext = (fullDescription + ' ' + resnetResults.join(' ')).toLowerCase();
+        console.log('🔍 Combined context for character matching:', combinedContext);
+        
+        // Try character matching with enhanced context
+        characterMatch = findCharacterMatch(combinedContext);
         
         if (characterMatch) {
-          console.log('🎭 Character identified via ResNet pattern matching:', characterMatch.key);
+          console.log('🎭 Character identified via enhanced ResNet pattern matching:', characterMatch.key);
           const characterCard = generateCharacterCard(characterMatch);
           
           return {
             title: characterCard.title,
             description: characterCard.description,
             detectedObjects: [characterMatch.key],
-            analysisMethod: 'resnet_character_pattern',
+            analysisMethod: 'resnet_enhanced_character_detection',
             confidence: 0.8,
+            category: characterCard.category,
+            rarity: characterCard.rarity
+          };
+        }
+        
+        // Enhanced fallback: Apply intelligent character detection rules
+        characterMatch = applyIntelligentCharacterDetection(resnetResults, fullDescription);
+        
+        if (characterMatch) {
+          console.log('🧠 Character identified via intelligent detection:', characterMatch.key);
+          const characterCard = generateCharacterCard(characterMatch);
+          
+          return {
+            title: characterCard.title,
+            description: characterCard.description,
+            detectedObjects: [characterMatch.key],
+            analysisMethod: 'intelligent_character_detection',
+            confidence: 0.75,
             category: characterCard.category,
             rarity: characterCard.rarity
           };
@@ -175,6 +199,62 @@ export async function runMultiModalAnalysis(imageData: string): Promise<Advanced
   };
 }
 
+function applyIntelligentCharacterDetection(detectedObjects: string[], fullDescription: string): any | null {
+  const allContext = (detectedObjects.join(' ') + ' ' + fullDescription).toLowerCase();
+  console.log('🧠 Applying intelligent character detection to:', allContext);
+  
+  // Smart detection rules based on common misclassifications
+  const intelligentRules = [
+    {
+      // Yoda often gets detected as mask, toy, or figure
+      conditions: ['mask', 'toy', 'figure', 'doll', 'puppet'],
+      indicators: ['green', 'small', 'ears', 'old', 'wise', 'jedi', 'star wars'],
+      character: 'yoda',
+      confidence: 0.9
+    },
+    {
+      // Darth Vader often gets detected as mask or helmet
+      conditions: ['mask', 'helmet', 'armor', 'black'],
+      indicators: ['dark', 'breathing', 'cape', 'sith', 'vader', 'star wars'],
+      character: 'darth vader',
+      confidence: 0.9
+    },
+    {
+      // Chewbacca often gets detected as bear, dog, or furry creature
+      conditions: ['bear', 'dog', 'furry', 'hair', 'brown'],
+      indicators: ['tall', 'wookiee', 'chewbacca', 'chewie', 'star wars'],
+      character: 'chewbacca',
+      confidence: 0.85
+    },
+    {
+      // R2-D2 often gets detected as robot or cylinder
+      conditions: ['robot', 'cylinder', 'blue', 'white'],
+      indicators: ['r2d2', 'r2-d2', 'droid', 'astromech', 'star wars'],
+      character: 'r2d2',
+      confidence: 0.85
+    }
+  ];
+  
+  for (const rule of intelligentRules) {
+    const hasCondition = rule.conditions.some(condition => allContext.includes(condition));
+    const hasIndicators = rule.indicators.filter(indicator => allContext.includes(indicator)).length;
+    
+    if (hasCondition && hasIndicators >= 1) {
+      console.log(`🎯 Intelligent detection match: ${rule.character} (condition: ${hasCondition}, indicators: ${hasIndicators})`);
+      
+      // Import character data
+      const { CHARACTER_DATABASE } = await import('./characterDatabase.ts');
+      const character = CHARACTER_DATABASE[rule.character];
+      
+      if (character) {
+        return { key: rule.character, ...character };
+      }
+    }
+  }
+  
+  return null;
+}
+
 function extractKeywordsFromDescription(description: string): string[] {
   const text = description.toLowerCase();
   const keywords: string[] = [];
@@ -212,15 +292,15 @@ function extractKeywordsFromDescription(description: string): string[] {
   });
   
   // Special Star Wars character detection
-  if (text.includes('green') && text.includes('small') || text.includes('yoda')) {
+  if (text.includes('green') && (text.includes('small') || text.includes('ears')) || text.includes('yoda')) {
     keywords.push('yoda');
   }
   
-  if (text.includes('mask') && text.includes('black') || text.includes('vader') || text.includes('darth')) {
+  if ((text.includes('mask') && text.includes('black')) || text.includes('vader') || text.includes('darth')) {
     keywords.push('darth_vader');
   }
   
-  if (text.includes('jedi') && text.includes('young') || text.includes('luke')) {
+  if ((text.includes('jedi') && text.includes('young')) || text.includes('luke')) {
     keywords.push('luke_skywalker');
   }
   
@@ -242,13 +322,13 @@ function extractContextFromUrl(imageUrl: string): string | null {
     const pathname = url.pathname.toLowerCase();
     
     // Check for character names in URL
-    if (pathname.includes('yoda')) return 'yoda green jedi master';
-    if (pathname.includes('vader') || pathname.includes('darth')) return 'darth vader mask black sith';
-    if (pathname.includes('luke')) return 'luke skywalker jedi young';
-    if (pathname.includes('leia')) return 'princess leia rebel leader';
-    if (pathname.includes('han') && pathname.includes('solo')) return 'han solo smuggler';
-    if (pathname.includes('chewbacca') || pathname.includes('chewie')) return 'chewbacca wookiee furry';
-    if (pathname.includes('r2d2') || pathname.includes('r2-d2')) return 'r2d2 droid blue white';
+    if (pathname.includes('yoda')) return 'yoda green jedi master small';
+    if (pathname.includes('vader') || pathname.includes('darth')) return 'darth vader mask black sith dark';
+    if (pathname.includes('luke')) return 'luke skywalker jedi young blonde';
+    if (pathname.includes('leia')) return 'princess leia rebel leader white';
+    if (pathname.includes('han') && pathname.includes('solo')) return 'han solo smuggler pilot';
+    if (pathname.includes('chewbacca') || pathname.includes('chewie')) return 'chewbacca wookiee furry tall brown';
+    if (pathname.includes('r2d2') || pathname.includes('r2-d2')) return 'r2d2 droid blue white astromech';
     if (pathname.includes('c3po') || pathname.includes('c-3po')) return 'c3po droid gold protocol';
     
     return null;
