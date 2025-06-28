@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { RotateCcw } from 'lucide-react';
 import type { ColorTheme } from '@/hooks/useColorThemes';
 
 interface TeamColorCardProps {
@@ -19,36 +20,71 @@ export const TeamColorCard = ({
   onLeave,
   onSelect
 }: TeamColorCardProps) => {
+  const [rotationIndex, setRotationIndex] = useState(0);
   const firstTeam = theme.teams?.[0];
   const displayName = firstTeam?.abbreviation?.toUpperCase() || theme.primary_example_team;
+
+  // Create rotated color array
+  const colors = [theme.primary_color, theme.secondary_color, theme.accent_color];
+  const rotateColors = () => {
+    setRotationIndex((prev) => (prev + 1) % colors.length);
+  };
+
+  // Get colors in current rotation order
+  const getRotatedColors = () => {
+    const rotated = [...colors];
+    for (let i = 0; i < rotationIndex; i++) {
+      rotated.push(rotated.shift()!);
+    }
+    return rotated;
+  };
+
+  const [primary, secondary, accent] = getRotatedColors();
 
   return (
     <div
       onClick={onSelect}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
-      className={`p-2 rounded-lg border cursor-pointer transition-all hover:scale-105 relative ${
+      className={`p-3 rounded-lg border cursor-pointer transition-all hover:scale-105 relative ${
         isSelected
           ? 'border-crd-green bg-crd-green/10'
           : 'border-crd-mediumGray/30 hover:border-crd-green/50'
       }`}
     >
-      <div className="flex items-center gap-2 mb-1">
-        <div 
-          className="w-3 h-3 rounded-full border border-white/20" 
-          style={{ backgroundColor: theme.primary_color }}
-        />
-        <div 
-          className="w-3 h-3 rounded-full border border-white/20" 
-          style={{ backgroundColor: theme.secondary_color }}
-        />
-        <div 
-          className="w-3 h-3 rounded-full border border-white/20" 
-          style={{ backgroundColor: theme.accent_color }}
-        />
-      </div>
-      <div className="text-crd-white text-xs font-medium truncate">
+      {/* Team Name */}
+      <div className="text-crd-white text-sm font-medium truncate mb-3 text-center">
         {displayName}
+      </div>
+
+      {/* Rotation Button */}
+      <div className="flex justify-center mb-3">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            rotateColors();
+          }}
+          className="p-1 rounded-full bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 transition-colors"
+          title="Rotate colors"
+        >
+          <RotateCcw className="w-4 h-4 text-crd-lightGray" />
+        </button>
+      </div>
+
+      {/* Color Pills at Bottom */}
+      <div className="flex justify-center gap-2">
+        <div 
+          className="w-4 h-4 rounded-full border border-white/20" 
+          style={{ backgroundColor: primary }}
+        />
+        <div 
+          className="w-4 h-4 rounded-full border border-white/20" 
+          style={{ backgroundColor: secondary }}
+        />
+        <div 
+          className="w-4 h-4 rounded-full border border-white/20" 
+          style={{ backgroundColor: accent }}
+        />
       </div>
       
       {/* Hover tooltip showing all teams */}

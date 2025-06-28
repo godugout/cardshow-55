@@ -10,22 +10,13 @@ interface TeamColorSelectorHeaderProps {
 
 export const TeamColorSelectorHeader = ({ selectedColorScheme }: TeamColorSelectorHeaderProps) => {
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <Palette className="w-4 h-4 text-crd-white" />
-        <CardTitle className="text-crd-white text-sm">Team Colors</CardTitle>
-      </div>
+    <div className="flex items-center gap-2">
+      <Palette className="w-4 h-4 text-crd-white" />
+      <CardTitle className="text-crd-white text-sm">Team Colors</CardTitle>
       {selectedColorScheme && (
-        <div className="flex gap-1">
-          <div 
-            className="w-4 h-4 rounded-full border border-white/20" 
-            style={{ backgroundColor: selectedColorScheme.primary }}
-          />
-          <div 
-            className="w-4 h-4 rounded-full border border-white/20" 
-            style={{ backgroundColor: selectedColorScheme.secondary }}
-          />
-        </div>
+        <span className="text-crd-lightGray text-xs ml-2">
+          ({selectedColorScheme.name})
+        </span>
       )}
     </div>
   );
