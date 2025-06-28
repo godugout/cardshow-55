@@ -25,7 +25,17 @@ const BLANK_CARD_TEMPLATE: DesignTemplate = {
   category: 'Basic',
   description: 'Clean blank card - perfect for complete card images',
   preview_url: '',
-  template_data: {},
+  template_data: {
+    style: 'blank',
+    aspectRatio: '2.5:3.5',
+    layout: 'clean',
+    colors: {
+      primary: '#ffffff',
+      secondary: '#f8f9fa',
+      background: '#ffffff',
+      text: '#000000'
+    }
+  },
   is_premium: false,
   usage_count: 0,
   tags: ['blank', 'clean', 'minimal']
