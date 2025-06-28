@@ -2,7 +2,9 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
+import { Badge } from '@/components/ui/badge';
 import { Palette, Wand2, Sparkles } from 'lucide-react';
+import { getRarityColor } from '@/utils/cardEffectUtils';
 import type { CreationMode } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
 
@@ -21,6 +23,22 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
 
   const handleVisibilityChange = (visibility: CardData['visibility']) => {
     onFieldUpdate('visibility', visibility);
+  };
+
+  const getRarityButtonStyle = (rarity: CardData['rarity']) => {
+    const rarityColor = getRarityColor(rarity);
+    const isSelected = cardData.rarity === rarity;
+    
+    if (isSelected) {
+      return {
+        backgroundColor: rarityColor + '20',
+        borderColor: rarityColor,
+        color: rarityColor,
+        border: `2px solid ${rarityColor}`
+      };
+    }
+    
+    return {};
   };
 
   return (
@@ -80,11 +98,12 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
                     key={rarity}
                     variant={cardData.rarity === rarity ? 'primary' : 'outline'}
                     onClick={() => handleRarityChange(rarity)}
-                    className={`capitalize ${
+                    className={`capitalize transition-all duration-200 hover:scale-105 ${
                       cardData.rarity === rarity 
-                        ? 'bg-crd-green text-black' 
+                        ? '' 
                         : 'border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white'
                     }`}
+                    style={getRarityButtonStyle(rarity)}
                   >
                     {rarity}
                   </CRDButton>
@@ -101,7 +120,7 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
                     key={visibility}
                     variant={cardData.visibility === visibility ? 'primary' : 'outline'}
                     onClick={() => handleVisibilityChange(visibility)}
-                    className={`w-full capitalize ${
+                    className={`w-full capitalize transition-all duration-200 ${
                       cardData.visibility === visibility 
                         ? 'bg-crd-green text-black' 
                         : 'border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white'
@@ -151,9 +170,48 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
             <div>
               <strong className="text-crd-white">Rarity Guide:</strong>
               <ul className="mt-1 space-y-1">
-                <li>• Common: Standard everyday cards</li>
-                <li>• Uncommon: Special occasion cards</li>
-                <li>• Rare: Limited collection items</li>
+                <li className="flex items-center gap-2">
+                  • Common: Standard everyday cards
+                  <Badge 
+                    className="text-xs" 
+                    style={{ 
+                      backgroundColor: getRarityColor('common') + '20',
+                      borderColor: getRarityColor('common'),
+                      color: getRarityColor('common'),
+                      border: `1px solid ${getRarityColor('common')}`
+                    }}
+                  >
+                    Common
+                  </Badge>
+                </li>
+                <li className="flex items-center gap-2">
+                  • Uncommon: Special occasion cards
+                  <Badge 
+                    className="text-xs" 
+                    style={{ 
+                      backgroundColor: getRarityColor('uncommon') + '20',
+                      borderColor: getRarityColor('uncommon'),
+                      color: getRarityColor('uncommon'),
+                      border: `1px solid ${getRarityColor('uncommon')}`
+                    }}
+                  >
+                    Uncommon
+                  </Badge>
+                </li>
+                <li className="flex items-center gap-2">
+                  • Rare: Limited collection items
+                  <Badge 
+                    className="text-xs" 
+                    style={{ 
+                      backgroundColor: getRarityColor('rare') + '20',
+                      borderColor: getRarityColor('rare'),
+                      color: getRarityColor('rare'),
+                      border: `1px solid ${getRarityColor('rare')}`
+                    }}
+                  >
+                    Rare
+                  </Badge>
+                </li>
               </ul>
             </div>
             <div>

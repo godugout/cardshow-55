@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Lock, Users, Tag, FileText, Settings } from 'lucide-react';
+import { Globe, Lock, Users, Tag, FileText, Settings, ImageIcon } from 'lucide-react';
+import { getRarityColor } from '@/utils/cardEffectUtils';
 import type { CreationMode } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
 
@@ -17,6 +18,14 @@ interface PublishStepProps {
 
 export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps) => {
   console.log('📤 PublishStep: Rendering with mode:', mode);
+  console.log('📤 PublishStep: Card data:', { 
+    title: cardData.title, 
+    image_url: cardData.image_url,
+    rarity: cardData.rarity 
+  });
+
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
 
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const tagsString = e.target.value;
@@ -38,6 +47,39 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
       case 'shared': return <Users className="w-4 h-4" />;
       default: return <Lock className="w-4 h-4" />;
     }
+  };
+
+  const getRarityBadge = () => {
+    const rarityColor = getRarityColor(cardData.rarity);
+    return (
+      <Badge 
+        className="capitalize font-medium transition-all duration-200 hover:scale-105" 
+        style={{ 
+          backgroundColor: rarityColor + '20',
+          borderColor: rarityColor,
+          color: rarityColor,
+          border: `1px solid ${rarityColor}`
+        }}
+      >
+        {cardData.rarity}
+      </Badge>
+    );
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    console.error('📤 PublishStep: Failed to load image:', cardData.image_url);
+    setImageLoading(false);
+    setImageError(true);
+  };
+
+  const handleImageStart = () => {
+    setImageLoading(true);
+    setImageError(false);
   };
 
   return (
@@ -63,16 +105,37 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Card Preview */}
-            <div className="aspect-[2.5/3.5] bg-crd-mediumGray/20 rounded-lg overflow-hidden">
+            <div className="aspect-[2.5/3.5] bg-crd-mediumGray/20 rounded-lg overflow-hidden relative">
               {cardData.image_url ? (
-                <img 
-                  src={cardData.image_url} 
-                  alt="Card preview"
-                  className="w-full h-full object-cover"
-                />
+                <>
+                  {imageLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-crd-mediumGray/40">
+                      <div className="w-8 h-8 border-2 border-crd-green border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                  <img 
+                    src={cardData.image_url} 
+                    alt="Card preview"
+                    className={`w-full h-full object-cover transition-opacity duration-300 ${
+                      imageLoading ? 'opacity-0' : 'opacity-100'
+                    }`}
+                    onLoad={handleImageLoad}
+                    onError={handleImageError}
+                    onLoadStart={handleImageStart}
+                    style={{ display: imageError ? 'none' : 'block' }}
+                  />
+                  {imageError && (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-crd-lightGray bg-crd-mediumGray/20">
+                      <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
+                      <p className="text-sm">Image failed to load</p>
+                      <p className="text-xs opacity-70 mt-1">Check image URL</p>
+                    </div>
+                  )}
+                </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-crd-lightGray">
-                  No image
+                <div className="w-full h-full flex flex-col items-center justify-center text-crd-lightGray">
+                  <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
+                  <p className="text-sm">No image uploaded</p>
                 </div>
               )}
             </div>
@@ -89,9 +152,7 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
                   {getVisibilityIcon()}
                   <span className="text-crd-lightGray capitalize">{cardData.visibility}</span>
                 </div>
-                <Badge variant="outline" className="capitalize">
-                  {cardData.rarity}
-                </Badge>
+                {getRarityBadge()}
               </div>
 
               {cardData.tags && cardData.tags.length > 0 && (
@@ -99,7 +160,7 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
                   <h5 className="text-crd-white text-sm font-medium mb-2">Tags</h5>
                   <div className="flex flex-wrap gap-1">
                     {cardData.tags.map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
+                      <Badge key={index} variant="secondary" className="text-xs bg-crd-mediumGray/30 text-crd-lightGray border-crd-mediumGray/20">
                         {tag}
                       </Badge>
                     ))}
