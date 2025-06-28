@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { Sparkles } from 'lucide-react';
-import { analyzeCardImage } from '@/services/cardAnalyzer';
+import { unifiedCardAnalyzer, UnifiedAnalysisResult } from '@/services/imageAnalysis/unifiedCardAnalyzer';
 
 interface ImageDetails {
   dimensions: { width: number; height: number };
@@ -12,7 +12,7 @@ interface ImageDetails {
 
 export const usePhotoUpload = (
   onPhotoSelect: (photo: string) => void,
-  onAnalysisComplete?: (analysis: any) => void
+  onAnalysisComplete?: (analysis: UnifiedAnalysisResult) => void
 ) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [imageDetails, setImageDetails] = useState<ImageDetails | null>(null);
@@ -78,12 +78,19 @@ export const usePhotoUpload = (
     
     setIsAnalyzing(true);
     try {
-      toast.info('Analyzing image with AI...', { icon: <Sparkles className="w-4 h-4" /> });
-      const analysis = await analyzeCardImage(imageDataUrl);
+      toast.info('Running comprehensive card analysis...', { icon: <Sparkles className="w-4 h-4" /> });
+      const analysis = await unifiedCardAnalyzer.analyzeCard(imageDataUrl);
       onAnalysisComplete(analysis);
-      toast.success('Image analyzed! Fields have been pre-filled.');
+      
+      if (analysis.confidence > 0.7) {
+        toast.success(`High confidence analysis complete! Found: ${analysis.title}`);
+      } else if (analysis.confidence > 0.4) {
+        toast.success('Analysis complete with moderate confidence. Please review the details.');
+      } else {
+        toast.info('Analysis complete but low confidence. Manual entry recommended.');
+      }
     } catch (error) {
-      console.error('Analysis failed:', error);
+      console.error('Enhanced analysis failed:', error);
       toast.error('Analysis failed, but you can still fill details manually.');
     } finally {
       setIsAnalyzing(false);
@@ -95,9 +102,9 @@ export const usePhotoUpload = (
       toast.info('Processing image for card format...');
       const processedImageUrl = await processImageForCard(file);
       onPhotoSelect(processedImageUrl);
-      toast.success('Photo processed and ready for card!');
+      toast.success('Photo processed and ready for analysis!');
       
-      // Trigger AI analysis
+      // Trigger enhanced AI analysis
       await handlePhotoAnalysis(processedImageUrl);
     } catch (error) {
       console.error('Error processing image:', error);
