@@ -10,6 +10,7 @@ interface TeamColorGridProps {
   hoveredTheme: string | null;
   onThemeHover: (themeId: string | null) => void;
   onThemeSelect: (theme: ColorTheme) => void;
+  onColorsChange?: (rotatedTheme: ColorTheme) => void;
 }
 
 export const TeamColorGrid = ({
@@ -17,10 +18,21 @@ export const TeamColorGrid = ({
   selectedColorScheme,
   hoveredTheme,
   onThemeHover,
-  onThemeSelect
+  onThemeSelect,
+  onColorsChange
 }: TeamColorGridProps) => {
+  if (themes.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <div className="text-crd-lightGray text-sm">
+          No teams available for this sport
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
       {themes.map((theme) => (
         <TeamColorCard
           key={theme.id}
@@ -30,6 +42,7 @@ export const TeamColorGrid = ({
           onHover={() => onThemeHover(theme.id)}
           onLeave={() => onThemeHover(null)}
           onSelect={() => onThemeSelect(theme)}
+          onColorsChange={onColorsChange}
         />
       ))}
     </div>

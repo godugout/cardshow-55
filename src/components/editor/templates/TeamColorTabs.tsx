@@ -38,6 +38,7 @@ interface TeamColorTabsProps {
   hoveredTheme: string | null;
   onThemeHover: (themeId: string | null) => void;
   onThemeSelect: (theme: ColorTheme) => void;
+  onColorsChange?: (rotatedTheme: ColorTheme) => void;
 }
 
 // Define sport order and icons
@@ -56,7 +57,8 @@ export const TeamColorTabs = ({
   selectedColorScheme,
   hoveredTheme,
   onThemeHover,
-  onThemeSelect
+  onThemeSelect,
+  onColorsChange
 }: TeamColorTabsProps) => {
   // Filter sports that have themes and maintain order
   const availableSports = SPORTS_CONFIG.filter(sport => 
@@ -92,6 +94,7 @@ export const TeamColorTabs = ({
             hoveredTheme={hoveredTheme}
             onThemeHover={onThemeHover}
             onThemeSelect={onThemeSelect}
+            onColorsChange={onColorsChange}
           />
         </TabsContent>
       ))}

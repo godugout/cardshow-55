@@ -72,6 +72,14 @@ export const TeamColorSelector = ({
     onColorSchemeSelect(scheme);
   };
 
+  const handleColorsChange = (rotatedTheme: ColorTheme) => {
+    // If this is the currently selected theme, update it
+    if (selectedColorScheme && selectedColorScheme.id === rotatedTheme.id) {
+      const rotatedScheme = convertColorThemeToScheme(rotatedTheme);
+      onColorSchemeSelect(rotatedScheme);
+    }
+  };
+
   if (loading) {
     return (
       <Card className={`bg-crd-darker border-crd-mediumGray/20 ${className}`}>
@@ -119,6 +127,7 @@ export const TeamColorSelector = ({
           hoveredTheme={hoveredTheme}
           onThemeHover={setHoveredTheme}
           onThemeSelect={handleThemeSelect}
+          onColorsChange={handleColorsChange}
         />
         
         {selectedColorScheme && (

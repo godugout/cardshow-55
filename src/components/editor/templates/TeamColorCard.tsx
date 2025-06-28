@@ -11,6 +11,7 @@ interface TeamColorCardProps {
   onHover: () => void;
   onLeave: () => void;
   onSelect: () => void;
+  onColorsChange?: (rotatedTheme: ColorTheme) => void;
 }
 
 export const TeamColorCard = ({
@@ -19,7 +20,8 @@ export const TeamColorCard = ({
   isHovered,
   onHover,
   onLeave,
-  onSelect
+  onSelect,
+  onColorsChange
 }: TeamColorCardProps) => {
   const [rotationIndex, setRotationIndex] = useState(0);
   const firstTeam = theme.teams?.[0];
@@ -28,7 +30,25 @@ export const TeamColorCard = ({
   // Create rotated color array
   const colors = [theme.primary_color, theme.secondary_color, theme.accent_color];
   const rotateColors = () => {
-    setRotationIndex((prev) => (prev + 1) % colors.length);
+    const newRotationIndex = (rotationIndex + 1) % colors.length;
+    setRotationIndex(newRotationIndex);
+    
+    // Create rotated theme and notify parent
+    if (onColorsChange) {
+      const rotatedColors = [...colors];
+      for (let i = 0; i < newRotationIndex; i++) {
+        rotatedColors.push(rotatedColors.shift()!);
+      }
+      
+      const rotatedTheme = {
+        ...theme,
+        primary_color: rotatedColors[0],
+        secondary_color: rotatedColors[1],
+        accent_color: rotatedColors[2]
+      };
+      
+      onColorsChange(rotatedTheme);
+    }
   };
 
   // Get colors in current rotation order
