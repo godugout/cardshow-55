@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RotateCcw, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { useUniversalCreator } from './hooks/useUniversalCreator';
@@ -41,18 +41,22 @@ export const UniversalCardCreator = ({
     step: state.currentStep,
     hasConfig: !!currentConfig,
     isCreating: state.isCreating,
-    hasCardData: !!cardEditor?.cardData
+    hasCardData: !!cardEditor?.cardData,
+    errors: state.errors
   });
 
-  // Early return if no config to prevent rendering issues
-  if (!currentConfig) {
-    console.warn('⚠️ UniversalCardCreator: No config found for mode:', state.mode);
+  // Show loading state if no config or card editor
+  if (!currentConfig || !cardEditor) {
+    console.warn('⚠️ UniversalCardCreator: Missing dependencies');
     return (
       <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-crd-white mb-2">Loading Creator...</h2>
-          <p className="text-crd-lightGray">Setting up {state.mode} mode</p>
-        </div>
+        <SimpleErrorBoundary fallback="Loading Error">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-crd-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <h2 className="text-xl font-semibold text-crd-white mb-2">Setting up Creator...</h2>
+            <p className="text-crd-lightGray">Initializing {state.mode} mode</p>
+          </div>
+        </SimpleErrorBoundary>
       </div>
     );
   }
@@ -108,21 +112,25 @@ export const UniversalCardCreator = ({
         {state.currentStep !== 'intent' && (
           <div className="bg-crd-darker border-b border-crd-mediumGray/20 py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <ProgressIndicator
-                steps={currentConfig.steps}
-                currentStep={state.currentStep}
-                progress={state.progress}
-              />
+              <SimpleErrorBoundary fallback="Progress Error">
+                <ProgressIndicator
+                  steps={currentConfig.steps}
+                  currentStep={state.currentStep}
+                  progress={state.progress}
+                />
+              </SimpleErrorBoundary>
             </div>
           </div>
         )}
 
         {/* Error Display */}
         {state.creationError && (
-          <div className="bg-red-900/20 border border-red-500/30 text-red-200 px-4 py-3 mx-4 mt-4 rounded">
-            <p className="text-sm">
-              <strong>Error:</strong> {state.creationError}
-            </p>
+          <div className="bg-red-900/20 border border-red-500/30 text-red-200 px-4 py-3 mx-4 mt-4 rounded flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium">Creation Error</p>
+              <p className="text-xs">{state.creationError}</p>
+            </div>
           </div>
         )}
 
@@ -130,8 +138,9 @@ export const UniversalCardCreator = ({
         {Object.keys(state.errors).length > 0 && (
           <div className="bg-amber-900/20 border border-amber-500/30 text-amber-200 px-4 py-3 mx-4 mt-4 rounded">
             {Object.entries(state.errors).map(([step, error]) => (
-              <p key={step} className="text-sm">
-                <strong>Note:</strong> {error}
+              <p key={step} className="text-sm flex items-center gap-2">
+                <AlertTriangle className="w-3 h-3 flex-shrink-0" />
+                <span><strong>{step}:</strong> {error}</span>
               </p>
             ))}
           </div>
@@ -157,41 +166,43 @@ export const UniversalCardCreator = ({
         {/* Navigation */}
         {showNavigation && (
           <div className="fixed bottom-0 left-0 right-0 bg-crd-darker border-t border-crd-mediumGray/20 p-4">
-            <div className="max-w-7xl mx-auto flex justify-between items-center">
-              <CRDButton
-                variant="outline"
-                onClick={actions.previousStep}
-                disabled={!state.canGoBack}
-                className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white disabled:opacity-50"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </CRDButton>
+            <SimpleErrorBoundary fallback="Navigation Error">
+              <div className="max-w-7xl mx-auto flex justify-between items-center">
+                <CRDButton
+                  variant="outline"
+                  onClick={actions.previousStep}
+                  disabled={!state.canGoBack}
+                  className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white disabled:opacity-50"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </CRDButton>
 
-              <div className="text-crd-lightGray text-sm">
-                Step {(currentConfig.steps.indexOf(state.currentStep) ?? 0) + 1} of {currentConfig.steps.length}
+                <div className="text-crd-lightGray text-sm">
+                  Step {(currentConfig.steps.indexOf(state.currentStep) ?? 0) + 1} of {currentConfig.steps.length}
+                </div>
+
+                {state.currentStep === 'publish' ? (
+                  <CRDButton
+                    variant="primary"
+                    onClick={actions.completeCreation}
+                    disabled={!canProceed || state.isCreating}
+                    className="bg-crd-green hover:bg-crd-green/80 text-black"
+                  >
+                    {state.isCreating ? 'Creating...' : 'Create Card'}
+                  </CRDButton>
+                ) : (
+                  <CRDButton
+                    variant="primary"
+                    onClick={actions.nextStep}
+                    disabled={!canProceed}
+                  >
+                    Next
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </CRDButton>
+                )}
               </div>
-
-              {state.currentStep === 'publish' ? (
-                <CRDButton
-                  variant="primary"
-                  onClick={actions.completeCreation}
-                  disabled={!canProceed || state.isCreating}
-                  className="bg-crd-green hover:bg-crd-green/80 text-black"
-                >
-                  {state.isCreating ? 'Creating...' : 'Create Card'}
-                </CRDButton>
-              ) : (
-                <CRDButton
-                  variant="primary"
-                  onClick={actions.nextStep}
-                  disabled={!canProceed}
-                >
-                  Next
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </CRDButton>
-              )}
-            </div>
+            </SimpleErrorBoundary>
           </div>
         )}
       </div>
