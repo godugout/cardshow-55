@@ -6,7 +6,8 @@ import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRe
 import { BaseballCardCropper } from '@/components/editor/cropping/BaseballCardCropper';
 import { BASEBALL_CARD_TEMPLATES } from '@/components/editor/templates/BaseballCardTemplates';
 import { TeamColorSelector } from '@/components/editor/templates/TeamColorSelector';
-import { PRO_SPORTS_TEAM_COLORS, type TeamColorScheme } from '@/components/editor/templates/TeamColors';
+import { useColorThemes } from '@/hooks/useColorThemes';
+import { convertColorThemeToScheme, type TeamColorScheme } from '@/components/editor/templates/TeamColors';
 import type { CreationMode } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { DesignTemplate } from '@/types/card';
@@ -37,9 +38,18 @@ export const PhotoStep = ({
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [playerName, setPlayerName] = useState(cardData?.title || 'PLAYER NAME');
   const [teamName, setTeamName] = useState('TEAM');
-  const [selectedColorScheme, setSelectedColorScheme] = useState<TeamColorScheme>(PRO_SPORTS_TEAM_COLORS[0]);
+  const [selectedColorScheme, setSelectedColorScheme] = useState<TeamColorScheme | null>(null);
+  
+  const { colorThemes, loading: themesLoading } = useColorThemes();
 
-  // Cleanup created URLs on unmount
+  // Set default color scheme when themes load
+  useEffect(() => {
+    if (!selectedColorScheme && colorThemes.length > 0 && !themesLoading) {
+      const defaultTheme = convertColorThemeToScheme(colorThemes[0]);
+      setSelectedColorScheme(defaultTheme);
+    }
+  }, [colorThemes, themesLoading, selectedColorScheme]);
+
   useEffect(() => {
     return () => {
       imageUrls.forEach(url => {
@@ -50,7 +60,6 @@ export const PhotoStep = ({
     };
   }, [imageUrls]);
 
-  // Sync frame selection
   useEffect(() => {
     if (selectedFrame && selectedFrame.id !== currentFrame.id) {
       console.log('📸 PhotoStep: Updating frame to:', selectedFrame.name);
@@ -83,6 +92,10 @@ export const PhotoStep = ({
     onPhotoSelect(croppedImageUrl);
     setShowCropper(false);
   };
+
+  const handleColorSchemeSelect = useCallback((colorScheme: TeamColorScheme) => {
+    setSelectedColorScheme(colorScheme);
+  }, []);
 
   // Show cropper if active
   if (showCropper && selectedPhoto) {
@@ -208,8 +221,8 @@ export const PhotoStep = ({
 
           {/* Team Color Selector */}
           <TeamColorSelector
-            selectedColorScheme={selectedColorScheme}
-            onColorSchemeSelect={setSelectedColorScheme}
+            selectedColorScheme={selectedColorScheme || undefined}
+            onColorSchemeSelect={handleColorSchemeSelect}
           />
         </div>
 
@@ -234,7 +247,7 @@ export const PhotoStep = ({
                 imageUrl={selectedPhoto}
                 playerName={playerName}
                 teamName={teamName}
-                customColors={selectedColorScheme}
+                customColors={selectedColorScheme || undefined}
                 className="w-full h-full"
               />
             </div>
@@ -301,7 +314,7 @@ const TemplateCard = ({
   onSelect: (template: DesignTemplate) => void;
   playerName: string;
   teamName: string;
-  colorScheme: TeamColorScheme;
+  colorScheme: TeamColorScheme | null;
 }) => (
   <div
     onClick={() => onSelect(template)}
@@ -316,7 +329,7 @@ const TemplateCard = ({
         template={template}
         playerName={playerName}
         teamName={teamName}
-        customColors={colorScheme}
+        customColors={colorScheme || undefined}
         className="w-full h-full"
       />
     </div>

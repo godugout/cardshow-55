@@ -1184,6 +1184,42 @@ export type Database = {
           },
         ]
       }
+      color_themes: {
+        Row: {
+          accent_color: string
+          created_at: string | null
+          id: string
+          name: string
+          primary_color: string
+          primary_example_team: string
+          secondary_color: string
+          text_color: string
+          updated_at: string | null
+        }
+        Insert: {
+          accent_color: string
+          created_at?: string | null
+          id?: string
+          name: string
+          primary_color: string
+          primary_example_team: string
+          secondary_color: string
+          text_color?: string
+          updated_at?: string | null
+        }
+        Update: {
+          accent_color?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          primary_color?: string
+          primary_example_team?: string
+          secondary_color?: string
+          text_color?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           author_id: string
@@ -4627,6 +4663,47 @@ export type Database = {
           usage_count?: number | null
         }
         Relationships: []
+      }
+      teams: {
+        Row: {
+          abbreviation: string
+          city: string
+          color_theme_id: string | null
+          created_at: string | null
+          id: string
+          league: string
+          name: string
+          sport: string
+        }
+        Insert: {
+          abbreviation: string
+          city: string
+          color_theme_id?: string | null
+          created_at?: string | null
+          id?: string
+          league: string
+          name: string
+          sport: string
+        }
+        Update: {
+          abbreviation?: string
+          city?: string
+          color_theme_id?: string | null
+          created_at?: string | null
+          id?: string
+          league?: string
+          name?: string
+          sport?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_color_theme_id_fkey"
+            columns: ["color_theme_id"]
+            isOneToOne: false
+            referencedRelation: "color_themes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       temp_card_analysis: {
         Row: {
