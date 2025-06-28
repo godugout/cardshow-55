@@ -144,44 +144,44 @@ export const EnhancedCardCreator = ({ onComplete, onCancel }: EnhancedCardCreato
 
         <StepIndicator steps={WIZARD_STEPS} currentStep={currentStep} />
 
-        <Card className="bg-crd-darker border-crd-mediumGray/20 mt-8">
+        {/* Navigation Bar - Moved here from footer */}
+        <div className="flex justify-between items-center mb-8 bg-crd-darker border border-crd-mediumGray/20 rounded-lg p-4">
+          <CRDButton
+            variant="secondary"
+            onClick={onCancel}
+          >
+            Cancel
+          </CRDButton>
+          <div className="flex gap-4">
+            {currentStep !== 'intent' && (
+              <CRDButton
+                variant="outline"
+                onClick={handleBack}
+              >
+                Back
+              </CRDButton>
+            )}
+            {currentStep !== 'complete' ? (
+              <CRDButton
+                onClick={handleNext}
+                className="min-w-[120px]"
+              >
+                Next
+              </CRDButton>
+            ) : (
+              <CRDButton
+                onClick={handleComplete}
+                className="min-w-[120px]"
+              >
+                Complete
+              </CRDButton>
+            )}
+          </div>
+        </div>
+
+        <Card className="bg-crd-darker border-crd-mediumGray/20">
           <CardContent className="p-8">
             {renderStepContent()}
-
-            <div className="flex justify-between mt-8">
-              <CRDButton
-                variant="secondary"
-                onClick={onCancel}
-              >
-                Cancel
-              </CRDButton>
-              <div>
-                {currentStep !== 'intent' && (
-                  <CRDButton
-                    variant="outline"
-                    onClick={handleBack}
-                    className="mr-4"
-                  >
-                    Back
-                  </CRDButton>
-                )}
-                {currentStep !== 'complete' ? (
-                  <CRDButton
-                    onClick={handleNext}
-                    className="min-w-[120px]"
-                  >
-                    Next
-                  </CRDButton>
-                ) : (
-                  <CRDButton
-                    onClick={handleComplete}
-                    className="min-w-[120px]"
-                  >
-                    Complete
-                  </CRDButton>
-                )}
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
