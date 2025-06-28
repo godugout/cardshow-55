@@ -138,7 +138,7 @@ export const TeamColorSelector = ({
                   const isSelected = selectedColorScheme?.id === theme.id;
                   const isHovered = hoveredTheme === theme.id;
                   const firstTeam = theme.teams?.[0];
-                  const displayName = firstTeam?.city || theme.primary_example_team;
+                  const displayName = firstTeam?.abbreviation?.toUpperCase() || theme.primary_example_team;
                   
                   return (
                     <div
@@ -160,6 +160,10 @@ export const TeamColorSelector = ({
                         <div 
                           className="w-3 h-3 rounded-full border border-white/20" 
                           style={{ backgroundColor: theme.secondary_color }}
+                        />
+                        <div 
+                          className="w-3 h-3 rounded-full border border-white/20" 
+                          style={{ backgroundColor: theme.accent_color }}
                         />
                       </div>
                       <div className="text-crd-white text-xs font-medium truncate">
