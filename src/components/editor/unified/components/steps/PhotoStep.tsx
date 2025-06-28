@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Upload, Image, Frame } from 'lucide-react';
@@ -50,9 +50,14 @@ export const PhotoStep = ({
   onFrameSelect 
 }: PhotoStepProps) => {
   const { templates } = useWizardTemplates();
-  const [currentFrame, setCurrentFrame] = useState<DesignTemplate>(
-    selectedFrame || BLANK_CARD_TEMPLATE
-  );
+  const [currentFrame, setCurrentFrame] = useState<DesignTemplate>(BLANK_CARD_TEMPLATE);
+
+  // Initialize current frame from props only once
+  useEffect(() => {
+    if (selectedFrame && selectedFrame.id !== currentFrame.id) {
+      setCurrentFrame(selectedFrame);
+    }
+  }, [selectedFrame?.id]); // Only depend on the ID to avoid deep comparison issues
 
   // Add blank card as first option
   const allTemplates = [BLANK_CARD_TEMPLATE, ...templates];
