@@ -9,6 +9,7 @@ import type { CardData } from '@/types/card';
 export interface SaveResult {
   success: boolean;
   cardId?: string;
+  error?: string;
 }
 
 export const useCardSaveOperations = () => {
@@ -16,10 +17,50 @@ export const useCardSaveOperations = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
+  const validateCardData = (cardData: CardData): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    if (!cardData.title?.trim()) {
+      errors.push('Card title is required');
+    }
+    
+    // Check if image URL is valid
+    if (cardData.image_url) {
+      try {
+        const url = new URL(cardData.image_url);
+        console.log('✅ Image URL is valid:', url.href);
+      } catch (error) {
+        console.error('❌ Invalid image URL:', cardData.image_url);
+        errors.push('Invalid image URL format');
+      }
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  };
+
   const saveCard = async (cardData: CardData): Promise<SaveResult> => {
     if (!user) {
-      toast.error('Please sign in to save cards');
-      return { success: false };
+      const error = 'Please sign in to save cards';
+      toast.error(error);
+      return { success: false, error };
+    }
+
+    console.log('💾 Starting card save process...', {
+      cardId: cardData.id,
+      hasImage: !!cardData.image_url,
+      imageUrl: cardData.image_url?.substring(0, 50) + '...'
+    });
+
+    // Validate card data
+    const validation = validateCardData(cardData);
+    if (!validation.isValid) {
+      const error = `Validation failed: ${validation.errors.join(', ')}`;
+      console.error('❌ Card validation failed:', validation.errors);
+      toast.error(error);
+      return { success: false, error };
     }
 
     const finalCardData = {
@@ -30,17 +71,23 @@ export const useCardSaveOperations = () => {
 
     setIsSaving(true);
     try {
-      console.log('💾 Saving card with new storage system...');
+      console.log('💾 Saving card with enhanced error handling...');
       
       // 1. Save to localStorage using new storage service
+      console.log('📱 Attempting localStorage save...');
       const localResult = CardStorageService.saveCard(finalCardData);
       if (!localResult.success) {
         throw new Error(`localStorage save failed: ${localResult.error}`);
       }
+      console.log('✅ localStorage save successful');
       
-      // 2. Attempt database save
+      // 2. Attempt database save with enhanced error handling
       let dbSuccess = false;
+      let dbError: string | null = null;
+      
       try {
+        console.log('🗄️ Attempting database save...');
+        
         // Map rarity for database compatibility
         const rarityMap: Record<string, string> = {
           'common': 'common',
@@ -65,35 +112,55 @@ export const useCardSaveOperations = () => {
           print_available: finalCardData.publishing_options?.print_available || false
         };
 
+        console.log('🗄️ Database card data prepared:', {
+          title: dbCardData.title,
+          hasImage: !!dbCardData.image_url,
+          rarity: dbCardData.rarity
+        });
+
         const dbResult = await CardRepository.createCard(dbCardData);
         if (dbResult) {
-          console.log('✅ Database save successful');
+          console.log('✅ Database save successful, card ID:', dbResult.id);
           dbSuccess = true;
+          setLastSaved(new Date());
+          toast.success('Card saved successfully to database');
           return { success: true, cardId: dbResult.id };
+        } else {
+          dbError = 'Database returned null result';
         }
-      } catch (dbError) {
-        console.warn('⚠️ Database save failed, but localStorage succeeded:', dbError);
+      } catch (error: any) {
+        dbError = error.message || 'Unknown database error';
+        console.warn('⚠️ Database save failed:', dbError);
+        console.warn('Full error:', error);
       }
 
       setLastSaved(new Date());
       
       if (dbSuccess) {
         toast.success('Card saved successfully');
+        return { success: true, cardId: finalCardData.id };
       } else {
-        toast.success('Card saved locally (will sync to database later)');
+        console.log('📱 Card saved locally, database sync will be attempted later');
+        toast.success('Card saved locally (will sync to database when connection is restored)', {
+          description: dbError ? `Database error: ${dbError}` : undefined
+        });
+        return { success: true, cardId: finalCardData.id };
       }
-      
-      return { success: true, cardId: finalCardData.id };
-    } catch (error) {
-      console.error('💥 Error saving card:', error);
-      toast.error('Failed to save card. Please try again.');
-      return { success: false };
+    } catch (error: any) {
+      const errorMessage = error.message || 'Unknown error occurred';
+      console.error('💥 Critical error saving card:', error);
+      toast.error('Failed to save card. Please try again.', {
+        description: errorMessage
+      });
+      return { success: false, error: errorMessage };
     } finally {
       setIsSaving(false);
     }
   };
 
   const publishCard = async (cardData: CardData): Promise<boolean> => {
+    console.log('📤 Publishing card...');
+    
     const updatedCard = {
       ...cardData,
       is_public: true,
@@ -101,14 +168,20 @@ export const useCardSaveOperations = () => {
     };
     
     const result = await saveCard(updatedCard);
-    if (!result.success) return false;
+    if (!result.success) {
+      console.error('❌ Publish failed:', result.error);
+      toast.error('Failed to publish card', {
+        description: result.error
+      });
+      return false;
+    }
 
     try {
       toast.success('Card published successfully');
       return true;
     } catch (error) {
-      console.error('Error publishing card:', error);
-      toast.error('Failed to publish card');
+      console.error('Error in publish flow:', error);
+      toast.error('Failed to complete publish process');
       return false;
     }
   };
