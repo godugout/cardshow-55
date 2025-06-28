@@ -28,7 +28,7 @@ export interface PublishingOptions {
 }
 
 export interface CardData {
-  id?: string;
+  id: string; // Made required to match other CardData type
   title: string;
   description?: string;
   rarity: CardRarity;
@@ -51,4 +51,7 @@ export interface CardData {
   marketplace_listing?: boolean;
   crd_catalog_inclusion?: boolean;
   print_available?: boolean;
+  // Add missing properties that Gallery is trying to access
+  view_count?: number;
+  created_at?: string;
 }

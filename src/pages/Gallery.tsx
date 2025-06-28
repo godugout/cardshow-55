@@ -26,9 +26,15 @@ const Gallery = () => {
       case 'featured':
         return featuredCardsConverted.length > 0 ? featuredCardsConverted : allCardsConverted.slice(0, 8);
       case 'trending':
-        return allCardsConverted.filter(card => card.view_count && card.view_count > 10).slice(0, 20);
+        // Filter cards with view_count > 10, with fallback for undefined view_count
+        return allCardsConverted.filter(card => (card.view_count || 0) > 10).slice(0, 20);
       case 'new':
-        return allCardsConverted.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()).slice(0, 20);
+        // Sort by created_at with fallback for undefined created_at
+        return allCardsConverted.sort((a, b) => {
+          const aDate = new Date(a.created_at || 0).getTime();
+          const bDate = new Date(b.created_at || 0).getTime();
+          return bDate - aDate;
+        }).slice(0, 20);
       default:
         return allCardsConverted;
     }
@@ -36,6 +42,16 @@ const Gallery = () => {
 
   const displayCards = getDisplayCards();
   console.log('🎨 Gallery: Displaying', displayCards.length, 'cards for tab:', activeTab);
+
+  // Convert CardData to the format expected by CardGrid
+  const gridCards = displayCards.map(card => ({
+    id: card.id,
+    title: card.title,
+    description: card.description,
+    image_url: card.image_url,
+    thumbnail_url: card.thumbnail_url,
+    price: card.price?.toString() || undefined
+  }));
 
   return (
     <div className="min-h-screen bg-crd-darkest">
@@ -53,7 +69,7 @@ const Gallery = () => {
         )}
         
         <CardGrid 
-          cards={displayCards}
+          cards={gridCards}
           loading={false}
           viewMode="grid"
         />

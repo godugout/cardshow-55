@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 import type { Tables } from '@/integrations/supabase/types';
-import type { CardData } from '@/hooks/card-editor/types';
+import type { CardData } from '@/types/card';
 
 type Card = Tables<'cards'>;
 
@@ -11,7 +11,7 @@ export const useCardConversion = () => {
       // Map database rarity to CardData rarity
       const mapRarity = (dbRarity: string): CardData['rarity'] => {
         switch (dbRarity) {
-          case 'epic': return 'ultra-rare';
+          case 'epic': return 'epic';
           case 'mythic': return 'legendary';
           default: return dbRarity as CardData['rarity'];
         }
@@ -27,7 +27,7 @@ export const useCardConversion = () => {
       };
 
       return {
-        id: card.id,
+        id: card.id, // Required field
         title: card.title,
         description: card.description || '',
         image_url: card.image_url,
@@ -52,7 +52,11 @@ export const useCardConversion = () => {
           distribution: {
             limited_edition: false
           }
-        }
+        },
+        // Add the missing properties that Gallery needs
+        view_count: card.view_count || 0,
+        created_at: card.created_at || new Date().toISOString(),
+        price: card.price ? Number(card.price) : undefined
       };
     });
   }, []);
@@ -61,7 +65,7 @@ export const useCardConversion = () => {
     // Map CardData rarity back to database rarity
     const mapRarityToDb = (rarity: CardData['rarity']): string => {
       switch (rarity) {
-        case 'ultra-rare': return 'epic';
+        case 'epic': return 'epic';
         case 'legendary': return 'mythic';
         default: return rarity;
       }
