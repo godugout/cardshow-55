@@ -129,12 +129,10 @@ export const useStudioState = (cardId?: string) => {
     }
   };
 
-  // Handle download/export
-  const handleDownload = () => {
-    if (selectedCard) {
-      toast.success(`Exporting ${selectedCard.title}...`);
-      console.log(`💾 Exporting card: ${selectedCard.title} from ${dataSource}`);
-    }
+  // Handle download/export - updated to accept card parameter
+  const handleDownload = (card: CardData) => {
+    toast.success(`Exporting ${card.title}...`);
+    console.log(`💾 Exporting card: ${card.title} from ${dataSource}`);
   };
 
   // Handle closing studio - use browser history when possible

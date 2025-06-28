@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
@@ -21,6 +22,17 @@ const convertCardForViewer = (card: CardData) => {
       creator_name: card.creator_attribution?.creator_name || 'Unknown Creator',
       creator_id: card.creator_attribution?.creator_id || '',
       collaboration_type: (card.creator_attribution?.collaboration_type as 'solo' | 'collaboration') || 'solo'
+    },
+    // Ensure publishing_options has required properties for viewer
+    publishing_options: {
+      marketplace_listing: card.publishing_options?.marketplace_listing ?? false,
+      crd_catalog_inclusion: card.publishing_options?.crd_catalog_inclusion ?? false,
+      print_available: card.publishing_options?.print_available ?? false,
+      pricing: card.publishing_options?.pricing,
+      distribution: {
+        limited_edition: card.publishing_options?.distribution?.limited_edition ?? false,
+        edition_size: card.publishing_options?.distribution?.edition_size
+      }
     }
   };
 };
