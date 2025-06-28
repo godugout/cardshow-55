@@ -2,9 +2,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Upload, Image, Frame, AlertCircle } from 'lucide-react';
-import { FramePreviewCanvas } from '@/components/editor/wizard/components/FramePreviewCanvas';
-import { useWizardTemplates } from '@/components/editor/wizard/hooks/useWizardTemplates';
+import { Upload, Image, Frame, AlertCircle, Crop, Palette } from 'lucide-react';
+import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRenderer';
+import { BaseballCardCropper } from '@/components/editor/cropping/BaseballCardCropper';
+import { BASEBALL_CARD_TEMPLATES } from '@/components/editor/templates/BaseballCardTemplates';
 import type { CreationMode } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { DesignTemplate } from '@/types/card';
@@ -18,29 +19,6 @@ interface PhotoStepProps {
   onFrameSelect?: (frame: DesignTemplate) => void;
 }
 
-// Default blank card template
-const BLANK_CARD_TEMPLATE: DesignTemplate = {
-  id: 'blank-card',
-  name: 'No Frame',
-  category: 'Basic',
-  description: 'Clean blank card - perfect for complete card images',
-  preview_url: '',
-  template_data: {
-    style: 'blank',
-    aspectRatio: '2.5:3.5',
-    layout: 'clean',
-    colors: {
-      primary: '#ffffff',
-      secondary: '#f8f9fa',
-      background: '#ffffff',
-      text: '#000000'
-    }
-  },
-  is_premium: false,
-  usage_count: 0,
-  tags: ['blank', 'clean', 'minimal']
-};
-
 export const PhotoStep = ({ 
   mode, 
   selectedPhoto, 
@@ -51,9 +29,13 @@ export const PhotoStep = ({
 }: PhotoStepProps) => {
   console.log('📸 PhotoStep: Rendering with photo:', !!selectedPhoto, 'frame:', selectedFrame?.name);
   
-  const { templates, isLoading: templatesLoading } = useWizardTemplates();
-  const [currentFrame, setCurrentFrame] = useState<DesignTemplate>(selectedFrame || BLANK_CARD_TEMPLATE);
+  const [currentFrame, setCurrentFrame] = useState<DesignTemplate>(
+    selectedFrame || BASEBALL_CARD_TEMPLATES[0]
+  );
+  const [showCropper, setShowCropper] = useState(false);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [playerName, setPlayerName] = useState(cardData?.title || 'PLAYER NAME');
+  const [teamName, setTeamName] = useState('TEAM');
 
   // Cleanup created URLs on unmount
   useEffect(() => {
@@ -66,7 +48,7 @@ export const PhotoStep = ({
     };
   }, [imageUrls]);
 
-  // Simple frame sync without deep dependency issues
+  // Sync frame selection
   useEffect(() => {
     if (selectedFrame && selectedFrame.id !== currentFrame.id) {
       console.log('📸 PhotoStep: Updating frame to:', selectedFrame.name);
@@ -95,20 +77,31 @@ export const PhotoStep = ({
     onFrameSelect?.(template);
   }, [onFrameSelect]);
 
-  // Combine templates with loading state
-  const allTemplates = templatesLoading 
-    ? [BLANK_CARD_TEMPLATE] 
-    : [BLANK_CARD_TEMPLATE, ...templates];
+  const handleCropComplete = (croppedImageUrl: string) => {
+    onPhotoSelect(croppedImageUrl);
+    setShowCropper(false);
+  };
+
+  // Show cropper if active
+  if (showCropper && selectedPhoto) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <BaseballCardCropper
+          imageUrl={selectedPhoto}
+          template={currentFrame}
+          onCropComplete={handleCropComplete}
+          onCancel={() => setShowCropper(false)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-crd-white mb-2">Upload Photo & Choose Frame</h2>
+        <h2 className="text-2xl font-bold text-crd-white mb-2">Create Your Baseball Card</h2>
         <p className="text-crd-lightGray">
-          {mode === 'quick' 
-            ? 'Upload your image and see it with different frame options'
-            : 'Upload and customize your card image with frame preview'
-          }
+          Upload your photo and choose from professional baseball card templates
         </p>
       </div>
 
@@ -123,7 +116,7 @@ export const PhotoStep = ({
           </CardHeader>
           <CardContent className="space-y-6">
             {selectedPhoto ? (
-              <div className="text-center">
+              <div className="text-center space-y-4">
                 <div className="relative inline-block">
                   <img 
                     src={selectedPhoto} 
@@ -137,15 +130,25 @@ export const PhotoStep = ({
                     Uploaded
                   </div>
                 </div>
-                <p className="mt-2 text-sm text-crd-lightGray">Original image</p>
                 
-                <CRDButton
-                  onClick={() => document.getElementById('photo-input')?.click()}
-                  variant="outline"
-                  className="mt-4 border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
-                >
-                  Change Photo
-                </CRDButton>
+                <div className="flex gap-3 justify-center">
+                  <CRDButton
+                    onClick={() => setShowCropper(true)}
+                    variant="primary"
+                    className="bg-crd-green hover:bg-crd-green/80 text-black"
+                  >
+                    <Crop className="w-4 h-4 mr-2" />
+                    Crop & Edit
+                  </CRDButton>
+                  
+                  <CRDButton
+                    onClick={() => document.getElementById('photo-input')?.click()}
+                    variant="outline"
+                    className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
+                  >
+                    Change Photo
+                  </CRDButton>
+                </div>
               </div>
             ) : (
               <div className="border-2 border-dashed border-crd-mediumGray/30 rounded-lg p-8 text-center">
@@ -169,10 +172,38 @@ export const PhotoStep = ({
               onChange={handleFileUpload}
               className="hidden"
             />
+
+            {/* Player Info */}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-crd-white text-sm font-medium mb-1">
+                  Player Name
+                </label>
+                <input
+                  type="text"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  className="w-full bg-crd-mediumGray/20 border border-crd-mediumGray/30 rounded px-3 py-2 text-crd-white"
+                  placeholder="Enter player name"
+                />
+              </div>
+              <div>
+                <label className="block text-crd-white text-sm font-medium mb-1">
+                  Team Name
+                </label>
+                <input
+                  type="text"
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  className="w-full bg-crd-mediumGray/20 border border-crd-mediumGray/30 rounded px-3 py-2 text-crd-white"
+                  placeholder="Enter team name"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Right Side - Frame Preview */}
+        {/* Right Side - Template Preview */}
         <Card className="bg-crd-darker border-crd-mediumGray/20">
           <CardHeader>
             <CardTitle className="text-crd-white flex items-center gap-2">
@@ -181,39 +212,49 @@ export const PhotoStep = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <PreviewWithErrorBoundary
-              imageUrl={selectedPhoto}
-              selectedFrame={currentFrame}
-            />
+            <div className="aspect-[5/7] bg-white rounded-lg border border-crd-mediumGray/30 overflow-hidden">
+              <SVGTemplateRenderer
+                template={currentFrame}
+                imageUrl={selectedPhoto}
+                playerName={playerName}
+                teamName={teamName}
+                className="w-full h-full"
+              />
+            </div>
             
             <div className="text-center mt-4">
               <h4 className="text-crd-white font-medium mb-2">
-                Current Frame: {currentFrame.name}
+                {currentFrame.name}
               </h4>
               <p className="text-crd-lightGray text-sm">
-                {currentFrame.description || 'Preview how your card will look'}
+                {currentFrame.description}
               </p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Frame Selection */}
+      {/* Template Selection */}
       <Card className="bg-crd-darker border-crd-mediumGray/20 mt-8">
         <CardHeader>
-          <CardTitle className="text-crd-white">Choose Frame Style</CardTitle>
-          {templatesLoading && (
-            <p className="text-crd-lightGray text-sm">Loading additional frames...</p>
-          )}
+          <CardTitle className="text-crd-white flex items-center gap-2">
+            <Palette className="w-5 h-5" />
+            Baseball Card Templates
+          </CardTitle>
+          <p className="text-crd-lightGray text-sm">
+            Choose from professional baseball card designs
+          </p>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {allTemplates.map((template) => (
-              <FrameOption
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {BASEBALL_CARD_TEMPLATES.map((template) => (
+              <TemplateCard
                 key={template.id}
                 template={template}
                 isSelected={currentFrame.id === template.id}
                 onSelect={handleFrameSelection}
+                playerName={playerName}
+                teamName={teamName}
               />
             ))}
           </div>
@@ -223,70 +264,49 @@ export const PhotoStep = ({
   );
 };
 
-// Error boundary wrapper for preview
-const PreviewWithErrorBoundary = ({ imageUrl, selectedFrame }: { 
-  imageUrl?: string; 
-  selectedFrame: DesignTemplate; 
-}) => {
-  try {
-    return (
-      <FramePreviewCanvas
-        imageUrl={imageUrl}
-        selectedFrame={selectedFrame}
-        className="mb-6"
-      />
-    );
-  } catch (error) {
-    console.error('📸 Preview error:', error);
-    return (
-      <div className="mb-6 p-8 border border-crd-mediumGray/30 rounded-lg text-center">
-        <AlertCircle className="w-8 h-8 mx-auto mb-2 text-amber-500" />
-        <p className="text-crd-lightGray">Preview temporarily unavailable</p>
-      </div>
-    );
-  }
-};
-
-// Simplified frame option component
-const FrameOption = ({ 
+// Template selection card component
+const TemplateCard = ({ 
   template, 
   isSelected, 
-  onSelect 
+  onSelect,
+  playerName,
+  teamName
 }: { 
   template: DesignTemplate; 
   isSelected: boolean; 
-  onSelect: (template: DesignTemplate) => void; 
+  onSelect: (template: DesignTemplate) => void;
+  playerName: string;
+  teamName: string;
 }) => (
   <div
     onClick={() => onSelect(template)}
-    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+    className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:scale-105 ${
       isSelected
         ? 'border-crd-green bg-crd-green/10'
         : 'border-crd-mediumGray/30 hover:border-crd-green/50'
     }`}
   >
-    <div className="aspect-[2.5/3.5] bg-crd-mediumGray/20 rounded mb-3 flex items-center justify-center">
-      {template.id === 'blank-card' ? (
-        <div className="w-full h-full bg-white rounded border border-gray-200 flex items-center justify-center">
-          <span className="text-gray-400 text-xs">Clean</span>
-        </div>
-      ) : (
-        <div className="w-full h-full bg-gradient-to-b from-blue-500 to-purple-600 rounded flex items-center justify-center">
-          <span className="text-white text-xs font-bold">{template.name}</span>
-        </div>
-      )}
+    <div className="aspect-[5/7] bg-white rounded mb-3 overflow-hidden">
+      <SVGTemplateRenderer
+        template={template}
+        playerName={playerName}
+        teamName={teamName}
+        className="w-full h-full"
+      />
     </div>
     
-    <h4 className="text-crd-white font-medium text-sm mb-1">
-      {template.name}
-    </h4>
-    <div className="flex items-center justify-between">
-      <span className="text-crd-lightGray text-xs">
-        {template.category}
-      </span>
-      {template.is_premium && (
-        <span className="text-crd-green text-xs font-medium">PRO</span>
-      )}
+    <div className="text-center">
+      <h4 className="text-crd-white font-medium text-sm mb-1">
+        {template.name}
+      </h4>
+      <div className="flex items-center justify-between">
+        <span className="text-crd-lightGray text-xs">
+          {template.category}
+        </span>
+        {template.is_premium && (
+          <span className="text-crd-green text-xs font-medium">PRO</span>
+        )}
+      </div>
     </div>
   </div>
 );
