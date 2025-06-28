@@ -22,7 +22,7 @@ export const TeamColorSelector = ({
   const [hoveredTheme, setHoveredTheme] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('baseball');
 
-  // Group themes by sport with improved logic
+  // Group themes by sport with improved logic - filter out cricket
   const themesBySport = useMemo(() => {
     const grouped = colorThemes.reduce((acc, theme) => {
       const teams = theme.teams || [];
@@ -34,6 +34,9 @@ export const TeamColorSelector = ({
       } else {
         teams.forEach(team => {
           const sport = team.sport.toLowerCase();
+          // Skip cricket teams
+          if (sport === 'cricket') return;
+          
           if (!acc[sport]) acc[sport] = [];
           // Only add theme once per sport to avoid duplicates within the same sport
           if (!acc[sport].find(t => t.id === theme.id)) {
@@ -45,7 +48,7 @@ export const TeamColorSelector = ({
       return acc;
     }, {} as Record<string, ColorTheme[]>);
     
-    // Ensure we have the expected sports even if empty
+    // Ensure we have the expected sports (excluding cricket)
     const expectedSports = ['baseball', 'basketball', 'football', 'hockey', 'soccer'];
     expectedSports.forEach(sport => {
       if (!grouped[sport]) grouped[sport] = [];

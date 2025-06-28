@@ -7,15 +7,18 @@ import type { TeamColorScheme } from './TeamColors';
 
 // Import sports icons from lucide-react
 import { 
-  Baseball as BaseballIcon,
-  Football as FootballIcon,
-  Target as SoccerIcon
+  Target as SoccerIcon,
+  Shield as FootballIcon,
+  Zap as HockeyIcon
 } from 'lucide-react';
 
-// Custom Hockey and Basketball icons as simple SVGs since lucide doesn't have them
-const HockeyIcon = () => (
+// Custom Baseball and Basketball icons as SVGs since lucide doesn't have them
+const BaseballIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M3 12h18M12 3v18M8 8l8 8M16 8l-8 8"/>
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M8 12c0-2.21 1.79-4 4-4s4 1.79 4 4"/>
+    <path d="M8 12c0 2.21 1.79 4 4 4s4-1.79 4-4"/>
+    <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
   </svg>
 );
 
