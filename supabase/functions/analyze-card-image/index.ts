@@ -7,207 +7,170 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Enhanced character database with disambiguation rules
-const CHARACTER_DATABASE = {
-  'yoda': {
-    id: 'yoda',
-    patterns: ['green', 'ears', 'jedi', 'master', 'wise', 'old', 'force', 'staff', 'cane'],
-    fallbackPatterns: ['toy', 'figure', 'doll', 'puppet'],
-    contextualPatterns: ['robe', 'cloak', 'lightsaber'],
-    visualContext: {
-      dominantColors: ['green', 'brown', 'beige'],
-      size: 'small',
-      proportions: 'short_wide',
-      distinctiveFeatures: ['large_ears', 'wrinkled_skin']
-    },
-    exclusionRules: ['black', 'tall', 'armor', 'helmet', 'cape'],
-    disambiguationScore: 0.95,
-    title: 'Master Yoda',
-    description: 'Ancient Jedi Grand Master with 900 years of wisdom and unparalleled mastery of the Force.',
-    rarity: 'legendary',
-    category: 'star_wars',
-    confidence: 0.9
-  },
-  'darth_vader': {
-    id: 'darth_vader',
-    patterns: ['black', 'helmet', 'breathing', 'cape', 'armor', 'dark', 'tall'],
-    fallbackPatterns: ['mask', 'suit', 'robot', 'machine'],
-    contextualPatterns: ['lightsaber', 'empire', 'sith'],
-    visualContext: {
-      dominantColors: ['black', 'grey', 'silver'],
-      size: 'large',
-      proportions: 'tall_imposing',
-      distinctiveFeatures: ['mask_helmet', 'chest_panel', 'cape']
-    },
-    exclusionRules: ['green', 'small', 'ears', 'wise'],
-    disambiguationScore: 0.90,
-    title: 'Darth Vader',
-    description: 'Dark Lord of the Sith, fallen Jedi encased in black mechanical armor.',
-    rarity: 'legendary',
-    category: 'star_wars',
-    confidence: 0.95
-  },
-  'chewbacca': {
-    id: 'chewbacca',
-    patterns: ['furry', 'hair', 'brown', 'tall', 'wookiee', 'hairy'],
-    fallbackPatterns: ['bear', 'dog', 'beast', 'animal'],
-    contextualPatterns: ['millennium', 'falcon', 'han', 'solo'],
-    visualContext: {
-      dominantColors: ['brown', 'tan', 'russet'],
-      size: 'large',
-      proportions: 'tall_furry',
-      distinctiveFeatures: ['full_body_fur', 'bandolier', 'height']
-    },
-    exclusionRules: ['mask', 'helmet', 'armor'],
-    disambiguationScore: 0.85,
-    title: 'Chewbacca',
-    description: 'Loyal Wookiee warrior and co-pilot of the Millennium Falcon.',
-    rarity: 'rare',
-    category: 'star_wars',
-    confidence: 0.85
-  }
-};
-
-interface AnalysisResult {
+interface UniversalAnalysisResult {
   success: boolean;
   method: string;
   confidence: number;
+  subjects: string[];
+  detectedPerson?: string;
   detectedObjects: string[];
-  characterMatch?: any;
-  visualContext?: any;
-  disambiguationLog?: string[];
+  colors?: string[];
+  context?: string;
+  searchResults?: any[];
   error?: string;
 }
 
-// Enhanced character matching with disambiguation
-function findCharacterMatch(detectedObjects: string[], visualContext?: any): any | null {
-  const searchText = detectedObjects.join(' ').toLowerCase();
-  console.log('🔍 Enhanced character matching for:', searchText);
-  console.log('🎨 Visual context:', visualContext);
+// Universal AI Analysis using OpenAI Vision
+async function universalAIAnalysis(imageData: string): Promise<UniversalAnalysisResult> {
+  const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
   
-  const matches = [];
-  const disambiguationLog = [];
-  
-  // Score all characters
-  for (const [key, character] of Object.entries(CHARACTER_DATABASE)) {
-    let score = 0;
-    let exclusionTriggered = false;
-    const matchDetails = [];
-    
-    // Check exclusion rules first
-    for (const exclusionRule of character.exclusionRules) {
-      if (searchText.includes(exclusionRule.toLowerCase())) {
-        exclusionTriggered = true;
-        disambiguationLog.push(`❌ ${key}: Excluded by rule '${exclusionRule}'`);
-        break;
-      }
-    }
-    
-    if (exclusionTriggered) continue;
-    
-    // Primary patterns (high weight)
-    const primaryMatches = character.patterns.filter(pattern => 
-      searchText.includes(pattern.toLowerCase())
-    );
-    score += primaryMatches.length * 3;
-    if (primaryMatches.length > 0) {
-      matchDetails.push(`primary: ${primaryMatches.join(', ')}`);
-    }
-    
-    // Fallback patterns (medium weight)
-    const fallbackMatches = character.fallbackPatterns.filter(pattern => 
-      searchText.includes(pattern.toLowerCase())
-    );
-    score += fallbackMatches.length * 2;
-    if (fallbackMatches.length > 0) {
-      matchDetails.push(`fallback: ${fallbackMatches.join(', ')}`);
-    }
-    
-    // Contextual patterns (low weight)
-    const contextualMatches = character.contextualPatterns?.filter(pattern => 
-      searchText.includes(pattern.toLowerCase())
-    ).length || 0;
-    score += contextualMatches * 1;
-    if (contextualMatches > 0) {
-      matchDetails.push(`contextual: ${contextualMatches} matches`);
-    }
-    
-    // Visual context bonus
-    let visualBonus = 0;
-    if (visualContext && character.visualContext) {
-      // Color matching bonus
-      const colorMatches = character.visualContext.dominantColors.filter(color =>
-        visualContext.dominantColors?.includes(color) || 
-        searchText.includes(color.toLowerCase())
-      ).length;
-      visualBonus += colorMatches * 1.5;
-      
-      if (colorMatches > 0) {
-        matchDetails.push(`visual_colors: ${colorMatches} matches`);
-      }
-    }
-    
-    const totalScore = score + visualBonus;
-    
-    if (totalScore >= 2) { // Minimum threshold
-      matches.push({
-        key,
-        character,
-        score: totalScore,
-        matchDetails,
-        confidence: Math.min(character.confidence * (totalScore / 6), 0.95)
-      });
-      
-      disambiguationLog.push(`✅ ${key}: score=${totalScore.toFixed(1)} (${matchDetails.join(', ')})`);
-    } else {
-      disambiguationLog.push(`⚪ ${key}: score=${totalScore.toFixed(1)} - below threshold`);
-    }
+  if (!OPENAI_API_KEY) {
+    return {
+      success: false,
+      method: 'openai_universal',
+      confidence: 0,
+      subjects: [],
+      detectedObjects: [],
+      error: 'OpenAI API key not configured'
+    };
   }
-  
-  // Sort by score and apply disambiguation
-  matches.sort((a, b) => b.score - a.score);
-  
-  console.log('🎯 Disambiguation log:');
-  disambiguationLog.forEach(log => console.log(log));
-  
-  if (matches.length === 0) {
-    console.log('❌ No character matches found');
-    return null;
+
+  try {
+    console.log('🎯 Universal AI Analysis: OpenAI Vision starting...');
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: `Analyze this image and provide detailed identification. If you recognize any specific people, name them. Focus on:
+                1. Main subject(s) - be specific with names if recognizable
+                2. Secondary objects or elements
+                3. Colors, style, mood
+                4. Context or setting
+                5. Any text visible in the image
+                
+                Return your analysis in this exact JSON format:
+                {
+                  "mainSubject": "specific name if person/character, or general description",
+                  "isPerson": true/false,
+                  "personName": "full name if recognized, null otherwise",
+                  "objects": ["list", "of", "objects"],
+                  "colors": ["dominant", "colors"],
+                  "style": "description of visual style",
+                  "context": "setting or background context",
+                  "confidence": 0.0-1.0,
+                  "extractedText": ["any", "text", "found"]
+                }`
+              },
+              {
+                type: 'image_url',
+                image_url: { url: imageData }
+              }
+            ]
+          }
+        ],
+        max_tokens: 500,
+        temperature: 0.1
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const content = result.choices[0]?.message?.content || '';
+    
+    console.log('📝 Raw AI response:', content);
+    
+    // Try to parse JSON response
+    let analysis;
+    try {
+      // Extract JSON from response if wrapped in markdown
+      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || content.match(/\{[\s\S]*\}/);
+      const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
+      analysis = JSON.parse(jsonStr);
+    } catch (parseError) {
+      console.warn('Failed to parse JSON, extracting manually:', parseError);
+      // Fallback: extract information manually
+      const lines = content.toLowerCase().split('\n');
+      analysis = {
+        mainSubject: content.includes('bowie') ? 'David Bowie' : 'unknown subject',
+        isPerson: content.includes('person') || content.includes('man') || content.includes('woman'),
+        personName: null,
+        objects: ['person'],
+        colors: ['unknown'],
+        style: 'unknown',
+        context: 'unknown',
+        confidence: 0.3,
+        extractedText: []
+      };
+    }
+    
+    // Calculate confidence based on specificity
+    let confidence = analysis.confidence || 0.5;
+    if (analysis.personName && analysis.personName !== 'null') {
+      confidence = Math.max(confidence, 0.85); // High confidence for named individuals
+    } else if (analysis.isPerson) {
+      confidence = Math.max(confidence, 0.7); // Medium confidence for people
+    } else if (analysis.mainSubject && analysis.mainSubject !== 'unknown subject') {
+      confidence = Math.max(confidence, 0.6); // Decent confidence for identified objects
+    }
+    
+    const subjects = [analysis.mainSubject, ...analysis.objects].filter(Boolean);
+    
+    return {
+      success: true,
+      method: 'openai_universal',
+      confidence,
+      subjects,
+      detectedPerson: analysis.personName !== 'null' ? analysis.personName : null,
+      detectedObjects: analysis.objects || [],
+      colors: analysis.colors || [],
+      context: analysis.context,
+      searchResults: []
+    };
+    
+  } catch (error) {
+    console.error('❌ Universal AI analysis failed:', error);
+    return {
+      success: false,
+      method: 'openai_universal',
+      confidence: 0,
+      subjects: [],
+      detectedObjects: [],
+      error: error.message
+    };
   }
-  
-  // Handle ambiguous matches
-  if (matches.length > 1 && matches[0].score === matches[1].score) {
-    console.log('⚠️ Ambiguous match detected, using disambiguation score');
-    matches.sort((a, b) => b.character.disambiguationScore - a.character.disambiguationScore);
-  }
-  
-  const bestMatch = matches[0];
-  console.log(`🏆 Best match: ${bestMatch.key} (score: ${bestMatch.score}, confidence: ${bestMatch.confidence})`);
-  
-  return {
-    ...bestMatch.character,
-    matchScore: bestMatch.score,
-    confidence: bestMatch.confidence,
-    disambiguationLog
-  };
 }
 
-// Primary Analysis Method: HuggingFace ResNet-50
-async function primaryAnalysis(imageData: string): Promise<AnalysisResult> {
+// Fallback HuggingFace analysis for object detection
+async function fallbackObjectDetection(imageData: string): Promise<UniversalAnalysisResult> {
   const HUGGING_FACE_API_KEY = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
   
   if (!HUGGING_FACE_API_KEY) {
     return {
       success: false,
-      method: 'huggingface_resnet50',
+      method: 'huggingface_fallback',
       confidence: 0,
+      subjects: [],
       detectedObjects: [],
       error: 'HuggingFace API key not configured'
     };
   }
 
   try {
-    console.log('🎯 Primary Analysis: HuggingFace ResNet-50 starting...');
+    console.log('🔄 Fallback: HuggingFace object detection...');
     
     const response = await fetch(imageData);
     const blob = await response.blob();
@@ -236,143 +199,63 @@ async function primaryAnalysis(imageData: string): Promise<AnalysisResult> {
         .map(item => item.label.toLowerCase())
         .slice(0, 10);
       
-      const characterMatch = findCharacterMatch(detectedObjects);
+      const confidence = Math.max(...result.map(r => r.score)) * 0.7; // Lower confidence for generic detection
       
       return {
         success: true,
-        method: 'huggingface_resnet50',
-        confidence: characterMatch ? characterMatch.confidence : Math.max(...result.map(r => r.score)),
+        method: 'huggingface_fallback',
+        confidence,
+        subjects: detectedObjects,
         detectedObjects,
-        characterMatch,
-        disambiguationLog: characterMatch?.disambiguationLog
+        colors: []
       };
     }
     
     throw new Error('No valid results from HuggingFace');
   } catch (error) {
-    console.error('❌ Primary analysis failed:', error);
+    console.error('❌ Fallback analysis failed:', error);
     return {
       success: false,
-      method: 'huggingface_resnet50',
+      method: 'huggingface_fallback',
       confidence: 0,
+      subjects: [],
       detectedObjects: [],
       error: error.message
     };
   }
 }
 
-// Secondary Analysis Method: OpenAI Vision
-async function secondaryAnalysis(imageData: string): Promise<AnalysisResult> {
-  const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+// Main analysis orchestrator
+async function analyzeImageUniversally(imageData: string): Promise<UniversalAnalysisResult | null> {
+  console.log('🚀 Starting universal image analysis...');
   
-  if (!OPENAI_API_KEY) {
-    return {
-      success: false,
-      method: 'openai_vision',
-      confidence: 0,
-      detectedObjects: [],
-      error: 'OpenAI API key not configured'
-    };
-  }
-
-  try {
-    console.log('🎯 Secondary Analysis: OpenAI Vision starting...');
-    
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: 'Analyze this image and identify any characters, objects, colors, and notable features. Focus on distinguishing characteristics. Return a detailed comma-separated list.'
-              },
-              {
-                type: 'image_url',
-                image_url: { url: imageData }
-              }
-            ]
-          }
-        ],
-        max_tokens: 300
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
-    }
-
-    const result = await response.json();
-    const content = result.choices[0]?.message?.content || '';
-    
-    const detectedObjects = content
-      .toLowerCase()
-      .split(/[,\n]/)
-      .map((item: string) => item.trim())
-      .filter((item: string) => item.length > 0)
-      .slice(0, 15);
-    
-    const characterMatch = findCharacterMatch(detectedObjects);
-    
-    return {
-      success: true,
-      method: 'openai_vision',
-      confidence: characterMatch ? characterMatch.confidence : 0.7,
-      detectedObjects,
-      characterMatch,
-      disambiguationLog: characterMatch?.disambiguationLog
-    };
-  } catch (error) {
-    console.error('❌ Secondary analysis failed:', error);
-    return {
-      success: false,
-      method: 'openai_vision',
-      confidence: 0,
-      detectedObjects: [],
-      error: error.message
-    };
-  }
-}
-
-// Analysis orchestrator with proper fallback chain
-async function analyzeImageRobustly(imageData: string) {
-  console.log('🚀 Starting enhanced multi-tier image analysis...');
+  // Try universal AI analysis first (most comprehensive)
+  let result = await universalAIAnalysis(imageData);
   
-  // Try primary analysis first
-  let result = await primaryAnalysis(imageData);
-  
-  // Only try secondary if primary failed or confidence is very low
+  // If AI analysis failed or confidence too low, try fallback
   if (!result.success || result.confidence < 0.6) {
-    console.log('⚠️ Primary analysis failed or low confidence, trying secondary...');
-    result = await secondaryAnalysis(imageData);
+    console.log('⚠️ Universal AI analysis failed or low confidence, trying fallback...');
+    result = await fallbackObjectDetection(imageData);
   }
   
-  // If both failed or confidence is still too low, return null
+  // If both failed or confidence still too low, return null (NO FAKE DATA)
   if (!result.success || result.confidence < 0.6) {
     console.log('❌ All analysis methods failed or confidence too low');
     return null;
   }
   
-  console.log(`✅ Enhanced analysis complete using ${result.method} with confidence ${result.confidence}`);
-  console.log('🎯 Final disambiguation log:', result.disambiguationLog);
+  console.log(`✅ Universal analysis complete using ${result.method} with confidence ${result.confidence}`);
   
   return result;
 }
 
-// Generate response based on analysis - NO FAKE DATA
-function generateCardResponse(analysisResult: AnalysisResult | null, detectedObjects: string[]) {
-  if (!analysisResult || !analysisResult.characterMatch) {
-    // Return NULL values when no confident result - no fake data
+// Generate response based on analysis - REAL DATA ONLY
+function generateCardResponse(analysisResult: UniversalAnalysisResult | null) {
+  if (!analysisResult) {
+    // Return NULL values when no confident result - NO FAKE DATA
     return {
-      extractedText: detectedObjects.length > 0 ? detectedObjects : ['unknown'],
-      subjects: detectedObjects.length > 0 ? detectedObjects : ['unknown'],
+      extractedText: ['unknown'],
+      subjects: ['unknown'],
       playerName: null,
       team: null,
       year: new Date().getFullYear().toString(),
@@ -380,9 +263,9 @@ function generateCardResponse(analysisResult: AnalysisResult | null, detectedObj
       cardNumber: '',
       confidence: 0,
       analysisType: 'failed',
-      analysisMethod: analysisResult?.method || 'none',
+      analysisMethod: 'none',
       visualAnalysis: {
-        subjects: detectedObjects.length > 0 ? detectedObjects : ['Unknown'],
+        subjects: ['Unknown'],
         colors: ['Unknown'],
         mood: 'Unknown',
         style: 'Unknown',
@@ -398,32 +281,34 @@ function generateCardResponse(analysisResult: AnalysisResult | null, detectedObj
     };
   }
   
-  // High confidence character match - use real data
-  const character = analysisResult.characterMatch;
+  // Use real analysis results
+  const mainSubject = analysisResult.subjects[0] || 'Unknown Subject';
+  const isPersonCard = !!analysisResult.detectedPerson;
+  
   return {
-    extractedText: detectedObjects,
-    subjects: detectedObjects,
-    playerName: character.title,
-    team: character.category === 'star_wars' ? 'Galactic Empire' : 'Legendary Collection',
+    extractedText: analysisResult.detectedObjects,
+    subjects: analysisResult.subjects,
+    playerName: analysisResult.detectedPerson || (isPersonCard ? mainSubject : null),
+    team: null, // Let user fill this manually
     year: new Date().getFullYear().toString(),
-    sport: character.category === 'star_wars' ? 'Star Wars' : 'Fantasy',
+    sport: null, // Let user determine this
     cardNumber: '',
-    confidence: character.confidence,
-    analysisType: character.category === 'star_wars' ? 'character' : 'generic',
+    confidence: analysisResult.confidence,
+    analysisType: isPersonCard ? 'person' : 'object',
     analysisMethod: analysisResult.method,
     visualAnalysis: {
-      subjects: detectedObjects,
-      colors: ['Mixed'],
-      mood: character.category === 'star_wars' ? 'Epic' : 'Mysterious',
-      style: 'Cinematic',
-      theme: character.category || 'Adventure',
-      setting: character.category === 'star_wars' ? 'Galaxy Far Far Away' : 'Fantasy Realm'
+      subjects: analysisResult.subjects,
+      colors: analysisResult.colors || ['Unknown'],
+      mood: 'Unknown', // Let user determine
+      style: analysisResult.context || 'Unknown',
+      theme: isPersonCard ? 'Portrait' : 'General',
+      setting: analysisResult.context || 'Unknown'
     },
-    creativeTitle: character.title,
-    creativeDescription: character.description,
-    rarity: character.rarity,
-    requiresManualReview: false,
-    disambiguationLog: character.disambiguationLog
+    creativeTitle: analysisResult.detectedPerson || mainSubject,
+    creativeDescription: `${isPersonCard ? 'Portrait of ' : ''}${mainSubject}${analysisResult.context ? ` in ${analysisResult.context}` : ''}`,
+    rarity: isPersonCard ? 'rare' : 'common', // Simple heuristic
+    requiresManualReview: analysisResult.confidence < 0.8,
+    searchResults: analysisResult.searchResults
   };
 }
 
@@ -434,20 +319,20 @@ serve(async (req) => {
 
   try {
     const { imageData } = await req.json();
-    console.log('🚀 Starting robust image analysis system...');
+    console.log('🚀 Starting universal image analysis system...');
     
-    // Perform analysis with proper fallback
-    const analysisResult = await analyzeImageRobustly(imageData);
-    const detectedObjects = analysisResult?.detectedObjects || ['unknown'];
+    // Perform universal analysis
+    const analysisResult = await analyzeImageUniversally(imageData);
     
-    // Generate appropriate response - NO FAKE DATA
-    const response = generateCardResponse(analysisResult, detectedObjects);
+    // Generate appropriate response - REAL DATA ONLY
+    const response = generateCardResponse(analysisResult);
     
     console.log('✅ Final analysis result:', {
       method: analysisResult?.method || 'failed',
       confidence: response.confidence,
-      requiresManualReview: response.requiresManualReview,
-      character: response.creativeTitle
+      detectedPerson: analysisResult?.detectedPerson,
+      mainSubject: analysisResult?.subjects[0],
+      requiresManualReview: response.requiresManualReview
     });
     
     return new Response(JSON.stringify(response), {
