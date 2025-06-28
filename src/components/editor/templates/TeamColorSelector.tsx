@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Palette, Info } from 'lucide-react';
 import { useColorThemes, type ColorTheme } from '@/hooks/useColorThemes';
@@ -19,6 +20,31 @@ export const TeamColorSelector = ({
 }: TeamColorSelectorProps) => {
   const { colorThemes, loading, error } = useColorThemes();
   const [hoveredTheme, setHoveredTheme] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('baseball');
+
+  // Group themes by sport
+  const themesBySport = useMemo(() => {
+    const grouped = colorThemes.reduce((acc, theme) => {
+      const teams = theme.teams || [];
+      if (teams.length === 0) {
+        // Default to baseball for themes without teams
+        if (!acc.baseball) acc.baseball = [];
+        acc.baseball.push(theme);
+      } else {
+        teams.forEach(team => {
+          const sport = team.sport.toLowerCase();
+          if (!acc[sport]) acc[sport] = [];
+          // Only add theme once per sport
+          if (!acc[sport].find(t => t.id === theme.id)) {
+            acc[sport].push(theme);
+          }
+        });
+      }
+      return acc;
+    }, {} as Record<string, ColorTheme[]>);
+    
+    return grouped;
+  }, [colorThemes]);
 
   const handleThemeSelect = (theme: ColorTheme) => {
     const scheme = convertColorThemeToScheme(theme);
@@ -61,6 +87,8 @@ export const TeamColorSelector = ({
     );
   }
 
+  const sportTabs = Object.keys(themesBySport).sort();
+
   return (
     <Card className={`bg-crd-darker border-crd-mediumGray/20 ${className}`}>
       <CardHeader>
@@ -73,63 +101,84 @@ export const TeamColorSelector = ({
         </p>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto">
-          {colorThemes.map((theme) => {
-            const isSelected = selectedColorScheme?.id === theme.id;
-            const isHovered = hoveredTheme === theme.id;
-            
-            return (
-              <div
-                key={theme.id}
-                onClick={() => handleThemeSelect(theme)}
-                onMouseEnter={() => setHoveredTheme(theme.id)}
-                onMouseLeave={() => setHoveredTheme(null)}
-                className={`p-2 rounded-lg border cursor-pointer transition-all hover:scale-105 relative ${
-                  isSelected
-                    ? 'border-crd-green bg-crd-green/10'
-                    : 'border-crd-mediumGray/30 hover:border-crd-green/50'
-                }`}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 bg-crd-mediumGray/20 mb-4">
+            {sportTabs.slice(0, 4).map((sport) => (
+              <TabsTrigger 
+                key={sport} 
+                value={sport}
+                className="data-[state=active]:bg-crd-green data-[state=active]:text-black text-crd-lightGray capitalize text-xs"
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <div 
-                    className="w-3 h-3 rounded-full border border-white/20" 
-                    style={{ backgroundColor: theme.primary_color }}
-                  />
-                  <div 
-                    className="w-3 h-3 rounded-full border border-white/20" 
-                    style={{ backgroundColor: theme.secondary_color }}
-                  />
-                  <div 
-                    className="w-3 h-3 rounded-full border border-white/20" 
-                    style={{ backgroundColor: theme.accent_color }}
-                  />
-                </div>
-                <div className="text-crd-white text-xs font-medium truncate">
-                  {theme.primary_example_team}
-                </div>
-                
-                {/* Hover tooltip showing all teams */}
-                {isHovered && theme.teams && theme.teams.length > 0 && (
-                  <div className="absolute z-10 bottom-full left-0 mb-2 p-2 bg-crd-darkest border border-crd-mediumGray/30 rounded-lg shadow-lg min-w-48">
-                    <div className="text-crd-white text-xs font-medium mb-1">
-                      {theme.name}
+                {sport}
+                <span className="ml-1 text-xs opacity-70">
+                  ({themesBySport[sport]?.length || 0})
+                </span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {sportTabs.map((sport) => (
+            <TabsContent key={sport} value={sport} className="mt-0">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+                {themesBySport[sport]?.map((theme) => {
+                  const isSelected = selectedColorScheme?.id === theme.id;
+                  const isHovered = hoveredTheme === theme.id;
+                  
+                  return (
+                    <div
+                      key={theme.id}
+                      onClick={() => handleThemeSelect(theme)}
+                      onMouseEnter={() => setHoveredTheme(theme.id)}
+                      onMouseLeave={() => setHoveredTheme(null)}
+                      className={`p-2 rounded-lg border cursor-pointer transition-all hover:scale-105 relative ${
+                        isSelected
+                          ? 'border-crd-green bg-crd-green/10'
+                          : 'border-crd-mediumGray/30 hover:border-crd-green/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <div 
+                          className="w-3 h-3 rounded-full border border-white/20" 
+                          style={{ backgroundColor: theme.primary_color }}
+                        />
+                        <div 
+                          className="w-3 h-3 rounded-full border border-white/20" 
+                          style={{ backgroundColor: theme.secondary_color }}
+                        />
+                        <div 
+                          className="w-3 h-3 rounded-full border border-white/20" 
+                          style={{ backgroundColor: theme.accent_color }}
+                        />
+                      </div>
+                      <div className="text-crd-white text-xs font-medium truncate">
+                        {theme.primary_example_team}
+                      </div>
+                      
+                      {/* Hover tooltip showing all teams */}
+                      {isHovered && theme.teams && theme.teams.length > 0 && (
+                        <div className="absolute z-10 bottom-full left-0 mb-2 p-2 bg-crd-darkest border border-crd-mediumGray/30 rounded-lg shadow-lg min-w-48">
+                          <div className="text-crd-white text-xs font-medium mb-1">
+                            {theme.name}
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {theme.teams.map((team) => (
+                              <span
+                                key={team.id}
+                                className="text-crd-lightGray text-xs bg-crd-mediumGray/20 px-1 py-0.5 rounded"
+                              >
+                                {team.abbreviation}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex flex-wrap gap-1">
-                      {theme.teams.map((team) => (
-                        <span
-                          key={team.id}
-                          className="text-crd-lightGray text-xs bg-crd-mediumGray/20 px-1 py-0.5 rounded"
-                        >
-                          {team.abbreviation}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            </TabsContent>
+          ))}
+        </Tabs>
         
         {selectedColorScheme && (
           <div className="mt-3 pt-3 border-t border-crd-mediumGray/20">
