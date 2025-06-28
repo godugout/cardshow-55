@@ -9,21 +9,30 @@ const mockTemplates: DesignTemplate[] = [
     name: 'Classic Sports',
     category: 'sports',
     preview_url: '/templates/classic-sports.jpg',
-    is_premium: false
+    is_premium: false,
+    template_data: {},
+    usage_count: 0,
+    tags: ['sports', 'classic']
   },
   {
     id: 'modern-gaming',
     name: 'Modern Gaming',
     category: 'gaming', 
     preview_url: '/templates/modern-gaming.jpg',
-    is_premium: true
+    is_premium: true,
+    template_data: {},
+    usage_count: 0,
+    tags: ['gaming', 'modern']
   },
   {
     id: 'vintage-card',
     name: 'Vintage Card',
     category: 'classic',
     preview_url: '/templates/vintage-card.jpg',
-    is_premium: false
+    is_premium: false,
+    template_data: {},
+    usage_count: 0,
+    tags: ['vintage', 'classic']
   }
 ];
 

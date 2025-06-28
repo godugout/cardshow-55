@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode, useReducer } from 'react';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import type { CardData, DesignTemplate } from '@/hooks/useCardEditor';
@@ -27,7 +28,12 @@ type WizardAction =
   | { type: 'MARK_STEP_COMPLETED'; payload: string }
   | { type: 'SET_STEP_VALIDITY'; payload: { stepId: string; valid: boolean } }
   | { type: 'MARK_SAVED' }
-  | { type: 'SET_LOADING'; payload: boolean };
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_CURRENT_STEP_NUMBER'; payload: number }
+  | { type: 'SET_SELECTED_PHOTO'; payload: string | null }
+  | { type: 'SET_SELECTED_TEMPLATE'; payload: DesignTemplate | null }
+  | { type: 'SET_AI_ANALYSIS_COMPLETE'; payload: boolean }
+  | { type: 'SET_PROCESSING'; payload: boolean };
 
 interface WizardHandlers {
   handlePhotoSelect: (photo: string) => void;
@@ -35,7 +41,7 @@ interface WizardHandlers {
   handleAiAnalysis: (analysisData: any) => void;
   handleNext: () => void;
   handleBack: () => void;
-  handleComplete: () => void;
+  handleComplete: () => Promise<void>;
   updatePublishingOptions: (options: any) => void;
   updateCreatorAttribution: (attribution: any) => void;
   updateCardField: (field: keyof CardData, value: any) => void;
@@ -104,6 +110,31 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
         ...state,
         isLoading: action.payload
       };
+    case 'SET_CURRENT_STEP_NUMBER':
+      return {
+        ...state,
+        currentStep: action.payload
+      };
+    case 'SET_SELECTED_PHOTO':
+      return {
+        ...state,
+        selectedPhoto: action.payload
+      };
+    case 'SET_SELECTED_TEMPLATE':
+      return {
+        ...state,
+        selectedTemplate: action.payload
+      };
+    case 'SET_AI_ANALYSIS_COMPLETE':
+      return {
+        ...state,
+        aiAnalysisComplete: action.payload
+      };
+    case 'SET_PROCESSING':
+      return {
+        ...state,
+        isProcessing: action.payload
+      };
     default:
       return state;
   }
@@ -130,26 +161,19 @@ export const WizardProvider: React.FC<WizardProviderProps> = ({ children }) => {
 
   const [state, dispatch] = useReducer(wizardReducer, initialState);
 
-  // Keep legacy wizardState for backward compatibility
-  const wizardState = {
-    currentStep: state.currentStep,
-    selectedPhoto: state.selectedPhoto,
-    selectedTemplate: state.selectedTemplate,
-    aiAnalysisComplete: state.aiAnalysisComplete,
-    isProcessing: state.isProcessing
-  };
-
   console.log('🧙 WizardProvider: Current state:', state);
 
   const handlers: WizardHandlers = {
     handlePhotoSelect: (photo: string) => {
       console.log('📸 Photo selected:', photo);
+      dispatch({ type: 'SET_SELECTED_PHOTO', payload: photo });
       dispatch({ type: 'UPDATE_CARD_DATA', payload: { image_url: photo } });
       cardEditor.updateCardField('image_url', photo);
     },
 
     handleTemplateSelect: (template: DesignTemplate) => {
       console.log('🎨 Template selected:', template);
+      dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: template });
       dispatch({ type: 'UPDATE_CARD_DATA', payload: { template_id: template.id } });
       cardEditor.updateCardField('template_id', template.id);
     },
@@ -164,6 +188,7 @@ export const WizardProvider: React.FC<WizardProviderProps> = ({ children }) => {
       if (analysisData?.tags) updates.tags = analysisData.tags;
       
       dispatch({ type: 'UPDATE_CARD_DATA', payload: updates });
+      dispatch({ type: 'SET_AI_ANALYSIS_COMPLETE', payload: true });
       
       // Apply to card editor as well
       Object.entries(updates).forEach(([key, value]) => {
@@ -174,13 +199,13 @@ export const WizardProvider: React.FC<WizardProviderProps> = ({ children }) => {
     handleNext: () => {
       const nextStep = Math.min(state.currentStep + 1, 3);
       console.log('➡️ Moving to step:', nextStep);
-      dispatch({ type: 'UPDATE_CARD_DATA', payload: { ...state.cardData, currentStep: nextStep } });
+      dispatch({ type: 'SET_CURRENT_STEP_NUMBER', payload: nextStep });
     },
 
     handleBack: () => {
       const prevStep = Math.max(state.currentStep - 1, 1);
       console.log('⬅️ Moving to step:', prevStep);
-      dispatch({ type: 'UPDATE_CARD_DATA', payload: { ...state.cardData, currentStep: prevStep } });
+      dispatch({ type: 'SET_CURRENT_STEP_NUMBER', payload: prevStep });
     },
 
     handleComplete: async () => {
@@ -190,6 +215,7 @@ export const WizardProvider: React.FC<WizardProviderProps> = ({ children }) => {
       try {
         await cardEditor.saveCard();
         console.log('✅ Card saved successfully');
+        dispatch({ type: 'MARK_SAVED' });
       } catch (error) {
         console.error('❌ Error saving card:', error);
       } finally {
@@ -205,7 +231,8 @@ export const WizardProvider: React.FC<WizardProviderProps> = ({ children }) => {
 
     updateCreatorAttribution: (attribution: any) => {
       console.log('👤 Creator attribution updated:', attribution);
-      // Handle creator attribution updates
+      dispatch({ type: 'UPDATE_CARD_DATA', payload: { creator_attribution: attribution } });
+      cardEditor.updateCardField('creator_attribution', attribution);
     },
 
     updateCardField: (field: keyof CardData, value: any) => {
@@ -216,7 +243,7 @@ export const WizardProvider: React.FC<WizardProviderProps> = ({ children }) => {
   };
 
   return (
-    <WizardContext.Provider value={{ wizardState, handlers, state, dispatch }}>
+    <WizardContext.Provider value={{ wizardState: state, handlers, state, dispatch }}>
       {children}
     </WizardContext.Provider>
   );
