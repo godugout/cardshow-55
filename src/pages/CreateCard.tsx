@@ -8,7 +8,7 @@ import type { CardData } from '@/hooks/useCardEditor';
 const CreateCard = () => {
   const navigate = useNavigate();
 
-  console.log('CreateCard page loaded - using UniversalCardCreator');
+  console.log('CreateCard page loaded - initializing UniversalCardCreator');
 
   const handleComplete = (cardData: CardData) => {
     console.log('Card created successfully:', cardData);
@@ -21,13 +21,15 @@ const CreateCard = () => {
   };
 
   return (
-    <ErrorBoundary>
-      <UniversalCardCreator 
-        initialMode="quick"
-        onComplete={handleComplete}
-        onCancel={handleCancel}
-      />
-    </ErrorBoundary>
+    <div className="min-h-screen bg-crd-darkest">
+      <ErrorBoundary>
+        <UniversalCardCreator 
+          initialMode="quick"
+          onComplete={handleComplete}
+          onCancel={handleCancel}
+        />
+      </ErrorBoundary>
+    </div>
   );
 };
 

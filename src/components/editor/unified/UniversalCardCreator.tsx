@@ -51,18 +51,13 @@ export const UniversalCardCreator = ({
     navigate('/cards/bulk-upload');
   };
 
-  // Show loading state when initializing
-  if (state.isInitializing) {
-    return (
-      <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-crd-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-crd-white mb-2">Initializing Card Creator</h2>
-          <p className="text-crd-lightGray">Setting up your creation session...</p>
-        </div>
-      </div>
-    );
-  }
+  // Remove the problematic loading state check - just render the component
+  console.log('🎯 UniversalCardCreator: Current state:', {
+    mode: state.mode,
+    step: state.currentStep,
+    hasConfig: !!currentConfig,
+    isCreating: state.isCreating
+  });
 
   return (
     <CreationErrorBoundary onReset={actions.startOver}>

@@ -78,7 +78,9 @@ export const useUniversalCreator = ({
 
   // Memoized current config - stable reference
   const currentConfig = useMemo(() => {
-    return MODE_CONFIGS.find(config => config.id === mode);
+    const config = MODE_CONFIGS.find(config => config.id === mode);
+    console.log('🎯 useUniversalCreator: Current config found:', !!config, 'for mode:', mode);
+    return config;
   }, [mode]);
 
   // Memoized progress calculation
