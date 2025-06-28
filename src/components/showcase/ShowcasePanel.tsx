@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SlabPresets } from './SlabPresets';
 import { SlabControls } from './SlabControls';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { SlabPresetConfig } from './SlabPresets';
 
 interface ShowcasePanelProps {

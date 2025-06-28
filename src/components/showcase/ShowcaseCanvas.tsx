@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, PresentationControls } from '@react-three/drei';
 import { ShowcaseCard } from './ShowcaseCard';
 import { ShowcaseErrorBoundary } from './ShowcaseErrorBoundary';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { SlabPresetConfig } from './SlabPresets';
 
 interface ShowcaseCanvasProps {

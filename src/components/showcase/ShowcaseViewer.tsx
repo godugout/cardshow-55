@@ -9,7 +9,7 @@ import type { SlabPresetConfig } from './SlabPresets';
 
 interface ShowcaseViewerProps {
   card: CardData;
-  cards: any[];
+  cards: CardData[];
   currentCardIndex: number;
   onCardChange?: (index: number) => void;
   slabConfig: SlabPresetConfig;

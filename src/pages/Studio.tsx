@@ -9,6 +9,16 @@ import { DatabaseSeedPrompt } from './Studio/components/DatabaseSeedPrompt';
 import { useStudioState } from './Studio/hooks/useStudioState';
 import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
+import type { CardData } from '@/types/card';
+
+// Helper function to convert CardData to the format expected by ImmersiveCardViewer
+const convertCardForViewer = (card: CardData) => {
+  return {
+    ...card,
+    // Map epic to ultra-rare for compatibility with viewer
+    rarity: card.rarity === 'epic' ? 'ultra-rare' as const : card.rarity as 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary'
+  };
+};
 
 const Studio = () => {
   const { cardId } = useParams();
@@ -76,6 +86,28 @@ const Studio = () => {
     console.log(`🎮 Studio rendering card: ${selectedCard.title} from ${dataSource} source`);
   }
 
+  // Convert card and mockCards for viewer compatibility
+  const viewerCard = convertCardForViewer(selectedCard);
+  const viewerCards = mockCards.map(convertCardForViewer);
+
+  const handleViewerShare = (card: any) => {
+    // Convert back to original CardData format for the handler
+    const originalCard: CardData = {
+      ...card,
+      rarity: card.rarity === 'ultra-rare' ? 'epic' : card.rarity
+    };
+    handleShare(originalCard);
+  };
+
+  const handleViewerDownload = (card: any) => {
+    // Convert back to original CardData format for the handler
+    const originalCard: CardData = {
+      ...card,
+      rarity: card.rarity === 'ultra-rare' ? 'epic' : card.rarity
+    };
+    handleDownload(originalCard);
+  };
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-crd-darkest">
@@ -88,14 +120,14 @@ const Studio = () => {
         
         {/* Immersive Card Viewer - the navbar logo will show through */}
         <ImmersiveCardViewer
-          card={selectedCard}
-          cards={mockCards}
+          card={viewerCard}
+          cards={viewerCards}
           currentCardIndex={currentCardIndex}
           onCardChange={handleCardChange}
           isOpen={true}
           onClose={handleClose}
-          onShare={handleShare}
-          onDownload={handleDownload}
+          onShare={handleViewerShare}
+          onDownload={handleViewerDownload}
           allowRotation={true}
           showStats={true}
           ambient={true}
