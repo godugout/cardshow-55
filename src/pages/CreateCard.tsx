@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ProfessionalWizard } from '@/components/editor/wizard/ProfessionalWizard';
+import { UniversalCardCreator } from '@/components/editor/unified/UniversalCardCreator';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -8,7 +8,7 @@ import type { CardData } from '@/hooks/useCardEditor';
 const CreateCard = () => {
   const navigate = useNavigate();
 
-  console.log('CreateCard page loaded');
+  console.log('CreateCard page loaded - using UniversalCardCreator');
 
   const handleComplete = (cardData: CardData) => {
     console.log('Card created successfully:', cardData);
@@ -22,12 +22,11 @@ const CreateCard = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-crd-darkest">
-        <ProfessionalWizard 
-          onComplete={handleComplete}
-          onCancel={handleCancel}
-        />
-      </div>
+      <UniversalCardCreator 
+        initialMode="quick"
+        onComplete={handleComplete}
+        onCancel={handleCancel}
+      />
     </ErrorBoundary>
   );
 };
