@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode, useReducer } from 'react';
 import { useCardEditor } from '@/hooks/useCardEditor';
-import type { CardData, DesignTemplate } from '@/hooks/useCardEditor';
+import type { CardData, DesignTemplate, CardTemplate } from '@/hooks/useCardEditor';
 
 interface WizardState {
   currentStep: number;
   selectedPhoto: string | null;
-  selectedTemplate: DesignTemplate | null;
+  selectedTemplate: CardTemplate | null;
   aiAnalysisComplete: boolean;
   isProcessing: boolean;
   cardData: CardData;
@@ -23,7 +23,7 @@ interface WizardState {
 
 interface WizardHandlers {
   handlePhotoSelect: (photo: string) => void;
-  handleTemplateSelect: (template: DesignTemplate) => void;
+  handleTemplateSelect: (template: CardTemplate) => void;
   handleAiAnalysis: (analysisData: any) => void;
   handleNext: () => void;
   handleBack: () => void;
@@ -117,7 +117,7 @@ interface WizardProviderProps {
 export const WizardProvider: React.FC<WizardProviderProps> = ({ children }) => {
   const cardEditor = useCardEditor();
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<DesignTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<CardTemplate | null>(null);
   const [aiAnalysisComplete, setAiAnalysisComplete] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -143,7 +143,7 @@ export const WizardProvider: React.FC<WizardProviderProps> = ({ children }) => {
       dispatch({ type: 'UPDATE_CARD_DATA', payload: { image_url: photo } });
     },
 
-    handleTemplateSelect: (template: DesignTemplate) => {
+    handleTemplateSelect: (template: CardTemplate) => {
       console.log('🎨 Template selected:', template);
       setSelectedTemplate(template);
       cardEditor.updateCardField('template_id', template.id);
@@ -216,7 +216,7 @@ export const WizardProvider: React.FC<WizardProviderProps> = ({ children }) => {
     },
 
     updateCardField: (field: keyof CardData, value: any) => {
-      console.log(`🔄 Updating field ${field}:`, value);
+      console.log(`🔄 Updating field ${String(field)}:`, value);
       cardEditor.updateCardField(field, value);
       dispatch({ type: 'UPDATE_CARD_DATA', payload: { [field]: value } });
     }

@@ -4,17 +4,12 @@ import { useTagManagement } from '@/hooks/card-editor/useTagManagement';
 import { useCardSaveOperations } from '@/hooks/card-editor/useCardSaveOperations';
 import { useAutoSave } from '@/hooks/card-editor/useAutoSave';
 
-// Re-export types for backward compatibility
-export type { CardData, DesignTemplate } from '@/hooks/card-editor/types';
-export type { 
-  CardRarity, 
-  CardVisibility, 
-  CreatorAttribution, 
-  PublishingOptions 
-} from '@/hooks/card-editor/types';
+// Re-export types from the main types file
+export type { CardData, CardRarity, CardVisibility, CreatorAttribution, PublishingOptions } from '@/types/card';
+export type { CardTemplate } from '@/hooks/card-editor/types';
 
 export interface UseCardEditorOptions {
-  initialData?: Partial<import('@/hooks/card-editor/types').CardData>;
+  initialData?: Partial<import('@/types/card').CardData>;
   autoSave?: boolean;
   autoSaveInterval?: number;
 }
@@ -49,9 +44,9 @@ export const useCardEditor = (options: UseCardEditorOptions = {}) => {
   } = useCardSaveOperations();
 
   // Sync tags with card data
-  const syncedUpdateCardField = <K extends keyof import('@/hooks/card-editor/types').CardData>(
+  const syncedUpdateCardField = <K extends keyof import('@/types/card').CardData>(
     field: K, 
-    value: import('@/hooks/card-editor/types').CardData[K]
+    value: import('@/types/card').CardData[K]
   ) => {
     updateCardField(field, value);
     if (field === 'tags') {

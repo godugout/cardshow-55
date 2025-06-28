@@ -1,5 +1,5 @@
 
-import type { CardData } from '@/hooks/card-editor/types';
+import type { CardData } from '@/types/card';
 
 export interface CardValidationResult {
   isValid: boolean;
@@ -24,7 +24,7 @@ export class CardValidationService {
     }
 
     // Validate rarity with detailed mapping info
-    const validRarities = ['common', 'uncommon', 'rare', 'ultra-rare', 'legendary'];
+    const validRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
     if (card.rarity && !validRarities.includes(card.rarity)) {
       console.warn(`⚠️ Invalid rarity "${card.rarity}" for card "${card.title}"`);
       warnings.push(`Invalid rarity "${card.rarity}", will be mapped to common`);

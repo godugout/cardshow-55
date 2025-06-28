@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
@@ -25,12 +24,9 @@ const convertCardForViewer = (card: CardData) => {
     design_metadata: card.design_metadata,
     visibility: card.visibility,
     template_id: card.template_id,
-    type: card.design_metadata?.type,
-    series: card.design_metadata?.series,
-    // Map epic to ultra-rare for compatibility with viewer
-    rarity: card.rarity === 'epic' ? 'ultra-rare' as const : 
-           card.rarity === 'legendary' ? 'legendary' as const :
-           card.rarity as 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary',
+    // Map epic to legendary for compatibility with viewer, but preserve others
+    rarity: card.rarity === 'epic' ? 'legendary' as const : 
+           card.rarity as 'common' | 'uncommon' | 'rare' | 'legendary',
     // Ensure creator_attribution has required properties for viewer
     creator_attribution: {
       creator_name: card.creator_attribution?.creator_name || 'Unknown Creator',
@@ -52,12 +48,11 @@ const convertCardForViewer = (card: CardData) => {
     print_metadata: card.print_metadata,
     creator_id: card.creator_id,
     // Add properties that might be needed
-    needsSync: false,
-    isLocal: false,
     is_public: card.visibility === 'public',
-    shop_id: undefined,
     collection_id: card.collection_id,
-    team_id: card.team_id
+    team_id: card.team_id,
+    view_count: card.view_count,
+    created_at: card.created_at
   };
 };
 

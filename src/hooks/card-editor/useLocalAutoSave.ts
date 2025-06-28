@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { localCardStorage } from '@/lib/localCardStorage';
 import { useCustomAuth } from '@/features/auth/hooks/useCustomAuth';
 import { supabase } from '@/lib/supabase-client';
-import type { CardData } from './types';
+import type { CardData } from '@/types/card';
 
 export const useLocalAutoSave = (
   cardData: CardData,
@@ -57,7 +57,7 @@ export const useLocalAutoSave = (
     }
 
     const localCard = localCardStorage.getCard(cardId);
-    if (!localCard || localCard.needsSync === false) {
+    if (!localCard) {
       return;
     }
 
@@ -113,8 +113,6 @@ export const useLocalAutoSave = (
         if (error) throw error;
       }
 
-      // Mark as synced
-      localCardStorage.markAsSynced(cardId);
       toast.success('Card synced to cloud', { duration: 2000 });
       
     } catch (error) {

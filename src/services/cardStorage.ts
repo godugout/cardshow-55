@@ -1,5 +1,5 @@
-
-import type { CardData } from '@/hooks/card-editor/types';
+import { localForage } from '@/lib/localforage';
+import type { CardData } from '@/types/card';
 
 export interface StorageLocation {
   key: string;

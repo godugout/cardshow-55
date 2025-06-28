@@ -1,9 +1,8 @@
-
 import { MigrationPreviewService, type MigrationPreviewResult } from './migration/migrationPreview';
 import { MigrationExecutionService, type MigrationResult } from './migration/migrationExecution';
 import { CardValidationService, type CardValidationResult } from './migration/cardValidation';
 import { CardPreparationService } from './migration/cardPreparation';
-import type { CardData } from '@/hooks/card-editor/types';
+import type { CardData } from '@/types/card';
 
 // Re-export types for backward compatibility
 export type { MigrationResult, CardValidationResult };

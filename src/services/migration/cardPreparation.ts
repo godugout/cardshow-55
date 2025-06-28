@@ -1,5 +1,5 @@
 
-import type { CardData } from '@/hooks/card-editor/types';
+import type { CardData } from '@/types/card';
 
 export class CardPreparationService {
   static prepareCardForDatabase(card: CardData, userId: string): any {
@@ -10,7 +10,7 @@ export class CardPreparationService {
       'common': 'common',
       'uncommon': 'uncommon', 
       'rare': 'rare',
-      'ultra-rare': 'legendary',
+      'epic': 'legendary',
       'legendary': 'legendary'
     };
 
@@ -32,7 +32,6 @@ export class CardPreparationService {
       visibility: card.visibility || 'private',
       marketplace_listing: card.publishing_options?.marketplace_listing || false,
       print_available: card.publishing_options?.print_available || false,
-      series: card.series || null,
       verification_status: 'pending'
     };
 

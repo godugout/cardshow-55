@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase-client';
 import { useCustomAuth } from '@/features/auth/hooks/useCustomAuth';
 import { v4 as uuidv4 } from 'uuid';
-import type { CardData } from './types';
+import type { CardData } from '@/types/card';
 
 // UUID validation function
 const isValidUUID = (str: string): boolean => {
@@ -31,7 +31,7 @@ const validateCardData = (cardData: CardData): { isValid: boolean; errors: strin
   }
 
   // Validate rarity enum - map to database values
-  const validRarities = ['common', 'uncommon', 'rare', 'ultra-rare', 'legendary'];
+  const validRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
   if (cardData.rarity && !validRarities.includes(cardData.rarity)) {
     errors.push(`Invalid rarity: ${cardData.rarity}. Must be one of: ${validRarities.join(', ')}`);
   }
@@ -81,12 +81,12 @@ export const useCardOperations = (
         return false;
       }
 
-      // Map rarity to database enum (database doesn't have ultra-rare)
+      // Map rarity to database enum (database doesn't have epic)
       const rarityMapping: Record<string, string> = {
         'common': 'common',
         'uncommon': 'uncommon', 
         'rare': 'rare',
-        'ultra-rare': 'legendary', // Map ultra-rare to legendary
+        'epic': 'legendary', // Map epic to legendary
         'legendary': 'legendary'
       };
 

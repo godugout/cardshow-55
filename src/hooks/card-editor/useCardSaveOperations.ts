@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { CardRepository } from '@/repositories/cardRepository';
 import { CardStorageService } from '@/services/cardStorage';
-import type { CardData } from './types';
+import type { CardData } from '@/types/card';
 
 export interface SaveResult {
   success: boolean;
@@ -26,7 +26,6 @@ export const useCardSaveOperations = () => {
       ...cardData,
       title: cardData.title?.trim() || 'My New Card',
       creator_id: user.id,
-      needsSync: false
     };
 
     setIsSaving(true);
@@ -47,7 +46,7 @@ export const useCardSaveOperations = () => {
           'common': 'common',
           'uncommon': 'uncommon',
           'rare': 'rare',
-          'ultra-rare': 'legendary',
+          'epic': 'legendary',
           'legendary': 'legendary'
         };
 

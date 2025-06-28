@@ -1,6 +1,6 @@
-
-import { CardStorageService } from '@/services/cardStorage';
-import type { CardData } from '@/hooks/card-editor/types';
+import { localForage } from '@/lib/localforage';
+import { v4 as uuidv4 } from 'uuid';
+import type { CardData } from '@/types/card';
 
 // Simplified wrapper for backward compatibility
 export const localCardStorage = {

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
-import type { CardData } from './types';
+import type { CardData } from '@/types/card';
 
 export interface UseCardEditorStateOptions {
   initialData?: Partial<CardData>;
@@ -24,8 +24,8 @@ export const useCardEditorState = (options: UseCardEditorStateOptions = {}) => {
     visibility: initialData.visibility || 'private',
     is_public: initialData.is_public || false,
     template_id: initialData.template_id,
-    type: initialData.type || 'Digital',
-    series: initialData.series || '',
+    collection_id: initialData.collection_id,
+    team_id: initialData.team_id,
     creator_attribution: initialData.creator_attribution || {
       creator_name: user?.email || '',
       creator_id: user?.id || '',
@@ -43,8 +43,8 @@ export const useCardEditorState = (options: UseCardEditorStateOptions = {}) => {
       }
     },
     creator_id: user?.id,
-    needsSync: false,
-    isLocal: false
+    view_count: initialData.view_count || 0,
+    created_at: initialData.created_at || new Date().toISOString()
   });
 
   const [isDirty, setIsDirty] = useState(false);
