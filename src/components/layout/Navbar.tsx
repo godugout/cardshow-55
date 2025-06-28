@@ -16,20 +16,10 @@ export const Navbar = () => {
           <Link to="/" className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
               <img
-                src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png"
+                src="/lovable-uploads/786e777f-b56f-4080-9b40-aef8e8303f27.png"
                 alt="CRD Logo"
                 className="w-8 h-8"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                  if (nextElement) {
-                    nextElement.style.display = 'flex';
-                  }
-                }}
               />
-              <div className="w-8 h-8 bg-crd-green rounded-lg flex items-center justify-center" style={{display: 'none'}}>
-                <span className="text-black font-bold text-sm">C</span>
-              </div>
               <span className="text-white font-bold text-xl font-orbitron">CARDSHOW</span>
             </div>
           </Link>
