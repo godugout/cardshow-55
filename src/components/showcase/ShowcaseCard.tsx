@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { ProtectiveCase } from './slab/displays/ProtectiveCase';
 import { TrophyPlaque } from './slab/displays/TrophyPlaque';
 import { MuseumDisplay } from './slab/displays/MuseumDisplay';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { SlabPresetConfig } from './SlabPresets';
 
 interface ShowcaseCardProps {

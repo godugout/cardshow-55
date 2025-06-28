@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
@@ -16,7 +15,13 @@ const convertCardForViewer = (card: CardData) => {
   return {
     ...card,
     // Map epic to ultra-rare for compatibility with viewer
-    rarity: card.rarity === 'epic' ? 'ultra-rare' as const : card.rarity as 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary'
+    rarity: card.rarity === 'epic' ? 'ultra-rare' as const : card.rarity as 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary',
+    // Ensure creator_attribution has required properties for viewer
+    creator_attribution: {
+      creator_name: card.creator_attribution?.creator_name || 'Unknown Creator',
+      creator_id: card.creator_attribution?.creator_id || '',
+      collaboration_type: (card.creator_attribution?.collaboration_type as 'solo' | 'collaboration') || 'solo'
+    }
   };
 };
 
