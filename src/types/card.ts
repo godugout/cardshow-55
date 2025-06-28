@@ -33,6 +33,10 @@ export interface DesignTemplate {
   category: string;
   preview_url?: string;
   description?: string;
+  template_data?: Record<string, any>;
+  is_premium?: boolean;
+  usage_count?: number;
+  tags?: string[];
 }
 
 export interface CardData {
@@ -61,7 +65,6 @@ export interface CardData {
   print_available?: boolean;
   view_count?: number;
   created_at?: string;
-  // Add missing properties that components expect
   type?: string;
   series?: string;
   isLocal?: boolean;

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,66 +18,42 @@ import {
   Eye,
   Heart,
   MessageCircle,
-  Lock
+  Lock,
+  Loader2,
+  Sparkles
 } from 'lucide-react';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Button, Loader2, Sparkles } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { useCardEditor } from '@/hooks/useCardEditor';
 
 interface PublishingSectionProps {
-  cardData: any;
-  updateCardField: (field: string, value: any) => void;
-  updatePublishingOptions: (field: string, value: any) => void;
-  isCreating: boolean;
+  cardEditor: ReturnType<typeof useCardEditor>;
+  onPublish: () => Promise<void>;
+  onPrevious: () => void;
 }
 
 export const PublishingSection = ({ 
-  cardData, 
-  updateCardField, 
-  updatePublishingOptions,
-  isCreating 
+  cardEditor,
+  onPublish,
+  onPrevious
 }: PublishingSectionProps) => {
-  const [price, setPrice] = useState('');
-  const [isMarketplace, setIsMarketplace] = useState(false);
-  const [isPrintable, setIsPrintable] = useState(false);
-  const [isCatalog, setIsCatalog] = useState(true);
+  const { cardData, updateCardField } = cardEditor;
+  const [isCreating, setIsCreating] = useState(false);
 
-  const handleVisibilityChange = (visibility: 'private' | 'public' | 'shared') => {
-    updateCardField('visibility', visibility);
-  };
-
-  const handlePriceChange = (newPrice: string) => {
-    setPrice(newPrice);
-    updatePublishingOptions('publishing_options', {
+  const updatePublishingOptions = (field: string, value: any) => {
+    updateCardField('publishing_options', {
       ...cardData.publishing_options,
-      pricing: newPrice ? {
-        base_price: parseFloat(newPrice),
-        currency: 'USD'
-      } : undefined
+      [field]: value
     });
   };
 
-  const handleMarketplaceToggle = (enabled: boolean) => {
-    setIsMarketplace(enabled);
-    updatePublishingOptions('publishing_options', {
-      ...cardData.publishing_options,
-      marketplace_listing: enabled
-    });
-  };
-
-  const handlePrintToggle = (enabled: boolean) => {
-    setIsPrintable(enabled);
-    updatePublishingOptions('publishing_options', {
-      ...cardData.publishing_options,
-      print_available: enabled
-    });
-  };
-
-  const handleCatalogToggle = (enabled: boolean) => {
-    setIsCatalog(enabled);
-    updatePublishingOptions('publishing_options', {
-      ...cardData.publishing_options,
-      crd_catalog_inclusion: enabled
-    });
+  const handlePublish = async () => {
+    setIsCreating(true);
+    try {
+      await onPublish();
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -308,12 +285,16 @@ export const PublishingSection = ({
         )}
       </div>
 
-      {/* Submit Button */}
-      <div className="flex justify-center">
+      {/* Navigation */}
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onPrevious}>
+          Previous
+        </Button>
         <Button
           size="lg"
           className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
           disabled={isCreating}
+          onClick={handlePublish}
         >
           {isCreating ? (
             <>

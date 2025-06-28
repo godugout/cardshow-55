@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import type { DesignTemplate } from '@/hooks/useCardEditor';
+import type { DesignTemplate } from '@/types/card';
 
 // Mock templates for now - in a real app these would come from your API
 const mockTemplates: DesignTemplate[] = [

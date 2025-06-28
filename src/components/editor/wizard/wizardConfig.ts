@@ -1,5 +1,5 @@
 
-import type { DesignTemplate } from '@/hooks/useCardEditor';
+import type { DesignTemplate } from '@/types/card';
 
 export interface WizardStep {
   number: number;
