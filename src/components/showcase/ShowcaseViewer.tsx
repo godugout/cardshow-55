@@ -4,7 +4,7 @@ import { ShowcasePanel } from './ShowcasePanel';
 import { ShowcaseCanvas } from './ShowcaseCanvas';
 import { ViewerHeader } from '@/components/viewer/components/ViewerHeader';
 import { CardNavigationHandler } from '@/components/viewer/components/CardNavigationHandler';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { SlabPresetConfig } from './SlabPresets';
 
 interface ShowcaseViewerProps {

@@ -1,24 +1,23 @@
 
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 export const mockCards: CardData[] = [
   {
-    id: 'mock-1',
+    id: '498e5467-7818-49a3-9a19-4a3bc2995fc7',
     title: 'Mystic Dragon',
-    description: 'A powerful dragon with ancient magic flowing through its veins.',
-    image_url: '/lovable-uploads/cd4cf59d-5ff5-461d-92e9-61b6e2c63e2e.png',
+    description: 'A legendary dragon card with mystical powers',
     rarity: 'legendary',
-    tags: ['dragon', 'magic', 'legendary'],
+    tags: ['dragon', 'fantasy', 'legendary'],
+    image_url: '/lovable-uploads/cd4cf59d-5ff5-461d-92e9-61b6e2c63e2e.png',
     design_metadata: {
-      effects: {
-        holographic: { intensity: 80 },
-        chrome: { intensity: 60 }
-      }
+      background: 'mystical',
+      effects: ['glow', 'particles'],
+      colorScheme: 'purple-gold'
     },
     visibility: 'public',
     creator_attribution: {
-      creator_name: 'Mock Creator',
-      creator_id: 'mock-creator',
+      creator_name: 'Studio Artist',
+      creator_id: 'studio-artist-1',
       collaboration_type: 'solo'
     },
     publishing_options: {
@@ -26,73 +25,85 @@ export const mockCards: CardData[] = [
       crd_catalog_inclusion: true,
       print_available: true,
       pricing: {
+        base_price: 25.99,
         currency: 'USD'
       },
       distribution: {
-        limited_edition: false
-      }
-    }
-  },
-  {
-    id: 'mock-2',
-    title: 'Crystal Guardian',
-    description: 'A guardian spirit made of pure crystal energy.',
-    image_url: '/lovable-uploads/49889392-623d-4c17-9677-1b076902479a.png',
-    rarity: 'ultra-rare',
-    tags: ['crystal', 'guardian', 'spirit'],
-    design_metadata: {
-      effects: {
-        crystal: { intensity: 90 },
-        prizm: { intensity: 70 }
+        limited_edition: true,
+        edition_size: 1000
       }
     },
-    visibility: 'public',
-    creator_attribution: {
-      creator_name: 'Mock Creator',
-      creator_id: 'mock-creator',
-      collaboration_type: 'solo'
-    },
-    publishing_options: {
-      marketplace_listing: true,
-      crd_catalog_inclusion: true,
-      print_available: true,
-      pricing: {
-        currency: 'USD'
-      },
-      distribution: {
-        limited_edition: false
-      }
-    }
+    verification_status: 'verified',
+    view_count: 1250,
+    created_at: '2024-01-15T10:30:00Z'
   },
   {
-    id: 'mock-3',
-    title: 'Shadow Assassin',
-    description: 'A stealthy warrior that strikes from the darkness.',
-    image_url: '/lovable-uploads/25cbcac9-64c0-4969-9baa-7a3fdf9eb00a.png',
+    id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    title: 'Crystal Warrior',
+    description: 'A rare warrior forged from pure crystal',
     rarity: 'rare',
-    tags: ['assassin', 'shadow', 'stealth'],
+    tags: ['warrior', 'crystal', 'rare'],
+    image_url: '/lovable-uploads/5e4b9905-1b9a-481e-b51d-9cf0bda7ff0f.png',
     design_metadata: {
-      effects: {
-        vintage: { intensity: 50 },
-        gold: { intensity: 30 }
-      }
+      background: 'crystalline',
+      effects: ['shine', 'refraction'],
+      colorScheme: 'blue-white'
     },
     visibility: 'public',
     creator_attribution: {
-      creator_name: 'Mock Creator',
-      creator_id: 'mock-creator',
+      creator_name: 'Crystal Studios',
+      creator_id: 'crystal-studios-1',
       collaboration_type: 'solo'
     },
     publishing_options: {
       marketplace_listing: true,
       crd_catalog_inclusion: true,
-      print_available: false,
+      print_available: true,
       pricing: {
+        base_price: 15.99,
         currency: 'USD'
       },
       distribution: {
         limited_edition: false
       }
-    }
+    },
+    verification_status: 'verified',
+    view_count: 840,
+    created_at: '2024-01-20T14:15:00Z'
+  },
+  {
+    id: 'f7e8d9c0-b1a2-3456-789a-bcdef0123456',
+    title: 'Shadow Assassin',
+    description: 'An epic assassin that strikes from the shadows',
+    rarity: 'epic',
+    tags: ['assassin', 'shadow', 'stealth'],
+    image_url: '/lovable-uploads/68c31062-5697-489f-a2f1-8ff47d5f5e1e.png',
+    design_metadata: {
+      background: 'dark',
+      effects: ['shadow', 'smoke'],
+      colorScheme: 'black-purple'
+    },
+    visibility: 'public',
+    creator_attribution: {
+      creator_name: 'Shadow Arts',
+      creator_id: 'shadow-arts-1',
+      collaboration_type: 'solo'
+    },
+    publishing_options: {
+      marketplace_listing: true,
+      crd_catalog_inclusion: true,
+      print_available: true,
+      pricing: {
+        base_price: 19.99,
+        currency: 'USD'
+      },
+      distribution: {
+        limited_edition: true,
+        edition_size: 500
+      }
+    },
+    verification_status: 'verified',
+    view_count: 2100,
+    created_at: '2024-01-10T09:45:00Z'
   }
 ];
