@@ -1,5 +1,5 @@
 
-import type { CardAnalysisResult } from '@/services/cardAnalyzer';
+import type { UnifiedAnalysisResult } from '@/services/imageAnalysis/unifiedCardAnalyzer';
 import type { CardData, DesignTemplate, PublishingOptions, CreatorAttribution } from '@/hooks/useCardEditor';
 
 export interface WizardStep {
@@ -17,7 +17,7 @@ export interface WizardState {
 
 export interface WizardHandlers {
   handlePhotoSelect: (photo: string) => void;
-  handleAiAnalysis: (analysis: CardAnalysisResult) => void;
+  handleAiAnalysis: (analysis: UnifiedAnalysisResult) => void;
   handleTemplateSelect: (template: DesignTemplate) => void;
   handleNext: () => void;
   handleBack: () => void;

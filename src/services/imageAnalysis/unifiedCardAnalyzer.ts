@@ -8,6 +8,8 @@ export interface UnifiedAnalysisResult {
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   estimatedValue: number;
   confidence: number;
+  category: string; // Added for compatibility
+  type: string; // Added for compatibility
   playerName?: string;
   teamName?: string;
   year?: string;
@@ -251,12 +253,14 @@ export class UnifiedCardAnalyzer {
         rarity,
         estimatedValue: valueData.estimatedValue,
         confidence,
+        category: 'Baseball Card', // Added for compatibility
+        type: 'Sports Card', // Added for compatibility
         playerName: ocrResult.playerName,
         teamName: ocrResult.teamName,
         year: ocrResult.year,
         cardNumber: ocrResult.cardNumber,
         manufacturer: visualAnalysis.manufacturer,
-        series: databaseInfo?.cardInfo?.series,
+        series: databaseInfo?.cardInfo?.series || 'Unknown Series',
         condition: visualAnalysis.condition,
         specialFeatures: visualAnalysis.specialFeatures,
         tags,
@@ -283,6 +287,8 @@ export class UnifiedCardAnalyzer {
         rarity: 'common',
         estimatedValue: 0,
         confidence: 0.1,
+        category: 'Baseball Card', // Added for compatibility
+        type: 'Sports Card', // Added for compatibility
         specialFeatures: [],
         tags: ['baseball', 'trading-card'],
         sources: {

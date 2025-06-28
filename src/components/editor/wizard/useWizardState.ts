@@ -1,10 +1,9 @@
-
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import { useCardEditor, CardData } from '@/hooks/useCardEditor';
-import { DEFAULT_TEMPLATES } from './wizardConfig';
+import { unifiedCardAnalyzer, UnifiedAnalysisResult } from '@/services/imageAnalysis/unifiedCardAnalyzer';
+import { useCardEditor, CardData, DesignTemplate } from '@/hooks/useCardEditor';
+import { useWizardTemplates } from './hooks/useWizardTemplates';
 import type { WizardState, WizardHandlers } from './types';
-import type { CardAnalysisResult } from '@/services/cardAnalyzer';
 
 export const useWizardState = (onComplete: (cardData: CardData) => void) => {
   const [wizardState, setWizardState] = useState<WizardState>({
@@ -14,126 +13,119 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     aiAnalysisComplete: false
   });
 
-  const cardEditor = useCardEditor({
-    initialData: {
-      creator_attribution: {
-        creator_name: '',
-        creator_id: '',
-        collaboration_type: 'solo'
-      },
-      publishing_options: {
-        marketplace_listing: false,
-        crd_catalog_inclusion: true,
-        print_available: false,
-        pricing: {
-          currency: 'USD'
-        },
-        distribution: {
-          limited_edition: false
-        }
+  const [isSaving, setIsSaving] = useState(false);
+  const { cardData, updateCardField, saveCard } = useCardEditor();
+  const { templates } = useWizardTemplates();
+  const cardEditor = useCardEditor();
+
+  const handlePhotoSelect = useCallback((photo: string) => {
+    setWizardState(prev => ({ ...prev, selectedPhoto: photo }));
+    updateCardField('image_url', photo);
+    updateCardField('thumbnail_url', photo);
+  }, [updateCardField]);
+
+  const handleAiAnalysis = useCallback((analysis: UnifiedAnalysisResult) => {
+    console.log('📊 AI Analysis received:', analysis);
+    
+    // Map the unified analysis result to card data
+    updateCardField('title', analysis.title);
+    updateCardField('description', analysis.description);
+    updateCardField('rarity', analysis.rarity);
+    updateCardField('tags', analysis.tags);
+    updateCardField('type', analysis.type);
+    updateCardField('category', analysis.category);
+    
+    // Store additional metadata from analysis
+    const designMetadata = {
+      ...cardData.design_metadata,
+      aiAnalysis: {
+        confidence: analysis.confidence,
+        playerName: analysis.playerName,
+        teamName: analysis.teamName,
+        year: analysis.year,
+        manufacturer: analysis.manufacturer,
+        condition: analysis.condition,
+        estimatedValue: analysis.estimatedValue,
+        specialFeatures: analysis.specialFeatures,
+        sources: analysis.sources
       }
+    };
+    
+    updateCardField('design_metadata', designMetadata);
+    
+    setWizardState(prev => ({ ...prev, aiAnalysisComplete: true }));
+    toast.success('AI analysis complete! Card details populated.');
+  }, [updateCardField, cardData.design_metadata]);
+
+  const handleTemplateSelect = useCallback((template: DesignTemplate) => {
+    setWizardState(prev => ({ ...prev, selectedTemplate: template }));
+    updateCardField('template_id', template.id);
+  }, [updateCardField]);
+
+  const handleNext = useCallback(() => {
+    setWizardState(prev => ({
+      ...prev,
+      currentStep: Math.min(prev.currentStep + 1, 4)
+    }));
+  }, []);
+
+  const handleBack = useCallback(() => {
+    setWizardState(prev => ({
+      ...prev,
+      currentStep: Math.max(prev.currentStep - 1, 1)
+    }));
+  }, []);
+
+  const handleComplete = useCallback(async () => {
+    setIsSaving(true);
+    try {
+      await saveCard();
+      toast.success('Card saved successfully!');
+      onComplete(cardData);
+    } catch (error) {
+      console.error('Failed to save card:', error);
+      toast.error('Failed to save card. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
-  });
+  }, [saveCard, onComplete, cardData]);
 
-  const { cardData, updateCardField, saveCard, isSaving } = cardEditor;
+  const updatePublishingOptions = useCallback((key: keyof CardData['publishing_options'], value: any) => {
+    const updatedOptions = {
+      ...cardData.publishing_options,
+      [key]: value
+    };
+    updateCardField('publishing_options', updatedOptions);
+  }, [cardData.publishing_options, updateCardField]);
 
-  const handlers: WizardHandlers = {
-    handlePhotoSelect: (photo: string) => {
-      setWizardState(prev => ({ ...prev, selectedPhoto: photo }));
-      updateCardField('image_url', photo);
-    },
+  const updateCreatorAttribution = useCallback((key: keyof CardData['creator_attribution'], value: any) => {
+    const updatedAttribution = {
+      ...cardData.creator_attribution,
+      [key]: value
+    };
+    updateCardField('creator_attribution', updatedAttribution);
+  }, [cardData.creator_attribution, updateCardField]);
 
-    handleAiAnalysis: (analysis: CardAnalysisResult) => {
-      updateCardField('title', analysis.title);
-      updateCardField('description', analysis.description);
-      // Map epic to legendary for database compatibility
-      const mappedRarity = analysis.rarity === 'epic' ? 'legendary' : analysis.rarity;
-      updateCardField('rarity', mappedRarity as any);
-      updateCardField('tags', analysis.tags);
-      updateCardField('type', analysis.type);
-      updateCardField('series', analysis.series);
-      
-      setWizardState(prev => ({ ...prev, aiAnalysisComplete: true }));
-      
-      // Find template based on tags only since category field doesn't exist in database
-      const suggestedTemplate = DEFAULT_TEMPLATES.find(t => 
-        analysis.tags.some(tag => t.tags.includes(tag))
-      ) || DEFAULT_TEMPLATES[0];
-      
-      setWizardState(prev => ({ ...prev, selectedTemplate: suggestedTemplate }));
-      updateCardField('template_id', suggestedTemplate.id);
-      updateCardField('design_metadata', suggestedTemplate.template_data);
-      
-      toast.success('All fields pre-filled with AI suggestions!');
-    },
-
-    handleTemplateSelect: (template) => {
-      setWizardState(prev => ({ ...prev, selectedTemplate: template }));
-      updateCardField('template_id', template.id);
-      updateCardField('design_metadata', template.template_data);
-    },
-
-    handleNext: () => {
-      if (wizardState.currentStep === 1 && !wizardState.selectedPhoto) {
-        toast.error('Please upload a photo first');
-        return;
-      }
-      if (wizardState.currentStep === 2 && !wizardState.selectedTemplate) {
-        toast.error('Please select a template');
-        return;
-      }
-      if (wizardState.currentStep === 3 && !cardData.title.trim()) {
-        toast.error('Please enter a card title');
-        return;
-      }
-      
-      if (wizardState.currentStep === 1 && wizardState.aiAnalysisComplete && wizardState.selectedTemplate) {
-        setWizardState(prev => ({ ...prev, currentStep: 3 }));
-      } else {
-        setWizardState(prev => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, 4) }));
-      }
-    },
-
-    handleBack: () => {
-      setWizardState(prev => ({ ...prev, currentStep: Math.max(prev.currentStep - 1, 1) }));
-    },
-
-    handleComplete: async () => {
-      try {
-        const success = await saveCard();
-        if (success) {
-          onComplete(cardData);
-          toast.success('Card created successfully!');
-        }
-      } catch (error) {
-        toast.error('Failed to create card');
-      }
-    },
-
-    updatePublishingOptions: (key, value) => {
-      updateCardField('publishing_options', {
-        ...cardData.publishing_options,
-        [key]: value
-      });
-    },
-
-    updateCreatorAttribution: (key, value) => {
-      updateCardField('creator_attribution', {
-        ...cardData.creator_attribution,
-        [key]: value
-      });
-    },
-
-    updateCardField: updateCardField
-  };
+  const updateCardFieldHandler = useCallback(<K extends keyof CardData>(field: K, value: CardData[K]) => {
+    updateCardField(field, value);
+  }, [updateCardField]);
 
   return {
     wizardState,
     cardData,
-    handlers,
+    handlers: {
+      handlePhotoSelect,
+      handleAiAnalysis,
+      handleTemplateSelect,
+      handleNext,
+      handleBack,
+      handleComplete,
+      updatePublishingOptions,
+      updateCreatorAttribution,
+      updateCardField: updateCardFieldHandler
+    } as WizardHandlers,
     isSaving,
-    templates: DEFAULT_TEMPLATES,
-    updateCardField,
+    templates,
     cardEditor
   };
 };
