@@ -5,6 +5,28 @@ import { TeamColorGrid } from './TeamColorGrid';
 import type { ColorTheme } from '@/hooks/useColorThemes';
 import type { TeamColorScheme } from './TeamColors';
 
+// Import sports icons from lucide-react
+import { 
+  Baseball as BaseballIcon,
+  Football as FootballIcon,
+  Target as SoccerIcon
+} from 'lucide-react';
+
+// Custom Hockey and Basketball icons as simple SVGs since lucide doesn't have them
+const HockeyIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M3 12h18M12 3v18M8 8l8 8M16 8l-8 8"/>
+  </svg>
+);
+
+const BasketballIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    <path d="M2 12h20"/>
+  </svg>
+);
+
 interface TeamColorTabsProps {
   themesBySport: Record<string, ColorTheme[]>;
   activeTab: string;
@@ -15,6 +37,15 @@ interface TeamColorTabsProps {
   onThemeSelect: (theme: ColorTheme) => void;
 }
 
+// Define sport order and icons
+const SPORTS_CONFIG = [
+  { key: 'baseball', name: 'Baseball', icon: BaseballIcon },
+  { key: 'basketball', name: 'Basketball', icon: BasketballIcon },
+  { key: 'football', name: 'Football', icon: FootballIcon },
+  { key: 'hockey', name: 'Hockey', icon: HockeyIcon },
+  { key: 'soccer', name: 'Soccer', icon: SoccerIcon }
+];
+
 export const TeamColorTabs = ({
   themesBySport,
   activeTab,
@@ -24,29 +55,36 @@ export const TeamColorTabs = ({
   onThemeHover,
   onThemeSelect
 }: TeamColorTabsProps) => {
-  const sportTabs = Object.keys(themesBySport).sort();
+  // Filter sports that have themes and maintain order
+  const availableSports = SPORTS_CONFIG.filter(sport => 
+    themesBySport[sport.key] && themesBySport[sport.key].length > 0
+  );
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <TabsList className="grid w-full grid-cols-4 bg-crd-mediumGray/20 mb-4">
-        {sportTabs.slice(0, 4).map((sport) => (
-          <TabsTrigger 
-            key={sport} 
-            value={sport}
-            className="data-[state=active]:bg-crd-green data-[state=active]:text-black text-crd-lightGray capitalize text-xs"
-          >
-            {sport}
-            <span className="ml-1 text-xs opacity-70">
-              ({themesBySport[sport]?.length || 0})
-            </span>
-          </TabsTrigger>
-        ))}
+      <TabsList className="grid w-full grid-cols-5 bg-crd-mediumGray/20 mb-4">
+        {availableSports.map((sport) => {
+          const IconComponent = sport.icon;
+          return (
+            <TabsTrigger 
+              key={sport.key} 
+              value={sport.key}
+              className="data-[state=active]:bg-crd-green data-[state=active]:text-black text-crd-lightGray text-xs flex items-center gap-1"
+            >
+              <IconComponent />
+              <span className="hidden sm:inline">{sport.name}</span>
+              <span className="ml-1 text-xs opacity-70">
+                ({themesBySport[sport.key]?.length || 0})
+              </span>
+            </TabsTrigger>
+          );
+        })}
       </TabsList>
 
-      {sportTabs.map((sport) => (
-        <TabsContent key={sport} value={sport} className="mt-0">
+      {availableSports.map((sport) => (
+        <TabsContent key={sport.key} value={sport.key} className="mt-0">
           <TeamColorGrid
-            themes={themesBySport[sport] || []}
+            themes={themesBySport[sport.key] || []}
             selectedColorScheme={selectedColorScheme}
             hoveredTheme={hoveredTheme}
             onThemeHover={onThemeHover}

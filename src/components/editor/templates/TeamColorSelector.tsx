@@ -22,10 +22,11 @@ export const TeamColorSelector = ({
   const [hoveredTheme, setHoveredTheme] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('baseball');
 
-  // Group themes by sport
+  // Group themes by sport with improved logic
   const themesBySport = useMemo(() => {
     const grouped = colorThemes.reduce((acc, theme) => {
       const teams = theme.teams || [];
+      
       if (teams.length === 0) {
         // Default to baseball for themes without teams
         if (!acc.baseball) acc.baseball = [];
@@ -34,17 +35,34 @@ export const TeamColorSelector = ({
         teams.forEach(team => {
           const sport = team.sport.toLowerCase();
           if (!acc[sport]) acc[sport] = [];
-          // Only add theme once per sport
+          // Only add theme once per sport to avoid duplicates within the same sport
           if (!acc[sport].find(t => t.id === theme.id)) {
             acc[sport].push(theme);
           }
         });
       }
+      
       return acc;
     }, {} as Record<string, ColorTheme[]>);
     
+    // Ensure we have the expected sports even if empty
+    const expectedSports = ['baseball', 'basketball', 'football', 'hockey', 'soccer'];
+    expectedSports.forEach(sport => {
+      if (!grouped[sport]) grouped[sport] = [];
+    });
+    
     return grouped;
   }, [colorThemes]);
+
+  // Set default active tab to first sport with themes
+  React.useEffect(() => {
+    const sportsWithThemes = Object.keys(themesBySport).filter(sport => 
+      themesBySport[sport].length > 0
+    );
+    if (sportsWithThemes.length > 0 && !sportsWithThemes.includes(activeTab)) {
+      setActiveTab(sportsWithThemes[0]);
+    }
+  }, [themesBySport, activeTab]);
 
   const handleThemeSelect = (theme: ColorTheme) => {
     const scheme = convertColorThemeToScheme(theme);
