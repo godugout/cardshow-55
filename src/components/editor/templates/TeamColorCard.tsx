@@ -73,43 +73,37 @@ export const TeamColorCard = ({
           : 'border-crd-mediumGray/30 hover:border-crd-green/50'
       }`}
     >
-      {/* Team Name */}
-      <div className="text-crd-white text-sm font-medium truncate mb-3 text-center">
-        {displayName}
-      </div>
-
-      {/* Color Pills and Rotation Button in Same Row */}
-      <div className="flex items-center justify-center gap-2">
-        {/* Color Pills */}
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-4 h-4 rounded-full border border-white/20" 
-            style={{ backgroundColor: primary }}
-          />
-          <div 
-            className="w-4 h-4 rounded-full border border-white/20" 
-            style={{ backgroundColor: secondary }}
-          />
-          <div 
-            className="w-4 h-4 rounded-full border border-white/20" 
-            style={{ backgroundColor: accent }}
-          />
+      {/* Team Name and Rotation Button */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-crd-white text-sm font-medium truncate">
+          {displayName}
         </div>
-
-        {/* Divider */}
-        <Separator orientation="vertical" className="h-4 bg-crd-mediumGray/30" />
-
-        {/* Rotation Button */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             rotateColors();
           }}
-          className="p-1 rounded-full bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 transition-colors"
+          className="p-1 rounded-full bg-crd-mediumGray/20 hover:bg-crd-mediumGray/40 transition-colors flex-shrink-0 ml-2"
           title="Rotate colors"
         >
           <RotateCcw className="w-4 h-4 text-crd-lightGray" />
         </button>
+      </div>
+
+      {/* Color Pills */}
+      <div className="flex items-center justify-center gap-2">
+        <div 
+          className="w-4 h-4 rounded-full border border-white/20" 
+          style={{ backgroundColor: primary }}
+        />
+        <div 
+          className="w-4 h-4 rounded-full border border-white/20" 
+          style={{ backgroundColor: secondary }}
+        />
+        <div 
+          className="w-4 h-4 rounded-full border border-white/20" 
+          style={{ backgroundColor: accent }}
+        />
       </div>
       
       {/* Hover tooltip showing all teams */}
