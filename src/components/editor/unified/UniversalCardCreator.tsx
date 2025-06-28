@@ -6,7 +6,7 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { useUniversalCreator } from './hooks/useUniversalCreator';
 import { ProgressIndicator } from './components/ProgressIndicator';
 import { StepContent } from './components/StepContent';
-import { CreationErrorBoundary } from './components/CreationErrorBoundary';
+import { SimpleErrorBoundary } from './components/SimpleErrorBoundary';
 import type { CreationMode } from './types';
 import type { CardData } from '@/hooks/useCardEditor';
 
@@ -36,11 +36,31 @@ export const UniversalCardCreator = ({
     onCancel: onCancel || (() => navigate('/gallery'))
   });
 
+  console.log('🎯 UniversalCardCreator: Current state:', {
+    mode: state.mode,
+    step: state.currentStep,
+    hasConfig: !!currentConfig,
+    isCreating: state.isCreating,
+    hasCardData: !!cardEditor?.cardData
+  });
+
+  // Early return if no config to prevent rendering issues
+  if (!currentConfig) {
+    console.warn('⚠️ UniversalCardCreator: No config found for mode:', state.mode);
+    return (
+      <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-crd-white mb-2">Loading Creator...</h2>
+          <p className="text-crd-lightGray">Setting up {state.mode} mode</p>
+        </div>
+      </div>
+    );
+  }
+
   const canProceed = actions.validateStep();
   const showNavigation = state.currentStep !== 'intent' && state.currentStep !== 'complete';
   const showModeSwitch = state.currentStep !== 'intent' && state.currentStep !== 'complete';
 
-  // Add debug logging for mode selection
   const handleModeSelect = (mode: CreationMode) => {
     console.log('🎯 UniversalCardCreator: Mode selected:', mode);
     actions.setMode(mode);
@@ -51,23 +71,15 @@ export const UniversalCardCreator = ({
     navigate('/cards/bulk-upload');
   };
 
-  // Remove the problematic loading state check - just render the component
-  console.log('🎯 UniversalCardCreator: Current state:', {
-    mode: state.mode,
-    step: state.currentStep,
-    hasConfig: !!currentConfig,
-    isCreating: state.isCreating
-  });
-
   return (
-    <CreationErrorBoundary onReset={actions.startOver}>
+    <SimpleErrorBoundary onReset={actions.startOver} fallback="Card Creator Error">
       <div className="min-h-screen bg-crd-darkest">
         {/* Header */}
         <div className="bg-crd-darker border-b border-crd-mediumGray/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <h1 className="text-2xl font-bold text-crd-white">
-                {currentConfig?.title || 'Create Card'}
+                {currentConfig.title || 'Create Card'}
               </h1>
               {showModeSwitch && (
                 <CRDButton
@@ -93,7 +105,7 @@ export const UniversalCardCreator = ({
         </div>
 
         {/* Progress Indicator */}
-        {currentConfig && state.currentStep !== 'intent' && (
+        {state.currentStep !== 'intent' && (
           <div className="bg-crd-darker border-b border-crd-mediumGray/20 py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <ProgressIndicator
@@ -127,17 +139,19 @@ export const UniversalCardCreator = ({
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <StepContent
-            step={state.currentStep}
-            mode={state.mode}
-            cardData={cardEditor.cardData}
-            onModeSelect={handleModeSelect}
-            onPhotoSelect={(photo) => cardEditor.updateCardField('image_url', photo)}
-            onFieldUpdate={cardEditor.updateCardField}
-            onBulkUpload={handleBulkUpload}
-            onGoToGallery={actions.goToGallery}
-            onStartOver={actions.startOver}
-          />
+          <SimpleErrorBoundary fallback="Step Content Error">
+            <StepContent
+              step={state.currentStep}
+              mode={state.mode}
+              cardData={cardEditor.cardData}
+              onModeSelect={handleModeSelect}
+              onPhotoSelect={(photo) => cardEditor.updateCardField('image_url', photo)}
+              onFieldUpdate={cardEditor.updateCardField}
+              onBulkUpload={handleBulkUpload}
+              onGoToGallery={actions.goToGallery}
+              onStartOver={actions.startOver}
+            />
+          </SimpleErrorBoundary>
         </div>
 
         {/* Navigation */}
@@ -155,7 +169,7 @@ export const UniversalCardCreator = ({
               </CRDButton>
 
               <div className="text-crd-lightGray text-sm">
-                Step {(currentConfig?.steps.indexOf(state.currentStep) ?? 0) + 1} of {currentConfig?.steps.length}
+                Step {(currentConfig.steps.indexOf(state.currentStep) ?? 0) + 1} of {currentConfig.steps.length}
               </div>
 
               {state.currentStep === 'publish' ? (
@@ -181,6 +195,6 @@ export const UniversalCardCreator = ({
           </div>
         )}
       </div>
-    </CreationErrorBoundary>
+    </SimpleErrorBoundary>
   );
 };

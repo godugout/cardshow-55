@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Upload, Image, Frame } from 'lucide-react';
+import { Upload, Image, Frame, AlertCircle } from 'lucide-react';
 import { FramePreviewCanvas } from '@/components/editor/wizard/components/FramePreviewCanvas';
 import { useWizardTemplates } from '@/components/editor/wizard/hooks/useWizardTemplates';
 import type { CreationMode } from '../../types';
@@ -49,31 +49,56 @@ export const PhotoStep = ({
   selectedFrame,
   onFrameSelect 
 }: PhotoStepProps) => {
-  const { templates } = useWizardTemplates();
-  const [currentFrame, setCurrentFrame] = useState<DesignTemplate>(BLANK_CARD_TEMPLATE);
+  console.log('📸 PhotoStep: Rendering with photo:', !!selectedPhoto, 'frame:', selectedFrame?.name);
+  
+  const { templates, isLoading: templatesLoading } = useWizardTemplates();
+  const [currentFrame, setCurrentFrame] = useState<DesignTemplate>(selectedFrame || BLANK_CARD_TEMPLATE);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
-  // Initialize current frame from props only once
+  // Cleanup created URLs on unmount
+  useEffect(() => {
+    return () => {
+      imageUrls.forEach(url => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, [imageUrls]);
+
+  // Simple frame sync without deep dependency issues
   useEffect(() => {
     if (selectedFrame && selectedFrame.id !== currentFrame.id) {
+      console.log('📸 PhotoStep: Updating frame to:', selectedFrame.name);
       setCurrentFrame(selectedFrame);
     }
-  }, [selectedFrame?.id]); // Only depend on the ID to avoid deep comparison issues
+  }, [selectedFrame?.id, currentFrame.id]);
 
-  // Add blank card as first option
-  const allTemplates = [BLANK_CARD_TEMPLATE, ...templates];
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      onPhotoSelect(url);
-    }
-  };
+    if (!file) return;
 
-  const handleFrameSelection = (template: DesignTemplate) => {
+    console.log('📸 PhotoStep: File selected:', file.name);
+    
+    try {
+      const url = URL.createObjectURL(file);
+      setImageUrls(prev => [...prev, url]);
+      onPhotoSelect(url);
+    } catch (error) {
+      console.error('📸 PhotoStep: Error creating object URL:', error);
+    }
+  }, [onPhotoSelect]);
+
+  const handleFrameSelection = useCallback((template: DesignTemplate) => {
+    console.log('📸 PhotoStep: Frame selected:', template.name);
     setCurrentFrame(template);
     onFrameSelect?.(template);
-  };
+  }, [onFrameSelect]);
+
+  // Combine templates with loading state
+  const allTemplates = templatesLoading 
+    ? [BLANK_CARD_TEMPLATE] 
+    : [BLANK_CARD_TEMPLATE, ...templates];
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -104,6 +129,9 @@ export const PhotoStep = ({
                     src={selectedPhoto} 
                     alt="Original upload"
                     className="max-w-full h-48 object-contain rounded-lg border border-crd-mediumGray/30"
+                    onError={(e) => {
+                      console.error('📸 PhotoStep: Image load error:', e);
+                    }}
                   />
                   <div className="absolute top-2 right-2 bg-crd-green text-black px-2 py-1 rounded-full text-xs font-medium">
                     Uploaded
@@ -153,13 +181,12 @@ export const PhotoStep = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <FramePreviewCanvas
+            <PreviewWithErrorBoundary
               imageUrl={selectedPhoto}
               selectedFrame={currentFrame}
-              className="mb-6"
             />
             
-            <div className="text-center">
+            <div className="text-center mt-4">
               <h4 className="text-crd-white font-medium mb-2">
                 Current Frame: {currentFrame.name}
               </h4>
@@ -175,43 +202,19 @@ export const PhotoStep = ({
       <Card className="bg-crd-darker border-crd-mediumGray/20 mt-8">
         <CardHeader>
           <CardTitle className="text-crd-white">Choose Frame Style</CardTitle>
+          {templatesLoading && (
+            <p className="text-crd-lightGray text-sm">Loading additional frames...</p>
+          )}
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {allTemplates.map((template) => (
-              <div
+              <FrameOption
                 key={template.id}
-                onClick={() => handleFrameSelection(template)}
-                className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                  currentFrame.id === template.id
-                    ? 'border-crd-green bg-crd-green/10'
-                    : 'border-crd-mediumGray/30 hover:border-crd-green/50'
-                }`}
-              >
-                <div className="aspect-[2.5/3.5] bg-crd-mediumGray/20 rounded mb-3 flex items-center justify-center">
-                  {template.id === 'blank-card' ? (
-                    <div className="w-full h-full bg-white rounded border border-gray-200 flex items-center justify-center">
-                      <span className="text-gray-400 text-xs">Clean</span>
-                    </div>
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-b from-blue-500 to-purple-600 rounded flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">{template.name}</span>
-                    </div>
-                  )}
-                </div>
-                
-                <h4 className="text-crd-white font-medium text-sm mb-1">
-                  {template.name}
-                </h4>
-                <div className="flex items-center justify-between">
-                  <span className="text-crd-lightGray text-xs">
-                    {template.category}
-                  </span>
-                  {template.is_premium && (
-                    <span className="text-crd-green text-xs font-medium">PRO</span>
-                  )}
-                </div>
-              </div>
+                template={template}
+                isSelected={currentFrame.id === template.id}
+                onSelect={handleFrameSelection}
+              />
             ))}
           </div>
         </CardContent>
@@ -219,3 +222,71 @@ export const PhotoStep = ({
     </div>
   );
 };
+
+// Error boundary wrapper for preview
+const PreviewWithErrorBoundary = ({ imageUrl, selectedFrame }: { 
+  imageUrl?: string; 
+  selectedFrame: DesignTemplate; 
+}) => {
+  try {
+    return (
+      <FramePreviewCanvas
+        imageUrl={imageUrl}
+        selectedFrame={selectedFrame}
+        className="mb-6"
+      />
+    );
+  } catch (error) {
+    console.error('📸 Preview error:', error);
+    return (
+      <div className="mb-6 p-8 border border-crd-mediumGray/30 rounded-lg text-center">
+        <AlertCircle className="w-8 h-8 mx-auto mb-2 text-amber-500" />
+        <p className="text-crd-lightGray">Preview temporarily unavailable</p>
+      </div>
+    );
+  }
+};
+
+// Simplified frame option component
+const FrameOption = ({ 
+  template, 
+  isSelected, 
+  onSelect 
+}: { 
+  template: DesignTemplate; 
+  isSelected: boolean; 
+  onSelect: (template: DesignTemplate) => void; 
+}) => (
+  <div
+    onClick={() => onSelect(template)}
+    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+      isSelected
+        ? 'border-crd-green bg-crd-green/10'
+        : 'border-crd-mediumGray/30 hover:border-crd-green/50'
+    }`}
+  >
+    <div className="aspect-[2.5/3.5] bg-crd-mediumGray/20 rounded mb-3 flex items-center justify-center">
+      {template.id === 'blank-card' ? (
+        <div className="w-full h-full bg-white rounded border border-gray-200 flex items-center justify-center">
+          <span className="text-gray-400 text-xs">Clean</span>
+        </div>
+      ) : (
+        <div className="w-full h-full bg-gradient-to-b from-blue-500 to-purple-600 rounded flex items-center justify-center">
+          <span className="text-white text-xs font-bold">{template.name}</span>
+        </div>
+      )}
+    </div>
+    
+    <h4 className="text-crd-white font-medium text-sm mb-1">
+      {template.name}
+    </h4>
+    <div className="flex items-center justify-between">
+      <span className="text-crd-lightGray text-xs">
+        {template.category}
+      </span>
+      {template.is_premium && (
+        <span className="text-crd-green text-xs font-medium">PRO</span>
+      )}
+    </div>
+  </div>
+);

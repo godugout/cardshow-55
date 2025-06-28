@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
@@ -117,7 +116,10 @@ export const useUniversalCreator = ({
   }, []);
 
   const nextStep = useCallback(() => {
-    if (!currentConfig) return;
+    if (!currentConfig) {
+      console.warn('⚠️ useUniversalCreator: Cannot advance - no config');
+      return;
+    }
     
     const currentIndex = currentConfig.steps.indexOf(currentStep);
     if (currentIndex < currentConfig.steps.length - 1) {
@@ -129,7 +131,10 @@ export const useUniversalCreator = ({
   }, [currentConfig, currentStep]);
 
   const previousStep = useCallback(() => {
-    if (!currentConfig) return;
+    if (!currentConfig) {
+      console.warn('⚠️ useUniversalCreator: Cannot go back - no config');
+      return;
+    }
     
     const currentIndex = currentConfig.steps.indexOf(currentStep);
     if (currentIndex > 0) {
@@ -141,6 +146,11 @@ export const useUniversalCreator = ({
   }, [currentConfig, currentStep]);
 
   const validateStep = useCallback(() => {
+    if (!cardEditor?.cardData) {
+      console.warn('⚠️ useUniversalCreator: No card data for validation');
+      return false;
+    }
+    
     const { cardData } = cardEditor;
     
     switch (currentStep) {
@@ -171,7 +181,7 @@ export const useUniversalCreator = ({
       default:
         return true;
     }
-  }, [currentStep, cardEditor.cardData]);
+  }, [currentStep, cardEditor?.cardData]);
 
   const completeCreation = useCallback(async () => {
     console.log('🚀 useUniversalCreator: Starting card creation');
@@ -179,6 +189,10 @@ export const useUniversalCreator = ({
     setCreationError(null);
 
     try {
+      if (!cardEditor?.cardData) {
+        throw new Error('No card data available');
+      }
+
       // Ensure we have the required data
       if (!cardEditor.cardData.image_url) {
         throw new Error('Card must have an image');
@@ -198,9 +212,7 @@ export const useUniversalCreator = ({
           onCompleteRef.current(cardEditor.cardData);
         }
         
-        toast.success('Card created successfully!', {
-          description: `"${cardEditor.cardData.title}" has been saved to your collection.`
-        });
+        console.log('✅ useUniversalCreator: Card created successfully');
       } else {
         throw new Error('Failed to save card');
       }
@@ -208,9 +220,6 @@ export const useUniversalCreator = ({
       console.error('❌ useUniversalCreator: Error creating card:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to create card';
       setCreationError(errorMessage);
-      toast.error('Failed to create card', {
-        description: errorMessage
-      });
     } finally {
       setIsCreating(false);
     }
@@ -223,6 +232,11 @@ export const useUniversalCreator = ({
 
   const startOver = useCallback(() => {
     console.log('🔄 useUniversalCreator: Starting over');
+    if (!cardEditor) {
+      console.warn('⚠️ useUniversalCreator: No card editor for reset');
+      return;
+    }
+    
     // Reset card data to initial state
     cardEditor.updateCardField('title', 'My New Card');
     cardEditor.updateCardField('description', '');
