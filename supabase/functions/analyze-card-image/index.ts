@@ -7,94 +7,125 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Simple, direct OpenAI analysis focused on person/character identification
+// Retry utility with exponential backoff
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (attempt === maxRetries - 1) throw error;
+      
+      const delay = baseDelay * Math.pow(2, attempt);
+      console.log(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
+
+// Enhanced OpenAI analysis with retry logic
 async function analyzeWithOpenAI(imageData: string) {
   const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
   
   if (!OPENAI_API_KEY) {
-    return null;
+    console.log('❌ No OpenAI API key found');
+    return { success: false, error: 'No OpenAI API key configured' };
   }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `Look at this image and identify:
-1. If there's a person, character, or recognizable figure - WHO IS IT? Give me their name if you can recognize them.
-2. What are the main subjects/objects in the image?
-3. What type of card would this be? (character, object, place, etc.)
+    return await retryWithBackoff(async () => {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: `Analyze this image and identify WHO this person is. I need you to:
 
-Be direct and specific. If you see someone recognizable, tell me their name. Don't be overly cautious about face coverings or accessories - look at the overall appearance.
+1. Look past any masks, face coverings, helmets, or accessories
+2. Focus on identifying the actual person by their overall appearance, build, context, uniform, etc.
+3. If you recognize them, tell me their name specifically
+4. Don't be overly cautious - if you think you know who it is, say so
 
 Respond in JSON format:
 {
-  "personName": "Name if you recognize them, null if not",
-  "mainSubject": "Primary subject description",
-  "cardType": "character/object/place/creature/etc",
+  "personName": "Actual person's name if you recognize them, null if you don't",
   "confidence": 0.0-1.0,
-  "description": "Brief description of what you see"
+  "description": "What you see in the image",
+  "reasoning": "Why you think this is that person",
+  "cardType": "character/sports/entertainment/etc"
 }`
-              },
-              {
-                type: 'image_url',
-                image_url: { url: imageData }
-              }
-            ]
-          }
-        ],
-        max_tokens: 400,
-        temperature: 0.3
-      })
-    });
+                },
+                {
+                  type: 'image_url',
+                  image_url: { url: imageData }
+                }
+              ]
+            }
+          ],
+          max_tokens: 500,
+          temperature: 0.1
+        })
+      });
 
-    if (!response.ok) {
-      console.error('OpenAI API error:', response.status, await response.text());
-      return null;
-    }
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`OpenAI API error: ${response.status} ${errorText}`);
+        
+        if (response.status === 429) {
+          throw new Error('Rate limit - will retry');
+        }
+        
+        return { success: false, error: `OpenAI API error: ${response.status}` };
+      }
 
-    const result = await response.json();
-    const content = result.choices[0]?.message?.content || '';
-    
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      const analysis = JSON.parse(jsonMatch ? jsonMatch[0] : content);
+      const result = await response.json();
+      const content = result.choices[0]?.message?.content || '';
       
-      return {
-        success: true,
-        method: 'openai',
-        confidence: analysis.confidence || 0.8,
-        personName: analysis.personName,
-        mainSubject: analysis.mainSubject || 'Unknown',
-        cardType: analysis.cardType || 'character',
-        description: analysis.description || '',
-        isPersonDetected: !!analysis.personName || analysis.cardType === 'character'
-      };
-    } catch (parseError) {
-      console.warn('Failed to parse OpenAI response:', parseError);
-      return null;
-    }
+      try {
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        const analysis = JSON.parse(jsonMatch ? jsonMatch[0] : content);
+        
+        return {
+          success: true,
+          method: 'openai',
+          confidence: analysis.confidence || 0.8,
+          personName: analysis.personName,
+          mainSubject: analysis.personName || 'Person',
+          cardType: analysis.cardType || 'character',
+          description: analysis.description || '',
+          reasoning: analysis.reasoning || '',
+          isPersonDetected: true
+        };
+      } catch (parseError) {
+        console.warn('Failed to parse OpenAI response:', parseError);
+        return { success: false, error: 'Failed to parse response' };
+      }
+    });
   } catch (error) {
-    console.error('OpenAI analysis failed:', error);
-    return null;
+    console.error('OpenAI analysis failed after retries:', error);
+    return { success: false, error: error.message };
   }
 }
 
-// Fallback object detection
-async function fallbackDetection(imageData: string) {
+// Face detection fallback using HuggingFace
+async function detectPersonWithHuggingFace(imageData: string) {
   const HUGGING_FACE_API_KEY = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
   
   if (!HUGGING_FACE_API_KEY) {
+    console.log('❌ No HuggingFace API key found');
     return null;
   }
 
@@ -102,8 +133,9 @@ async function fallbackDetection(imageData: string) {
     const response = await fetch(imageData);
     const blob = await response.blob();
     
+    // Use a proper face detection model instead of ResNet
     const hfResponse = await fetch(
-      "https://api-inference.huggingface.co/models/microsoft/resnet-50",
+      "https://api-inference.huggingface.co/models/facebook/detr-resnet-50",
       {
         headers: {
           "Authorization": `Bearer ${HUGGING_FACE_API_KEY}`,
@@ -114,69 +146,95 @@ async function fallbackDetection(imageData: string) {
     );
 
     if (!hfResponse.ok) {
+      console.error('HuggingFace API error:', hfResponse.status);
       return null;
     }
 
     const result = await hfResponse.json();
     
-    if (Array.isArray(result) && result.length > 0) {
-      const topResult = result[0];
+    // Look for person detection in results
+    if (Array.isArray(result)) {
+      const personDetection = result.find(item => 
+        item.label && item.label.toLowerCase().includes('person')
+      );
       
-      return {
-        success: true,
-        method: 'fallback',
-        confidence: topResult.score || 0.5,
-        mainSubject: topResult.label || 'Unknown',
-        cardType: 'object',
-        description: `Detected: ${topResult.label}`,
-        isPersonDetected: false
-      };
+      if (personDetection && personDetection.score > 0.5) {
+        return {
+          success: true,
+          method: 'huggingface-person-detection',
+          confidence: personDetection.score,
+          mainSubject: 'Person Detected',
+          cardType: 'character',
+          description: `Detected person with ${Math.round(personDetection.score * 100)}% confidence`,
+          isPersonDetected: true
+        };
+      }
     }
     
     return null;
   } catch (error) {
-    console.error('Fallback detection failed:', error);
+    console.error('HuggingFace person detection failed:', error);
     return null;
   }
 }
 
-// Main analysis function
-async function analyzeImage(imageData: string) {
-  console.log('🚀 Starting image analysis...');
-  
-  // Try OpenAI first (most capable)
-  let result = await analyzeWithOpenAI(imageData);
-  
-  if (result && result.confidence >= 0.6) {
-    console.log('✅ OpenAI analysis successful:', result);
-    return result;
-  }
-  
-  // Fallback to HuggingFace
-  console.log('🔄 Trying fallback detection...');
-  result = await fallbackDetection(imageData);
-  
-  if (result) {
-    console.log('✅ Fallback analysis completed:', result);
-    return result;
-  }
-  
-  // Last resort
-  console.log('❌ All analysis methods failed');
+// Generic visual analysis fallback
+async function genericVisualAnalysisFallback() {
   return {
-    success: false,
-    method: 'failed',
-    confidence: 0,
-    mainSubject: 'Unknown',
-    cardType: 'unknown',
-    description: 'Could not analyze image',
-    isPersonDetected: false,
-    error: 'Analysis failed'
+    success: true,
+    method: 'generic-fallback',
+    confidence: 0.3,
+    mainSubject: 'Unknown Person',
+    cardType: 'character',
+    description: 'Image contains a person but automatic identification failed',
+    isPersonDetected: true,
+    requiresManualInput: true
   };
 }
 
-// Generate card response
+// Main analysis orchestrator
+async function analyzeImage(imageData: string) {
+  console.log('🚀 Starting enhanced image analysis...');
+  
+  // Try OpenAI first (most capable)
+  console.log('🔍 Attempting OpenAI analysis...');
+  const openaiResult = await analyzeWithOpenAI(imageData);
+  
+  if (openaiResult.success && openaiResult.confidence >= 0.5) {
+    console.log('✅ OpenAI analysis successful:', openaiResult);
+    return openaiResult;
+  } else {
+    console.log('❌ OpenAI failed:', openaiResult.error);
+  }
+  
+  // Try HuggingFace person detection
+  console.log('🔍 Attempting HuggingFace person detection...');
+  const hfResult = await detectPersonWithHuggingFace(imageData);
+  
+  if (hfResult && hfResult.confidence >= 0.5) {
+    console.log('✅ HuggingFace person detection successful:', hfResult);
+    return hfResult;
+  } else {
+    console.log('❌ HuggingFace person detection failed');
+  }
+  
+  // Final fallback - assume it's a person but needs manual input
+  console.log('🔄 Using generic fallback...');
+  const fallbackResult = genericVisualAnalysisFallback();
+  console.log('✅ Generic fallback applied:', fallbackResult);
+  
+  return fallbackResult;
+}
+
+// Generate enhanced card response with debugging info
 function generateCardResponse(analysisResult: any) {
+  const debugInfo = {
+    detectionMethod: analysisResult.method || 'unknown',
+    confidence: analysisResult.confidence || 0,
+    success: analysisResult.success || false,
+    timestamp: new Date().toISOString()
+  };
+
   if (!analysisResult || !analysisResult.success) {
     return {
       extractedText: ['unknown'],
@@ -188,7 +246,7 @@ function generateCardResponse(analysisResult: any) {
       cardNumber: '',
       confidence: 0,
       analysisType: 'failed',
-      analysisMethod: 'none',
+      analysisMethod: analysisResult?.method || 'none',
       visualAnalysis: {
         subjects: ['Unknown'],
         colors: ['Unknown'],
@@ -202,7 +260,10 @@ function generateCardResponse(analysisResult: any) {
       rarity: null,
       requiresManualReview: true,
       error: true,
-      message: 'Image analysis failed. Please provide card details manually.'
+      message: analysisResult?.requiresManualInput 
+        ? 'Person detected, but automatic identification failed. Please enter details manually.'
+        : 'Image analysis failed. Please provide card details manually.',
+      debugInfo
     };
   }
   
@@ -230,8 +291,10 @@ function generateCardResponse(analysisResult: any) {
     creativeTitle: analysisResult.personName || analysisResult.mainSubject,
     creativeDescription: analysisResult.description,
     rarity: isPersonCard ? 'rare' : 'common',
-    requiresManualReview: analysisResult.confidence < 0.7,
-    error: false
+    requiresManualReview: analysisResult.confidence < 0.7 || analysisResult.requiresManualInput,
+    error: false,
+    reasoning: analysisResult.reasoning || '',
+    debugInfo
   };
 }
 
@@ -243,15 +306,20 @@ serve(async (req) => {
   try {
     const { imageData } = await req.json();
     
+    if (!imageData) {
+      throw new Error('No image data provided');
+    }
+    
     const analysisResult = await analyzeImage(imageData);
     const response = generateCardResponse(analysisResult);
     
-    console.log('📋 Final result:', {
+    console.log('📋 Final analysis result:', {
       method: analysisResult.method,
       confidence: response.confidence,
       personName: response.playerName,
       mainSubject: analysisResult.mainSubject,
-      requiresManualReview: response.requiresManualReview
+      requiresManualReview: response.requiresManualReview,
+      debugInfo: response.debugInfo
     });
     
     return new Response(JSON.stringify(response), {
@@ -259,7 +327,7 @@ serve(async (req) => {
     });
     
   } catch (error) {
-    console.error('❌ Analysis error:', error);
+    console.error('❌ Critical analysis error:', error);
     
     return new Response(JSON.stringify({
       extractedText: ['error'],
@@ -285,7 +353,14 @@ serve(async (req) => {
       rarity: null,
       requiresManualReview: true,
       error: true,
-      message: 'Analysis system error. Please try again or enter details manually.'
+      message: 'Critical system error. Please try again or enter details manually.',
+      debugInfo: {
+        detectionMethod: 'error',
+        confidence: 0,
+        success: false,
+        timestamp: new Date().toISOString(),
+        error: error.message
+      }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
