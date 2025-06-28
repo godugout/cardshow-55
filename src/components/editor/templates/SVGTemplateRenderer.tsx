@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { ClassicBaseballTemplate, ModernBaseballTemplate, VintageBaseballTemplate } from './BaseballCardTemplates';
+import { ClassicBaseballTemplate, ModernBaseballTemplate, VintageBaseballTemplate, NoFrameTemplate } from './BaseballCardTemplates';
 import type { DesignTemplate } from '@/types/card';
+import type { TeamColorScheme } from './TeamColors';
 
 interface SVGTemplateRendererProps {
   template: DesignTemplate;
@@ -9,7 +10,7 @@ interface SVGTemplateRendererProps {
   playerName?: string;
   teamName?: string;
   position?: string;
-  customColors?: Record<string, string>;
+  customColors?: TeamColorScheme;
   className?: string;
 }
 
@@ -35,6 +36,10 @@ export const SVGTemplateRenderer: React.FC<SVGTemplateRendererProps> = ({
 
   const renderTemplate = () => {
     switch (templateData.component || template.id) {
+      case 'NoFrameTemplate':
+      case 'no-frame':
+        return <NoFrameTemplate {...templateProps} />;
+      
       case 'ClassicBaseballTemplate':
       case 'classic-baseball':
         return <ClassicBaseballTemplate {...templateProps} />;
