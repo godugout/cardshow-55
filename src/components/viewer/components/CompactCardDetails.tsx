@@ -49,9 +49,9 @@ export const CompactCardDetails: React.FC<CompactCardDetailsProps> = ({
     .map(([effectId, params]) => ({
       id: effectId,
       name: effectId.charAt(0).toUpperCase() + effectId.slice(1),
-      intensity: params.intensity as Number
+      intensity: Number(params.intensity) // Convert to primitive number
     }))
-    .sort((a, b) => b.intensity - a.intensity) : [];
+    .sort((a, b) => Number(b.intensity) - Number(a.intensity)) : []; // Convert to primitive numbers for arithmetic
 
   return (
     <div className="bg-white bg-opacity-20 backdrop-blur border border-white/20 rounded-lg p-4 max-w-sm select-none hover:bg-opacity-30 transition-all duration-200" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
@@ -93,7 +93,7 @@ export const CompactCardDetails: React.FC<CompactCardDetailsProps> = ({
               {activeEffects.slice(0, 3).map(effect => (
                 <div key={effect.id} className="flex justify-between items-center">
                   <span className="text-gray-200">{effect.name}</span>
-                  <span className="text-xs text-gray-300">{effect.intensity}%</span>
+                  <span className="text-xs text-gray-300">{Number(effect.intensity)}%</span>
                 </div>
               ))}
               {activeEffects.length > 3 && (
