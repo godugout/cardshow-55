@@ -14,10 +14,22 @@ export const ProfessionalWizard: React.FC<ProfessionalWizardProps> = ({
 }) => {
   console.log('🎨 ProfessionalWizard: Rendering with web scraping functionality');
   
-  return (
-    <WizardContainer 
-      onComplete={onComplete}
-      onCancel={onCancel}
-    />
-  );
+  try {
+    return (
+      <WizardContainer 
+        onComplete={onComplete}
+        onCancel={onCancel}
+      />
+    );
+  } catch (error) {
+    console.error('❌ ProfessionalWizard: Error rendering:', error);
+    return (
+      <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-white mb-2">Card Creator Loading...</h2>
+          <p className="text-crd-lightGray">Initializing wizard components...</p>
+        </div>
+      </div>
+    );
+  }
 };
