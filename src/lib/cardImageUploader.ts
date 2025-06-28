@@ -47,24 +47,15 @@ export const uploadCardImage = async ({
       return { url: '', error: 'Invalid file type. Please use JPG, PNG, or WebP' };
     }
 
-    // Create a unique filename
+    // Create a unique filename with timestamp
     const fileExt = file.name.split('.').pop()?.toLowerCase();
-    const fileName = `${userId}/${cardId}-${Date.now()}.${fileExt}`;
+    const timestamp = Date.now();
+    const fileName = `${userId}/${cardId}-${timestamp}.${fileExt}`;
     
     console.log('📁 Upload path:', fileName);
 
     // Report initial progress
     if (onProgress) onProgress(10);
-
-    // Check if bucket exists, if not this will help us debug
-    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
-    if (bucketsError) {
-      console.error('❌ Error checking buckets:', bucketsError);
-    } else {
-      console.log('📦 Available buckets:', buckets?.map(b => b.name));
-    }
-
-    if (onProgress) onProgress(25);
 
     // Upload to Supabase Storage
     console.log('⬆️ Uploading to Supabase Storage...');
@@ -72,42 +63,12 @@ export const uploadCardImage = async ({
       .from('card-images')
       .upload(fileName, file, {
         cacheControl: '3600',
-        upsert: false
+        upsert: true // Allow overwriting existing files
       });
 
     if (error) {
       console.error('❌ Supabase upload error:', error);
-      
-      // Try to create the bucket if it doesn't exist
-      if (error.message.includes('The resource was not found')) {
-        console.log('🔧 Bucket not found, attempting to create...');
-        const { error: createBucketError } = await supabase.storage.createBucket('card-images', {
-          public: true
-        });
-        
-        if (createBucketError) {
-          console.error('❌ Failed to create bucket:', createBucketError);
-          return { url: '', error: `Storage error: ${error.message}` };
-        }
-        
-        // Retry upload after creating bucket
-        console.log('🔄 Retrying upload after bucket creation...');
-        const { data: retryData, error: retryError } = await supabase.storage
-          .from('card-images')
-          .upload(fileName, file, {
-            cacheControl: '3600', 
-            upsert: false
-          });
-          
-        if (retryError) {
-          console.error('❌ Retry upload failed:', retryError);
-          return { url: '', error: `Upload failed: ${retryError.message}` };
-        }
-        
-        console.log('✅ Retry upload successful:', retryData);
-      } else {
-        return { url: '', error: `Upload error: ${error.message}` };
-      }
+      return { url: '', error: `Upload error: ${error.message}` };
     }
 
     if (onProgress) onProgress(75);

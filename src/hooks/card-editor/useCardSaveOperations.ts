@@ -24,14 +24,17 @@ export const useCardSaveOperations = () => {
       errors.push('Card title is required');
     }
     
-    // Check if image URL is valid
+    // Check if image URL is valid (allow both blob and supabase URLs)
     if (cardData.image_url) {
       try {
         const url = new URL(cardData.image_url);
         console.log('✅ Image URL is valid:', url.href);
       } catch (error) {
-        console.error('❌ Invalid image URL:', cardData.image_url);
-        errors.push('Invalid image URL format');
+        // Allow blob URLs for temporary images
+        if (!cardData.image_url.startsWith('blob:')) {
+          console.error('❌ Invalid image URL:', cardData.image_url);
+          errors.push('Invalid image URL format');
+        }
       }
     }
     
@@ -51,7 +54,8 @@ export const useCardSaveOperations = () => {
     console.log('💾 Starting card save process...', {
       cardId: cardData.id,
       hasImage: !!cardData.image_url,
-      imageUrl: cardData.image_url?.substring(0, 50) + '...'
+      imageUrl: cardData.image_url?.substring(0, 50) + '...',
+      isBlob: cardData.image_url?.startsWith('blob:')
     });
 
     // Validate card data
@@ -73,7 +77,7 @@ export const useCardSaveOperations = () => {
     try {
       console.log('💾 Saving card with enhanced error handling...');
       
-      // 1. Save to localStorage using new storage service
+      // 1. Save to localStorage using storage service
       console.log('📱 Attempting localStorage save...');
       const localResult = CardStorageService.saveCard(finalCardData);
       if (!localResult.success) {
@@ -115,7 +119,8 @@ export const useCardSaveOperations = () => {
         console.log('🗄️ Database card data prepared:', {
           title: dbCardData.title,
           hasImage: !!dbCardData.image_url,
-          rarity: dbCardData.rarity
+          rarity: dbCardData.rarity,
+          isBlob: dbCardData.image_url?.startsWith('blob:')
         });
 
         const dbResult = await CardRepository.createCard(dbCardData);
@@ -123,7 +128,16 @@ export const useCardSaveOperations = () => {
           console.log('✅ Database save successful, card ID:', dbResult.id);
           dbSuccess = true;
           setLastSaved(new Date());
-          toast.success('Card saved successfully to database');
+          
+          // Show success message with image storage note
+          if (dbCardData.image_url?.startsWith('blob:')) {
+            toast.success('Card saved successfully', {
+              description: 'Note: Upload image to make it permanent'
+            });
+          } else {
+            toast.success('Card saved successfully with permanent image');
+          }
+          
           return { success: true, cardId: dbResult.id };
         } else {
           dbError = 'Database returned null result';

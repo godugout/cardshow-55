@@ -70,6 +70,7 @@ export const UploadSection = ({ cardEditor }: UploadSectionProps) => {
       if (result && result.url && !result.error) {
         console.log('✅ Upload successful:', result.url);
         
+        // Update card with the persistent image URL
         cardEditor.updateCardField('image_url', result.url);
         if (result.thumbnailUrl) {
           cardEditor.updateCardField('thumbnail_url', result.thumbnailUrl);
@@ -77,13 +78,15 @@ export const UploadSection = ({ cardEditor }: UploadSectionProps) => {
         }
         
         toast.success('Image uploaded successfully', {
-          description: 'Your card image has been updated.',
+          description: 'Your card image has been saved permanently.',
         });
 
         cancelUpload();
       } else {
         console.error('❌ Upload failed:', result?.error);
-        toast.error(result?.error || 'Upload failed for unknown reason');
+        toast.error('Upload failed', {
+          description: result?.error || 'Unknown error occurred'
+        });
       }
     } catch (error: any) {
       console.error('💥 Upload error:', error);
