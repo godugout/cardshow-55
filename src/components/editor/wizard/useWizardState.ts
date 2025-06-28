@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { unifiedCardAnalyzer, UnifiedAnalysisResult } from '@/services/imageAnalysis/unifiedCardAnalyzer';
@@ -32,8 +33,6 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     updateCardField('description', analysis.description);
     updateCardField('rarity', analysis.rarity);
     updateCardField('tags', analysis.tags);
-    updateCardField('type', analysis.type);
-    updateCardField('category', analysis.category);
     
     // Store additional metadata from analysis
     const designMetadata = {
@@ -47,7 +46,9 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
         condition: analysis.condition,
         estimatedValue: analysis.estimatedValue,
         specialFeatures: analysis.specialFeatures,
-        sources: analysis.sources
+        sources: analysis.sources,
+        category: analysis.category,
+        type: analysis.type
       }
     };
     
@@ -126,6 +127,7 @@ export const useWizardState = (onComplete: (cardData: CardData) => void) => {
     } as WizardHandlers,
     isSaving,
     templates,
-    cardEditor
+    cardEditor,
+    updateCardField: updateCardFieldHandler
   };
 };

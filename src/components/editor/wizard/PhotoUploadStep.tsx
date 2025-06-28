@@ -102,6 +102,8 @@ export const PhotoUploadStep = ({
       rarity: 'common',
       estimatedValue: 0,
       confidence: 0,
+      category: 'Baseball Card',
+      type: 'Sports Card',
       specialFeatures: [],
       tags: ['manual-entry'],
       sources: {
