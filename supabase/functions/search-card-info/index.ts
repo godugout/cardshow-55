@@ -1,7 +1,6 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { generateCreativeCardInfo } from './creativeGeneration.ts';
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
@@ -29,9 +28,18 @@ async function searchDuckDuckGo(query: string) {
 }
 
 async function generateEnhancedCardInfo(extractedData: any, searchResults: any) {
+  // If no OpenAI key, return minimal valid response
   if (!openAIApiKey) {
-    console.log('No OpenAI key - using enhanced creative generation');
-    return generateCreativeCardInfo(extractedData);
+    console.log('No OpenAI key - using basic generation');
+    return JSON.stringify({
+      title: extractedData.creativeTitle || extractedData.subjects?.[0] || 'Unknown Subject',
+      description: extractedData.creativeDescription || 'A unique collectible card.',
+      rarity: extractedData.rarity || 'common',
+      tags: extractedData.subjects || ['collectible'],
+      type: extractedData.analysisType === 'person' ? 'Character' : 'Entity',
+      series: 'Custom Collection',
+      confidence: extractedData.confidence || 0.5
+    });
   }
 
   const isVisualAnalysis = extractedData.analysisType === 'visual' || extractedData.analysisType === 'fallback';
@@ -69,7 +77,7 @@ Generate a JSON response with comprehensive card details.`;
         messages: [
           { 
             role: 'system', 
-            content: 'You are an expert trading card designer. Be creative and compelling.'
+            content: 'You are an expert trading card designer. Create engaging card information based on the provided analysis. Return only valid JSON with fields: title, description, rarity, tags, type, series, confidence.'
           },
           { role: 'user', content: prompt }
         ],
@@ -82,7 +90,16 @@ Generate a JSON response with comprehensive card details.`;
     return data.choices?.[0]?.message?.content;
   } catch (error) {
     console.error('OpenAI generation failed:', error);
-    return generateCreativeCardInfo(extractedData);
+    // Return basic valid response as fallback
+    return JSON.stringify({
+      title: extractedData.creativeTitle || extractedData.subjects?.[0] || 'Unknown Subject',
+      description: extractedData.creativeDescription || 'A unique collectible card.',
+      rarity: extractedData.rarity || 'common',
+      tags: extractedData.subjects || ['collectible'],
+      type: extractedData.analysisType === 'person' ? 'Character' : 'Entity',
+      series: 'Custom Collection',
+      confidence: extractedData.confidence || 0.5
+    });
   }
 }
 
@@ -107,10 +124,19 @@ serve(async (req) => {
     try {
       cardInfo = JSON.parse(cardInfoResponse);
     } catch (parseError) {
-      console.log('JSON parse failed, using creative generation:', parseError);
-      cardInfo = JSON.parse(generateCreativeCardInfo(extractedData));
+      console.log('JSON parse failed, using fallback:', parseError);
+      cardInfo = {
+        title: extractedData.creativeTitle || extractedData.subjects?.[0] || 'Unknown Subject',
+        description: extractedData.creativeDescription || 'A unique collectible card.',
+        rarity: extractedData.rarity || 'common',
+        tags: extractedData.subjects || ['collectible'],
+        type: extractedData.analysisType === 'person' ? 'Character' : 'Entity',
+        series: 'Custom Collection',
+        confidence: extractedData.confidence || 0.5
+      };
     }
 
+    // Boost confidence for visual analysis if reasonable
     if (extractedData.analysisType === 'visual' && cardInfo.confidence < 0.6) {
       cardInfo.confidence = 0.7;
     }
@@ -135,17 +161,17 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       success: true,
       cardInfo: {
-        title: 'Epic Discovery',
-        description: 'A fascinating entity that defies conventional understanding.',
-        rarity: 'rare',
-        tags: ['epic', 'discovery', 'unique', 'remarkable', 'mysterious'],
-        type: 'Legendary Entity',
-        series: 'Mysterious Origins',
-        confidence: 0.6
+        title: 'Unknown Subject',
+        description: 'A unique collectible card that requires manual details.',
+        rarity: 'common',
+        tags: ['collectible'],
+        type: 'Entity',
+        series: 'Custom Collection',
+        confidence: 0.3
       },
       analysisType: 'enhanced_fallback',
       searchResults: { hasResults: false },
-      note: 'Generated enhanced creative interpretation'
+      note: 'Manual entry recommended for better results'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
