@@ -4628,6 +4628,42 @@ export type Database = {
         }
         Relationships: []
       }
+      temp_card_analysis: {
+        Row: {
+          created_at: string | null
+          id: string
+          processed: boolean | null
+          relevance_score: number | null
+          session_id: string
+          snippet: string | null
+          source: string
+          title: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          processed?: boolean | null
+          relevance_score?: number | null
+          session_id: string
+          snippet?: string | null
+          source: string
+          title: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          processed?: boolean | null
+          relevance_score?: number | null
+          session_id?: string
+          snippet?: string | null
+          source?: string
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       trade_feedback: {
         Row: {
           created_at: string | null
@@ -5423,6 +5459,10 @@ export type Database = {
       calculate_user_level: {
         Args: { total_xp: number }
         Returns: Json
+      }
+      cleanup_temp_card_analysis: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       create_collection_from_template: {
         Args: { template_id: string; collection_title: string; user_id: string }
