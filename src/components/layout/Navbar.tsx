@@ -21,7 +21,10 @@ export const Navbar = () => {
                 className="w-8 h-8"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                  const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (nextElement) {
+                    nextElement.style.display = 'flex';
+                  }
                 }}
               />
               <div className="w-8 h-8 bg-crd-green rounded-lg flex items-center justify-center" style={{display: 'none'}}>

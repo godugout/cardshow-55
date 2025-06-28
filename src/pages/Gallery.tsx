@@ -4,10 +4,12 @@ import { GalleryHeader } from './Gallery/components/GalleryHeader';
 import { CardGrid } from '@/components/cards/CardGrid';
 import { useCards } from '@/hooks/useCards';
 import { LoadingState } from '@/components/common/LoadingState';
+import { useCardConversion } from './Gallery/hooks/useCardConversion';
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
   const { cards, featuredCards, loading, dataSource } = useCards();
+  const { convertCardsToCardData } = useCardConversion();
 
   console.log('🎨 Gallery: Rendering with cards:', cards.length, 'featured:', featuredCards.length, 'source:', dataSource);
 
@@ -16,15 +18,19 @@ const Gallery = () => {
   }
 
   const getDisplayCards = () => {
+    // Convert database cards to CardData format for display
+    const allCardsConverted = convertCardsToCardData(cards);
+    const featuredCardsConverted = convertCardsToCardData(featuredCards);
+    
     switch (activeTab) {
       case 'featured':
-        return featuredCards.length > 0 ? featuredCards : cards.slice(0, 8);
+        return featuredCardsConverted.length > 0 ? featuredCardsConverted : allCardsConverted.slice(0, 8);
       case 'trending':
-        return cards.filter(card => card.view_count && card.view_count > 10).slice(0, 20);
+        return allCardsConverted.filter(card => card.view_count && card.view_count > 10).slice(0, 20);
       case 'new':
-        return cards.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 20);
+        return allCardsConverted.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()).slice(0, 20);
       default:
-        return cards;
+        return allCardsConverted;
     }
   };
 

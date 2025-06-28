@@ -1,14 +1,13 @@
 
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
 import { mockCards as fallbackMockCards } from '../mockData';
 import { useCards } from '@/hooks/useCards';
 import { useCardConversion } from '@/pages/Gallery/hooks/useCardConversion';
 
-export const useStudioState = () => {
-  const { cardId } = useParams<{ cardId?: string }>();
+export const useStudioState = (cardId?: string) => {
   const navigate = useNavigate();
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
