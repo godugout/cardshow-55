@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { useCards } from '@/hooks/useCards';
 import { useCardConversion } from '@/pages/Gallery/hooks/useCardConversion';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { SlabPresetConfig } from '../SlabPresets';
 
 export const useShowcaseState = (cardId?: string) => {

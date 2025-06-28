@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import { mockCards as fallbackMockCards } from '../mockData';
 import { useCards } from '@/hooks/useCards';
 import { useCardConversion } from '@/pages/Gallery/hooks/useCardConversion';
