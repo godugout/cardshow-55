@@ -8,7 +8,7 @@ import type { CardData } from '@/hooks/useCardEditor';
 const CreateCard = () => {
   const navigate = useNavigate();
 
-  console.log('CreateCard page loaded - initializing SimpleCardCreator');
+  console.log('CreateCard page loaded - starting directly at upload step');
 
   const handleComplete = (cardData: CardData) => {
     console.log('Card created successfully:', cardData);
@@ -27,6 +27,7 @@ const CreateCard = () => {
           initialMode="quick"
           onComplete={handleComplete}
           onCancel={handleCancel}
+          skipIntent={true}
         />
       </ErrorBoundary>
     </div>

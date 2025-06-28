@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +12,7 @@ interface SimpleCardCreatorProps {
   initialMode?: CreationMode;
   onComplete?: (cardData: CardData) => void;
   onCancel?: () => void;
+  skipIntent?: boolean;
 }
 
 // Static configuration to prevent re-creation
@@ -24,15 +26,18 @@ const STEP_CONFIGS = {
 export const SimpleCardCreator = ({
   initialMode = 'quick',
   onComplete,
-  onCancel
+  onCancel,
+  skipIntent = false
 }: SimpleCardCreatorProps) => {
-  console.log('🚀 SimpleCardCreator: Initializing with mode:', initialMode);
+  console.log('🚀 SimpleCardCreator: Initializing with mode:', initialMode, 'skipIntent:', skipIntent);
   
   const navigate = useNavigate();
   
   // Simple, direct state management
   const [currentMode, setCurrentMode] = useState<CreationMode>(initialMode);
-  const [currentStep, setCurrentStep] = useState<CreationStep>('intent');
+  const [currentStep, setCurrentStep] = useState<CreationStep>(
+    skipIntent ? 'upload' : 'intent'
+  );
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -45,42 +50,47 @@ export const SimpleCardCreator = ({
   // Get current steps for mode
   const currentSteps = useMemo(() => STEP_CONFIGS[currentMode], [currentMode]);
   
-  // Calculate progress
-  const currentIndex = useMemo(() => 
-    currentSteps.indexOf(currentStep), [currentSteps, currentStep]
-  );
+  // Calculate progress - adjust for skipped intent step
+  const currentIndex = useMemo(() => {
+    const index = currentSteps.indexOf(currentStep);
+    return skipIntent && index > 0 ? index - 1 : index;
+  }, [currentSteps, currentStep, skipIntent]);
   
-  const progress = useMemo(() => 
-    currentIndex >= 0 ? (currentIndex / (currentSteps.length - 1)) * 100 : 0
-  , [currentIndex, currentSteps.length]);
+  const progress = useMemo(() => {
+    const totalSteps = skipIntent ? currentSteps.length - 1 : currentSteps.length;
+    return currentIndex >= 0 ? (currentIndex / (totalSteps - 1)) * 100 : 0;
+  }, [currentIndex, currentSteps.length, skipIntent]);
 
   // Navigation handlers
   const handleModeSelect = useCallback((mode: CreationMode) => {
     console.log('🎯 SimpleCardCreator: Mode selected:', mode);
     setCurrentMode(mode);
-    setCurrentStep(STEP_CONFIGS[mode][1] || 'upload'); // Skip intent step
+    setCurrentStep(skipIntent ? 'upload' : STEP_CONFIGS[mode][1] || 'upload');
     setError(null);
-  }, []);
+  }, [skipIntent]);
 
   const handleNextStep = useCallback(() => {
-    const nextIndex = currentIndex + 1;
+    const nextIndex = currentSteps.indexOf(currentStep) + 1;
     if (nextIndex < currentSteps.length) {
       const nextStep = currentSteps[nextIndex];
       console.log('➡️ SimpleCardCreator: Moving to step:', nextStep);
       setCurrentStep(nextStep);
       setError(null);
     }
-  }, [currentIndex, currentSteps]);
+  }, [currentSteps, currentStep]);
 
   const handlePreviousStep = useCallback(() => {
-    const prevIndex = currentIndex - 1;
-    if (prevIndex >= 0) {
+    const currentIdx = currentSteps.indexOf(currentStep);
+    const prevIndex = currentIdx - 1;
+    // Don't go back to intent if we're skipping it
+    const minIndex = skipIntent ? 1 : 0;
+    if (prevIndex >= minIndex) {
       const prevStep = currentSteps[prevIndex];
       console.log('⬅️ SimpleCardCreator: Moving to step:', prevStep);
       setCurrentStep(prevStep);
       setError(null);
     }
-  }, [currentIndex, currentSteps]);
+  }, [currentSteps, currentStep, skipIntent]);
 
   // Validation - moved to callback to prevent render loops
   const validateCurrentStep = useCallback(() => {
@@ -142,10 +152,10 @@ export const SimpleCardCreator = ({
       cardEditor.updateCardField('image_url', undefined);
     }
     setCurrentMode(initialMode);
-    setCurrentStep('intent');
+    setCurrentStep(skipIntent ? 'upload' : 'intent');
     setError(null);
     setIsCreating(false);
-  }, [cardEditor, initialMode]);
+  }, [cardEditor, initialMode, skipIntent]);
 
   const handleGoToGallery = useCallback(() => {
     console.log('🏠 SimpleCardCreator: Navigating to gallery');
@@ -159,7 +169,9 @@ export const SimpleCardCreator = ({
 
   // Check validation state
   const canProceed = validateCurrentStep();
-  const canGoBack = currentIndex > 0;
+  const currentIdx = currentSteps.indexOf(currentStep);
+  const minIndex = skipIntent ? 1 : 0;
+  const canGoBack = currentIdx > minIndex;
   const showNavigation = currentStep !== 'intent' && currentStep !== 'complete';
 
   // Loading state
@@ -182,7 +194,7 @@ export const SimpleCardCreator = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold text-crd-white">Create Card</h1>
-            {showNavigation && (
+            {showNavigation && !skipIntent && (
               <CRDButton
                 variant="outline"
                 size="sm"
@@ -211,7 +223,7 @@ export const SimpleCardCreator = ({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-crd-white">
-                Step {currentIndex + 1} of {currentSteps.length}
+                Step {currentIndex + 1} of {skipIntent ? currentSteps.length - 1 : currentSteps.length}
               </span>
               <span className="text-sm text-crd-lightGray">{Math.round(progress)}% Complete</span>
             </div>
@@ -264,7 +276,7 @@ export const SimpleCardCreator = ({
             </CRDButton>
 
             <div className="text-crd-lightGray text-sm">
-              Step {currentIndex + 1} of {currentSteps.length}
+              Step {currentIndex + 1} of {skipIntent ? currentSteps.length - 1 : currentSteps.length}
             </div>
 
             {currentStep === 'publish' ? (
