@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { RotateCcw } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 import type { ColorTheme } from '@/hooks/useColorThemes';
 
 interface TeamColorCardProps {
@@ -57,8 +58,28 @@ export const TeamColorCard = ({
         {displayName}
       </div>
 
-      {/* Rotation Button */}
-      <div className="flex justify-center mb-3">
+      {/* Color Pills and Rotation Button in Same Row */}
+      <div className="flex items-center justify-center gap-2">
+        {/* Color Pills */}
+        <div className="flex items-center gap-2">
+          <div 
+            className="w-4 h-4 rounded-full border border-white/20" 
+            style={{ backgroundColor: primary }}
+          />
+          <div 
+            className="w-4 h-4 rounded-full border border-white/20" 
+            style={{ backgroundColor: secondary }}
+          />
+          <div 
+            className="w-4 h-4 rounded-full border border-white/20" 
+            style={{ backgroundColor: accent }}
+          />
+        </div>
+
+        {/* Divider */}
+        <Separator orientation="vertical" className="h-4 bg-crd-mediumGray/30" />
+
+        {/* Rotation Button */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -69,22 +90,6 @@ export const TeamColorCard = ({
         >
           <RotateCcw className="w-4 h-4 text-crd-lightGray" />
         </button>
-      </div>
-
-      {/* Color Pills at Bottom */}
-      <div className="flex justify-center gap-2">
-        <div 
-          className="w-4 h-4 rounded-full border border-white/20" 
-          style={{ backgroundColor: primary }}
-        />
-        <div 
-          className="w-4 h-4 rounded-full border border-white/20" 
-          style={{ backgroundColor: secondary }}
-        />
-        <div 
-          className="w-4 h-4 rounded-full border border-white/20" 
-          style={{ backgroundColor: accent }}
-        />
       </div>
       
       {/* Hover tooltip showing all teams */}
