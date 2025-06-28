@@ -22,6 +22,7 @@ const App = () => {
               <Route path="/create" element={<CreateCard />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/studio" element={<Studio />} />
+              <Route path="/studio/:cardId" element={<Studio />} />
             </Routes>
             <Toaster 
               position="top-right"

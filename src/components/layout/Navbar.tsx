@@ -12,12 +12,23 @@ export const Navbar = () => {
     <nav className="bg-crd-darker border-b border-crd-mediumGray/20 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-crd-green rounded-lg flex items-center justify-center">
-              <span className="text-black font-bold text-sm">C</span>
+          {/* Logo with Menu Style */}
+          <Link to="/" className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              <img
+                src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png"
+                alt="CRD Logo"
+                className="w-8 h-8"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                }}
+              />
+              <div className="w-8 h-8 bg-crd-green rounded-lg flex items-center justify-center" style={{display: 'none'}}>
+                <span className="text-black font-bold text-sm">C</span>
+              </div>
+              <span className="text-white font-bold text-xl font-orbitron">CARDSHOW</span>
             </div>
-            <span className="text-white font-bold text-xl">Cardshow</span>
           </Link>
 
           {/* Navigation Links */}

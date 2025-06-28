@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
@@ -10,6 +11,7 @@ import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 
 const Studio = () => {
+  const { cardId } = useParams();
   const { user } = useAuth();
   const [showSeedPrompt, setShowSeedPrompt] = useState(false);
   const [hasCheckedDatabase, setHasCheckedDatabase] = useState(false);
@@ -24,7 +26,9 @@ const Studio = () => {
     handleShare,
     handleDownload,
     handleClose
-  } = useStudioState();
+  } = useStudioState(cardId);
+
+  console.log('🎮 Studio: Rendering with cardId:', cardId, 'selectedCard:', selectedCard?.title);
 
   // Check if database has cards and show seed prompt if needed
   useEffect(() => {
@@ -78,7 +82,7 @@ const Studio = () => {
         {/* Data source indicator (only in development) */}
         {process.env.NODE_ENV === 'development' && (
           <div className="fixed top-4 left-4 z-50 bg-black/80 text-white px-2 py-1 rounded text-xs">
-            Source: {dataSource} ({mockCards.length} cards)
+            Source: {dataSource} ({mockCards.length} cards) | Card: {cardId || 'auto-selected'}
           </div>
         )}
         
