@@ -13,10 +13,24 @@ import type { CardData } from '@/types/card';
 
 // Helper function to convert CardData to the format expected by ImmersiveCardViewer
 const convertCardForViewer = (card: CardData) => {
+  console.log('🔄 Converting card for viewer:', card.title, 'Image URL:', card.image_url);
+  
   return {
-    ...card,
+    id: card.id,
+    title: card.title,
+    description: card.description,
+    image_url: card.image_url, // Ensure image_url is preserved
+    thumbnail_url: card.thumbnail_url,
+    tags: card.tags,
+    design_metadata: card.design_metadata,
+    visibility: card.visibility,
+    template_id: card.template_id,
+    type: card.design_metadata?.type,
+    series: card.design_metadata?.series,
     // Map epic to ultra-rare for compatibility with viewer
-    rarity: card.rarity === 'epic' ? 'ultra-rare' as const : card.rarity as 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary',
+    rarity: card.rarity === 'epic' ? 'ultra-rare' as const : 
+           card.rarity === 'legendary' ? 'legendary' as const :
+           card.rarity as 'common' | 'uncommon' | 'rare' | 'ultra-rare' | 'legendary',
     // Ensure creator_attribution has required properties for viewer
     creator_attribution: {
       creator_name: card.creator_attribution?.creator_name || 'Unknown Creator',
@@ -33,7 +47,17 @@ const convertCardForViewer = (card: CardData) => {
         limited_edition: card.publishing_options?.distribution?.limited_edition ?? false,
         edition_size: card.publishing_options?.distribution?.edition_size
       }
-    }
+    },
+    verification_status: card.verification_status,
+    print_metadata: card.print_metadata,
+    creator_id: card.creator_id,
+    // Add properties that might be needed
+    needsSync: false,
+    isLocal: false,
+    is_public: card.visibility === 'public',
+    shop_id: undefined,
+    collection_id: card.collection_id,
+    team_id: card.team_id
   };
 };
 
@@ -101,11 +125,14 @@ const Studio = () => {
   // Debug info in development
   if (process.env.NODE_ENV === 'development') {
     console.log(`🎮 Studio rendering card: ${selectedCard.title} from ${dataSource} source`);
+    console.log('🖼️ Card image URL:', selectedCard.image_url);
   }
 
   // Convert card and mockCards for viewer compatibility
   const viewerCard = convertCardForViewer(selectedCard);
   const viewerCards = mockCards.map(convertCardForViewer);
+
+  console.log('🎯 Converted viewer card:', viewerCard.title, 'Image URL:', viewerCard.image_url);
 
   const handleViewerShare = (card: any) => {
     // Convert back to original CardData format for the handler

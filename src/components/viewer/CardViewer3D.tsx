@@ -1,10 +1,9 @@
-
 import React, { useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 interface CardViewer3DProps {
   card: CardData;

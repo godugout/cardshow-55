@@ -1,5 +1,6 @@
+
 import React from 'react';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentControls } from '../types';
 import { CardFrontContainer } from './CardFrontContainer';

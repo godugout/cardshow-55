@@ -2,7 +2,7 @@
 import React, { Suspense } from 'react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { CardViewer3D } from './CardViewer3D';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 interface CardViewer3DContainerProps {
   card: CardData;
