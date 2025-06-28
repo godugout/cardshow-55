@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
@@ -5,7 +6,9 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { Card, CardContent } from '@/components/ui/card';
 import { StepIndicator } from './components/StepIndicator';
 import { StepContent } from './components/StepContent';
-import { WIZARD_STEPS } from './wizardConfig';
+import { IntentStep } from './components/steps/IntentStep';
+import { PhotoStep } from './components/steps/PhotoStep';
+import { WIZARD_STEPS } from '@/components/editor/wizard/wizardConfig';
 import type { CreationMode, CreationStep } from './types';
 import type { DesignTemplate } from '@/types/card';
 
@@ -110,50 +113,8 @@ export const EnhancedCardCreator = ({ onComplete, onCancel }: EnhancedCardCreato
         );
 
       case 'details':
-        return (
-          <StepContent
-            step={currentStep}
-            mode={selectedMode}
-            cardData={cardEditor.cardData}
-            onModeSelect={handleModeSelect}
-            onPhotoSelect={(photo) => cardEditor.updateCardField('image_url', photo)}
-            onFieldUpdate={cardEditor.updateCardField}
-            onBulkUpload={() => navigate('/cards/bulk-upload')}
-            onGoToGallery={() => navigate('/gallery')}
-            onStartOver={handleStartOver}
-          />
-        );
-
       case 'design':
-        return (
-          <StepContent
-            step={currentStep}
-            mode={selectedMode}
-            cardData={cardEditor.cardData}
-            onModeSelect={handleModeSelect}
-            onPhotoSelect={(photo) => cardEditor.updateCardField('image_url', photo)}
-            onFieldUpdate={cardEditor.updateCardField}
-            onBulkUpload={() => navigate('/cards/bulk-upload')}
-            onGoToGallery={() => navigate('/gallery')}
-            onStartOver={handleStartOver}
-          />
-        );
-
       case 'publish':
-        return (
-          <StepContent
-            step={currentStep}
-            mode={selectedMode}
-            cardData={cardEditor.cardData}
-            onModeSelect={handleModeSelect}
-            onPhotoSelect={(photo) => cardEditor.updateCardField('image_url', photo)}
-            onFieldUpdate={cardEditor.updateCardField}
-            onBulkUpload={() => navigate('/cards/bulk-upload')}
-            onGoToGallery={() => navigate('/gallery')}
-            onStartOver={handleStartOver}
-          />
-        );
-
       case 'complete':
         return (
           <StepContent
