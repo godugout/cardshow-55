@@ -5,7 +5,7 @@ import { useCardSaveOperations } from '@/hooks/card-editor/useCardSaveOperations
 import { useAutoSave } from '@/hooks/card-editor/useAutoSave';
 
 // Re-export types from the main types file
-export type { CardData, CardRarity, CardVisibility, CreatorAttribution, PublishingOptions } from '@/types/card';
+export type { CardData, CardRarity, CardVisibility, CreatorAttribution, PublishingOptions, DesignTemplate } from '@/types/card';
 export type { CardTemplate } from '@/hooks/card-editor/types';
 
 export interface UseCardEditorOptions {

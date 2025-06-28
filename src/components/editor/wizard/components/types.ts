@@ -1,17 +1,5 @@
 
-import type { CardRarity, CardVisibility, CreatorAttribution } from '@/hooks/useCardEditor';
-
-export interface CardData {
-  title: string;
-  description?: string;
-  rarity: CardRarity;
-  tags: string[];
-  type?: string;
-  series?: string;
-  image_url?: string;
-  visibility?: CardVisibility;
-  creator_attribution?: CreatorAttribution;
-}
+import type { CardRarity, CardVisibility, CreatorAttribution, CardData } from '@/types/card';
 
 export interface CardDetailsStepProps {
   cardData: Partial<CardData>;

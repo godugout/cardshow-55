@@ -1,6 +1,8 @@
+
 import { localForage } from '@/lib/localforage';
 import { v4 as uuidv4 } from 'uuid';
 import type { CardData } from '@/types/card';
+import { CardStorageService } from '@/services/cardStorage';
 
 // Simplified wrapper for backward compatibility
 export const localCardStorage = {
