@@ -4,8 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Globe, Lock, Users } from 'lucide-react';
-import type { CardData } from './types';
-import type { CardVisibility, CreatorAttribution } from '@/hooks/useCardEditor';
+import type { CardData, CardVisibility, CreatorAttribution } from '@/types/card';
 
 interface CreatorAttributionFieldsProps {
   cardData: Partial<CardData>;

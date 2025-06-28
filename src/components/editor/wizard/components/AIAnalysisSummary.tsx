@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import type { CardData } from './types';
+import type { CardData } from '@/types/card';
 
 interface AIAnalysisSummaryProps {
   cardData: Partial<CardData>;

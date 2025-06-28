@@ -5,8 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sparkles } from 'lucide-react';
-import type { CardData } from './types';
-import type { CardRarity } from '@/hooks/useCardEditor';
+import type { CardData, CardRarity } from '@/types/card';
 
 interface CardInfoFieldsProps {
   cardData: Partial<CardData>;
@@ -61,7 +60,7 @@ export const CardInfoFields = ({
             <SelectItem value="common">Common</SelectItem>
             <SelectItem value="uncommon">Uncommon</SelectItem>
             <SelectItem value="rare">Rare</SelectItem>
-            <SelectItem value="ultra-rare">Ultra Rare</SelectItem>
+            <SelectItem value="epic">Epic</SelectItem>
             <SelectItem value="legendary">Legendary</SelectItem>
           </SelectContent>
         </Select>

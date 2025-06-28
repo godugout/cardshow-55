@@ -5,8 +5,15 @@ import { CRDIdSystem } from './components/CRDIdSystem';
 import { CardInfoFields } from './components/CardInfoFields';
 import { CreatorAttributionFields } from './components/CreatorAttributionFields';
 import { AIAnalysisSummary } from './components/AIAnalysisSummary';
-import type { CardDetailsStepProps } from './components/types';
+import type { CardData, CreatorAttribution } from '@/types/card';
 import type { CardSearchResult } from './hooks/useCardWebSearch';
+
+interface CardDetailsStepProps {
+  cardData: Partial<CardData>;
+  onFieldUpdate: <K extends keyof CardData>(field: K, value: any) => void;
+  onCreatorAttributionUpdate: (key: keyof CreatorAttribution, value: any) => void;
+  aiAnalysisComplete?: boolean;
+}
 
 export const CardDetailsStep = ({ 
   cardData, 
