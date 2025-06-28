@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
-import type { CreationMode, CreationStep, CreationState } from '../types';
+import type { CreationMode, CreationStep } from '../types';
 
 interface UseUniversalCreatorProps {
   initialMode?: CreationMode;
@@ -12,7 +12,7 @@ interface UseUniversalCreatorProps {
   onCancel?: () => void;
 }
 
-// Stable mode configurations - defined outside component to prevent re-creation
+// Move MODE_CONFIGS outside to prevent re-creation
 const MODE_CONFIGS = [
   {
     id: 'quick' as CreationMode,
@@ -69,7 +69,6 @@ export const useUniversalCreator = ({
   const [isCreating, setIsCreating] = useState(false);
   const [creationError, setCreationError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isInitializing, setIsInitializing] = useState(false);
 
   // Initialize card editor with minimal config - DON'T auto-save during creation
   const cardEditor = useCardEditor({
@@ -234,10 +233,9 @@ export const useUniversalCreator = ({
     setCreationError(null);
     setErrors({});
     setIsCreating(false);
-    setIsInitializing(false);
   }, [cardEditor, initialMode]);
 
-  const updateState = useCallback((updates: Partial<CreationState>) => {
+  const updateState = useCallback((updates: Partial<{ currentStep: CreationStep; errors: Record<string, string> }>) => {
     console.log('🔄 useUniversalCreator: State update:', updates);
     if (updates.currentStep) setCurrentStep(updates.currentStep);
     if (updates.errors) setErrors(updates.errors);
@@ -254,8 +252,8 @@ export const useUniversalCreator = ({
     errors,
     isCreating,
     creationError,
-    isInitializing
-  }), [mode, currentStep, navigationState, progress, errors, isCreating, creationError, isInitializing]);
+    isInitializing: false
+  }), [mode, currentStep, navigationState, progress, errors, isCreating, creationError]);
 
   console.log('✅ useUniversalCreator: Hook setup complete, current step:', currentStep);
 
