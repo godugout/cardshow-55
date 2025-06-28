@@ -2,7 +2,7 @@
 import React from 'react';
 import { CardViewer3DContainer } from './CardViewer3DContainer';
 import { useCardEffects } from './hooks/useCardEffects';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 interface Card3DPreviewProps {
   card: CardData;

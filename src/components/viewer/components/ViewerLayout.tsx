@@ -7,7 +7,7 @@ import { CardNavigationHandler } from './CardNavigationHandler';
 import { ViewerInfoPanel } from './ViewerInfoPanel';
 import { BackgroundRenderer } from './BackgroundRenderer';
 import { EnhancedCardContainer } from './EnhancedCardContainer';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { useSafeZones } from '../hooks/useSafeZones';
