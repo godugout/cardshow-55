@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { IntentStep } from './steps/IntentStep';
 import { PhotoStep } from './steps/PhotoStep';
@@ -19,6 +18,8 @@ interface StepContentProps {
   onBulkUpload: () => void;
   onGoToGallery: () => void;
   onStartOver: () => void;
+  selectedFrame?: import('@/types/card').DesignTemplate;
+  onFrameSelect?: (frame: import('@/types/card').DesignTemplate) => void;
 }
 
 export const StepContent = ({
@@ -30,7 +31,9 @@ export const StepContent = ({
   onFieldUpdate,
   onBulkUpload,
   onGoToGallery,
-  onStartOver
+  onStartOver,
+  selectedFrame,
+  onFrameSelect
 }: StepContentProps) => {
   console.log('🎯 StepContent: Rendering step:', step, 'with mode:', mode);
 
@@ -50,6 +53,8 @@ export const StepContent = ({
           selectedPhoto={cardData?.image_url}
           onPhotoSelect={onPhotoSelect}
           cardData={cardData}
+          selectedFrame={selectedFrame}
+          onFrameSelect={onFrameSelect}
         />
       );
 
