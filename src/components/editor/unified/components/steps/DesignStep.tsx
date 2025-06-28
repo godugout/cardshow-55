@@ -96,7 +96,7 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
             <div>
               <label className="block text-crd-white font-medium mb-3">Visibility</label>
               <div className="space-y-2">
-                {(['private', 'public', 'friends'] as const).map((visibility) => (
+                {(['private', 'public', 'shared'] as const).map((visibility) => (
                   <CRDButton
                     key={visibility}
                     variant={cardData.visibility === visibility ? 'primary' : 'outline'}
@@ -160,7 +160,7 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
               <strong className="text-crd-white">Visibility Options:</strong>
               <ul className="mt-1 space-y-1">
                 <li>• Private: Only you can see it</li>
-                <li>• Friends: Shared with connections</li>
+                <li>• Shared: Shared with connections</li>
                 <li>• Public: Visible to everyone</li>
               </ul>
             </div>

@@ -35,7 +35,7 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
   const getVisibilityIcon = () => {
     switch (cardData.visibility) {
       case 'public': return <Globe className="w-4 h-4" />;
-      case 'friends': return <Users className="w-4 h-4" />;
+      case 'shared': return <Users className="w-4 h-4" />;
       default: return <Lock className="w-4 h-4" />;
     }
   };
