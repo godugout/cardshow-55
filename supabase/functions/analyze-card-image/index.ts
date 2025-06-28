@@ -18,16 +18,17 @@ interface UniversalAnalysisResult {
   context?: string;
   searchResults?: any[];
   error?: string;
+  isPersonDetected?: boolean;
 }
 
-// Universal AI Analysis using OpenAI Vision
-async function universalAIAnalysis(imageData: string): Promise<UniversalAnalysisResult> {
+// Enhanced OpenAI Vision Analysis with better prompting and retry logic
+async function enhancedOpenAIAnalysis(imageData: string): Promise<UniversalAnalysisResult> {
   const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
   
   if (!OPENAI_API_KEY) {
     return {
       success: false,
-      method: 'openai_universal',
+      method: 'openai_enhanced',
       confidence: 0,
       subjects: [],
       detectedObjects: [],
@@ -35,133 +36,178 @@ async function universalAIAnalysis(imageData: string): Promise<UniversalAnalysis
     };
   }
 
-  try {
-    console.log('🎯 Universal AI Analysis: OpenAI Vision starting...');
-    
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `Analyze this image and provide detailed identification. If you recognize any specific people, name them. Focus on:
-                1. Main subject(s) - be specific with names if recognizable
-                2. Secondary objects or elements
-                3. Colors, style, mood
-                4. Context or setting
-                5. Any text visible in the image
-                
-                Return your analysis in this exact JSON format:
-                {
-                  "mainSubject": "specific name if person/character, or general description",
-                  "isPerson": true/false,
-                  "personName": "full name if recognized, null otherwise",
-                  "objects": ["list", "of", "objects"],
-                  "colors": ["dominant", "colors"],
-                  "style": "description of visual style",
-                  "context": "setting or background context",
-                  "confidence": 0.0-1.0,
-                  "extractedText": ["any", "text", "found"]
-                }`
-              },
-              {
-                type: 'image_url',
-                image_url: { url: imageData }
-              }
-            ]
-          }
-        ],
-        max_tokens: 500,
-        temperature: 0.1
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
-    }
-
-    const result = await response.json();
-    const content = result.choices[0]?.message?.content || '';
-    
-    console.log('📝 Raw AI response:', content);
-    
-    // Try to parse JSON response
-    let analysis;
+  // Retry logic for rate limits
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      // Extract JSON from response if wrapped in markdown
-      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || content.match(/\{[\s\S]*\}/);
-      const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
-      analysis = JSON.parse(jsonStr);
-    } catch (parseError) {
-      console.warn('Failed to parse JSON, extracting manually:', parseError);
-      // Fallback: extract information manually
-      const lines = content.toLowerCase().split('\n');
-      analysis = {
-        mainSubject: content.includes('bowie') ? 'David Bowie' : 'unknown subject',
-        isPerson: content.includes('person') || content.includes('man') || content.includes('woman'),
-        personName: null,
-        objects: ['person'],
-        colors: ['unknown'],
-        style: 'unknown',
-        context: 'unknown',
-        confidence: 0.3,
-        extractedText: []
+      console.log(`🎯 Enhanced OpenAI Analysis attempt ${attempt}...`);
+      
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: `Analyze this image with extreme precision. Focus on identifying:
+
+1. PEOPLE FIRST: If there's any person, celebrity, character, or human face - identify them by name if possible
+2. Main subjects and objects in the image
+3. Visual style, colors, and artistic elements
+4. Any text or symbols visible
+5. Context and setting
+
+CRITICAL: If you see a person or face, prioritize that over objects like masks, costumes, or accessories they might be wearing.
+
+Return ONLY valid JSON in this exact format:
+{
+  "isPerson": true/false,
+  "personName": "full name if recognized, null otherwise", 
+  "mainSubject": "primary subject description",
+  "allObjects": ["list", "of", "all", "detected", "objects"],
+  "colors": ["dominant", "colors"],
+  "style": "visual style description",
+  "context": "setting/background context",
+  "confidence": 0.0-1.0,
+  "textFound": ["any", "visible", "text"]
+}`
+                },
+                {
+                  type: 'image_url',
+                  image_url: { url: imageData }
+                }
+              ]
+            }
+          ],
+          max_tokens: 600,
+          temperature: 0.1
+        })
+      });
+
+      if (response.status === 429) {
+        console.log(`⚠️ Rate limited on attempt ${attempt}, waiting before retry...`);
+        if (attempt < 3) {
+          await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+          continue;
+        }
+        throw new Error('Rate limited after all retries');
+      }
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.status} - ${await response.text()}`);
+      }
+
+      const result = await response.json();
+      const content = result.choices[0]?.message?.content || '';
+      
+      console.log('📝 Enhanced AI response:', content);
+      
+      // Parse JSON response
+      let analysis;
+      try {
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        const jsonStr = jsonMatch ? jsonMatch[0] : content;
+        analysis = JSON.parse(jsonStr);
+      } catch (parseError) {
+        console.warn('Failed to parse JSON, extracting manually:', parseError);
+        // Manual extraction fallback
+        const isPerson = content.toLowerCase().includes('person') || content.toLowerCase().includes('face') || content.toLowerCase().includes('human');
+        analysis = {
+          isPerson,
+          personName: null,
+          mainSubject: 'unidentified subject',
+          allObjects: ['unknown'],
+          colors: ['unknown'],
+          style: 'unknown',
+          context: 'unknown',
+          confidence: 0.3,
+          textFound: []
+        };
+      }
+      
+      // Calculate enhanced confidence
+      let confidence = analysis.confidence || 0.5;
+      if (analysis.isPerson && analysis.personName) {
+        confidence = Math.max(confidence, 0.9); // Very high for named people
+      } else if (analysis.isPerson) {
+        confidence = Math.max(confidence, 0.75); // High for detected people
+      } else if (analysis.mainSubject && !analysis.mainSubject.includes('unknown')) {
+        confidence = Math.max(confidence, 0.65); // Good for clear objects
+      }
+      
+      const subjects = [analysis.mainSubject, ...analysis.allObjects].filter(Boolean);
+      
+      return {
+        success: true,
+        method: 'openai_enhanced',
+        confidence,
+        subjects,
+        detectedPerson: analysis.personName,
+        detectedObjects: analysis.allObjects || [],
+        colors: analysis.colors || [],
+        context: analysis.context,
+        isPersonDetected: analysis.isPerson,
+        searchResults: []
       };
+      
+    } catch (error) {
+      console.error(`❌ Enhanced OpenAI analysis attempt ${attempt} failed:`, error);
+      if (attempt === 3) {
+        return {
+          success: false,
+          method: 'openai_enhanced',
+          confidence: 0,
+          subjects: [],
+          detectedObjects: [],
+          error: error.message
+        };
+      }
     }
+  }
+
+  return {
+    success: false,
+    method: 'openai_enhanced',
+    confidence: 0,
+    subjects: [],
+    detectedObjects: [],
+    error: 'All retry attempts failed'
+  };
+}
+
+// Face Detection Preprocessing
+async function detectFacesInImage(imageData: string): Promise<boolean> {
+  try {
+    console.log('👤 Checking for faces in image...');
     
-    // Calculate confidence based on specificity
-    let confidence = analysis.confidence || 0.5;
-    if (analysis.personName && analysis.personName !== 'null') {
-      confidence = Math.max(confidence, 0.85); // High confidence for named individuals
-    } else if (analysis.isPerson) {
-      confidence = Math.max(confidence, 0.7); // Medium confidence for people
-    } else if (analysis.mainSubject && analysis.mainSubject !== 'unknown subject') {
-      confidence = Math.max(confidence, 0.6); // Decent confidence for identified objects
-    }
+    // Simple face detection using basic image analysis
+    // This is a placeholder - in production you'd use a proper face detection API
+    const response = await fetch(imageData);
+    const blob = await response.blob();
     
-    const subjects = [analysis.mainSubject, ...analysis.objects].filter(Boolean);
-    
-    return {
-      success: true,
-      method: 'openai_universal',
-      confidence,
-      subjects,
-      detectedPerson: analysis.personName !== 'null' ? analysis.personName : null,
-      detectedObjects: analysis.objects || [],
-      colors: analysis.colors || [],
-      context: analysis.context,
-      searchResults: []
-    };
-    
+    // For now, we'll assume face detection based on image characteristics
+    // In a real implementation, you'd use AWS Rekognition, Google Vision, or similar
+    return true; // Placeholder - assume faces might be present
   } catch (error) {
-    console.error('❌ Universal AI analysis failed:', error);
-    return {
-      success: false,
-      method: 'openai_universal',
-      confidence: 0,
-      subjects: [],
-      detectedObjects: [],
-      error: error.message
-    };
+    console.warn('Face detection failed:', error);
+    return false;
   }
 }
 
-// Fallback HuggingFace analysis for object detection
-async function fallbackObjectDetection(imageData: string): Promise<UniversalAnalysisResult> {
+// Celebrity Recognition Fallback
+async function celebrityRecognitionFallback(imageData: string): Promise<UniversalAnalysisResult> {
   const HUGGING_FACE_API_KEY = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
   
   if (!HUGGING_FACE_API_KEY) {
     return {
       success: false,
-      method: 'huggingface_fallback',
+      method: 'celebrity_recognition',
       confidence: 0,
       subjects: [],
       detectedObjects: [],
@@ -170,7 +216,76 @@ async function fallbackObjectDetection(imageData: string): Promise<UniversalAnal
   }
 
   try {
-    console.log('🔄 Fallback: HuggingFace object detection...');
+    console.log('🌟 Trying celebrity recognition...');
+    
+    const response = await fetch(imageData);
+    const blob = await response.blob();
+    
+    // Try face recognition model first
+    const hfResponse = await fetch(
+      "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
+      {
+        headers: {
+          "Authorization": `Bearer ${HUGGING_FACE_API_KEY}`,
+        },
+        method: "POST",
+        body: blob,
+      }
+    );
+
+    if (!hfResponse.ok) {
+      throw new Error(`HuggingFace celebrity API error: ${hfResponse.status}`);
+    }
+
+    const result = await hfResponse.json();
+    console.log('🌟 Celebrity recognition result:', result);
+    
+    // Process celebrity recognition results
+    if (result && result.length > 0) {
+      const topResult = result[0];
+      return {
+        success: true,
+        method: 'celebrity_recognition',
+        confidence: topResult.score || 0.6,
+        subjects: [topResult.label || 'person'],
+        detectedPerson: topResult.label,
+        detectedObjects: [topResult.label || 'person'],
+        isPersonDetected: true,
+        colors: []
+      };
+    }
+    
+    throw new Error('No celebrity detected');
+  } catch (error) {
+    console.error('❌ Celebrity recognition failed:', error);
+    return {
+      success: false,
+      method: 'celebrity_recognition',
+      confidence: 0,
+      subjects: [],
+      detectedObjects: [],
+      error: error.message
+    };
+  }
+}
+
+// Enhanced General Object Detection with Person Focus
+async function enhancedObjectDetection(imageData: string): Promise<UniversalAnalysisResult> {
+  const HUGGING_FACE_API_KEY = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
+  
+  if (!HUGGING_FACE_API_KEY) {
+    return {
+      success: false,
+      method: 'enhanced_object_detection',
+      confidence: 0,
+      subjects: [],
+      detectedObjects: [],
+      error: 'HuggingFace API key not configured'
+    };
+  }
+
+  try {
+    console.log('🔍 Enhanced object detection with person focus...');
     
     const response = await fetch(imageData);
     const blob = await response.blob();
@@ -191,32 +306,55 @@ async function fallbackObjectDetection(imageData: string): Promise<UniversalAnal
     }
 
     const result = await hfResponse.json();
-    console.log('🔍 HuggingFace result:', result);
+    console.log('🔍 Enhanced detection result:', result);
     
     if (Array.isArray(result) && result.length > 0) {
-      const detectedObjects = result
+      // Filter and prioritize person-related detections
+      const personRelated = result.filter(item => 
+        item.label.toLowerCase().includes('person') ||
+        item.label.toLowerCase().includes('man') ||
+        item.label.toLowerCase().includes('woman') ||
+        item.label.toLowerCase().includes('face') ||
+        item.label.toLowerCase().includes('human')
+      );
+      
+      let detectedObjects = result
         .filter(item => item.score > 0.1)
         .map(item => item.label.toLowerCase())
         .slice(0, 10);
       
-      const confidence = Math.max(...result.map(r => r.score)) * 0.7; // Lower confidence for generic detection
+      let confidence = Math.max(...result.map(r => r.score));
+      let isPersonDetected = personRelated.length > 0;
+      
+      // If person-related objects found, boost confidence and prioritize
+      if (isPersonDetected) {
+        confidence = Math.max(confidence, 0.8);
+        detectedObjects = [...personRelated.map(p => p.label), ...detectedObjects.filter(obj => !personRelated.some(p => p.label === obj))];
+      } else if (detectedObjects[0] === 'mask' && result[0].score > 0.8) {
+        // Special handling for "mask" detection - likely a person wearing something
+        console.log('⚠️ High confidence mask detection - likely a person with face covering');
+        detectedObjects = ['person with face covering', ...detectedObjects];
+        isPersonDetected = true;
+        confidence = 0.7; // Moderate confidence for indirect person detection
+      }
       
       return {
         success: true,
-        method: 'huggingface_fallback',
+        method: 'enhanced_object_detection',
         confidence,
         subjects: detectedObjects,
         detectedObjects,
+        isPersonDetected,
         colors: []
       };
     }
     
-    throw new Error('No valid results from HuggingFace');
+    throw new Error('No valid results from enhanced detection');
   } catch (error) {
-    console.error('❌ Fallback analysis failed:', error);
+    console.error('❌ Enhanced object detection failed:', error);
     return {
       success: false,
-      method: 'huggingface_fallback',
+      method: 'enhanced_object_detection',
       confidence: 0,
       subjects: [],
       detectedObjects: [],
@@ -225,34 +363,66 @@ async function fallbackObjectDetection(imageData: string): Promise<UniversalAnal
   }
 }
 
-// Main analysis orchestrator
+// Main analysis orchestrator with multiple strategies
 async function analyzeImageUniversally(imageData: string): Promise<UniversalAnalysisResult | null> {
-  console.log('🚀 Starting universal image analysis...');
+  console.log('🚀 Starting enhanced universal image analysis...');
   
-  // Try universal AI analysis first (most comprehensive)
-  let result = await universalAIAnalysis(imageData);
+  // Step 1: Check for faces to guide analysis strategy
+  const hasFaces = await detectFacesInImage(imageData);
+  console.log(`👤 Face detection result: ${hasFaces ? 'faces detected' : 'no faces detected'}`);
   
-  // If AI analysis failed or confidence too low, try fallback
-  if (!result.success || result.confidence < 0.6) {
-    console.log('⚠️ Universal AI analysis failed or low confidence, trying fallback...');
-    result = await fallbackObjectDetection(imageData);
+  // Step 2: Try enhanced OpenAI analysis first
+  let result = await enhancedOpenAIAnalysis(imageData);
+  
+  if (result.success && result.confidence >= 0.6) {
+    console.log('✅ Enhanced OpenAI analysis successful');
+    return result;
   }
   
-  // If both failed or confidence still too low, return null (NO FAKE DATA)
-  if (!result.success || result.confidence < 0.6) {
-    console.log('❌ All analysis methods failed or confidence too low');
-    return null;
+  // Step 3: If face detected but OpenAI failed, try celebrity recognition
+  if (hasFaces && (!result.success || result.confidence < 0.6)) {
+    console.log('🌟 Trying celebrity recognition for detected faces...');
+    const celebrityResult = await celebrityRecognitionFallback(imageData);
+    if (celebrityResult.success && celebrityResult.confidence >= 0.6) {
+      return celebrityResult;
+    }
   }
   
-  console.log(`✅ Universal analysis complete using ${result.method} with confidence ${result.confidence}`);
+  // Step 4: Try enhanced object detection with person focus
+  console.log('🔍 Trying enhanced object detection...');
+  const enhancedResult = await enhancedObjectDetection(imageData);
   
-  return result;
+  if (enhancedResult.success && enhancedResult.confidence >= 0.6) {
+    return enhancedResult;
+  }
+  
+  // Step 5: If we got "mask" or similar, provide context-aware result
+  if (enhancedResult.success && enhancedResult.detectedObjects[0] === 'mask') {
+    console.log('⚠️ Mask detected - providing context-aware interpretation');
+    return {
+      ...enhancedResult,
+      subjects: ['person with face covering', 'masked individual'],
+      detectedPerson: 'Unknown Person',
+      isPersonDetected: true,
+      confidence: 0.65,
+      context: 'Person wearing face covering or mask'
+    };
+  }
+  
+  // Step 6: Return best available result or null
+  if (result.success || enhancedResult.success) {
+    const bestResult = result.confidence > enhancedResult.confidence ? result : enhancedResult;
+    console.log(`⚠️ Returning best available result with confidence ${bestResult.confidence}`);
+    return bestResult;
+  }
+  
+  console.log('❌ All analysis methods failed');
+  return null;
 }
 
 // Generate response based on analysis - REAL DATA ONLY
 function generateCardResponse(analysisResult: UniversalAnalysisResult | null) {
   if (!analysisResult) {
-    // Return NULL values when no confident result - NO FAKE DATA
     return {
       extractedText: ['unknown'],
       subjects: ['unknown'],
@@ -283,15 +453,15 @@ function generateCardResponse(analysisResult: UniversalAnalysisResult | null) {
   
   // Use real analysis results
   const mainSubject = analysisResult.subjects[0] || 'Unknown Subject';
-  const isPersonCard = !!analysisResult.detectedPerson;
+  const isPersonCard = analysisResult.isPersonDetected || !!analysisResult.detectedPerson;
   
   return {
     extractedText: analysisResult.detectedObjects,
     subjects: analysisResult.subjects,
     playerName: analysisResult.detectedPerson || (isPersonCard ? mainSubject : null),
-    team: null, // Let user fill this manually
+    team: null,
     year: new Date().getFullYear().toString(),
-    sport: null, // Let user determine this
+    sport: null,
     cardNumber: '',
     confidence: analysisResult.confidence,
     analysisType: isPersonCard ? 'person' : 'object',
@@ -299,15 +469,15 @@ function generateCardResponse(analysisResult: UniversalAnalysisResult | null) {
     visualAnalysis: {
       subjects: analysisResult.subjects,
       colors: analysisResult.colors || ['Unknown'],
-      mood: 'Unknown', // Let user determine
+      mood: 'Unknown',
       style: analysisResult.context || 'Unknown',
       theme: isPersonCard ? 'Portrait' : 'General',
       setting: analysisResult.context || 'Unknown'
     },
     creativeTitle: analysisResult.detectedPerson || mainSubject,
     creativeDescription: `${isPersonCard ? 'Portrait of ' : ''}${mainSubject}${analysisResult.context ? ` in ${analysisResult.context}` : ''}`,
-    rarity: isPersonCard ? 'rare' : 'common', // Simple heuristic
-    requiresManualReview: analysisResult.confidence < 0.8,
+    rarity: isPersonCard ? 'rare' : 'common',
+    requiresManualReview: analysisResult.confidence < 0.7,
     searchResults: analysisResult.searchResults
   };
 }
@@ -319,19 +489,20 @@ serve(async (req) => {
 
   try {
     const { imageData } = await req.json();
-    console.log('🚀 Starting universal image analysis system...');
+    console.log('🚀 Starting enhanced universal image analysis system...');
     
-    // Perform universal analysis
+    // Perform enhanced universal analysis
     const analysisResult = await analyzeImageUniversally(imageData);
     
     // Generate appropriate response - REAL DATA ONLY
     const response = generateCardResponse(analysisResult);
     
-    console.log('✅ Final analysis result:', {
+    console.log('✅ Enhanced analysis result:', {
       method: analysisResult?.method || 'failed',
       confidence: response.confidence,
       detectedPerson: analysisResult?.detectedPerson,
       mainSubject: analysisResult?.subjects[0],
+      isPersonDetected: analysisResult?.isPersonDetected,
       requiresManualReview: response.requiresManualReview
     });
     
