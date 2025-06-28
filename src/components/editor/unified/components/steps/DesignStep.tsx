@@ -63,7 +63,7 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="aspect-[2.5/3.5] bg-crd-mediumGray/20 rounded-lg flex items-center justify-center">
+            <div className="aspect-[2.5/3.5] bg-crd-mediumGray/20 rounded-lg flex items-center justify-center overflow-hidden">
               {cardData.image_url ? (
                 <img 
                   src={cardData.image_url} 
@@ -89,7 +89,7 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Rarity Selection */}
+            {/* Rarity Selection with enhanced colors */}
             <div>
               <label className="block text-crd-white font-medium mb-3">Card Rarity</label>
               <div className="grid grid-cols-2 gap-3">
@@ -162,7 +162,7 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
         </Card>
       </div>
 
-      {/* Design Tips */}
+      {/* Design Tips with enhanced rarity badges */}
       <Card className="bg-crd-darker border-crd-mediumGray/20 mt-8">
         <CardContent className="pt-6">
           <h4 className="text-crd-white font-medium mb-3">Design Tips</h4>
@@ -173,7 +173,7 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
                 <li className="flex items-center gap-2">
                   • Common: Standard everyday cards
                   <Badge 
-                    className="text-xs" 
+                    className="text-xs transition-all duration-200 hover:scale-105" 
                     style={{ 
                       backgroundColor: getRarityColor('common') + '20',
                       borderColor: getRarityColor('common'),
@@ -187,7 +187,7 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
                 <li className="flex items-center gap-2">
                   • Uncommon: Special occasion cards
                   <Badge 
-                    className="text-xs" 
+                    className="text-xs transition-all duration-200 hover:scale-105" 
                     style={{ 
                       backgroundColor: getRarityColor('uncommon') + '20',
                       borderColor: getRarityColor('uncommon'),
@@ -201,7 +201,7 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
                 <li className="flex items-center gap-2">
                   • Rare: Limited collection items
                   <Badge 
-                    className="text-xs" 
+                    className="text-xs transition-all duration-200 hover:scale-105" 
                     style={{ 
                       backgroundColor: getRarityColor('rare') + '20',
                       borderColor: getRarityColor('rare'),
@@ -210,6 +210,34 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
                     }}
                   >
                     Rare
+                  </Badge>
+                </li>
+                <li className="flex items-center gap-2">
+                  • Epic: Powerful premium cards
+                  <Badge 
+                    className="text-xs transition-all duration-200 hover:scale-105" 
+                    style={{ 
+                      backgroundColor: getRarityColor('epic') + '20',
+                      borderColor: getRarityColor('epic'),
+                      color: getRarityColor('epic'),
+                      border: `1px solid ${getRarityColor('epic')}`
+                    }}
+                  >
+                    Epic
+                  </Badge>
+                </li>
+                <li className="flex items-center gap-2">
+                  • Legendary: Ultimate rare finds
+                  <Badge 
+                    className="text-xs transition-all duration-200 hover:scale-105" 
+                    style={{ 
+                      backgroundColor: getRarityColor('legendary') + '20',
+                      borderColor: getRarityColor('legendary'),
+                      color: getRarityColor('legendary'),
+                      border: `1px solid ${getRarityColor('legendary')}`
+                    }}
+                  >
+                    Legendary
                   </Badge>
                 </li>
               </ul>

@@ -104,12 +104,12 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Card Preview */}
+            {/* Card Preview with enhanced image handling */}
             <div className="aspect-[2.5/3.5] bg-crd-mediumGray/20 rounded-lg overflow-hidden relative">
               {cardData.image_url ? (
                 <>
                   {imageLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-crd-mediumGray/40">
+                    <div className="absolute inset-0 flex items-center justify-center bg-crd-mediumGray/40 z-10">
                       <div className="w-8 h-8 border-2 border-crd-green border-t-transparent rounded-full animate-spin"></div>
                     </div>
                   )}
@@ -127,15 +127,18 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
                   {imageError && (
                     <div className="w-full h-full flex flex-col items-center justify-center text-crd-lightGray bg-crd-mediumGray/20">
                       <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
-                      <p className="text-sm">Image failed to load</p>
-                      <p className="text-xs opacity-70 mt-1">Check image URL</p>
+                      <p className="text-sm font-medium">Image failed to load</p>
+                      <p className="text-xs opacity-70 mt-1 text-center px-4">
+                        The image URL may be invalid or the image is no longer available
+                      </p>
                     </div>
                   )}
                 </>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-crd-lightGray">
                   <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
-                  <p className="text-sm">No image uploaded</p>
+                  <p className="text-sm font-medium">No image uploaded</p>
+                  <p className="text-xs opacity-70 mt-1">Go back to add an image</p>
                 </div>
               )}
             </div>
