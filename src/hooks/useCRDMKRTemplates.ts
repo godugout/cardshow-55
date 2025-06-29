@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { CRDMKRTemplate } from '@/types/crdmkr';
@@ -38,7 +37,7 @@ export const useCRDMKRTemplates = () => {
         return;
       }
 
-      // Transform database records to CRDMKRTemplate format with proper type casting
+      // Transform database records to CRDMKRTemplate format with all required properties
       const crdmkrTemplates: CRDMKRTemplate[] = (data || []).map(template => ({
         id: template.id,
         name: template.name,
@@ -50,18 +49,35 @@ export const useCRDMKRTemplates = () => {
           : {},
         is_premium: template.is_premium,
         usage_count: template.usage_count,
-        tags: [], // Default to empty array since tags doesn't exist in schema
+        tags: template.tags || [],
         sourceType: 'crdmkr' as const,
-        sourceFile: template.source_file_url,
+        sourceFile: template.source_file_url || '',
         fabricData: template.fabric_data,
+        dimensions: template.dimensions || {
+          width: 400,
+          height: 600,
+          orientation: 'portrait' as const
+        },
         layers: Array.isArray(template.layers) ? template.layers as any[] : [],
         parameters: Array.isArray(template.parameters) ? template.parameters as any[] : [],
+        colorPalette: template.color_palette || {
+          primary: '#000000',
+          secondary: '#ffffff',
+          accent: '#ff0000',
+          background: '#f0f0f0'
+        },
+        typography: Array.isArray(template.typography) ? template.typography as any[] : [],
+        metadata: {
+          createdAt: new Date(template.created_at),
+          processedBy: 'manual' as const,
+          accuracy: template.ai_analysis?.confidence || 0
+        },
         aiAnalysis: template.ai_analysis ? {
-          confidence: 0,
-          detectedRegions: [],
-          colorPalette: [],
-          typography: [],
-          ...(typeof template.ai_analysis === 'object' ? template.ai_analysis : {})
+          confidence: template.ai_analysis.confidence || 0,
+          detectedRegions: template.ai_analysis.detectedRegions || [],
+          dominantColors: template.ai_analysis.dominantColors || [],
+          suggestedRarity: template.ai_analysis.suggestedRarity || 'Common',
+          contentType: template.ai_analysis.contentType || 'Trading Card'
         } : undefined
       }));
 

@@ -43,10 +43,27 @@ export class CRDMKRAdapter {
       usage_count: designTemplate.usage_count,
       tags: designTemplate.tags || [],
       sourceType: 'crdmkr',
-      sourceFile: designTemplate.template_data.sourceFile,
+      sourceFile: designTemplate.template_data.sourceFile || '',
       fabricData: designTemplate.template_data.fabricData,
+      dimensions: {
+        width: 400,
+        height: 600,
+        orientation: 'portrait'
+      },
       layers: designTemplate.template_data.layers || [],
       parameters: designTemplate.template_data.parameters || [],
+      colorPalette: {
+        primary: '#000000',
+        secondary: '#ffffff',
+        accent: '#ff0000',
+        background: '#f0f0f0'
+      },
+      typography: [],
+      metadata: {
+        createdAt: new Date(),
+        processedBy: 'manual',
+        accuracy: 0
+      },
       aiAnalysis: designTemplate.template_data.aiAnalysis
     };
   }

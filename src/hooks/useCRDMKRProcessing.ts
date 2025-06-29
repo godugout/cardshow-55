@@ -94,7 +94,7 @@ export const useCRDMKRProcessing = () => {
 
       if (error) throw error;
 
-      // Map database column names to TypeScript interface property names
+      // Map database column names to TypeScript interface property names and convert dates
       const mappedJobs: ProcessingJob[] = (data || []).map(row => ({
         id: row.id,
         userId: row.user_id,
@@ -105,10 +105,10 @@ export const useCRDMKRProcessing = () => {
         progress: row.progress,
         result: row.result,
         errorMessage: row.error_message,
-        startedAt: row.started_at,
-        completedAt: row.completed_at,
-        createdAt: row.created_at,
-        updatedAt: row.updated_at
+        startedAt: row.started_at ? new Date(row.started_at) : undefined,
+        completedAt: row.completed_at ? new Date(row.completed_at) : undefined,
+        createdAt: new Date(row.created_at),
+        updatedAt: new Date(row.updated_at)
       }));
 
       setJobs(mappedJobs);
