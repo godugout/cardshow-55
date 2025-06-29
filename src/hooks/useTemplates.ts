@@ -32,7 +32,7 @@ export const useTemplates = () => {
         description: template.description,
         is_premium: template.is_premium,
         usage_count: template.usage_count || 0,
-        tags: template.tags || [],
+        tags: [], // Default to empty array since tags property doesn't exist in DB schema
         template_data: typeof template.template_data === 'object' && template.template_data !== null 
           ? template.template_data as Record<string, any>
           : {}
