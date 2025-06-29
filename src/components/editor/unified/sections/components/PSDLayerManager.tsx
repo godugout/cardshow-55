@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, EyeOff, Image, Type, Square, Layers, Upload, Download, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, Image, Type, Square, Layers, Upload, Download, Trash2, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { PSDProcessor, type PSDLayer, type PSDProcessingResult } from '@/lib/crdmkr/psdProcessor';
 
@@ -126,7 +126,7 @@ export const PSDLayerManager: React.FC<PSDLayerManagerProps> = ({
       // Create frame data structure
       const frameData = {
         id: `psd-frame-${Date.now()}`,
-        name: `${psdFile.name.replace('.psd', '')} Frame`,
+        name: `${psdFile.name.replace(/\.(psd|psb)$/i, '')} Frame`,
         category: 'PSD Generated',
         description: `Custom frame generated from ${psdFile.name}`,
         dimensions: processingResult.dimensions,
@@ -168,6 +168,10 @@ export const PSDLayerManager: React.FC<PSDLayerManagerProps> = ({
               <h3 className="text-lg font-semibold">Processing Failed</h3>
             </div>
             <p className="text-red-300 mb-4">{error}</p>
+            <div className="text-sm text-red-200 mb-4">
+              <p>Note: This is a preview version of PSD processing.</p>
+              <p>For best results, export your PSD as PNG and upload that instead.</p>
+            </div>
             <CRDButton onClick={onCancel} variant="outline">
               Go Back
             </CRDButton>
@@ -217,6 +221,22 @@ export const PSDLayerManager: React.FC<PSDLayerManagerProps> = ({
           </CRDButton>
         </div>
       </div>
+
+      {/* Info Banner */}
+      <Card className="bg-blue-900/20 border-blue-500/30">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+            <div className="text-sm">
+              <h4 className="text-blue-300 font-medium mb-1">PSD Preview Mode</h4>
+              <p className="text-blue-200">
+                This is a preview implementation that generates mock layers based on common card patterns. 
+                For production use, we'll implement full PSD parsing to extract actual layer data.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
