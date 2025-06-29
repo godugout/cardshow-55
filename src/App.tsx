@@ -22,21 +22,19 @@ function App() {
       <ThemeProvider defaultTheme="dark" storageKey="crd-ui-theme">
         <AuthProvider>
           <Router>
-            <div className="min-h-screen bg-crd-darkest text-white">
-              <MainLayout>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/create" element={<CreateCard />} />
-                  <Route path="/cards" element={<CardsPage />} />
-                  <Route path="/crdmkr" element={<CRDMKRPage />} />
-                  <Route path="/feed" element={<FeedPage />} />
-                  <Route path="/studio/:cardId?" element={<Studio />} />
-                  <Route path="/gallery" element={<Gallery />} />
-                  <Route path="/auth/*" element={<AuthPage />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </MainLayout>
-            </div>
+            <Routes>
+              <Route path="/*" element={<MainLayout />}>
+                <Route index element={<Home />} />
+                <Route path="create" element={<CreateCard />} />
+                <Route path="cards" element={<CardsPage />} />
+                <Route path="crdmkr" element={<CRDMKRPage />} />
+                <Route path="feed" element={<FeedPage />} />
+                <Route path="studio/:cardId?" element={<Studio />} />
+                <Route path="gallery" element={<Gallery />} />
+                <Route path="auth/*" element={<AuthPage />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Route>
+            </Routes>
           </Router>
         </AuthProvider>
       </ThemeProvider>
