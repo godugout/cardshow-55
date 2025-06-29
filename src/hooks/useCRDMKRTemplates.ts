@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { CRDMKRTemplate } from '@/types/crdmkr';
@@ -49,35 +50,45 @@ export const useCRDMKRTemplates = () => {
           : {},
         is_premium: template.is_premium,
         usage_count: template.usage_count,
-        tags: template.tags || [],
+        tags: [], // Default to empty array since tags doesn't exist in schema
         sourceType: 'crdmkr' as const,
         sourceFile: template.source_file_url || '',
         fabricData: template.fabric_data,
-        dimensions: template.dimensions || {
+        dimensions: {
           width: 400,
           height: 600,
           orientation: 'portrait' as const
         },
         layers: Array.isArray(template.layers) ? template.layers as any[] : [],
         parameters: Array.isArray(template.parameters) ? template.parameters as any[] : [],
-        colorPalette: template.color_palette || {
+        colorPalette: {
           primary: '#000000',
           secondary: '#ffffff',
           accent: '#ff0000',
           background: '#f0f0f0'
         },
-        typography: Array.isArray(template.typography) ? template.typography as any[] : [],
+        typography: [], // Default to empty array since typography doesn't exist in schema
         metadata: {
           createdAt: new Date(template.created_at),
           processedBy: 'manual' as const,
-          accuracy: template.ai_analysis?.confidence || 0
+          accuracy: 0
         },
         aiAnalysis: template.ai_analysis ? {
-          confidence: template.ai_analysis.confidence || 0,
-          detectedRegions: template.ai_analysis.detectedRegions || [],
-          dominantColors: template.ai_analysis.dominantColors || [],
-          suggestedRarity: template.ai_analysis.suggestedRarity || 'Common',
-          contentType: template.ai_analysis.contentType || 'Trading Card'
+          confidence: typeof template.ai_analysis === 'object' && template.ai_analysis !== null && 'confidence' in template.ai_analysis 
+            ? (template.ai_analysis as any).confidence || 0 
+            : 0,
+          detectedRegions: typeof template.ai_analysis === 'object' && template.ai_analysis !== null && 'detectedRegions' in template.ai_analysis 
+            ? (template.ai_analysis as any).detectedRegions || [] 
+            : [],
+          dominantColors: typeof template.ai_analysis === 'object' && template.ai_analysis !== null && 'dominantColors' in template.ai_analysis 
+            ? (template.ai_analysis as any).dominantColors || [] 
+            : [],
+          suggestedRarity: typeof template.ai_analysis === 'object' && template.ai_analysis !== null && 'suggestedRarity' in template.ai_analysis 
+            ? (template.ai_analysis as any).suggestedRarity || 'Common' 
+            : 'Common',
+          contentType: typeof template.ai_analysis === 'object' && template.ai_analysis !== null && 'contentType' in template.ai_analysis 
+            ? (template.ai_analysis as any).contentType || 'Trading Card' 
+            : 'Trading Card'
         } : undefined
       }));
 
@@ -257,14 +268,41 @@ export const useCRDMKRTemplates = () => {
         sourceType: 'crdmkr' as const,
         sourceFile: data.source_file_url,
         fabricData: data.fabric_data,
+        dimensions: {
+          width: 400,
+          height: 600,
+          orientation: 'portrait' as const
+        },
         layers: Array.isArray(data.layers) ? data.layers as any[] : [],
         parameters: Array.isArray(data.parameters) ? data.parameters as any[] : [],
+        colorPalette: {
+          primary: '#000000',
+          secondary: '#ffffff',
+          accent: '#ff0000',
+          background: '#f0f0f0'
+        },
+        typography: [],
+        metadata: {
+          createdAt: new Date(data.created_at),
+          processedBy: 'manual' as const,
+          accuracy: 0
+        },
         aiAnalysis: data.ai_analysis ? {
-          confidence: 0,
-          detectedRegions: [],
-          colorPalette: [],
-          typography: [],
-          ...(typeof data.ai_analysis === 'object' ? data.ai_analysis : {})
+          confidence: typeof data.ai_analysis === 'object' && data.ai_analysis !== null && 'confidence' in data.ai_analysis 
+            ? (data.ai_analysis as any).confidence || 0 
+            : 0,
+          detectedRegions: typeof data.ai_analysis === 'object' && data.ai_analysis !== null && 'detectedRegions' in data.ai_analysis 
+            ? (data.ai_analysis as any).detectedRegions || [] 
+            : [],
+          dominantColors: typeof data.ai_analysis === 'object' && data.ai_analysis !== null && 'dominantColors' in data.ai_analysis 
+            ? (data.ai_analysis as any).dominantColors || [] 
+            : [],
+          suggestedRarity: typeof data.ai_analysis === 'object' && data.ai_analysis !== null && 'suggestedRarity' in data.ai_analysis 
+            ? (data.ai_analysis as any).suggestedRarity || 'Common' 
+            : 'Common',
+          contentType: typeof data.ai_analysis === 'object' && data.ai_analysis !== null && 'contentType' in data.ai_analysis 
+            ? (data.ai_analysis as any).contentType || 'Trading Card' 
+            : 'Trading Card'
         } : undefined
       };
 
