@@ -19,7 +19,10 @@ const stepMapping: Record<string, number> = {
   'details': 3,
   'design': 4,
   'publish': 5,
-  'complete': 6
+  'complete': 6,
+  'path-selection': 2,
+  'template-selection': 3,
+  'psd-manager': 4
 };
 
 export const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
