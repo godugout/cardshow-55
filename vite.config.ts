@@ -38,5 +38,9 @@ export default defineConfig(({ mode }) => ({
         manualChunks: undefined,
       }
     }
+  },
+  define: {
+    // Ensure browser environment
+    'process.env.NODE_ENV': JSON.stringify(mode === 'development' ? 'development' : 'production'),
   }
 }));

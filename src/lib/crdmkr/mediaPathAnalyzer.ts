@@ -1,100 +1,103 @@
 
-interface MediaDetectionResult {
+// Browser-compatible media path analyzer
+export interface MediaAnalysisResult {
   format: string;
-  isPSD: boolean;
-  isAnimated: boolean;
-  hasLayers: boolean;
-  dimensions: { width: number; height: number } | null;
+  capabilities: string[];
   recommendedPath: string;
   confidence: number;
+  fileSize: number;
+  dimensions?: {
+    width: number;
+    height: number;
+  };
 }
 
 export class MediaPathAnalyzer {
-  static async analyzeFile(file: File): Promise<MediaDetectionResult> {
-    console.log('🔍 Analyzing media file:', file.name, file.type);
+  static async analyzeFile(file: File): Promise<MediaAnalysisResult> {
+    console.log('🔍 Analyzing media file:', file.name, 'Type:', file.type);
     
-    const format = this.detectFormat(file);
-    const isPSD = format.includes('PSD');
-    const isAnimated = this.isAnimatedFile(file);
-    const hasLayers = isPSD; // Could be enhanced to detect other layered formats
+    const fileName = file.name.toLowerCase();
+    const fileType = file.type.toLowerCase();
+    const fileSize = file.size;
     
-    let dimensions = null;
-    try {
-      dimensions = await this.getDimensions(file);
-    } catch (error) {
-      console.warn('Failed to get dimensions:', error);
+    // Determine format based on file extension and MIME type
+    let format = 'Unknown';
+    let capabilities: string[] = [];
+    let recommendedPath = 'standard-card';
+    let confidence = 0.8;
+    
+    if (fileName.endsWith('.psd') || fileType.includes('photoshop')) {
+      format = 'PSD (Photoshop Document)';
+      capabilities = ['Layer extraction', 'Advanced editing', 'Professional workflow'];
+      recommendedPath = 'psd-professional';
+      confidence = 0.95;
+    } else if (fileName.endsWith('.gif') || fileType.includes('gif')) {
+      format = 'GIF (Graphics Interchange Format)';
+      capabilities = ['Animation support', 'Frame extraction', 'Interactive effects'];
+      recommendedPath = 'gif-animated';
+      confidence = 0.9;
+    } else if (fileType.includes('image/png') || fileName.endsWith('.png')) {
+      format = 'PNG (Portable Network Graphics)';
+      capabilities = ['Transparency support', 'High quality', 'Lossless compression'];
+      recommendedPath = 'standard-card';
+      confidence = 0.85;
+    } else if (fileType.includes('image/jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) {
+      format = 'JPEG (Joint Photographic Experts Group)';
+      capabilities = ['Photo optimization', 'Compact size', 'Wide compatibility'];
+      recommendedPath = 'standard-card';
+      confidence = 0.85;
+    } else if (fileType.includes('image/webp') || fileName.endsWith('.webp')) {
+      format = 'WebP (Modern Image Format)';
+      capabilities = ['Advanced compression', 'Animation support', 'Modern format'];
+      recommendedPath = 'standard-card';
+      confidence = 0.8;
+    } else if (fileType.includes('image/svg') || fileName.endsWith('.svg')) {
+      format = 'SVG (Scalable Vector Graphics)';
+      capabilities = ['Vector graphics', 'Scalable', 'Small file size'];
+      recommendedPath = 'standard-card';
+      confidence = 0.9;
     }
     
-    const recommendedPath = this.getRecommendedPath(format, file);
+    // Try to get image dimensions if possible
+    let dimensions: { width: number; height: number } | undefined;
+    
+    if (fileType.startsWith('image/')) {
+      try {
+        dimensions = await this.getImageDimensions(file);
+      } catch (error) {
+        console.warn('Could not get image dimensions:', error);
+      }
+    }
     
     return {
       format,
-      isPSD,
-      isAnimated,
-      hasLayers,
-      dimensions,
+      capabilities,
       recommendedPath,
-      confidence: 0.9
+      confidence,
+      fileSize,
+      dimensions
     };
   }
   
-  private static detectFormat(file: File): string {
-    const extension = file.name.split('.').pop()?.toLowerCase();
-    const mimeType = file.type.toLowerCase();
-    
-    if (mimeType.includes('photoshop') || extension === 'psd') {
-      return 'Adobe Photoshop (PSD)';
-    }
-    
-    if (mimeType.includes('gif') || extension === 'gif') {
-      return 'Animated GIF';
-    }
-    
-    if (mimeType.includes('png') || extension === 'png') {
-      return 'PNG Image';
-    }
-    
-    if (mimeType.includes('jpeg') || mimeType.includes('jpg') || extension === 'jpg' || extension === 'jpeg') {
-      return 'JPEG Image';
-    }
-    
-    if (mimeType.includes('webp') || extension === 'webp') {
-      return 'WebP Image';
-    }
-    
-    return 'Unknown Format';
-  }
-  
-  private static isAnimatedFile(file: File): boolean {
-    return file.type.includes('gif') || file.name.toLowerCase().endsWith('.gif');
-  }
-  
-  private static async getDimensions(file: File): Promise<{ width: number; height: number }> {
+  private static getImageDimensions(file: File): Promise<{ width: number; height: number }> {
     return new Promise((resolve, reject) => {
       const img = new Image();
+      const url = URL.createObjectURL(file);
+      
       img.onload = () => {
-        resolve({ width: img.naturalWidth, height: img.naturalHeight });
-        URL.revokeObjectURL(img.src);
+        URL.revokeObjectURL(url);
+        resolve({
+          width: img.naturalWidth,
+          height: img.naturalHeight
+        });
       };
-      img.onerror = reject;
-      img.src = URL.createObjectURL(file);
+      
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Failed to load image'));
+      };
+      
+      img.src = url;
     });
-  }
-  
-  private static getRecommendedPath(format: string, file: File): string {
-    if (format.includes('PSD')) {
-      return file.size > 50 * 1024 * 1024 ? 'psd-professional' : 'psd-simple'; // 50MB threshold
-    }
-    
-    if (format.includes('GIF')) {
-      return 'gif-animated';
-    }
-    
-    // For standard images, recommend based on size and likely use case
-    if (file.size > 5 * 1024 * 1024) { // 5MB threshold
-      return 'interactive-card';
-    }
-    
-    return 'standard-card';
   }
 }

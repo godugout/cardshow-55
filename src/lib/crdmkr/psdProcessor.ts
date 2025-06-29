@@ -33,22 +33,20 @@ export class PSDProcessor {
     console.log('🎨 Processing PSD file:', file.name);
     
     try {
-      // For now, we'll create a mock layer structure and use the file as a flattened image
-      // This is a simplified approach that can be enhanced with a proper PSD parser later
-      
+      // Create a URL for the file to use as image source
       const imageUrl = URL.createObjectURL(file);
-      const img = new Image();
       
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = imageUrl;
-      });
+      // Create image element and load the file
+      const img = await this.loadImageFromFile(imageUrl);
       
-      // Create canvas to work with the image
+      // Get dimensions from the loaded image
+      const width = img.naturalWidth || 400;
+      const height = img.naturalHeight || 600;
+      
+      // Create canvas for processing
       const canvas = document.createElement('canvas');
-      canvas.width = img.width || 400;
-      canvas.height = img.height || 600;
+      canvas.width = width;
+      canvas.height = height;
       const ctx = canvas.getContext('2d');
       
       if (!ctx) {
@@ -58,28 +56,31 @@ export class PSDProcessor {
       // Draw the image to canvas
       ctx.drawImage(img, 0, 0);
       
+      // Generate composite image URL
+      const previewUrl = canvas.toDataURL('image/png');
+      
       // Create mock layers based on common card design patterns
       const layers: PSDLayer[] = [
         {
           id: 'background',
           name: 'Background',
           type: 'shape',
-          bounds: { x: 0, y: 0, width: canvas.width, height: canvas.height },
+          bounds: { x: 0, y: 0, width, height },
           visible: true,
           opacity: 1,
           blendMode: 'normal',
           isPhotoLayer: false,
-          imageUrl: canvas.toDataURL('image/png')
+          imageUrl: previewUrl
         },
         {
           id: 'photo-area',
           name: 'Photo Area',
           type: 'image',
           bounds: { 
-            x: Math.round(canvas.width * 0.1), 
-            y: Math.round(canvas.height * 0.1), 
-            width: Math.round(canvas.width * 0.8), 
-            height: Math.round(canvas.height * 0.6) 
+            x: Math.round(width * 0.1), 
+            y: Math.round(height * 0.1), 
+            width: Math.round(width * 0.8), 
+            height: Math.round(height * 0.6) 
           },
           visible: true,
           opacity: 0.3,
@@ -91,23 +92,21 @@ export class PSDProcessor {
           id: 'frame-overlay',
           name: 'Frame Overlay',
           type: 'shape',
-          bounds: { x: 0, y: 0, width: canvas.width, height: canvas.height },
+          bounds: { x: 0, y: 0, width, height },
           visible: true,
           opacity: 1,
           blendMode: 'normal',
           isPhotoLayer: false,
-          imageUrl: canvas.toDataURL('image/png')
+          imageUrl: previewUrl
         }
       ];
       
-      const previewUrl = canvas.toDataURL('image/png');
+      // Clean up the object URL
+      URL.revokeObjectURL(imageUrl);
       
       return {
         layers,
-        dimensions: {
-          width: canvas.width,
-          height: canvas.height
-        },
+        dimensions: { width, height },
         previewUrl,
         originalFile: file
       };
@@ -115,6 +114,15 @@ export class PSDProcessor {
       console.error('❌ Error processing PSD:', error);
       throw new Error(`Failed to process PSD file: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+  }
+  
+  private static loadImageFromFile(url: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = (error) => reject(new Error('Failed to load image'));
+      img.src = url;
+    });
   }
   
   static async generateCompositePreview(
@@ -139,12 +147,7 @@ export class PSDProcessor {
     for (const layer of layers) {
       if (visibleLayers.has(layer.id) && layer.imageUrl && !layer.isPhotoLayer) {
         try {
-          const img = new Image();
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-            img.src = layer.imageUrl!;
-          });
+          const img = await this.loadImageFromFile(layer.imageUrl);
           
           ctx.globalAlpha = layer.opacity;
           ctx.drawImage(img, layer.bounds.x, layer.bounds.y, layer.bounds.width, layer.bounds.height);
