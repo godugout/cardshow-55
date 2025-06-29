@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CRDMKRTemplateSelector } from '../../../../components/editor/CRDMKRTemplateSelector';
+import { CRDMKRErrorBoundary } from '@/components/common/CRDMKRErrorBoundary';
 import { Upload, Sparkles, Palette } from 'lucide-react';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 
@@ -109,12 +111,14 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
         </TabsContent>
 
         <TabsContent value="crdmkr" className="mt-6">
-          <CRDMKRTemplateSelector
-            onTemplateSelect={onTemplateSelect}
-            onCreateFromPSD={onCreateFromPSD || (() => {})}
-            selectedTemplate={selectedTemplate}
-            showCreateFromPSD={!!onCreateFromPSD}
-          />
+          <CRDMKRErrorBoundary>
+            <CRDMKRTemplateSelector
+              onTemplateSelect={onTemplateSelect}
+              onCreateFromPSD={onCreateFromPSD || (() => {})}
+              selectedTemplate={selectedTemplate}
+              showCreateFromPSD={!!onCreateFromPSD}
+            />
+          </CRDMKRErrorBoundary>
         </TabsContent>
       </Tabs>
 

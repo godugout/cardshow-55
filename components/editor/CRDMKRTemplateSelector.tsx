@@ -18,7 +18,7 @@ import {
   Palette,
   Layout
 } from 'lucide-react';
-import { useCRDMKRTemplates } from '../hooks/useCRDMKRTemplates';
+import { useCRDMKRTemplates } from '@/hooks/useCRDMKRTemplates';
 import type { DesignTemplate } from '@/types/card';
 import type { CRDMKRTemplate } from '@/types/crdmkr';
 import { toast } from 'sonner';
