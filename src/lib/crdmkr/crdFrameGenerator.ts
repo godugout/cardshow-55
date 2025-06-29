@@ -1,4 +1,3 @@
-
 import type { DesignTemplate } from '@/types/card';
 
 export interface CRDFrameData {
@@ -44,9 +43,7 @@ export class CRDFrameGenerator {
         sourceFile: frameData.sourceFile
       },
       is_premium: false,
-      tags: ['psd-generated', 'custom-frame'],
-      created_at: frameData.createdAt,
-      updated_at: frameData.createdAt
+      tags: ['psd-generated', 'custom-frame']
     };
     
     console.log('✅ CRD template generated:', template);
