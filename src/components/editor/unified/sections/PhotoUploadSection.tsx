@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { CRDButton } from '@/components/ui/design-system/Button';
@@ -289,19 +290,22 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
               {currentStep === 'path-selection' && 'Choose Your Workflow'}
               {currentStep === 'template-selection' && 'Select Template'}
             </h3>
-            <p className="text-crd-lightGray">
-              {currentStep === 'upload' && 'Upload your file and let our AI detect the best workflow'}
-              {currentStep === 'path-selection' && 'Select the approach that matches your goals'}
-              {currentStep === 'template-selection' && 'Choose a frame template for your card'}
-            </p>
-          </div>
-          
-          {mediaDetection && (
-            <div className="flex items-center gap-2 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-crd-green" />
-              <span className="text-crd-green font-medium">{mediaDetection.format}</span>
+            {/* Align this description text with the JPEG Image checkmark row */}
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-crd-lightGray">
+                {currentStep === 'upload' && 'Upload your file and let our AI detect the best workflow'}
+                {currentStep === 'path-selection' && 'Select the approach that matches your goals'}
+                {currentStep === 'template-selection' && 'Choose a frame template for your card'}
+              </p>
+              
+              {mediaDetection && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-crd-green" />
+                  <span className="text-crd-green font-medium">{mediaDetection.format}</span>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Step Indicator */}

@@ -30,6 +30,13 @@ const CreateCard = () => {
     // Later we can navigate to the next step in the flow
   };
 
+  // Get current workflow step from PhotoUploadSection
+  const getWorkflowTitle = () => {
+    // For now, default to "Choose your workflow" since we're in the creation flow
+    // This could be made more dynamic by lifting state up if needed
+    return 'Choose your workflow';
+  };
+
   return (
     <div className="min-h-screen bg-crd-darkest">
       <ErrorBoundary>
@@ -37,7 +44,9 @@ const CreateCard = () => {
         <div className="bg-crd-darker border-b border-crd-mediumGray/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-crd-white">Create Card</h1>
+              <h1 className="text-2xl font-bold text-crd-white">
+                {getWorkflowTitle()}
+              </h1>
             </div>
 
             <CRDButton
