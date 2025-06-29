@@ -6,7 +6,7 @@ import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Plus, Upload } from 'lucide-react';
 import { CardsTabsNavigation } from '@/components/cards/CardsTabsNavigation';
-import { CardsTabsContent } from '@/components/cards/CardsTabsContent';
+import { CardGrid } from '@/components/cards/CardGrid';
 import { useCards } from '@/hooks/useCards';
 import type { FeedType } from '@/hooks/use-feed-types';
 
@@ -72,12 +72,31 @@ const CardsPage = () => {
               <CardsTabsNavigation />
             </div>
             
-            <CardsTabsContent 
-              activeTab={activeTab}
-              cards={cards || []}
-              isLoading={loading}
-              onCardClick={handleCardClick}
-            />
+            <TabsContent value="forYou" className="mt-6">
+              <CardGrid 
+                cards={cards || []} 
+                loading={loading} 
+                viewMode="grid"
+              />
+            </TabsContent>
+
+            <TabsContent value="trending" className="mt-6">
+              <div className="text-center py-12">
+                <p className="text-crd-lightGray">Trending cards coming soon</p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="featured" className="mt-6">
+              <div className="text-center py-12">
+                <p className="text-crd-lightGray">Featured cards coming soon</p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="following" className="mt-6">
+              <div className="text-center py-12">
+                <p className="text-crd-lightGray">Follow creators to see their cards here</p>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </ErrorBoundary>

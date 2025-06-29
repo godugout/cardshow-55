@@ -31,7 +31,9 @@ export const CreatorsGrid: React.FC<CreatorsGridProps> = ({
 
   if (!creators || creators.length === 0) {
     return (
-      <p className="text-[#777E90] col-span-4 text-center py-8">No featured artists found</p>
+      <div className="text-center py-12">
+        <p className="text-[#777E90]">No featured artists found</p>
+      </div>
     );
   }
 

@@ -130,7 +130,7 @@ const Gallery = () => {
               ) : (
                 <CardsGrid 
                   cards={filteredCards} 
-                  viewMode={viewMode}
+                  loading={cardsLoading}
                   onCardClick={handleViewCard}
                 />
               )}
@@ -142,6 +142,7 @@ const Gallery = () => {
               ) : (
                 <CollectionsGrid 
                   collections={filteredCollections}
+                  loading={collectionsLoading}
                 />
               )}
             </TabsContent>
@@ -152,6 +153,7 @@ const Gallery = () => {
               ) : (
                 <CreatorsGrid 
                   creators={filteredCreators}
+                  loading={creatorsLoading}
                 />
               )}
             </TabsContent>
