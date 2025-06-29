@@ -30,5 +30,13 @@ export default defineConfig(({ mode }) => ({
   },
   optimizeDeps: {
     exclude: ['@/workers/cardDetectionWorker.ts']
+  },
+  build: {
+    rollupOptions: {
+      external: [],
+      output: {
+        manualChunks: undefined,
+      }
+    }
   }
 }));
