@@ -94,7 +94,24 @@ export const useCRDMKRProcessing = () => {
 
       if (error) throw error;
 
-      setJobs(data || []);
+      // Map database column names to TypeScript interface property names
+      const mappedJobs: ProcessingJob[] = (data || []).map(row => ({
+        id: row.id,
+        userId: row.user_id,
+        fileUrl: row.file_url,
+        fileName: row.file_name,
+        fileSize: row.file_size,
+        status: row.status as ProcessingJobStatus,
+        progress: row.progress,
+        result: row.result,
+        errorMessage: row.error_message,
+        startedAt: row.started_at,
+        completedAt: row.completed_at,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at
+      }));
+
+      setJobs(mappedJobs);
     } catch (error) {
       console.error('Error fetching processing jobs:', error);
       toast.error('Failed to load processing jobs');
