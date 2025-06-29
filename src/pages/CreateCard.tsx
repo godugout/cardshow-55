@@ -8,7 +8,7 @@ import type { CardData } from '@/hooks/useCardEditor';
 const CreateCard = () => {
   const navigate = useNavigate();
 
-  console.log('CreateCard page loaded - starting directly at upload step');
+  console.log('CreateCard page loaded - starting with photo upload');
 
   const handleComplete = (cardData: CardData) => {
     console.log('Card created successfully:', cardData);

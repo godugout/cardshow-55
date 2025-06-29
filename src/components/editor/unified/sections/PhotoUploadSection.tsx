@@ -33,11 +33,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const [showCropper, setShowCropper] = useState(false);
   const [imageAnalysis, setImageAnalysis] = useState<any>(null);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
-
-    console.log('📁 File dropped in PhotoUploadSection:', file.name);
+  const processFile = useCallback(async (file: File) => {
+    console.log('📁 Processing file:', file.name);
     setIsProcessing(true);
     setUploadProgress(0);
 
@@ -53,7 +50,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         });
       }, 200);
 
-      // Create object URL for preview
+      // Create object URL for preview  
       const imageUrl = URL.createObjectURL(file);
       cardEditor.updateCardField('image_url', imageUrl);
 
@@ -72,11 +69,18 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       }, 2000);
 
     } catch (error) {
+      console.error('Upload error:', error);
       toast.error('Failed to upload image');
     } finally {
       setIsProcessing(false);
     }
   }, [cardEditor]);
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (!file) return;
+    await processFile(file);
+  }, [processFile]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -84,24 +88,28 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
     },
     maxFiles: 1,
-    noClick: false, // Enable click
+    noClick: true, // Disable default click to handle manually
     noKeyboard: false
   });
 
-  const handleBrowseClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleBrowseClick = useCallback(() => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.onchange = (event) => {
+    input.style.display = 'none';
+    
+    input.onchange = async (event) => {
       const files = (event.target as HTMLInputElement).files;
       if (files && files.length > 0) {
         console.log('📁 File selected via browse:', files[0].name);
-        onDrop([files[0]]);
+        await processFile(files[0]);
       }
     };
+    
+    document.body.appendChild(input);
     input.click();
-  }, [onDrop]);
+    document.body.removeChild(input);
+  }, [processFile]);
 
   const handleAdvancedCrop = () => {
     setShowCropper(true);
@@ -125,18 +133,19 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const canProceed = cardEditor.cardData.image_url && !isProcessing;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative z-10">
       {/* Upload Area */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Side - Upload Interface */}
         <div className="space-y-6">
           <div
             {...getRootProps()}
-            className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all min-h-[300px] flex flex-col items-center justify-center ${
+            className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all min-h-[400px] flex flex-col items-center justify-center z-20 ${
               isDragActive
                 ? 'border-crd-green bg-crd-green/10'
-                : 'border-crd-mediumGray/30 hover:border-crd-green/50'
+                : 'border-crd-mediumGray/30 hover:border-crd-green/50 bg-crd-darker/50'
             }`}
+            onClick={handleBrowseClick}
           >
             <input {...getInputProps()} />
             
@@ -162,32 +171,33 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="w-16 h-16 mx-auto bg-crd-mediumGray/20 rounded-full flex items-center justify-center">
-                  <Upload className="w-8 h-8 text-crd-lightGray" />
+              <div className="space-y-6">
+                <div className="w-20 h-20 mx-auto bg-crd-mediumGray/20 rounded-full flex items-center justify-center">
+                  <Upload className="w-10 h-10 text-crd-lightGray" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-crd-white">Upload Your Image</h3>
-                  <p className="text-crd-lightGray text-sm mb-4">
-                    Drag & drop or click to browse
+                  <h3 className="text-xl font-semibold text-crd-white mb-2">Upload Your Image</h3>
+                  <p className="text-crd-lightGray mb-4">
+                    Drag & drop or click to browse files
                   </p>
-                  <div className="flex flex-wrap justify-center gap-2 text-xs text-crd-mediumGray">
-                    <Badge variant="outline">JPG</Badge>
-                    <Badge variant="outline">PNG</Badge>
-                    <Badge variant="outline">WebP</Badge>
-                    <Badge variant="outline">GIF</Badge>
+                  <div className="flex flex-wrap justify-center gap-2 text-xs text-crd-mediumGray mb-6">
+                    <Badge variant="outline" className="border-crd-mediumGray/30 text-crd-lightGray">JPG</Badge>
+                    <Badge variant="outline" className="border-crd-mediumGray/30 text-crd-lightGray">PNG</Badge>
+                    <Badge variant="outline" className="border-crd-mediumGray/30 text-crd-lightGray">WebP</Badge>
+                    <Badge variant="outline" className="border-crd-mediumGray/30 text-crd-lightGray">GIF</Badge>
                   </div>
                 </div>
-                <div className="flex justify-center gap-4">
-                  <CRDButton
-                    type="button"
-                    onClick={handleBrowseClick}
-                    className="bg-crd-green hover:bg-crd-green/90 text-black"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Browse Files
-                  </CRDButton>
-                </div>
+                <CRDButton
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleBrowseClick();
+                  }}
+                  className="bg-crd-green hover:bg-crd-green/90 text-black font-medium z-30 relative"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Choose File
+                </CRDButton>
               </div>
             )}
           </div>
@@ -289,14 +299,14 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         <CRDButton 
           onClick={onNext} 
           disabled={!canProceed}
-          className="min-w-[120px]"
+          className="min-w-[120px] bg-crd-green hover:bg-crd-green/90 text-black"
         >
           Next Step
           <ArrowRight className="w-4 h-4 ml-2" />
         </CRDButton>
       </div>
 
-      {/* Simple cropper fallback instead of AdvancedCropper */}
+      {/* Simple cropper fallback */}
       {showCropper && cardEditor.cardData.image_url && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
           <div className="bg-crd-darkGray p-6 rounded-lg max-w-2xl w-full mx-4">

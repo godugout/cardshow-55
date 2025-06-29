@@ -59,10 +59,8 @@ export const PhotoUploadStep: React.FC = () => {
     });
   }, []);
 
-  const handleFileUpload = useCallback(async (files: File[]) => {
-    if (files.length === 0) return;
-    
-    const file = files[0];
+  const handleFileProcess = useCallback(async (file: File) => {
+    console.log('📁 Processing file:', file.name);
     setIsProcessing(true);
     
     try {
@@ -87,10 +85,13 @@ export const PhotoUploadStep: React.FC = () => {
     }
   }, [processImageForCard, dispatch]);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log('📁 Files dropped:', acceptedFiles.length);
-    handleFileUpload(acceptedFiles);
-  }, [handleFileUpload]);
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      console.log('📁 Files dropped:', file.name);
+      await handleFileProcess(file);
+    }
+  }, [handleFileProcess]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -98,43 +99,51 @@ export const PhotoUploadStep: React.FC = () => {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
     },
     maxFiles: 1,
-    noClick: false, // Enable click
+    noClick: true, // Disable default click behavior
     noKeyboard: false
   });
 
-  const handleBrowseClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleBrowseClick = useCallback(() => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.onchange = (event) => {
+    input.style.display = 'none';
+    
+    input.onchange = async (event) => {
       const files = (event.target as HTMLInputElement).files;
       if (files && files.length > 0) {
         console.log('📁 File selected via browse:', files[0].name);
-        handleFileUpload([files[0]]);
+        await handleFileProcess(files[0]);
       }
     };
+    
+    document.body.appendChild(input);
     input.click();
-  }, [handleFileUpload]);
+    document.body.removeChild(input);
+  }, [handleFileProcess]);
 
-  const handleCameraClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleCameraClick = useCallback(() => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.capture = 'environment';
-    input.onchange = (event) => {
+    input.style.display = 'none';
+    
+    input.onchange = async (event) => {
       const files = (event.target as HTMLInputElement).files;
       if (files && files.length > 0) {
         console.log('📁 Photo taken:', files[0].name);
-        handleFileUpload([files[0]]);
+        await handleFileProcess(files[0]);
       }
     };
+    
+    document.body.appendChild(input);
     input.click();
-  }, [handleFileUpload]);
+    document.body.removeChild(input);
+  }, [handleFileProcess]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative z-10">
       {/* Header */}
       <div className="text-center space-y-4">
         <h2 className="text-4xl font-bold text-white">Upload Your Photo</h2>
@@ -173,11 +182,12 @@ export const PhotoUploadStep: React.FC = () => {
       <div className="max-w-2xl mx-auto">
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer min-h-[300px] flex flex-col items-center justify-center ${
+          className={`border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer min-h-[350px] flex flex-col items-center justify-center relative z-20 ${
             isDragActive
               ? 'border-crd-green bg-crd-green/10'
               : 'border-crd-mediumGray/50 hover:border-crd-green/50 hover:bg-crd-darkGray/50'
           }`}
+          onClick={handleBrowseClick}
         >
           <input {...getInputProps()} />
           
@@ -199,7 +209,7 @@ export const PhotoUploadStep: React.FC = () => {
               <p className="text-crd-lightGray">
                 {isDragActive 
                   ? 'Release to upload your image'
-                  : 'Drag and drop an image here, or click browse to select'
+                  : 'Drag and drop an image here, or click to browse'
                 }
               </p>
             </div>
@@ -207,9 +217,12 @@ export const PhotoUploadStep: React.FC = () => {
             <div className="flex justify-center gap-4">
               <Button
                 type="button"
-                onClick={handleBrowseClick}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBrowseClick();
+                }}
                 disabled={isProcessing}
-                className="bg-crd-green hover:bg-crd-green/90 text-black font-medium"
+                className="bg-crd-green hover:bg-crd-green/90 text-black font-medium z-30 relative"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Browse Files
@@ -217,10 +230,13 @@ export const PhotoUploadStep: React.FC = () => {
               
               <Button
                 type="button"
-                onClick={handleCameraClick}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCameraClick();
+                }}
                 variant="outline"
                 disabled={isProcessing}
-                className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white"
+                className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white z-30 relative"
               >
                 <Camera className="w-4 h-4 mr-2" />
                 Take Photo
