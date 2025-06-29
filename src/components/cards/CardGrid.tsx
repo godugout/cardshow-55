@@ -3,34 +3,16 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-
-interface CardData {
-  id: string;
-  title: string;
-  description?: string;
-  image_url?: string;
-  thumbnail_url?: string;
-  price?: string;
-}
+import type { CardData } from '@/types/card';
 
 interface CardGridProps {
   cards: CardData[];
   loading: boolean;
   viewMode: 'grid' | 'masonry' | 'feed';
+  onCardClick?: (cardId: string) => void;
 }
 
-const UNSPLASH_IMAGES = [
-  'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80', // Trading cards
-  'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=400&q=80', // Gaming cards
-  'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80', // Tech aesthetic
-  'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&q=80', // Code aesthetic
-  'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&q=80', // Abstract digital
-  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80', // Neon aesthetic
-  'https://images.unsplash.com/photo-1563089145-599997674d42?w=400&q=80', // Digital art
-  'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400&q=80', // Abstract colorful
-];
-
-const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
+const CardGridItem = ({ card, index, onCardClick }: { card: CardData; index: number; onCardClick?: (cardId: string) => void }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   
@@ -57,8 +39,22 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
     setImageLoading(false);
   };
 
+  const handleClick = () => {
+    if (onCardClick) {
+      onCardClick(card.id);
+    }
+  };
+
+  // Format price for display
+  const formatPrice = (price?: number) => {
+    if (typeof price === 'number') {
+      return price.toFixed(2);
+    }
+    return '1.5'; // Default fallback
+  };
+
   return (
-    <Card className="group bg-crd-dark border-crd-mediumGray hover:border-crd-blue transition-all duration-300 overflow-hidden">
+    <Card className="group bg-crd-dark border-crd-mediumGray hover:border-crd-blue transition-all duration-300 overflow-hidden cursor-pointer" onClick={handleClick}>
       <div className="aspect-[3/4] relative overflow-hidden bg-crd-mediumGray">
         {imageLoading && (
           <Skeleton className="absolute inset-0 bg-crd-mediumGray" />
@@ -76,7 +72,7 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <Badge variant="secondary" className="bg-crd-green/20 text-crd-green">
-            {card.price ? `${card.price} ETH` : '1.5 ETH'}
+            {formatPrice(card.price)} ETH
           </Badge>
         </div>
       </div>
@@ -106,7 +102,7 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) => {
+export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode, onCardClick }) => {
   if (loading) {
     return (
       <div className={
@@ -140,7 +136,7 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) 
         : 'space-y-6'
     }>
       {cards.map((card, index) => (
-        <CardGridItem key={`card-${card.id}-${index}`} card={card} index={index} />
+        <CardGridItem key={`card-${card.id}-${index}`} card={card} index={index} onCardClick={onCardClick} />
       ))}
     </div>
   );
