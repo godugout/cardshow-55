@@ -1,45 +1,46 @@
-
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'sonner';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { ThemeProvider } from '@/components/ui/theme-provider';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
-import { ErrorBoundary } from '@/components/common/ErrorBoundary';
-import { Navbar } from '@/components/layout/Navbar';
-import Index from '@/pages/Index';
-import CreateCard from '@/pages/CreateCard';
-import Gallery from '@/pages/Gallery';
-import Studio from '@/pages/Studio';
+import { MainLayout } from '@/layouts/MainLayout';
+import { Home } from '@/pages/Home';
+import { CreateCard } from '@/pages/CreateCard';
+import { CardsPage } from '@/pages/CardsPage';
+import { FeedPage } from '@/pages/Feed';
+import { Studio } from '@/pages/Studio';
+import { Gallery } from '@/pages/Gallery';
+import { AuthPage } from '@/pages/Auth';
+import CRDMKRPage from '@/pages/CRDMKRPage';
 
-const App = () => {
+const queryClient = new QueryClient();
+
+function App() {
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-crd-darkest">
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/create" element={<CreateCard />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/studio" element={<Studio />} />
-              <Route path="/studio/:cardId" element={<Studio />} />
-            </Routes>
-            <Toaster 
-              position="top-right"
-              theme="dark"
-              toastOptions={{
-                style: {
-                  background: '#1A1A1A',
-                  color: '#FCFCFD',
-                  border: '1px solid #353945'
-                }
-              }}
-            />
-          </div>
-        </Router>
-      </AuthProvider>
-    </ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="crd-ui-theme">
+        <AuthProvider>
+          <Router>
+            <div className="min-h-screen bg-crd-darkest text-white">
+              <MainLayout>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/create" element={<CreateCard />} />
+                  <Route path="/cards" element={<CardsPage />} />
+                  <Route path="/crdmkr" element={<CRDMKRPage />} />
+                  <Route path="/feed" element={<FeedPage />} />
+                  <Route path="/studio/:cardId?" element={<Studio />} />
+                  <Route path="/gallery" element={<Gallery />} />
+                  <Route path="/auth/*" element={<AuthPage />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </MainLayout>
+            </div>
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
-};
+}
 
 export default App;

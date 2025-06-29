@@ -447,41 +447,59 @@ export type Database = {
       }
       card_templates: {
         Row: {
+          ai_analysis: Json | null
           category: string
           created_at: string | null
           creator_id: string | null
           description: string | null
+          fabric_data: Json | null
           id: string
           is_premium: boolean | null
           is_public: boolean | null
+          layers: Json | null
           name: string
+          parameters: Json | null
           preview_url: string | null
+          source_file_url: string | null
+          source_type: string | null
           template_data: Json
           usage_count: number | null
         }
         Insert: {
+          ai_analysis?: Json | null
           category: string
           created_at?: string | null
           creator_id?: string | null
           description?: string | null
+          fabric_data?: Json | null
           id?: string
           is_premium?: boolean | null
           is_public?: boolean | null
+          layers?: Json | null
           name: string
+          parameters?: Json | null
           preview_url?: string | null
+          source_file_url?: string | null
+          source_type?: string | null
           template_data: Json
           usage_count?: number | null
         }
         Update: {
+          ai_analysis?: Json | null
           category?: string
           created_at?: string | null
           creator_id?: string | null
           description?: string | null
+          fabric_data?: Json | null
           id?: string
           is_premium?: boolean | null
           is_public?: boolean | null
+          layers?: Json | null
           name?: string
+          parameters?: Json | null
           preview_url?: string | null
+          source_file_url?: string | null
+          source_type?: string | null
           template_data?: Json
           usage_count?: number | null
         }
@@ -1623,6 +1641,104 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      crdmkr_processing_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          file_name: string | null
+          file_size: number | null
+          file_url: string
+          id: string
+          progress: number | null
+          result: Json | null
+          started_at: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          file_name?: string | null
+          file_size?: number | null
+          file_url: string
+          id?: string
+          progress?: number | null
+          result?: Json | null
+          started_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          file_name?: string | null
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          progress?: number | null
+          result?: Json | null
+          started_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      crdmkr_team_variations: {
+        Row: {
+          created_at: string | null
+          generated_css: string | null
+          generated_svg: string | null
+          id: string
+          parameter_overrides: Json | null
+          preview_url: string | null
+          team_colors: Json | null
+          team_logos: Json | null
+          team_name: string
+          template_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          generated_css?: string | null
+          generated_svg?: string | null
+          id?: string
+          parameter_overrides?: Json | null
+          preview_url?: string | null
+          team_colors?: Json | null
+          team_logos?: Json | null
+          team_name: string
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          generated_css?: string | null
+          generated_svg?: string | null
+          id?: string
+          parameter_overrides?: Json | null
+          preview_url?: string | null
+          team_colors?: Json | null
+          team_logos?: Json | null
+          team_name?: string
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crdmkr_team_variations_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "card_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       creator_activities: {
         Row: {

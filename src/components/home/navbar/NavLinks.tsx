@@ -1,55 +1,38 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-export const NavLinks = () => {
-  const location = useLocation();
-  
-  const isActive = (path: string) => location.pathname === path;
-  
+export const NavLinks: React.FC = () => {
   return (
-    <div className="flex items-center gap-8">
-      <Link 
-        to="/" 
-        className={`nav-item ${isActive('/') ? 'active' : ''}`}
+    <div className="hidden md:flex items-center space-x-8">
+      <Link
+        to="/create"
+        className="text-white hover:text-crd-green transition-colors duration-200 font-medium"
       >
-        Home
+        Create
       </Link>
-      <Link 
-        to="/studio" 
-        className={`nav-item ${location.pathname.startsWith('/studio') ? 'active' : ''}`}
+      <Link
+        to="/crdmkr"
+        className="text-white hover:text-crd-green transition-colors duration-200 font-medium"
       >
-        Studio
+        CRDMKR
       </Link>
-      <Link 
-        to="/showcase" 
-        className={`nav-item ${location.pathname.startsWith('/showcase') ? 'active' : ''}`}
-      >
-        Showcase
-      </Link>
-      <Link 
-        to="/cards" 
-        className={`nav-item ${location.pathname.startsWith('/cards') ? 'active' : ''}`}
+      <Link
+        to="/cards"
+        className="text-white hover:text-crd-green transition-colors duration-200 font-medium"
       >
         Cards
       </Link>
-      <Link 
-        to="/gallery" 
-        className={`nav-item ${isActive('/gallery') ? 'active' : ''}`}
+      <Link
+        to="/gallery"
+        className="text-white hover:text-crd-green transition-colors duration-200 font-medium"
       >
         Gallery
       </Link>
-      <Link 
-        to="/creators" 
-        className={`nav-item ${isActive('/creators') ? 'active' : ''}`}
+      <Link
+        to="/studio"
+        className="text-white hover:text-crd-green transition-colors duration-200 font-medium"
       >
-        Creators
-      </Link>
-      <Link 
-        to="/cards/bulk-upload" 
-        className={`nav-item ${isActive('/cards/bulk-upload') ? 'active' : ''}`}
-      >
-        Bulk Upload
+        Studio
       </Link>
     </div>
   );
