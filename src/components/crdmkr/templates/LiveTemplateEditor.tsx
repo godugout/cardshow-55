@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Slider } from '@/components/ui/slider';
 import { 
   Palette, Type, Layout, Layers, Eye, Download, 
-  Undo, Redo, Settings, Magic, Zap
+  Undo, Redo, Settings, Sparkles, Zap
 } from 'lucide-react';
 import type { DetectedRegion } from '@/types/crdmkr';
 
@@ -72,7 +71,7 @@ export const LiveTemplateEditor: React.FC<LiveTemplateEditorProps> = ({
     { id: 'layout', label: 'Layout', icon: Layout },
     { id: 'colors', label: 'Colors', icon: Palette },
     { id: 'typography', label: 'Typography', icon: Type },
-    { id: 'effects', label: 'Effects', icon: Magic }
+    { id: 'effects', label: 'Effects', icon: Sparkles }
   ];
 
   return (
