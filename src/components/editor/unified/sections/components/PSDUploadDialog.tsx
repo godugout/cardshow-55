@@ -63,7 +63,22 @@ export const PSDUploadDialog: React.FC<PSDUploadDialogProps> = ({
     input.accept = '.psd,.psb';
     input.style.display = 'none';
     
-    input.onchange = handleFileSelect;
+    // Fix: Use proper event type casting
+    input.onchange = (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      const syntheticEvent = {
+        target,
+        currentTarget: target,
+        nativeEvent: event,
+        isDefaultPrevented: () => false,
+        isPropagationStopped: () => false,
+        persist: () => {},
+        preventDefault: () => event.preventDefault(),
+        stopPropagation: () => event.stopPropagation()
+      } as React.ChangeEvent<HTMLInputElement>;
+      
+      handleFileSelect(syntheticEvent);
+    };
     
     document.body.appendChild(input);
     input.click();
