@@ -3,6 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { ArrowRight } from 'lucide-react';
+import { useFreeAIAnalysis } from '@/hooks/useFreeAIAnalysis';
 
 import { PhotoDropzone } from './components/PhotoDropzone';
 import { PhotoPreview } from './components/PhotoPreview';
@@ -22,6 +23,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [showAITools, setShowAITools] = useState(false);
   const [imageAnalysis, setImageAnalysis] = useState<any>(null);
+  
+  const { analyzeImage, isAnalyzing } = useFreeAIAnalysis();
 
   const processFile = useCallback(async (file: File) => {
     console.log('📁 Processing file:', file.name);
@@ -32,9 +35,9 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       // Simulate upload progress
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
-          if (prev >= 90) {
+          if (prev >= 50) {
             clearInterval(progressInterval);
-            return 90;
+            return 50;
           }
           return prev + 10;
         });
@@ -44,30 +47,39 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       const imageUrl = URL.createObjectURL(file);
       cardEditor.updateCardField('image_url', imageUrl);
 
-      // Simulate AI analysis
-      setTimeout(() => {
+      // Run real AI analysis
+      console.log('🤖 Starting real AI analysis...');
+      const result = await analyzeImage(imageUrl);
+      
+      if (result) {
         setImageAnalysis({
-          dominantColors: ['#FF6B6B', '#4ECDC4', '#45B7D1'],
-          suggestedRarity: 'rare',
-          contentType: 'character',
-          tags: ['fantasy', 'magical', 'warrior'],
-          quality: 95,
-          detectedText: file.name.includes('card') ? 'Trading Card Detected' : null,
-          suggestedTemplate: 'classic-gold'
+          dominantColors: result.colorPalette,
+          suggestedRarity: result.suggestedRarity,
+          contentType: result.contentType,
+          tags: result.tags,
+          quality: result.quality,
+          detectedText: result.detectedText,
+          suggestedTemplate: result.suggestedTemplate,
+          confidence: result.confidence
         });
+        
         setUploadProgress(100);
         setShowAITools(true);
         clearInterval(progressInterval);
-        toast.success('Image uploaded and analyzed!');
-      }, 2000);
+        
+        console.log('✅ Real AI analysis complete:', result);
+        toast.success(`Image analyzed! Detected: ${result.contentType} (${result.confidence}% confidence)`);
+      } else {
+        throw new Error('Analysis failed');
+      }
 
     } catch (error) {
-      console.error('Upload error:', error);
-      toast.error('Failed to upload image');
+      console.error('Upload/Analysis error:', error);
+      toast.error('Failed to analyze image');
     } finally {
       setIsProcessing(false);
     }
-  }, [cardEditor]);
+  }, [cardEditor, analyzeImage]);
 
   const handleAIEnhance = () => {
     setIsProcessing(true);
@@ -81,15 +93,18 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     // This will be handled by AIToolsPanel
   };
 
-  const canProceed = cardEditor.cardData.image_url && !isProcessing;
+  const canProceed = cardEditor.cardData.image_url && !isProcessing && !isAnalyzing;
 
   return (
     <div className="space-y-6 relative z-10">
       <div className="space-y-4">
         <div className="relative">
-          {isProcessing ? (
+          {isProcessing || isAnalyzing ? (
             <div className="border-2 border-dashed border-crd-green/50 rounded-xl p-6 text-center min-h-[280px] flex flex-col items-center justify-center">
               <UploadProgress progress={uploadProgress} />
+              {isAnalyzing && (
+                <p className="text-crd-lightGray mt-4">Running AI analysis...</p>
+              )}
             </div>
           ) : cardEditor.cardData.image_url ? (
             <div className="border-2 border-dashed border-crd-green rounded-xl p-6 text-center bg-crd-green/5 min-h-[280px] flex flex-col items-center justify-center">
@@ -101,12 +116,12 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
           ) : (
             <PhotoDropzone 
               onFileSelect={processFile}
-              disabled={isProcessing}
+              disabled={isProcessing || isAnalyzing}
             />
           )}
         </div>
 
-        {showAITools && cardEditor.cardData.image_url && (
+        {showAITools && cardEditor.cardData.image_url && imageAnalysis && (
           <AIToolsPanel
             analysisData={imageAnalysis}
             onEnhance={handleAIEnhance}
@@ -117,7 +132,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
 
       <div className="flex justify-between items-center pt-6 border-t border-crd-mediumGray/20">
         <div className="text-sm text-crd-lightGray">
-          Step 1 of 5 - Upload complete
+          Step 1 of 5 - {imageAnalysis ? `Analysis: ${imageAnalysis.contentType}` : 'Upload complete'}
         </div>
         
         <CRDButton 
