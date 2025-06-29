@@ -1,61 +1,80 @@
 
 import React from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Upload, Route, Template, Layers } from 'lucide-react';
+
+type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager';
 
 interface StepHeaderProps {
-  currentStep: 'upload' | 'path-selection' | 'template-selection';
-  mediaDetection: any;
+  currentStep: WorkflowStep;
+  mediaDetection?: any;
 }
 
-export const StepHeader: React.FC<StepHeaderProps> = ({
-  currentStep,
-  mediaDetection
-}) => {
+export const StepHeader: React.FC<StepHeaderProps> = ({ currentStep, mediaDetection }) => {
+  const getStepIcon = () => {
+    switch (currentStep) {
+      case 'upload':
+        return <Upload className="w-6 h-6" />;
+      case 'path-selection':
+        return <Route className="w-6 h-6" />;
+      case 'template-selection':
+        return <Template className="w-6 h-6" />;
+      case 'psd-manager':
+        return <Layers className="w-6 h-6" />;
+      default:
+        return <Upload className="w-6 h-6" />;
+    }
+  };
+
   const getStepTitle = () => {
     switch (currentStep) {
       case 'upload':
-        return 'Upload & Analyze Your Media';
+        return 'Upload Your Media';
       case 'path-selection':
         return 'Choose Your Workflow';
       case 'template-selection':
         return 'Select Template';
+      case 'psd-manager':
+        return 'PSD Professional Studio';
       default:
-        return '';
+        return 'Upload Your Media';
     }
   };
 
   const getStepDescription = () => {
     switch (currentStep) {
       case 'upload':
-        return 'Upload your file and let our AI detect the best workflow';
+        return 'Start by uploading your photo or PSD file';
       case 'path-selection':
-        return 'Select the approach that matches your goals';
+        return 'Select the best creation path for your content';
       case 'template-selection':
-        return 'Choose a frame template for your card';
+        return 'Pick a template that matches your vision';
+      case 'psd-manager':
+        return 'Professional layer management and frame generation';
       default:
-        return '';
+        return 'Start by uploading your photo or PSD file';
     }
   };
 
   return (
-    <div className="flex items-center justify-between">
-      <div>
-        <h3 className="text-xl font-semibold text-crd-white">
-          {getStepTitle()}
-        </h3>
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-crd-lightGray">
-            {getStepDescription()}
-          </p>
-          
-          {mediaDetection && (
-            <div className="flex items-center gap-2 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-crd-green" />
-              <span className="text-crd-green font-medium">{mediaDetection.format}</span>
-            </div>
-          )}
+    <div className="text-center space-y-4">
+      <div className="flex items-center justify-center gap-3">
+        <div className="bg-gradient-to-r from-crd-green to-crd-blue p-3 rounded-xl text-black">
+          {getStepIcon()}
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-crd-white">{getStepTitle()}</h2>
+          <p className="text-crd-lightGray">{getStepDescription()}</p>
         </div>
       </div>
+      
+      {mediaDetection && (
+        <div className="flex justify-center">
+          <Badge className="bg-crd-green/20 text-crd-green border-crd-green/30">
+            Detected: {mediaDetection.format}
+          </Badge>
+        </div>
+      )}
     </div>
   );
 };

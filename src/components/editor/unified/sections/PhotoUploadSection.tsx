@@ -21,7 +21,7 @@ interface PhotoUploadSectionProps {
   onNext: () => void;
 }
 
-// Define the workflow step type consistently
+// Define the workflow step type consistently across the entire component
 type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager';
 
 export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
@@ -44,7 +44,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const { analyzeImage, isAnalyzing } = useFreeAIAnalysis();
   const { templates, isLoading: templatesLoading } = useTemplates();
 
-  // Simple step indicator component with proper typing
+  // Simple step indicator component with properly typed props
   const SimpleStepIndicator = ({ currentStep }: { currentStep: WorkflowStep }) => {
     const steps: Array<{ id: WorkflowStep; label: string; description: string }> = [
       { id: 'upload', label: 'Upload', description: 'Choose your media' },
