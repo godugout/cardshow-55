@@ -2,10 +2,12 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Upload, Layers, Palette, Sparkles, ArrowRight, FileImage, Download, Brain } from 'lucide-react';
+import { Upload, Layers, Palette, Sparkles, ArrowRight, FileImage, Download, Brain, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { RegionMapper } from './RegionMapper';
 import { HybridTemplateEditor } from './HybridTemplateEditor';
+import { TeamAssetManager } from './TeamAssetManager';
+import { BatchCustomizer } from './BatchCustomizer';
 import { useMLAnalysis } from '@/hooks/useMLAnalysis';
 import { toast } from 'sonner';
 import type { DetectedRegion } from '@/types/crdmkr';
@@ -15,6 +17,8 @@ export const CRDMKRLayout = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [detectedRegions, setDetectedRegions] = useState<DetectedRegion[]>([]);
+  const [generatedTemplate, setGeneratedTemplate] = useState<any>(null);
+  const [selectedTeamId, setSelectedTeamId] = useState<string>('');
   
   const { analyzeImage, isAnalyzing, progress } = useMLAnalysis();
 
@@ -23,7 +27,9 @@ export const CRDMKRLayout = () => {
     { id: 'analyze', label: 'AI Analysis', icon: Brain },
     { id: 'regions', label: 'Map Regions', icon: Layers },
     { id: 'customize', label: 'Customize', icon: Palette },
-    { id: 'export', label: 'Generate Template', icon: Download }
+    { id: 'teams', label: 'Team Assets', icon: Users },
+    { id: 'batch', label: 'Batch Generate', icon: Sparkles },
+    { id: 'export', label: 'Export', icon: Download }
   ];
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,6 +71,11 @@ export const CRDMKRLayout = () => {
 
   const handleRegionsUpdate = (regions: DetectedRegion[]) => {
     setDetectedRegions(regions);
+  };
+
+  const handleTemplateGenerated = (templateData: any) => {
+    setGeneratedTemplate(templateData);
+    setActiveStep(4); // Move to team assets step
   };
 
   const renderStepContent = () => {
@@ -152,29 +163,40 @@ export const CRDMKRLayout = () => {
           <HybridTemplateEditor
             imageUrl={imageUrl}
             detectedRegions={detectedRegions}
-            onTemplateGenerated={(templateData) => {
-              console.log('✅ Template generated:', templateData);
-              toast.success('Template generated successfully!');
-              setActiveStep(4); // Move to export step
-            }}
+            onTemplateGenerated={handleTemplateGenerated}
           />
         );
 
-      case 4: // Export
+      case 4: // Team Assets
+        return (
+          <TeamAssetManager
+            selectedTeamId={selectedTeamId}
+            onTeamSelect={setSelectedTeamId}
+          />
+        );
+
+      case 5: // Batch Generate
+        return (
+          <BatchCustomizer
+            templateData={generatedTemplate}
+          />
+        );
+
+      case 6: // Export
         return (
           <div className="h-full flex flex-col items-center justify-center p-8">
             <div className="text-center max-w-md">
               <Download className="w-16 h-16 text-crd-green mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-crd-white mb-2">
-                Template Ready!
+                Templates Ready!
               </h3>
               <p className="text-crd-lightGray mb-6">
-                Your custom card template has been generated and is ready for use. You can now integrate it with your card creation workflow.
+                Your team-specific card templates have been generated and are ready for use. You can now integrate them with your card creation workflow.
               </p>
               <div className="flex gap-3 justify-center">
                 <CRDButton variant="primary">
                   <Download className="w-4 h-4 mr-2" />
-                  Download Files
+                  Download All
                 </CRDButton>
                 <CRDButton variant="outline">
                   View in Gallery
@@ -203,7 +225,7 @@ export const CRDMKRLayout = () => {
               CRDMKR Template Generator
             </h1>
             <p className="text-crd-lightGray">
-              Transform PSD files into customizable card templates with AI-powered analysis
+              Transform PSD files into customizable card templates with AI-powered analysis and team customization
             </p>
           </div>
           <Link to="/create">
@@ -215,14 +237,14 @@ export const CRDMKRLayout = () => {
         </div>
 
         {/* Process Steps */}
-        <div className="flex items-center justify-between bg-crd-darker p-4 rounded-lg">
+        <div className="flex items-center justify-between bg-crd-darker p-4 rounded-lg overflow-x-auto">
           {steps.map((step, index) => {
             const Icon = step.icon;
             const isActive = index === activeStep;
             const isCompleted = index < activeStep;
             
             return (
-              <div key={step.id} className="flex items-center">
+              <div key={step.id} className="flex items-center whitespace-nowrap">
                 <div 
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors cursor-pointer ${
                     isActive ? 'bg-crd-green/20 text-crd-green' :
@@ -266,6 +288,11 @@ export const CRDMKRLayout = () => {
               <div className="text-sm text-crd-lightGray">
                 Regions: <span className="text-crd-white">{detectedRegions.length}</span>
               </div>
+              {selectedTeamId && (
+                <div className="text-sm text-crd-lightGray">
+                  Selected Team: <span className="text-crd-white">{selectedTeamId}</span>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <CRDButton
