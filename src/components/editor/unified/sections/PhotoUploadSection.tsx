@@ -21,7 +21,7 @@ interface PhotoUploadSectionProps {
   onNext: () => void;
 }
 
-// Fix: Update the type definition to include "psd-manager"
+// Update the type definition to match what StepIndicator expects
 type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager';
 
 export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
