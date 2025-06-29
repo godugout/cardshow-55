@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
@@ -6,6 +7,7 @@ import {
   Palette, Type, Layout, Layers, Eye, Download, 
   Undo, Redo, Settings, Sparkles, Zap
 } from 'lucide-react';
+import { TemplatePreviewRenderer } from './TemplatePreviewRenderer';
 import type { DetectedRegion } from '@/types/crdmkr';
 
 interface LiveTemplateEditorProps {
@@ -27,21 +29,21 @@ export const LiveTemplateEditor: React.FC<LiveTemplateEditorProps> = ({
       aspectRatio: '5:7'
     },
     colors: {
-      primary: '#000000',
-      secondary: '#ffffff',
-      accent: '#ff0000',
-      background: '#f0f0f0'
+      primary: '#2faf50',
+      secondary: '#1f2d2d', 
+      accent: '#f8e445',
+      background: '#ffffff'
     },
     typography: {
       fontFamily: 'Inter',
       fontSize: 16,
-      fontWeight: 400,
+      fontWeight: 600,
       lineHeight: 1.4
     },
     effects: {
       shadow: true,
       glow: false,
-      gradient: false,
+      gradient: true,
       opacity: 100
     }
   });
@@ -62,7 +64,8 @@ export const LiveTemplateEditor: React.FC<LiveTemplateEditorProps> = ({
     const templateData = {
       regions: detectedRegions,
       config: templateConfig,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      previewUrl: imageUrl
     };
     onTemplateGenerated(templateData);
   };
@@ -117,13 +120,18 @@ export const LiveTemplateEditor: React.FC<LiveTemplateEditorProps> = ({
           </div>
         </div>
 
-        {/* Preview Canvas */}
-        <div className="relative bg-white rounded-lg border border-crd-mediumGray/30 overflow-hidden">
+        {/* Live Preview Canvas */}
+        <div className="relative bg-gray-100 rounded-lg border border-crd-mediumGray/30 overflow-hidden">
           {previewMode === 'split' ? (
-            <div className="flex h-96">
+            <div className="flex h-[600px]">
               {/* Original */}
-              <div className="flex-1 relative">
-                <img src={imageUrl} alt="Original" className="w-full h-full object-contain" />
+              <div className="flex-1 relative bg-white">
+                <TemplatePreviewRenderer
+                  imageUrl={imageUrl}
+                  regions={detectedRegions}
+                  config={templateConfig}
+                  showOriginal={true}
+                />
                 <div className="absolute bottom-2 left-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
                   Original
                 </div>
@@ -137,44 +145,46 @@ export const LiveTemplateEditor: React.FC<LiveTemplateEditorProps> = ({
               </div>
               
               {/* Template Preview */}
-              <div className="flex-1 relative bg-gradient-to-br from-gray-100 to-gray-200">
-                <div className="absolute inset-4 bg-white rounded-lg shadow-lg p-4">
-                  <div className="text-center text-gray-500 mt-8">
-                    Template Preview
-                    <div className="mt-4 space-y-2">
-                      {detectedRegions.map((region, index) => (
-                        <div key={region.id} className="text-xs bg-gray-100 p-2 rounded">
-                          {region.type} region
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
-                  Template
-                </div>
+              <div className="flex-1 relative bg-gray-50">
+                <TemplatePreviewRenderer
+                  imageUrl={imageUrl}
+                  regions={detectedRegions}
+                  config={templateConfig}
+                  showOriginal={false}
+                />
               </div>
             </div>
           ) : (
-            <div className="h-96 relative">
-              <img 
-                src={imageUrl} 
-                alt={previewMode === 'before' ? 'Original' : 'Template'} 
-                className="w-full h-full object-contain" 
+            <div className="h-[600px] relative">
+              <TemplatePreviewRenderer
+                imageUrl={imageUrl}
+                regions={detectedRegions}
+                config={templateConfig}
+                showOriginal={previewMode === 'before'}
               />
             </div>
           )}
         </div>
 
-        {/* Quick Actions */}
-        <div className="flex items-center gap-2">
-          <CRDButton onClick={generateTemplate} className="flex-1">
-            <Zap className="w-4 h-4 mr-2" />
-            Generate Template
-          </CRDButton>
-          <CRDButton variant="outline">
-            <Settings className="w-4 h-4" />
-          </CRDButton>
+        {/* Live Stats */}
+        <div className="bg-crd-darker rounded-lg p-4 border border-crd-mediumGray/30">
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-6">
+              <div className="text-crd-lightGray">
+                Detected Regions: <span className="text-crd-white font-medium">{detectedRegions.length}</span>
+              </div>
+              <div className="text-crd-lightGray">
+                Primary Color: <span className="text-crd-white font-medium">{templateConfig.colors.primary}</span>
+              </div>
+              <div className="text-crd-lightGray">
+                Font: <span className="text-crd-white font-medium">{templateConfig.typography.fontFamily}</span>
+              </div>
+            </div>
+            <CRDButton onClick={generateTemplate} size="sm">
+              <Zap className="w-4 h-4 mr-2" />
+              Generate Template
+            </CRDButton>
+          </div>
         </div>
       </div>
 
@@ -311,6 +321,21 @@ export const LiveTemplateEditor: React.FC<LiveTemplateEditorProps> = ({
                     {templateConfig.typography.fontSize}px
                   </div>
                 </div>
+
+                <div>
+                  <label className="block text-sm text-crd-lightGray mb-2">Font Weight</label>
+                  <Slider
+                    value={[templateConfig.typography.fontWeight]}
+                    onValueChange={(value) => handleConfigUpdate('typography', 'fontWeight', value[0])}
+                    min={300}
+                    max={900}
+                    step={100}
+                    className="w-full"
+                  />
+                  <div className="text-xs text-crd-lightGray mt-1">
+                    {templateConfig.typography.fontWeight}
+                  </div>
+                </div>
               </>
             )}
 
@@ -330,13 +355,16 @@ export const LiveTemplateEditor: React.FC<LiveTemplateEditorProps> = ({
                           className="w-4 h-4"
                         />
                       ) : (
-                        <Slider
-                          value={[value as number]}
-                          onValueChange={(val) => handleConfigUpdate('effects', key, val[0])}
-                          max={100}
-                          step={1}
-                          className="w-24"
-                        />
+                        <div className="flex items-center gap-2">
+                          <Slider
+                            value={[value as number]}
+                            onValueChange={(val) => handleConfigUpdate('effects', key, val[0])}
+                            max={100}
+                            step={1}
+                            className="w-24"
+                          />
+                          <span className="text-xs text-crd-lightGray w-8">{value}%</span>
+                        </div>
                       )}
                     </div>
                   ))}
@@ -355,7 +383,7 @@ export const LiveTemplateEditor: React.FC<LiveTemplateEditorProps> = ({
             <div className="space-y-2">
               {detectedRegions.map((region, index) => (
                 <div key={region.id} className="flex items-center justify-between text-sm">
-                  <span className="text-crd-lightGray">
+                  <span className="text-crd-lightGray capitalize">
                     {region.type} {index + 1}
                   </span>
                   <span className="text-crd-white">
