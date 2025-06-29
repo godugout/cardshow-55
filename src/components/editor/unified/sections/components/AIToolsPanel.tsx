@@ -7,13 +7,19 @@ import { Sparkles, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AIAnalysisData {
-  dominantColors: string[];
-  suggestedRarity: string;
-  contentType: string;
-  tags: string[];
-  quality: number;
-  detectedText: string | null;
-  suggestedTemplate: string;
+  dominantColors?: string[];
+  suggestedRarity?: string;
+  contentType?: string;
+  tags?: string[];
+  quality?: number;
+  detectedText?: string | null;
+  suggestedTemplate?: string;
+  // CRDMKR specific properties
+  layers?: string[];
+  regions?: string[];
+  colorPalette?: string[];
+  confidence?: number;
+  templateType?: string;
 }
 
 interface AIToolsPanelProps {
@@ -50,6 +56,12 @@ export const AIToolsPanel: React.FC<AIToolsPanelProps> = ({
     onCreateFromPSD();
   };
 
+  // Safely get colors with fallback
+  const getDisplayColors = () => {
+    const colors = analysisData?.dominantColors || analysisData?.colorPalette || [];
+    return colors.slice(0, 3);
+  };
+
   return (
     <Card className="bg-crd-mediumGray/20 border-crd-mediumGray/30">
       <CardContent className="p-4">
@@ -76,26 +88,35 @@ export const AIToolsPanel: React.FC<AIToolsPanelProps> = ({
             <div className="flex items-center justify-between">
               <span className="text-sm text-crd-lightGray">Suggested Rarity:</span>
               <Badge className="bg-purple-500/20 text-purple-300 text-xs">
-                {analysisData.suggestedRarity}
+                {analysisData.suggestedRarity || 'Common'}
               </Badge>
             </div>
             
             <div>
               <span className="text-sm text-crd-lightGray mb-2 block">Colors:</span>
               <div className="flex gap-2">
-                {analysisData.dominantColors.slice(0, 3).map((color: string, index: number) => (
+                {getDisplayColors().map((color: string, index: number) => (
                   <div 
                     key={index}
                     className="w-6 h-6 rounded-full border border-crd-mediumGray/30"
                     style={{ backgroundColor: color }}
                   />
                 ))}
+                {getDisplayColors().length === 0 && (
+                  <div className="text-xs text-crd-mediumGray">No colors detected</div>
+                )}
               </div>
             </div>
             
             {analysisData.detectedText && (
               <div className="text-xs text-crd-green">
                 ✓ {analysisData.detectedText}
+              </div>
+            )}
+
+            {analysisData.confidence && (
+              <div className="text-xs text-crd-lightGray">
+                Confidence: {analysisData.confidence}%
               </div>
             )}
           </div>
