@@ -8,7 +8,7 @@ import { useCollections } from '@/hooks/useCollections';
 import { useCreators } from '@/hooks/useCreators';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Plus, Grid, List, Filter, Search } from 'lucide-react';
+import { Plus, Grid, List, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { CardsGrid } from './Gallery/components/CardsGrid';
@@ -22,9 +22,9 @@ const Gallery = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedTab, setSelectedTab] = useState('cards');
   
-  const { cards, isLoading: cardsLoading } = useCards();
+  const { cards, loading: cardsLoading } = useCards();
   const { collections, isLoading: collectionsLoading } = useCollections();
-  const { creators, isLoading: creatorsLoading } = useCreators();
+  const { popularCreators: creators, loading: creatorsLoading } = useCreators();
 
   console.log('Gallery: Loaded with navigation via React Router');
 
@@ -33,9 +33,9 @@ const Gallery = () => {
     navigate('/create');
   };
 
-  const handleViewCard = (cardId: string) => {
-    console.log('Navigating to studio for card:', cardId);
-    navigate(`/studio/${cardId}`);
+  const handleViewCard = (card: any) => {
+    console.log('Navigating to studio for card:', card.id);
+    navigate(`/studio/${card.id}`);
   };
 
   const filteredCards = cards?.filter(card => 
@@ -54,7 +54,10 @@ const Gallery = () => {
   return (
     <div className="min-h-screen bg-crd-darkest">
       <ErrorBoundary>
-        <GalleryHeader />
+        <GalleryHeader 
+          activeTab={selectedTab} 
+          onTabChange={setSelectedTab}
+        />
         
         {/* Controls Bar */}
         <div className="bg-crd-darker border-b border-crd-mediumGray/20">
@@ -138,8 +141,7 @@ const Gallery = () => {
                 <LoadingState message="Loading collections..." />
               ) : (
                 <CollectionsGrid 
-                  collections={filteredCollections} 
-                  viewMode={viewMode}
+                  collections={filteredCollections}
                 />
               )}
             </TabsContent>
@@ -149,8 +151,7 @@ const Gallery = () => {
                 <LoadingState message="Loading creators..." />
               ) : (
                 <CreatorsGrid 
-                  creators={filteredCreators} 
-                  viewMode={viewMode}
+                  creators={filteredCreators}
                 />
               )}
             </TabsContent>

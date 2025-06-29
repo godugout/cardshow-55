@@ -8,11 +8,12 @@ import { Plus, Upload } from 'lucide-react';
 import { CardsTabsNavigation } from '@/components/cards/CardsTabsNavigation';
 import { CardsTabsContent } from '@/components/cards/CardsTabsContent';
 import { useCards } from '@/hooks/useCards';
+import type { FeedType } from '@/hooks/use-feed-types';
 
 const CardsPage = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('discover');
-  const { cards, isLoading } = useCards();
+  const [activeTab, setActiveTab] = useState<FeedType>('forYou');
+  const { cards, loading } = useCards();
 
   console.log('CardsPage: Loaded with React Router navigation');
 
@@ -23,7 +24,6 @@ const CardsPage = () => {
 
   const handleBulkUpload = () => {
     console.log('Opening bulk upload');
-    // Could navigate to a dedicated bulk upload page or open a modal
     navigate('/cards?upload=bulk');
   };
 
@@ -67,7 +67,7 @@ const CardsPage = () => {
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as FeedType)} className="w-full">
             <div className="flex justify-center mb-8">
               <CardsTabsNavigation />
             </div>
@@ -75,7 +75,7 @@ const CardsPage = () => {
             <CardsTabsContent 
               activeTab={activeTab}
               cards={cards || []}
-              isLoading={isLoading}
+              isLoading={loading}
               onCardClick={handleCardClick}
             />
           </Tabs>

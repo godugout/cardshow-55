@@ -14,42 +14,46 @@ export const GalleryHeader: React.FC<GalleryHeaderProps> = ({
   onTabChange
 }) => {
   return (
-    <div className="mb-10">
-      <h1 className="text-4xl font-bold text-white mb-8">
-        Discover <span className="text-[#EA6E48]">Cards & Collectibles</span>
-      </h1>
-      
-      <div className="flex justify-between items-center">
-        <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-          <div className="flex justify-between items-center w-full">
-            <TabsList className="bg-[#1A1A1A] p-1 rounded-md">
-              <TabsTrigger 
-                value="featured" 
-                className={`px-4 py-2 ${activeTab === 'featured' ? 'bg-[#3772FF] text-white' : 'text-[#777E90]'}`}
-              >
-                Featured
-              </TabsTrigger>
-              <TabsTrigger 
-                value="trending" 
-                className={`px-4 py-2 ${activeTab === 'trending' ? 'bg-[#3772FF] text-white' : 'text-[#777E90]'}`}
-              >
-                Trending
-              </TabsTrigger>
-              <TabsTrigger 
-                value="new" 
-                className={`px-4 py-2 ${activeTab === 'new' ? 'bg-[#3772FF] text-white' : 'text-[#777E90]'}`}
-              >
-                New
-              </TabsTrigger>
-            </TabsList>
-            
-            <Button className="bg-[#3772FF] text-white rounded-md flex items-center gap-2">
-              <Filter size={16} />
-              Filter
-              <span className="ml-1 bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs">×</span>
-            </Button>
+    <div className="bg-crd-darker border-b border-crd-mediumGray/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-10">
+          <h1 className="text-4xl font-bold text-white mb-8">
+            Discover <span className="text-crd-green">Cards & Collectibles</span>
+          </h1>
+          
+          <div className="flex justify-between items-center">
+            <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
+              <div className="flex justify-between items-center w-full">
+                <TabsList className="bg-crd-darkest p-1 rounded-md">
+                  <TabsTrigger 
+                    value="cards" 
+                    className={`px-4 py-2 ${activeTab === 'cards' ? 'bg-crd-green text-black' : 'text-crd-lightGray'}`}
+                  >
+                    Cards
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="collections" 
+                    className={`px-4 py-2 ${activeTab === 'collections' ? 'bg-crd-green text-black' : 'text-crd-lightGray'}`}
+                  >
+                    Collections
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="creators" 
+                    className={`px-4 py-2 ${activeTab === 'creators' ? 'bg-crd-green text-black' : 'text-crd-lightGray'}`}
+                  >
+                    Creators
+                  </TabsTrigger>
+                </TabsList>
+                
+                <Button className="bg-crd-green text-black rounded-md flex items-center gap-2 hover:bg-crd-green/90">
+                  <Filter size={16} />
+                  Filter
+                  <span className="ml-1 bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs">×</span>
+                </Button>
+              </div>
+            </Tabs>
           </div>
-        </Tabs>
+        </div>
       </div>
     </div>
   );
