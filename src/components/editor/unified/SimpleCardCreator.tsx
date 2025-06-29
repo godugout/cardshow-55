@@ -448,7 +448,7 @@ export const SimpleCardCreator = ({
             <Checkbox
               id="marketplace-listing"
               checked={marketplaceListing}
-              onCheckedChange={setMarketplaceListing}
+              onCheckedChange={(checked) => setMarketplaceListing(checked === true)}
             />
             <Label htmlFor="marketplace-listing" className="text-crd-white">
               List on Marketplace
@@ -459,7 +459,7 @@ export const SimpleCardCreator = ({
             <Checkbox
               id="crd-catalog"
               checked={crdCatalogInclusion}
-              onCheckedChange={setCrdCatalogInclusion}
+              onCheckedChange={(checked) => setCrdCatalogInclusion(checked === true)}
             />
             <Label htmlFor="crd-catalog" className="text-crd-white">
               Include in CRD Catalog
@@ -470,7 +470,7 @@ export const SimpleCardCreator = ({
             <Checkbox
               id="print-available"
               checked={printAvailable}
-              onCheckedChange={setPrintAvailable}
+              onCheckedChange={(checked) => setPrintAvailable(checked === true)}
             />
             <Label htmlFor="print-available" className="text-crd-white">
               Available for Print
@@ -481,7 +481,7 @@ export const SimpleCardCreator = ({
             <Checkbox
               id="limited-edition"
               checked={limitedEdition}
-              onCheckedChange={setLimitedEdition}
+              onCheckedChange={(checked) => setLimitedEdition(checked === true)}
             />
             <Label htmlFor="limited-edition" className="text-crd-white">
               Limited Edition
@@ -579,7 +579,7 @@ export const SimpleCardCreator = ({
         Your card has been successfully created.
       </p>
       <div className="flex justify-center gap-4">
-        <CRDButton onClick={onComplete}>View Card</CRDButton>
+        <CRDButton onClick={() => onComplete && onComplete({} as CardData)}>View Card</CRDButton>
         <CRDButton variant="outline" onClick={onCancel}>
           Create Another
         </CRDButton>

@@ -33,7 +33,9 @@ export const useTemplates = () => {
         is_premium: template.is_premium,
         usage_count: template.usage_count || 0,
         tags: template.tags || [],
-        template_data: template.template_data || {}
+        template_data: typeof template.template_data === 'object' && template.template_data !== null 
+          ? template.template_data as Record<string, any>
+          : {}
       }));
 
       setTemplates(designTemplates);
