@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { CRDButton } from '@/components/ui/design-system/Button';
@@ -272,6 +273,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
           analysisData={imageAnalysis}
           onEnhance={() => {}}
           onCreateFromPSD={() => {}}
+          onFrameGenerated={handleTemplateGenerated}
+          userImage={cardEditor.cardData.image_url}
         />
       )}
     </div>
