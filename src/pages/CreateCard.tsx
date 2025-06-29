@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { PhotoUploadSection } from '@/components/editor/unified/sections/PhotoUploadSection';
@@ -10,9 +10,23 @@ import type { CardData } from '@/hooks/useCardEditor';
 
 const CreateCard = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const cardEditor = useCardEditor();
 
-  console.log('CreateCard page loaded - using enhanced photo upload with media path detection');
+  // Handle URL parameters for workflow activation
+  useEffect(() => {
+    const source = searchParams.get('source');
+    const workflow = searchParams.get('workflow');
+    
+    if (source === 'crdmkr' && workflow === 'psd-professional') {
+      console.log('🎯 Auto-activating PSD Professional workflow from URL parameters');
+      // Set workflow metadata
+      cardEditor.updateDesignMetadata('workflowSource', 'crdmkr');
+      cardEditor.updateDesignMetadata('workflowType', 'psd-professional');
+    }
+  }, [searchParams, cardEditor]);
+
+  console.log('CreateCard page loaded - enhanced PSD workflow ready');
 
   const handleComplete = (cardData: CardData) => {
     console.log('Card created successfully:', cardData);
@@ -25,34 +39,31 @@ const CreateCard = () => {
   };
 
   const handleNext = () => {
-    console.log('Moving to next step - details and design');
-    // For now, just log that we're ready to proceed
-    // Later we can navigate to the next step in the flow
-  };
-
-  // Get current workflow step from PhotoUploadSection
-  const getWorkflowTitle = () => {
-    // For now, default to "Choose your workflow" since we're in the creation flow
-    // This could be made more dynamic by lifting state up if needed
-    return 'Choose your workflow';
+    console.log('Moving to next step - effects and finalization');
+    // Navigate to next step or continue workflow
   };
 
   return (
-    <div className="min-h-screen bg-crd-darkest">
+    <div className="min-h-screen bg-gradient-to-br from-crd-darkest via-crd-darker to-crd-darkGray">
       <ErrorBoundary>
-        {/* Header */}
-        <div className="bg-crd-darker border-b border-crd-mediumGray/20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-crd-white">
-                {getWorkflowTitle()}
+        {/* Enhanced Header */}
+        <div className="bg-gradient-to-r from-crd-darker via-crd-darkGray to-crd-darker border-b border-crd-green/20 shadow-xl">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-crd-green to-crd-blue bg-clip-text text-transparent">
+                Professional Card Creator
               </h1>
+              <div className="hidden md:block h-8 w-px bg-crd-mediumGray/30"></div>
+              <div className="hidden md:flex items-center gap-2 text-crd-lightGray">
+                <div className="w-2 h-2 bg-crd-green rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium">Advanced PSD Workflow</span>
+              </div>
             </div>
 
             <CRDButton
               variant="outline"
               onClick={handleCancel}
-              className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
+              className="border-crd-mediumGray/30 text-crd-lightGray hover:text-crd-white hover:border-crd-green/50 transition-all duration-200"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Cancel
