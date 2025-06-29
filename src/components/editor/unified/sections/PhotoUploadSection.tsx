@@ -43,9 +43,9 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const { analyzeImage, isAnalyzing } = useFreeAIAnalysis();
   const { templates, isLoading: templatesLoading } = useTemplates();
 
-  // Simple step indicator component inline
+  // Simple step indicator component inline with correct type
   const SimpleStepIndicator = ({ currentStep }: { currentStep: WorkflowStep }) => {
-    const steps = [
+    const steps: Array<{ id: WorkflowStep; label: string; description: string }> = [
       { id: 'upload', label: 'Upload', description: 'Choose your media' },
       { id: 'path-selection', label: 'Workflow', description: 'Select creation path' },
       { id: 'template-selection', label: 'Template', description: 'Pick design' },
