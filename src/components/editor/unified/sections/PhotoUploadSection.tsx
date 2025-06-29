@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
@@ -18,8 +17,7 @@ import {
   FileImage,
   Zap,
   Palette,
-  Layout,
-  Magic
+  Layout
 } from 'lucide-react';
 
 interface PhotoUploadSectionProps {
@@ -240,7 +238,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                   Enhance
                 </CRDButton>
                 <CRDButton variant="outline" onClick={handleCreateFromPSD} className="w-full text-sm">
-                  <Magic className="w-4 h-4 mr-2" />
+                  <Sparkles className="w-4 h-4 mr-2" />
                   From PSD
                 </CRDButton>
               </div>
