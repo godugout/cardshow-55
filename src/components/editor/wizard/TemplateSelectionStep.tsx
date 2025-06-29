@@ -1,19 +1,26 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CRDMKRTemplateSelector } from '../CRDMKRTemplateSelector';
+import { Upload, Sparkles, Palette } from 'lucide-react';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 
 interface TemplateSelectionStepProps {
   templates: DesignTemplate[];
   selectedTemplate: DesignTemplate | null;
   onTemplateSelect: (template: DesignTemplate) => void;
+  onCreateFromPSD?: () => void;
 }
 
 export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
   templates,
   selectedTemplate,
-  onTemplateSelect
+  onTemplateSelect,
+  onCreateFromPSD
 }) => {
   console.log('🎨 TemplateSelectionStep: Rendering with templates:', templates);
+
+  const [activeTab, setActiveTab] = useState('standard');
 
   const renderTemplatePreview = (template: DesignTemplate) => {
     // Safely handle template data
@@ -63,31 +70,61 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
     );
   };
 
-  if (!templates || templates.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <div className="text-crd-lightGray mb-4">No templates available</div>
-        <div className="text-sm text-crd-lightGray">Loading templates...</div>
-      </div>
-    );
-  }
+  // Filter templates by type
+  const standardTemplates = templates.filter(t => 
+    !t.template_data?.sourceType?.includes('crdmkr')
+  );
 
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <h3 className="text-white font-medium text-lg mb-2">Choose a Frame</h3>
+        <h3 className="text-white font-medium text-lg mb-2">Choose a Template</h3>
         <p className="text-crd-lightGray text-sm">
-          Select a template to style your card
+          Select from our collection of templates or create your own from PSD
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {templates.map(renderTemplatePreview)}
-      </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 bg-crd-darker">
+          <TabsTrigger value="standard" className="flex items-center gap-2">
+            <Palette className="w-4 h-4" />
+            Standard Templates
+          </TabsTrigger>
+          <TabsTrigger value="crdmkr" className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            AI Generated
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="standard" className="mt-6">
+          {standardTemplates.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {standardTemplates.map(renderTemplatePreview)}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-crd-lightGray mb-4">No standard templates available</div>
+              <div className="text-sm text-crd-lightGray">Loading templates...</div>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="crdmkr" className="mt-6">
+          <CRDMKRTemplateSelector
+            onTemplateSelect={onTemplateSelect}
+            onCreateFromPSD={onCreateFromPSD || (() => {})}
+            selectedTemplate={selectedTemplate}
+            showCreateFromPSD={!!onCreateFromPSD}
+          />
+        </TabsContent>
+      </Tabs>
 
       {selectedTemplate && (
         <div className="text-center mt-4">
-          <div className="text-crd-green text-sm">
+          <div className="text-crd-green text-sm flex items-center justify-center gap-2">
+            {selectedTemplate.template_data?.sourceType?.includes('crdmkr') && (
+              <Sparkles className="w-4 h-4" />
+            )}
             ✓ Selected: {selectedTemplate.name}
           </div>
         </div>
