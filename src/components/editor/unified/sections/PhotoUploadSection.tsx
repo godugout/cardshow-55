@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Crown, Gem, Star, Sparkles, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Crown, Gem, Star, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useFreeAIAnalysis } from '@/hooks/useFreeAIAnalysis';
 import { useTemplates } from '@/hooks/useTemplates';
 import { MediaPathAnalyzer } from '@/lib/crdmkr/mediaPathAnalyzer';
@@ -137,6 +137,24 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const canProceed = cardEditor.cardData.image_url && 
     (selectedTemplate || (selectedMediaPath && !['standard-card', 'interactive-card', 'quick-frame'].includes(selectedMediaPath))) &&
     !isProcessing && !isAnalyzing;
+
+  const getStepText = () => {
+    switch (currentStep) {
+      case 'upload':
+        return 'Upload your media file';
+      case 'path-selection':
+        return 'Choose your workflow';
+      case 'template-selection':
+        return 'Select template';
+      default:
+        return canProceed ? 'Ready to continue!' : 'Complete setup';
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep === 'template-selection') setCurrentStep('path-selection');
+    else if (currentStep === 'path-selection') setCurrentStep('upload');
+  };
 
   const renderCurrentStep = () => {
     switch (currentStep) {
@@ -312,41 +330,20 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="min-h-[400px]">
-        {renderCurrentStep()}
-      </div>
-
-      {/* AI Tools Panel */}
-      {showAITools && cardEditor.cardData.image_url && imageAnalysis && (
-        <AIToolsPanel
-          analysisData={imageAnalysis}
-          onEnhance={() => {}}
-          onCreateFromPSD={() => {}}
-        />
-      )}
-
-      {/* Navigation */}
-      <div className="flex justify-between items-center pt-6 border-t border-crd-mediumGray/20">
+      {/* Navigation Section - MOVED HERE */}
+      <div className="flex justify-between items-center py-4 border-y border-crd-mediumGray/20">
         <div className="text-sm text-crd-lightGray">
-          Step 1 of 4 - {
-            currentStep === 'upload' ? 'Upload your media file' :
-            currentStep === 'path-selection' ? 'Choose your workflow' :
-            currentStep === 'template-selection' ? 'Select template' :
-            canProceed ? 'Ready to continue!' : 'Complete setup'
-          }
+          Step 1 of 4 - {getStepText()}
         </div>
         
         <div className="flex gap-3">
           {currentStep !== 'upload' && (
             <CRDButton 
-              onClick={() => {
-                if (currentStep === 'template-selection') setCurrentStep('path-selection');
-                else if (currentStep === 'path-selection') setCurrentStep('upload');
-              }}
+              onClick={handleBack}
               variant="outline"
-              className="min-w-[100px]"
+              className="min-w-[100px] border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
             >
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </CRDButton>
           )}
@@ -361,6 +358,20 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
           </CRDButton>
         </div>
       </div>
+
+      {/* Main Content */}
+      <div className="min-h-[400px]">
+        {renderCurrentStep()}
+      </div>
+
+      {/* AI Tools Panel */}
+      {showAITools && cardEditor.cardData.image_url && imageAnalysis && (
+        <AIToolsPanel
+          analysisData={imageAnalysis}
+          onEnhance={() => {}}
+          onCreateFromPSD={() => {}}
+        />
+      )}
     </div>
   );
 };
