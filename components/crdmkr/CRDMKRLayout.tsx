@@ -5,6 +5,7 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { Upload, Layers, Palette, Sparkles, ArrowRight, FileImage, Download, Brain } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { RegionMapper } from './RegionMapper';
+import { HybridTemplateEditor } from './HybridTemplateEditor';
 import { useMLAnalysis } from '@/hooks/useMLAnalysis';
 import { toast } from 'sonner';
 import type { DetectedRegion } from '@/types/crdmkr';
@@ -144,6 +145,43 @@ export const CRDMKRLayout = () => {
             detectedRegions={detectedRegions}
             onRegionsUpdate={handleRegionsUpdate}
           />
+        );
+
+      case 3: // Customize
+        return (
+          <HybridTemplateEditor
+            imageUrl={imageUrl}
+            detectedRegions={detectedRegions}
+            onTemplateGenerated={(templateData) => {
+              console.log('✅ Template generated:', templateData);
+              toast.success('Template generated successfully!');
+              setActiveStep(4); // Move to export step
+            }}
+          />
+        );
+
+      case 4: // Export
+        return (
+          <div className="h-full flex flex-col items-center justify-center p-8">
+            <div className="text-center max-w-md">
+              <Download className="w-16 h-16 text-crd-green mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-crd-white mb-2">
+                Template Ready!
+              </h3>
+              <p className="text-crd-lightGray mb-6">
+                Your custom card template has been generated and is ready for use. You can now integrate it with your card creation workflow.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <CRDButton variant="primary">
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Files
+                </CRDButton>
+                <CRDButton variant="outline">
+                  View in Gallery
+                </CRDButton>
+              </div>
+            </div>
+          </div>
         );
 
       default:
