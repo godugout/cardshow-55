@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -178,6 +177,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     setCurrentStep('upload');
     // Reset file and URL
     setOriginalFile(null);
+    setUploadProgress(0);
+    setIsProcessing(false);
     cardEditor.updateCardField('image_url', '');
   };
 
