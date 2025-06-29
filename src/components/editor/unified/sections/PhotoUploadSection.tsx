@@ -22,6 +22,9 @@ interface PhotoUploadSectionProps {
   onNext: () => void;
 }
 
+// Fix: Update the type definition to include "psd-manager"
+type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager';
+
 export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   cardEditor,
   onNext
@@ -34,7 +37,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [mediaDetection, setMediaDetection] = useState<any>(null);
   const [selectedMediaPath, setSelectedMediaPath] = useState<string>('');
-  const [currentStep, setCurrentStep] = useState<'upload' | 'path-selection' | 'template-selection' | 'psd-manager'>('upload');
+  const [currentStep, setCurrentStep] = useState<WorkflowStep>('upload');
   const [originalFile, setOriginalFile] = useState<File | null>(null);
   const [generatedTemplate, setGeneratedTemplate] = useState<any>(null);
   const [showPSDManager, setShowPSDManager] = useState(false);
@@ -173,6 +176,9 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const handlePSDManagerCancel = () => {
     setShowPSDManager(false);
     setCurrentStep('upload');
+    // Reset file and URL
+    setOriginalFile(null);
+    cardEditor.updateCardField('image_url', '');
   };
 
   const handleTemplateSelect = (templateId: string) => {
@@ -212,6 +218,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         return 'Choose your workflow';
       case 'template-selection':
         return 'Select template';
+      case 'psd-manager':
+        return 'Processing PSD file';
       default:
         return canProceed ? 'Ready to continue!' : 'Complete setup';
     }
@@ -258,6 +266,13 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
           />
         );
 
+      case 'psd-manager':
+        return (
+          <div className="text-center text-crd-lightGray">
+            Processing PSD file...
+          </div>
+        );
+
       default:
         return null;
     }
@@ -281,7 +296,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         </div>
         
         <div className="flex gap-4">
-          {currentStep !== 'upload' && (
+          {currentStep !== 'upload' && currentStep !== 'psd-manager' && (
             <CRDButton 
               onClick={handleBack}
               variant="outline"
