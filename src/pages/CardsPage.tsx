@@ -8,12 +8,14 @@ import { Plus, Upload } from 'lucide-react';
 import { CardsTabsNavigation } from '@/components/cards/CardsTabsNavigation';
 import { CardGrid } from '@/components/cards/CardGrid';
 import { useCards } from '@/hooks/useCards';
+import { useCardConversion } from '@/pages/Gallery/hooks/useCardConversion';
 import type { FeedType } from '@/hooks/use-feed-types';
 
 const CardsPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<FeedType>('forYou');
   const { cards, loading } = useCards();
+  const { convertCardsToCardData } = useCardConversion();
 
   console.log('CardsPage: Loaded with React Router navigation');
 
@@ -31,6 +33,9 @@ const CardsPage = () => {
     console.log('Navigating to card studio:', cardId);
     navigate(`/studio/${cardId}`);
   };
+
+  // Convert database cards to CardData format
+  const convertedCards = convertCardsToCardData(cards || []);
 
   return (
     <div className="min-h-screen bg-crd-darkest">
@@ -74,7 +79,7 @@ const CardsPage = () => {
             
             <TabsContent value="forYou" className="mt-6">
               <CardGrid 
-                cards={cards || []} 
+                cards={convertedCards} 
                 loading={loading} 
                 viewMode="grid"
               />
