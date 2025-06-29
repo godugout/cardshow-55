@@ -7,6 +7,7 @@ import { MemoryCard } from '@/components/memory/MemoryCard';
 import { CardGrid } from '@/components/cards/CardGrid';
 import { Loader, Image } from 'lucide-react';
 import type { Memory } from '@/types/memory';
+import type { CardData } from '@/types/card';
 
 interface ProfileTabsProps {
   activeTab: string;
@@ -25,10 +26,43 @@ export const ProfileTabs = ({
   hasMore, 
   onLoadMore 
 }: ProfileTabsProps) => {
-  // Separate cards from memories based on the presence of card-specific fields
-  const cards = memories.filter(item => 
+  // Filter memories that have card-specific properties and convert them to CardData
+  const cardMemories = memories.filter(item => 
     'rarity' in item || 'design_metadata' in item || 'creator_id' in item
   );
+
+  // Convert card memories to proper CardData format
+  const convertedCards: CardData[] = cardMemories.map(memory => ({
+    id: memory.id,
+    title: memory.title,
+    description: memory.description || '',
+    rarity: 'common' as const, // Default rarity
+    tags: memory.tags || [],
+    image_url: undefined,
+    thumbnail_url: undefined,
+    design_metadata: memory.metadata || {},
+    visibility: memory.visibility as CardData['visibility'],
+    is_public: memory.visibility === 'public',
+    template_id: undefined,
+    collection_id: undefined,
+    team_id: memory.teamId,
+    creator_attribution: {
+      creator_name: '',
+      creator_id: memory.userId,
+      collaboration_type: 'solo' as const
+    },
+    publishing_options: {
+      marketplace_listing: false,
+      crd_catalog_inclusion: true,
+      print_available: false
+    },
+    verification_status: 'pending' as const,
+    print_metadata: {},
+    creator_id: memory.userId,
+    price: 0,
+    created_at: memory.createdAt
+  }));
+
   const actualMemories = memories.filter(item => 
     !('rarity' in item) && !('design_metadata' in item) && !('creator_id' in item)
   );
@@ -36,7 +70,7 @@ export const ProfileTabs = ({
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList className="mb-6">
-        <TabsTrigger value="memories">My Cards ({cards.length})</TabsTrigger>
+        <TabsTrigger value="memories">My Cards ({convertedCards.length})</TabsTrigger>
         <TabsTrigger value="collections">Collections</TabsTrigger>
         <TabsTrigger value="liked">Liked</TabsTrigger>
       </TabsList>
@@ -48,7 +82,7 @@ export const ProfileTabs = ({
               <div key={item} className="h-64 animate-pulse bg-gray-100 rounded-lg"></div>
             ))}
           </div>
-        ) : cards.length === 0 ? (
+        ) : convertedCards.length === 0 ? (
           <div className="text-center py-16">
             <Image className="h-12 w-12 mx-auto text-gray-300 mb-4" />
             <h3 className="text-xl font-medium mb-2">No cards yet</h3>
@@ -60,7 +94,7 @@ export const ProfileTabs = ({
         ) : (
           <>
             <CardGrid 
-              cards={cards} 
+              cards={convertedCards} 
               loading={memoriesLoading} 
               viewMode="grid" 
             />
