@@ -319,6 +319,39 @@ export type Database = {
         }
         Relationships: []
       }
+      branding_settings: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       card_favorites: {
         Row: {
           card_id: string
@@ -3155,6 +3188,80 @@ export type Database = {
           },
         ]
       }
+      feature_flag_user_overrides: {
+        Row: {
+          created_at: string | null
+          flag_id: string | null
+          id: string
+          is_enabled: boolean
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          flag_id?: string | null
+          id?: string
+          is_enabled: boolean
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          flag_id?: string | null
+          id?: string
+          is_enabled?: boolean
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_flag_user_overrides_flag_id_fkey"
+            columns: ["flag_id"]
+            isOneToOne: false
+            referencedRelation: "feature_flags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_flags: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_enabled: boolean | null
+          metadata: Json | null
+          name: string
+          rollout_percentage: number | null
+          target_users: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          metadata?: Json | null
+          name: string
+          rollout_percentage?: number | null
+          target_users?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          metadata?: Json | null
+          name?: string
+          rollout_percentage?: number | null
+          target_users?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       financial_analytics: {
         Row: {
           avg_transaction_value: number | null
@@ -3520,6 +3627,96 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      image_assets: {
+        Row: {
+          alt_text: string | null
+          category: string | null
+          cdn_url: string | null
+          created_at: string | null
+          file_path: string
+          file_size: number | null
+          id: string
+          is_optimized: boolean | null
+          mime_type: string | null
+          name: string
+          tags: string[] | null
+          updated_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          alt_text?: string | null
+          category?: string | null
+          cdn_url?: string | null
+          created_at?: string | null
+          file_path: string
+          file_size?: number | null
+          id?: string
+          is_optimized?: boolean | null
+          mime_type?: string | null
+          name: string
+          tags?: string[] | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          alt_text?: string | null
+          category?: string | null
+          cdn_url?: string | null
+          created_at?: string | null
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          is_optimized?: boolean | null
+          mime_type?: string | null
+          name?: string
+          tags?: string[] | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      integration_settings: {
+        Row: {
+          api_keys: Json | null
+          config: Json
+          created_at: string | null
+          created_by: string | null
+          error_log: string | null
+          id: string
+          integration_name: string
+          is_active: boolean | null
+          last_sync: string | null
+          updated_at: string | null
+          webhook_url: string | null
+        }
+        Insert: {
+          api_keys?: Json | null
+          config?: Json
+          created_at?: string | null
+          created_by?: string | null
+          error_log?: string | null
+          id?: string
+          integration_name: string
+          is_active?: boolean | null
+          last_sync?: string | null
+          updated_at?: string | null
+          webhook_url?: string | null
+        }
+        Update: {
+          api_keys?: Json | null
+          config?: Json
+          created_at?: string | null
+          created_by?: string | null
+          error_log?: string | null
+          id?: string
+          integration_name?: string
+          is_active?: boolean | null
+          last_sync?: string | null
+          updated_at?: string | null
+          webhook_url?: string | null
+        }
+        Relationships: []
       }
       knowledge_base: {
         Row: {
@@ -5617,6 +5814,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ux_settings: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          setting_category: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          setting_category: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          setting_category?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -5761,6 +5994,10 @@ export type Database = {
       }
       is_admin: {
         Args: { user_uuid?: string }
+        Returns: boolean
+      }
+      is_feature_enabled: {
+        Args: { flag_name: string; user_uuid?: string }
         Returns: boolean
       }
       log_audit_event: {

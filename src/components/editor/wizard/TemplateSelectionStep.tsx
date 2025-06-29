@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CRDMKRTemplateSelector } from '../CRDMKRTemplateSelector';
+import { CRDMKRTemplateSelector } from '@/components/editor/CRDMKRTemplateSelector';
 import { Upload, Sparkles, Palette } from 'lucide-react';
 import type { DesignTemplate } from '@/hooks/useCardEditor';
 

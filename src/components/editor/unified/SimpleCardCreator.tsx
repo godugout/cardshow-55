@@ -17,6 +17,7 @@ import { CreatorAttribution } from '../wizard/CreatorAttribution';
 import { IntentStep } from './components/steps/IntentStep';
 import type { CreationMode, CreationStep } from './types';
 import { CRDMKRAdapter } from '@/lib/templates/crdmkrAdapter';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SimpleCardCreatorProps {
   initialMode?: CreationMode;
@@ -48,7 +49,7 @@ export const SimpleCardCreator = ({
   const [basePrice, setBasePrice] = useState<number | undefined>(undefined);
   const [printPrice, setPrintPrice] = useState<number | undefined>(undefined);
   const [editionSize, setEditionSize] = useState<number | undefined>(undefined);
-	const [limitedEdition, setLimitedEdition] = useState(false);
+  const [limitedEdition, setLimitedEdition] = useState(false);
   const [canGoBack, setCanGoBack] = useState(false);
   const [creatorName, setCreatorName] = useState('');
   const [collaborationType, setCollaborationType] = useState<'solo' | 'collaboration' | 'commission'>('solo');
@@ -57,7 +58,7 @@ export const SimpleCardCreator = ({
   const [creationError, setCreationError] = useState<string | null>(null);
 
   const { templates, isLoading: isLoadingTemplates } = useTemplates();
-  const { createCard } = useCardEditor();
+  const cardEditor = useCardEditor();
 
   useEffect(() => {
     setCanGoBack(currentStep !== 'intent' && currentStep !== 'upload');
@@ -140,14 +141,37 @@ export const SimpleCardCreator = ({
         }
       };
 
-      const newCard = await createCard(cardData);
+      // Create card directly using Supabase
+      const { data: newCard, error } = await supabase
+        .from('cards')
+        .insert([{
+          title: cardData.title,
+          description: cardData.description,
+          rarity: cardData.rarity,
+          tags: cardData.tags,
+          image_url: cardData.image_url,
+          template_id: cardData.template_id,
+          design_metadata: cardData.design_metadata,
+          visibility: cardData.visibility,
+          is_public: cardData.is_public,
+          marketplace_listing: cardData.publishing_options?.marketplace_listing || false,
+          crd_catalog_inclusion: cardData.publishing_options?.crd_catalog_inclusion || true,
+          print_available: cardData.publishing_options?.print_available || false,
+          price: cardData.publishing_options?.pricing?.base_price,
+          creator_id: (await supabase.auth.getUser()).data.user?.id
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('🎨 SimpleCardCreator: Card creation failed:', error);
+        setCreationError(error.message || 'Card creation failed. Please try again.');
+        return;
+      }
 
       if (newCard) {
         console.log('🎨 SimpleCardCreator: Card created successfully:', newCard);
-        onComplete?.(newCard);
-      } else {
-        console.error('🎨 SimpleCardCreator: Card creation failed');
-        setCreationError('Card creation failed. Please try again.');
+        onComplete?.({ ...cardData, id: newCard.id });
       }
     } catch (error: any) {
       console.error('🎨 SimpleCardCreator: Error creating card:', error);
@@ -418,22 +442,103 @@ export const SimpleCardCreator = ({
         </p>
       </div>
 
-      <PublishingOptionsStep
-        marketplaceListing={marketplaceListing}
-        setMarketplaceListing={setMarketplaceListing}
-        crdCatalogInclusion={crdCatalogInclusion}
-        setCrdCatalogInclusion={setCrdCatalogInclusion}
-        printAvailable={printAvailable}
-        setPrintAvailable={setPrintAvailable}
-        basePrice={basePrice}
-        setBasePrice={setBasePrice}
-        printPrice={printPrice}
-        setPrintPrice={setPrintPrice}
-				limitedEdition={limitedEdition}
-				setLimitedEdition={setLimitedEdition}
-        editionSize={editionSize}
-        setEditionSize={setEditionSize}
-      />
+      <Card className="bg-crd-darker border-crd-mediumGray/20">
+        <CardContent className="p-6 space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="marketplace-listing"
+              checked={marketplaceListing}
+              onCheckedChange={setMarketplaceListing}
+            />
+            <Label htmlFor="marketplace-listing" className="text-crd-white">
+              List on Marketplace
+            </Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="crd-catalog"
+              checked={crdCatalogInclusion}
+              onCheckedChange={setCrdCatalogInclusion}
+            />
+            <Label htmlFor="crd-catalog" className="text-crd-white">
+              Include in CRD Catalog
+            </Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="print-available"
+              checked={printAvailable}
+              onCheckedChange={setPrintAvailable}
+            />
+            <Label htmlFor="print-available" className="text-crd-white">
+              Available for Print
+            </Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="limited-edition"
+              checked={limitedEdition}
+              onCheckedChange={setLimitedEdition}
+            />
+            <Label htmlFor="limited-edition" className="text-crd-white">
+              Limited Edition
+            </Label>
+          </div>
+
+          {limitedEdition && (
+            <div>
+              <Label htmlFor="edition-size" className="text-crd-white">
+                Edition Size
+              </Label>
+              <Input
+                type="number"
+                id="edition-size"
+                placeholder="100"
+                value={editionSize || ''}
+                onChange={(e) => setEditionSize(e.target.value ? parseInt(e.target.value) : undefined)}
+                className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white"
+              />
+            </div>
+          )}
+
+          {marketplaceListing && (
+            <div>
+              <Label htmlFor="base-price" className="text-crd-white">
+                Base Price ($)
+              </Label>
+              <Input
+                type="number"
+                id="base-price"
+                placeholder="9.99"
+                step="0.01"
+                value={basePrice || ''}
+                onChange={(e) => setBasePrice(e.target.value ? parseFloat(e.target.value) : undefined)}
+                className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white"
+              />
+            </div>
+          )}
+
+          {printAvailable && (
+            <div>
+              <Label htmlFor="print-price" className="text-crd-white">
+                Print Price ($)
+              </Label>
+              <Input
+                type="number"
+                id="print-price"
+                placeholder="19.99"
+                step="0.01"
+                value={printPrice || ''}
+                onChange={(e) => setPrintPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
+                className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white"
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <CreatorAttribution
         creatorName={creatorName}
