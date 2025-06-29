@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Upload, Layers, Palette, Sparkles, ArrowRight, FileImage, Download, Brain, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { RegionMapper } from './RegionMapper';
-import { HybridTemplateEditor } from './HybridTemplateEditor';
+import { AnalysisDashboard } from './analysis/AnalysisDashboard';
+import { AdvancedRegionMapper } from './regions/AdvancedRegionMapper';
+import { LiveTemplateEditor } from './templates/LiveTemplateEditor';
 import { TeamAssetManager } from './TeamAssetManager';
 import { BatchCustomizer } from './BatchCustomizer';
 import { useFreeAIAnalysis } from '@/hooks/useFreeAIAnalysis';
@@ -24,10 +24,9 @@ export const CRDMKRLayout = () => {
   const { analyzeImage, isAnalyzing, progress } = useFreeAIAnalysis();
 
   const steps = [
-    { id: 'upload', label: 'Upload PSD/Image', icon: Upload },
-    { id: 'analyze', label: 'AI Analysis', icon: Brain },
+    { id: 'upload', label: 'Upload & Analyze', icon: Upload },
     { id: 'regions', label: 'Map Regions', icon: Layers },
-    { id: 'customize', label: 'Customize', icon: Palette },
+    { id: 'customize', label: 'Live Editor', icon: Palette },
     { id: 'teams', label: 'Team Assets', icon: Users },
     { id: 'batch', label: 'Batch Generate', icon: Sparkles },
     { id: 'export', label: 'Export', icon: Download }
@@ -40,28 +39,18 @@ export const CRDMKRLayout = () => {
     console.log('📁 File uploaded:', file.name);
     setUploadedFile(file);
     
-    // Create object URL for preview
     const url = URL.createObjectURL(file);
     setImageUrl(url);
     
-    // Move to analysis step
-    setActiveStep(1);
+    toast.success('File uploaded successfully! Starting AI analysis...');
     
-    toast.success('File uploaded successfully!');
-  };
-
-  const handleStartAnalysis = async () => {
-    if (!imageUrl) return;
-    
+    // Auto-start analysis
     try {
-      const result = await analyzeImage(imageUrl);
-      
+      const result = await analyzeImage(url);
       if (result) {
         setAnalysisResult(result);
         setDetectedRegions(result.regions);
-        setActiveStep(2); // Move to regions step
-        
-        console.log('🎯 Real analysis results:', result);
+        setActiveStep(1); // Move to regions step
       }
     } catch (error) {
       console.error('Analysis failed:', error);
@@ -75,99 +64,69 @@ export const CRDMKRLayout = () => {
 
   const handleTemplateGenerated = (templateData: any) => {
     setGeneratedTemplate(templateData);
-    setActiveStep(4); // Move to team assets step
+    setActiveStep(3); // Move to team assets step
   };
 
   const renderStepContent = () => {
     switch (activeStep) {
-      case 0: // Upload
+      case 0: // Upload & Analyze
         return (
-          <div className="border-2 border-dashed border-crd-mediumGray/30 rounded-lg h-full flex flex-col items-center justify-center p-8 hover:border-crd-green/50 transition-colors cursor-pointer">
-            <div className="text-center">
-              <FileImage className="w-16 h-16 text-crd-mediumGray mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-crd-white mb-2">
-                Drop your PSD or image file here
-              </h3>
-              <p className="text-crd-lightGray mb-6 max-w-md">
-                Upload a Photoshop PSD file or high-resolution image to start creating your template. 
-                We support files up to 100MB.
-              </p>
-              <CRDButton variant="primary" className="mb-4">
-                <Upload className="w-4 h-4 mr-2" />
-                Choose File
-              </CRDButton>
-              <p className="text-sm text-crd-mediumGray">
-                Supported: .psd, .png, .jpg, .jpeg
-              </p>
-            </div>
-            <input
-              type="file"
-              accept=".psd,.png,.jpg,.jpeg"
-              onChange={handleFileUpload}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
-          </div>
-        );
-
-      case 1: // Analysis
-        return (
-          <div className="h-full flex flex-col items-center justify-center p-8">
-            {!isAnalyzing ? (
-              <div className="text-center">
-                <Brain className="w-16 h-16 text-crd-green mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-crd-white mb-2">
-                  Ready for AI Analysis
-                </h3>
-                <p className="text-crd-lightGray mb-6 max-w-md">
-                  Our AI will analyze your image to identify card regions, text areas, and design elements automatically.
-                </p>
-                <CRDButton variant="primary" onClick={handleStartAnalysis}>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Start Analysis
-                </CRDButton>
+          <div className="space-y-6">
+            {!imageUrl ? (
+              <div className="border-2 border-dashed border-crd-mediumGray/30 rounded-lg h-96 flex flex-col items-center justify-center p-8 hover:border-crd-green/50 transition-colors cursor-pointer">
+                <div className="text-center">
+                  <FileImage className="w-16 h-16 text-crd-mediumGray mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-crd-white mb-2">
+                    Drop your PSD or image file here
+                  </h3>
+                  <p className="text-crd-lightGray mb-6 max-w-md">
+                    Upload a Photoshop PSD file or high-resolution image to start creating your template. 
+                    We support files up to 100MB.
+                  </p>
+                  <CRDButton variant="primary" className="mb-4">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Choose File
+                  </CRDButton>
+                  <p className="text-sm text-crd-mediumGray">
+                    Supported: .psd, .png, .jpg, .jpeg
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  accept=".psd,.png,.jpg,.jpeg"
+                  onChange={handleFileUpload}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
               </div>
             ) : (
-              <div className="text-center">
-                <div className="w-16 h-16 bg-crd-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-8 h-8 text-crd-green animate-pulse" />
-                </div>
-                <h3 className="text-xl font-semibold text-crd-white mb-2">
-                  Analyzing Image...
-                </h3>
-                <p className="text-crd-lightGray mb-4">
-                  AI is detecting regions and design elements
-                </p>
-                <div className="w-64 bg-crd-mediumGray/20 rounded-full h-2 mx-auto">
-                  <div 
-                    className="bg-crd-green h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <p className="text-crd-mediumGray text-sm mt-2">{progress}% complete</p>
-              </div>
+              <AnalysisDashboard
+                result={analysisResult}
+                isAnalyzing={isAnalyzing}
+                progress={progress}
+              />
             )}
           </div>
         );
 
-      case 2: // Regions
+      case 1: // Regions
         return (
-          <RegionMapper
+          <AdvancedRegionMapper
             imageUrl={imageUrl}
             detectedRegions={detectedRegions}
             onRegionsUpdate={handleRegionsUpdate}
           />
         );
 
-      case 3: // Customize
+      case 2: // Customize
         return (
-          <HybridTemplateEditor
+          <LiveTemplateEditor
             imageUrl={imageUrl}
             detectedRegions={detectedRegions}
             onTemplateGenerated={handleTemplateGenerated}
           />
         );
 
-      case 4: // Team Assets
+      case 3: // Team Assets
         return (
           <TeamAssetManager
             selectedTeamId={selectedTeamId}
@@ -175,14 +134,14 @@ export const CRDMKRLayout = () => {
           />
         );
 
-      case 5: // Batch Generate
+      case 4: // Batch Generate
         return (
           <BatchCustomizer
             templateData={generatedTemplate}
           />
         );
 
-      case 6: // Export
+      case 5: // Export
         return (
           <div className="h-full flex flex-col items-center justify-center p-8">
             <div className="text-center max-w-md">
@@ -219,13 +178,13 @@ export const CRDMKRLayout = () => {
     <div className="container mx-auto p-6 max-w-7xl">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-crd-white mb-2">
-              CRDMKR Template Generator
+              CRDMKR 2.0
             </h1>
             <p className="text-crd-lightGray">
-              Transform PSD files into customizable card templates with AI-powered analysis and team customization
+              Professional AI-powered template generation with advanced region mapping and real-time customization
             </p>
           </div>
           <Link to="/create">
@@ -236,72 +195,79 @@ export const CRDMKRLayout = () => {
           </Link>
         </div>
 
-        {/* Process Steps */}
-        <div className="flex items-center justify-between bg-crd-darker p-4 rounded-lg overflow-x-auto">
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            const isActive = index === activeStep;
-            const isCompleted = index < activeStep;
-            
-            return (
-              <div key={step.id} className="flex items-center whitespace-nowrap">
-                <div 
-                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors cursor-pointer ${
-                    isActive ? 'bg-crd-green/20 text-crd-green' :
-                    isCompleted ? 'bg-green-500/20 text-green-400' :
-                    'text-crd-lightGray hover:text-crd-white'
-                  }`}
+        {/* Modern Step Navigation */}
+        <div className="relative">
+          <div className="flex items-center justify-between bg-gradient-to-r from-crd-darker to-crd-mediumGray/20 p-1 rounded-xl border border-crd-mediumGray/20">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              const isActive = index === activeStep;
+              const isCompleted = index < activeStep;
+              
+              return (
+                <button
+                  key={step.id}
                   onClick={() => {
                     if (isCompleted || index <= activeStep) {
                       setActiveStep(index);
                     }
                   }}
+                  className={`flex-1 flex flex-col items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 ${
+                    isActive 
+                      ? 'bg-crd-green text-black shadow-lg scale-105' 
+                      : isCompleted 
+                        ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' 
+                        : 'text-crd-lightGray hover:text-crd-white hover:bg-crd-mediumGray/10'
+                  }`}
+                  disabled={index > activeStep && !isCompleted}
                 >
                   <Icon className="w-5 h-5" />
-                  <span className="font-medium">{step.label}</span>
-                </div>
-                {index < steps.length - 1 && (
-                  <ArrowRight className="w-4 h-4 text-crd-mediumGray mx-2" />
-                )}
-              </div>
-            );
-          })}
+                  <span className="font-medium text-sm">{step.label}</span>
+                  {isCompleted && (
+                    <div className="w-2 h-2 bg-green-400 rounded-full" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="min-h-[600px]">
+      <div className="min-h-[600px] bg-crd-darker rounded-xl border border-crd-mediumGray/20 p-6">
         {renderStepContent()}
       </div>
 
-      {/* Status Bar with Real Analysis Results */}
+      {/* Enhanced Status Bar */}
       {uploadedFile && (
-        <div className="mt-8 bg-crd-darker p-4 rounded-lg">
+        <div className="mt-6 bg-gradient-to-r from-crd-darker to-crd-mediumGray/20 border border-crd-mediumGray/20 rounded-xl p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-crd-lightGray">
-                File: <span className="text-crd-white">{uploadedFile.name}</span>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-crd-green rounded-full animate-pulse" />
+                <span className="text-sm text-crd-lightGray">
+                  <span className="text-crd-white font-medium">{uploadedFile.name}</span>
+                  <span className="ml-2">({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)</span>
+                </span>
               </div>
-              <div className="text-sm text-crd-lightGray">
-                Size: <span className="text-crd-white">{(uploadedFile.size / 1024 / 1024).toFixed(2)} MB</span>
-              </div>
-              <div className="text-sm text-crd-lightGray">
-                Regions: <span className="text-crd-white">{detectedRegions.length}</span>
-              </div>
+              
               {analysisResult && (
-                <>
-                  <div className="text-sm text-crd-lightGray">
-                    Confidence: <span className="text-crd-white">{analysisResult.confidence}%</span>
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="text-crd-lightGray">
+                    Regions: <span className="text-crd-white font-medium">{detectedRegions.length}</span>
                   </div>
-                  <div className="text-sm text-crd-lightGray">
-                    Type: <span className="text-crd-white">{analysisResult.contentType}</span>
+                  <div className="text-crd-lightGray">
+                    Confidence: <span className="text-crd-green font-medium">{analysisResult.confidence}%</span>
                   </div>
-                  <div className="text-sm text-crd-lightGray">
-                    Rarity: <span className="text-crd-white">{analysisResult.suggestedRarity}</span>
+                  <div className="text-crd-lightGray">
+                    Type: <span className="text-crd-white font-medium">{analysisResult.contentType}</span>
                   </div>
-                </>
+                  <div className="text-crd-lightGray">
+                    Quality: <span className="text-crd-white font-medium">{analysisResult.quality}/100</span>
+                  </div>
+                </div>
               )}
             </div>
+            
             <div className="flex items-center gap-2">
               <CRDButton
                 size="sm"
