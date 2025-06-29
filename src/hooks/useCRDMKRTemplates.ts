@@ -1,121 +1,290 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { CRDMKRTemplate } from '@/types/crdmkr';
-import { toast } from 'sonner';
 
 export const useCRDMKRTemplates = () => {
   const [templates, setTemplates] = useState<CRDMKRTemplate[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [categories] = useState<string[]>(['Sports', 'Entertainment', 'Abstract', 'Vintage']);
 
+  // Load templates from database
   const loadTemplates = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Query from card_templates table with CRDMKR source type
-      const { data, error } = await supabase
+      let query = supabase
         .from('card_templates')
         .select('*')
         .eq('source_type', 'crdmkr')
         .eq('is_public', true)
         .order('created_at', { ascending: false });
 
+      // Apply search filter
+      if (searchQuery.trim()) {
+        query = query.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+      }
+
+      // Apply category filter
+      if (selectedCategory) {
+        query = query.eq('category', selectedCategory);
+      }
+
+      const { data, error } = await query;
+
       if (error) {
         console.error('Failed to load CRDMKR templates:', error);
-        setTemplates([]);
         return;
       }
 
-      // Transform to CRDMKRTemplate format
+      // Transform database records to CRDMKRTemplate format with proper type casting
       const crdmkrTemplates: CRDMKRTemplate[] = (data || []).map(template => ({
         id: template.id,
         name: template.name,
         category: template.category,
         preview_url: template.preview_url,
         description: template.description,
-        is_premium: template.is_premium || false,
-        usage_count: template.usage_count || 0,
-        tags: [], // Default to empty array
-        template_data: template.template_data || {},
-        sourceType: 'crdmkr',
+        template_data: typeof template.template_data === 'object' && template.template_data !== null 
+          ? template.template_data as Record<string, any>
+          : {},
+        is_premium: template.is_premium,
+        usage_count: template.usage_count,
+        tags: template.tags || [],
+        sourceType: 'crdmkr' as const,
         sourceFile: template.source_file_url,
         fabricData: template.fabric_data,
-        layers: template.layers || [],
-        parameters: template.parameters || [],
-        aiAnalysis: template.ai_analysis
+        layers: Array.isArray(template.layers) ? template.layers as any[] : [],
+        parameters: Array.isArray(template.parameters) ? template.parameters as any[] : [],
+        aiAnalysis: template.ai_analysis ? {
+          confidence: 0,
+          detectedRegions: [],
+          colorPalette: [],
+          typography: [],
+          ...(typeof template.ai_analysis === 'object' ? template.ai_analysis : {})
+        } : undefined
       }));
 
       setTemplates(crdmkrTemplates);
+
+      // Extract unique categories
+      const uniqueCategories = [...new Set(crdmkrTemplates.map(t => t.category).filter(Boolean))];
+      setCategories(uniqueCategories);
+
     } catch (error) {
-      console.error('Error loading CRDMKR templates:', error);
-      setTemplates([]);
+      console.error('Error loading templates:', error);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [searchQuery, selectedCategory]);
 
-  const duplicateTemplate = async (templateId: string): Promise<CRDMKRTemplate | null> => {
+  // Create a new template
+  const createTemplate = useCallback(async (templateData: Partial<CRDMKRTemplate>) => {
     try {
-      const originalTemplate = templates.find(t => t.id === templateId);
-      if (!originalTemplate) return null;
-
       const { data, error } = await supabase
         .from('card_templates')
-        .insert([{
-          name: `${originalTemplate.name} (Copy)`,
-          category: originalTemplate.category,
-          description: originalTemplate.description,
-          template_data: originalTemplate.template_data,
+        .insert({
+          name: templateData.name,
+          category: templateData.category,
+          description: templateData.description,
+          template_data: templateData.template_data,
+          preview_url: templateData.preview_url,
           source_type: 'crdmkr',
-          fabric_data: originalTemplate.fabricData,
-          layers: originalTemplate.layers,
-          parameters: originalTemplate.parameters,
-          ai_analysis: originalTemplate.aiAnalysis,
-          is_public: false
-        }])
+          source_file_url: templateData.sourceFile,
+          fabric_data: templateData.fabricData,
+          layers: templateData.layers,
+          parameters: templateData.parameters,
+          ai_analysis: templateData.aiAnalysis,
+          is_premium: templateData.is_premium || false,
+          is_public: true,
+          tags: templateData.tags || []
+        })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Failed to create template:', error);
+        return null;
+      }
 
-      return {
-        ...originalTemplate,
-        id: data.id,
-        name: data.name,
-        is_premium: false
-      };
+      return data;
     } catch (error) {
-      console.error('Failed to duplicate template:', error);
+      console.error('Error creating template:', error);
       return null;
     }
-  };
+  }, []);
 
-  const shareTemplate = async (templateId: string): Promise<string | null> => {
+  // Update template
+  const updateTemplate = useCallback(async (templateId: string, updates: Partial<CRDMKRTemplate>) => {
     try {
-      // Generate a shareable URL - for now just return a placeholder
+      const { data, error } = await supabase
+        .from('card_templates')
+        .update({
+          name: updates.name,
+          category: updates.category,
+          description: updates.description,
+          template_data: updates.template_data,
+          preview_url: updates.preview_url,
+          fabric_data: updates.fabricData,
+          layers: updates.layers,
+          parameters: updates.parameters,
+          ai_analysis: updates.aiAnalysis,
+          tags: updates.tags
+        })
+        .eq('id', templateId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Failed to update template:', error);
+        return null;
+      }
+
+      // Refresh templates list
+      loadTemplates();
+      return data;
+    } catch (error) {
+      console.error('Error updating template:', error);
+      return null;
+    }
+  }, [loadTemplates]);
+
+  // Duplicate template
+  const duplicateTemplate = useCallback(async (templateId: string) => {
+    try {
+      // Get original template
+      const { data: original, error: fetchError } = await supabase
+        .from('card_templates')
+        .select('*')
+        .eq('id', templateId)
+        .single();
+
+      if (fetchError || !original) {
+        console.error('Failed to fetch original template:', fetchError);
+        return null;
+      }
+
+      // Create duplicate
+      const { data, error } = await supabase
+        .from('card_templates')
+        .insert({
+          name: `${original.name} (Copy)`,
+          category: original.category,
+          description: original.description,
+          template_data: original.template_data,
+          preview_url: original.preview_url,
+          source_type: original.source_type,
+          source_file_url: original.source_file_url,
+          fabric_data: original.fabric_data,
+          layers: original.layers,
+          parameters: original.parameters,
+          ai_analysis: original.ai_analysis,
+          is_premium: original.is_premium,
+          is_public: original.is_public,
+          tags: original.tags,
+          creator_id: original.creator_id,
+          usage_count: 0
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Failed to duplicate template:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error duplicating template:', error);
+      return null;
+    }
+  }, []);
+
+  // Share template (generate shareable link)
+  const shareTemplate = useCallback(async (templateId: string) => {
+    try {
+      // For now, return a simple share URL
+      // In production, you might want to implement proper sharing with tokens
       const shareUrl = `${window.location.origin}/templates/${templateId}`;
       return shareUrl;
     } catch (error) {
-      console.error('Failed to generate share URL:', error);
+      console.error('Error sharing template:', error);
       return null;
     }
-  };
+  }, []);
 
-  // Filter templates based on search and category
-  const filteredTemplates = templates.filter(template => {
-    const matchesSearch = !searchQuery || 
-      template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = !selectedCategory || template.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  });
+  // Get template by ID
+  const getTemplate = useCallback(async (templateId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('card_templates')
+        .select('*')
+        .eq('id', templateId)
+        .eq('source_type', 'crdmkr')
+        .single();
+
+      if (error) {
+        console.error('Failed to get template:', error);
+        return null;
+      }
+
+      // Transform to CRDMKRTemplate format
+      const crdmkrTemplate: CRDMKRTemplate = {
+        id: data.id,
+        name: data.name,
+        category: data.category,
+        preview_url: data.preview_url,
+        description: data.description,
+        template_data: typeof data.template_data === 'object' && data.template_data !== null 
+          ? data.template_data as Record<string, any>
+          : {},
+        is_premium: data.is_premium,
+        usage_count: data.usage_count,
+        tags: data.tags || [],
+        sourceType: 'crdmkr' as const,
+        sourceFile: data.source_file_url,
+        fabricData: data.fabric_data,
+        layers: Array.isArray(data.layers) ? data.layers as any[] : [],
+        parameters: Array.isArray(data.parameters) ? data.parameters as any[] : [],
+        aiAnalysis: data.ai_analysis ? {
+          confidence: 0,
+          detectedRegions: [],
+          colorPalette: [],
+          typography: [],
+          ...(typeof data.ai_analysis === 'object' ? data.ai_analysis : {})
+        } : undefined
+      };
+
+      return crdmkrTemplate;
+    } catch (error) {
+      console.error('Error getting template:', error);
+      return null;
+    }
+  }, []);
+
+  // Track template usage
+  const trackUsage = useCallback(async (templateId: string) => {
+    try {
+      await supabase
+        .from('card_templates')
+        .update({ usage_count: supabase.raw('usage_count + 1') })
+        .eq('id', templateId);
+    } catch (error) {
+      console.error('Error tracking template usage:', error);
+    }
+  }, []);
+
+  // Auto-load templates when dependencies change
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      loadTemplates();
+    }, 300); // Debounce search
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, selectedCategory]);
 
   return {
-    templates: filteredTemplates,
+    templates,
     categories,
     isLoading,
     searchQuery,
@@ -123,7 +292,11 @@ export const useCRDMKRTemplates = () => {
     selectedCategory,
     setSelectedCategory,
     loadTemplates,
+    createTemplate,
+    updateTemplate,
     duplicateTemplate,
-    shareTemplate
+    shareTemplate,
+    getTemplate,
+    trackUsage
   };
 };
