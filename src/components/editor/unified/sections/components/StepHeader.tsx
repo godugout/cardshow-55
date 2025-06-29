@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Route, Template, Layers } from 'lucide-react';
+import { Upload, Route, FileTemplate, Layers } from 'lucide-react';
 
 type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager';
 
@@ -18,7 +18,7 @@ export const StepHeader: React.FC<StepHeaderProps> = ({ currentStep, mediaDetect
       case 'path-selection':
         return <Route className="w-6 h-6" />;
       case 'template-selection':
-        return <Template className="w-6 h-6" />;
+        return <FileTemplate className="w-6 h-6" />;
       case 'psd-manager':
         return <Layers className="w-6 h-6" />;
       default:
