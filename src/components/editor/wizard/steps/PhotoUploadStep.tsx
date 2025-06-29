@@ -88,29 +88,49 @@ export const PhotoUploadStep: React.FC = () => {
   }, [processImageForCard, dispatch]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    console.log('📁 Files dropped:', acceptedFiles.length);
     handleFileUpload(acceptedFiles);
   }, [handleFileUpload]);
 
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': []
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
     },
     maxFiles: 1,
-    noClick: true,
-    noKeyboard: true
+    noClick: false, // Enable click
+    noKeyboard: false
   });
 
-  const handleChooseFile = useCallback(() => {
-    open();
-  }, [open]);
+  const handleBrowseClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (event) => {
+      const files = (event.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        console.log('📁 File selected via browse:', files[0].name);
+        handleFileUpload([files[0]]);
+      }
+    };
+    input.click();
+  }, [handleFileUpload]);
 
-  const handleFileInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      handleFileUpload([files[0]]);
-    }
-    event.target.value = '';
+  const handleCameraClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.onchange = (event) => {
+      const files = (event.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        console.log('📁 Photo taken:', files[0].name);
+        handleFileUpload([files[0]]);
+      }
+    };
+    input.click();
   }, [handleFileUpload]);
 
   return (
@@ -153,7 +173,7 @@ export const PhotoUploadStep: React.FC = () => {
       <div className="max-w-2xl mx-auto">
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer ${
+          className={`border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer min-h-[300px] flex flex-col items-center justify-center ${
             isDragActive
               ? 'border-crd-green bg-crd-green/10'
               : 'border-crd-mediumGray/50 hover:border-crd-green/50 hover:bg-crd-darkGray/50'
@@ -186,7 +206,8 @@ export const PhotoUploadStep: React.FC = () => {
 
             <div className="flex justify-center gap-4">
               <Button
-                onClick={handleChooseFile}
+                type="button"
+                onClick={handleBrowseClick}
                 disabled={isProcessing}
                 className="bg-crd-green hover:bg-crd-green/90 text-black font-medium"
               >
@@ -194,26 +215,16 @@ export const PhotoUploadStep: React.FC = () => {
                 Browse Files
               </Button>
               
-              <label className="cursor-pointer">
-                <Button
-                  variant="outline"
-                  disabled={isProcessing}
-                  className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white"
-                  asChild
-                >
-                  <span>
-                    <Camera className="w-4 h-4 mr-2" />
-                    Take Photo
-                  </span>
-                </Button>
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleFileInputChange}
-                  className="hidden"
-                />
-              </label>
+              <Button
+                type="button"
+                onClick={handleCameraClick}
+                variant="outline"
+                disabled={isProcessing}
+                className="border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-white"
+              >
+                <Camera className="w-4 h-4 mr-2" />
+                Take Photo
+              </Button>
             </div>
           </div>
         </div>
@@ -222,7 +233,7 @@ export const PhotoUploadStep: React.FC = () => {
       {/* File Format Info */}
       <div className="text-center">
         <p className="text-crd-lightGray text-sm">
-          Supported formats: JPG, PNG, WebP • Maximum size: 10MB
+          Supported formats: JPG, PNG, WebP, GIF • Maximum size: 10MB
         </p>
       </div>
     </div>

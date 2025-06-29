@@ -32,12 +32,12 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCropper, setShowCropper] = useState(false);
   const [imageAnalysis, setImageAnalysis] = useState<any>(null);
-  const [dragActive, setDragActive] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
 
+    console.log('📁 File dropped in PhotoUploadSection:', file.name);
     setIsProcessing(true);
     setUploadProgress(0);
 
@@ -84,9 +84,24 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
     },
     maxFiles: 1,
-    onDragEnter: () => setDragActive(true),
-    onDragLeave: () => setDragActive(false)
+    noClick: false, // Enable click
+    noKeyboard: false
   });
+
+  const handleBrowseClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (event) => {
+      const files = (event.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        console.log('📁 File selected via browse:', files[0].name);
+        onDrop([files[0]]);
+      }
+    };
+    input.click();
+  }, [onDrop]);
 
   const handleAdvancedCrop = () => {
     setShowCropper(true);
@@ -117,8 +132,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         <div className="space-y-6">
           <div
             {...getRootProps()}
-            className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
-              isDragActive || dragActive
+            className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all min-h-[300px] flex flex-col items-center justify-center ${
+              isDragActive
                 ? 'border-crd-green bg-crd-green/10'
                 : 'border-crd-mediumGray/30 hover:border-crd-green/50'
             }`}
@@ -162,6 +177,16 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                     <Badge variant="outline">WebP</Badge>
                     <Badge variant="outline">GIF</Badge>
                   </div>
+                </div>
+                <div className="flex justify-center gap-4">
+                  <CRDButton
+                    type="button"
+                    onClick={handleBrowseClick}
+                    className="bg-crd-green hover:bg-crd-green/90 text-black"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    Browse Files
+                  </CRDButton>
                 </div>
               </div>
             )}
