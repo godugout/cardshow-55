@@ -1,99 +1,162 @@
 
 import React, { useState } from 'react';
-import { GalleryHeader } from './Gallery/components/GalleryHeader';
-import { CardGrid } from '@/components/cards/CardGrid';
-import { useCards } from '@/hooks/useCards';
+import { useNavigate } from 'react-router-dom';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { LoadingState } from '@/components/common/LoadingState';
-import { useCardConversion } from './Gallery/hooks/useCardConversion';
+import { useCards } from '@/hooks/useCards';
+import { useCollections } from '@/hooks/useCollections';
+import { useCreators } from '@/hooks/useCreators';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CRDButton } from '@/components/ui/design-system/Button';
+import { Plus, Grid, List, Filter, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { CardsGrid } from './Gallery/components/CardsGrid';
+import { CollectionsGrid } from './Gallery/components/CollectionsGrid';
+import { CreatorsGrid } from './Gallery/components/CreatorsGrid';
+import { GalleryHeader } from './Gallery/components/GalleryHeader';
 
 const Gallery = () => {
-  const [activeTab, setActiveTab] = useState('featured');
-  const { cards, featuredCards, loading, dataSource } = useCards();
-  const { convertCardsToCardData } = useCardConversion();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedTab, setSelectedTab] = useState('cards');
+  
+  const { cards, isLoading: cardsLoading } = useCards();
+  const { collections, isLoading: collectionsLoading } = useCollections();
+  const { creators, isLoading: creatorsLoading } = useCreators();
 
-  console.log('🎨 Gallery: Rendering with cards:', cards.length, 'featured:', featuredCards.length, 'source:', dataSource);
+  console.log('Gallery: Loaded with navigation via React Router');
 
-  if (loading) {
-    return <LoadingState message="Loading gallery..." fullPage />;
-  }
-
-  const getDisplayCards = () => {
-    // Convert database cards to CardData format for display
-    const allCardsConverted = convertCardsToCardData(cards);
-    const featuredCardsConverted = convertCardsToCardData(featuredCards);
-    
-    switch (activeTab) {
-      case 'featured':
-        return featuredCardsConverted.length > 0 ? featuredCardsConverted : allCardsConverted.slice(0, 8);
-      case 'trending':
-        // Filter cards with view_count > 10, with fallback for undefined view_count
-        return allCardsConverted.filter(card => (card.view_count || 0) > 10).slice(0, 20);
-      case 'new':
-        // Sort by created_at with fallback for undefined created_at
-        return allCardsConverted.sort((a, b) => {
-          const aDate = new Date(a.created_at || 0).getTime();
-          const bDate = new Date(b.created_at || 0).getTime();
-          return bDate - aDate;
-        }).slice(0, 20);
-      default:
-        return allCardsConverted;
-    }
+  const handleCreateCard = () => {
+    console.log('Navigating to create card page');
+    navigate('/create');
   };
 
-  const displayCards = getDisplayCards();
-  console.log('🎨 Gallery: Displaying', displayCards.length, 'cards for tab:', activeTab);
+  const handleViewCard = (cardId: string) => {
+    console.log('Navigating to studio for card:', cardId);
+    navigate(`/studio/${cardId}`);
+  };
 
-  // Convert CardData to the format expected by CardGrid
-  const gridCards = displayCards.map(card => ({
-    id: card.id,
-    title: card.title,
-    description: card.description,
-    image_url: card.image_url,
-    thumbnail_url: card.thumbnail_url,
-    price: card.price?.toString() || undefined
-  }));
+  const filteredCards = cards?.filter(card => 
+    card.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    card.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  const filteredCollections = collections?.filter(collection =>
+    collection.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  const filteredCreators = creators?.filter(creator =>
+    creator.username?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
 
   return (
     <div className="min-h-screen bg-crd-darkest">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <GalleryHeader
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+      <ErrorBoundary>
+        <GalleryHeader />
         
-        {/* Data source indicator in development */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mb-4 p-2 bg-black/50 rounded text-xs text-white">
-            Source: {dataSource} | Total: {cards.length} | Showing: {displayCards.length}
+        {/* Controls Bar */}
+        <div className="bg-crd-darker border-b border-crd-mediumGray/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-4 flex-1">
+                <div className="relative max-w-md flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-crd-lightGray" />
+                  <Input
+                    placeholder="Search cards, collections, creators..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 bg-crd-mediumGray/20 border-crd-mediumGray/30 text-crd-white"
+                  />
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <CRDButton
+                    variant={viewMode === 'grid' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                  >
+                    <Grid className="w-4 h-4" />
+                  </CRDButton>
+                  <CRDButton
+                    variant={viewMode === 'list' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                  >
+                    <List className="w-4 h-4" />
+                  </CRDButton>
+                </div>
+              </div>
+              
+              <CRDButton onClick={handleCreateCard} className="bg-crd-green hover:bg-crd-green/90 text-black">
+                <Plus className="w-4 h-4 mr-2" />
+                Create Card
+              </CRDButton>
+            </div>
           </div>
-        )}
-        
-        <CardGrid 
-          cards={gridCards}
-          loading={false}
-          viewMode="grid"
-        />
-        
-        {displayCards.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-semibold text-white mb-4">No Cards Found</h3>
-            <p className="text-crd-lightGray mb-6">
-              {cards.length === 0 
-                ? "No cards have been created yet. Start by creating your first card!"
-                : "No cards match the current filter. Try switching tabs or check other categories."
-              }
-            </p>
-            {cards.length === 0 && (
-              <a 
-                href="/create"
-                className="inline-flex items-center px-4 py-2 bg-crd-green text-white rounded-lg hover:bg-crd-green/90 transition-colors"
-              >
-                Create Your First Card
-              </a>
-            )}
-          </div>
-        )}
-      </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 bg-crd-darker border border-crd-mediumGray/20">
+              <TabsTrigger value="cards" className="data-[state=active]:bg-crd-green data-[state=active]:text-black">
+                Cards
+                {filteredCards.length > 0 && (
+                  <Badge variant="outline" className="ml-2">{filteredCards.length}</Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="collections" className="data-[state=active]:bg-crd-green data-[state=active]:text-black">
+                Collections
+                {filteredCollections.length > 0 && (
+                  <Badge variant="outline" className="ml-2">{filteredCollections.length}</Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="creators" className="data-[state=active]:bg-crd-green data-[state=active]:text-black">
+                Creators
+                {filteredCreators.length > 0 && (
+                  <Badge variant="outline" className="ml-2">{filteredCreators.length}</Badge>
+                )}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="cards" className="mt-6">
+              {cardsLoading ? (
+                <LoadingState message="Loading cards..." />
+              ) : (
+                <CardsGrid 
+                  cards={filteredCards} 
+                  viewMode={viewMode}
+                  onCardClick={handleViewCard}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="collections" className="mt-6">
+              {collectionsLoading ? (
+                <LoadingState message="Loading collections..." />
+              ) : (
+                <CollectionsGrid 
+                  collections={filteredCollections} 
+                  viewMode={viewMode}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="creators" className="mt-6">
+              {creatorsLoading ? (
+                <LoadingState message="Loading creators..." />
+              ) : (
+                <CreatorsGrid 
+                  creators={filteredCreators} 
+                  viewMode={viewMode}
+                />
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </ErrorBoundary>
     </div>
   );
 };

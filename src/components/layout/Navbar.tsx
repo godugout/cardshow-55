@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Plus, Home, ImageIcon, Palette } from 'lucide-react';
+import { Plus, Home, ImageIcon, Palette, Sparkles, Grid } from 'lucide-react';
 
 export const Navbar = () => {
   const location = useLocation();
@@ -48,6 +48,30 @@ export const Navbar = () => {
             >
               <Plus className="w-4 h-4" />
               <span>Create</span>
+            </Link>
+
+            <Link
+              to="/crdmkr"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive('/crdmkr') 
+                  ? 'text-crd-green bg-crd-green/10' 
+                  : 'text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20'
+              }`}
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>CRDMKR</span>
+            </Link>
+
+            <Link
+              to="/cards"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive('/cards') 
+                  ? 'text-crd-green bg-crd-green/10' 
+                  : 'text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20'
+              }`}
+            >
+              <Grid className="w-4 h-4" />
+              <span>Cards</span>
             </Link>
 
             <Link

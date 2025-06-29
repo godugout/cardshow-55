@@ -11,12 +11,21 @@ import CardsPage from '@/pages/CardsPage';
 import FeedPage from '@/pages/FeedPage';
 import Studio from '@/pages/Studio';
 import Gallery from '@/pages/Gallery';
-import { AuthPage } from '@/components/auth/AuthPage';
 import CRDMKRPage from '@/pages/CRDMKRPage';
+import { AuthPage } from '@/components/auth/AuthPage';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 function App() {
+  console.log('App: Initializing with proper routing configuration');
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="crd-ui-theme">

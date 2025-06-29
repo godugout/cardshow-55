@@ -1,45 +1,86 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Plus } from 'lucide-react';
+import { Plus, Upload } from 'lucide-react';
+import { CardsTabsNavigation } from '@/components/cards/CardsTabsNavigation';
+import { CardsTabsContent } from '@/components/cards/CardsTabsContent';
+import { useCards } from '@/hooks/useCards';
 
 const CardsPage = () => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('discover');
+  const { cards, isLoading } = useCards();
+
+  console.log('CardsPage: Loaded with React Router navigation');
+
+  const handleCreateCard = () => {
+    console.log('Navigating to create card');
+    navigate('/create');
+  };
+
+  const handleBulkUpload = () => {
+    console.log('Opening bulk upload');
+    // Could navigate to a dedicated bulk upload page or open a modal
+    navigate('/cards?upload=bulk');
+  };
+
+  const handleCardClick = (cardId: string) => {
+    console.log('Navigating to card studio:', cardId);
+    navigate(`/studio/${cardId}`);
+  };
+
   return (
     <div className="min-h-screen bg-crd-darkest">
-      <div className="container mx-auto p-6 max-w-6xl">
+      <ErrorBoundary>
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-crd-white mb-2">My Cards</h1>
-            <p className="text-crd-lightGray">Create and manage your trading cards</p>
+        <div className="bg-crd-darker border-b border-crd-mediumGray/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl font-bold text-crd-white">Cards</h1>
+              <div className="text-sm text-crd-lightGray">
+                Discover, create, and manage your trading cards
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <CRDButton
+                variant="outline"
+                onClick={handleBulkUpload}
+                className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Bulk Upload
+              </CRDButton>
+              <CRDButton
+                onClick={handleCreateCard}
+                className="bg-crd-green hover:bg-crd-green/90 text-black"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Card
+              </CRDButton>
+            </div>
           </div>
-          <CRDButton asChild variant="primary">
-            <Link to="/create">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Card
-            </Link>
-          </CRDButton>
         </div>
 
-        {/* Content */}
-        <Card className="bg-crd-darker border-crd-mediumGray/20">
-          <CardHeader>
-            <CardTitle className="text-crd-white">Get Started</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-crd-lightGray">
-              Welcome to your card creation hub! Start by creating your first trading card.
-            </p>
-            <CRDButton asChild variant="primary">
-              <Link to="/create">
-                Create Your First Card
-              </Link>
-            </CRDButton>
-          </CardContent>
-        </Card>
-      </div>
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="flex justify-center mb-8">
+              <CardsTabsNavigation />
+            </div>
+            
+            <CardsTabsContent 
+              activeTab={activeTab}
+              cards={cards || []}
+              isLoading={isLoading}
+              onCardClick={handleCardClick}
+            />
+          </Tabs>
+        </div>
+      </ErrorBoundary>
     </div>
   );
 };
