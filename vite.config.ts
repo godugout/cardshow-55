@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => ({
   },
   test: {
     globals: true,
-    environment: 'happy-dom', // Use happy-dom instead of jsdom for lighter testing
+    environment: 'happy-dom', // Use happy-dom instead of jsdom for browser-compatible testing
     setupFiles: ['./src/components/cards/hooks/__tests__/setup.ts'],
   },
   worker: {
