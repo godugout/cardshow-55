@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -20,7 +21,7 @@ interface PhotoUploadSectionProps {
   onNext: () => void;
 }
 
-// Update the type definition to match what StepIndicator expects
+// Define the workflow step type consistently
 type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager';
 
 export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
@@ -43,7 +44,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const { analyzeImage, isAnalyzing } = useFreeAIAnalysis();
   const { templates, isLoading: templatesLoading } = useTemplates();
 
-  // Simple step indicator component inline with correct type
+  // Simple step indicator component with proper typing
   const SimpleStepIndicator = ({ currentStep }: { currentStep: WorkflowStep }) => {
     const steps: Array<{ id: WorkflowStep; label: string; description: string }> = [
       { id: 'upload', label: 'Upload', description: 'Choose your media' },
