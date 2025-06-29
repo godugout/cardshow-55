@@ -20,6 +20,31 @@
     @apply text-crd-orange;
   }
 
+  /* Custom Scrollbar for Layer Manager */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #45B26B #23262F;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #23262F;
+    border-radius: 3px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #45B26B, #3772FF);
+    border-radius: 3px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #45B26B, #3772FF);
+    opacity: 0.8;
+  }
+
   /* Filter Controls */
   .crd-filter-group {
     @apply flex rounded-md overflow-hidden;
