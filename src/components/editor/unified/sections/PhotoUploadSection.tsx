@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { CRDButton } from '@/components/ui/design-system/Button';
@@ -6,6 +5,8 @@ import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useFreeAIAnalysis } from '@/hooks/useFreeAIAnalysis';
 import { useTemplates } from '@/hooks/useTemplates';
 import { MediaPathAnalyzer } from '@/lib/crdmkr/mediaPathAnalyzer';
+import { PSDLayerManager } from './components/PSDLayerManager';
+import { CRDFrameGenerator } from '@/lib/crdmkr/crdFrameGenerator';
 
 import { AIToolsPanel } from './components/AIToolsPanel';
 import { UploadStep } from './components/UploadStep';
@@ -31,6 +32,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const [mediaDetection, setMediaDetection] = useState<any>(null);
   const [selectedMediaPath, setSelectedMediaPath] = useState<string>('');
   const [currentStep, setCurrentStep] = useState<'upload' | 'path-selection' | 'template-selection'>('upload');
+  const [originalFile, setOriginalFile] = useState<File | null>(null);
+  const [generatedTemplate, setGeneratedTemplate] = useState<any>(null);
   
   const { analyzeImage, isAnalyzing } = useFreeAIAnalysis();
   const { templates, isLoading: templatesLoading } = useTemplates();
@@ -39,6 +42,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     console.log('📁 Processing file:', file.name);
     setIsProcessing(true);
     setUploadProgress(0);
+    setOriginalFile(file); // Store original file
 
     try {
       // Step 1: Detect media format and capabilities
@@ -105,14 +109,30 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     // Store workflow selection in card data
     cardEditor.updateDesignMetadata('workflowPath', pathId);
     
-    // Move to template selection for standard workflows
-    if (pathId === 'standard-card' || pathId === 'interactive-card' || pathId === 'quick-frame') {
+    // For PSD professional workflow, the template is generated in PathSelectionStep
+    if (pathId === 'psd-professional') {
+      // Template will be generated via callback
+      setShowAITools(true);
+    } else if (pathId === 'standard-card' || pathId === 'interactive-card' || pathId === 'quick-frame') {
       setCurrentStep('template-selection');
     } else {
-      // For advanced workflows (PSD, GIF), we might skip template selection or use different logic
       toast.success(`${pathId} workflow selected! Ready to proceed.`);
       setShowAITools(true);
     }
+  };
+
+  const handleTemplateGenerated = (template: any) => {
+    console.log('🎯 Template generated from PSD:', template);
+    setGeneratedTemplate(template);
+    
+    // Apply the generated template to the card
+    cardEditor.updateCardField('template_id', template.id);
+    if (template.template_data) {
+      cardEditor.updateDesignMetadata('frame', template.template_data);
+    }
+    
+    // Move to next step
+    setShowAITools(true);
   };
 
   const handleTemplateSelect = (templateId: string) => {
@@ -129,7 +149,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   };
 
   const canProceed = cardEditor.cardData.image_url && 
-    (selectedTemplate || (selectedMediaPath && !['standard-card', 'interactive-card', 'quick-frame'].includes(selectedMediaPath))) &&
+    (selectedTemplate || generatedTemplate || (selectedMediaPath && !['standard-card', 'interactive-card', 'quick-frame'].includes(selectedMediaPath))) &&
     !isProcessing && !isAnalyzing;
 
   const getStepText = () => {
@@ -169,6 +189,9 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
             mediaDetection={mediaDetection}
             selectedMediaPath={selectedMediaPath}
             onPathSelect={handlePathSelect}
+            originalFile={originalFile}
+            userImage={cardEditor.cardData.image_url}
+            onTemplateGenerated={handleTemplateGenerated}
           />
         );
 
@@ -231,6 +254,16 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       {/* Main Content */}
       <div className="min-h-[400px]">
         {renderCurrentStep()}
+        
+        {/* Show generated template info */}
+        {generatedTemplate && (
+          <div className="mt-6 p-4 bg-crd-green/10 border border-crd-green/30 rounded-lg">
+            <h4 className="text-crd-green font-medium mb-2">Custom CRD Frame Generated</h4>
+            <p className="text-crd-lightGray text-sm">
+              Your PSD has been converted to a reusable CRD Frame: "{generatedTemplate.name}"
+            </p>
+          </div>
+        )}
       </div>
 
       {/* AI Tools Panel */}
