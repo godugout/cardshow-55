@@ -50,7 +50,7 @@ export const useCRDMKRTemplates = () => {
           : {},
         is_premium: template.is_premium,
         usage_count: template.usage_count,
-        tags: template.tags || [],
+        tags: [], // Default to empty array since tags doesn't exist in schema
         sourceType: 'crdmkr' as const,
         sourceFile: template.source_file_url,
         fabricData: template.fabric_data,
@@ -87,17 +87,16 @@ export const useCRDMKRTemplates = () => {
           name: templateData.name,
           category: templateData.category,
           description: templateData.description,
-          template_data: templateData.template_data,
+          template_data: templateData.template_data as any,
           preview_url: templateData.preview_url,
           source_type: 'crdmkr',
           source_file_url: templateData.sourceFile,
-          fabric_data: templateData.fabricData,
-          layers: templateData.layers,
-          parameters: templateData.parameters,
-          ai_analysis: templateData.aiAnalysis,
+          fabric_data: templateData.fabricData as any,
+          layers: templateData.layers as any,
+          parameters: templateData.parameters as any,
+          ai_analysis: templateData.aiAnalysis as any,
           is_premium: templateData.is_premium || false,
-          is_public: true,
-          tags: templateData.tags || []
+          is_public: true
         })
         .select()
         .single();
@@ -123,13 +122,12 @@ export const useCRDMKRTemplates = () => {
           name: updates.name,
           category: updates.category,
           description: updates.description,
-          template_data: updates.template_data,
+          template_data: updates.template_data as any,
           preview_url: updates.preview_url,
-          fabric_data: updates.fabricData,
-          layers: updates.layers,
-          parameters: updates.parameters,
-          ai_analysis: updates.aiAnalysis,
-          tags: updates.tags
+          fabric_data: updates.fabricData as any,
+          layers: updates.layers as any,
+          parameters: updates.parameters as any,
+          ai_analysis: updates.aiAnalysis as any
         })
         .eq('id', templateId)
         .select()
@@ -181,7 +179,6 @@ export const useCRDMKRTemplates = () => {
           ai_analysis: original.ai_analysis,
           is_premium: original.is_premium,
           is_public: original.is_public,
-          tags: original.tags,
           creator_id: original.creator_id,
           usage_count: 0
         })
@@ -240,7 +237,7 @@ export const useCRDMKRTemplates = () => {
           : {},
         is_premium: data.is_premium,
         usage_count: data.usage_count,
-        tags: data.tags || [],
+        tags: [], // Default to empty array since tags doesn't exist in schema
         sourceType: 'crdmkr' as const,
         sourceFile: data.source_file_url,
         fabricData: data.fabric_data,
@@ -265,10 +262,19 @@ export const useCRDMKRTemplates = () => {
   // Track template usage
   const trackUsage = useCallback(async (templateId: string) => {
     try {
-      await supabase
+      // Get current usage count first
+      const { data: currentData } = await supabase
         .from('card_templates')
-        .update({ usage_count: supabase.raw('usage_count + 1') })
-        .eq('id', templateId);
+        .select('usage_count')
+        .eq('id', templateId)
+        .single();
+
+      if (currentData) {
+        await supabase
+          .from('card_templates')
+          .update({ usage_count: (currentData.usage_count || 0) + 1 })
+          .eq('id', templateId);
+      }
     } catch (error) {
       console.error('Error tracking template usage:', error);
     }
