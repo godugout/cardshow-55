@@ -14,7 +14,6 @@ import { UploadStep } from './components/UploadStep';
 import { PathSelectionStep } from './components/PathSelectionStep';
 import { TemplateSelectionStep } from './components/TemplateSelectionStep';
 import { StepHeader } from './components/StepHeader';
-import { StepIndicator } from './components/StepIndicator';
 
 interface PhotoUploadSectionProps {
   cardEditor: ReturnType<typeof import('@/hooks/useCardEditor').useCardEditor>;
@@ -43,6 +42,54 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   
   const { analyzeImage, isAnalyzing } = useFreeAIAnalysis();
   const { templates, isLoading: templatesLoading } = useTemplates();
+
+  // Simple step indicator component inline
+  const SimpleStepIndicator = ({ currentStep }: { currentStep: WorkflowStep }) => {
+    const steps = [
+      { id: 'upload', label: 'Upload', description: 'Choose your media' },
+      { id: 'path-selection', label: 'Workflow', description: 'Select creation path' },
+      { id: 'template-selection', label: 'Template', description: 'Pick design' },
+      { id: 'psd-manager', label: 'PSD Studio', description: 'Professional editing' }
+    ];
+
+    const currentStepIndex = steps.findIndex(step => step.id === currentStep);
+
+    return (
+      <div className="flex items-center justify-center gap-2 py-4">
+        {steps.map((step, index) => {
+          const isActive = index === currentStepIndex;
+          const isCompleted = index < currentStepIndex;
+          const isVisible = index <= currentStepIndex || (currentStep === 'psd-manager' && step.id === 'psd-manager');
+
+          if (!isVisible) return null;
+
+          return (
+            <div key={step.id} className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
+              isActive 
+                ? 'bg-gradient-to-r from-crd-green/20 to-crd-blue/20 border border-crd-green/40 shadow-lg' 
+                : isCompleted 
+                ? 'bg-crd-green/10 border border-crd-green/20' 
+                : 'bg-crd-mediumGray/10 border border-crd-mediumGray/20'
+            }`}>
+              <div className={`w-5 h-5 ${isActive ? 'text-crd-green' : isCompleted ? 'text-crd-green' : 'text-crd-mediumGray'}`}>
+                {isCompleted ? '✓' : index + 1}
+              </div>
+              <div>
+                <div className={`font-semibold ${
+                  isActive ? 'text-crd-green' : isCompleted ? 'text-crd-green' : 'text-crd-mediumGray'
+                }`}>
+                  {step.label}
+                </div>
+                <div className="text-xs text-crd-lightGray">
+                  {step.description}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   // Handle URL parameters for auto-triggering PSD workflow
   useEffect(() => {
@@ -287,7 +334,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
           currentStep={currentStep}
           mediaDetection={mediaDetection}
         />
-        <StepIndicator currentStep={currentStep} />
+        <SimpleStepIndicator currentStep={currentStep} />
       </div>
 
       {/* Navigation Section */}
