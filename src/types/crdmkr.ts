@@ -23,7 +23,16 @@ export interface FontAnalysis {
 export interface CRDMKRTemplate {
   id: string;
   name: string;
+  category: string;
+  preview_url: string;
+  description: string;
+  template_data: Record<string, any>;
+  is_premium: boolean;
+  usage_count: number;
+  tags: string[];
+  sourceType: 'crdmkr' | 'crdmkr-generated';
   sourceFile: string;
+  fabricData?: any;
   dimensions: {
     width: number;
     height: number;
@@ -37,6 +46,13 @@ export interface CRDMKRTemplate {
     createdAt: Date;
     processedBy: 'ai' | 'manual';
     accuracy: number;
+  };
+  aiAnalysis?: {
+    confidence: number;
+    detectedRegions: DetectedRegion[];
+    dominantColors: string[];
+    suggestedRarity: string;
+    contentType: string;
   };
 }
 
@@ -66,6 +82,9 @@ export interface LayerStyles {
   strokeWidth?: number;
   opacity?: number;
   blendMode?: string;
+  fontSize?: number;
+  fontFamily?: string;
+  fontWeight?: string;
 }
 
 export interface ParameterConstraints {
@@ -79,4 +98,22 @@ export interface ColorScheme {
   secondary: string;
   accent: string;
   background: string;
+}
+
+export type ProcessingJobStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+
+export interface ProcessingJob {
+  id: string;
+  userId: string;
+  fileUrl: string;
+  fileName?: string;
+  fileSize?: number;
+  status: ProcessingJobStatus;
+  progress?: number;
+  result?: any;
+  errorMessage?: string;
+  startedAt?: Date;
+  completedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
