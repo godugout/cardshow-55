@@ -1,35 +1,74 @@
 
-import { beforeAll, vi } from 'vitest';
-import '@testing-library/jest-dom';
+// Browser-compatible test setup without jsdom
+// Using native browser APIs available in the test environment
 
-// Mock React Testing Library
+// Setup for vitest browser environment
+import { beforeAll, afterEach } from 'vitest';
+
 beforeAll(() => {
-  // Mock Date.now for consistent timestamps in tests
-  const mockDate = new Date('2024-01-01T00:00:00.000Z');
-  vi.setSystemTime(mockDate);
+  // Setup any global test configuration here
+  console.log('Test environment setup complete');
 });
 
-// Global test utilities
-export const createMockFile = (name: string = 'test.jpg', type: string = 'image/jpeg'): File => {
-  return new File(['test content'], name, { type });
+afterEach(() => {
+  // Cleanup after each test
+  document.body.innerHTML = '';
+});
+
+// Mock implementations for testing
+global.ResizeObserver = global.ResizeObserver || class ResizeObserver {
+  constructor(callback: ResizeObserverCallback) {}
+  observe(target: Element) {}
+  unobserve(target: Element) {}
+  disconnect() {}
 };
 
-export const createMockUploadedImage = (id: string = '1'): any => ({
-  id,
-  file: createMockFile(`test${id}.jpg`),
-  preview: `blob:test${id}`,
-});
+global.IntersectionObserver = global.IntersectionObserver || class IntersectionObserver {
+  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {}
+  observe(target: Element) {}
+  unobserve(target: Element) {}
+  disconnect() {}
+};
 
-export const createMockDetectedCard = (id: string = 'card-1'): any => ({
-  id,
-  confidence: 0.9,
-  originalImageId: '1',
-  originalImageUrl: `blob:original${id}`,
-  croppedImageUrl: `blob:cropped${id}`,
-  bounds: { x: 0, y: 0, width: 100, height: 140 },
-  metadata: { 
-    detectedAt: new Date('2024-01-01T00:00:00.000Z'),
-    processingTime: 500,
-    cardType: 'Pokemon' 
-  },
-});
+// Mock URL.createObjectURL for file handling tests
+if (typeof URL.createObjectURL === 'undefined') {
+  global.URL.createObjectURL = () => 'mock-url';
+  global.URL.revokeObjectURL = () => {};
+}
+
+// Mock canvas context for tests
+if (typeof HTMLCanvasElement !== 'undefined') {
+  HTMLCanvasElement.prototype.getContext = HTMLCanvasElement.prototype.getContext || function(contextId: string) {
+    if (contextId === '2d') {
+      return {
+        fillRect: () => {},
+        clearRect: () => {},
+        getImageData: () => ({ data: new Uint8ClampedArray(4) }),
+        putImageData: () => {},
+        createImageData: () => ({ data: new Uint8ClampedArray(4) }),
+        setTransform: () => {},
+        drawImage: () => {},
+        save: () => {},
+        fillText: () => {},
+        restore: () => {},
+        beginPath: () => {},
+        moveTo: () => {},
+        lineTo: () => {},
+        closePath: () => {},
+        stroke: () => {},
+        translate: () => {},
+        scale: () => {},
+        rotate: () => {},
+        arc: () => {},
+        fill: () => {},
+        measureText: () => ({ width: 0 }),
+        transform: () => {},
+        rect: () => {},
+        clip: () => {},
+      };
+    }
+    return null;
+  };
+}
+
+export {};
