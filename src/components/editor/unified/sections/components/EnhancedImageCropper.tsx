@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,9 +18,9 @@ interface EnhancedImageCropperProps {
   className?: string;
 }
 
-const CARD_ASPECT_RATIO = 2.5 / 3.5; // Trading card aspect ratio
+const CARD_ASPECT_RATIO = 2.5 / 3.5;
 const CANVAS_MAX_WIDTH = 400;
-const CANVAS_MAX_HEIGHT = 560; // Maintains card aspect ratio
+const CANVAS_MAX_HEIGHT = 560;
 
 export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
   imageUrl,
@@ -32,8 +33,6 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
   const [extracting, setExtracting] = useState(false);
-  const [showCroppedResult, setShowCroppedResult] = useState(false);
-  const [croppedImageUrl, setCroppedImageUrl] = useState<string>('');
 
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,11 +44,9 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
     let canvasWidth, canvasHeight;
     
     if (imageAspectRatio > CARD_ASPECT_RATIO) {
-      // Image is wider than card - fit to height
       canvasHeight = Math.min(CANVAS_MAX_HEIGHT, img.naturalHeight * 0.8);
       canvasWidth = canvasHeight * CARD_ASPECT_RATIO;
     } else {
-      // Image is taller than card - fit to width
       canvasWidth = Math.min(CANVAS_MAX_WIDTH, img.naturalWidth * 0.8);
       canvasHeight = canvasWidth / CARD_ASPECT_RATIO;
     }
@@ -62,18 +59,15 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
     const displayWidth = img.clientWidth;
     const displayHeight = img.clientHeight;
     
-    // Calculate crop size that matches card aspect ratio
     const maxCropSize = Math.min(displayWidth * 0.8, displayHeight * 0.8);
     let cropWidth = maxCropSize;
     let cropHeight = cropWidth / CARD_ASPECT_RATIO;
     
-    // Adjust if height exceeds display bounds
     if (cropHeight > displayHeight * 0.8) {
       cropHeight = displayHeight * 0.8;
       cropWidth = cropHeight * CARD_ASPECT_RATIO;
     }
     
-    // Center the crop area
     const x = (displayWidth - cropWidth) / 2;
     const y = (displayHeight - cropHeight) / 2;
     
@@ -100,7 +94,6 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
     const displayWidth = img.clientWidth;
     const displayHeight = img.clientHeight;
     
-    // Maximize crop area while maintaining card aspect ratio
     let cropWidth = displayWidth * 0.9;
     let cropHeight = cropWidth / CARD_ASPECT_RATIO;
     
@@ -171,16 +164,13 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
           break;
       }
 
-      // Maintain minimum size
       newCrop.width = Math.max(100, newCrop.width);
       newCrop.height = Math.max(100, newCrop.height);
 
-      // Maintain card aspect ratio for corner handles
       if (dragHandle !== 'move') {
         newCrop.height = newCrop.width / CARD_ASPECT_RATIO;
       }
 
-      // Ensure within bounds
       newCrop.width = Math.min(newCrop.width, img.clientWidth - newCrop.x);
       newCrop.height = Math.min(newCrop.height, img.clientHeight - newCrop.y);
 
@@ -206,7 +196,7 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  // Extract the cropped area
+  // Extract the cropped area and proceed directly to effects
   const extractCrop = useCallback(async () => {
     if (!imageRef.current || extracting) return;
 
@@ -218,11 +208,9 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
       
       if (!ctx) throw new Error('Could not get canvas context');
 
-      // Set canvas to standard card dimensions
       canvas.width = 300;
       canvas.height = 420;
 
-      // Calculate source coordinates relative to natural image size
       const scaleX = img.naturalWidth / img.clientWidth;
       const scaleY = img.naturalHeight / img.clientHeight;
       
@@ -231,7 +219,6 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
       const sourceWidth = cropArea.width * scaleX;
       const sourceHeight = cropArea.height * scaleY;
 
-      // Draw the cropped area
       ctx.drawImage(
         img,
         sourceX, sourceY, sourceWidth, sourceHeight,
@@ -239,95 +226,16 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
       );
 
       const croppedUrl = canvas.toDataURL('image/jpeg', 0.9);
-      setCroppedImageUrl(croppedUrl);
-      setShowCroppedResult(true);
       
-      toast.success('Card crop extracted successfully!');
+      toast.success('Card crop extracted! Proceeding to effects...');
+      onCropComplete(croppedUrl);
     } catch (error) {
       console.error('Crop extraction failed:', error);
       toast.error('Failed to extract crop');
     } finally {
       setExtracting(false);
     }
-  }, [cropArea, extracting]);
-
-  const handleConfirmCrop = useCallback(() => {
-    onCropComplete(croppedImageUrl);
-    setShowCroppedResult(false);
-  }, [croppedImageUrl, onCropComplete]);
-
-  const handleDownloadCrop = useCallback(() => {
-    const link = document.createElement('a');
-    link.href = croppedImageUrl;
-    link.download = `cropped-card-${Date.now()}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success('Download started!');
-  }, [croppedImageUrl]);
-
-  const handleBackToEdit = useCallback(() => {
-    setShowCroppedResult(false);
-    setCroppedImageUrl('');
-  }, []);
-
-  // Show cropped result view
-  if (showCroppedResult && croppedImageUrl) {
-    return (
-      <div className={`flex flex-col gap-6 ${className}`}>
-        <div className="text-center">
-          <h3 className="text-2xl font-bold text-crd-white mb-2">Cropped Result</h3>
-          <p className="text-crd-lightGray">
-            Here's your extracted card crop. Use it or go back to adjust.
-          </p>
-        </div>
-
-        {/* Full Size Cropped Image Display */}
-        <div className="flex justify-center">
-          <div className="bg-white rounded-lg p-4 shadow-lg">
-            <img
-              src={croppedImageUrl}
-              alt="Cropped result"
-              className="max-w-sm max-h-96 object-contain rounded"
-            />
-          </div>
-        </div>
-
-        {/* Image Info */}
-        <div className="text-center text-crd-lightGray text-sm">
-          <p>Dimensions: 300 × 420 pixels (Trading Card Ratio)</p>
-          <p>Ready for card creation</p>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-center gap-4">
-          <CRDButton
-            variant="outline"
-            onClick={handleBackToEdit}
-            className="border-crd-mediumGray text-crd-lightGray hover:text-white"
-          >
-            Back to Edit
-          </CRDButton>
-          
-          <CRDButton
-            variant="outline"
-            onClick={handleDownloadCrop}
-            className="border-crd-green text-crd-green hover:bg-crd-green hover:text-black"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Download
-          </CRDButton>
-          
-          <CRDButton
-            onClick={handleConfirmCrop}
-            className="bg-crd-green hover:bg-crd-green/90 text-black"
-          >
-            Use This Crop
-          </CRDButton>
-        </div>
-      </div>
-    );
-  }
+  }, [cropArea, extracting, onCropComplete]);
 
   return (
     <div className={`flex flex-col gap-4 ${className}`}>
@@ -448,8 +356,8 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
             </>
           ) : (
             <>
-              <Eye className="w-4 h-4 mr-2" />
-              Extract & Preview
+              <Crop className="w-4 h-4 mr-2" />
+              Extract & Continue
             </>
           )}
         </CRDButton>
