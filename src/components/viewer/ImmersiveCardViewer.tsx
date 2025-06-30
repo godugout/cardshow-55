@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { EnhancedCardCanvas } from './components/EnhancedCardCanvas';
 import { CustomizePanel } from './components/CustomizePanel';
@@ -58,7 +59,8 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   const [selectedEffect, setSelectedEffect] = useState({
     id: 'none',
     name: 'None',
-    description: 'No visual effects applied'
+    description: 'No visual effects applied',
+    category: 'surface' as const
   });
   const [effectIntensity, setEffectIntensity] = useState([50]);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -108,8 +110,10 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
   }, [isFullscreen]);
 
   const handleInteractiveLightingToggle = useCallback(() => {
-    // Implement interactive lighting toggle logic
-  }, []);
+    if (onInteractiveLightingToggle) {
+      onInteractiveLightingToggle();
+    }
+  }, [onInteractiveLightingToggle]);
 
   const handleCardNavigation = (indexChange: number) => {
     if (onCardChange) {
@@ -197,13 +201,13 @@ export const ImmersiveCardViewer: React.FC<ImmersiveCardViewerProps> = ({
               clearcoat: 0.3
             }}
             isFullscreen={isFullscreen}
-            onSceneChange={onSceneChange || setSelectedScene}
-            onLightingChange={onLightingChange || setSelectedLighting}
+            onSceneChange={onSceneChange}
+            onLightingChange={onLightingChange}
             onEffectChange={setSelectedEffect}
             onEffectIntensityChange={setEffectIntensity}
-            onBrightnessChange={onBrightnessChange || setOverallBrightness}
-            onInteractiveLightingToggle={onInteractiveLightingToggle || handleInteractiveLightingToggle}
-            onMaterialSettingsChange={onMaterialSettingsChange || setMaterialSettings}
+            onBrightnessChange={onBrightnessChange}
+            onInteractiveLightingToggle={handleInteractiveLightingToggle}
+            onMaterialSettingsChange={onMaterialSettingsChange}
             onToggleFullscreen={handleToggleFullscreen}
             onDownload={onDownload}
             onShare={onShare}

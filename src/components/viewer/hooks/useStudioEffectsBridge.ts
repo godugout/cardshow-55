@@ -2,6 +2,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { EffectValues } from './useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
+import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
 
 interface StudioEffectsState {
   effectValues: EffectValues;
@@ -22,19 +23,8 @@ export const useStudioEffectsBridge = (
 ) => {
   const [studioState, setStudioState] = useState<StudioEffectsState>({
     effectValues: initialEffects,
-    selectedScene: selectedScene || {
-      id: 'cosmic',
-      name: 'Cosmic Void',
-      gradient: 'from-purple-900 via-black to-blue-900',
-      icon: '🌌'
-    },
-    selectedLighting: selectedLighting || {
-      id: 'dramatic',
-      name: 'Dramatic',
-      description: 'High contrast lighting',
-      intensity: 0.8,
-      color: '#ffffff'
-    },
+    selectedScene: selectedScene || ENVIRONMENT_SCENES[0],
+    selectedLighting: selectedLighting || LIGHTING_PRESETS[0],
     materialSettings: materialSettings || {
       metalness: 0.5,
       roughness: 0.5,
@@ -99,7 +89,8 @@ export const useStudioEffectsBridge = (
     Object.keys(effects).forEach(effectKey => {
       const effect = effects[effectKey];
       if (effect && typeof effect === 'object' && 'intensity' in effect) {
-        effect.intensity = Math.round((effect.intensity || 50) * (state.overallBrightness / 100));
+        const currentIntensity = typeof effect.intensity === 'number' ? effect.intensity : 50;
+        effect.intensity = Math.round(currentIntensity * (state.overallBrightness / 100));
       }
     });
 

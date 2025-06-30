@@ -157,7 +157,11 @@ export const EnhancedCardBack: React.FC<EnhancedCardBackProps> = ({
         {/* Effect Status Indicators */}
         <div className="flex flex-wrap gap-2 justify-center mb-6">
           {Object.entries(effectValues).map(([effectKey, effect]) => {
-            if (!effect || !effect.enabled || (effect.intensity || 0) < 10) return null;
+            if (!effect || !effect.enabled) return null;
+            
+            // Safely handle intensity comparison with proper type checking
+            const intensity = typeof effect.intensity === 'number' ? effect.intensity : 0;
+            if (intensity < 10) return null;
             
             return (
               <div
@@ -170,7 +174,7 @@ export const EnhancedCardBack: React.FC<EnhancedCardBackProps> = ({
                   boxShadow: `0 2px 10px color-mix(in srgb, ${selectedMaterial.borderColor} 30%, transparent)`
                 }}
               >
-                {effectKey.toUpperCase()} {effect.intensity}%
+                {effectKey.toUpperCase()} {intensity}%
               </div>
             );
           })}
