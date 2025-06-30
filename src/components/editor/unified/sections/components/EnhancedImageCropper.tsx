@@ -1,8 +1,7 @@
-
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Crop, RotateCw, Target, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { Crop, RotateCw, Target, ZoomIn, ZoomOut, RotateCcw, Eye, Download } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface CropArea {
@@ -32,8 +31,9 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
   const [dragHandle, setDragHandle] = useState<string | null>(null);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [zoom, setZoom] = useState(1);
   const [extracting, setExtracting] = useState(false);
+  const [showCroppedResult, setShowCroppedResult] = useState(false);
+  const [croppedImageUrl, setCroppedImageUrl] = useState<string>('');
 
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -238,8 +238,9 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
         0, 0, canvas.width, canvas.height
       );
 
-      const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
-      onCropComplete(croppedImageUrl);
+      const croppedUrl = canvas.toDataURL('image/jpeg', 0.9);
+      setCroppedImageUrl(croppedUrl);
+      setShowCroppedResult(true);
       
       toast.success('Card crop extracted successfully!');
     } catch (error) {
@@ -248,7 +249,85 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
     } finally {
       setExtracting(false);
     }
-  }, [cropArea, extracting, onCropComplete]);
+  }, [cropArea, extracting]);
+
+  const handleConfirmCrop = useCallback(() => {
+    onCropComplete(croppedImageUrl);
+    setShowCroppedResult(false);
+  }, [croppedImageUrl, onCropComplete]);
+
+  const handleDownloadCrop = useCallback(() => {
+    const link = document.createElement('a');
+    link.href = croppedImageUrl;
+    link.download = `cropped-card-${Date.now()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Download started!');
+  }, [croppedImageUrl]);
+
+  const handleBackToEdit = useCallback(() => {
+    setShowCroppedResult(false);
+    setCroppedImageUrl('');
+  }, []);
+
+  // Show cropped result view
+  if (showCroppedResult && croppedImageUrl) {
+    return (
+      <div className={`flex flex-col gap-6 ${className}`}>
+        <div className="text-center">
+          <h3 className="text-2xl font-bold text-crd-white mb-2">Cropped Result</h3>
+          <p className="text-crd-lightGray">
+            Here's your extracted card crop. Use it or go back to adjust.
+          </p>
+        </div>
+
+        {/* Full Size Cropped Image Display */}
+        <div className="flex justify-center">
+          <div className="bg-white rounded-lg p-4 shadow-lg">
+            <img
+              src={croppedImageUrl}
+              alt="Cropped result"
+              className="max-w-sm max-h-96 object-contain rounded"
+            />
+          </div>
+        </div>
+
+        {/* Image Info */}
+        <div className="text-center text-crd-lightGray text-sm">
+          <p>Dimensions: 300 × 420 pixels (Trading Card Ratio)</p>
+          <p>Ready for card creation</p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-center gap-4">
+          <CRDButton
+            variant="outline"
+            onClick={handleBackToEdit}
+            className="border-crd-mediumGray text-crd-lightGray hover:text-white"
+          >
+            Back to Edit
+          </CRDButton>
+          
+          <CRDButton
+            variant="outline"
+            onClick={handleDownloadCrop}
+            className="border-crd-green text-crd-green hover:bg-crd-green hover:text-black"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Download
+          </CRDButton>
+          
+          <CRDButton
+            onClick={handleConfirmCrop}
+            className="bg-crd-green hover:bg-crd-green/90 text-black"
+          >
+            Use This Crop
+          </CRDButton>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`flex flex-col gap-4 ${className}`}>
@@ -369,8 +448,8 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
             </>
           ) : (
             <>
-              <Crop className="w-4 h-4 mr-2" />
-              Extract Card Crop
+              <Eye className="w-4 h-4 mr-2" />
+              Extract & Preview
             </>
           )}
         </CRDButton>
