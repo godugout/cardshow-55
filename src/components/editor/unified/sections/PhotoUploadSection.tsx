@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { ArrowRight, Sparkles, Upload, Image, Grid, CheckCircle } from 'lucide-react';
@@ -258,9 +257,9 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     <div className="space-y-8 max-w-6xl mx-auto">
       {/* Progress Indicator */}
       <div className="flex items-center justify-center gap-8 mb-8">
-        <div className={`flex items-center gap-2 ${state.step === 'upload' ? 'text-crd-green' : state.step !== 'upload' ? 'text-crd-green' : 'text-crd-mediumGray'}`}>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${state.step !== 'upload' ? 'bg-crd-green' : 'bg-crd-mediumGray/20 border-2 border-crd-green'}`}>
-            {state.step !== 'upload' ? <CheckCircle className="w-5 h-5 text-white" /> : '1'}
+        <div className={`flex items-center gap-2 ${state.step === 'upload' ? 'text-crd-green' : (state.step === 'crop' || state.step === 'preview' || state.step === 'ready') ? 'text-crd-green' : 'text-crd-mediumGray'}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${(state.step === 'crop' || state.step === 'preview' || state.step === 'ready') ? 'bg-crd-green' : 'bg-crd-mediumGray/20 border-2 border-crd-green'}`}>
+            {(state.step === 'crop' || state.step === 'preview' || state.step === 'ready') ? <CheckCircle className="w-5 h-5 text-white" /> : '1'}
           </div>
           <span className="font-medium">Upload</span>
         </div>

@@ -278,7 +278,7 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
               </Button>
               
               <Button
-                variant="primary"
+                variant="default"
                 onClick={handleExtractCrop}
                 disabled={!imageLoaded}
               >

@@ -6,11 +6,12 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { DesignTemplate } from '@/types/card';
 
-// Default templates with proper CRD frame overlay
+// Default templates with proper CRD frame overlay and all required DesignTemplate properties
 const DEFAULT_TEMPLATES = [
   {
     id: 'classic-baseball',
     name: 'Classic Baseball',
+    category: 'sports' as const,
     template_data: {
       component: 'ClassicBaseballTemplate',
       colors: {
@@ -19,11 +20,14 @@ const DEFAULT_TEMPLATES = [
         accent: '#4ade80',
         text: '#ffffff'
       }
-    }
+    },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     id: 'modern-baseball',
     name: 'Modern Baseball',
+    category: 'sports' as const,
     template_data: {
       component: 'ModernBaseballTemplate',
       colors: {
@@ -32,11 +36,14 @@ const DEFAULT_TEMPLATES = [
         accent: '#06b6d4',
         text: '#ffffff'
       }
-    }
+    },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     id: 'vintage-baseball',
     name: 'Vintage Baseball',
+    category: 'sports' as const,
     template_data: {
       component: 'VintageBaseballTemplate',
       colors: {
@@ -45,11 +52,14 @@ const DEFAULT_TEMPLATES = [
         accent: '#f97316',
         text: '#ffffff'
       }
-    }
+    },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     id: 'no-frame',
     name: 'Clean Background',
+    category: 'minimal' as const,
     template_data: {
       component: 'NoFrameTemplate',
       colors: {
@@ -58,7 +68,9 @@ const DEFAULT_TEMPLATES = [
         accent: '#4ade80',
         text: '#ffffff'
       }
-    }
+    },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   }
 ];
 
@@ -100,14 +112,14 @@ export const CardPreviewRenderer: React.FC<CardPreviewRendererProps> = ({
     const newIndex = (currentTemplateIndex - 1 + DEFAULT_TEMPLATES.length) % DEFAULT_TEMPLATES.length;
     setCurrentTemplateIndex(newIndex);
     const newTemplate = DEFAULT_TEMPLATES[newIndex];
-    onTemplateChange?.(newTemplate as DesignTemplate);
+    onTemplateChange?.(newTemplate);
   };
 
   const handleNextTemplate = () => {
     const newIndex = (currentTemplateIndex + 1) % DEFAULT_TEMPLATES.length;
     setCurrentTemplateIndex(newIndex);
     const newTemplate = DEFAULT_TEMPLATES[newIndex];
-    onTemplateChange?.(newTemplate as DesignTemplate);
+    onTemplateChange?.(newTemplate);
   };
 
   return (
@@ -130,7 +142,7 @@ export const CardPreviewRenderer: React.FC<CardPreviewRendererProps> = ({
           {/* CRD Frame Overlay */}
           <div className="absolute inset-0 pointer-events-none">
             <SVGTemplateRenderer
-              template={activeTemplate as DesignTemplate}
+              template={activeTemplate}
               imageUrl={imageUrl}
               playerName={playerName}
               teamName={teamName}
