@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { ArrowRight } from 'lucide-react';
@@ -95,14 +94,21 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       if (result) {
         updateState({
           imageAnalysis: {
-            colorPalette: result.colorPalette,
-            suggestedRarity: result.suggestedRarity,
-            contentType: result.contentType,
-            tags: result.tags,
-            quality: result.quality,
-            detectedText: result.detectedText,
-            suggestedTemplate: result.suggestedTemplate,
-            confidence: result.confidence
+            title: result.title || 'Trading Card',
+            description: result.description || 'A trading card with unique characteristics.',
+            rarity: result.rarity || 'common',
+            estimatedValue: result.estimatedValue || 0,
+            confidence: result.confidence || 0.5,
+            category: result.category || 'Sports Card',
+            type: result.type || 'Trading Card',
+            tags: result.tags || [],
+            specialFeatures: result.specialFeatures || [],
+            sources: result.sources || {
+              ocr: false,
+              visual: false,
+              webSearch: false,
+              database: false
+            }
           },
           currentStep: 'combined-selection'
         });
