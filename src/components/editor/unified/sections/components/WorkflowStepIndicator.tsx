@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Sparkles, Grid, FileImage, ArrowRight, Layers } from 'lucide-react';
+import { Sparkles, Grid, FileImage, Layers } from 'lucide-react';
 import { WorkflowStep } from '../../types';
 
 interface WorkflowStepIndicatorProps {
@@ -26,10 +26,10 @@ export const WorkflowStepIndicator: React.FC<WorkflowStepIndicatorProps> = ({
           { id: 'effects', label: 'Effects', description: 'Apply effects', icon: Sparkles }
         ];
       default:
+        // Simplified 2-step workflow for standard images
         return [
-          { id: 'upload', label: 'Upload', description: 'Choose media', icon: FileImage },
-          { id: 'combined-selection', label: 'Setup', description: 'Workflow & Template', icon: Grid },
-          { id: 'effects', label: 'Effects', description: 'Customize & Publish', icon: Sparkles }
+          { id: 'upload', label: 'Upload & Select', description: 'Image + Template', icon: FileImage },
+          { id: 'effects', label: 'Customize', description: 'Effects & Publish', icon: Sparkles }
         ];
     }
   };

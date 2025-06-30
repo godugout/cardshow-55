@@ -3,8 +3,8 @@ export type CreationMode = 'quick' | 'guided' | 'advanced' | 'bulk';
 
 export type CreationStep = 'intent' | 'upload' | 'details' | 'design' | 'publish' | 'complete';
 
-// Updated WorkflowStep to include setup and other steps
-export type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager' | 'batch-processing' | 'combined-selection' | 'setup';
+// Simplified WorkflowStep - most users will only see 'upload' (combined with template selection)
+export type WorkflowStep = 'upload' | 'psd-manager' | 'batch-processing';
 
 export interface CreationIntent {
   mode: CreationMode;

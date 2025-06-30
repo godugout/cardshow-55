@@ -1,186 +1,138 @@
+
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles, Upload, Image, Grid } from 'lucide-react';
 import { useFreeAIAnalysis } from '@/hooks/useFreeAIAnalysis';
 import { useTemplates } from '@/hooks/useTemplates';
 import { MediaPathAnalyzer } from '@/lib/crdmkr/mediaPathAnalyzer';
 import { ProfessionalPSDManager } from './components/ProfessionalPSDManager';
-
-import { AIToolsPanel } from './components/AIToolsPanel';
-import { UploadStep } from './components/UploadStep';
-import { PathSelectionStep } from './components/PathSelectionStep';
-import { TemplateSelectionStep } from './components/TemplateSelectionStep';
-import { StepHeader } from './components/StepHeader';
-import { BatchProcessingStep } from './components/BatchProcessingStep';
-import { WorkflowStepIndicator } from './components/WorkflowStepIndicator';
-import { WorkflowNavigation } from './components/WorkflowNavigation';
-import { useWorkflowManager } from './hooks/useWorkflowManager';
+import { CRDButton } from '@/components/ui/design-system/Button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import type { UnifiedAnalysisResult } from '@/services/imageAnalysis/unifiedCardAnalyzer';
 
 interface PhotoUploadSectionProps {
   cardEditor: ReturnType<typeof import('@/hooks/useCardEditor').useCardEditor>;
   onNext: () => void;
 }
 
+interface SimpleWorkflowState {
+  uploadedFile: File | null;
+  imageUrl: string;
+  isProcessing: boolean;
+  analysisResult: UnifiedAnalysisResult | null;
+  selectedTemplate: string | null;
+  showPSDManager: boolean;
+}
+
 export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   cardEditor,
   onNext
 }) => {
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isProcessing, setIsProcessing] = useState(false);
-  
+  const [state, setState] = useState<SimpleWorkflowState>({
+    uploadedFile: null,
+    imageUrl: cardEditor.cardData.image_url || '',
+    isProcessing: false,
+    analysisResult: null,
+    selectedTemplate: null,
+    showPSDManager: false
+  });
+
   const { analyzeImage, isAnalyzing } = useFreeAIAnalysis();
   const { templates, isLoading: templatesLoading } = useTemplates();
-  const { state, updateState, validateCurrentStep, searchParams } = useWorkflowManager(cardEditor);
+
+  const updateState = useCallback((updates: Partial<SimpleWorkflowState>) => {
+    setState(prev => ({ ...prev, ...updates }));
+  }, []);
 
   const processFile = useCallback(async (file: File) => {
     console.log('📁 Processing file:', file.name);
-    setIsProcessing(true);
-    setUploadProgress(0);
-    updateState({ originalFile: file });
+    
+    updateState({ 
+      uploadedFile: file, 
+      isProcessing: true 
+    });
 
     try {
-      const workflow = searchParams.get('workflow');
-      const isPSDWorkflow = workflow === 'psd-professional' || file.name.toLowerCase().endsWith('.psd');
-      
-      if (isPSDWorkflow) {
-        console.log('🎨 Detected PSD professional workflow');
+      // Handle PSD files specially
+      if (file.name.toLowerCase().endsWith('.psd')) {
+        console.log('🎨 Detected PSD file - switching to professional workflow');
+        const imageUrl = URL.createObjectURL(file);
+        cardEditor.updateCardField('image_url', imageUrl);
+        
         updateState({ 
-          showPSDManager: true, 
-          currentStep: 'psd-manager' 
+          imageUrl,
+          showPSDManager: true,
+          isProcessing: false
         });
-        setUploadProgress(100);
         
-        const imageUrl = URL.createObjectURL(file);
-        cardEditor.updateCardField('image_url', imageUrl);
-        
-        toast.success('PSD file ready for professional processing!');
+        toast.success('PSD file detected! Opening professional layer manager...');
         return;
       }
 
-      // Handle batch processing workflow
-      if (workflow === 'batch-processing') {
-        console.log('⚡ Processing for batch workflow');
-        const imageUrl = URL.createObjectURL(file);
-        cardEditor.updateCardField('image_url', imageUrl);
-        setUploadProgress(100);
-        updateState({ currentStep: 'batch-processing' });
-        
-        toast.success('Image ready for batch processing!');
-        return;
-      }
-
-      const detection = await MediaPathAnalyzer.analyzeFile(file);
-      updateState({ 
-        mediaDetection: detection,
-        selectedMediaPath: detection.recommendedPath 
-      });
-      
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 50) {
-            clearInterval(progressInterval);
-            return 50;
-          }
-          return prev + 10;
-        });
-      }, 200);
-
+      // Standard image processing
       const imageUrl = URL.createObjectURL(file);
       cardEditor.updateCardField('image_url', imageUrl);
+      updateState({ imageUrl });
 
-      console.log('🤖 Starting AI analysis...');
+      // Run AI analysis in background (silent smart detection)
+      console.log('🤖 Running background analysis...');
       const result = await analyzeImage(imageUrl);
       
       if (result) {
-        updateState({
-          imageAnalysis: {
-            title: result.suggestedTemplate || 'Trading Card',
-            description: result.detectedText || 'A trading card with unique characteristics.',
-            rarity: result.suggestedRarity === 'Legendary' ? 'legendary' : 
-                   result.suggestedRarity === 'Epic' ? 'epic' :
-                   result.suggestedRarity === 'Rare' ? 'rare' :
-                   result.suggestedRarity === 'Uncommon' ? 'uncommon' : 'common',
-            estimatedValue: result.quality || 0,
-            confidence: result.confidence / 100 || 0.5,
-            category: result.contentType || 'Sports Card',
-            type: result.contentType || 'Trading Card',
-            tags: result.tags || [],
-            specialFeatures: result.regions?.map(r => r.type) || [],
-            sources: {
-              ocr: !!result.detectedText,
-              visual: result.confidence > 0,
-              webSearch: false,
-              database: false
-            }
-          },
-          currentStep: 'setup'
-        });
+        const analysisResult: UnifiedAnalysisResult = {
+          title: result.suggestedTemplate || 'Trading Card',
+          description: result.detectedText || 'A unique trading card.',
+          rarity: result.suggestedRarity === 'Legendary' ? 'legendary' : 
+                 result.suggestedRarity === 'Epic' ? 'epic' :
+                 result.suggestedRarity === 'Rare' ? 'rare' :
+                 result.suggestedRarity === 'Uncommon' ? 'uncommon' : 'common',
+          estimatedValue: result.quality || 0,
+          confidence: result.confidence / 100 || 0.5,
+          category: result.contentType || 'Sports Card',
+          type: result.contentType || 'Trading Card',
+          tags: result.tags || [],
+          specialFeatures: result.regions?.map(r => r.type) || [],
+          sources: {
+            ocr: !!result.detectedText,
+            visual: result.confidence > 0,
+            webSearch: false,
+            database: false
+          }
+        };
         
-        setUploadProgress(100);
-        clearInterval(progressInterval);
-        
-        console.log('✅ Analysis complete:', { detection, result });
-        toast.success(`File analyzed! Detected: ${detection.format}`);
-      } else {
-        throw new Error('Analysis failed');
+        updateState({ analysisResult });
+        console.log('✅ Background analysis complete');
       }
 
+      toast.success('Image uploaded successfully! Choose a template below.');
+      
     } catch (error) {
       console.error('Upload/Analysis error:', error);
-      toast.error('Failed to analyze file');
-      updateState({ currentStep: 'upload' });
+      toast.error('Failed to process file');
     } finally {
-      setIsProcessing(false);
+      updateState({ isProcessing: false });
     }
-  }, [cardEditor, analyzeImage, searchParams, updateState]);
+  }, [cardEditor, analyzeImage, updateState]);
 
-  const handlePathSelect = (pathId: string) => {
-    updateState({ selectedMediaPath: pathId });
-    console.log('🎯 Selected media path:', pathId);
-    
-    cardEditor.updateDesignMetadata('workflowPath', pathId);
-    
-    if (pathId === 'psd-professional') {
-      updateState({ showAITools: true });
-    } else if (['standard-card', 'interactive-card', 'quick-frame'].includes(pathId)) {
-      console.log('Path selected, ready for template selection');
-    } else {
-      toast.success(`${pathId} workflow selected!`);
-      updateState({ showAITools: true });
+  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      processFile(file);
     }
-  };
+    event.target.value = '';
+  }, [processFile]);
 
-  const handleTemplateGenerated = (template: any) => {
-    console.log('🎯 Professional template generated:', template);
-    updateState({ generatedTemplate: template });
-    
-    cardEditor.updateCardField('template_id', template.id);
-    if (template.template_data) {
-      cardEditor.updateDesignMetadata('frame', template.template_data);
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) {
+      processFile(file);
     }
-    
-    updateState({ 
-      showPSDManager: false,
-      showAITools: true 
-    });
-    
-    toast.success('Professional CRD Frame created!', {
-      description: 'Template is now ready for your card creation workflow'
-    });
-  };
+  }, [processFile]);
 
-  const handlePSDManagerCancel = () => {
-    updateState({
-      showPSDManager: false,
-      currentStep: 'upload',
-      originalFile: null
-    });
-    setUploadProgress(0);
-    setIsProcessing(false);
-    cardEditor.updateCardField('image_url', '');
-  };
-
-  const handleTemplateSelect = (templateId: string) => {
+  const handleTemplateSelect = useCallback((templateId: string) => {
     updateState({ selectedTemplate: templateId });
     cardEditor.updateCardField('template_id', templateId);
     
@@ -189,189 +141,244 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       cardEditor.updateDesignMetadata('frame', template.template_data);
     }
     
-    console.log('✅ Template selected:', templateId, 'Validation:', validateCurrentStep());
-    toast.success('Template selected! Ready to continue to effects.');
-  };
+    console.log('✅ Template selected:', templateId);
+    toast.success('Template selected! Ready to continue.');
+  }, [templates, cardEditor, updateState]);
+
+  const handlePSDManagerCancel = useCallback(() => {
+    updateState({
+      showPSDManager: false,
+      uploadedFile: null,
+      imageUrl: '',
+      isProcessing: false
+    });
+    cardEditor.updateCardField('image_url', '');
+  }, [cardEditor, updateState]);
+
+  const handleTemplateGenerated = useCallback((template: any) => {
+    console.log('🎯 Professional template generated:', template);
+    cardEditor.updateCardField('template_id', template.id);
+    
+    if (template.template_data) {
+      cardEditor.updateDesignMetadata('frame', template.template_data);
+    }
+    
+    updateState({ 
+      showPSDManager: false,
+      selectedTemplate: template.id 
+    });
+    
+    toast.success('Professional CRD Frame created!', {
+      description: 'Template is ready for your card creation workflow'
+    });
+  }, [cardEditor, updateState]);
 
   // Show PSD Manager if activated
-  if (state.showPSDManager && state.originalFile) {
+  if (state.showPSDManager && state.uploadedFile) {
     return (
       <ProfessionalPSDManager
-        psdFile={state.originalFile}
-        userImage={cardEditor.cardData.image_url}
+        psdFile={state.uploadedFile}
+        userImage={state.imageUrl}
         onFrameGenerated={handleTemplateGenerated}
         onCancel={handlePSDManagerCancel}
       />
     );
   }
 
-  const handleBack = () => {
-    console.log('⬅️ Going back from step:', state.currentStep);
-    if (state.currentStep === 'setup') updateState({ currentStep: 'upload' });
-    else if (state.currentStep === 'batch-processing') updateState({ currentStep: 'upload' });
-  };
-
-  const handleContinueToEffects = () => {
-    console.log('🎯 Continuing to effects step');
-    onNext();
-  };
-
-  const getStepText = () => {
-    const workflow = searchParams.get('workflow');
-    
-    switch (state.currentStep) {
-      case 'upload':
-        if (!cardEditor.cardData.image_url) {
-          if (workflow === 'batch-processing') return 'Upload multiple images for batch processing';
-          if (workflow === 'psd-professional') return 'Upload your PSD file for professional processing';
-          return 'Upload your media file';
-        }
-        if (isProcessing || isAnalyzing) return 'Processing with AI analysis...';
-        return 'Ready to continue workflow';
-      
-      case 'batch-processing':
-        if (!cardEditor.cardData.image_url) return 'Upload images for batch processing';
-        return 'Batch processing ready - continue to effects';
-      
-      case 'setup':
-        if (!state.selectedMediaPath) return 'Choose workflow and select template';
-        if (!state.selectedTemplate) return 'Select a template to continue';
-        return 'Ready to continue to effects';
-      
-      case 'psd-manager':
-        if (!state.generatedTemplate && !state.showAITools) return 'Processing PSD file';
-        return 'PSD processing complete';
-      
-      default:
-        return 'Complete current step';
-    }
-  };
-
-  const renderCurrentStep = () => {
-    switch (state.currentStep) {
-      case 'upload':
-        return (
-          <UploadStep
-            isProcessing={isProcessing}
-            isAnalyzing={isAnalyzing}
-            uploadProgress={uploadProgress}
-            imageUrl={cardEditor.cardData.image_url}
-            onFileSelect={processFile}
-          />
-        );
-
-      case 'batch-processing':
-        return <BatchProcessingStep imageUrl={cardEditor.cardData.image_url} />;
-
-      case 'setup':
-        return (
-          <div className="space-y-8">
-            {/* Path Selection */}
-            <div className="bg-crd-darker/50 border border-crd-mediumGray/20 rounded-xl p-6">
-              <h3 className="text-xl font-bold text-crd-white mb-4">Choose Your Workflow</h3>
-              <PathSelectionStep
-                mediaDetection={state.mediaDetection}
-                selectedMediaPath={state.selectedMediaPath}
-                onPathSelect={handlePathSelect}
-                originalFile={state.originalFile}
-                userImage={cardEditor.cardData.image_url}
-                onTemplateGenerated={handleTemplateGenerated}
-              />
-            </div>
-
-            {/* Template Selection - only show if path is selected */}
-            {state.selectedMediaPath && ['standard-card', 'interactive-card', 'quick-frame'].includes(state.selectedMediaPath) && (
-              <div className="bg-crd-darker/50 border border-crd-mediumGray/20 rounded-xl p-6">
-                <h3 className="text-xl font-bold text-crd-white mb-4">Select Template</h3>
-                <TemplateSelectionStep
-                  templates={templates}
-                  templatesLoading={templatesLoading}
-                  selectedTemplate={state.selectedTemplate}
-                  imageAnalysis={state.imageAnalysis}
-                  onTemplateSelect={handleTemplateSelect}
-                />
-              </div>
-            )}
-          </div>
-        );
-
-      case 'psd-manager':
-        return (
-          <div className="text-center text-crd-lightGray">
-            Processing PSD file...
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  const canProceed = validateCurrentStep();
-  const workflow = searchParams.get('workflow');
+  const canProceed = !!(state.imageUrl && state.selectedTemplate);
 
   return (
-    <div className="space-y-8 relative z-10">
-      {/* Enhanced Header with Workflow Context */}
-      <div className="space-y-4">
-        <StepHeader 
-          currentStep={state.currentStep}
-          mediaDetection={state.mediaDetection}
-        />
-        <WorkflowStepIndicator currentStep={state.currentStep} workflow={workflow} />
+    <div className="space-y-8 max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-crd-white mb-4">Create Your Card</h2>
+        <p className="text-crd-lightGray text-lg">
+          Upload your image and choose a template to get started
+        </p>
       </div>
 
-      {/* Enhanced Navigation Section */}
-      <WorkflowNavigation
-        currentStep={state.currentStep}
-        canProceed={canProceed}
-        stepText={getStepText()}
-        workflow={workflow}
-        onBack={handleBack}
-        onNext={handleContinueToEffects}
-      />
-
-      {/* Validation Feedback */}
-      {!canProceed && (
-        <div className="bg-crd-mediumGray/10 border border-crd-mediumGray/20 rounded-lg p-4">
-          <p className="text-crd-lightGray text-sm">
-            <span className="text-crd-yellow">⚠️</span> {getStepText()}
-          </p>
-        </div>
-      )}
-
-      {/* Main Content */}
-      <div className="min-h-[500px]">
-        {renderCurrentStep()}
+      {/* Combined Upload & Preview Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         
-        {/* Professional Template Status */}
-        {state.generatedTemplate && (
-          <div className="mt-8 p-6 bg-gradient-to-r from-crd-green/10 via-crd-green/5 to-crd-blue/10 border border-crd-green/30 rounded-2xl">
-            <div className="flex items-center gap-4">
-              <div className="bg-crd-green/20 p-3 rounded-xl">
-                <ArrowRight className="w-6 h-6 text-crd-green" />
-              </div>
-              <div>
-                <h4 className="text-crd-green font-bold text-lg mb-2">Professional CRD Frame Generated</h4>
-                <p className="text-crd-lightGray">
-                  Your PSD has been converted to a high-quality, reusable CRD Frame: "{state.generatedTemplate.name}"
+        {/* Upload Area */}
+        <div className="space-y-6">
+          {!state.imageUrl ? (
+            <div
+              className="border-2 border-dashed border-crd-mediumGray/30 rounded-xl h-80 flex flex-col items-center justify-center p-8 hover:border-crd-green/50 transition-colors cursor-pointer bg-crd-darker/20"
+              onDrop={handleDrop}
+              onDragOver={(e) => e.preventDefault()}
+              onClick={() => document.getElementById('photo-input')?.click()}
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-crd-mediumGray/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <Upload className="w-8 h-8 text-crd-mediumGray" />
+                </div>
+                <h3 className="text-xl font-semibold text-crd-white mb-2">
+                  Drop your image here
+                </h3>
+                <p className="text-crd-lightGray mb-6 max-w-sm">
+                  Drag & drop an image file or click to browse. 
+                  Supports JPG, PNG, and PSD files.
                 </p>
+                <CRDButton variant="primary">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Choose File
+                </CRDButton>
               </div>
             </div>
+          ) : (
+            <Card className="bg-crd-darker border-crd-mediumGray/20">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-crd-green/20 rounded-lg flex items-center justify-center">
+                    <Image className="w-6 h-6 text-crd-green" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-crd-white font-medium">Image Uploaded</h4>
+                    <p className="text-crd-lightGray text-sm">
+                      {state.uploadedFile?.name || 'Image ready for processing'}
+                    </p>
+                  </div>
+                  {state.isProcessing && (
+                    <div className="flex items-center gap-2 text-crd-green">
+                      <Sparkles className="w-4 h-4 animate-pulse" />
+                      <span className="text-sm">Processing...</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="aspect-video bg-crd-mediumGray/10 rounded-lg overflow-hidden">
+                  <img 
+                    src={state.imageUrl} 
+                    alt="Uploaded" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                
+                <div className="mt-4 flex gap-2">
+                  <CRDButton
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById('photo-input')?.click()}
+                  >
+                    Change Image
+                  </CRDButton>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Analysis Results (if available) */}
+          {state.analysisResult && state.analysisResult.confidence > 0.3 && (
+            <Card className="bg-crd-mediumGray/10 border-crd-mediumGray/20">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-4 h-4 text-crd-green" />
+                  <span className="text-crd-white text-sm font-medium">AI Analysis Complete</span>
+                  <Badge variant="outline" className="text-crd-green border-crd-green/30 text-xs">
+                    {Math.round(state.analysisResult.confidence * 100)}% confidence
+                  </Badge>
+                </div>
+                <p className="text-crd-lightGray text-sm">
+                  {state.analysisResult.description}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Template Selection */}
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-xl font-bold text-crd-white mb-2 flex items-center gap-2">
+              <Grid className="w-5 h-5" />
+              Choose Template
+            </h3>
+            <p className="text-crd-lightGray">
+              Select a design template for your card
+            </p>
           </div>
+
+          {templatesLoading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin w-6 h-6 border-2 border-crd-green border-t-transparent rounded-full mx-auto mb-2"></div>
+              <p className="text-crd-lightGray text-sm">Loading templates...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+              {templates.map((template) => (
+                <button
+                  key={template.id}
+                  onClick={() => handleTemplateSelect(template.id)}
+                  className={`p-3 rounded-lg border-2 transition-all hover:scale-105 ${
+                    state.selectedTemplate === template.id
+                      ? 'border-crd-green bg-crd-green/10 shadow-lg'
+                      : 'border-crd-mediumGray/30 hover:border-crd-green/50 bg-crd-darker/20'
+                  }`}
+                >
+                  <div className="aspect-[5/7] bg-white rounded mb-2 overflow-hidden">
+                    {template.thumbnail_url ? (
+                      <img 
+                        src={template.thumbnail_url} 
+                        alt={template.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-crd-mediumGray/20 to-crd-mediumGray/40 flex items-center justify-center">
+                        <Grid className="w-6 h-6 text-crd-mediumGray" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="text-center">
+                    <h4 className="text-crd-white font-medium text-sm mb-1">
+                      {template.name}
+                    </h4>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-crd-lightGray">
+                        {template.category}
+                      </span>
+                      {template.is_premium && (
+                        <Badge className="text-xs bg-crd-green/20 text-crd-green border-crd-green/30">
+                          PRO
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Continue Button */}
+      <div className="text-center pt-8 border-t border-crd-mediumGray/20">
+        <CRDButton
+          variant="primary"
+          size="lg"
+          onClick={onNext}
+          disabled={!canProceed}
+          className={`px-8 py-3 ${canProceed ? 'opacity-100' : 'opacity-50'}`}
+        >
+          Continue to Effects
+          <ArrowRight className="w-5 h-5 ml-2" />
+        </CRDButton>
+        {!canProceed && (
+          <p className="text-crd-lightGray text-sm mt-2">
+            {!state.imageUrl ? 'Upload an image' : 'Select a template'} to continue
+          </p>
         )}
       </div>
 
-      {/* AI Tools Panel */}
-      {state.showAITools && cardEditor.cardData.image_url && state.imageAnalysis && (
-        <AIToolsPanel
-          analysisData={state.imageAnalysis}
-          onEnhance={() => {}}
-          onCreateFromPSD={() => {}}
-          onFrameGenerated={handleTemplateGenerated}
-          userImage={cardEditor.cardData.image_url}
-        />
-      )}
+      {/* Hidden file input */}
+      <input
+        id="photo-input"
+        type="file"
+        accept="image/*,.psd"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
     </div>
   );
 };
