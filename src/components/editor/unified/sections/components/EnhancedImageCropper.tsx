@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -86,24 +85,26 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
   const drawCropOverlay = useCallback((ctx: CanvasRenderingContext2D | null, crop: typeof cropArea, canvasWidth: number, canvasHeight: number) => {
     if (!ctx) return;
 
-    // Clear and redraw image
+    // Clear and redraw image first
     const img = imageRef.current;
     if (img) {
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
       ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
     }
 
-    // Draw dark overlay
+    // Draw dark overlay over entire canvas
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-    // Clear crop area
+    // Clear the crop area to show original image (create transparent window)
     ctx.clearRect(crop.x, crop.y, crop.width, crop.height);
+    
+    // Redraw the original image in the cleared crop area only
     if (img) {
       ctx.drawImage(
-        img, 
-        crop.x, crop.y, crop.width, crop.height,
-        crop.x, crop.y, crop.width, crop.height
+        img,
+        crop.x, crop.y, crop.width, crop.height, // Source area from original image
+        crop.x, crop.y, crop.width, crop.height  // Destination area on canvas
       );
     }
 
