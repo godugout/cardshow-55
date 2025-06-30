@@ -1,3 +1,4 @@
+
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { ArrowRight, Sparkles, Upload, Image, Grid } from 'lucide-react';
@@ -6,6 +7,7 @@ import { useTemplates } from '@/hooks/useTemplates';
 import { MediaPathAnalyzer } from '@/lib/crdmkr/mediaPathAnalyzer';
 import { ProfessionalPSDManager } from './components/ProfessionalPSDManager';
 import { CardPreviewRenderer } from './components/CardPreviewRenderer';
+import { EnhancedImageCropper } from './components/EnhancedImageCropper';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,6 +25,8 @@ interface SimpleWorkflowState {
   analysisResult: UnifiedAnalysisResult | null;
   selectedTemplate: string | null;
   showPSDManager: boolean;
+  showCropper: boolean;
+  croppedImageUrl: string;
 }
 
 export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
@@ -35,7 +39,9 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     isProcessing: false,
     analysisResult: null,
     selectedTemplate: null,
-    showPSDManager: false
+    showPSDManager: false,
+    showCropper: false,
+    croppedImageUrl: ''
   });
 
   const { analyzeImage, isAnalyzing } = useFreeAIAnalysis();
@@ -70,10 +76,13 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         return;
       }
 
-      // Standard image processing
+      // Standard image processing - show cropper
       const imageUrl = URL.createObjectURL(file);
-      cardEditor.updateCardField('image_url', imageUrl);
-      updateState({ imageUrl });
+      updateState({ 
+        imageUrl,
+        showCropper: true,
+        isProcessing: false
+      });
 
       // Run AI analysis in background (silent smart detection)
       console.log('🤖 Running background analysis...');
@@ -105,12 +114,11 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         console.log('✅ Background analysis complete');
       }
 
-      toast.success('Image uploaded successfully! Choose a template below.');
+      toast.success('Image uploaded! Crop it to perfection for your card.');
       
     } catch (error) {
       console.error('Upload/Analysis error:', error);
       toast.error('Failed to process file');
-    } finally {
       updateState({ isProcessing: false });
     }
   }, [cardEditor, analyzeImage, updateState]);
@@ -131,6 +139,19 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       processFile(file);
     }
   }, [processFile]);
+
+  const handleCropComplete = useCallback((croppedImageUrl: string) => {
+    console.log('✅ Crop completed, updating card editor');
+    updateState({ 
+      croppedImageUrl,
+      showCropper: false
+    });
+    
+    cardEditor.updateCardField('image_url', croppedImageUrl);
+    cardEditor.updateCardField('thumbnail_url', croppedImageUrl);
+    
+    toast.success('Perfect crop! Choose a template below.');
+  }, [cardEditor, updateState]);
 
   const handleTemplateSelect = useCallback((templateId: string) => {
     updateState({ selectedTemplate: templateId });
@@ -185,9 +206,10 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     toast.success(`Switched to ${newTemplate.name}!`);
   }, [cardEditor, updateState]);
 
-  const canProceed = !!(state.imageUrl && state.selectedTemplate);
+  const canProceed = !!(state.croppedImageUrl && state.selectedTemplate);
   const selectedTemplate = templates.find(t => t.id === state.selectedTemplate);
-  const showCardPreview = !!(state.imageUrl && selectedTemplate);
+  const showCardPreview = !!(state.croppedImageUrl && selectedTemplate);
+  const displayImageUrl = state.croppedImageUrl || state.imageUrl;
 
   // Show PSD Manager if activated
   if (state.showPSDManager && state.uploadedFile) {
@@ -198,6 +220,79 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         onFrameGenerated={handleTemplateGenerated}
         onCancel={handlePSDManagerCancel}
       />
+    );
+  }
+
+  // Show Cropper if activated
+  if (state.showCropper && state.imageUrl) {
+    return (
+      <div className="space-y-8 max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-crd-white mb-4">Crop Your Card Image</h2>
+          <p className="text-crd-lightGray text-lg">
+            Position and size your image perfectly for your trading card
+          </p>
+        </div>
+
+        {/* Main Cropping Interface */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Image Cropper (2/3 width) */}
+          <div className="lg:col-span-2">
+            <EnhancedImageCropper
+              imageUrl={state.imageUrl}
+              onCropComplete={handleCropComplete}
+            />
+          </div>
+
+          {/* Right Column - Info and Tips */}
+          <div className="space-y-6">
+            <Card className="bg-crd-darker border-crd-mediumGray/20">
+              <CardContent className="p-6">
+                <h3 className="text-crd-white font-semibold mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-crd-green" />
+                  Cropping Tips
+                </h3>
+                <div className="space-y-3 text-sm text-crd-lightGray">
+                  <p>• Use <strong className="text-crd-green">Auto-Fit Card</strong> for optimal positioning</p>
+                  <p>• Drag corners to resize while maintaining card proportions</p>
+                  <p>• Move the entire crop area by dragging the center</p>
+                  <p>• The dotted outline shows the ideal card boundaries</p>
+                  <p>• Extract when you're happy with the positioning</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Analysis Results (if available) */}
+            {state.analysisResult && state.analysisResult.confidence > 0.3 && (
+              <Card className="bg-crd-mediumGray/10 border-crd-mediumGray/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="w-4 h-4 text-crd-green" />
+                    <span className="text-crd-white text-sm font-medium">AI Analysis</span>
+                    <Badge variant="outline" className="text-crd-green border-crd-green/30 text-xs">
+                      {Math.round(state.analysisResult.confidence * 100)}% confidence
+                    </Badge>
+                  </div>
+                  <p className="text-crd-lightGray text-sm">
+                    {state.analysisResult.description}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="text-center">
+              <CRDButton
+                variant="outline"
+                onClick={() => updateState({ showCropper: false, imageUrl: '', uploadedFile: null })}
+                className="border-crd-mediumGray/30 text-crd-lightGray hover:text-crd-white"
+              >
+                Start Over
+              </CRDButton>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -217,7 +312,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         {/* Left Column - Upload & Templates */}
         <div className="space-y-6">
           {/* Upload Area */}
-          {!state.imageUrl ? (
+          {!displayImageUrl ? (
             <div
               className="border-2 border-dashed border-crd-mediumGray/30 rounded-xl h-80 flex flex-col items-center justify-center p-8 hover:border-crd-green/50 transition-colors cursor-pointer bg-crd-darker/20"
               onDrop={handleDrop}
@@ -249,28 +344,38 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                     <Image className="w-6 h-6 text-crd-green" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-crd-white font-medium">Image Uploaded</h4>
+                    <h4 className="text-crd-white font-medium">
+                      {state.croppedImageUrl ? 'Image Cropped & Ready' : 'Image Uploaded'}
+                    </h4>
                     <p className="text-crd-lightGray text-sm">
                       {state.uploadedFile?.name || 'Image ready for processing'}
                     </p>
                   </div>
-                  {state.isProcessing && (
-                    <div className="flex items-center gap-2 text-crd-green">
-                      <Sparkles className="w-4 h-4 animate-pulse" />
-                      <span className="text-sm">Processing...</span>
-                    </div>
+                  {state.croppedImageUrl && (
+                    <Badge className="bg-crd-green/20 text-crd-green border-crd-green/30">
+                      Cropped
+                    </Badge>
                   )}
                 </div>
                 
                 <div className="aspect-video bg-crd-mediumGray/10 rounded-lg overflow-hidden">
                   <img 
-                    src={state.imageUrl} 
+                    src={displayImageUrl} 
                     alt="Uploaded" 
                     className="w-full h-full object-cover"
                   />
                 </div>
                 
                 <div className="mt-4 flex gap-2">
+                  {!state.croppedImageUrl && (
+                    <CRDButton
+                      variant="primary"
+                      size="sm"
+                      onClick={() => updateState({ showCropper: true })}
+                    >
+                      Crop Image
+                    </CRDButton>
+                  )}
                   <CRDButton
                     variant="outline"
                     size="sm"
@@ -279,24 +384,6 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                     Change Image
                   </CRDButton>
                 </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Analysis Results (if available) */}
-          {state.analysisResult && state.analysisResult.confidence > 0.3 && (
-            <Card className="bg-crd-mediumGray/10 border-crd-mediumGray/20">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="w-4 h-4 text-crd-green" />
-                  <span className="text-crd-white text-sm font-medium">AI Analysis Complete</span>
-                  <Badge variant="outline" className="text-crd-green border-crd-green/30 text-xs">
-                    {Math.round(state.analysisResult.confidence * 100)}% confidence
-                  </Badge>
-                </div>
-                <p className="text-crd-lightGray text-sm">
-                  {state.analysisResult.description}
-                </p>
               </CardContent>
             </Card>
           )}
@@ -311,12 +398,12 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                 Live Card Preview
               </h3>
               <p className="text-crd-lightGray">
-                Your card with live frame switching
+                Your cropped image with live frame switching
               </p>
             </div>
             
             <CardPreviewRenderer
-              imageUrl={state.imageUrl}
+              imageUrl={displayImageUrl}
               template={selectedTemplate}
               onTemplateChange={handleTemplateChange}
               enableFrameSwitching={true}
@@ -347,7 +434,9 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         </CRDButton>
         {!canProceed && (
           <p className="text-crd-lightGray text-sm mt-2">
-            {!state.imageUrl ? 'Upload an image' : 'Select a template'} to continue
+            {!displayImageUrl ? 'Upload an image' : 
+             !state.croppedImageUrl ? 'Crop your image' : 
+             'Select a template'} to continue
           </p>
         )}
       </div>
