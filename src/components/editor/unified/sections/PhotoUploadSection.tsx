@@ -94,18 +94,21 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       if (result) {
         updateState({
           imageAnalysis: {
-            title: result.title || 'Trading Card',
-            description: result.description || 'A trading card with unique characteristics.',
-            rarity: result.rarity || 'common',
-            estimatedValue: result.estimatedValue || 0,
-            confidence: result.confidence || 0.5,
-            category: result.category || 'Sports Card',
-            type: result.type || 'Trading Card',
+            title: result.suggestedTemplate || 'Trading Card',
+            description: result.detectedText || 'A trading card with unique characteristics.',
+            rarity: result.suggestedRarity === 'Legendary' ? 'legendary' : 
+                   result.suggestedRarity === 'Epic' ? 'ultra-rare' :
+                   result.suggestedRarity === 'Rare' ? 'rare' :
+                   result.suggestedRarity === 'Uncommon' ? 'uncommon' : 'common',
+            estimatedValue: result.quality || 0,
+            confidence: result.confidence / 100 || 0.5,
+            category: result.contentType || 'Sports Card',
+            type: result.contentType || 'Trading Card',
             tags: result.tags || [],
-            specialFeatures: result.specialFeatures || [],
-            sources: result.sources || {
-              ocr: false,
-              visual: false,
+            specialFeatures: result.regions?.map(r => r.type) || [],
+            sources: {
+              ocr: !!result.detectedText,
+              visual: result.confidence > 0,
               webSearch: false,
               database: false
             }
