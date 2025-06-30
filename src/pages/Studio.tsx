@@ -6,9 +6,12 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NoCardSelected } from './Studio/components/NoCardSelected';
 import { DatabaseSeedPrompt } from './Studio/components/DatabaseSeedPrompt';
 import { useStudioState } from './Studio/hooks/useStudioState';
+import { useStudioEffectsBridge } from '@/components/viewer/hooks/useStudioEffectsBridge';
 import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import type { CardData } from '@/types/card';
+import type { EnvironmentScene, LightingPreset, MaterialSettings } from '@/components/viewer/types';
+import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '@/components/viewer/constants';
 
 // Helper function to convert CardData to the format expected by ImmersiveCardViewer
 const convertCardForViewer = (card: CardData) => {
@@ -62,6 +65,18 @@ const Studio = () => {
   const [showSeedPrompt, setShowSeedPrompt] = useState(false);
   const [hasCheckedDatabase, setHasCheckedDatabase] = useState(false);
   
+  // Studio effects state
+  const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
+  const [selectedLighting, setSelectedLighting] = useState<LightingPreset>(LIGHTING_PRESETS[0]);
+  const [materialSettings, setMaterialSettings] = useState<MaterialSettings>({
+    metalness: 0.5,
+    roughness: 0.5,
+    reflectivity: 0.5,
+    clearcoat: 0.3
+  });
+  const [overallBrightness, setOverallBrightness] = useState(100);
+  const [interactiveLighting, setInteractiveLighting] = useState(true);
+
   const {
     selectedCard,
     currentCardIndex,
@@ -74,7 +89,17 @@ const Studio = () => {
     handleClose
   } = useStudioState(cardId);
 
-  console.log('🎮 Studio: Rendering with cardId:', cardId, 'selectedCard:', selectedCard?.title);
+  // Bridge Studio effects to card rendering
+  const { cardEffects, updateStudioEffect } = useStudioEffectsBridge(
+    {}, // Initial effects
+    selectedScene,
+    selectedLighting,
+    materialSettings,
+    overallBrightness,
+    interactiveLighting
+  );
+
+  console.log('🎮 Studio: Enhanced effects active:', Object.keys(cardEffects));
 
   // Check if database has cards and show seed prompt if needed
   useEffect(() => {
@@ -121,13 +146,42 @@ const Studio = () => {
   if (process.env.NODE_ENV === 'development') {
     console.log(`🎮 Studio rendering card: ${selectedCard.title} from ${dataSource} source`);
     console.log('🖼️ Card image URL:', selectedCard.image_url);
+    console.log('✨ Active effects:', cardEffects);
   }
 
-  // Convert card and mockCards for viewer compatibility
-  const viewerCard = convertCardForViewer(selectedCard);
-  const viewerCards = mockCards.map(convertCardForViewer);
+  // Convert card and mockCards for viewer compatibility with enhanced effects
+  const viewerCard = {
+    ...convertCardForViewer(selectedCard),
+    // Inject enhanced effects into card data
+    design_metadata: {
+      ...selectedCard.design_metadata,
+      enhanced_effects: cardEffects,
+      studio_settings: {
+        selectedScene,
+        selectedLighting,
+        materialSettings,
+        overallBrightness,
+        interactiveLighting
+      }
+    }
+  };
+  
+  const viewerCards = mockCards.map(card => ({
+    ...convertCardForViewer(card),
+    design_metadata: {
+      ...card.design_metadata,
+      enhanced_effects: cardEffects,
+      studio_settings: {
+        selectedScene,
+        selectedLighting,
+        materialSettings,
+        overallBrightness,
+        interactiveLighting
+      }
+    }
+  }));
 
-  console.log('🎯 Converted viewer card:', viewerCard.title, 'Image URL:', viewerCard.image_url);
+  console.log('🎯 Enhanced viewer card with effects:', viewerCard.title);
 
   const handleViewerShare = (card: any) => {
     // Convert back to original CardData format for the handler
@@ -154,10 +208,11 @@ const Studio = () => {
         {process.env.NODE_ENV === 'development' && (
           <div className="fixed top-4 left-4 z-50 bg-black/80 text-white px-2 py-1 rounded text-xs">
             Source: {dataSource} ({mockCards.length} cards) | Card: {cardId || 'auto-selected'}
+            <br />Effects: {Object.keys(cardEffects).length} active
           </div>
         )}
         
-        {/* Immersive Card Viewer - the navbar logo will show through */}
+        {/* Enhanced Immersive Card Viewer with Studio Effects */}
         <ImmersiveCardViewer
           card={viewerCard}
           cards={viewerCards}
@@ -170,6 +225,18 @@ const Studio = () => {
           allowRotation={true}
           showStats={true}
           ambient={true}
+          // Pass Studio panel state for real-time effect updates
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
+          overallBrightness={[overallBrightness]}
+          interactiveLighting={interactiveLighting}
+          // Callbacks for Studio panel controls
+          onSceneChange={setSelectedScene}
+          onLightingChange={setSelectedLighting}
+          onMaterialSettingsChange={setMaterialSettings}
+          onBrightnessChange={(value: number[]) => setOverallBrightness(value[0])}
+          onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
         />
       </div>
     </ErrorBoundary>
