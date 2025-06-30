@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,6 +11,7 @@ import { toast } from 'sonner';
 const mockTemplate = {
   id: 'template-1',
   name: 'Standard Trading Card',
+  category: 'sports' as const,
   template_data: {
     colors: {
       primary: '#1a472a',
