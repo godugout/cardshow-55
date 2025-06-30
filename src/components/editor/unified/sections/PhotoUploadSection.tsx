@@ -317,9 +317,9 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                   }`}
                 >
                   <div className="aspect-[5/7] bg-white rounded mb-2 overflow-hidden">
-                    {template.thumbnail_url ? (
+                    {template.preview_url ? (
                       <img 
-                        src={template.thumbnail_url} 
+                        src={template.preview_url} 
                         alt={template.name}
                         className="w-full h-full object-cover"
                       />

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Route, FileText, Layers } from 'lucide-react';
+import { Upload, Layers } from 'lucide-react';
 import { WorkflowStep } from '../../types';
 
 interface StepHeaderProps {
@@ -14,10 +14,6 @@ export const StepHeader: React.FC<StepHeaderProps> = ({ currentStep, mediaDetect
     switch (currentStep) {
       case 'upload':
         return <Upload className="w-6 h-6" />;
-      case 'path-selection':
-        return <Route className="w-6 h-6" />;
-      case 'template-selection':
-        return <FileText className="w-6 h-6" />;
       case 'psd-manager':
         return <Layers className="w-6 h-6" />;
       case 'batch-processing':
@@ -30,34 +26,26 @@ export const StepHeader: React.FC<StepHeaderProps> = ({ currentStep, mediaDetect
   const getStepTitle = () => {
     switch (currentStep) {
       case 'upload':
-        return 'Upload Your Media';
-      case 'path-selection':
-        return 'Choose Your Workflow';
-      case 'template-selection':
-        return 'Select Template';
+        return 'Upload & Select Template';
       case 'psd-manager':
         return 'PSD Professional Studio';
       case 'batch-processing':
         return 'Batch Processing Studio';
       default:
-        return 'Upload Your Media';
+        return 'Upload & Select Template';
     }
   };
 
   const getStepDescription = () => {
     switch (currentStep) {
       case 'upload':
-        return 'Start by uploading your photo or PSD file';
-      case 'path-selection':
-        return 'Select the best creation path for your content';
-      case 'template-selection':
-        return 'Pick a template that matches your vision';
+        return 'Upload your image and choose a template to get started';
       case 'psd-manager':
         return 'Professional layer management and frame generation';
       case 'batch-processing':
         return 'Efficient processing of multiple images for batch card creation';
       default:
-        return 'Start by uploading your photo or PSD file';
+        return 'Upload your image and choose a template to get started';
     }
   };
 
