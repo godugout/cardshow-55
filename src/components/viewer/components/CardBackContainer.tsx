@@ -5,6 +5,7 @@ import { useDynamicCardBackMaterials } from '../hooks/useDynamicCardBackMaterial
 import { CardBackMaterialOverlay } from './CardBackMaterialOverlay';
 import { CardBackLogo } from './CardBackLogo';
 import { CardBackInteractiveLighting } from './CardBackInteractiveLighting';
+import { EnhancedCardBack } from './EnhancedCardBack';
 
 interface CardBackContainerProps {
   rotation: { x: number; y: number };
@@ -16,6 +17,8 @@ interface CardBackContainerProps {
   enhancedEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
+  dynamicBrightness?: number;
+  activeEffectsCount?: number;
 }
 
 export const CardBackContainer: React.FC<CardBackContainerProps> = ({
@@ -28,6 +31,8 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting = false,
+  dynamicBrightness = 1.2,
+  activeEffectsCount = 0,
 }) => {
   // Get dynamic material based on current effects
   const { selectedMaterial } = useDynamicCardBackMaterials(effectValues);
@@ -44,15 +49,6 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         opacity: 1,
         zIndex: 15,
         backfaceVisibility: 'hidden',
-        background: selectedMaterial.background,
-        border: `2px solid ${selectedMaterial.borderColor}`,
-        ...(selectedMaterial.blur && {
-          backdropFilter: `blur(${selectedMaterial.blur}px)`
-        }),
-        boxShadow: `
-          0 0 30px ${selectedMaterial.borderColor},
-          inset 0 0 20px rgba(255, 255, 255, 0.1)
-        `,
         ...frameStyles,
         pointerEvents: 'auto',
       }}
@@ -61,25 +57,29 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       data-visibility={'visible'}
       data-back-rotation={rotation.y.toFixed(1)}
     >
-      {/* Effects, overlays, and logo only! */}
-      <CardEffectsLayer
-        showEffects={showEffects}
-        isHovering={isHovering}
-        effectIntensity={[50]}
-        mousePosition={mousePosition}
-        physicalEffectStyles={enhancedEffectStyles}
-        effectValues={effectValues}
-        interactiveLighting={interactiveLighting}
-      />
-
-      <CardBackMaterialOverlay selectedMaterial={selectedMaterial} />
-
-      <CardBackLogo
+      {/* Enhanced Card Back with all effects */}
+      <EnhancedCardBack
         selectedMaterial={selectedMaterial}
-        isHovering={isHovering}
+        effectValues={effectValues}
         mousePosition={mousePosition}
+        isHovering={isHovering}
         interactiveLighting={interactiveLighting}
+        dynamicBrightness={dynamicBrightness}
+        activeEffectsCount={activeEffectsCount}
       />
+
+      {/* Additional Effects Layer */}
+      {showEffects && (
+        <CardEffectsLayer
+          showEffects={showEffects}
+          isHovering={isHovering}
+          effectIntensity={[50]}
+          mousePosition={mousePosition}
+          physicalEffectStyles={enhancedEffectStyles}
+          effectValues={effectValues}
+          interactiveLighting={interactiveLighting}
+        />
+      )}
 
       <CardBackInteractiveLighting
         selectedMaterial={selectedMaterial}

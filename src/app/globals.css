@@ -1,7 +1,32 @@
 
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-@import '../styles/card-effects.css';
+/* ... keep existing styles the same */
 
-/* ... keep existing code (all existing global styles) */
+/* Enhanced Card Back Effect Animations */
+@keyframes holographicShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes crystallineShift {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(90deg); }
+  50% { transform: rotate(180deg); }
+  75% { transform: rotate(270deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes neonPulse {
+  0% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+@keyframes effectPulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes chromeShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
