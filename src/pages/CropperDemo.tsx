@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +7,7 @@ import { ImageCropper } from '@/components/editor/ImageCropper';
 import { StreamlinedAdvancedCropper } from '@/components/editor/StreamlinedAdvancedCropper';
 import { BaseballCardCropper } from '@/components/editor/cropping/BaseballCardCropper';
 import { DemoAdvancedCropper } from '@/components/demo/croppers/DemoAdvancedCropper';
+import { TemplateAwareMultiCropper } from '@/components/editor/cropping/TemplateAwareMultiCropper';
 import { ArrowLeft, Image, Scissors, Grid, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -84,6 +84,15 @@ const CROPPER_INFO: CropperInfo[] = [
     icon: <Grid className="w-5 h-5" />
   },
   {
+    id: 'template-aware',
+    name: 'Template-Aware Multi-Crop',
+    description: 'Intelligent cropper with template integration and smart presets',
+    features: ['Template integration', 'Smart presets', 'Visual guidance', 'Multi-crop', 'Template-aware extraction'],
+    bestFor: 'Card creation with template guidance and intelligent cropping',
+    complexity: 'Advanced',
+    icon: <Zap className="w-5 h-5" />
+  },
+  {
     id: 'baseball',
     name: 'Template-Aware Baseball',
     description: 'Sports card optimized cropper with preset positions',
@@ -130,6 +139,16 @@ export const CropperDemo: React.FC = () => {
     handleCropComplete('streamlined', urls);
   };
 
+  const handleTemplateAwareCropComplete = useCallback((crops: { main?: string; frame?: string; elements?: string[]; }) => {
+    const urls: string[] = [];
+    
+    if (crops.main) urls.push(crops.main);
+    if (crops.frame) urls.push(crops.frame);
+    if (crops.elements) urls.push(...crops.elements);
+    
+    handleCropComplete('template-aware', urls);
+  }, []);
+
   const getComplexityColor = (complexity: string) => {
     switch (complexity) {
       case 'Simple': return 'bg-green-100 text-green-800 border-green-200';
@@ -159,7 +178,7 @@ export const CropperDemo: React.FC = () => {
                 <p className="text-crd-lightGray">Compare different cropping implementations</p>
               </div>
             </div>
-            <Badge className="bg-crd-blue text-white">4 Implementations</Badge>
+            <Badge className="bg-crd-blue text-white">5 Implementations</Badge>
           </div>
         </div>
       </div>
@@ -194,8 +213,8 @@ export const CropperDemo: React.FC = () => {
         </Card>
 
         {/* Cropper Comparison */}
-        <Tabs defaultValue="simple" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-crd-darker border border-crd-mediumGray/30">
+        <Tabs defaultValue="template-aware" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 bg-crd-darker border border-crd-mediumGray/30">
             {CROPPER_INFO.map((cropper) => (
               <TabsTrigger 
                 key={cropper.id} 
@@ -351,6 +370,54 @@ export const CropperDemo: React.FC = () => {
             </div>
           </TabsContent>
 
+          {/* Template-Aware Multi-Crop */}
+          <TabsContent value="template-aware" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <Card className="bg-crd-darker border-crd-mediumGray/30">
+                  <CardContent className="p-0">
+                    <TemplateAwareMultiCropper
+                      imageUrl={selectedImage}
+                      template={MOCK_BASEBALL_TEMPLATE}
+                      onCropComplete={handleTemplateAwareCropComplete}
+                      onCancel={() => {}}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="space-y-4">
+                <Card className="bg-crd-darker border-crd-mediumGray/30">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-crd-white flex items-center gap-2">
+                        <Zap className="w-5 h-5" />
+                        Template-Aware Multi-Crop
+                      </CardTitle>
+                      <Badge className={getComplexityColor('Advanced')}>Advanced</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-crd-lightGray text-sm">
+                      Intelligent cropper with template integration and smart presets
+                    </p>
+                    <div>
+                      <h4 className="text-crd-white font-medium mb-2">Features:</h4>
+                      <ul className="text-crd-lightGray text-sm space-y-1">
+                        {CROPPER_INFO[3].features.map((feature, index) => (
+                          <li key={index}>• {feature}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="text-crd-white font-medium mb-2">Best For:</h4>
+                      <p className="text-crd-lightGray text-sm">{CROPPER_INFO[3].bestFor}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
           {/* Baseball Template-Aware */}
           <TabsContent value="baseball" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -384,14 +451,14 @@ export const CropperDemo: React.FC = () => {
                     <div>
                       <h4 className="text-crd-white font-medium mb-2">Features:</h4>
                       <ul className="text-crd-lightGray text-sm space-y-1">
-                        {CROPPER_INFO[3].features.map((feature, index) => (
+                        {CROPPER_INFO[4].features.map((feature, index) => (
                           <li key={index}>• {feature}</li>
                         ))}
                       </ul>
                     </div>
                     <div>
                       <h4 className="text-crd-white font-medium mb-2">Best For:</h4>
-                      <p className="text-crd-lightGray text-sm">{CROPPER_INFO[3].bestFor}</p>
+                      <p className="text-crd-lightGray text-sm">{CROPPER_INFO[4].bestFor}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -414,6 +481,7 @@ export const CropperDemo: React.FC = () => {
                     <th className="text-center text-crd-white font-medium py-3">Simple</th>
                     <th className="text-center text-crd-white font-medium py-3">Streamlined</th>
                     <th className="text-center text-crd-white font-medium py-3">Advanced</th>
+                    <th className="text-center text-crd-white font-medium py-3">Template-Aware</th>
                     <th className="text-center text-crd-white font-medium py-3">Baseball</th>
                   </tr>
                 </thead>
@@ -424,11 +492,37 @@ export const CropperDemo: React.FC = () => {
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
                   </tr>
                   <tr className="border-b border-crd-mediumGray/10">
                     <td className="py-3">Multiple Crops</td>
                     <td className="text-center">❌</td>
                     <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">❌</td>
+                  </tr>
+                  <tr className="border-b border-crd-mediumGray/10">
+                    <td className="py-3">Template Integration</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-crd-mediumGray/10">
+                    <td className="py-3">Smart Presets</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-crd-mediumGray/10">
+                    <td className="py-3">Visual Guidance</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">❌</td>
                   </tr>
@@ -437,34 +531,15 @@ export const CropperDemo: React.FC = () => {
                     <td className="text-center">❌</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
-                    <td className="text-center">❌</td>
-                  </tr>
-                  <tr className="border-b border-crd-mediumGray/10">
-                    <td className="py-3">Template Presets</td>
-                    <td className="text-center">❌</td>
-                    <td className="text-center">❌</td>
-                    <td className="text-center">❌</td>
-                    <td className="text-center">✅</td>
-                  </tr>
-                  <tr className="border-b border-crd-mediumGray/10">
-                    <td className="py-3">Grid Snapping</td>
-                    <td className="text-center">❌</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
-                    <td className="text-center">❌</td>
-                  </tr>
-                  <tr className="border-b border-crd-mediumGray/10">
-                    <td className="py-3">Undo/Redo</td>
-                    <td className="text-center">❌</td>
-                    <td className="text-center">✅</td>
-                    <td className="text-center">✅</td>
-                    <td className="text-center">❌</td>
                   </tr>
                   <tr>
                     <td className="py-3">Ease of Use</td>
                     <td className="text-center">⭐⭐⭐⭐⭐</td>
                     <td className="text-center">⭐⭐⭐⭐</td>
                     <td className="text-center">⭐⭐⭐</td>
+                    <td className="text-center">⭐⭐⭐⭐⭐</td>
                     <td className="text-center">⭐⭐⭐⭐</td>
                   </tr>
                 </tbody>
