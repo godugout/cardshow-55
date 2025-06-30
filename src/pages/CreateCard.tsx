@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
@@ -5,6 +6,7 @@ import { useCardEditor } from '@/hooks/useCardEditor';
 import { PhotoUploadSection } from '@/components/editor/unified/sections/PhotoUploadSection';
 import { EffectsTab } from '@/components/editor/sidebar/EffectsTab';
 import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRenderer';
+import { CardPreviewRenderer } from '@/components/editor/unified/sections/components/CardPreviewRenderer';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { ArrowLeft, Sparkles, Grid, Layers, FileImage, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
