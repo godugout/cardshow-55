@@ -1,6 +1,6 @@
 import React from 'react';
 import { IntentStep } from './steps/IntentStep';
-import { PhotoStep } from './steps/PhotoStep';
+import { Enhanced3DPhotoStep } from './steps/Enhanced3DPhotoStep';
 import { DetailsStep } from './steps/DetailsStep';
 import { DesignStep } from './steps/DesignStep';
 import { PublishStep } from './steps/PublishStep';
@@ -50,13 +50,11 @@ export const StepContent = ({
 
     case 'upload':
       return (
-        <PhotoStep
+        <Enhanced3DPhotoStep
           mode={mode}
           selectedPhoto={cardData?.image_url}
           onPhotoSelect={onPhotoSelect}
           cardData={cardData}
-          selectedFrame={selectedFrame}
-          onFrameSelect={onFrameSelect}
           onMoveToEffects={onNextStep}
         />
       );
