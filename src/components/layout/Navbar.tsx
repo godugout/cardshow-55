@@ -13,9 +13,17 @@ export const Navbar = () => {
     <nav className="bg-crd-darker border-b border-crd-mediumGray/20 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo - Simple link for Studio, regular logo for other pages */}
+          {/* Logo - Simple link for Studio, no dropdown menu */}
           {isStudioRoute ? (
-            <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+            <Link 
+              to="/" 
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+              onClick={(e) => {
+                // Ensure we navigate and don't trigger any dropdown
+                e.preventDefault();
+                window.location.href = '/';
+              }}
+            >
               <div className="flex items-center space-x-2">
                 <img
                   src="/lovable-uploads/786e777f-b56f-4080-9b40-aef8e8303f27.png"
