@@ -97,7 +97,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
             title: result.suggestedTemplate || 'Trading Card',
             description: result.detectedText || 'A trading card with unique characteristics.',
             rarity: result.suggestedRarity === 'Legendary' ? 'legendary' : 
-                   result.suggestedRarity === 'Epic' ? 'ultra-rare' :
+                   result.suggestedRarity === 'Epic' ? 'epic' :
                    result.suggestedRarity === 'Rare' ? 'rare' :
                    result.suggestedRarity === 'Uncommon' ? 'uncommon' : 'common',
             estimatedValue: result.quality || 0,
@@ -113,7 +113,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
               database: false
             }
           },
-          currentStep: 'combined-selection'
+          currentStep: 'setup'
         });
         
         setUploadProgress(100);
@@ -143,7 +143,6 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     if (pathId === 'psd-professional') {
       updateState({ showAITools: true });
     } else if (['standard-card', 'interactive-card', 'quick-frame'].includes(pathId)) {
-      // Path selection is now part of combined step
       console.log('Path selected, ready for template selection');
     } else {
       toast.success(`${pathId} workflow selected!`);
@@ -208,13 +207,13 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
 
   const handleBack = () => {
     console.log('⬅️ Going back from step:', state.currentStep);
-    if (state.currentStep === 'combined-selection') updateState({ currentStep: 'upload' });
+    if (state.currentStep === 'setup') updateState({ currentStep: 'upload' });
     else if (state.currentStep === 'batch-processing') updateState({ currentStep: 'upload' });
   };
 
   const handleContinueToEffects = () => {
     console.log('🎯 Continuing to effects step');
-    onNext(); // This should navigate to the effects section
+    onNext();
   };
 
   const getStepText = () => {
@@ -234,7 +233,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         if (!cardEditor.cardData.image_url) return 'Upload images for batch processing';
         return 'Batch processing ready - continue to effects';
       
-      case 'combined-selection':
+      case 'setup':
         if (!state.selectedMediaPath) return 'Choose workflow and select template';
         if (!state.selectedTemplate) return 'Select a template to continue';
         return 'Ready to continue to effects';
@@ -264,7 +263,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       case 'batch-processing':
         return <BatchProcessingStep imageUrl={cardEditor.cardData.image_url} />;
 
-      case 'combined-selection':
+      case 'setup':
         return (
           <div className="space-y-8">
             {/* Path Selection */}
