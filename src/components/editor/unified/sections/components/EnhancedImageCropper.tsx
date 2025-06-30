@@ -85,7 +85,7 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
   const drawCropOverlay = useCallback((ctx: CanvasRenderingContext2D | null, crop: typeof cropArea, canvasWidth: number, canvasHeight: number) => {
     if (!ctx) return;
 
-    // Clear and redraw image first
+    // Clear and redraw the original image first
     const img = imageRef.current;
     if (img) {
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -99,15 +99,6 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
     // Clear the crop area to show original image (create transparent window)
     ctx.clearRect(crop.x, crop.y, crop.width, crop.height);
     
-    // Redraw the original image in the cleared crop area only
-    if (img) {
-      ctx.drawImage(
-        img,
-        crop.x, crop.y, crop.width, crop.height, // Source area from original image
-        crop.x, crop.y, crop.width, crop.height  // Destination area on canvas
-      );
-    }
-
     // Draw crop border
     ctx.strokeStyle = '#4ade80';
     ctx.lineWidth = 2;
