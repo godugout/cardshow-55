@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 
 const formatCredits = (amount: number | string) => {
@@ -18,6 +17,7 @@ interface CardItemProps {
   stock?: string;
   highestBid?: string;
   avatars?: string[];
+  onClick?: () => void;
 }
 
 export const CardItem: React.FC<CardItemProps> = ({
@@ -27,6 +27,7 @@ export const CardItem: React.FC<CardItemProps> = ({
   stock = "3 in stock",
   highestBid = "10",
   avatars = [],
+  onClick
 }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
@@ -46,8 +47,17 @@ export const CardItem: React.FC<CardItemProps> = ({
     setImageLoading(false);
   };
 
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
-    <div className="self-stretch flex min-w-60 flex-col items-stretch justify-center grow shrink w-[205px] my-auto">
+    <div 
+      className={`self-stretch flex min-w-60 flex-col items-stretch justify-center grow shrink w-[205px] my-auto ${onClick ? 'cursor-pointer hover:transform hover:scale-105 transition-transform duration-200' : ''}`}
+      onClick={handleClick}
+    >
       <div className="justify-center items-stretch bg-[#CDB4DB] flex w-full flex-col overflow-hidden rounded-2xl">
         <div className="aspect-[0.84] w-full relative bg-gray-200">
           {imageLoading && (

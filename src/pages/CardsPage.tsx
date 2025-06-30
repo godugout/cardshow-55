@@ -82,6 +82,7 @@ const CardsPage = () => {
                 cards={convertedCards} 
                 loading={loading} 
                 viewMode="grid"
+                onCardClick={handleCardClick}
               />
             </TabsContent>
 

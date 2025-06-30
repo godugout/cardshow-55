@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -54,7 +53,10 @@ const CardGridItem = ({ card, index, onCardClick }: { card: CardData; index: num
   };
 
   return (
-    <Card className="group bg-crd-dark border-crd-mediumGray hover:border-crd-blue transition-all duration-300 overflow-hidden cursor-pointer" onClick={handleClick}>
+    <Card 
+      className="group bg-crd-dark border-crd-mediumGray hover:border-crd-blue transition-all duration-300 overflow-hidden cursor-pointer" 
+      onClick={handleClick}
+    >
       <div className="aspect-[3/4] relative overflow-hidden bg-crd-mediumGray">
         {imageLoading && (
           <Skeleton className="absolute inset-0 bg-crd-mediumGray" />
