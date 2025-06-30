@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Plus, Home, ImageIcon, Palette, Sparkles, Grid } from 'lucide-react';
@@ -13,17 +12,9 @@ export const Navbar = () => {
     <nav className="bg-crd-darker border-b border-crd-mediumGray/20 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo - Simple link for Studio, no dropdown menu */}
+          {/* Logo - Static for Studio, link for other pages */}
           {isStudioRoute ? (
-            <Link 
-              to="/" 
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-              onClick={(e) => {
-                // Ensure we navigate and don't trigger any dropdown
-                e.preventDefault();
-                window.location.href = '/';
-              }}
-            >
+            <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-2">
                 <img
                   src="/lovable-uploads/786e777f-b56f-4080-9b40-aef8e8303f27.png"
@@ -32,7 +23,7 @@ export const Navbar = () => {
                 />
                 <span className="text-white font-bold text-xl font-orbitron">CARDSHOW</span>
               </div>
-            </Link>
+            </div>
           ) : (
             <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
               <div className="flex items-center space-x-2">
