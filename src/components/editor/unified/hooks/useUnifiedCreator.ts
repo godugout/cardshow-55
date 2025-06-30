@@ -1,5 +1,3 @@
-
-
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { useNavigate } from 'react-router-dom';
@@ -126,7 +124,8 @@ export const useUnifiedCreator = ({
         setState(prev => ({
           ...prev,
           currentStep: nextStep,
-          progress: Math.round(((currentIndex + 2) / config.steps.length) * 100)
+          progress: Math.round(((currentIndex + 2) / config.steps.length) * 100),
+          canGoBack: true
         }));
       } else {
         console.log('🎯 useUnifiedCreator: At final step, completing creation');
@@ -138,7 +137,8 @@ export const useUnifiedCreator = ({
       console.log('🎯 useUnifiedCreator: Validating step:', step);
       switch (step) {
         case 'upload':
-          return !!cardEditor.cardData.image_url;
+          // For bulk mode, we assume the layer analysis is complete
+          return state.mode === 'bulk' ? true : !!cardEditor.cardData.image_url;
         case 'details':
           return !!cardEditor.cardData.title && !!cardEditor.cardData.description;
         case 'design':
@@ -200,4 +200,3 @@ export const useUnifiedCreator = ({
     actions
   };
 };
-

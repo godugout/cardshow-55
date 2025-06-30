@@ -50,11 +50,24 @@ export const StepContent = ({
       );
 
     case 'upload':
-      return (
-        <LayerControlStudio
-          onNext={onNextStep}
-        />
-      );
+      // Only show LayerControlStudio for bulk mode, otherwise show regular upload
+      if (mode === 'bulk') {
+        return (
+          <LayerControlStudio
+            onNext={onNextStep}
+          />
+        );
+      } else {
+        // For other modes, show a simple upload placeholder or redirect to next step
+        return (
+          <div className="text-center py-8">
+            <p className="text-crd-lightGray">Upload step for {mode} mode</p>
+            <button onClick={onNextStep} className="mt-4 px-4 py-2 bg-crd-green text-black rounded">
+              Continue
+            </button>
+          </div>
+        );
+      }
 
     case 'details':
       if (!cardData) {
@@ -129,3 +142,4 @@ export const StepContent = ({
       );
   }
 };
+
