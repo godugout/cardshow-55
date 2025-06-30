@@ -4,15 +4,20 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { PhotoUploadSection } from '@/components/editor/unified/sections/PhotoUploadSection';
+import { EffectsTab } from '@/components/editor/sidebar/EffectsTab';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { ArrowLeft, Sparkles, Grid, Layers, FileImage } from 'lucide-react';
+import { ArrowLeft, Sparkles, Grid, Layers, FileImage, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
+
+type CreationStep = 'upload' | 'effects';
 
 const CreateCard = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const cardEditor = useCardEditor();
+  const [currentStep, setCurrentStep] = useState<CreationStep>('upload');
   const [workflowInfo, setWorkflowInfo] = useState<{
     source: string | null;
     workflow: string | null;
@@ -76,9 +81,16 @@ const CreateCard = () => {
     }
   };
 
-  const handleComplete = (cardData: CardData) => {
+  const handleComplete = async (cardData: CardData) => {
     console.log('Card created successfully:', cardData);
-    navigate('/gallery');
+    try {
+      await cardEditor.saveCard();
+      toast.success('Card created successfully!');
+      navigate('/gallery');
+    } catch (error) {
+      console.error('Error saving card:', error);
+      toast.error('Failed to save card');
+    }
   };
 
   const handleCancel = () => {
@@ -87,8 +99,19 @@ const CreateCard = () => {
   };
 
   const handleNext = () => {
-    console.log('Moving to next step - effects and finalization');
-    // Navigate to next step or continue workflow
+    console.log('Moving to effects step');
+    setCurrentStep('effects');
+    toast.success('Ready to customize your card!');
+  };
+
+  const handleBack = () => {
+    console.log('Going back to upload step');
+    setCurrentStep('upload');
+  };
+
+  const handleEffectsComplete = () => {
+    console.log('Effects completed, saving card');
+    handleComplete(cardEditor.cardData);
   };
 
   const workflowConfig = getWorkflowConfig(workflowInfo.workflow);
@@ -105,9 +128,37 @@ const CreateCard = () => {
               </h1>
               <div className="hidden md:block h-8 w-px bg-crd-mediumGray/30"></div>
               
+              {/* Step Indicator */}
+              <div className="hidden md:flex items-center gap-2">
+                <div className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-all ${
+                  currentStep === 'upload' 
+                    ? 'bg-crd-green/20 border border-crd-green/40' 
+                    : 'bg-crd-green/10 border border-crd-green/20'
+                }`}>
+                  <FileImage className={`w-4 h-4 ${currentStep === 'upload' ? 'text-crd-green' : 'text-crd-green/60'}`} />
+                  <span className={`text-sm font-medium ${currentStep === 'upload' ? 'text-crd-green' : 'text-crd-green/60'}`}>
+                    Upload & Select
+                  </span>
+                  {currentStep !== 'upload' && <Check className="w-4 h-4 text-crd-green" />}
+                </div>
+                
+                <div className="w-8 h-px bg-crd-mediumGray/30"></div>
+                
+                <div className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-all ${
+                  currentStep === 'effects' 
+                    ? 'bg-crd-blue/20 border border-crd-blue/40' 
+                    : 'bg-crd-mediumGray/10 border border-crd-mediumGray/20'
+                }`}>
+                  <Sparkles className={`w-4 h-4 ${currentStep === 'effects' ? 'text-crd-blue' : 'text-crd-mediumGray'}`} />
+                  <span className={`text-sm font-medium ${currentStep === 'effects' ? 'text-crd-blue' : 'text-crd-mediumGray'}`}>
+                    Customize & Publish
+                  </span>
+                </div>
+              </div>
+              
               {/* Workflow Status Badge */}
               {workflowInfo.activated && workflowConfig && (
-                <div className="hidden md:flex items-center gap-3">
+                <div className="hidden lg:flex items-center gap-3">
                   <div className={`bg-gradient-to-r ${workflowConfig.color} p-2 rounded-lg`}>
                     <workflowConfig.icon className="w-5 h-5 text-white" />
                   </div>
@@ -125,21 +176,33 @@ const CreateCard = () => {
               
               {/* Default status when no workflow */}
               {!workflowInfo.activated && (
-                <div className="hidden md:flex items-center gap-2 text-crd-lightGray">
+                <div className="hidden lg:flex items-center gap-2 text-crd-lightGray">
                   <div className="w-2 h-2 bg-crd-green rounded-full animate-pulse"></div>
                   <span className="text-sm font-medium">Standard Creation Mode</span>
                 </div>
               )}
             </div>
 
-            <CRDButton
-              variant="outline"
-              onClick={handleCancel}
-              className="border-crd-mediumGray/30 text-crd-lightGray hover:text-crd-white hover:border-crd-green/50 transition-all duration-200"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Cancel
-            </CRDButton>
+            <div className="flex items-center gap-2">
+              {currentStep === 'effects' && (
+                <CRDButton
+                  variant="outline"
+                  onClick={handleBack}
+                  className="border-crd-mediumGray/30 text-crd-lightGray hover:text-crd-white hover:border-crd-green/50 transition-all duration-200"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </CRDButton>
+              )}
+              
+              <CRDButton
+                variant="outline"
+                onClick={handleCancel}
+                className="border-crd-mediumGray/30 text-crd-lightGray hover:text-crd-white hover:border-crd-green/50 transition-all duration-200"
+              >
+                Cancel
+              </CRDButton>
+            </div>
           </div>
         </div>
 
@@ -169,10 +232,29 @@ const CreateCard = () => {
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <PhotoUploadSection
-            cardEditor={cardEditor}
-            onNext={handleNext}
-          />
+          {currentStep === 'upload' ? (
+            <PhotoUploadSection
+              cardEditor={cardEditor}
+              onNext={handleNext}
+            />
+          ) : (
+            <div className="space-y-8">
+              <div className="text-center">
+                <h2 className="text-3xl font-bold text-crd-white mb-4">Customize Your Card</h2>
+                <p className="text-crd-lightGray text-lg">
+                  Add effects, adjust lighting, and prepare your card for publishing
+                </p>
+              </div>
+              
+              <div className="max-w-4xl mx-auto">
+                <EffectsTab 
+                  searchQuery=""
+                  onEffectsComplete={handleEffectsComplete}
+                  cardEditor={cardEditor}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </ErrorBoundary>
     </div>
