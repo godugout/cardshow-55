@@ -5,14 +5,23 @@ import { toast } from 'sonner';
 import { CropperProps, DragHandle } from './cropper/types';
 import { StreamlinedCropperToolbar } from './cropper/StreamlinedCropperToolbar';
 import { StreamlinedCropOverlay } from './cropper/StreamlinedCropOverlay';
-import { CropperSidebar } from './cropper/CropperSidebar';
+import { LayerSidebar } from './cropper/LayerSidebar';
+import { CardPreviewPanel } from './cropper/CardPreviewPanel';
 import { useEnhancedCropAreaManager } from './cropper/useEnhancedCropAreaManager';
+import type { DesignTemplate } from '@/types/card';
 
-export const StreamlinedAdvancedCropper: React.FC<CropperProps> = ({
+interface TemplateAwareCropperProps extends CropperProps {
+  template?: DesignTemplate;
+  showCardPreview?: boolean;
+}
+
+export const StreamlinedAdvancedCropper: React.FC<TemplateAwareCropperProps> = ({
   imageUrl,
   onCropComplete,
   onCancel,
   aspectRatio = 2.5 / 3.5,
+  template,
+  showCardPreview = false,
   className = ''
 }) => {
   const {
@@ -54,6 +63,8 @@ export const StreamlinedAdvancedCropper: React.FC<CropperProps> = ({
     canUndo,
     canRedo
   } = useEnhancedCropAreaManager(aspectRatio);
+
+  const [showCardPreviewPanel, setShowCardPreviewPanel] = React.useState(showCardPreview);
 
   const handleImageLoad = useCallback(() => {
     initializeCrops();
@@ -242,11 +253,11 @@ export const StreamlinedAdvancedCropper: React.FC<CropperProps> = ({
     <div className={`h-full flex flex-col bg-crd-darkest ${className}`}>
       <StreamlinedCropperToolbar
         cropCount={cropAreas.length}
-        showPreview={showPreview}
+        showPreview={showCardPreviewPanel}
         showGrid={showGrid}
         canUndo={canUndo}
         canRedo={canRedo}
-        onTogglePreview={() => setShowPreview(!showPreview)}
+        onTogglePreview={() => setShowCardPreviewPanel(!showCardPreviewPanel)}
         onToggleGrid={() => setShowGrid(!showGrid)}
         zoom={zoom}
         onZoomIn={() => setZoom(Math.min(3, zoom + 0.25))}
@@ -256,6 +267,8 @@ export const StreamlinedAdvancedCropper: React.FC<CropperProps> = ({
         onRedo={redo}
         onExtractAll={extractAllCrops}
         onCancel={onCancel}
+        onAddFrame={() => addCropArea('frame')}
+        onAddElement={() => addCropArea('element')}
         imageLoaded={imageLoaded}
         isExtracting={isExtracting}
       />
@@ -282,6 +295,8 @@ export const StreamlinedAdvancedCropper: React.FC<CropperProps> = ({
                 imageLoaded={imageLoaded}
                 showGrid={showGrid}
                 gridSize={gridSize}
+                template={template}
+                showTemplateguide={true}
                 onMouseDown={handleMouseDown}
                 onCropSelect={selectCrop}
                 onRemoveCrop={removeCropArea}
@@ -290,14 +305,27 @@ export const StreamlinedAdvancedCropper: React.FC<CropperProps> = ({
           </Card>
         </div>
 
-        <CropperSidebar
+        <LayerSidebar
           cropAreas={cropAreas}
           imageLoaded={imageLoaded}
-          selectedCropId={selectedCropIds[0] || null}
-          onAddCropArea={addCropArea}
+          selectedCropIds={selectedCropIds}
           onSelectCrop={selectCrop}
           onRemoveCrop={removeCropArea}
+          onToggleVisibility={(cropId) => {
+            setCropAreas(prev => prev.map(crop => 
+              crop.id === cropId ? { ...crop, visible: !crop.visible } : crop
+            ));
+          }}
         />
+
+        {showCardPreviewPanel && (
+          <CardPreviewPanel
+            cropAreas={cropAreas}
+            imageUrl={imageUrl}
+            template={template}
+            onClose={() => setShowCardPreviewPanel(false)}
+          />
+        )}
       </div>
     </div>
   );

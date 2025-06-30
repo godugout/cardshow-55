@@ -9,15 +9,19 @@ export interface CropArea {
   rotation: number;
   type: 'main' | 'frame' | 'element';
   color: string;
-  selected: boolean;
+  selected?: boolean;
+  visible?: boolean;
   cornerRadius?: number;
+  aspectRatio?: number;
+  minSize?: { width: number; height: number };
+  maxSize?: { width: number; height: number };
 }
 
 export interface CropperState {
   cropAreas: CropArea[];
   selectedCropIds: string[];
   isDragging: boolean;
-  dragHandle: string | null;
+  dragHandle: DragHandle | null;
   dragStart: { x: number; y: number };
   imageLoaded: boolean;
   zoom: number;
@@ -26,9 +30,6 @@ export interface CropperState {
   showGrid: boolean;
   snapToGrid: boolean;
   gridSize: number;
-  history: HistoryEntry[];
-  historyIndex: number;
-  clipboard: CropArea | null;
   activeTool: 'select' | 'crop' | 'rotate' | 'zoom';
 }
 
@@ -39,12 +40,12 @@ export interface HistoryEntry {
   cropAreas: CropArea[];
 }
 
+export type DragHandle = 'tl' | 'tr' | 'bl' | 'br' | 'move' | 'rotate' | null;
+
 export interface CropperProps {
   imageUrl: string;
-  onCropComplete: (crops: { main?: string; frame?: string; elements?: string[] }) => void;
+  onCropComplete: (crops: { main?: string; frame?: string; elements?: string[]; }) => void;
   onCancel: () => void;
   aspectRatio?: number;
   className?: string;
 }
-
-export type DragHandle = 'move' | 'rotate' | 'tl' | 'tr' | 'bl' | 'br' | 't' | 'r' | 'b' | 'l';
