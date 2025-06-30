@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { ArrowRight, Sparkles, Upload, Image, Grid, CheckCircle } from 'lucide-react';
+import { ArrowRight, Sparkles, Upload, Image, Grid, CheckCircle, Scissors } from 'lucide-react';
 import { useFreeAIAnalysis } from '@/hooks/useFreeAIAnalysis';
 import { useTemplates } from '@/hooks/useTemplates';
 import { MediaPathAnalyzer } from '@/lib/crdmkr/mediaPathAnalyzer';
@@ -11,6 +11,7 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import type { UnifiedAnalysisResult } from '@/services/imageAnalysis/unifiedCardAnalyzer';
+import { Button } from '@/components/ui/button';
 
 interface PhotoUploadSectionProps {
   cardEditor: ReturnType<typeof import('@/hooks/useCardEditor').useCardEditor>;
@@ -285,7 +286,18 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
 
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-crd-white mb-4">Create Your Card</h2>
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <h2 className="text-3xl font-bold text-crd-white">Create Your Card</h2>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.open('/demo/croppers', '_blank')}
+            className="bg-crd-blue hover:bg-crd-blue/90 text-white border-crd-blue"
+          >
+            <Scissors className="w-4 h-4 mr-2" />
+            View Cropper Demo
+          </Button>
+        </div>
         <p className="text-crd-lightGray text-lg">
           {state.step === 'upload' && 'Upload your image to get started'}
           {state.step === 'crop' && 'Crop your image for the perfect card'}

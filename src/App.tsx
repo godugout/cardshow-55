@@ -12,6 +12,7 @@ import FeedPage from '@/pages/FeedPage';
 import Studio from '@/pages/Studio';
 import Gallery from '@/pages/Gallery';
 import CRDMKRPage from '@/pages/CRDMKRPage';
+import CropperDemo from '@/pages/CropperDemo';
 import { AuthPage } from '@/components/auth/AuthPage';
 
 const queryClient = new QueryClient({
@@ -37,6 +38,7 @@ function App() {
                 <Route path="create" element={<CreateCard />} />
                 <Route path="cards" element={<CardsPage />} />
                 <Route path="crdmkr" element={<CRDMKRPage />} />
+                <Route path="demo/croppers" element={<CropperDemo />} />
                 <Route path="feed" element={<FeedPage />} />
                 <Route path="studio/:cardId?" element={<Studio />} />
                 <Route path="gallery" element={<Gallery />} />
