@@ -8,18 +8,22 @@ interface CreatorNavigationProps {
   currentStep: CreationStep;
   canGoBack: boolean;
   canAdvance: boolean;
+  validateStep: () => boolean;
   onBack: () => void;
   onNext: () => void;
   onComplete: () => void;
+  isCreating: boolean;
 }
 
 export const CreatorNavigation = ({
   currentStep,
   canGoBack,
   canAdvance,
+  validateStep,
   onBack,
   onNext,
-  onComplete
+  onComplete,
+  isCreating
 }: CreatorNavigationProps) => {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-crd-darker border-t border-crd-mediumGray/20 p-4">
@@ -38,20 +42,21 @@ export const CreatorNavigation = ({
           <CRDButton
             variant="primary"
             onClick={onComplete}
+            disabled={!validateStep() || isCreating}
             className="bg-crd-green hover:bg-crd-green/80 text-black"
           >
-            Create Card
+            {isCreating ? 'Creating...' : 'Create Card'}
           </CRDButton>
-        ) : canAdvance ? (
+        ) : (
           <CRDButton
             variant="primary"
             onClick={onNext}
-            className="bg-crd-green hover:bg-crd-green/80 text-black"
+            disabled={!validateStep()}
           >
             Next
             <ArrowRight className="w-4 h-4 ml-2" />
           </CRDButton>
-        ) : null}
+        )}
       </div>
     </div>
   );

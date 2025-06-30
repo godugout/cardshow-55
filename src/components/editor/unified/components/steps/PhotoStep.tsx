@@ -4,12 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Upload, Image, Frame, AlertCircle, Crop, Palette, Maximize, Camera, X } from 'lucide-react';
 import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRenderer';
-import { EnhancedImageCropper } from '../../sections/components/EnhancedImageCropper';
+import { BaseballCardCropper } from '@/components/editor/cropping/BaseballCardCropper';
 import { BASEBALL_CARD_TEMPLATES } from '@/components/editor/templates/BaseballCardTemplates';
 import { TeamColorSelector } from '@/components/editor/templates/TeamColorSelector';
 import { useColorThemes } from '@/hooks/useColorThemes';
 import { convertColorThemeToScheme, type TeamColorScheme } from '@/components/editor/templates/TeamColors';
-import { toast } from 'sonner';
 import type { CreationMode } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { DesignTemplate } from '@/types/card';
@@ -21,7 +20,6 @@ interface PhotoStepProps {
   cardData?: CardData;
   selectedFrame?: DesignTemplate;
   onFrameSelect?: (frame: DesignTemplate) => void;
-  onMoveToEffects?: () => void;
 }
 
 export const PhotoStep = ({ 
@@ -30,8 +28,7 @@ export const PhotoStep = ({
   onPhotoSelect, 
   cardData,
   selectedFrame,
-  onFrameSelect,
-  onMoveToEffects
+  onFrameSelect 
 }: PhotoStepProps) => {
   console.log('📸 PhotoStep: Rendering with photo:', !!selectedPhoto, 'frame:', selectedFrame?.name);
   
@@ -117,20 +114,8 @@ export const PhotoStep = ({
   }, [onFrameSelect]);
 
   const handleCropComplete = (croppedImageUrl: string) => {
-    console.log('✂️ PhotoStep: Crop completed, proceeding to effects immediately');
     onPhotoSelect(croppedImageUrl);
     setShowCropper(false);
-    
-    // Show success message
-    toast.success('Image cropped! Moving to effects step...');
-    
-    // Immediately move to effects step
-    setTimeout(() => {
-      if (onMoveToEffects) {
-        console.log('✂️ PhotoStep: Calling onMoveToEffects');
-        onMoveToEffects();
-      }
-    }, 100);
   };
 
   const handleColorSchemeSelect = useCallback((colorScheme: TeamColorScheme) => {
@@ -139,30 +124,17 @@ export const PhotoStep = ({
 
   const handleRemovePhoto = () => {
     onPhotoSelect('');
-    setShowCropper(false);
-  };
-
-  const handleStartCrop = () => {
-    if (selectedPhoto) {
-      console.log('🔄 PhotoStep: Starting crop mode');
-      setShowCropper(true);
-    }
   };
 
   // Show cropper if active
   if (showCropper && selectedPhoto) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-crd-white mb-2">Crop Your Image</h2>
-          <p className="text-crd-lightGray">
-            Adjust the crop area to focus on the main subject, then extract to continue
-          </p>
-        </div>
-        <EnhancedImageCropper
+        <BaseballCardCropper
           imageUrl={selectedPhoto}
+          template={currentFrame}
           onCropComplete={handleCropComplete}
-          className="max-w-2xl mx-auto"
+          onCancel={() => setShowCropper(false)}
         />
       </div>
     );
@@ -208,7 +180,7 @@ export const PhotoStep = ({
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleStartCrop();
+                      setShowCropper(true);
                     }}
                     className="bg-crd-green hover:bg-crd-green/80 text-black p-2"
                   >

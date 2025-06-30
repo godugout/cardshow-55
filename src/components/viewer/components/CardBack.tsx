@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import { CardEffectsLayer } from './CardEffectsLayer';
@@ -36,7 +37,7 @@ export const CardBack: React.FC<CardBackProps> = ({
         backfaceVisibility: 'hidden'
       }}
     >
-      {/* Enhanced CRD Branded Background */}
+      {/* Rich CRD Branded Background */}
       <div 
         className="absolute inset-0 z-10"
         style={{
@@ -48,21 +49,21 @@ export const CardBack: React.FC<CardBackProps> = ({
         }}
       />
 
-      {/* Enhanced Geometric Pattern Overlay */}
+      {/* Geometric Pattern Overlay */}
       <div 
         className="absolute inset-0 z-15"
         style={{
           backgroundImage: `
-            radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.08) 0%, transparent 25%),
-            radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.08) 0%, transparent 25%),
-            linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.015) 50%, transparent 60%),
-            linear-gradient(-45deg, transparent 40%, rgba(255, 255, 255, 0.015) 50%, transparent 60%)
+            radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 25%),
+            radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.1) 0%, transparent 25%),
+            linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.02) 50%, transparent 60%),
+            linear-gradient(-45deg, transparent 40%, rgba(255, 255, 255, 0.02) 50%, transparent 60%)
           `,
           backgroundSize: '200px 200px, 200px 200px, 100px 100px, 100px 100px'
         }}
       />
 
-      {/* Enhanced Card Information Panel */}
+      {/* Card Information Panel */}
       <div className="absolute inset-0 z-30 p-8 flex flex-col">
         {/* Top Section - Card Details */}
         <div className="flex-1 space-y-6">
@@ -108,7 +109,7 @@ export const CardBack: React.FC<CardBackProps> = ({
               className="w-32 h-auto opacity-90"
               style={{
                 filter: showEffects 
-                  ? 'drop-shadow(0 0 15px rgba(16, 185, 129, 0.4)) brightness(1.05)' 
+                  ? 'drop-shadow(0 0 20px rgba(16, 185, 129, 0.5)) brightness(1.1)' 
                   : 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
               }}
             />
@@ -120,7 +121,7 @@ export const CardBack: React.FC<CardBackProps> = ({
         </div>
       </div>
 
-      {/* Enhanced Effects Layer */}
+      {/* Effects Layer - Enhanced for Back */}
       <div className="absolute inset-0 z-40 pointer-events-none">
         <CardEffectsLayer
           showEffects={showEffects}
@@ -133,7 +134,7 @@ export const CardBack: React.FC<CardBackProps> = ({
         />
       </div>
 
-      {/* Enhanced Interactive Lighting for Back */}
+      {/* Interactive Lighting Enhancement for Back */}
       {interactiveLighting && isHovering && (
         <div
           className="absolute inset-0 z-45 pointer-events-none rounded-xl"
@@ -141,26 +142,26 @@ export const CardBack: React.FC<CardBackProps> = ({
             background: `
               radial-gradient(
                 ellipse 150% 120% at ${mousePosition.x * 100}% ${mousePosition.y * 100}%,
-                rgba(16, 185, 129, 0.12) 0%,
-                rgba(59, 130, 246, 0.08) 30%,
-                rgba(255, 255, 255, 0.04) 60%,
+                rgba(16, 185, 129, 0.15) 0%,
+                rgba(59, 130, 246, 0.1) 30%,
+                rgba(255, 255, 255, 0.05) 60%,
                 transparent 80%
               )
             `,
             mixBlendMode: 'screen',
             transition: 'opacity 0.2s ease',
-            opacity: showEffects ? 1 : 0.8
+            opacity: showEffects ? 1 : 0.7
           }}
         />
       )}
 
-      {/* Enhanced Glow Effect Border */}
+      {/* Glow Effect Border for Back */}
       {showEffects && (
         <div 
           className="absolute inset-0 z-50 pointer-events-none rounded-xl"
           style={{
             border: '1px solid transparent',
-            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(59, 130, 246, 0.15), rgba(16, 185, 129, 0.25)) border-box',
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(59, 130, 246, 0.2), rgba(16, 185, 129, 0.3)) border-box',
             WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
             WebkitMaskComposite: 'xor',
             maskComposite: 'exclude'

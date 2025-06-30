@@ -1,7 +1,8 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Crop, Target, RotateCw } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Crop, RotateCw, Download, Target } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface CropArea {
@@ -13,15 +14,15 @@ interface CropArea {
 
 interface ImageCropperProps {
   imageUrl: string;
-  onCropComplete: (croppedImageUrl: string) => void;
-  aspectRatio?: number;
+  onCropComplete: (croppedImageUrl: string, originalFile?: File) => void;
+  aspectRatio?: number; // width/height ratio, defaults to free crop
   className?: string;
 }
 
 export const ImageCropper: React.FC<ImageCropperProps> = ({
   imageUrl,
   onCropComplete,
-  aspectRatio = 2.5 / 3.5, // Default to trading card ratio
+  aspectRatio,
   className = ''
 }) => {
   const [cropArea, setCropArea] = useState<CropArea>({ x: 0, y: 0, width: 0, height: 0 });
@@ -29,77 +30,99 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
   const [dragHandle, setDragHandle] = useState<string | null>(null);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [extracting, setExtracting] = useState(false);
 
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Initialize crop area centered and sized for card aspect ratio
-  const initializeCropArea = useCallback(() => {
-    if (!imageRef.current) return;
-    
-    const img = imageRef.current;
+  // Smart initial crop detection
+  const detectInitialCrop = useCallback((img: HTMLImageElement) => {
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (!containerRect) return;
+
+    // Get displayed image dimensions
     const displayWidth = img.clientWidth;
     const displayHeight = img.clientHeight;
-    
-    // Calculate optimal crop size maintaining aspect ratio
-    let cropWidth = Math.min(displayWidth * 0.7, displayHeight * aspectRatio * 0.7);
-    let cropHeight = cropWidth / aspectRatio;
-    
-    // Adjust if height exceeds bounds
-    if (cropHeight > displayHeight * 0.8) {
-      cropHeight = displayHeight * 0.8;
-      cropWidth = cropHeight * aspectRatio;
+
+    let cropWidth, cropHeight;
+
+    if (aspectRatio) {
+      // Use provided aspect ratio (e.g., 2.5/3.5 for trading cards)
+      cropWidth = Math.min(displayWidth * 0.6, displayHeight * aspectRatio * 0.6);
+      cropHeight = cropWidth / aspectRatio;
+      
+      // Adjust if height is too large
+      if (cropHeight > displayHeight * 0.8) {
+        cropHeight = displayHeight * 0.8;
+        cropWidth = cropHeight * aspectRatio;
+      }
+    } else {
+      // Default to center 60% of image
+      cropWidth = displayWidth * 0.6;
+      cropHeight = displayHeight * 0.6;
     }
-    
+
     // Center the crop
     const x = (displayWidth - cropWidth) / 2;
     const y = (displayHeight - cropHeight) / 2;
-    
+
     setCropArea({
       x: Math.max(0, x),
       y: Math.max(0, y),
-      width: cropWidth,
-      height: cropHeight
+      width: Math.min(cropWidth, displayWidth),
+      height: Math.min(cropHeight, displayHeight)
     });
   }, [aspectRatio]);
 
   const handleImageLoad = useCallback(() => {
-    setImageLoaded(true);
-    initializeCropArea();
-  }, [initializeCropArea]);
+    if (imageRef.current) {
+      detectInitialCrop(imageRef.current);
+      setImageLoaded(true);
+    }
+  }, [detectInitialCrop]);
 
-  // Auto-fit to maximize crop area
-  const handleAutoFit = useCallback(() => {
+  // Auto-fit functionality
+  const autoFitRectangle = useCallback(() => {
     if (!imageRef.current) return;
-    
+
+    // Simple edge detection for auto-fit
     const img = imageRef.current;
     const displayWidth = img.clientWidth;
     const displayHeight = img.clientHeight;
+
+    // For now, use smart defaults based on aspect ratio
+    let cropWidth, cropHeight;
     
-    // Maximize area while maintaining aspect ratio
-    let cropWidth = displayWidth * 0.9;
-    let cropHeight = cropWidth / aspectRatio;
-    
+    if (aspectRatio) {
+      // Trading card optimization
+      cropWidth = Math.min(displayWidth * 0.7, displayHeight * aspectRatio * 0.7);
+      cropHeight = cropWidth / aspectRatio;
+    } else {
+      // General rectangle detection
+      cropWidth = displayWidth * 0.8;
+      cropHeight = displayHeight * 0.6;
+    }
+
+    // Ensure it fits
     if (cropHeight > displayHeight * 0.9) {
       cropHeight = displayHeight * 0.9;
-      cropWidth = cropHeight * aspectRatio;
+      cropWidth = aspectRatio ? cropHeight * aspectRatio : cropWidth;
     }
-    
+
     const x = (displayWidth - cropWidth) / 2;
     const y = (displayHeight - cropHeight) / 2;
-    
+
     setCropArea({
       x: Math.max(0, x),
       y: Math.max(0, y),
-      width: cropWidth,
-      height: cropHeight
+      width: Math.min(cropWidth, displayWidth),
+      height: Math.min(cropHeight, displayHeight)
     });
-    
-    toast.success('Auto-fitted to optimal size');
+
+    toast.success('Auto-fit applied');
   }, [aspectRatio]);
 
-  // Mouse event handlers
+  // Mouse event handlers for crop manipulation
   const handleMouseDown = useCallback((e: React.MouseEvent, handle?: string) => {
     e.preventDefault();
     setIsDragging(true);
@@ -123,19 +146,47 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
           newCrop.y = Math.max(0, Math.min(prev.y + deltaY, img.clientHeight - prev.height));
           break;
         
-        case 'br':
+        case 'tl': // Top-left
+          newCrop.x = Math.max(0, prev.x + deltaX);
+          newCrop.y = Math.max(0, prev.y + deltaY);
+          newCrop.width = prev.width - deltaX;
+          newCrop.height = prev.height - deltaY;
+          break;
+        
+        case 'tr': // Top-right
+          newCrop.y = Math.max(0, prev.y + deltaY);
           newCrop.width = prev.width + deltaX;
-          newCrop.height = newCrop.width / aspectRatio;
+          newCrop.height = prev.height - deltaY;
+          break;
+        
+        case 'bl': // Bottom-left
+          newCrop.x = Math.max(0, prev.x + deltaX);
+          newCrop.width = prev.width - deltaX;
+          newCrop.height = prev.height + deltaY;
+          break;
+        
+        case 'br': // Bottom-right
+          newCrop.width = prev.width + deltaX;
+          newCrop.height = prev.height + deltaY;
           break;
       }
 
-      // Maintain minimum size
-      newCrop.width = Math.max(80, newCrop.width);
-      newCrop.height = Math.max(80, newCrop.height);
+      // Ensure minimum size
+      newCrop.width = Math.max(50, newCrop.width);
+      newCrop.height = Math.max(50, newCrop.height);
 
       // Ensure within bounds
       newCrop.width = Math.min(newCrop.width, img.clientWidth - newCrop.x);
       newCrop.height = Math.min(newCrop.height, img.clientHeight - newCrop.y);
+
+      // Maintain aspect ratio if required
+      if (aspectRatio && dragHandle !== 'move') {
+        if (dragHandle?.includes('r')) {
+          newCrop.height = newCrop.width / aspectRatio;
+        } else {
+          newCrop.width = newCrop.height * aspectRatio;
+        }
+      }
 
       return newCrop;
     });
@@ -159,144 +210,159 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  // Process the crop
-  const handleCropConfirm = useCallback(async () => {
-    if (!imageRef.current || isProcessing) return;
+  // Extract the cropped area
+  const extractCrop = useCallback(async () => {
+    if (!imageRef.current || !imageLoaded) {
+      toast.error('Image not ready');
+      return;
+    }
 
-    setIsProcessing(true);
+    setExtracting(true);
+    
     try {
       const img = imageRef.current;
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      if (!ctx) throw new Error('Could not get canvas context');
+      if (!ctx) {
+        throw new Error('Could not get canvas context');
+      }
 
-      // Standard card output dimensions
-      canvas.width = 300;
-      canvas.height = 420;
-
-      // Calculate source coordinates
+      // Calculate scale factors between display and natural image size
       const scaleX = img.naturalWidth / img.clientWidth;
       const scaleY = img.naturalHeight / img.clientHeight;
-      
+
+      // Convert display coordinates to natural image coordinates
       const sourceX = cropArea.x * scaleX;
       const sourceY = cropArea.y * scaleY;
       const sourceWidth = cropArea.width * scaleX;
       const sourceHeight = cropArea.height * scaleY;
 
-      // Draw cropped image
+      // Set canvas dimensions for high quality output
+      const outputWidth = Math.min(1200, sourceWidth); // Cap at reasonable size
+      const outputHeight = Math.min(1600, sourceHeight);
+      
+      canvas.width = outputWidth;
+      canvas.height = outputHeight;
+
+      // Draw the cropped area
       ctx.drawImage(
         img,
         sourceX, sourceY, sourceWidth, sourceHeight,
-        0, 0, canvas.width, canvas.height
+        0, 0, outputWidth, outputHeight
       );
 
-      const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
-      onCropComplete(croppedImageUrl);
-      
+      // Convert to blob and create URL
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const croppedUrl = URL.createObjectURL(blob);
+          onCropComplete(croppedUrl);
+          toast.success('Crop extracted successfully!');
+        }
+      }, 'image/png', 0.95);
+
     } catch (error) {
-      console.error('Crop failed:', error);
-      toast.error('Failed to crop image');
+      console.error('Extraction failed:', error);
+      toast.error('Failed to extract crop');
     } finally {
-      setIsProcessing(false);
+      setExtracting(false);
     }
-  }, [cropArea, onCropComplete, isProcessing]);
+  }, [cropArea, imageLoaded, onCropComplete]);
 
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Controls */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center gap-2 flex-wrap">
         <Button
+          onClick={autoFitRectangle}
           variant="outline"
           size="sm"
-          onClick={handleAutoFit}
-          className="border-gray-600 text-white"
+          disabled={!imageLoaded}
         >
           <Target className="w-4 h-4 mr-2" />
           Auto-Fit
         </Button>
         
-        <div className="text-gray-400 text-sm">
-          {Math.round(cropArea.width)} × {Math.round(cropArea.height)}
-        </div>
-      </div>
-
-      {/* Crop Canvas */}
-      <div 
-        ref={containerRef}
-        className="relative mx-auto bg-gray-800 rounded-lg overflow-hidden border border-gray-600"
-        style={{ 
-          maxWidth: '500px',
-          aspectRatio: aspectRatio.toString()
-        }}
-      >
-        <img
-          ref={imageRef}
-          src={imageUrl}
-          alt="Crop source"
-          className="w-full h-full object-contain"
-          onLoad={handleImageLoad}
-          draggable={false}
-        />
-        
-        {imageLoaded && (
-          <>
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black bg-opacity-40 pointer-events-none" />
-            
-            {/* Crop Area */}
-            <div
-              className="absolute border-2 border-green-500 bg-transparent cursor-move"
-              style={{
-                left: cropArea.x,
-                top: cropArea.y,
-                width: cropArea.width,
-                height: cropArea.height,
-              }}
-              onMouseDown={(e) => handleMouseDown(e, 'move')}
-            >
-              {/* Resize handle */}
-              <div
-                className="absolute w-3 h-3 bg-green-500 border border-white -bottom-1 -right-1 cursor-se-resize"
-                onMouseDown={(e) => {
-                  e.stopPropagation();
-                  handleMouseDown(e, 'br');
-                }}
-              />
-              
-              {/* Grid */}
-              <div className="absolute inset-0 pointer-events-none opacity-50">
-                <div className="w-full h-full border border-green-400" />
-                <div className="absolute top-1/3 left-0 right-0 border-t border-green-400" />
-                <div className="absolute top-2/3 left-0 right-0 border-t border-green-400" />
-                <div className="absolute left-1/3 top-0 bottom-0 border-l border-green-400" />
-                <div className="absolute left-2/3 top-0 bottom-0 border-l border-green-400" />
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Confirm Button */}
-      <div className="text-center">
         <Button
-          onClick={handleCropConfirm}
-          disabled={!imageLoaded || isProcessing}
-          className="bg-green-600 hover:bg-green-700 text-white"
+          onClick={extractCrop}
+          disabled={!imageLoaded || extracting}
+          className="bg-crd-green hover:bg-crd-green/90 text-black"
         >
-          {isProcessing ? (
+          {extracting ? (
             <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin rounded-full mr-2" />
-              Processing...
+              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2" />
+              Extracting...
             </>
           ) : (
             <>
               <Crop className="w-4 h-4 mr-2" />
-              Confirm Crop
+              Extract Crop
             </>
           )}
         </Button>
+
+        {aspectRatio && (
+          <div className="text-sm text-crd-lightGray">
+            Aspect Ratio: {aspectRatio.toFixed(2)}:1
+          </div>
+        )}
       </div>
+
+      {/* Image and Crop Area */}
+      <Card className="relative overflow-hidden bg-editor-dark border-editor-border">
+        <div ref={containerRef} className="relative">
+          <img
+            ref={imageRef}
+            src={imageUrl}
+            alt="Crop source"
+            className="max-w-full max-h-[600px] w-auto h-auto"
+            onLoad={handleImageLoad}
+            draggable={false}
+          />
+          
+          {/* Crop Overlay */}
+          {imageLoaded && (
+            <div className="absolute inset-0">
+              {/* Darkened areas outside crop */}
+              <div className="absolute inset-0 bg-black bg-opacity-50" />
+              
+              {/* Crop area */}
+              <div
+                className="absolute border-2 border-crd-green cursor-move"
+                style={{
+                  left: cropArea.x,
+                  top: cropArea.y,
+                  width: cropArea.width,
+                  height: cropArea.height,
+                  boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)',
+                }}
+                onMouseDown={(e) => handleMouseDown(e, 'move')}
+              >
+                {/* Corner handles */}
+                {['tl', 'tr', 'bl', 'br'].map((handle) => (
+                  <div
+                    key={handle}
+                    className="absolute w-3 h-3 bg-crd-green border border-white cursor-pointer hover:bg-crd-green/80"
+                    style={{
+                      top: handle.includes('t') ? -6 : 'auto',
+                      bottom: handle.includes('b') ? -6 : 'auto',
+                      left: handle.includes('l') ? -6 : 'auto',
+                      right: handle.includes('r') ? -6 : 'auto',
+                      cursor: handle === 'tl' || handle === 'br' ? 'nw-resize' : 'ne-resize'
+                    }}
+                    onMouseDown={(e) => handleMouseDown(e, handle)}
+                  />
+                ))}
+                
+                {/* Crop info */}
+                <div className="absolute top-1 left-1 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+                  {Math.round(cropArea.width)} × {Math.round(cropArea.height)}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
     </div>
   );
 };
