@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { ArrowRight, Sparkles, Upload, Image, Grid } from 'lucide-react';
@@ -6,6 +5,7 @@ import { useFreeAIAnalysis } from '@/hooks/useFreeAIAnalysis';
 import { useTemplates } from '@/hooks/useTemplates';
 import { MediaPathAnalyzer } from '@/lib/crdmkr/mediaPathAnalyzer';
 import { ProfessionalPSDManager } from './components/ProfessionalPSDManager';
+import { CardPreviewRenderer } from './components/CardPreviewRenderer';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -173,6 +173,10 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     });
   }, [cardEditor, updateState]);
 
+  const canProceed = !!(state.imageUrl && state.selectedTemplate);
+  const selectedTemplate = templates.find(t => t.id === state.selectedTemplate);
+  const showCardPreview = !!(state.imageUrl && selectedTemplate);
+
   // Show PSD Manager if activated
   if (state.showPSDManager && state.uploadedFile) {
     return (
@@ -185,10 +189,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     );
   }
 
-  const canProceed = !!(state.imageUrl && state.selectedTemplate);
-
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto">
       {/* Header */}
       <div className="text-center">
         <h2 className="text-3xl font-bold text-crd-white mb-4">Create Your Card</h2>
@@ -197,8 +199,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         </p>
       </div>
 
-      {/* Combined Upload & Preview Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         {/* Upload Area */}
         <div className="space-y-6">
@@ -350,6 +352,35 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
             </div>
           )}
         </div>
+
+        {/* Card Preview - Only show when both image and template are selected */}
+        {showCardPreview && (
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-xl font-bold text-crd-white mb-2 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-crd-green" />
+                Card Preview
+              </h3>
+              <p className="text-crd-lightGray">
+                Your card is ready for customization
+              </p>
+            </div>
+            
+            <div className="flex justify-center">
+              <CardPreviewRenderer
+                imageUrl={state.imageUrl}
+                template={selectedTemplate}
+                className="w-full max-w-xs"
+              />
+            </div>
+            
+            <div className="text-center">
+              <Badge className="bg-crd-green/20 text-crd-green border-crd-green/30">
+                Ready for Effects!
+              </Badge>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Continue Button */}

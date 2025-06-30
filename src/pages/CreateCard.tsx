@@ -1,10 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { PhotoUploadSection } from '@/components/editor/unified/sections/PhotoUploadSection';
 import { EffectsTab } from '@/components/editor/sidebar/EffectsTab';
+import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRenderer';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { ArrowLeft, Sparkles, Grid, Layers, FileImage, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +18,7 @@ const CreateCard = () => {
   const [searchParams] = useSearchParams();
   const cardEditor = useCardEditor();
   const [currentStep, setCurrentStep] = useState<CreationStep>('upload');
-  const [workflowInfo, setWorkflowInfo] = useState<{
+  const [workflowInfo, setWorkflowInfo<{
     source: string | null;
     workflow: string | null;
     activated: boolean;
@@ -246,12 +246,37 @@ const CreateCard = () => {
                 </p>
               </div>
               
-              <div className="max-w-4xl mx-auto">
-                <EffectsTab 
-                  searchQuery=""
-                  onEffectsComplete={handleEffectsComplete}
-                  cardEditor={cardEditor}
-                />
+              {/* Show Card Preview in Effects Step */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                {/* Card Preview Column */}
+                <div className="flex justify-center lg:justify-end">
+                  <div className="w-full max-w-sm">
+                    <h3 className="text-lg font-semibold text-crd-white mb-4 text-center">
+                      Live Preview
+                    </h3>
+                    {cardEditor.cardData.image_url && cardEditor.cardData.template_id && (
+                      <div className="aspect-[5/7] bg-white rounded-lg overflow-hidden shadow-xl border border-crd-mediumGray/20">
+                        <SVGTemplateRenderer
+                          template={{ 
+                            id: cardEditor.cardData.template_id,
+                            template_data: cardEditor.cardData.design_metadata?.frame
+                          } as any}
+                          imageUrl={cardEditor.cardData.image_url}
+                          className="w-full h-full"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Effects Controls Column */}
+                <div className="w-full">
+                  <EffectsTab 
+                    searchQuery=""
+                    onEffectsComplete={handleEffectsComplete}
+                    cardEditor={cardEditor}
+                  />
+                </div>
               </div>
             </div>
           )}
