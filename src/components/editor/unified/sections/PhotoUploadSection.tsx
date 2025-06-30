@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Sparkles, Layers, Grid, FileImage } from 'lucide-react';
 import { useFreeAIAnalysis } from '@/hooks/useFreeAIAnalysis';
 import { useTemplates } from '@/hooks/useTemplates';
 import { MediaPathAnalyzer } from '@/lib/crdmkr/mediaPathAnalyzer';
@@ -20,8 +20,7 @@ interface PhotoUploadSectionProps {
   onNext: () => void;
 }
 
-// Define the workflow step type consistently across the entire component
-type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager';
+type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager' | 'batch-processing';
 
 export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   cardEditor,
@@ -39,11 +38,63 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   const [originalFile, setOriginalFile] = useState<File | null>(null);
   const [generatedTemplate, setGeneratedTemplate] = useState<any>(null);
   const [showPSDManager, setShowPSDManager] = useState(false);
+  const [workflowActivated, setWorkflowActivated] = useState(false);
   
   const { analyzeImage, isAnalyzing } = useFreeAIAnalysis();
   const { templates, isLoading: templatesLoading } = useTemplates();
 
-  // Enhanced step validation logic
+  // Enhanced workflow activation with visual feedback
+  useEffect(() => {
+    const source = searchParams.get('source');
+    const workflow = searchParams.get('workflow');
+    
+    if (source === 'crdmkr' && workflow && !workflowActivated) {
+      console.log('🎯 Activating CRDMKR workflow:', workflow);
+      setWorkflowActivated(true);
+      
+      // Set workflow metadata
+      cardEditor.updateDesignMetadata('workflowSource', 'crdmkr');
+      cardEditor.updateDesignMetadata('workflowType', workflow);
+      
+      // Handle different workflow types
+      switch (workflow) {
+        case 'psd-professional':
+          setSelectedMediaPath('psd-professional');
+          toast.success('🎨 PSD Professional workflow activated!', {
+            description: 'Upload your PSD file to begin professional layer extraction'
+          });
+          break;
+          
+        case 'batch-processing':
+          setSelectedMediaPath('batch-processing');
+          setCurrentStep('batch-processing');
+          toast.success('⚡ Batch Processing workflow activated!', {
+            description: 'Upload multiple images for efficient batch card creation'
+          });
+          break;
+          
+        case 'smart-upload':
+          setSelectedMediaPath('smart-upload');
+          toast.success('🤖 Smart Upload workflow activated!', {
+            description: 'AI-powered image analysis and template selection'
+          });
+          break;
+          
+        case 'crd-frame-generator':
+          setSelectedMediaPath('crd-frame-generator');
+          toast.success('🖼️ CRD Frame Generator activated!', {
+            description: 'Create custom frames from your designs'
+          });
+          break;
+          
+        default:
+          console.log('🎯 Unknown workflow type:', workflow);
+          toast.info(`${workflow} workflow activated`);
+      }
+    }
+  }, [searchParams, cardEditor, workflowActivated]);
+
+  // Enhanced step validation with workflow-specific logic
   const validateCurrentStep = () => {
     console.log('🔍 Validating step:', currentStep, {
       hasImage: !!cardEditor.cardData.image_url,
@@ -51,7 +102,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       selectedTemplate,
       generatedTemplate,
       isProcessing,
-      isAnalyzing
+      isAnalyzing,
+      workflowActivated
     });
 
     switch (currentStep) {
@@ -67,34 +119,45 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       case 'psd-manager':
         return !!generatedTemplate || showAITools;
       
+      case 'batch-processing':
+        return !!cardEditor.cardData.image_url; // Allow continuation with uploaded images
+      
       default:
         return false;
     }
   };
 
-  // Get dynamic step information
+  // Enhanced step information with workflow context
   const getStepInfo = () => {
-    const stepMap = {
+    const workflow = searchParams.get('workflow');
+    const baseStepMap = {
       'upload': { number: 1, total: 4 },
       'path-selection': { number: 2, total: 4 },
       'template-selection': { number: 3, total: 4 },
-      'psd-manager': { number: 3, total: 4 } // PSD manager is alternative to template selection
+      'psd-manager': { number: 3, total: 4 },
+      'batch-processing': { number: 1, total: 3 } // Simplified workflow
     };
     
-    return stepMap[currentStep] || { number: 1, total: 4 };
+    // Adjust for specific workflows
+    if (workflow === 'batch-processing') {
+      return { number: 1, total: 3 };
+    }
+    
+    return baseStepMap[currentStep] || { number: 1, total: 4 };
   };
 
-  // Enhanced continue button logic
   const canProceed = () => {
     const stepValid = validateCurrentStep();
     
-    // Additional checks for specific workflow paths
+    // Workflow-specific proceed logic
+    if (currentStep === 'batch-processing') {
+      return stepValid && cardEditor.cardData.image_url;
+    }
+    
     if (currentStep === 'path-selection') {
-      // If path requires template selection, move to template step
       if (['standard-card', 'interactive-card', 'quick-frame'].includes(selectedMediaPath)) {
         return stepValid;
       }
-      // For other paths, can proceed directly
       return stepValid;
     }
     
@@ -105,13 +168,23 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     return stepValid;
   };
 
-  // Get step-specific text and requirements
+  // Enhanced step text with workflow awareness
   const getStepText = () => {
+    const workflow = searchParams.get('workflow');
+    
     switch (currentStep) {
       case 'upload':
-        if (!cardEditor.cardData.image_url) return 'Upload your media file';
-        if (isProcessing || isAnalyzing) return 'Processing...';
-        return 'Ready to choose workflow';
+        if (!cardEditor.cardData.image_url) {
+          if (workflow === 'batch-processing') return 'Upload multiple images for batch processing';
+          if (workflow === 'psd-professional') return 'Upload your PSD file for professional processing';
+          return 'Upload your media file';
+        }
+        if (isProcessing || isAnalyzing) return 'Processing with AI analysis...';
+        return 'Ready to continue workflow';
+      
+      case 'batch-processing':
+        if (!cardEditor.cardData.image_url) return 'Upload images for batch processing';
+        return 'Batch processing ready - continue to effects';
       
       case 'path-selection':
         if (!selectedMediaPath) return 'Choose your workflow path';
@@ -130,68 +203,85 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     }
   };
 
-  // Simple step indicator component
-  const SimpleStepIndicator = ({ currentStep }: { currentStep: WorkflowStep }) => {
-    const steps: Array<{ id: WorkflowStep; label: string; description: string }> = [
-      { id: 'upload', label: 'Upload', description: 'Choose your media' },
-      { id: 'path-selection', label: 'Workflow', description: 'Select creation path' },
-      { id: 'template-selection', label: 'Template', description: 'Pick design' },
-      { id: 'psd-manager', label: 'PSD Studio', description: 'Professional editing' }
-    ];
+  // Workflow-aware step indicator
+  const WorkflowStepIndicator = ({ currentStep, workflow }: { currentStep: WorkflowStep; workflow: string | null }) => {
+    const getWorkflowSteps = () => {
+      switch (workflow) {
+        case 'batch-processing':
+          return [
+            { id: 'batch-processing', label: 'Batch Upload', description: 'Upload multiple images', icon: Grid },
+            { id: 'effects', label: 'Effects', description: 'Apply batch effects', icon: Sparkles },
+            { id: 'publish', label: 'Publish', description: 'Export all cards', icon: FileImage }
+          ];
+        case 'psd-professional':
+          return [
+            { id: 'upload', label: 'PSD Upload', description: 'Upload PSD file', icon: Layers },
+            { id: 'psd-manager', label: 'Layer Manager', description: 'Extract layers', icon: Grid },
+            { id: 'effects', label: 'Effects', description: 'Apply effects', icon: Sparkles }
+          ];
+        default:
+          return [
+            { id: 'upload', label: 'Upload', description: 'Choose media', icon: FileImage },
+            { id: 'path-selection', label: 'Workflow', description: 'Select path', icon: ArrowRight },
+            { id: 'template-selection', label: 'Template', description: 'Pick design', icon: Grid }
+          ];
+      }
+    };
 
+    const steps = getWorkflowSteps();
     const currentStepIndex = steps.findIndex(step => step.id === currentStep);
 
     return (
-      <div className="flex items-center justify-center gap-2 py-4">
-        {steps.map((step, index) => {
-          const isActive = index === currentStepIndex;
-          const isCompleted = index < currentStepIndex;
-          const isVisible = index <= currentStepIndex || (currentStep === 'psd-manager' && step.id === 'psd-manager');
+      <div className="flex items-center justify-center gap-3 py-6">
+        {/* Workflow Badge */}
+        {workflow && (
+          <div className="bg-gradient-to-r from-crd-green/20 to-crd-blue/20 border border-crd-green/40 rounded-full px-4 py-2 mb-4">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-crd-green" />
+              <span className="text-crd-green font-medium text-sm">
+                {workflow.replace('-', ' ').toUpperCase()} WORKFLOW
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {/* Step indicators */}
+        <div className="flex items-center gap-2">
+          {steps.map((step, index) => {
+            const isActive = index === currentStepIndex;
+            const isCompleted = index < currentStepIndex;
+            const Icon = step.icon;
 
-          if (!isVisible) return null;
-
-          return (
-            <div key={step.id} className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
-              isActive 
-                ? 'bg-gradient-to-r from-crd-green/20 to-crd-blue/20 border border-crd-green/40 shadow-lg' 
-                : isCompleted 
-                ? 'bg-crd-green/10 border border-crd-green/20' 
-                : 'bg-crd-mediumGray/10 border border-crd-mediumGray/20'
-            }`}>
-              <div className={`w-5 h-5 ${isActive ? 'text-crd-green' : isCompleted ? 'text-crd-green' : 'text-crd-mediumGray'}`}>
-                {isCompleted ? '✓' : index + 1}
-              </div>
-              <div>
-                <div className={`font-semibold ${
+            return (
+              <div key={step.id} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                isActive 
+                  ? 'bg-gradient-to-r from-crd-green/30 to-crd-blue/30 border-2 border-crd-green/50 shadow-lg scale-105' 
+                  : isCompleted 
+                  ? 'bg-crd-green/15 border border-crd-green/30' 
+                  : 'bg-crd-mediumGray/10 border border-crd-mediumGray/20'
+              }`}>
+                <div className={`w-6 h-6 flex items-center justify-center ${
                   isActive ? 'text-crd-green' : isCompleted ? 'text-crd-green' : 'text-crd-mediumGray'
                 }`}>
-                  {step.label}
+                  {isCompleted ? '✓' : <Icon className="w-4 h-4" />}
                 </div>
-                <div className="text-xs text-crd-lightGray">
-                  {step.description}
+                <div>
+                  <div className={`font-semibold text-sm ${
+                    isActive ? 'text-crd-green' : isCompleted ? 'text-crd-green' : 'text-crd-mediumGray'
+                  }`}>
+                    {step.label}
+                  </div>
+                  <div className="text-xs text-crd-lightGray">
+                    {step.description}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     );
   };
-
-  // Handle URL parameters for auto-triggering PSD workflow
-  useEffect(() => {
-    const source = searchParams.get('source');
-    const workflow = searchParams.get('workflow');
-    
-    if (source === 'crdmkr' && workflow === 'psd-professional') {
-      console.log('🎯 Auto-activating PSD Professional workflow');
-      setSelectedMediaPath('psd-professional');
-      setCurrentStep('upload');
-      
-      cardEditor.updateDesignMetadata('workflowSource', 'crdmkr');
-      cardEditor.updateDesignMetadata('workflowType', 'psd-professional');
-    }
-  }, [searchParams, cardEditor]);
 
   const processFile = useCallback(async (file: File) => {
     console.log('📁 Processing file:', file.name);
@@ -213,6 +303,18 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         cardEditor.updateCardField('image_url', imageUrl);
         
         toast.success('PSD file ready for professional processing!');
+        return;
+      }
+
+      // Handle batch processing workflow
+      if (workflow === 'batch-processing') {
+        console.log('⚡ Processing for batch workflow');
+        const imageUrl = URL.createObjectURL(file);
+        cardEditor.updateCardField('image_url', imageUrl);
+        setUploadProgress(100);
+        setCurrentStep('batch-processing');
+        
+        toast.success('Image ready for batch processing!');
         return;
       }
 
@@ -339,6 +441,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     console.log('⬅️ Going back from step:', currentStep);
     if (currentStep === 'template-selection') setCurrentStep('path-selection');
     else if (currentStep === 'path-selection') setCurrentStep('upload');
+    else if (currentStep === 'batch-processing') setCurrentStep('upload');
   };
 
   const renderCurrentStep = () => {
@@ -352,6 +455,28 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
             imageUrl={cardEditor.cardData.image_url}
             onFileSelect={processFile}
           />
+        );
+
+      case 'batch-processing':
+        return (
+          <div className="text-center space-y-6">
+            <div className="bg-gradient-to-r from-crd-green/10 to-crd-blue/10 border border-crd-green/30 rounded-xl p-8">
+              <Grid className="w-16 h-16 text-crd-green mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-crd-white mb-2">Batch Processing Ready</h3>
+              <p className="text-crd-lightGray mb-4">
+                Your image is ready for batch processing. Continue to apply effects and finalize your cards.
+              </p>
+              {cardEditor.cardData.image_url && (
+                <div className="max-w-xs mx-auto">
+                  <img 
+                    src={cardEditor.cardData.image_url} 
+                    alt="Uploaded for batch processing"
+                    className="w-full rounded-lg border border-crd-mediumGray/30"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         );
 
       case 'path-selection':
@@ -389,19 +514,19 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     }
   };
 
-  // Enhanced step info for dynamic display
   const stepInfo = getStepInfo();
   const proceedEnabled = canProceed();
+  const workflow = searchParams.get('workflow');
 
   return (
     <div className="space-y-8 relative z-10">
-      {/* Enhanced Header */}
+      {/* Enhanced Header with Workflow Context */}
       <div className="space-y-4">
         <StepHeader 
           currentStep={currentStep}
           mediaDetection={mediaDetection}
         />
-        <SimpleStepIndicator currentStep={currentStep} />
+        <WorkflowStepIndicator currentStep={currentStep} workflow={workflow} />
       </div>
 
       {/* Enhanced Navigation Section */}
@@ -411,7 +536,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         </div>
         
         <div className="flex gap-4">
-          {currentStep !== 'upload' && currentStep !== 'psd-manager' && (
+          {currentStep !== 'upload' && currentStep !== 'psd-manager' && currentStep !== 'batch-processing' && (
             <CRDButton 
               onClick={handleBack}
               variant="outline"
@@ -431,13 +556,13 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                 : 'bg-crd-mediumGray/20 text-crd-lightGray cursor-not-allowed'
             }`}
           >
-            Continue to Effects
+            {workflow === 'batch-processing' ? 'Continue to Batch Effects' : 'Continue to Effects'}
             <ArrowRight className="w-5 h-5 ml-2" />
           </CRDButton>
         </div>
       </div>
 
-      {/* Validation Feedback for Users */}
+      {/* Validation Feedback */}
       {!proceedEnabled && (
         <div className="bg-crd-mediumGray/10 border border-crd-mediumGray/20 rounded-lg p-4">
           <p className="text-crd-lightGray text-sm">
