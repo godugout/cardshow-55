@@ -143,6 +143,15 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
     }
   };
 
+  const handleContinue = () => {
+    console.log('🎯 LayerControlStudio: Continue to Effects clicked');
+    if (onNext) {
+      onNext();
+    }
+  };
+
+  const canContinue = analysisComplete && detectedLayers.length > 0;
+
   const layerTypeColors = {
     photo: 'bg-blue-500/20 border-blue-500',
     text: 'bg-green-500/20 border-green-500',
@@ -300,7 +309,11 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
         {analysisComplete && (
           <div className="p-4 border-t border-crd-mediumGray/20">
             <div className="space-y-3">
-              <CRDButton className="w-full" onClick={onNext}>
+              <CRDButton 
+                className="w-full" 
+                onClick={handleContinue}
+                disabled={!canContinue}
+              >
                 <Play className="w-4 h-4 mr-2" />
                 Continue to Template Generation
               </CRDButton>
