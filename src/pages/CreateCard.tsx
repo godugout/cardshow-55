@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
@@ -18,7 +19,7 @@ const CreateCard = () => {
   const [searchParams] = useSearchParams();
   const cardEditor = useCardEditor();
   const [currentStep, setCurrentStep] = useState<CreationStep>('upload');
-  const [workflowInfo, setWorkflowInfo<{
+  const [workflowInfo, setWorkflowInfo] = useState<{
     source: string | null;
     workflow: string | null;
     activated: boolean;
