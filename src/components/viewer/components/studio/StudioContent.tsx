@@ -1,3 +1,4 @@
+
 import React, { useCallback } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSectionManager } from './hooks/useSectionManager';
@@ -28,6 +29,7 @@ interface StudioContentProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
+  onExpandEffects?: () => void; // Add the missing prop
 }
 
 export const StudioContent: React.FC<StudioContentProps> = ({
@@ -46,7 +48,8 @@ export const StudioContent: React.FC<StudioContentProps> = ({
   selectedPresetId,
   onPresetSelect,
   onApplyCombo,
-  isApplyingPreset = false
+  isApplyingPreset = false,
+  onExpandEffects
 }) => {
   const { sectionStates, setSectionState } = useSectionManager();
 
@@ -70,6 +73,7 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             onPresetSelect={onPresetSelect}
             onApplyCombo={onApplyCombo}
             isApplyingPreset={isApplyingPreset}
+            onExpandEffects={onExpandEffects}
           />
 
           {/* Effects Section */}
