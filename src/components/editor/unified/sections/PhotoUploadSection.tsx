@@ -1,7 +1,7 @@
 
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { ArrowRight, Sparkles, Upload, Image, Grid } from 'lucide-react';
+import { ArrowRight, Sparkles, Upload, Image, Grid, CheckCircle } from 'lucide-react';
 import { useFreeAIAnalysis } from '@/hooks/useFreeAIAnalysis';
 import { useTemplates } from '@/hooks/useTemplates';
 import { MediaPathAnalyzer } from '@/lib/crdmkr/mediaPathAnalyzer';
@@ -18,36 +18,38 @@ interface PhotoUploadSectionProps {
   onNext: () => void;
 }
 
-interface SimpleWorkflowState {
+interface WorkflowState {
   uploadedFile: File | null;
-  imageUrl: string;
+  originalImageUrl: string;
+  croppedImageUrl: string;
   isProcessing: boolean;
   analysisResult: UnifiedAnalysisResult | null;
-  selectedTemplate: string | null;
+  selectedTemplate: any;
   showPSDManager: boolean;
   showCropper: boolean;
-  croppedImageUrl: string;
+  step: 'upload' | 'crop' | 'preview' | 'ready';
 }
 
 export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   cardEditor,
   onNext
 }) => {
-  const [state, setState] = useState<SimpleWorkflowState>({
+  const [state, setState] = useState<WorkflowState>({
     uploadedFile: null,
-    imageUrl: cardEditor.cardData.image_url || '',
+    originalImageUrl: cardEditor.cardData.image_url || '',
+    croppedImageUrl: '',
     isProcessing: false,
     analysisResult: null,
     selectedTemplate: null,
     showPSDManager: false,
     showCropper: false,
-    croppedImageUrl: ''
+    step: 'upload'
   });
 
   const { analyzeImage, isAnalyzing } = useFreeAIAnalysis();
   const { templates, isLoading: templatesLoading } = useTemplates();
 
-  const updateState = useCallback((updates: Partial<SimpleWorkflowState>) => {
+  const updateState = useCallback((updates: Partial<WorkflowState>) => {
     setState(prev => ({ ...prev, ...updates }));
   }, []);
 
@@ -56,7 +58,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     
     updateState({ 
       uploadedFile: file, 
-      isProcessing: true 
+      isProcessing: true,
+      step: 'upload'
     });
 
     try {
@@ -67,7 +70,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         cardEditor.updateCardField('image_url', imageUrl);
         
         updateState({ 
-          imageUrl,
+          originalImageUrl: imageUrl,
           showPSDManager: true,
           isProcessing: false
         });
@@ -76,50 +79,54 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         return;
       }
 
-      // Standard image processing - show cropper
+      // Standard image processing - move to crop step
       const imageUrl = URL.createObjectURL(file);
       updateState({ 
-        imageUrl,
+        originalImageUrl: imageUrl,
         showCropper: true,
+        step: 'crop',
         isProcessing: false
       });
 
-      // Run AI analysis in background (silent smart detection)
+      // Run AI analysis in background
       console.log('🤖 Running background analysis...');
-      const result = await analyzeImage(imageUrl);
-      
-      if (result) {
-        const analysisResult: UnifiedAnalysisResult = {
-          title: result.suggestedTemplate || 'Trading Card',
-          description: result.detectedText || 'A unique trading card.',
-          rarity: result.suggestedRarity === 'Legendary' ? 'legendary' : 
-                 result.suggestedRarity === 'Epic' ? 'epic' :
-                 result.suggestedRarity === 'Rare' ? 'rare' :
-                 result.suggestedRarity === 'Uncommon' ? 'uncommon' : 'common',
-          estimatedValue: result.quality || 0,
-          confidence: result.confidence / 100 || 0.5,
-          category: result.contentType || 'Sports Card',
-          type: result.contentType || 'Trading Card',
-          tags: result.tags || [],
-          specialFeatures: result.regions?.map(r => r.type) || [],
-          sources: {
-            ocr: !!result.detectedText,
-            visual: result.confidence > 0,
-            webSearch: false,
-            database: false
-          }
-        };
+      try {
+        const result = await analyzeImage(imageUrl);
         
-        updateState({ analysisResult });
-        console.log('✅ Background analysis complete');
+        if (result) {
+          const analysisResult: UnifiedAnalysisResult = {
+            title: result.suggestedTemplate || 'Trading Card',
+            description: result.detectedText || 'A unique trading card.',
+            rarity: result.suggestedRarity === 'Legendary' ? 'legendary' : 
+                   result.suggestedRarity === 'Epic' ? 'epic' :
+                   result.suggestedRarity === 'Rare' ? 'rare' :
+                   result.suggestedRarity === 'Uncommon' ? 'uncommon' : 'common',
+            estimatedValue: result.quality || 0,
+            confidence: result.confidence / 100 || 0.5,
+            category: result.contentType || 'Sports Card',
+            type: result.contentType || 'Trading Card',
+            tags: result.tags || [],
+            specialFeatures: result.regions?.map(r => r.type) || [],
+            sources: {
+              ocr: !!result.detectedText,
+              visual: result.confidence > 0,
+              webSearch: false,
+              database: false
+            }
+          };
+          
+          updateState({ analysisResult });
+        }
+      } catch (analysisError) {
+        console.warn('Background analysis failed, continuing without it:', analysisError);
       }
 
       toast.success('Image uploaded! Crop it to perfection for your card.');
       
     } catch (error) {
-      console.error('Upload/Analysis error:', error);
+      console.error('Upload error:', error);
       toast.error('Failed to process file');
-      updateState({ isProcessing: false });
+      updateState({ isProcessing: false, step: 'upload' });
     }
   }, [cardEditor, analyzeImage, updateState]);
 
@@ -141,37 +148,57 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   }, [processFile]);
 
   const handleCropComplete = useCallback((croppedImageUrl: string) => {
-    console.log('✅ Crop completed, updating card editor');
+    console.log('✅ Crop completed, moving to preview step');
     updateState({ 
       croppedImageUrl,
-      showCropper: false
+      showCropper: false,
+      step: 'preview'
     });
     
     cardEditor.updateCardField('image_url', croppedImageUrl);
     cardEditor.updateCardField('thumbnail_url', croppedImageUrl);
     
-    toast.success('Perfect crop! Choose a template below.');
+    // Auto-select default template
+    const defaultTemplate = {
+      id: 'classic-baseball',
+      name: 'Classic Baseball',
+      template_data: {
+        component: 'ClassicBaseballTemplate',
+        colors: {
+          primary: '#1a472a',
+          secondary: '#2d5a3d',
+          accent: '#4ade80',
+          text: '#ffffff'
+        }
+      }
+    };
+    
+    updateState({ selectedTemplate: defaultTemplate, step: 'ready' });
+    cardEditor.updateCardField('template_id', defaultTemplate.id);
+    cardEditor.updateDesignMetadata('frame', defaultTemplate.template_data);
+    
+    toast.success('Perfect crop! Template applied and ready to continue.');
   }, [cardEditor, updateState]);
 
-  const handleTemplateSelect = useCallback((templateId: string) => {
-    updateState({ selectedTemplate: templateId });
-    cardEditor.updateCardField('template_id', templateId);
+  const handleTemplateChange = useCallback((newTemplate: any) => {
+    updateState({ selectedTemplate: newTemplate });
+    cardEditor.updateCardField('template_id', newTemplate.id);
     
-    const template = templates.find(t => t.id === templateId);
-    if (template && template.template_data) {
-      cardEditor.updateDesignMetadata('frame', template.template_data);
+    if (newTemplate.template_data) {
+      cardEditor.updateDesignMetadata('frame', newTemplate.template_data);
     }
     
-    console.log('✅ Template selected:', templateId);
-    toast.success('Template selected! Ready to continue.');
-  }, [templates, cardEditor, updateState]);
+    console.log('✅ Template switched to:', newTemplate.id);
+    toast.success(`Switched to ${newTemplate.name}!`);
+  }, [cardEditor, updateState]);
 
   const handlePSDManagerCancel = useCallback(() => {
     updateState({
       showPSDManager: false,
       uploadedFile: null,
-      imageUrl: '',
-      isProcessing: false
+      originalImageUrl: '',
+      isProcessing: false,
+      step: 'upload'
     });
     cardEditor.updateCardField('image_url', '');
   }, [cardEditor, updateState]);
@@ -186,37 +213,22 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     
     updateState({ 
       showPSDManager: false,
-      selectedTemplate: template.id 
+      selectedTemplate: template,
+      step: 'ready'
     });
     
-    toast.success('Professional CRD Frame created!', {
-      description: 'Template is ready for your card creation workflow'
-    });
+    toast.success('Professional CRD Frame created!');
   }, [cardEditor, updateState]);
 
-  const handleTemplateChange = useCallback((newTemplate: any) => {
-    updateState({ selectedTemplate: newTemplate.id });
-    cardEditor.updateCardField('template_id', newTemplate.id);
-    
-    if (newTemplate.template_data) {
-      cardEditor.updateDesignMetadata('frame', newTemplate.template_data);
-    }
-    
-    console.log('✅ Template switched to:', newTemplate.id);
-    toast.success(`Switched to ${newTemplate.name}!`);
-  }, [cardEditor, updateState]);
-
-  const canProceed = !!(state.croppedImageUrl && state.selectedTemplate);
-  const selectedTemplate = templates.find(t => t.id === state.selectedTemplate);
-  const showCardPreview = !!(state.croppedImageUrl && selectedTemplate);
-  const displayImageUrl = state.croppedImageUrl || state.imageUrl;
+  const canProceed = state.step === 'ready' && state.croppedImageUrl && state.selectedTemplate;
+  const displayImageUrl = state.croppedImageUrl || state.originalImageUrl;
 
   // Show PSD Manager if activated
   if (state.showPSDManager && state.uploadedFile) {
     return (
       <ProfessionalPSDManager
         psdFile={state.uploadedFile}
-        userImage={state.imageUrl}
+        userImage={state.originalImageUrl}
         onFrameGenerated={handleTemplateGenerated}
         onCancel={handlePSDManagerCancel}
       />
@@ -224,10 +236,9 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   }
 
   // Show Cropper if activated
-  if (state.showCropper && state.imageUrl) {
+  if (state.showCropper && state.originalImageUrl) {
     return (
-      <div className="space-y-8 max-w-7xl mx-auto">
-        {/* Header */}
+      <div className="space-y-8 max-w-4xl mx-auto">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-crd-white mb-4">Crop Your Card Image</h2>
           <p className="text-crd-lightGray text-lg">
@@ -235,83 +246,60 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
           </p>
         </div>
 
-        {/* Main Cropping Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Image Cropper (2/3 width) */}
-          <div className="lg:col-span-2">
-            <EnhancedImageCropper
-              imageUrl={state.imageUrl}
-              onCropComplete={handleCropComplete}
-            />
-          </div>
-
-          {/* Right Column - Info and Tips */}
-          <div className="space-y-6">
-            <Card className="bg-crd-darker border-crd-mediumGray/20">
-              <CardContent className="p-6">
-                <h3 className="text-crd-white font-semibold mb-4 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-crd-green" />
-                  Cropping Tips
-                </h3>
-                <div className="space-y-3 text-sm text-crd-lightGray">
-                  <p>• Use <strong className="text-crd-green">Auto-Fit Card</strong> for optimal positioning</p>
-                  <p>• Drag corners to resize while maintaining card proportions</p>
-                  <p>• Move the entire crop area by dragging the center</p>
-                  <p>• The dotted outline shows the ideal card boundaries</p>
-                  <p>• Extract when you're happy with the positioning</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Analysis Results (if available) */}
-            {state.analysisResult && state.analysisResult.confidence > 0.3 && (
-              <Card className="bg-crd-mediumGray/10 border-crd-mediumGray/20">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="w-4 h-4 text-crd-green" />
-                    <span className="text-crd-white text-sm font-medium">AI Analysis</span>
-                    <Badge variant="outline" className="text-crd-green border-crd-green/30 text-xs">
-                      {Math.round(state.analysisResult.confidence * 100)}% confidence
-                    </Badge>
-                  </div>
-                  <p className="text-crd-lightGray text-sm">
-                    {state.analysisResult.description}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="text-center">
-              <CRDButton
-                variant="outline"
-                onClick={() => updateState({ showCropper: false, imageUrl: '', uploadedFile: null })}
-                className="border-crd-mediumGray/30 text-crd-lightGray hover:text-crd-white"
-              >
-                Start Over
-              </CRDButton>
-            </div>
-          </div>
-        </div>
+        <EnhancedImageCropper
+          imageUrl={state.originalImageUrl}
+          onCropComplete={handleCropComplete}
+        />
       </div>
     );
   }
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
+      {/* Progress Indicator */}
+      <div className="flex items-center justify-center gap-8 mb-8">
+        <div className={`flex items-center gap-2 ${state.step === 'upload' ? 'text-crd-green' : state.step !== 'upload' ? 'text-crd-green' : 'text-crd-mediumGray'}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${state.step !== 'upload' ? 'bg-crd-green' : 'bg-crd-mediumGray/20 border-2 border-crd-green'}`}>
+            {state.step !== 'upload' ? <CheckCircle className="w-5 h-5 text-white" /> : '1'}
+          </div>
+          <span className="font-medium">Upload</span>
+        </div>
+        
+        <div className="w-12 h-px bg-crd-mediumGray/30"></div>
+        
+        <div className={`flex items-center gap-2 ${state.step === 'crop' ? 'text-crd-green' : state.step === 'preview' || state.step === 'ready' ? 'text-crd-green' : 'text-crd-mediumGray'}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${state.step === 'preview' || state.step === 'ready' ? 'bg-crd-green' : state.step === 'crop' ? 'bg-crd-mediumGray/20 border-2 border-crd-green' : 'bg-crd-mediumGray/20'}`}>
+            {state.step === 'preview' || state.step === 'ready' ? <CheckCircle className="w-5 h-5 text-white" /> : '2'}
+          </div>
+          <span className="font-medium">Crop</span>
+        </div>
+        
+        <div className="w-12 h-px bg-crd-mediumGray/30"></div>
+        
+        <div className={`flex items-center gap-2 ${state.step === 'ready' ? 'text-crd-green' : 'text-crd-mediumGray'}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${state.step === 'ready' ? 'bg-crd-green' : 'bg-crd-mediumGray/20'}`}>
+            {state.step === 'ready' ? <CheckCircle className="w-5 h-5 text-white" /> : '3'}
+          </div>
+          <span className="font-medium">Ready</span>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="text-center">
         <h2 className="text-3xl font-bold text-crd-white mb-4">Create Your Card</h2>
         <p className="text-crd-lightGray text-lg">
-          Upload your image and choose a template to get started
+          {state.step === 'upload' && 'Upload your image to get started'}
+          {state.step === 'crop' && 'Crop your image for the perfect card'}
+          {state.step === 'preview' && 'Review your card preview'}
+          {state.step === 'ready' && 'Your card is ready for customization!'}
         </p>
       </div>
 
-      {/* Main Content Grid */}
+      {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         
-        {/* Left Column - Upload & Templates */}
+        {/* Left Column - Upload Status or Controls */}
         <div className="space-y-6">
-          {/* Upload Area */}
           {!displayImageUrl ? (
             <div
               className="border-2 border-dashed border-crd-mediumGray/30 rounded-xl h-80 flex flex-col items-center justify-center p-8 hover:border-crd-green/50 transition-colors cursor-pointer bg-crd-darker/20"
@@ -345,15 +333,17 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                   </div>
                   <div className="flex-1">
                     <h4 className="text-crd-white font-medium">
-                      {state.croppedImageUrl ? 'Image Cropped & Ready' : 'Image Uploaded'}
+                      {state.step === 'ready' ? 'Card Ready!' : 
+                       state.step === 'preview' ? 'Image Processed' : 
+                       'Image Uploaded'}
                     </h4>
                     <p className="text-crd-lightGray text-sm">
                       {state.uploadedFile?.name || 'Image ready for processing'}
                     </p>
                   </div>
-                  {state.croppedImageUrl && (
+                  {state.step === 'ready' && (
                     <Badge className="bg-crd-green/20 text-crd-green border-crd-green/30">
-                      Cropped
+                      Ready!
                     </Badge>
                   )}
                 </div>
@@ -367,13 +357,13 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                 </div>
                 
                 <div className="mt-4 flex gap-2">
-                  {!state.croppedImageUrl && (
+                  {state.step !== 'ready' && (
                     <CRDButton
                       variant="primary"
                       size="sm"
                       onClick={() => updateState({ showCropper: true })}
                     >
-                      Crop Image
+                      {state.step === 'upload' ? 'Crop Image' : 'Re-crop'}
                     </CRDButton>
                   )}
                   <CRDButton
@@ -389,22 +379,22 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
           )}
         </div>
 
-        {/* Right Column - Large Card Preview with Frame Switching */}
-        {showCardPreview && (
+        {/* Right Column - Large Card Preview */}
+        {state.step === 'ready' && displayImageUrl && state.selectedTemplate && (
           <div className="space-y-4 sticky top-8">
             <div>
               <h3 className="text-xl font-bold text-crd-white mb-2 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-crd-green" />
-                Live Card Preview
+                Your Card Preview
               </h3>
               <p className="text-crd-lightGray">
-                Your cropped image with live frame switching
+                Full image with CRD frame overlay - Switch frames with arrows
               </p>
             </div>
             
             <CardPreviewRenderer
               imageUrl={displayImageUrl}
-              template={selectedTemplate}
+              template={state.selectedTemplate}
               onTemplateChange={handleTemplateChange}
               enableFrameSwitching={true}
               size="large"
@@ -413,7 +403,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
             
             <div className="text-center">
               <Badge className="bg-crd-green/20 text-crd-green border-crd-green/30">
-                Ready for Effects!
+                Ready for Effects & Customization!
               </Badge>
             </div>
           </div>
@@ -429,14 +419,14 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
           disabled={!canProceed}
           className={`px-8 py-3 ${canProceed ? 'opacity-100' : 'opacity-50'}`}
         >
-          Continue to Effects
+          Continue to Effects & Customization
           <ArrowRight className="w-5 h-5 ml-2" />
         </CRDButton>
         {!canProceed && (
           <p className="text-crd-lightGray text-sm mt-2">
-            {!displayImageUrl ? 'Upload an image' : 
-             !state.croppedImageUrl ? 'Crop your image' : 
-             'Select a template'} to continue
+            {state.step === 'upload' ? 'Upload an image to continue' : 
+             state.step === 'crop' ? 'Crop your image to continue' : 
+             'Processing...'}
           </p>
         )}
       </div>

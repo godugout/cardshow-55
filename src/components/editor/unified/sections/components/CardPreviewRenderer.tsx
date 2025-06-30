@@ -1,130 +1,179 @@
 
 import React, { useState } from 'react';
 import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRenderer';
-import { CRDButton } from '@/components/ui/design-system/Button';
-import { useTemplates } from '@/hooks/useTemplates';
-import { ChevronLeft, ChevronRight, Grid, Eye, EyeOff } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { DesignTemplate } from '@/types/card';
 
+// Default templates with proper CRD frame overlay
+const DEFAULT_TEMPLATES = [
+  {
+    id: 'classic-baseball',
+    name: 'Classic Baseball',
+    template_data: {
+      component: 'ClassicBaseballTemplate',
+      colors: {
+        primary: '#1a472a',
+        secondary: '#2d5a3d',
+        accent: '#4ade80',
+        text: '#ffffff'
+      }
+    }
+  },
+  {
+    id: 'modern-baseball',
+    name: 'Modern Baseball',
+    template_data: {
+      component: 'ModernBaseballTemplate',
+      colors: {
+        primary: '#1e293b',
+        secondary: '#334155',
+        accent: '#06b6d4',
+        text: '#ffffff'
+      }
+    }
+  },
+  {
+    id: 'vintage-baseball',
+    name: 'Vintage Baseball',
+    template_data: {
+      component: 'VintageBaseballTemplate',
+      colors: {
+        primary: '#7c2d12',
+        secondary: '#9a3412',
+        accent: '#f97316',
+        text: '#ffffff'
+      }
+    }
+  },
+  {
+    id: 'no-frame',
+    name: 'Clean Background',
+    template_data: {
+      component: 'NoFrameTemplate',
+      colors: {
+        primary: '#000000',
+        secondary: '#1f1f1f',
+        accent: '#4ade80',
+        text: '#ffffff'
+      }
+    }
+  }
+];
+
 interface CardPreviewRendererProps {
   imageUrl: string;
-  template: DesignTemplate;
+  template?: DesignTemplate | null;
   onTemplateChange?: (template: DesignTemplate) => void;
-  className?: string;
   enableFrameSwitching?: boolean;
-  size?: 'default' | 'large';
+  size?: 'small' | 'medium' | 'large';
+  className?: string;
+  playerName?: string;
+  teamName?: string;
+  position?: string;
 }
 
 export const CardPreviewRenderer: React.FC<CardPreviewRendererProps> = ({
   imageUrl,
   template,
   onTemplateChange,
-  className = "",
   enableFrameSwitching = false,
-  size = 'default'
+  size = 'medium',
+  className = '',
+  playerName = 'Player Name',
+  teamName = 'Team Name',
+  position = 'Position'
 }) => {
-  const { templates } = useTemplates();
-  const [showFrameControls, setShowFrameControls] = useState(enableFrameSwitching);
+  const [currentTemplateIndex, setCurrentTemplateIndex] = useState(0);
   
-  const currentTemplateIndex = templates.findIndex(t => t.id === template.id);
+  // Use provided template or default to first template
+  const activeTemplate = template || DEFAULT_TEMPLATES[currentTemplateIndex];
   
-  const switchToNextTemplate = () => {
-    if (templates.length === 0) return;
-    const nextIndex = (currentTemplateIndex + 1) % templates.length;
-    const nextTemplate = templates[nextIndex];
-    onTemplateChange?.(nextTemplate);
-  };
-  
-  const switchToPrevTemplate = () => {
-    if (templates.length === 0) return;
-    const prevIndex = currentTemplateIndex === 0 ? templates.length - 1 : currentTemplateIndex - 1;
-    const prevTemplate = templates[prevIndex];
-    onTemplateChange?.(prevTemplate);
+  const sizeClasses = {
+    small: 'w-48 h-64',
+    medium: 'w-64 h-80',
+    large: 'w-80 h-100'
   };
 
-  const sizeClasses = size === 'large' ? 'w-full max-w-md' : 'w-full max-w-xs';
+  const handlePreviousTemplate = () => {
+    const newIndex = (currentTemplateIndex - 1 + DEFAULT_TEMPLATES.length) % DEFAULT_TEMPLATES.length;
+    setCurrentTemplateIndex(newIndex);
+    const newTemplate = DEFAULT_TEMPLATES[newIndex];
+    onTemplateChange?.(newTemplate as DesignTemplate);
+  };
+
+  const handleNextTemplate = () => {
+    const newIndex = (currentTemplateIndex + 1) % DEFAULT_TEMPLATES.length;
+    setCurrentTemplateIndex(newIndex);
+    const newTemplate = DEFAULT_TEMPLATES[newIndex];
+    onTemplateChange?.(newTemplate as DesignTemplate);
+  };
 
   return (
-    <div className={`relative ${className}`}>
-      <div className={`${sizeClasses} mx-auto`}>
-        <div className="aspect-[5/7] bg-white rounded-lg overflow-hidden shadow-xl border border-crd-mediumGray/20 relative group">
-          <SVGTemplateRenderer
-            template={template}
-            imageUrl={imageUrl}
-            className="w-full h-full"
-          />
-          
-          {/* Frame Controls Toggle */}
-          {enableFrameSwitching && (
-            <div className="absolute top-2 left-2">
-              <CRDButton
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowFrameControls(!showFrameControls)}
-                className="bg-crd-darkest/80 backdrop-blur-sm border border-crd-mediumGray/30"
-              >
-                {showFrameControls ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </CRDButton>
-            </div>
-          )}
-          
-          {/* Frame Navigation Controls */}
-          {enableFrameSwitching && showFrameControls && templates.length > 1 && (
-            <>
-              <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <CRDButton
-                  variant="ghost"
-                  size="icon"
-                  onClick={switchToPrevTemplate}
-                  className="bg-crd-darkest/80 backdrop-blur-sm border border-crd-mediumGray/30"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </CRDButton>
-              </div>
-              
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <CRDButton
-                  variant="ghost"
-                  size="icon"
-                  onClick={switchToNextTemplate}
-                  className="bg-crd-darkest/80 backdrop-blur-sm border border-crd-mediumGray/30"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </CRDButton>
-              </div>
-              
-              {/* Frame Counter */}
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="bg-crd-darkest/80 backdrop-blur-sm rounded-lg px-3 py-1 border border-crd-mediumGray/30">
-                  <div className="flex items-center gap-2 text-xs">
-                    <Grid className="w-3 h-3 text-crd-green" />
-                    <span className="text-crd-lightGray">
-                      {currentTemplateIndex + 1} / {templates.length}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-        
-        {/* Template Info */}
-        <div className="mt-3 text-center">
-          <div className="flex items-center justify-center gap-2">
-            <h4 className="text-crd-white font-medium">{template.name}</h4>
-            {template.is_premium && (
-              <Badge className="text-xs bg-crd-green/20 text-crd-green border-crd-green/30">
-                PRO
-              </Badge>
-            )}
+    <div className={`space-y-4 ${className}`}>
+      {/* Card Preview Container with proper aspect ratio */}
+      <div className="relative">
+        <div className={`${sizeClasses[size]} mx-auto relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl border border-crd-mediumGray/20`}>
+          {/* Full Image Background - Always visible */}
+          <div className="absolute inset-0">
+            <img
+              src={imageUrl}
+              alt="Card background"
+              className="w-full h-full object-cover"
+              style={{ objectPosition: 'center' }}
+            />
+            {/* Subtle overlay to ensure frame visibility */}
+            <div className="absolute inset-0 bg-black/10"></div>
           </div>
-          {enableFrameSwitching && showFrameControls && (
-            <p className="text-crd-lightGray text-sm mt-1">
-              Hover to switch frames • Click eye to hide controls
-            </p>
-          )}
+          
+          {/* CRD Frame Overlay */}
+          <div className="absolute inset-0 pointer-events-none">
+            <SVGTemplateRenderer
+              template={activeTemplate as DesignTemplate}
+              imageUrl={imageUrl}
+              playerName={playerName}
+              teamName={teamName}
+              position={position}
+              className="w-full h-full"
+            />
+          </div>
         </div>
+
+        {/* Frame Switching Controls */}
+        {enableFrameSwitching && (
+          <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 pointer-events-none">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePreviousTemplate}
+              className="pointer-events-auto bg-black/80 border-white/20 text-white hover:bg-black/90"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNextTemplate}
+              className="pointer-events-auto bg-black/80 border-white/20 text-white hover:bg-black/90"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Template Info */}
+      <div className="text-center">
+        <Badge variant="outline" className="text-crd-green border-crd-green/30">
+          {activeTemplate.name || 'Custom Template'}
+        </Badge>
+        {enableFrameSwitching && (
+          <p className="text-crd-lightGray text-xs mt-2">
+            Use arrows to switch frames • {currentTemplateIndex + 1}/{DEFAULT_TEMPLATES.length}
+          </p>
+        )}
       </div>
     </div>
   );

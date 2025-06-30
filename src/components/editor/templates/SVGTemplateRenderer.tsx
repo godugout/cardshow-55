@@ -59,7 +59,7 @@ export const SVGTemplateRenderer: React.FC<SVGTemplateRendererProps> = ({
   };
 
   return (
-    <div className={`aspect-[5/7] ${className}`}>
+    <div className={`w-full h-full ${className}`} style={{ aspectRatio: '5/7' }}>
       {renderTemplate()}
     </div>
   );
