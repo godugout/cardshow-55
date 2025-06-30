@@ -3,7 +3,6 @@ import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { 
   Upload, 
@@ -11,17 +10,6 @@ import {
   EyeOff, 
   Lock, 
   Unlock, 
-  Move, 
-  RotateCcw, 
-  Trash2,
-  Plus,
-  Layers,
-  Grid,
-  ZoomIn,
-  ZoomOut,
-  Settings,
-  Target,
-  Scan,
   Play,
   Square,
   Circle,
@@ -29,8 +17,12 @@ import {
   Image as ImageIcon,
   Palette,
   Filter,
-  ChevronDown,
-  ChevronUp
+  Layers,
+  Grid,
+  ZoomIn,
+  ZoomOut,
+  Target,
+  Settings
 } from 'lucide-react';
 
 interface LayerInfo {
@@ -54,15 +46,13 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
   onPrevious
 }) => {
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisComplete, setAnalysisComplete] = useState(false);
   const [selectedLayers, setSelectedLayers] = useState<string[]>([]);
   const [showGrid, setShowGrid] = useState(true);
   const [zoom, setZoom] = useState(1);
   const [autoDetect, setAutoDetect] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Mock detected layers - in real implementation, these would come from PSD analysis
+  // Static mock layers - no AI processing
   const [detectedLayers] = useState<LayerInfo[]>([
     {
       id: '1',
@@ -121,13 +111,6 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
     if (file) {
       const url = URL.createObjectURL(file);
       setSelectedFile(url);
-      
-      // Simulate analysis
-      setIsAnalyzing(true);
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        setAnalysisComplete(true);
-      }, 3000);
     }
   };
 
@@ -144,13 +127,11 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
   };
 
   const handleContinue = () => {
-    console.log('🎯 LayerControlStudio: Continue to Effects clicked');
+    console.log('🎯 LayerControlStudio: Continue clicked');
     if (onNext) {
       onNext();
     }
   };
-
-  const canContinue = analysisComplete && detectedLayers.length > 0;
 
   const layerTypeColors = {
     photo: 'bg-blue-500/20 border-blue-500',
@@ -177,11 +158,11 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
         {/* Header */}
         <div className="p-4 border-b border-crd-mediumGray/20">
           <h2 className="text-xl font-bold text-crd-white mb-2 flex items-center gap-2">
-            <Scan className="w-6 h-6 text-crd-green" />
-            Bulk PSD Analysis
+            <Layers className="w-6 h-6 text-crd-green" />
+            Bulk Creation Studio
           </h2>
           <p className="text-crd-lightGray text-sm">
-            Upload PSD files to automatically detect and extract card elements
+            Upload files and manage layers for bulk card creation
           </p>
         </div>
 
@@ -196,141 +177,107 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
             <CRDButton
               onClick={() => fileInputRef.current?.click()}
               className="w-full"
-              disabled={isAnalyzing}
             >
-              {isAnalyzing ? (
-                <>
-                  <Scan className="w-4 h-4 mr-2 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload PSD File
-                </>
-              )}
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Files
             </CRDButton>
             
             <input
               ref={fileInputRef}
               type="file"
-              accept=".psd,.psb"
+              accept="image/*,.psd,.psb"
+              multiple
               onChange={handleFileUpload}
               className="hidden"
             />
           </div>
         </div>
 
-        {/* Analysis Status */}
-        {isAnalyzing && (
+        {/* Layers Panel */}
+        <div className="flex-1 overflow-hidden">
           <div className="p-4 border-b border-crd-mediumGray/20">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-crd-green/20 rounded-full flex items-center justify-center">
-                  <Scan className="w-4 h-4 text-crd-green animate-pulse" />
-                </div>
-                <div>
-                  <div className="text-crd-white font-medium">Processing Layers</div>
-                  <div className="text-crd-lightGray text-sm">Detecting card elements...</div>
-                </div>
-              </div>
-              <div className="w-full bg-crd-mediumGray/20 rounded-full h-2">
-                <div className="bg-crd-green h-2 rounded-full transition-all duration-1000 w-2/3"></div>
-              </div>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-crd-white font-semibold flex items-center gap-2">
+                <Layers className="w-5 h-5" />
+                Detected Layers ({detectedLayers.length})
+              </h3>
+              <Badge variant="secondary" className="bg-crd-green/20 text-crd-green">
+                Ready
+              </Badge>
             </div>
           </div>
-        )}
 
-        {/* Layers Panel */}
-        {analysisComplete && (
-          <div className="flex-1 overflow-hidden">
-            <div className="p-4 border-b border-crd-mediumGray/20">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-crd-white font-semibold flex items-center gap-2">
-                  <Layers className="w-5 h-5" />
-                  Detected Layers ({detectedLayers.length})
-                </h3>
-                <Badge variant="secondary" className="bg-crd-green/20 text-crd-green">
-                  Auto-detected
-                </Badge>
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
-              {detectedLayers.map((layer, index) => {
-                const Icon = layerTypeIcons[layer.type];
-                const isSelected = selectedLayers.includes(layer.id);
-                
-                return (
-                  <div
-                    key={layer.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                      isSelected 
-                        ? 'border-crd-green bg-crd-green/10' 
-                        : 'border-crd-mediumGray/30 hover:border-crd-mediumGray/50'
-                    }`}
-                    onClick={(e) => handleLayerSelect(layer.id, e.ctrlKey || e.metaKey)}
-                  >
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className={`w-8 h-8 rounded border-2 flex items-center justify-center ${layerTypeColors[layer.type]}`}>
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-crd-white font-medium text-sm">{layer.name}</div>
-                        <div className="text-crd-lightGray text-xs capitalize">{layer.type}</div>
-                      </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {Math.round(layer.confidence * 100)}%
-                      </Badge>
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {detectedLayers.map((layer, index) => {
+              const Icon = layerTypeIcons[layer.type];
+              const isSelected = selectedLayers.includes(layer.id);
+              
+              return (
+                <div
+                  key={layer.id}
+                  className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                    isSelected 
+                      ? 'border-crd-green bg-crd-green/10' 
+                      : 'border-crd-mediumGray/30 hover:border-crd-mediumGray/50'
+                  }`}
+                  onClick={(e) => handleLayerSelect(layer.id, e.ctrlKey || e.metaKey)}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`w-8 h-8 rounded border-2 flex items-center justify-center ${layerTypeColors[layer.type]}`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-crd-white font-medium text-sm">{layer.name}</div>
+                      <div className="text-crd-lightGray text-xs capitalize">{layer.type}</div>
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                      {Math.round(layer.confidence * 100)}%
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <button className="text-crd-lightGray hover:text-crd-white">
+                        {layer.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      </button>
+                      <button className="text-crd-lightGray hover:text-crd-white">
+                        {layer.locked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                      </button>
                     </div>
                     
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <button className="text-crd-lightGray hover:text-crd-white">
-                          {layer.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                        </button>
-                        <button className="text-crd-lightGray hover:text-crd-white">
-                          {layer.locked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
-                        </button>
-                      </div>
-                      
-                      <div className="text-crd-lightGray text-xs">
-                        {layer.opacity}%
-                      </div>
+                    <div className="text-crd-lightGray text-xs">
+                      {layer.opacity}%
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
-        )}
+        </div>
 
-        {/* Action Buttons */}
-        {analysisComplete && (
-          <div className="p-4 border-t border-crd-mediumGray/20">
-            <div className="space-y-3">
-              <CRDButton 
-                className="w-full" 
-                onClick={handleContinue}
-                disabled={!canContinue}
-              >
-                <Play className="w-4 h-4 mr-2" />
-                Continue to Template Generation
+        {/* Action Buttons - Always enabled */}
+        <div className="p-4 border-t border-crd-mediumGray/20">
+          <div className="space-y-3">
+            <CRDButton 
+              className="w-full" 
+              onClick={handleContinue}
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Continue to Next Step
+            </CRDButton>
+            
+            <div className="flex gap-2">
+              <CRDButton variant="outline" size="sm" className="flex-1">
+                <Target className="w-4 h-4 mr-1" />
+                Re-scan
               </CRDButton>
-              
-              <div className="flex gap-2">
-                <CRDButton variant="outline" size="sm" className="flex-1">
-                  <Target className="w-4 h-4 mr-1" />
-                  Re-analyze
-                </CRDButton>
-                <CRDButton variant="outline" size="sm" className="flex-1">
-                  <Settings className="w-4 h-4 mr-1" />
-                  Settings
-                </CRDButton>
-              </div>
+              <CRDButton variant="outline" size="sm" className="flex-1">
+                <Settings className="w-4 h-4 mr-1" />
+                Settings
+              </CRDButton>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Main Canvas Area */}
@@ -340,18 +287,16 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <h3 className="text-crd-white font-semibold">
-                {selectedFile ? 'Layer Analysis View' : 'Upload a PSD file to begin'}
+                {selectedFile ? 'Layer Preview' : 'Upload files to begin'}
               </h3>
-              {analysisComplete && (
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                    Analysis Complete
-                  </Badge>
-                  <span className="text-crd-lightGray text-sm">
-                    {detectedLayers.length} layers detected
-                  </span>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="bg-green-500/20 text-green-400">
+                  Ready
+                </Badge>
+                <span className="text-crd-lightGray text-sm">
+                  {detectedLayers.length} layers available
+                </span>
+              </div>
             </div>
             
             {selectedFile && (
@@ -394,15 +339,15 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
                   <Upload className="w-12 h-12 text-crd-mediumGray" />
                 </div>
                 <h3 className="text-crd-white text-xl font-semibold mb-2">
-                  Ready for PSD Analysis
+                  Ready for Bulk Creation
                 </h3>
                 <p className="text-crd-lightGray mb-6 max-w-md">
-                  Upload your PSD files to automatically detect and extract card elements. 
-                  The AI will identify photos, text, logos, and other components.
+                  Upload your files to begin the bulk card creation process. 
+                  Multiple formats are supported including images and PSD files.
                 </p>
                 <CRDButton onClick={() => fileInputRef.current?.click()}>
                   <Upload className="w-4 h-4 mr-2" />
-                  Choose PSD File
+                  Choose Files
                 </CRDButton>
               </div>
             </div>
@@ -413,7 +358,6 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
                 style={{ transform: `scale(${zoom})`, transformOrigin: 'center top' }}
               >
                 <div className="w-[280px] h-[400px] relative overflow-hidden rounded-lg">
-                  {/* Background placeholder for card */}
                   <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-50 relative">
                     
                     {/* Grid overlay */}
@@ -431,7 +375,7 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
                     )}
                     
                     {/* Layer overlays */}
-                    {analysisComplete && detectedLayers.map((layer) => (
+                    {detectedLayers.map((layer) => (
                       <div
                         key={layer.id}
                         className={`absolute border-2 transition-all cursor-pointer group ${
@@ -447,12 +391,10 @@ export const LayerControlStudio: React.FC<LayerControlStudioProps> = ({
                         }}
                         onClick={() => handleLayerSelect(layer.id)}
                       >
-                        {/* Layer label */}
                         <div className="absolute -top-6 left-0 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                           {layer.name} ({Math.round(layer.confidence * 100)}%)
                         </div>
                         
-                        {/* Resize handles for selected layers */}
                         {selectedLayers.includes(layer.id) && (
                           <>
                             <div className="absolute -top-1 -left-1 w-3 h-3 bg-crd-green rounded-full" />
