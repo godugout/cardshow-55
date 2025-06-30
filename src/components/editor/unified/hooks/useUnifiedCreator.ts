@@ -1,6 +1,7 @@
+
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { useCardEditor } from '@/hooks/useCardEditor';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { CreationMode, CreationStep, ModeConfig } from '../types';
@@ -26,9 +27,9 @@ export const useUnifiedCreator = ({
   onCancel
 }: UseUnifiedCreatorParams) => {
   const cardEditor = useCardEditor();
-  const router = useRouter();
+  const navigate = useNavigate();
 
-  const [state, updateState] = useState<UnifiedCreatorState>({
+  const [state, setState] = useState<UnifiedCreatorState>({
     currentStep: 'intent',
     mode: initialMode || 'quick',
     progress: 0,
@@ -60,16 +61,18 @@ export const useUnifiedCreator = ({
   const galleryFallbackRef = useRef<string>('/gallery');
 
   const actions = useMemo(() => ({
-    updateState,
+    updateState: (updates: Partial<UnifiedCreatorState>) => {
+      setState(prev => ({ ...prev, ...updates }));
+    },
 
     setMode: (mode: CreationMode) => {
       console.log('🎯 useUnifiedCreator: Setting mode to:', mode);
-      updateState({
-        ...state,
+      setState(prev => ({
+        ...prev,
         mode,
         currentStep: 'upload',
         progress: 25
-      });
+      }));
     },
 
     previousStep: () => {
@@ -80,15 +83,15 @@ export const useUnifiedCreator = ({
       if (currentIndex > 0) {
         const previousStep = config.steps[currentIndex - 1];
         console.log('🎯 useUnifiedCreator: Moving to previous step:', previousStep);
-        updateState({
-          ...state,
+        setState(prev => ({
+          ...prev,
           currentStep: previousStep,
           progress: Math.round((currentIndex / config.steps.length) * 100),
           canGoBack: currentIndex > 1
-        });
+        }));
       } else {
         console.log('🎯 useUnifiedCreator: Already at the first step');
-        updateState({ ...state, canGoBack: false });
+        setState(prev => ({ ...prev, canGoBack: false }));
       }
     },
 
@@ -102,10 +105,11 @@ export const useUnifiedCreator = ({
         const nextStep = config.steps[currentIndex + 1];
         console.log('🎯 useUnifiedCreator: Moving to next step:', nextStep);
         
-        updateState({ 
+        setState(prev => ({
+          ...prev,
           currentStep: nextStep,
           progress: Math.round(((currentIndex + 2) / config.steps.length) * 100)
-        });
+        }));
       } else {
         console.log('🎯 useUnifiedCreator: At final step, completing creation');
         actions.completeCreation();
@@ -130,38 +134,45 @@ export const useUnifiedCreator = ({
 
     completeCreation: async () => {
       console.log('🎯 useUnifiedCreator: Completing card creation');
-      updateState({ ...state, isCreating: true, creationError: null });
+      setState(prev => ({ ...prev, isCreating: true, creationError: null }));
 
       try {
         await cardEditor.saveCard();
-        updateState({ ...state, isCreating: false });
+        setState(prev => ({ ...prev, isCreating: false }));
         toast.success('Card created successfully!');
         onComplete?.(cardEditor.cardData);
-        router.push('/gallery');
+        navigate('/gallery');
       } catch (error: any) {
         console.error('🎯 useUnifiedCreator: Error completing card creation:', error);
-        updateState({ ...state, isCreating: false, creationError: error.message || 'Failed to create card' });
+        setState(prev => ({ 
+          ...prev, 
+          isCreating: false, 
+          creationError: error.message || 'Failed to create card' 
+        }));
         toast.error('Failed to create card: ' + error.message);
       }
     },
 
     startOver: () => {
       console.log('🎯 useUnifiedCreator: Starting over, resetting card data');
-      cardEditor.resetCard();
-      updateState({
-        ...state,
+      // Reset card data by updating individual fields
+      cardEditor.updateCardField('title', 'My New Card');
+      cardEditor.updateCardField('description', '');
+      cardEditor.updateCardField('image_url', undefined);
+      setState(prev => ({
+        ...prev,
         currentStep: 'intent',
         progress: 0,
         canGoBack: false
-      });
-      router.push('/');
+      }));
+      navigate('/');
     },
 
     goToGallery: () => {
       console.log('🎯 useUnifiedCreator: Navigating to gallery');
-      router.push(galleryFallbackRef.current);
+      navigate(galleryFallbackRef.current);
     }
-  }), [state, cardEditor, modeConfigs, onComplete, onCancel, router]);
+  }), [state, cardEditor, modeConfigs, onComplete, onCancel, navigate]);
 
   return {
     state,
