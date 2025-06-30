@@ -119,6 +119,7 @@ export const UnifiedCardCreator = ({
           onBulkUpload={() => actions.setMode('bulk')}
           onGoToGallery={actions.goToGallery}
           onStartOver={actions.startOver}
+          onNextStep={actions.nextStep}
         />
       </div>
 

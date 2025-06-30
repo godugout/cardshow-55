@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Upload, Image, Frame, AlertCircle, Crop, Palette, Maximize, Camera, X } from 'lucide-react';
 import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRenderer';
-import { BaseballCardCropper } from '@/components/editor/cropping/BaseballCardCropper';
+import { EnhancedImageCropper } from '../../sections/components/EnhancedImageCropper';
 import { BASEBALL_CARD_TEMPLATES } from '@/components/editor/templates/BaseballCardTemplates';
 import { TeamColorSelector } from '@/components/editor/templates/TeamColorSelector';
 import { useColorThemes } from '@/hooks/useColorThemes';
@@ -20,6 +20,7 @@ interface PhotoStepProps {
   cardData?: CardData;
   selectedFrame?: DesignTemplate;
   onFrameSelect?: (frame: DesignTemplate) => void;
+  onMoveToEffects?: () => void;
 }
 
 export const PhotoStep = ({ 
@@ -28,7 +29,8 @@ export const PhotoStep = ({
   onPhotoSelect, 
   cardData,
   selectedFrame,
-  onFrameSelect 
+  onFrameSelect,
+  onMoveToEffects
 }: PhotoStepProps) => {
   console.log('📸 PhotoStep: Rendering with photo:', !!selectedPhoto, 'frame:', selectedFrame?.name);
   
@@ -114,8 +116,14 @@ export const PhotoStep = ({
   }, [onFrameSelect]);
 
   const handleCropComplete = (croppedImageUrl: string) => {
+    console.log('✂️ PhotoStep: Crop completed, moving to effects');
     onPhotoSelect(croppedImageUrl);
     setShowCropper(false);
+    
+    // Move directly to effects step
+    if (onMoveToEffects) {
+      onMoveToEffects();
+    }
   };
 
   const handleColorSchemeSelect = useCallback((colorScheme: TeamColorScheme) => {
@@ -130,11 +138,10 @@ export const PhotoStep = ({
   if (showCropper && selectedPhoto) {
     return (
       <div className="max-w-4xl mx-auto">
-        <BaseballCardCropper
+        <EnhancedImageCropper
           imageUrl={selectedPhoto}
-          template={currentFrame}
           onCropComplete={handleCropComplete}
-          onCancel={() => setShowCropper(false)}
+          className="max-w-2xl mx-auto"
         />
       </div>
     );
