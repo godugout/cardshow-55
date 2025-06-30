@@ -31,6 +31,7 @@ interface StudioPanelProps {
   onResetCamera?: () => void;
   solidCardTransition: boolean;
   onSolidCardTransitionChange: (value: boolean) => void;
+  onExpandEffects?: () => void; // New prop for Effects section expansion
 }
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({
@@ -38,6 +39,7 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
   onClose,
   solidCardTransition,
   onSolidCardTransitionChange,
+  onExpandEffects,
   ...studioProps
 }) => {
   if (!isVisible) return null;
@@ -83,8 +85,11 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
           </p>
         </div>
 
-        {/* Studio Content with Scroll Support */}
-        <ScrollableStudioContent {...studioProps} />
+        {/* Studio Content with Enhanced Effects Integration */}
+        <ScrollableStudioContent 
+          {...studioProps} 
+          onExpandEffects={onExpandEffects}
+        />
       </div>
     </div>
   );

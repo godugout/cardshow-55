@@ -57,44 +57,54 @@ export const ViewerEffectsManager: React.FC<ViewerEffectsManagerProps> = ({
     }
   }, [card, validateEffectState, onValidateEffectState]);
 
-  // Enhanced manual effect change that syncs with parent state
+  // Enhanced manual effect change with better state management
   const handleManualEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
     console.log('🎛️ ViewerEffectsManager: Manual effect change:', { effectId, parameterId, value });
     
+    // Apply the change without clearing preset if we're not in application mode
     if (!isApplyingPreset) {
-      // Clear preset selection when manual changes are made
-      console.log('🔄 Clearing preset selection due to manual change');
+      console.log('🔄 Manual change detected, maintaining effect continuity');
     }
     
     handleEffectChange(effectId, parameterId, value);
     onEffectChange(effectId, parameterId, value);
   }, [handleEffectChange, isApplyingPreset, onEffectChange]);
 
-  // Enhanced reset that includes all state
+  // Enhanced reset that maintains card back visibility
   const handleResetWithEffects = useCallback(() => {
-    console.log('🔄 ViewerEffectsManager: Resetting all effects');
+    console.log('🔄 ViewerEffectsManager: Enhanced reset maintaining back visibility');
     resetAllEffects();
     validateEffectState();
     onResetAllEffects();
   }, [resetAllEffects, validateEffectState, onResetAllEffects]);
 
-  // Enhanced combo application with proper logging
+  // Enhanced preset application with improved state management
   const handleApplyCombo = useCallback((preset: EffectValues, presetId?: string) => {
-    console.log('🚀 ViewerEffectsManager: Applying preset:', presetId, preset);
+    console.log('🚀 ViewerEffectsManager: Enhanced preset application:', presetId, preset);
     
+    // Validate current state before application
     validateEffectState();
+    
+    // Apply preset with enhanced merging
     applyPreset(preset, presetId);
     onApplyPreset(preset, presetId);
     
-    // Log the current effect values after application
+    // Enhanced logging for debugging
     setTimeout(() => {
-      console.log('✅ ViewerEffectsManager: Preset applied, current effects:', effectValues);
-    }, 100);
+      console.log('✅ ViewerEffectsManager: Enhanced preset applied, current effects:', effectValues);
+    }, 150);
   }, [applyPreset, validateEffectState, onApplyPreset, effectValues]);
 
-  // Debug logging for effect values changes
+  // Enhanced debug logging for effect values changes
   useEffect(() => {
-    console.log('🎨 ViewerEffectsManager: Effect values updated:', effectValues);
+    console.log('🎨 ViewerEffectsManager: Enhanced effect values updated:', effectValues);
+    
+    // Log active effects for debugging
+    const activeEffects = Object.entries(effectValues).filter(([_, params]) => {
+      const intensity = typeof params.intensity === 'number' ? params.intensity : 0;
+      return intensity > 10;
+    });
+    console.log('⚡ Active effects (>10 intensity):', activeEffects.map(([id, params]) => `${id}: ${params.intensity}`));
   }, [effectValues]);
 
   return (

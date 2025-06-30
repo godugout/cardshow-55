@@ -12,6 +12,7 @@ interface StylesSectionProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
+  onExpandEffects?: () => void; // New prop to trigger Effects section expansion
 }
 
 export const StylesSection: React.FC<StylesSectionProps> = ({
@@ -21,20 +22,29 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
   selectedPresetId,
   onPresetSelect,
   onApplyCombo,
-  isApplyingPreset = false
+  isApplyingPreset = false,
+  onExpandEffects
 }) => {
   const statusText = selectedPresetId && selectedPresetId !== 'custom-init' ? 
     selectedPresetId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : 
     "Select Style";
 
   const handleComboClick = (combo: any) => {
-    console.log('🎨 StylesSection: Combo clicked:', combo.id, combo.effects);
+    console.log('🎨 StylesSection: Combo clicked with enhanced integration:', combo.id, combo.effects);
     
     // First set the selected preset
     onPresetSelect(combo.id);
     
-    // Then apply the combo effects
+    // Apply the combo effects
     onApplyCombo(combo);
+    
+    // Expand Effects section to show active sliders (after brief delay for state update)
+    if (onExpandEffects) {
+      setTimeout(() => {
+        onExpandEffects();
+        console.log('📈 Expanding Effects section to show active sliders');
+      }, 200);
+    }
   };
 
   return (

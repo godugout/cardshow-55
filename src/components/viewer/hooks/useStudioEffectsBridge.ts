@@ -29,17 +29,32 @@ export const useStudioEffectsBridge = ({
     return 0;
   }, []);
   
-  // Convert Studio state to card-compatible effects
+  // Convert Studio state to card-compatible effects with enhanced state validation
   const bridgedEffects = useMemo((): EffectValues => {
-    console.log('🌉 StudioEffectsBridge: Input effectValues:', effectValues);
+    console.log('🌉 StudioEffectsBridge: Processing effectValues:', effectValues);
     
-    // Start with existing effect values as base
-    const effects: EffectValues = effectValues ? { ...effectValues } : {};
+    // Validate input - ensure we have valid effect values
+    if (!effectValues || Object.keys(effectValues).length === 0) {
+      console.warn('⚠️ StudioEffectsBridge: Received empty effectValues, using defaults');
+      return {
+        brushedmetal: { intensity: 15 } // Ensure card back remains visible
+      };
+    }
     
-    // Scene-based effects - only enhance if not already strong
+    // Start with existing effect values as base (deep copy to prevent mutations)
+    const effects: EffectValues = JSON.parse(JSON.stringify(effectValues));
+    
+    // Ensure minimum base effect for card back visibility
+    if (!effects.brushedmetal || getEffectIntensity(effects.brushedmetal) < 10) {
+      if (!effects.brushedmetal) effects.brushedmetal = {};
+      effects.brushedmetal.intensity = Math.max(15, getEffectIntensity(effects.brushedmetal));
+      console.log('🛡️ Ensuring card back visibility with brushedmetal base');
+    }
+    
+    // Scene-based enhancements (additive, not replacement)
     if (selectedScene.id === 'holographic') {
       const currentIntensity = getEffectIntensity(effects.holographic);
-      if (currentIntensity < 60) {
+      if (currentIntensity < 50) {
         effects.holographic = { 
           intensity: Math.max(currentIntensity, 60),
           shiftSpeed: 150,
@@ -47,26 +62,26 @@ export const useStudioEffectsBridge = ({
           animated: true,
           ...effects.holographic 
         };
-        console.log('🌈 Applied holographic scene effect');
+        console.log('🌈 Enhanced holographic scene effect');
       }
     }
     
     if (selectedScene.id === 'chrome') {
       const currentIntensity = getEffectIntensity(effects.chrome);
-      if (currentIntensity < 50) {
+      if (currentIntensity < 40) {
         effects.chrome = { 
           intensity: Math.max(currentIntensity, 50),
           sharpness: 95,
           highlightSize: 70,
           ...effects.chrome 
         };
-        console.log('🪞 Applied chrome scene effect');
+        console.log('🪞 Enhanced chrome scene effect');
       }
     }
     
     if (selectedScene.id === 'gold') {
       const currentIntensity = getEffectIntensity(effects.gold);
-      if (currentIntensity < 70) {
+      if (currentIntensity < 60) {
         effects.gold = { 
           intensity: Math.max(currentIntensity, 70),
           goldTone: 'classic',
@@ -74,27 +89,27 @@ export const useStudioEffectsBridge = ({
           platingThickness: 5,
           ...effects.gold 
         };
-        console.log('🏆 Applied gold scene effect');
+        console.log('🏆 Enhanced gold scene effect');
       }
     }
     
-    // Lighting-based effects
+    // Lighting-based enhancements
     if (selectedLighting.id === 'neon') {
       const currentIntensity = getEffectIntensity(effects.neon);
-      if (currentIntensity < 40) {
+      if (currentIntensity < 30) {
         effects.neon = { 
           intensity: Math.max(currentIntensity, 40),
           neonColor: '#00ff00',
           ...effects.neon 
         };
-        console.log('💚 Applied neon lighting effect');
+        console.log('💚 Enhanced neon lighting effect');
       }
     }
     
     // Material-based enhancements
     if (materialSettings.metalness > 0.7) {
       const currentIntensity = getEffectIntensity(effects.chrome);
-      const materialBoost = materialSettings.metalness * 60;
+      const materialBoost = materialSettings.metalness * 50;
       if (currentIntensity < materialBoost) {
         effects.chrome = { 
           intensity: Math.max(currentIntensity, materialBoost),
@@ -102,11 +117,11 @@ export const useStudioEffectsBridge = ({
           highlightSize: 60,
           ...effects.chrome 
         };
-        console.log('🛠️ Applied material metalness boost');
+        console.log('🛠️ Enhanced material metalness boost');
       }
     }
     
-    console.log('🌉 StudioEffectsBridge: Output bridged effects:', effects);
+    console.log('🌉 StudioEffectsBridge: Final bridged effects:', effects);
     return effects;
   }, [selectedScene, selectedLighting, effectValues, materialSettings, getEffectIntensity]);
   
@@ -114,12 +129,12 @@ export const useStudioEffectsBridge = ({
   const dynamicBrightness = useMemo(() => {
     const baseBrightness = overallBrightness[0] / 100;
     const activeEffectsCount = Object.values(bridgedEffects).filter(
-      effect => getEffectIntensity(effect) > 20
+      effect => getEffectIntensity(effect) > 15
     ).length;
     
     // Boost brightness when multiple effects are active
-    const effectBoost = activeEffectsCount > 0 ? 1 + (activeEffectsCount * 0.1) : 1;
-    const result = Math.min(baseBrightness * effectBoost, 2.0);
+    const effectBoost = activeEffectsCount > 0 ? 1 + (activeEffectsCount * 0.08) : 1;
+    const result = Math.min(baseBrightness * effectBoost, 1.8);
     
     console.log('💡 Dynamic brightness calculation:', {
       baseBrightness,
