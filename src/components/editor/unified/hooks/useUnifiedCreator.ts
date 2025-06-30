@@ -1,4 +1,5 @@
 
+
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { useNavigate } from 'react-router-dom';
@@ -40,19 +41,36 @@ export const useUnifiedCreator = ({
 
   const modeConfigs: Record<CreationMode, ModeConfig> = useMemo(() => ({
     quick: {
+      id: 'quick',
       title: 'Quick Creation',
       description: 'Create a card in a few simple steps',
-      steps: ['upload', 'details', 'publish']
+      icon: 'Zap',
+      steps: ['upload', 'details', 'publish'],
+      features: ['AI assistance', 'Smart defaults', 'One-click publish']
     },
-    detailed: {
-      title: 'Detailed Creation',
-      description: 'Customize every aspect of your card',
-      steps: ['upload', 'details', 'design', 'publish']
+    guided: {
+      id: 'guided',
+      title: 'Guided Creation',
+      description: 'Step-by-step wizard with help',
+      icon: 'Navigation',
+      steps: ['upload', 'details', 'design', 'publish'],
+      features: ['Progressive guidance', 'Templates', 'Live preview']
+    },
+    advanced: {
+      id: 'advanced',
+      title: 'Advanced Creation',
+      description: 'Full editor with all features',
+      icon: 'Settings',
+      steps: ['upload', 'design', 'details', 'publish'],
+      features: ['Advanced cropping', 'Custom effects', 'Collaboration']
     },
     bulk: {
+      id: 'bulk',
       title: 'Bulk Creation',
       description: 'Create multiple cards from a spreadsheet',
-      steps: ['upload', 'details', 'publish']
+      icon: 'Copy',
+      steps: ['upload', 'details', 'publish'],
+      features: ['Batch processing', 'AI analysis', 'Template application']
     }
   }), []);
 
@@ -182,3 +200,4 @@ export const useUnifiedCreator = ({
     actions
   };
 };
+
