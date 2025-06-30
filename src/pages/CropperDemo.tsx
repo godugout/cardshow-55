@@ -120,8 +120,13 @@ export const CropperDemo: React.FC = () => {
     handleCropComplete('advanced', urls);
   };
 
-  const handleStreamlinedCropComplete = (results: any[]) => {
-    const urls = results.map(result => result.croppedImageUrl);
+  const handleStreamlinedCropComplete = (crops: { main?: string; frame?: string; elements?: string[]; }) => {
+    const urls: string[] = [];
+    
+    if (crops.main) urls.push(crops.main);
+    if (crops.frame) urls.push(crops.frame);
+    if (crops.elements) urls.push(...crops.elements);
+    
     handleCropComplete('streamlined', urls);
   };
 
