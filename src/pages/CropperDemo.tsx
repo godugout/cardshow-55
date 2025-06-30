@@ -19,6 +19,32 @@ const SAMPLE_IMAGES = [
   '/lovable-uploads/25cbcac9-64c0-4969-9baa-7a3fdf9eb00a.png'
 ];
 
+// Mock template for baseball cropper demo
+const MOCK_BASEBALL_TEMPLATE = {
+  id: 'demo-baseball',
+  name: 'Demo Baseball Template',
+  category: 'sports',
+  is_premium: false,
+  template_data: {
+    component: 'ClassicBaseballTemplate',
+    photoRegion: {
+      x: 15,
+      y: 50,
+      width: 220,
+      height: 180,
+      shape: 'rectangle' as const
+    },
+    colors: {
+      primary: '#1a472a',
+      secondary: '#2d5a3d',
+      accent: '#4ade80',
+      text: '#ffffff'
+    }
+  },
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString()
+};
+
 interface CropperInfo {
   id: string;
   name: string;
@@ -73,11 +99,30 @@ export const CropperDemo: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string>(SAMPLE_IMAGES[0]);
   const [cropResults, setCropResults] = useState<Record<string, string[]>>({});
 
-  const handleCropComplete = (cropperId: string, croppedImageUrl: string) => {
-    setCropResults(prev => ({
-      ...prev,
-      [cropperId]: [...(prev[cropperId] || []), croppedImageUrl]
-    }));
+  const handleCropComplete = (cropperId: string, croppedImageUrl: string | string[]) => {
+    setCropResults(prev => {
+      const newResults = { ...prev };
+      
+      if (Array.isArray(croppedImageUrl)) {
+        // Handle multiple results (from advanced croppers)
+        newResults[cropperId] = [...(prev[cropperId] || []), ...croppedImageUrl];
+      } else {
+        // Handle single result
+        newResults[cropperId] = [...(prev[cropperId] || []), croppedImageUrl];
+      }
+      
+      return newResults;
+    });
+  };
+
+  const handleAdvancedCropComplete = (results: any[]) => {
+    const urls = results.map(result => result.croppedImageUrl);
+    handleCropComplete('advanced', urls);
+  };
+
+  const handleStreamlinedCropComplete = (results: any[]) => {
+    const urls = results.map(result => result.croppedImageUrl);
+    handleCropComplete('streamlined', urls);
   };
 
   const getComplexityColor = (complexity: string) => {
@@ -215,9 +260,7 @@ export const CropperDemo: React.FC = () => {
                   <CardContent className="p-0">
                     <StreamlinedAdvancedCropper
                       imageUrl={selectedImage}
-                      onCropComplete={(results) => {
-                        results.forEach(result => handleCropComplete('streamlined', result.croppedImageUrl));
-                      }}
+                      onCropComplete={handleStreamlinedCropComplete}
                       onCancel={() => {}}
                     />
                   </CardContent>
@@ -264,9 +307,7 @@ export const CropperDemo: React.FC = () => {
                   <CardContent className="p-0">
                     <DemoAdvancedCropper
                       imageUrl={selectedImage}
-                      onCropComplete={(results) => {
-                        results.forEach(result => handleCropComplete('advanced', result.croppedImageUrl));
-                      }}
+                      onCropComplete={handleAdvancedCropComplete}
                       onCancel={() => {}}
                     />
                   </CardContent>
@@ -313,7 +354,9 @@ export const CropperDemo: React.FC = () => {
                   <CardContent className="p-6">
                     <BaseballCardCropper
                       imageUrl={selectedImage}
+                      template={MOCK_BASEBALL_TEMPLATE}
                       onCropComplete={(url) => handleCropComplete('baseball', url)}
+                      onCancel={() => {}}
                     />
                   </CardContent>
                 </Card>
