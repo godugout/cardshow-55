@@ -1,20 +1,38 @@
+
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Plus, Home, ImageIcon, Palette, Sparkles, Grid } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Plus, Home, ImageIcon, Palette, Sparkles, Grid, ArrowLeft } from 'lucide-react';
 
 export const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => location.pathname === path;
   const isStudioRoute = location.pathname.startsWith('/studio');
+
+  const handleBackClick = () => {
+    // Use browser history to go back to previous page
+    // If there's no history (direct access), fallback to gallery
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/gallery');
+    }
+  };
 
   return (
     <nav className="bg-crd-darker border-b border-crd-mediumGray/20 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo - Static for Studio, link for other pages */}
+          {/* Logo - Static for Studio with back button, link for other pages */}
           {isStudioRoute ? (
             <div className="flex items-center space-x-3">
+              <button
+                onClick={handleBackClick}
+                className="p-2 text-white hover:text-gray-300 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
               <div className="flex items-center space-x-2">
                 <img
                   src="/lovable-uploads/786e777f-b56f-4080-9b40-aef8e8303f27.png"
