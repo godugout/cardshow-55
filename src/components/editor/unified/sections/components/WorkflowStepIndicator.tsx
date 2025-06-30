@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Sparkles, Grid, FileImage, ArrowRight } from 'lucide-react';
+import { Sparkles, Grid, FileImage, ArrowRight, Layers } from 'lucide-react';
 import { WorkflowStep } from '../../types';
 
 interface WorkflowStepIndicatorProps {
@@ -17,8 +17,7 @@ export const WorkflowStepIndicator: React.FC<WorkflowStepIndicatorProps> = ({
       case 'batch-processing':
         return [
           { id: 'batch-processing', label: 'Batch Upload', description: 'Upload multiple images', icon: Grid },
-          { id: 'effects', label: 'Effects', description: 'Apply batch effects', icon: Sparkles },
-          { id: 'publish', label: 'Publish', description: 'Export all cards', icon: FileImage }
+          { id: 'effects', label: 'Effects', description: 'Apply batch effects', icon: Sparkles }
         ];
       case 'psd-professional':
         return [
@@ -29,8 +28,8 @@ export const WorkflowStepIndicator: React.FC<WorkflowStepIndicatorProps> = ({
       default:
         return [
           { id: 'upload', label: 'Upload', description: 'Choose media', icon: FileImage },
-          { id: 'path-selection', label: 'Workflow', description: 'Select path', icon: ArrowRight },
-          { id: 'template-selection', label: 'Template', description: 'Pick design', icon: Grid }
+          { id: 'combined-selection', label: 'Setup', description: 'Workflow & Template', icon: Grid },
+          { id: 'effects', label: 'Effects', description: 'Customize & Publish', icon: Sparkles }
         ];
     }
   };

@@ -1,3 +1,4 @@
+
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { ArrowRight } from 'lucide-react';
@@ -5,7 +6,6 @@ import { useFreeAIAnalysis } from '@/hooks/useFreeAIAnalysis';
 import { useTemplates } from '@/hooks/useTemplates';
 import { MediaPathAnalyzer } from '@/lib/crdmkr/mediaPathAnalyzer';
 import { ProfessionalPSDManager } from './components/ProfessionalPSDManager';
-import { CRDFrameGenerator } from '@/lib/crdmkr/crdFrameGenerator';
 
 import { AIToolsPanel } from './components/AIToolsPanel';
 import { UploadStep } from './components/UploadStep';
@@ -95,7 +95,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       if (result) {
         updateState({
           imageAnalysis: {
-            dominantColors: result.colorPalette,
+            colorPalette: result.colorPalette,
             suggestedRarity: result.suggestedRarity,
             contentType: result.contentType,
             tags: result.tags,
@@ -104,7 +104,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
             suggestedTemplate: result.suggestedTemplate,
             confidence: result.confidence
           },
-          currentStep: 'path-selection'
+          currentStep: 'combined-selection'
         });
         
         setUploadProgress(100);
@@ -134,7 +134,8 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     if (pathId === 'psd-professional') {
       updateState({ showAITools: true });
     } else if (['standard-card', 'interactive-card', 'quick-frame'].includes(pathId)) {
-      updateState({ currentStep: 'template-selection' });
+      // Path selection is now part of combined step
+      console.log('Path selected, ready for template selection');
     } else {
       toast.success(`${pathId} workflow selected!`);
       updateState({ showAITools: true });
@@ -181,8 +182,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     }
     
     console.log('✅ Template selected:', templateId, 'Validation:', validateCurrentStep());
-    updateState({ showAITools: true });
-    toast.success('Template selected!');
+    toast.success('Template selected! Ready to continue to effects.');
   };
 
   // Show PSD Manager if activated
@@ -199,9 +199,13 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
 
   const handleBack = () => {
     console.log('⬅️ Going back from step:', state.currentStep);
-    if (state.currentStep === 'template-selection') updateState({ currentStep: 'path-selection' });
-    else if (state.currentStep === 'path-selection') updateState({ currentStep: 'upload' });
+    if (state.currentStep === 'combined-selection') updateState({ currentStep: 'upload' });
     else if (state.currentStep === 'batch-processing') updateState({ currentStep: 'upload' });
+  };
+
+  const handleContinueToEffects = () => {
+    console.log('🎯 Continuing to effects step');
+    onNext(); // This should navigate to the effects section
   };
 
   const getStepText = () => {
@@ -221,13 +225,10 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         if (!cardEditor.cardData.image_url) return 'Upload images for batch processing';
         return 'Batch processing ready - continue to effects';
       
-      case 'path-selection':
-        if (!state.selectedMediaPath) return 'Choose your workflow path';
-        return 'Workflow selected - ready to continue';
-      
-      case 'template-selection':
-        if (!state.selectedTemplate) return 'Select a template';
-        return 'Template selected - ready to continue';
+      case 'combined-selection':
+        if (!state.selectedMediaPath) return 'Choose workflow and select template';
+        if (!state.selectedTemplate) return 'Select a template to continue';
+        return 'Ready to continue to effects';
       
       case 'psd-manager':
         if (!state.generatedTemplate && !state.showAITools) return 'Processing PSD file';
@@ -254,27 +255,36 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       case 'batch-processing':
         return <BatchProcessingStep imageUrl={cardEditor.cardData.image_url} />;
 
-      case 'path-selection':
+      case 'combined-selection':
         return (
-          <PathSelectionStep
-            mediaDetection={state.mediaDetection}
-            selectedMediaPath={state.selectedMediaPath}
-            onPathSelect={handlePathSelect}
-            originalFile={state.originalFile}
-            userImage={cardEditor.cardData.image_url}
-            onTemplateGenerated={handleTemplateGenerated}
-          />
-        );
+          <div className="space-y-8">
+            {/* Path Selection */}
+            <div className="bg-crd-darker/50 border border-crd-mediumGray/20 rounded-xl p-6">
+              <h3 className="text-xl font-bold text-crd-white mb-4">Choose Your Workflow</h3>
+              <PathSelectionStep
+                mediaDetection={state.mediaDetection}
+                selectedMediaPath={state.selectedMediaPath}
+                onPathSelect={handlePathSelect}
+                originalFile={state.originalFile}
+                userImage={cardEditor.cardData.image_url}
+                onTemplateGenerated={handleTemplateGenerated}
+              />
+            </div>
 
-      case 'template-selection':
-        return (
-          <TemplateSelectionStep
-            templates={templates}
-            templatesLoading={templatesLoading}
-            selectedTemplate={state.selectedTemplate}
-            imageAnalysis={state.imageAnalysis}
-            onTemplateSelect={handleTemplateSelect}
-          />
+            {/* Template Selection - only show if path is selected */}
+            {state.selectedMediaPath && ['standard-card', 'interactive-card', 'quick-frame'].includes(state.selectedMediaPath) && (
+              <div className="bg-crd-darker/50 border border-crd-mediumGray/20 rounded-xl p-6">
+                <h3 className="text-xl font-bold text-crd-white mb-4">Select Template</h3>
+                <TemplateSelectionStep
+                  templates={templates}
+                  templatesLoading={templatesLoading}
+                  selectedTemplate={state.selectedTemplate}
+                  imageAnalysis={state.imageAnalysis}
+                  onTemplateSelect={handleTemplateSelect}
+                />
+              </div>
+            )}
+          </div>
         );
 
       case 'psd-manager':
@@ -310,7 +320,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
         stepText={getStepText()}
         workflow={workflow}
         onBack={handleBack}
-        onNext={onNext}
+        onNext={handleContinueToEffects}
       />
 
       {/* Validation Feedback */}

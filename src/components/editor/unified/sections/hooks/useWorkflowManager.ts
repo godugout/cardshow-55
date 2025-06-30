@@ -104,11 +104,16 @@ export const useWorkflowManager = (cardEditor: any) => {
       case 'upload':
         return !!cardEditor.cardData.image_url;
       
-      case 'path-selection':
-        return !!state.selectedMediaPath && !!cardEditor.cardData.image_url;
-      
-      case 'template-selection':
-        return !!state.selectedTemplate && !!cardEditor.cardData.image_url;
+      case 'combined-selection':
+        // Require both path and template selection for standard workflows
+        const hasPath = !!state.selectedMediaPath;
+        const isStandardPath = ['standard-card', 'interactive-card', 'quick-frame'].includes(state.selectedMediaPath);
+        const hasTemplate = !!state.selectedTemplate;
+        
+        if (isStandardPath) {
+          return hasPath && hasTemplate && !!cardEditor.cardData.image_url;
+        }
+        return hasPath && !!cardEditor.cardData.image_url;
       
       case 'psd-manager':
         return !!state.generatedTemplate || state.showAITools;
