@@ -21,6 +21,14 @@ export const useStudioEffectsBridge = ({
   interactiveLighting
 }: StudioEffectsBridgeProps) => {
   
+  // Helper function to safely get effect intensity as number
+  const getEffectIntensity = useCallback((effect: any): number => {
+    if (typeof effect?.intensity === 'number') {
+      return effect.intensity;
+    }
+    return 0;
+  }, []);
+  
   // Convert Studio state to card-compatible effects
   const bridgedEffects = useMemo((): EffectValues => {
     const effects: EffectValues = { ...effectValues };
@@ -28,21 +36,21 @@ export const useStudioEffectsBridge = ({
     // Scene-based effects
     if (selectedScene.id === 'holographic') {
       effects.holographic = { 
-        intensity: Math.max(effects.holographic?.intensity || 0, 60),
+        intensity: Math.max(getEffectIntensity(effects.holographic), 60),
         ...effects.holographic 
       };
     }
     
     if (selectedScene.id === 'chrome') {
       effects.chrome = { 
-        intensity: Math.max(effects.chrome?.intensity || 0, 50),
+        intensity: Math.max(getEffectIntensity(effects.chrome), 50),
         ...effects.chrome 
       };
     }
     
     if (selectedScene.id === 'gold') {
       effects.gold = { 
-        intensity: Math.max(effects.gold?.intensity || 0, 70),
+        intensity: Math.max(getEffectIntensity(effects.gold), 70),
         goldTone: 'classic',
         ...effects.gold 
       };
@@ -51,7 +59,7 @@ export const useStudioEffectsBridge = ({
     // Lighting-based effects
     if (selectedLighting.id === 'neon') {
       effects.neon = { 
-        intensity: Math.max(effects.neon?.intensity || 0, 40),
+        intensity: Math.max(getEffectIntensity(effects.neon), 40),
         neonColor: '#00ff00',
         ...effects.neon 
       };
@@ -60,25 +68,25 @@ export const useStudioEffectsBridge = ({
     // Material-based enhancements
     if (materialSettings.metalness > 0.7) {
       effects.chrome = { 
-        intensity: Math.max(effects.chrome?.intensity || 0, materialSettings.metalness * 60),
+        intensity: Math.max(getEffectIntensity(effects.chrome), materialSettings.metalness * 60),
         ...effects.chrome 
       };
     }
     
     return effects;
-  }, [selectedScene, selectedLighting, effectValues, materialSettings]);
+  }, [selectedScene, selectedLighting, effectValues, materialSettings, getEffectIntensity]);
   
   // Calculate dynamic brightness based on effects and brightness setting
   const dynamicBrightness = useMemo(() => {
     const baseBrightness = overallBrightness[0] / 100;
     const activeEffectsCount = Object.values(bridgedEffects).filter(
-      effect => typeof effect.intensity === 'number' && effect.intensity > 20
+      effect => getEffectIntensity(effect) > 20
     ).length;
     
     // Boost brightness when multiple effects are active
     const effectBoost = activeEffectsCount > 0 ? 1 + (activeEffectsCount * 0.1) : 1;
     return Math.min(baseBrightness * effectBoost, 2.0);
-  }, [overallBrightness, bridgedEffects]);
+  }, [overallBrightness, bridgedEffects, getEffectIntensity]);
   
   // Enhanced interactive lighting based on Studio settings
   const enhancedInteractiveLighting = useMemo(() => {
@@ -90,7 +98,7 @@ export const useStudioEffectsBridge = ({
     dynamicBrightness,
     enhancedInteractiveLighting,
     activeEffectsCount: Object.values(bridgedEffects).filter(
-      effect => typeof effect.intensity === 'number' && effect.intensity > 10
+      effect => getEffectIntensity(effect) > 10
     ).length
   };
 };
