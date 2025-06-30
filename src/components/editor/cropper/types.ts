@@ -40,7 +40,7 @@ export interface HistoryEntry {
   cropAreas: CropArea[];
 }
 
-export type DragHandle = 'tl' | 'tr' | 'bl' | 'br' | 'move' | 'rotate' | null;
+export type DragHandle = 'tl' | 'tr' | 'bl' | 'br' | 't' | 'b' | 'l' | 'r' | 'move' | 'rotate' | null;
 
 export interface CropperProps {
   imageUrl: string;

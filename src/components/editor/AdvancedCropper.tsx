@@ -1,4 +1,3 @@
-
 import React, { useCallback, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -152,9 +151,12 @@ export const AdvancedCropper: React.FC<CropperProps> = ({
 
       // Maintain aspect ratio for main card when resizing (not rotating)
       if (crop.type === 'main' && dragHandle !== 'move' && dragHandle !== 'rotate') {
-        if (dragHandle?.includes('r') || dragHandle === 'l') {
+        const isHorizontalResize = ['r', 'l', 'tr', 'br'].includes(dragHandle);
+        const isVerticalResize = ['t', 'b', 'tr', 'br'].includes(dragHandle);
+        
+        if (isHorizontalResize) {
           newCrop.height = newCrop.width / aspectRatio;
-        } else if (dragHandle?.includes('t') || dragHandle?.includes('b')) {
+        } else if (isVerticalResize) {
           newCrop.width = newCrop.height * aspectRatio;
         }
       }
