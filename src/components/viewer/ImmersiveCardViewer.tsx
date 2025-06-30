@@ -1,3 +1,4 @@
+
 import React, { useRef } from 'react';
 import type { ExtendedImmersiveCardViewerProps } from './types/ImmersiveViewerTypes';
 import { useViewerState } from './hooks/useViewerState';
@@ -58,16 +59,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     onCardClick
   } = viewerStateHook;
 
-  // Studio Effects Bridge - connects Studio panel to card rendering
-  const studioBridge = useStudioEffectsBridge({
-    selectedScene: viewerState.selectedScene,
-    selectedLighting: viewerState.selectedLighting,
-    effectValues: {},
-    materialSettings: viewerState.materialSettings,
-    overallBrightness: viewerState.overallBrightness,
-    interactiveLighting: viewerState.interactiveLighting
-  });
-
   // Viewer interactions manager
   const {
     containerRef,
@@ -95,32 +86,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     handleZoom
   });
 
-  // Export functionality
-  const { exportCard, isExporting, exportProgress } = useCardExport({
-    cardRef: cardContainerRef,
-    card,
-    onRotationChange: setRotation,
-    onEffectChange: () => {},
-    effectValues: studioBridge.bridgedEffects
-  });
-
-  // Enhanced reset that includes all state
-  const handleResetWithEffects = () => {
-    handleReset();
-  };
-
-  // Enhanced combo application
-  const handleApplyCombo = (combo: any) => {
-    console.log('🚀 Applying style combo:', combo.id);
-    actions.setSelectedPresetId(combo.id);
-    if (combo.scene) {
-      actions.setSelectedScene(combo.scene);
-    }
-    if (combo.lighting) {
-      actions.setSelectedLighting(combo.lighting);
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -143,18 +108,63 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         enhancedEffectStyles,
         surfaceTextureStyles
       }) => {
-        // Merge Studio effects with viewer effects
-        const mergedEffectValues = {
-          ...effectValues,
-          ...studioBridge.bridgedEffects
+        console.log('🎮 ImmersiveCardViewer: Current effectValues:', effectValues);
+
+        // Studio Effects Bridge - NOW receives actual effect values
+        const studioBridge = useStudioEffectsBridge({
+          selectedScene: viewerState.selectedScene,
+          selectedLighting: viewerState.selectedLighting,
+          effectValues: effectValues, // Pass actual effect values here
+          materialSettings: viewerState.materialSettings,
+          overallBrightness: viewerState.overallBrightness,
+          interactiveLighting: viewerState.interactiveLighting
+        });
+
+        console.log('🌉 Studio Bridge Output:', studioBridge.bridgedEffects);
+
+        // Export functionality
+        const { exportCard, isExporting, exportProgress } = useCardExport({
+          cardRef: cardContainerRef,
+          card,
+          onRotationChange: setRotation,
+          onEffectChange: handleEffectChange,
+          effectValues: studioBridge.bridgedEffects
+        });
+
+        // Enhanced reset that includes all state
+        const handleResetWithEffects = () => {
+          handleReset();
+          resetAllEffects();
         };
+
+        // Enhanced combo application that properly updates effects
+        const handleApplyCombo = (combo: any) => {
+          console.log('🚀 Applying style combo with effects:', combo.id, combo.effects);
+          
+          // Set the preset ID first
+          actions.setSelectedPresetId(combo.id);
+          
+          // Apply the preset effects through the ViewerEffectsManager
+          applyPreset(combo.effects, combo.id);
+          
+          // Apply scene and lighting changes if present
+          if (combo.scene) {
+            actions.setSelectedScene(combo.scene);
+          }
+          if (combo.lighting) {
+            actions.setSelectedLighting(combo.lighting);
+          }
+        };
+
+        // Use the bridged effects for the card rendering
+        const finalEffectValues = studioBridge.bridgedEffects;
 
         return (
           <>
             <ViewerActionsManager
               card={card}
               onShare={onShare}
-              effectValues={mergedEffectValues}
+              effectValues={finalEffectValues}
               handleEffectChange={handleEffectChange}
               resetAllEffects={resetAllEffects}
               applyPreset={applyPreset}
@@ -184,7 +194,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
                 isFlipped={isFlipped}
                 setIsFlipped={setIsFlipped}
                 showStats={showStats}
-                effectValues={mergedEffectValues}
+                effectValues={finalEffectValues}
                 selectedScene={viewerState.selectedScene}
                 selectedLighting={viewerState.selectedLighting}
                 materialSettings={viewerState.materialSettings}
@@ -215,13 +225,13 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
               />
             </ViewerActionsManager>
 
-            {/* Studio Panel with Environment Controls */}
+            {/* Studio Panel with proper effect handling */}
             <StudioPanel
               isVisible={viewerState.showCustomizePanel}
               onClose={() => actions.setShowCustomizePanel(false)}
               selectedScene={viewerState.selectedScene}
               selectedLighting={viewerState.selectedLighting}
-              effectValues={mergedEffectValues}
+              effectValues={finalEffectValues}
               overallBrightness={viewerState.overallBrightness}
               interactiveLighting={viewerState.interactiveLighting}
               materialSettings={viewerState.materialSettings}

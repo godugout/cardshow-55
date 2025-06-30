@@ -23,9 +23,19 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
   onApplyCombo,
   isApplyingPreset = false
 }) => {
-  const statusText = selectedPresetId ? 
+  const statusText = selectedPresetId && selectedPresetId !== 'custom-init' ? 
     selectedPresetId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : 
     "Select Style";
+
+  const handleComboClick = (combo: any) => {
+    console.log('🎨 StylesSection: Combo clicked:', combo.id, combo.effects);
+    
+    // First set the selected preset
+    onPresetSelect(combo.id);
+    
+    // Then apply the combo effects
+    onApplyCombo(combo);
+  };
 
   return (
     <CollapsibleSection
@@ -36,7 +46,7 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
       onToggle={onToggle}
     >
       <EnhancedQuickComboPresets
-        onApplyCombo={onApplyCombo}
+        onApplyCombo={handleComboClick}
         currentEffects={effectValues}
         selectedPresetId={selectedPresetId}
         onPresetSelect={onPresetSelect}

@@ -57,29 +57,45 @@ export const ViewerEffectsManager: React.FC<ViewerEffectsManagerProps> = ({
     }
   }, [card, validateEffectState, onValidateEffectState]);
 
-  // Enhanced manual effect change to clear preset selection
+  // Enhanced manual effect change that syncs with parent state
   const handleManualEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
+    console.log('🎛️ ViewerEffectsManager: Manual effect change:', { effectId, parameterId, value });
+    
     if (!isApplyingPreset) {
       // Clear preset selection when manual changes are made
+      console.log('🔄 Clearing preset selection due to manual change');
     }
+    
     handleEffectChange(effectId, parameterId, value);
     onEffectChange(effectId, parameterId, value);
   }, [handleEffectChange, isApplyingPreset, onEffectChange]);
 
   // Enhanced reset that includes all state
   const handleResetWithEffects = useCallback(() => {
+    console.log('🔄 ViewerEffectsManager: Resetting all effects');
     resetAllEffects();
     validateEffectState();
     onResetAllEffects();
   }, [resetAllEffects, validateEffectState, onResetAllEffects]);
 
-  // Enhanced combo application
-  const handleApplyCombo = useCallback((combo: any) => {
-    console.log('🚀 Applying style combo:', combo.id);
+  // Enhanced combo application with proper logging
+  const handleApplyCombo = useCallback((preset: EffectValues, presetId?: string) => {
+    console.log('🚀 ViewerEffectsManager: Applying preset:', presetId, preset);
+    
     validateEffectState();
-    applyPreset(combo.effects, combo.id);
-    onApplyPreset(combo.effects, combo.id);
-  }, [applyPreset, validateEffectState, onApplyPreset]);
+    applyPreset(preset, presetId);
+    onApplyPreset(preset, presetId);
+    
+    // Log the current effect values after application
+    setTimeout(() => {
+      console.log('✅ ViewerEffectsManager: Preset applied, current effects:', effectValues);
+    }, 100);
+  }, [applyPreset, validateEffectState, onApplyPreset, effectValues]);
+
+  // Debug logging for effect values changes
+  useEffect(() => {
+    console.log('🎨 ViewerEffectsManager: Effect values updated:', effectValues);
+  }, [effectValues]);
 
   return (
     <>
