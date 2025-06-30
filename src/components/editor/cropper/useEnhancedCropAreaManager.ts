@@ -67,7 +67,8 @@ export const useEnhancedCropAreaManager = (aspectRatio: number) => {
       rotation: 0,
       type: 'main',
       color: '#10b981',
-      selected: true
+      selected: true,
+      visible: true
     };
 
     setCropAreas([mainCrop]);
@@ -83,13 +84,13 @@ export const useEnhancedCropAreaManager = (aspectRatio: number) => {
     const displayHeight = img.clientHeight;
 
     const newId = `${type}_${Date.now()}`;
-    const size = type === 'frame' ? 0.4 : 0.3;
+    const size = type === 'frame' ? 0.3 : 0.25;
     const cropWidth = displayWidth * size;
     const cropHeight = displayHeight * size;
 
     const newCrop: CropArea = {
       id: newId,
-      label: type === 'frame' ? 'Frame Element' : 'Custom Element',
+      label: type === 'frame' ? `Frame ${cropAreas.filter(c => c.type === 'frame').length + 1}` : `Element ${cropAreas.filter(c => c.type === 'element').length + 1}`,
       x: snapToGridHelper(Math.random() * (displayWidth - cropWidth)),
       y: snapToGridHelper(Math.random() * (displayHeight - cropHeight)),
       width: cropWidth,
@@ -97,7 +98,8 @@ export const useEnhancedCropAreaManager = (aspectRatio: number) => {
       rotation: 0,
       type,
       color: type === 'frame' ? '#3b82f6' : '#f59e0b',
-      selected: false
+      selected: false,
+      visible: true
     };
 
     const newAreas = [...cropAreas, newCrop];
@@ -279,18 +281,6 @@ export const useEnhancedCropAreaManager = (aspectRatio: number) => {
           case 'Escape':
             e.preventDefault();
             clearSelection();
-            break;
-          case 'r':
-            e.preventDefault();
-            setActiveTool('rotate');
-            break;
-          case 's':
-            e.preventDefault();
-            setActiveTool('select');
-            break;
-          case 'c':
-            e.preventDefault();
-            setActiveTool('crop');
             break;
         }
       }
