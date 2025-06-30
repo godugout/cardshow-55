@@ -3,6 +3,9 @@ export type CreationMode = 'quick' | 'guided' | 'advanced' | 'bulk';
 
 export type CreationStep = 'intent' | 'upload' | 'details' | 'design' | 'publish' | 'complete';
 
+// Updated WorkflowStep to include batch-processing
+export type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager' | 'batch-processing';
+
 export interface CreationIntent {
   mode: CreationMode;
   description?: string;

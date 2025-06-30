@@ -14,13 +14,12 @@ import { UploadStep } from './components/UploadStep';
 import { PathSelectionStep } from './components/PathSelectionStep';
 import { TemplateSelectionStep } from './components/TemplateSelectionStep';
 import { StepHeader } from './components/StepHeader';
+import { WorkflowStep } from '../types';
 
 interface PhotoUploadSectionProps {
   cardEditor: ReturnType<typeof import('@/hooks/useCardEditor').useCardEditor>;
   onNext: () => void;
 }
-
-type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager' | 'batch-processing';
 
 export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   cardEditor,
@@ -266,7 +265,7 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
                   {isCompleted ? '✓' : <Icon className="w-4 h-4" />}
                 </div>
                 <div>
-                  <div className={`font-semibold text-sm ${
+                  <div className={`font-semibold text-s ${
                     isActive ? 'text-crd-green' : isCompleted ? 'text-crd-green' : 'text-crd-mediumGray'
                   }`}>
                     {step.label}

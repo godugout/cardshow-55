@@ -1,8 +1,8 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Upload, Route, FileText, Layers } from 'lucide-react';
-
-type WorkflowStep = 'upload' | 'path-selection' | 'template-selection' | 'psd-manager';
+import { WorkflowStep } from '../../types';
 
 interface StepHeaderProps {
   currentStep: WorkflowStep;
@@ -20,6 +20,8 @@ export const StepHeader: React.FC<StepHeaderProps> = ({ currentStep, mediaDetect
         return <FileText className="w-6 h-6" />;
       case 'psd-manager':
         return <Layers className="w-6 h-6" />;
+      case 'batch-processing':
+        return <Layers className="w-6 h-6" />;
       default:
         return <Upload className="w-6 h-6" />;
     }
@@ -35,6 +37,8 @@ export const StepHeader: React.FC<StepHeaderProps> = ({ currentStep, mediaDetect
         return 'Select Template';
       case 'psd-manager':
         return 'PSD Professional Studio';
+      case 'batch-processing':
+        return 'Batch Processing Studio';
       default:
         return 'Upload Your Media';
     }
@@ -50,6 +54,8 @@ export const StepHeader: React.FC<StepHeaderProps> = ({ currentStep, mediaDetect
         return 'Pick a template that matches your vision';
       case 'psd-manager':
         return 'Professional layer management and frame generation';
+      case 'batch-processing':
+        return 'Efficient processing of multiple images for batch card creation';
       default:
         return 'Start by uploading your photo or PSD file';
     }
