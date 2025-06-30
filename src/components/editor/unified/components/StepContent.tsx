@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { IntentStep } from './steps/IntentStep';
+import { LayerControlStudio } from './steps/LayerControlStudio';
 import { DetailsStep } from './steps/DetailsStep';
 import { DesignStep } from './steps/DesignStep';
 import { PublishStep } from './steps/PublishStep';
@@ -50,18 +51,9 @@ export const StepContent = ({
 
     case 'upload':
       return (
-        <div className="text-center py-8">
-          <h2 className="text-2xl font-bold text-crd-white mb-4">Upload Your Photo</h2>
-          <p className="text-crd-lightGray mb-8">This step will be implemented with your preferred upload flow</p>
-          {onNextStep && (
-            <button 
-              onClick={onNextStep}
-              className="bg-crd-green hover:bg-crd-green/80 text-black px-6 py-3 rounded font-semibold"
-            >
-              Skip to Next Step
-            </button>
-          )}
-        </div>
+        <LayerControlStudio
+          onNext={onNextStep}
+        />
       );
 
     case 'details':
