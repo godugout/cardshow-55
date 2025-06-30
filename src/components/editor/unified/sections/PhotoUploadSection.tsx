@@ -173,6 +173,18 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
     });
   }, [cardEditor, updateState]);
 
+  const handleTemplateChange = useCallback((newTemplate: any) => {
+    updateState({ selectedTemplate: newTemplate.id });
+    cardEditor.updateCardField('template_id', newTemplate.id);
+    
+    if (newTemplate.template_data) {
+      cardEditor.updateDesignMetadata('frame', newTemplate.template_data);
+    }
+    
+    console.log('✅ Template switched to:', newTemplate.id);
+    toast.success(`Switched to ${newTemplate.name}!`);
+  }, [cardEditor, updateState]);
+
   const canProceed = !!(state.imageUrl && state.selectedTemplate);
   const selectedTemplate = templates.find(t => t.id === state.selectedTemplate);
   const showCardPreview = !!(state.imageUrl && selectedTemplate);
@@ -200,10 +212,11 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         
-        {/* Upload Area */}
+        {/* Left Column - Upload & Templates */}
         <div className="space-y-6">
+          {/* Upload Area */}
           {!state.imageUrl ? (
             <div
               className="border-2 border-dashed border-crd-mediumGray/30 rounded-xl h-80 flex flex-col items-center justify-center p-8 hover:border-crd-green/50 transition-colors cursor-pointer bg-crd-darker/20"
@@ -289,90 +302,27 @@ export const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
           )}
         </div>
 
-        {/* Template Selection */}
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-xl font-bold text-crd-white mb-2 flex items-center gap-2">
-              <Grid className="w-5 h-5" />
-              Choose Template
-            </h3>
-            <p className="text-crd-lightGray">
-              Select a design template for your card
-            </p>
-          </div>
-
-          {templatesLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin w-6 h-6 border-2 border-crd-green border-t-transparent rounded-full mx-auto mb-2"></div>
-              <p className="text-crd-lightGray text-sm">Loading templates...</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-              {templates.map((template) => (
-                <button
-                  key={template.id}
-                  onClick={() => handleTemplateSelect(template.id)}
-                  className={`p-3 rounded-lg border-2 transition-all hover:scale-105 ${
-                    state.selectedTemplate === template.id
-                      ? 'border-crd-green bg-crd-green/10 shadow-lg'
-                      : 'border-crd-mediumGray/30 hover:border-crd-green/50 bg-crd-darker/20'
-                  }`}
-                >
-                  <div className="aspect-[5/7] bg-white rounded mb-2 overflow-hidden">
-                    {template.preview_url ? (
-                      <img 
-                        src={template.preview_url} 
-                        alt={template.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-crd-mediumGray/20 to-crd-mediumGray/40 flex items-center justify-center">
-                        <Grid className="w-6 h-6 text-crd-mediumGray" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="text-center">
-                    <h4 className="text-crd-white font-medium text-sm mb-1">
-                      {template.name}
-                    </h4>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-crd-lightGray">
-                        {template.category}
-                      </span>
-                      {template.is_premium && (
-                        <Badge className="text-xs bg-crd-green/20 text-crd-green border-crd-green/30">
-                          PRO
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Card Preview - Only show when both image and template are selected */}
+        {/* Right Column - Large Card Preview with Frame Switching */}
         {showCardPreview && (
-          <div className="space-y-4">
+          <div className="space-y-4 sticky top-8">
             <div>
               <h3 className="text-xl font-bold text-crd-white mb-2 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-crd-green" />
-                Card Preview
+                Live Card Preview
               </h3>
               <p className="text-crd-lightGray">
-                Your card is ready for customization
+                Your card with live frame switching
               </p>
             </div>
             
-            <div className="flex justify-center">
-              <CardPreviewRenderer
-                imageUrl={state.imageUrl}
-                template={selectedTemplate}
-                className="w-full max-w-xs"
-              />
-            </div>
+            <CardPreviewRenderer
+              imageUrl={state.imageUrl}
+              template={selectedTemplate}
+              onTemplateChange={handleTemplateChange}
+              enableFrameSwitching={true}
+              size="large"
+              className="w-full"
+            />
             
             <div className="text-center">
               <Badge className="bg-crd-green/20 text-crd-green border-crd-green/30">

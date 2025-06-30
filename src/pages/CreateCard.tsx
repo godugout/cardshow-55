@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
@@ -113,6 +112,14 @@ const CreateCard = () => {
   const handleEffectsComplete = () => {
     console.log('Effects completed, saving card');
     handleComplete(cardEditor.cardData);
+  };
+
+  const handleTemplateChange = (newTemplate: any) => {
+    cardEditor.updateCardField('template_id', newTemplate.id);
+    if (newTemplate.template_data) {
+      cardEditor.updateDesignMetadata('frame', newTemplate.template_data);
+    }
+    toast.success(`Switched to ${newTemplate.name}!`);
   };
 
   const workflowConfig = getWorkflowConfig(workflowInfo.workflow);
@@ -247,25 +254,26 @@ const CreateCard = () => {
                 </p>
               </div>
               
-              {/* Show Card Preview in Effects Step */}
+              {/* Enhanced Effects Step with Larger Preview */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-                {/* Card Preview Column */}
+                {/* Card Preview Column - Now Larger with Frame Switching */}
                 <div className="flex justify-center lg:justify-end">
-                  <div className="w-full max-w-sm">
+                  <div className="w-full max-w-lg">
                     <h3 className="text-lg font-semibold text-crd-white mb-4 text-center">
                       Live Preview
                     </h3>
                     {cardEditor.cardData.image_url && cardEditor.cardData.template_id && (
-                      <div className="aspect-[5/7] bg-white rounded-lg overflow-hidden shadow-xl border border-crd-mediumGray/20">
-                        <SVGTemplateRenderer
-                          template={{ 
-                            id: cardEditor.cardData.template_id,
-                            template_data: cardEditor.cardData.design_metadata?.frame
-                          } as any}
-                          imageUrl={cardEditor.cardData.image_url}
-                          className="w-full h-full"
-                        />
-                      </div>
+                      <CardPreviewRenderer
+                        imageUrl={cardEditor.cardData.image_url}
+                        template={{ 
+                          id: cardEditor.cardData.template_id,
+                          template_data: cardEditor.cardData.design_metadata?.frame
+                        } as any}
+                        onTemplateChange={handleTemplateChange}
+                        enableFrameSwitching={true}
+                        size="large"
+                        className="w-full"
+                      />
                     )}
                   </div>
                 </div>
