@@ -19,6 +19,8 @@ interface EnhancedImageCropperProps {
 }
 
 const CARD_ASPECT_RATIO = 2.5 / 3.5; // Trading card aspect ratio
+const CANVAS_MAX_WIDTH = 400;
+const CANVAS_MAX_HEIGHT = 560; // Maintains card aspect ratio
 
 export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
   imageUrl,
@@ -36,68 +38,88 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-detect initial crop area
-  const detectInitialCrop = useCallback((img: HTMLImageElement) => {
+  // Calculate optimal canvas size based on image and card proportions
+  const getOptimalCanvasSize = useCallback((img: HTMLImageElement) => {
+    const imageAspectRatio = img.naturalWidth / img.naturalHeight;
+    
+    let canvasWidth, canvasHeight;
+    
+    if (imageAspectRatio > CARD_ASPECT_RATIO) {
+      // Image is wider than card - fit to height
+      canvasHeight = Math.min(CANVAS_MAX_HEIGHT, img.naturalHeight * 0.8);
+      canvasWidth = canvasHeight * CARD_ASPECT_RATIO;
+    } else {
+      // Image is taller than card - fit to width
+      canvasWidth = Math.min(CANVAS_MAX_WIDTH, img.naturalWidth * 0.8);
+      canvasHeight = canvasWidth / CARD_ASPECT_RATIO;
+    }
+    
+    return { width: canvasWidth, height: canvasHeight };
+  }, []);
+
+  // Center and size crop area to card dimensions
+  const initializeCropArea = useCallback((img: HTMLImageElement) => {
     const displayWidth = img.clientWidth;
     const displayHeight = img.clientHeight;
-
-    // Calculate optimal crop dimensions for card aspect ratio
-    let cropWidth = Math.min(displayWidth * 0.7, displayHeight * CARD_ASPECT_RATIO * 0.7);
+    
+    // Calculate crop size that matches card aspect ratio
+    const maxCropSize = Math.min(displayWidth * 0.8, displayHeight * 0.8);
+    let cropWidth = maxCropSize;
     let cropHeight = cropWidth / CARD_ASPECT_RATIO;
     
-    // Adjust if height is too large
+    // Adjust if height exceeds display bounds
     if (cropHeight > displayHeight * 0.8) {
       cropHeight = displayHeight * 0.8;
       cropWidth = cropHeight * CARD_ASPECT_RATIO;
     }
-
-    // Center the crop
+    
+    // Center the crop area
     const x = (displayWidth - cropWidth) / 2;
     const y = (displayHeight - cropHeight) / 2;
-
+    
     setCropArea({
       x: Math.max(0, x),
       y: Math.max(0, y),
-      width: Math.min(cropWidth, displayWidth),
-      height: Math.min(cropHeight, displayHeight)
+      width: cropWidth,
+      height: cropHeight
     });
   }, []);
 
   const handleImageLoad = useCallback(() => {
     if (imageRef.current) {
-      detectInitialCrop(imageRef.current);
+      initializeCropArea(imageRef.current);
       setImageLoaded(true);
     }
-  }, [detectInitialCrop]);
+  }, [initializeCropArea]);
 
-  // Auto-fit functionality
+  // Auto-fit to card edges
   const autoFitCard = useCallback(() => {
     if (!imageRef.current) return;
-
+    
     const img = imageRef.current;
     const displayWidth = img.clientWidth;
     const displayHeight = img.clientHeight;
-
-    // Smart card detection - maximize area while maintaining aspect ratio
-    let cropWidth = Math.min(displayWidth * 0.85, displayHeight * CARD_ASPECT_RATIO * 0.85);
+    
+    // Maximize crop area while maintaining card aspect ratio
+    let cropWidth = displayWidth * 0.9;
     let cropHeight = cropWidth / CARD_ASPECT_RATIO;
-
+    
     if (cropHeight > displayHeight * 0.9) {
       cropHeight = displayHeight * 0.9;
       cropWidth = cropHeight * CARD_ASPECT_RATIO;
     }
-
+    
     const x = (displayWidth - cropWidth) / 2;
     const y = (displayHeight - cropHeight) / 2;
-
+    
     setCropArea({
       x: Math.max(0, x),
       y: Math.max(0, y),
-      width: Math.min(cropWidth, displayWidth),
-      height: Math.min(cropHeight, displayHeight)
+      width: cropWidth,
+      height: cropHeight
     });
-
-    toast.success('Auto-fitted to optimal card dimensions');
+    
+    toast.success('Auto-fitted to card edges');
   }, []);
 
   // Mouse event handlers for crop manipulation
@@ -155,11 +177,7 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
 
       // Maintain card aspect ratio for corner handles
       if (dragHandle !== 'move') {
-        if (dragHandle?.includes('r')) {
-          newCrop.height = newCrop.width / CARD_ASPECT_RATIO;
-        } else {
-          newCrop.width = newCrop.height * CARD_ASPECT_RATIO;
-        }
+        newCrop.height = newCrop.width / CARD_ASPECT_RATIO;
       }
 
       // Ensure within bounds
@@ -190,125 +208,163 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
 
   // Extract the cropped area
   const extractCrop = useCallback(async () => {
-    if (!imageRef.current || !imageLoaded) {
-      toast.error('Image not ready');
-      return;
-    }
+    if (!imageRef.current || extracting) return;
 
     setExtracting(true);
-    
     try {
       const img = imageRef.current;
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      if (!ctx) {
-        throw new Error('Could not get canvas context');
-      }
+      if (!ctx) throw new Error('Could not get canvas context');
 
-      // Calculate scale factors
+      // Set canvas to standard card dimensions
+      canvas.width = 300;
+      canvas.height = 420;
+
+      // Calculate source coordinates relative to natural image size
       const scaleX = img.naturalWidth / img.clientWidth;
       const scaleY = img.naturalHeight / img.clientHeight;
-
-      // Convert display coordinates to natural image coordinates
+      
       const sourceX = cropArea.x * scaleX;
       const sourceY = cropArea.y * scaleY;
       const sourceWidth = cropArea.width * scaleX;
       const sourceHeight = cropArea.height * scaleY;
 
-      // Set canvas to high quality card dimensions
-      const outputWidth = Math.min(600, sourceWidth);  // Good quality for cards
-      const outputHeight = Math.min(840, sourceHeight); // Maintain aspect ratio
-      
-      canvas.width = outputWidth;
-      canvas.height = outputHeight;
-
       // Draw the cropped area
       ctx.drawImage(
         img,
         sourceX, sourceY, sourceWidth, sourceHeight,
-        0, 0, outputWidth, outputHeight
+        0, 0, canvas.width, canvas.height
       );
 
-      // Convert to blob and create URL
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const croppedUrl = URL.createObjectURL(blob);
-          onCropComplete(croppedUrl);
-          toast.success('Perfect crop extracted for your card!');
-        }
-      }, 'image/jpeg', 0.95);
-
+      const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
+      onCropComplete(croppedImageUrl);
+      
+      toast.success('Card crop extracted successfully!');
     } catch (error) {
-      console.error('Extraction failed:', error);
+      console.error('Crop extraction failed:', error);
       toast.error('Failed to extract crop');
     } finally {
       setExtracting(false);
     }
-  }, [cropArea, imageLoaded, onCropComplete]);
-
-  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.1, 2));
-  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
-  const resetCrop = () => {
-    if (imageRef.current) {
-      detectInitialCrop(imageRef.current);
-      toast.success('Crop area reset');
-    }
-  };
+  }, [cropArea, extracting, onCropComplete]);
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      {/* Crop Controls */}
-      <div className="flex items-center gap-3 flex-wrap bg-crd-darker p-4 rounded-lg border border-crd-mediumGray/30">
-        <CRDButton
-          onClick={autoFitCard}
-          variant="outline"
-          size="sm"
-          disabled={!imageLoaded}
-          className="border-crd-green/50 text-crd-green hover:bg-crd-green/10"
-        >
-          <Target className="w-4 h-4 mr-2" />
-          Auto-Fit Card
-        </CRDButton>
-        
-        <div className="flex items-center gap-1">
+    <div className={`flex flex-col gap-4 ${className}`}>
+      {/* Controls */}
+      <div className="flex justify-between items-center">
+        <div className="flex gap-2">
           <CRDButton
-            onClick={handleZoomOut}
-            variant="ghost"
+            variant="outline"
             size="sm"
-            disabled={!imageLoaded}
+            onClick={autoFitCard}
+            className="border-crd-mediumGray text-crd-lightGray hover:text-white"
           >
-            <ZoomOut className="w-4 h-4" />
-          </CRDButton>
-          <span className="text-crd-lightGray text-sm px-2">{Math.round(zoom * 100)}%</span>
-          <CRDButton
-            onClick={handleZoomIn}
-            variant="ghost"
-            size="sm"
-            disabled={!imageLoaded}
-          >
-            <ZoomIn className="w-4 h-4" />
+            <Target className="w-4 h-4 mr-1" />
+            Auto-Fit Card
           </CRDButton>
         </div>
+        
+        <div className="text-crd-lightGray text-sm">
+          Card Aspect: {CARD_ASPECT_RATIO.toFixed(3)} | Size: {Math.round(cropArea.width)} × {Math.round(cropArea.height)}
+        </div>
+      </div>
 
-        <CRDButton
-          onClick={resetCrop}
-          variant="ghost"
-          size="sm"
-          disabled={!imageLoaded}
-        >
-          <RotateCcw className="w-4 h-4 mr-2" />
-          Reset
-        </CRDButton>
+      {/* Cropping Canvas */}
+      <div 
+        ref={containerRef}
+        className="relative mx-auto border-2 border-crd-mediumGray rounded-lg overflow-hidden bg-crd-darkGray"
+        style={{
+          maxWidth: CANVAS_MAX_WIDTH,
+          maxHeight: CANVAS_MAX_HEIGHT,
+          aspectRatio: CARD_ASPECT_RATIO.toString()
+        }}
+      >
+        <img
+          ref={imageRef}
+          src={imageUrl}
+          alt="Crop preview"
+          className="w-full h-full object-contain"
+          onLoad={handleImageLoad}
+          draggable={false}
+        />
+        
+        {/* Crop Overlay */}
+        {imageLoaded && (
+          <>
+            {/* Darkened areas outside crop */}
+            <div className="absolute inset-0 bg-black bg-opacity-50 pointer-events-none" />
+            
+            {/* Crop area */}
+            <div
+              className="absolute border-2 border-crd-green bg-transparent cursor-move"
+              style={{
+                left: cropArea.x,
+                top: cropArea.y,
+                width: cropArea.width,
+                height: cropArea.height,
+              }}
+              onMouseDown={(e) => handleMouseDown(e, 'move')}
+            >
+              {/* Corner handles */}
+              <div
+                className="absolute w-3 h-3 bg-crd-green border border-white -top-1 -left-1 cursor-nw-resize"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  handleMouseDown(e, 'tl');
+                }}
+              />
+              <div
+                className="absolute w-3 h-3 bg-crd-green border border-white -top-1 -right-1 cursor-ne-resize"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  handleMouseDown(e, 'tr');
+                }}
+              />
+              <div
+                className="absolute w-3 h-3 bg-crd-green border border-white -bottom-1 -left-1 cursor-sw-resize"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  handleMouseDown(e, 'bl');
+                }}
+              />
+              <div
+                className="absolute w-3 h-3 bg-crd-green border border-white -bottom-1 -right-1 cursor-se-resize"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  handleMouseDown(e, 'br');
+                }}
+              />
+              
+              {/* Grid lines for better alignment */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="w-full h-full grid grid-cols-3 grid-rows-3">
+                  {Array.from({ length: 9 }).map((_, i) => (
+                    <div key={i} className="border border-crd-green border-opacity-30" />
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Instructions overlay */}
+            <div className="absolute top-2 left-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+              Drag to move • Corners to resize • Maintains card ratio
+            </div>
+          </>
+        )}
+      </div>
 
+      {/* Extract Button */}
+      <div className="text-center">
         <CRDButton
           onClick={extractCrop}
           disabled={!imageLoaded || extracting}
-          className="bg-crd-green hover:bg-crd-green/90 text-crd-darkest font-medium ml-auto"
+          className="bg-crd-green hover:bg-crd-green/90 text-black min-w-32"
         >
           {extracting ? (
             <>
-              <div className="w-4 h-4 border-2 border-crd-darkest border-t-transparent rounded-full animate-spin mr-2" />
+              <div className="w-4 h-4 border-2 border-black border-t-transparent animate-spin rounded-full mr-2" />
               Extracting...
             </>
           ) : (
@@ -318,86 +374,6 @@ export const EnhancedImageCropper: React.FC<EnhancedImageCropperProps> = ({
             </>
           )}
         </CRDButton>
-      </div>
-
-      {/* Image Cropping Area with 2.5 x 3.5 Dotted Placeholder */}
-      <Card className="relative overflow-hidden bg-crd-darker border-crd-mediumGray/30">
-        <CardContent className="p-0">
-          <div ref={containerRef} className="relative">
-            <img
-              ref={imageRef}
-              src={imageUrl}
-              alt="Crop your card image"
-              className="max-w-full max-h-[70vh] w-auto h-auto block mx-auto"
-              style={{ transform: `scale(${zoom})` }}
-              onLoad={handleImageLoad}
-              draggable={false}
-            />
-            
-            {/* Crop Overlay */}
-            {imageLoaded && (
-              <div className="absolute inset-0">
-                {/* Darkened areas outside crop */}
-                <div className="absolute inset-0 bg-black bg-opacity-60" />
-                
-                {/* Dotted placeholder guide */}
-                <div
-                  className="absolute border-2 border-dashed border-crd-green/40 pointer-events-none"
-                  style={{
-                    left: cropArea.x - 10,
-                    top: cropArea.y - 10,
-                    width: cropArea.width + 20,
-                    height: cropArea.height + 20,
-                  }}
-                />
-                
-                {/* Actual crop area */}
-                <div
-                  className="absolute border-2 border-crd-green cursor-move bg-transparent"
-                  style={{
-                    left: cropArea.x,
-                    top: cropArea.y,
-                    width: cropArea.width,
-                    height: cropArea.height,
-                    boxShadow: '0 0 0 9999px rgba(0,0,0,0.6)',
-                  }}
-                  onMouseDown={(e) => handleMouseDown(e, 'move')}
-                >
-                  {/* Corner handles */}
-                  {['tl', 'tr', 'bl', 'br'].map((handle) => (
-                    <div
-                      key={handle}
-                      className="absolute w-4 h-4 bg-crd-green border-2 border-white cursor-pointer hover:bg-crd-green/80"
-                      style={{
-                        top: handle.includes('t') ? -8 : 'auto',
-                        bottom: handle.includes('b') ? -8 : 'auto',
-                        left: handle.includes('l') ? -8 : 'auto',
-                        right: handle.includes('r') ? -8 : 'auto',
-                        cursor: handle === 'tl' || handle === 'br' ? 'nw-resize' : 'ne-resize'
-                      }}
-                      onMouseDown={(e) => handleMouseDown(e, handle)}
-                    />
-                  ))}
-                  
-                  {/* Crop info */}
-                  <div className="absolute -top-8 left-0 bg-crd-green text-crd-darkest text-xs px-3 py-1 rounded font-medium">
-                    Card: {Math.round(cropArea.width)} × {Math.round(cropArea.height)}
-                  </div>
-                  
-                  {/* Aspect ratio indicator */}
-                  <div className="absolute -bottom-8 right-0 bg-crd-green/80 text-crd-darkest text-xs px-3 py-1 rounded font-medium">
-                    2.5 × 3.5 Ratio
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Instructions */}
-      <div className="text-center text-crd-lightGray text-sm">
-        <p>Drag to move • Use corners to resize • Auto-fit for best results • Extract when ready</p>
       </div>
     </div>
   );
