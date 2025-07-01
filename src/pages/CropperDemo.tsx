@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -28,11 +27,23 @@ const CropperDemo = () => {
   const [debugMode, setDebugMode] = useState(false);
   const [debugLogs, setDebugLogs] = useState<Array<{timestamp: string, type: string, message: string}>>([]);
 
-  // Updated sample images with working paths
+  // Use the same card images from the home page
   const sampleImages = [
-    '/lovable-uploads/22ce728b-dbf0-4534-8ee2-2c79bbe6c0de.png',
-    '/lovable-uploads/356f5580-958c-4da6-9c36-b9931367a794.png',
-    '/lovable-uploads/68c31062-5697-489f-a2f1-8ff47d5f5c1e.png'
+    '/lovable-uploads/22ce728b-dbf0-4534-8ee2-2c79bbe6c0de.png', // Cardshow Retro
+    '/lovable-uploads/356f5580-958c-4da6-9c36-b9931367a794.png', // Cardshow Block Letters
+    '/lovable-uploads/68c31062-5697-489f-a2f1-8ff47d5f5c1e.png', // Cardshow Vintage
+    '/lovable-uploads/ffcc3926-a637-4938-a3d6-6b0b366e95d4.png', // Cardshow Green
+    '/lovable-uploads/5e4b9905-1b9a-481e-b51d-9cf0bda7ff0f.png', // Cardshow Orange
+    '/lovable-uploads/c01b5d86-d51b-4123-98b4-cb77936462cb.png'  // Cardshow Blue
+  ];
+
+  const sampleImageLabels = [
+    'Retro Sports Card',
+    'Block Letter Design',
+    'Vintage Style Card',
+    'Green Theme Card',
+    'Orange Theme Card',
+    'Blue Theme Card'
   ];
 
   const addDebugLog = (type: string, message: string) => {
@@ -289,7 +300,7 @@ const CropperDemo = () => {
         {/* Sample Images */}
         <Card className="bg-crd-darker border-crd-mediumGray">
           <CardContent className="p-6">
-            <h3 className="text-white text-lg font-semibold mb-4">Or Try Sample Images</h3>
+            <h3 className="text-white text-lg font-semibold mb-4">Try Sample Card Designs</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {sampleImages.map((imageUrl, index) => (
                 <div
@@ -299,7 +310,7 @@ const CropperDemo = () => {
                 >
                   <img
                     src={imageUrl}
-                    alt={`Sample ${index + 1}`}
+                    alt={sampleImageLabels[index]}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform"
                     onError={(e) => {
                       addDebugLog('ERROR', `Failed to load sample image: ${imageUrl}`);
@@ -314,6 +325,9 @@ const CropperDemo = () => {
                       <Image className="w-4 h-4 mr-2" />
                       Test Cropper
                     </Button>
+                  </div>
+                  <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    {sampleImageLabels[index]}
                   </div>
                 </div>
               ))}
