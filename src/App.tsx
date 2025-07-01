@@ -14,6 +14,9 @@ import Gallery from '@/pages/Gallery';
 import CRDMKRPage from '@/pages/CRDMKRPage';
 import CropperDemo from '@/pages/CropperDemo';
 import { AuthPage } from '@/components/auth/AuthPage';
+import { PSDProfessionalWorkflow } from '@/pages/crdmkr/PSDProfessionalWorkflow';
+import { SmartUploadWorkflow } from '@/pages/crdmkr/SmartUploadWorkflow';
+import { BatchProcessingWorkflow } from '@/pages/crdmkr/BatchProcessingWorkflow';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,7 +28,7 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  console.log('App: Initializing with proper routing configuration');
+  console.log('App: Initializing with CRDMKR workflow routing configuration');
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -38,6 +41,9 @@ function App() {
                 <Route path="create" element={<CreateCard />} />
                 <Route path="cards" element={<CardsPage />} />
                 <Route path="crdmkr" element={<CRDMKRPage />} />
+                <Route path="crdmkr/psd-professional" element={<PSDProfessionalWorkflow />} />
+                <Route path="crdmkr/smart-upload" element={<SmartUploadWorkflow />} />
+                <Route path="crdmkr/batch-processing" element={<BatchProcessingWorkflow />} />
                 <Route path="demo/croppers" element={<CropperDemo />} />
                 <Route path="feed" element={<FeedPage />} />
                 <Route path="studio/:cardId?" element={<Studio />} />

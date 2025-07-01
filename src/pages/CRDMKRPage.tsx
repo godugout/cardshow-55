@@ -12,9 +12,8 @@ import { Badge } from '@/components/ui/badge';
 const CRDMKRPage = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const [selectedWorkflow, setSelectedWorkflow] = useState<string>('');
 
-  console.log('CRDMKRPage: Loaded with authentication check');
+  console.log('CRDMKRPage: Loaded with dedicated workflow routing');
 
   if (loading) {
     return <LoadingState message="Loading CRDMKR..." fullPage />;
@@ -28,21 +27,21 @@ const CRDMKRPage = () => {
     }
 
     console.log('Starting CRDMKR workflow:', workflowType);
-    setSelectedWorkflow(workflowType);
     
-    // Navigate to create page with CRDMKR context
-    navigate('/create?source=crdmkr&workflow=' + workflowType);
+    // Navigate to dedicated workflow routes
+    navigate(`/crdmkr/${workflowType}`);
   };
 
   const workflows = [
     {
       id: 'psd-professional',
-      title: 'Professional PSD Workflow',
-      description: 'Extract layers, create custom templates, and enable advanced editing capabilities',
+      title: 'PSD Professional Workflow',
+      description: 'Extract layers from Photoshop files, create custom regions, and generate team-specific templates',
       icon: Layers,
       features: ['Layer extraction', 'Custom regions', 'Team variations', 'Export templates'],
       premium: true,
-      recommended: true
+      recommended: true,
+      route: '/crdmkr/psd-professional'
     },
     {
       id: 'smart-upload',
@@ -51,7 +50,8 @@ const CRDMKRPage = () => {
       icon: Eye,
       features: ['Format detection', 'Smart suggestions', 'Auto-optimization', 'Quick processing'],
       premium: false,
-      recommended: false
+      recommended: false,
+      route: '/crdmkr/smart-upload'
     },
     {
       id: 'batch-processing',
@@ -60,7 +60,8 @@ const CRDMKRPage = () => {
       icon: Zap,
       features: ['Multi-file upload', 'Consistent styling', 'Batch export', 'Progress tracking'],
       premium: true,
-      recommended: false
+      recommended: false,
+      route: '/crdmkr/batch-processing'
     }
   ];
 
@@ -96,16 +97,11 @@ const CRDMKRPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {workflows.map((workflow) => {
                 const Icon = workflow.icon;
-                const isSelected = selectedWorkflow === workflow.id;
                 
                 return (
                   <Card
                     key={workflow.id}
-                    className={`cursor-pointer transition-all hover:scale-105 ${
-                      isSelected 
-                        ? 'ring-2 ring-crd-green bg-crd-green/5 border-crd-green/30' 
-                        : 'bg-crd-darker border-crd-mediumGray/20 hover:border-crd-green/50'
-                    }`}
+                    className="cursor-pointer transition-all hover:scale-105 bg-crd-darker border-crd-mediumGray/20 hover:border-crd-green/50"
                     onClick={() => handleStartWorkflow(workflow.id)}
                   >
                     <CardContent className="p-6">
