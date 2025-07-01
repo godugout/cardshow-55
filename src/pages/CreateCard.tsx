@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
@@ -194,6 +193,15 @@ const CreateCard = () => {
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Enhanced Creator Link */}
+              <CRDButton
+                onClick={() => navigate('/create/enhanced')}
+                className="bg-gradient-to-r from-crd-green to-crd-blue text-black hover:opacity-90 transition-opacity"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Enhanced Mode
+              </CRDButton>
+              
               {currentStep === 'effects' && (
                 <CRDButton
                   variant="outline"
