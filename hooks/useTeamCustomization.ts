@@ -119,15 +119,10 @@ export const useTeamCustomization = () => {
 
       setUploadProgress(prev => ({ ...prev, [fileName]: 0 }));
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage without onUploadProgress
       const { data, error } = await supabase.storage
         .from('team-assets')
-        .upload(fileName, file, {
-          onUploadProgress: (progress) => {
-            const percent = (progress.loaded / progress.total) * 100;
-            setUploadProgress(prev => ({ ...prev, [fileName]: percent }));
-          }
-        });
+        .upload(fileName, file);
 
       if (error) throw error;
 
