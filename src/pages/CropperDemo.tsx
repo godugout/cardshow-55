@@ -27,14 +27,14 @@ const CropperDemo = () => {
   const [debugMode, setDebugMode] = useState(false);
   const [debugLogs, setDebugLogs] = useState<Array<{timestamp: string, type: string, message: string}>>([]);
 
-  // Use the same card images from the home page
+  // Use the same card images from the home page - fixed paths without leading slash
   const sampleImages = [
-    '/lovable-uploads/22ce728b-dbf0-4534-8ee2-2c79bbe6c0de.png', // Cardshow Retro
-    '/lovable-uploads/356f5580-958c-4da6-9c36-b9931367a794.png', // Cardshow Block Letters
-    '/lovable-uploads/68c31062-5697-489f-a2f1-8ff47d5f5c1e.png', // Cardshow Vintage
-    '/lovable-uploads/ffcc3926-a637-4938-a3d6-6b0b366e95d4.png', // Cardshow Green
-    '/lovable-uploads/5e4b9905-1b9a-481e-b51d-9cf0bda7ff0f.png', // Cardshow Orange
-    '/lovable-uploads/c01b5d86-d51b-4123-98b4-cb77936462cb.png'  // Cardshow Blue
+    'lovable-uploads/22ce728b-dbf0-4534-8ee2-2c79bbe6c0de.png', // Cardshow Retro
+    'lovable-uploads/356f5580-958c-4da6-9c36-b9931367a794.png', // Cardshow Block Letters
+    'lovable-uploads/68c31062-5697-489f-a2f1-8ff47d5f5c1e.png', // Cardshow Vintage
+    'lovable-uploads/ffcc3926-a637-4938-a3d6-6b0b366e95d4.png', // Cardshow Green
+    'lovable-uploads/5e4b9905-1b9a-481e-b51d-9cf0bda7ff0f.png', // Cardshow Orange
+    'lovable-uploads/c01b5d86-d51b-4123-98b4-cb77936462cb.png'  // Cardshow Blue
   ];
 
   const sampleImageLabels = [
