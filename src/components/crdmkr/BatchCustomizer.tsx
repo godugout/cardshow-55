@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
@@ -21,7 +20,7 @@ import {
   Clock,
   AlertCircle
 } from 'lucide-react';
-import { useTeamCustomization } from '../../hooks/useTeamCustomization';
+import { useTeamCustomization } from '../../../hooks/useTeamCustomization';
 import { toast } from 'sonner';
 
 interface BatchCustomizerProps {
