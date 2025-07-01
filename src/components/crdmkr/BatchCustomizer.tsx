@@ -21,7 +21,7 @@ import {
   Clock,
   AlertCircle
 } from 'lucide-react';
-import { useTeamCustomization } from '@/hooks/useTeamCustomization';
+import { useTeamCustomization } from '../../hooks/useTeamCustomization';
 import { toast } from 'sonner';
 
 interface BatchCustomizerProps {
