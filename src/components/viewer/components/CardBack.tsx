@@ -72,16 +72,7 @@ export const CardBack: React.FC<CardBackProps> = ({
         </div>
       </div>
 
-      {/* Unified Effects Layer - Same as front but with enhanced visibility */}
-      <CardEffectsLayer
-        showEffects={showEffects}
-        isHovering={isHovering}
-        effectIntensity={effectIntensity.map(i => i * 1.2)} // Boost intensity for better visibility on dark background
-        mousePosition={mousePosition}
-        physicalEffectStyles={physicalEffectStyles}
-        effectValues={effectValues}
-        interactiveLighting={interactiveLighting}
-      />
+      {/* Clean card back - NO effects layer to keep it simple */}
     </div>
   );
 };

@@ -91,6 +91,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   const effectiveSurfaceTextureBack = undefined;
 
   // Calculate the final rotation including the flip
+  // When flipped, we add 180 degrees to Y rotation to show the back
   const finalRotation = {
     x: rotation.x,
     y: rotation.y + (isFlipped ? 180 : 0),

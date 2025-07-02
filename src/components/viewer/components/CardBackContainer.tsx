@@ -61,16 +61,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       data-visibility={'visible'}
       data-back-rotation={rotation.y.toFixed(1)}
     >
-      {/* Effects, overlays, and logo only! */}
-      <CardEffectsLayer
-        showEffects={showEffects}
-        isHovering={isHovering}
-        effectIntensity={[50]}
-        mousePosition={mousePosition}
-        physicalEffectStyles={enhancedEffectStyles}
-        effectValues={effectValues}
-        interactiveLighting={interactiveLighting}
-      />
+      {/* Clean card back - effects are applied to front only */}
 
       <CardBackMaterialOverlay selectedMaterial={selectedMaterial} />
 
