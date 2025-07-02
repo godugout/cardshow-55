@@ -1,120 +1,83 @@
 
+import { localForage } from '@/lib/localforage';
 import { v4 as uuidv4 } from 'uuid';
-import type { CardRarity } from '@/hooks/card-editor/types';
+import type { CardData } from '@/types/card';
+import { CardStorageService } from '@/services/cardStorage';
 
-export interface LocalCard {
-  id: string;
-  title: string;
-  description?: string;
-  image_url?: string;
-  thumbnail_url?: string;
-  design_metadata: Record<string, any>;
-  rarity: CardRarity;
-  tags: string[];
-  template_id?: string;
-  creator_attribution: any;
-  publishing_options: any;
-  print_metadata: Record<string, any>;
-  is_public?: boolean;
-  lastModified: number;
-  needsSync: boolean;
-  isLocal: boolean;
-}
-
-const LOCAL_CARDS_KEY = 'crd_local_cards';
-
+// Simplified wrapper for backward compatibility
 export const localCardStorage = {
-  saveCard: (cardData: Partial<LocalCard>): string => {
-    const cards = localCardStorage.getAllCards();
-    const cardId = cardData.id || uuidv4();
+  getAllCards(): CardData[] {
+    return CardStorageService.getAllCards();
+  },
+
+  // Enhanced method to get all cards from all locations with detailed reporting
+  getAllCardsFromAllLocations(): { 
+    standardCards: CardData[], 
+    userCards: CardData[], 
+    allCards: CardData[],
+    report: any
+  } {
+    const report = CardStorageService.getStorageReport();
+    const standardCards = CardStorageService.getAllCards();
     
-    const card: LocalCard = {
-      id: cardId,
-      title: cardData.title || 'Untitled Card',
-      description: cardData.description,
-      image_url: cardData.image_url,
-      thumbnail_url: cardData.thumbnail_url,
-      design_metadata: cardData.design_metadata || {},
-      rarity: (cardData.rarity as CardRarity) || 'common',
-      tags: cardData.tags || [],
-      template_id: cardData.template_id,
-      creator_attribution: cardData.creator_attribution || { collaboration_type: 'solo' },
-      publishing_options: cardData.publishing_options || {
-        marketplace_listing: false,
-        crd_catalog_inclusion: true,
-        print_available: false,
-        pricing: { currency: 'USD' },
-        distribution: { limited_edition: false }
-      },
-      print_metadata: cardData.print_metadata || {},
-      is_public: cardData.is_public || false,
-      lastModified: Date.now(),
-      needsSync: true,
-      isLocal: true
+    // Separate user-specific cards from standard cards
+    const userCards = report.locations
+      .filter(loc => loc.key.startsWith('cards_'))
+      .flatMap(loc => loc.cards);
+
+    return {
+      standardCards,
+      userCards,
+      allCards: report.locations.flatMap(loc => loc.cards),
+      report
     };
+  },
 
-    cards[cardId] = card;
-    
-    try {
-      localStorage.setItem(LOCAL_CARDS_KEY, JSON.stringify(cards));
-      console.log('Card saved to local storage:', cardId);
-    } catch (error) {
-      console.error('Failed to save to localStorage:', error);
+  getCard(cardId: string): CardData | null {
+    const cards = CardStorageService.getAllCards();
+    return cards.find(c => c.id === cardId) || null;
+  },
+
+  saveCard(card: CardData): string {
+    const result = CardStorageService.saveCard(card);
+    if (!result.success) {
+      console.error('Failed to save card:', result.error);
+      return card.id || '';
     }
-    
-    return cardId;
+    return card.id || '';
   },
 
-  getCard: (id: string): LocalCard | null => {
-    const cards = localCardStorage.getAllCards();
-    return cards[id] || null;
+  // Consolidate all cards from different storage locations into standard storage
+  consolidateAllStorage(): { consolidated: number, cleaned: string[] } {
+    const result = CardStorageService.consolidateStorage();
+    return {
+      consolidated: result.moved,
+      cleaned: result.errors
+    };
   },
 
-  getAllCards: (): Record<string, LocalCard> => {
-    try {
-      const stored = localStorage.getItem(LOCAL_CARDS_KEY);
-      return stored ? JSON.parse(stored) : {};
-    } catch (error) {
-      console.error('Error reading local cards:', error);
-      return {};
-    }
+  markAsSynced(cardId: string): void {
+    // Implementation kept for compatibility but not needed with new system
+    console.log(`Card ${cardId} marked as synced (legacy method)`);
   },
 
-  getCardsNeedingSync: (): LocalCard[] => {
-    const cards = localCardStorage.getAllCards();
-    return Object.values(cards).filter(card => card.needsSync);
-  },
-
-  markAsSynced: (id: string): void => {
-    const cards = localCardStorage.getAllCards();
-    if (cards[id]) {
-      cards[id].needsSync = false;
-      cards[id].isLocal = false;
-      try {
-        localStorage.setItem(LOCAL_CARDS_KEY, JSON.stringify(cards));
-        console.log('Card marked as synced:', id);
-      } catch (error) {
-        console.error('Failed to update sync status:', error);
-      }
+  removeCard(cardId: string): void {
+    const result = CardStorageService.removeCard(cardId);
+    if (!result.success) {
+      console.error('Failed to remove card:', result.error);
     }
   },
 
-  deleteCard: (id: string): void => {
-    const cards = localCardStorage.getAllCards();
-    delete cards[id];
-    try {
-      localStorage.setItem(LOCAL_CARDS_KEY, JSON.stringify(cards));
-      console.log('Card deleted from local storage:', id);
-    } catch (error) {
-      console.error('Failed to delete card:', error);
+  clearAll(): void {
+    const result = CardStorageService.clearAll();
+    if (!result.success) {
+      console.error('Failed to clear storage:', result.error);
     }
   },
 
-  isRecentlyModified: (id: string, thresholdSeconds: number = 30): boolean => {
-    const card = localCardStorage.getCard(id);
-    if (!card) return false;
-    
-    const timeDiff = (Date.now() - card.lastModified) / 1000;
-    return timeDiff < thresholdSeconds;
+  // Check if there are cards that haven't been synced to database
+  getUnsyncedCards(): CardData[] {
+    // For now, assume all local cards are unsynced
+    return CardStorageService.getAllCards();
   }
 };

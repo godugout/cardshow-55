@@ -30,6 +30,8 @@ export const SimpleEditor = ({ initialData, onStartOver }: SimpleEditorProps) =>
       design_metadata: {},
       visibility: 'private',
       creator_attribution: {
+        creator_name: '',
+        creator_id: '',
         collaboration_type: 'solo'
       },
       publishing_options: {
@@ -99,14 +101,7 @@ export const SimpleEditor = ({ initialData, onStartOver }: SimpleEditorProps) =>
               <RotateCcw className="w-4 h-4 mr-2" />
               Start Over
             </Button>
-            <Button
-              onClick={handleViewImmersive}
-              className="bg-crd-purple hover:bg-crd-purple/90 text-white px-4 py-2 rounded-full"
-              disabled={!cardEditor.cardData.title?.trim()}
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              View 3D Card
-            </Button>
+            
           </div>
         )}
       </div>
@@ -129,20 +124,7 @@ export const SimpleEditor = ({ initialData, onStartOver }: SimpleEditorProps) =>
           <RightSidebar cardEditor={cardEditor} />
         </div>
       </div>
-
-      {/* Immersive Card Viewer */}
-      {showImmersiveViewer && (
-        <ImmersiveCardViewer
-          card={cardEditor.cardData}
-          isOpen={showImmersiveViewer}
-          onClose={() => setShowImmersiveViewer(false)}
-          onShare={handleShareCard}
-          onDownload={handleDownloadCard}
-          allowRotation={true}
-          showStats={true}
-          ambient={true}
-        />
-      )}
+      
     </div>
   );
 };

@@ -64,7 +64,7 @@ const Profile = () => {
   }
 
   const displayName = user.full_name || user.username || user.email || 'User';
-  const bioText = profile?.bio_extended || '';
+  const bioText = profile?.bio || '';
   const avatarUrl = profile?.avatar_url || '';
 
   // Convert cards to unified format with proper type handling

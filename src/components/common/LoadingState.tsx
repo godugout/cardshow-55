@@ -1,35 +1,33 @@
 
 import React from 'react';
-import { Loader } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 interface LoadingStateProps {
   message?: string;
-  fullPage?: boolean;
   size?: 'sm' | 'md' | 'lg';
+  fullPage?: boolean;
 }
 
 export const LoadingState: React.FC<LoadingStateProps> = ({ 
   message = 'Loading...', 
-  fullPage = false,
-  size = 'md'
+  size = 'md', 
+  fullPage = false 
 }) => {
   const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-8 w-8',
-    lg: 'h-12 w-12'
+    sm: 'w-4 h-4',
+    md: 'w-6 h-6',
+    lg: 'w-8 h-8'
   };
 
   const containerClasses = fullPage 
-    ? 'min-h-screen flex items-center justify-center'
-    : 'flex items-center justify-center py-12';
+    ? 'min-h-screen flex items-center justify-center bg-crd-darkest'
+    : 'flex items-center justify-center p-8';
 
   return (
     <div className={containerClasses}>
-      <div className="flex flex-col items-center">
-        <Loader 
-          className={`${sizeClasses[size]} animate-spin text-primary mb-4`} 
-        />
-        <p className="text-center text-gray-500">{message}</p>
+      <div className="flex flex-col items-center space-y-4">
+        <Loader2 className={`${sizeClasses[size]} animate-spin text-crd-green`} />
+        <p className="text-crd-lightGray text-center">{message}</p>
       </div>
     </div>
   );

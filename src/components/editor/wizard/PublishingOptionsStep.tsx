@@ -16,12 +16,12 @@ export const PublishingOptionsStep = ({ publishingOptions, selectedTemplate, onP
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-white mb-2">Publishing Options</h2>
+        <h2 className="text-3xl font-bold text-white mb-4">Publishing Options</h2>
         <p className="text-crd-lightGray">Configure how your card will be shared and distributed</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-editor-tool border-editor-border">
+        <Card className="bg-crd-darkGray border-crd-mediumGray/30">
           <CardHeader>
             <CardTitle className="text-white text-lg">Distribution</CardTitle>
           </CardHeader>
@@ -61,7 +61,7 @@ export const PublishingOptionsStep = ({ publishingOptions, selectedTemplate, onP
           </CardContent>
         </Card>
 
-        <Card className="bg-editor-tool border-editor-border">
+        <Card className="bg-crd-darkGray border-crd-mediumGray/30">
           <CardHeader>
             <CardTitle className="text-white text-lg">Edition Details</CardTitle>
           </CardHeader>
@@ -88,7 +88,7 @@ export const PublishingOptionsStep = ({ publishingOptions, selectedTemplate, onP
                   min="1"
                   max="10000"
                   placeholder="100"
-                  className="bg-editor-darker border-editor-border text-white"
+                  className="bg-crd-darkGray border-crd-mediumGray text-white"
                   onChange={(e) => onPublishingUpdate('distribution', {
                     ...publishingOptions.distribution,
                     edition_size: parseInt(e.target.value) || undefined
@@ -97,7 +97,7 @@ export const PublishingOptionsStep = ({ publishingOptions, selectedTemplate, onP
               </div>
             )}
 
-            <div className="pt-4 border-t border-editor-border">
+            <div className="pt-4 border-t border-crd-mediumGray">
               <div className="text-sm text-crd-lightGray space-y-1">
                 <p>Status: <span className="text-crd-green">Ready to publish</span></p>
                 <p>Template: <span className="text-white">{selectedTemplate?.name}</span></p>

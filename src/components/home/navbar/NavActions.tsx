@@ -11,7 +11,7 @@ export const NavActions = () => {
 
   if (user) {
     return (
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 ml-auto">
         <NotificationCenter />
         <ProfileDropdown />
       </div>
@@ -19,7 +19,7 @@ export const NavActions = () => {
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-3 ml-auto">
       <Link to="/auth">
         <CRDButton
           variant="outline"

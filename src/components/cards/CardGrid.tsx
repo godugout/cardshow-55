@@ -34,11 +34,19 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   
-  // Use consistent fallback image based on card ID to prevent flickering
-  const fallbackImage = UNSPLASH_IMAGES[index % UNSPLASH_IMAGES.length];
-  const displayImage = imageError || (!card.image_url && !card.thumbnail_url) 
-    ? fallbackImage 
-    : (card.thumbnail_url || card.image_url);
+  const getDisplayImage = () => {
+    // Check for valid image URLs, avoiding blob URLs
+    if (card.image_url && !card.image_url.startsWith('blob:') && !imageError) {
+      return card.image_url;
+    }
+    if (card.thumbnail_url && !card.thumbnail_url.startsWith('blob:') && !imageError) {
+      return card.thumbnail_url;
+    }
+    // Use placeholder image
+    return '/placeholder.svg';
+  };
+
+  const displayImage = getDisplayImage();
 
   const handleImageLoad = () => {
     setImageLoading(false);

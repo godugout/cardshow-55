@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS } from '../constants';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
@@ -20,6 +19,10 @@ export const useViewerState = () => {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
+  // --- REMOVED: Redundant effectValues state.
+  // This state is now managed exclusively by the `useEnhancedCardEffects` hook to prevent conflicts
+  // and resolve the card back rendering issue.
+
   // Environment and effects state - Simplified to only handle 2D scenes
   const [selectedScene, setSelectedScene] = useState<EnvironmentScene>(ENVIRONMENT_SCENES[0]);
   const [selectedLighting, setSelectedLighting] = useState<LightingPreset>(LIGHTING_PRESETS[0]);
@@ -31,7 +34,9 @@ export const useViewerState = () => {
     clearcoat: 0.0,
     reflectivity: 0.5
   });
-  const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>();
+
+  // --- NEW: Preset state initialized to "custom-init"
+  const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>("custom-init");
 
   // Action handlers
   const handleReset = useCallback(() => {
@@ -85,6 +90,8 @@ export const useViewerState = () => {
     setIsHoveringControls,
     showExportDialog,
     setShowExportDialog,
+
+    // --- REMOVED: effectValues and setEffectValues are no longer exposed by this hook.
 
     // Environment state
     selectedScene,

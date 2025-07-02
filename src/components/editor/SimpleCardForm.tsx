@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { CRDCard } from '@/components/ui/design-system/Card';
+import { CRDInput } from '@/components/ui/design-system/Input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
+import { CRDButton } from '@/components/ui/design-system/Button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSimpleCardEditor } from '@/hooks/useSimpleCardEditor';
@@ -73,30 +73,32 @@ export const SimpleCardForm = () => {
 
   if (!user) {
     return (
-      <Card className="max-w-2xl mx-auto mt-8">
-        <CardContent className="pt-6">
-          <p className="text-center text-muted-foreground">
+      <CRDCard className="max-w-2xl mx-auto mt-8 bg-crd-darkGray border-crd-mediumGray">
+        <div className="pt-6 p-6">
+          <p className="text-center text-crd-lightGray">
             Please sign in to create cards
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </CRDCard>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Create New Card</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
+    <div className="max-w-2xl mx-auto p-6 space-y-6 bg-crd-darkest min-h-screen">
+      <CRDCard className="bg-crd-darkGray border-crd-mediumGray">
+        <div className="p-6 border-b border-crd-mediumGray">
+          <h2 className="text-2xl font-bold text-crd-white">Create New Card</h2>
+        </div>
+        <div className="p-6 space-y-6">
           {/* Image Upload */}
           <div>
-            <Label>Card Image</Label>
+            <Label className="text-crd-white font-medium">Card Image</Label>
             <div
               {...getRootProps()}
               className={`mt-2 border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                isDragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+                isDragActive 
+                  ? 'border-crd-green bg-crd-green/10' 
+                  : 'border-crd-mediumGray hover:border-crd-green/50 bg-crd-darker'
               }`}
             >
               <input {...getInputProps()} />
@@ -107,14 +109,14 @@ export const SimpleCardForm = () => {
                     alt="Card preview" 
                     className="max-h-40 mx-auto rounded"
                   />
-                  <p className="text-sm text-gray-600">Click or drag to replace image</p>
+                  <p className="text-sm text-crd-lightGray">Click or drag to replace image</p>
                 </div>
               ) : (
                 <div>
                   {isUploading ? (
-                    <p>Uploading...</p>
+                    <p className="text-crd-white">Uploading...</p>
                   ) : (
-                    <p>Drag and drop an image here, or click to select</p>
+                    <p className="text-crd-lightGray">Drag and drop an image here, or click to select</p>
                   )}
                 </div>
               )}
@@ -123,9 +125,10 @@ export const SimpleCardForm = () => {
 
           {/* Title */}
           <div>
-            <Label htmlFor="title">Title *</Label>
-            <Input
+            <Label htmlFor="title" className="text-crd-white font-medium">Title *</Label>
+            <CRDInput
               id="title"
+              variant="crd"
               value={cardData.title}
               onChange={(e) => updateField('title', e.target.value)}
               placeholder="Enter card title"
@@ -135,65 +138,71 @@ export const SimpleCardForm = () => {
 
           {/* Description */}
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="text-crd-white font-medium">Description</Label>
             <Textarea
               id="description"
               value={cardData.description || ''}
               onChange={(e) => updateField('description', e.target.value)}
               placeholder="Enter card description"
-              className="mt-1"
+              className="mt-1 bg-crd-dark border-crd-mediumGray text-crd-white placeholder:text-crd-lightGray focus-visible:ring-crd-blue focus-visible:border-crd-blue"
               rows={3}
             />
           </div>
 
           {/* Rarity */}
           <div>
-            <Label>Rarity</Label>
+            <Label className="text-crd-white font-medium">Rarity</Label>
             <Select 
               value={cardData.rarity} 
               onValueChange={(value) => updateField('rarity', value as CardRarity)}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 bg-crd-dark border-crd-mediumGray text-crd-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="common">Common</SelectItem>
-                <SelectItem value="uncommon">Uncommon</SelectItem>
-                <SelectItem value="rare">Rare</SelectItem>
-                <SelectItem value="epic">Epic</SelectItem>
-                <SelectItem value="legendary">Legendary</SelectItem>
+              <SelectContent className="bg-crd-dark border-crd-mediumGray">
+                <SelectItem value="common" className="text-crd-white hover:bg-crd-mediumGray">Common</SelectItem>
+                <SelectItem value="uncommon" className="text-crd-white hover:bg-crd-mediumGray">Uncommon</SelectItem>
+                <SelectItem value="rare" className="text-crd-white hover:bg-crd-mediumGray">Rare</SelectItem>
+                <SelectItem value="epic" className="text-crd-white hover:bg-crd-mediumGray">Epic</SelectItem>
+                <SelectItem value="legendary" className="text-crd-white hover:bg-crd-mediumGray">Legendary</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Tags */}
           <div>
-            <Label>Tags</Label>
+            <Label className="text-crd-white font-medium">Tags</Label>
             <div className="mt-1 space-y-2">
               <div className="flex gap-2">
-                <Input
+                <CRDInput
+                  variant="crd"
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Add a tag and press Enter"
                   className="flex-1"
                 />
-                <Button type="button" onClick={addTag} variant="outline">
+                <CRDButton 
+                  type="button" 
+                  onClick={addTag} 
+                  variant="outline"
+                  className="bg-transparent border-crd-mediumGray text-crd-lightGray hover:bg-crd-mediumGray hover:text-crd-white"
+                >
                   Add
-                </Button>
+                </CRDButton>
               </div>
               {cardData.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {cardData.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm"
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-crd-blue/20 text-crd-blue rounded-md text-sm border border-crd-blue/30"
                     >
                       {tag}
                       <button
                         type="button"
                         onClick={() => removeTag(tag)}
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-crd-blue hover:text-crd-white transition-colors"
                       >
                         ×
                       </button>
@@ -206,24 +215,25 @@ export const SimpleCardForm = () => {
 
           {/* Actions */}
           <div className="flex gap-3 pt-4">
-            <Button 
+            <CRDButton 
               onClick={saveCard} 
               disabled={isSaving || !cardData.title.trim()}
+              variant="primary"
               className="flex-1"
             >
               {isSaving ? 'Saving...' : 'Save Card'}
-            </Button>
-            <Button 
+            </CRDButton>
+            <CRDButton 
               onClick={publishCard} 
               disabled={isSaving || !cardData.title.trim()}
-              variant="outline"
+              variant="secondary"
               className="flex-1"
             >
               Save & Publish
-            </Button>
+            </CRDButton>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </CRDCard>
     </div>
   );
 };

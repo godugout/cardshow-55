@@ -1,124 +1,99 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { useAllCollections } from '@/hooks/useCollections';
-import { useCards } from '@/hooks/useCards';
-import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
-import { GallerySection } from './Gallery/components/GallerySection';
 import { GalleryHeader } from './Gallery/components/GalleryHeader';
-import { CollectionsGrid } from './Gallery/components/CollectionsGrid';
-import { CardsGrid } from './Gallery/components/CardsGrid';
+import { CardGrid } from '@/components/cards/CardGrid';
+import { useCards } from '@/hooks/useCards';
+import { LoadingState } from '@/components/common/LoadingState';
 import { useCardConversion } from './Gallery/hooks/useCardConversion';
-import { useGalleryActions } from './Gallery/hooks/useGalleryActions';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Plus } from 'lucide-react';
-import type { Tables } from '@/integrations/supabase/types';
-
-// Use the database type directly
-type DbCard = Tables<'cards'>;
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
-  
-  const { collections, loading: collectionsLoading } = useAllCollections(1, 6);
-  const { featuredCards, loading: cardsLoading } = useCards();
-  
+  const { cards, featuredCards, loading, dataSource } = useCards();
   const { convertCardsToCardData } = useCardConversion();
-  const {
-    selectedCardIndex,
-    showImmersiveViewer,
-    handleCardClick,
-    handleCardChange,
-    handleCloseViewer,
-    handleShareCard,
-    handleDownloadCard
-  } = useGalleryActions();
 
-  // Convert cards to CardData format for the viewer
-  const convertedCards = convertCardsToCardData(featuredCards || []);
-  const currentCard = convertedCards[selectedCardIndex];
+  console.log('🎨 Gallery: Rendering with cards:', cards.length, 'featured:', featuredCards.length, 'source:', dataSource);
 
-  const handleCreateCollection = () => {
-    // TODO: Implement collection creation
-    console.log('Create collection clicked');
+  if (loading) {
+    return <LoadingState message="Loading gallery..." fullPage />;
+  }
+
+  const getDisplayCards = () => {
+    // Convert database cards to CardData format for display
+    const allCardsConverted = convertCardsToCardData(cards);
+    const featuredCardsConverted = convertCardsToCardData(featuredCards);
+    
+    switch (activeTab) {
+      case 'featured':
+        return featuredCardsConverted.length > 0 ? featuredCardsConverted : allCardsConverted.slice(0, 8);
+      case 'trending':
+        // Filter cards with view_count > 10, with fallback for undefined view_count
+        return allCardsConverted.filter(card => (card.view_count || 0) > 10).slice(0, 20);
+      case 'new':
+        // Sort by created_at with fallback for undefined created_at
+        return allCardsConverted.sort((a, b) => {
+          const aDate = new Date(a.created_at || 0).getTime();
+          const bDate = new Date(b.created_at || 0).getTime();
+          return bDate - aDate;
+        }).slice(0, 20);
+      default:
+        return allCardsConverted;
+    }
   };
 
+  const displayCards = getDisplayCards();
+  console.log('🎨 Gallery: Displaying', displayCards.length, 'cards for tab:', activeTab);
+
+  // Convert CardData to the format expected by CardGrid
+  const gridCards = displayCards.map(card => ({
+    id: card.id,
+    title: card.title,
+    description: card.description,
+    image_url: card.image_url,
+    thumbnail_url: card.thumbnail_url,
+    price: card.price?.toString() || undefined
+  }));
+
   return (
-    <div className="container mx-auto p-6 max-w-7xl bg-[#121212]">
-      <GalleryHeader activeTab={activeTab} onTabChange={setActiveTab} />
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsContent value="featured" className="mt-8">
-          {/* Simplified Collections Section */}
-          <GallerySection title="Collections">
-            {collections && collections.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
-                <CollectionsGrid collections={collections.slice(0, 5) || []} loading={collectionsLoading} />
-                <div className="flex items-center justify-center">
-                  <EmptyState
-                    title="Create Collection"
-                    description="Start your own collection of cards"
-                    icon={<Plus className="h-12 w-12 text-crd-mediumGray mb-4" />}
-                    action={{
-                      label: "Create Collection",
-                      onClick: handleCreateCollection,
-                      icon: <Plus className="mr-2 h-4 w-4" />
-                    }}
-                  />
-                </div>
-              </div>
-            ) : (
-              <EmptyState
-                title="No Collections Yet"
-                description="Be the first to create a collection and showcase your cards"
-                action={{
-                  label: "Create Collection",
-                  onClick: handleCreateCollection,
-                  icon: <Plus className="mr-2 h-4 w-4" />
-                }}
-              />
-            )}
-          </GallerySection>
-
-          {/* Main Focus: Featured Cards */}
-          <GallerySection title="Featured Cards">
-            <CardsGrid 
-              cards={featuredCards || []} 
-              loading={cardsLoading}
-              onCardClick={(card: DbCard) => handleCardClick(card, featuredCards || [])}
-            />
-          </GallerySection>
-        </TabsContent>
-        
-        <TabsContent value="trending">
-          <div className="py-16">
-            <p className="text-[#777E90] text-center">Trending content coming soon</p>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="new">
-          <div className="py-16">
-            <p className="text-[#777E90] text-center">New content coming soon</p>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* Enhanced Immersive Card Viewer with Navigation */}
-      {showImmersiveViewer && currentCard && convertedCards.length > 0 && (
-        <ImmersiveCardViewer
-          card={currentCard}
-          cards={convertedCards}
-          currentCardIndex={selectedCardIndex}
-          onCardChange={handleCardChange}
-          isOpen={showImmersiveViewer}
-          onClose={handleCloseViewer}
-          onShare={() => handleShareCard(convertedCards)}
-          onDownload={() => handleDownloadCard(convertedCards)}
-          allowRotation={true}
-          showStats={true}
-          ambient={true}
+    <div className="min-h-screen bg-crd-darkest">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <GalleryHeader
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
         />
-      )}
+        
+        {/* Data source indicator in development */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mb-4 p-2 bg-black/50 rounded text-xs text-white">
+            Source: {dataSource} | Total: {cards.length} | Showing: {displayCards.length}
+          </div>
+        )}
+        
+        <CardGrid 
+          cards={gridCards}
+          loading={false}
+          viewMode="grid"
+        />
+        
+        {displayCards.length === 0 && !loading && (
+          <div className="text-center py-12">
+            <h3 className="text-xl font-semibold text-white mb-4">No Cards Found</h3>
+            <p className="text-crd-lightGray mb-6">
+              {cards.length === 0 
+                ? "No cards have been created yet. Start by creating your first card!"
+                : "No cards match the current filter. Try switching tabs or check other categories."
+              }
+            </p>
+            {cards.length === 0 && (
+              <a 
+                href="/create"
+                className="inline-flex items-center px-4 py-2 bg-crd-green text-white rounded-lg hover:bg-crd-green/90 transition-colors"
+              >
+                Create Your First Card
+              </a>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

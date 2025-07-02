@@ -4,62 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useAllCollections } from '@/hooks/useCollections';
+import { useFrames } from '@/hooks/useFrames';
 import { Loader, Image, Grid, Plus, Users, Palette, Star, Crown, Gem } from 'lucide-react';
 
 export default function Creators() {
   const [activeTab, setActiveTab] = useState<'frames' | 'collections'>('frames');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const { collections, loading: collectionsLoading } = useAllCollections();
+  const { frames, trendingFrames, categories, loading: framesLoading } = useFrames(selectedCategory === 'all' ? undefined : selectedCategory);
   
-  const framesCommons = [
-    {
-      name: 'Classic Baseball (Community)',
-      preview: '/placeholder.svg',
-      creator: 'Community',
-      price: 0,
-      locked: false,
-      rarity: 'common',
-      description: "A vintage-style open frame perfect for all-star throwbacks and custom teams. Free to remix.",
-      downloads: 1520,
-      rating: 4.8
-    },
-    {
-      name: 'Pixel Art (Open)',
-      preview: '/placeholder.svg',
-      creator: 'PixArt Joe',
-      price: 0,
-      locked: false,
-      rarity: 'common',
-      description: "Minimal pixel frame, remix-friendly and open for all designers.",
-      downloads: 890,
-      rating: 4.6
-    },
-  ];
-
-  const framesLocked = [
-    {
-      name: 'Gold Signature (Official)',
-      preview: '/placeholder.svg',
-      creator: 'RookieCollectibles',
-      price: 20,
-      locked: true,
-      rarity: 'legendary',
-      description: "Official CRD Creator frame, gold foil, perfect for ultra-rares. Unlock with $20 or 50 CC.",
-      downloads: 350,
-      rating: 4.9
-    },
-    {
-      name: 'Team Authentics (Monetized)',
-      preview: '/placeholder.svg',
-      creator: 'OGCardBase',
-      price: 5,
-      locked: true,
-      rarity: 'epic',
-      description: "Licensed team-style frame supporting creator—purchase with 5 CC.",
-      downloads: 670,
-      rating: 4.7
-    },
-  ];
-
   const getRarityIcon = (rarity: string) => {
     switch (rarity) {
       case 'legendary': return <Crown className="h-4 w-4 text-orange-400" />;
@@ -74,6 +27,12 @@ export default function Creators() {
       case 'epic': return 'border-purple-400 shadow-purple-400/20';
       default: return 'border-blue-400 shadow-blue-400/20';
     }
+  };
+
+  const getFrameRarity = (price: number) => {
+    if (price >= 20) return 'legendary';
+    if (price >= 5) return 'epic';
+    return 'common';
   };
 
   return (
@@ -139,129 +98,178 @@ export default function Creators() {
           </TabsList>
           
           <TabsContent value="frames" className="space-y-12">
-            {/* Commons Section */}
-            <section>
-              <h2 className="text-3xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
-                Commons: Open Community Frames
-              </h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {framesCommons.map((frame) => (
-                  <div key={frame.name} 
-                       className={`card-item ${frame.rarity} rounded-xl overflow-hidden`}
-                       style={{ aspectRatio: 'auto', background: 'var(--card-bg)' }}>
-                    <div className="relative h-48 overflow-hidden">
-                      <img src={frame.preview} alt={frame.name} 
-                           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                           style={{ background: 'var(--secondary-bg)' }} />
-                      <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full"
-                           style={{ background: 'rgba(0, 0, 0, 0.7)' }}>
-                        {getRarityIcon(frame.rarity)}
-                        <span className="text-xs font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
-                          {frame.rarity}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="font-bold text-lg mb-2" style={{ color: 'var(--text-primary)' }}>
-                        {frame.name}
-                      </h3>
-                      <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                        {frame.description}
-                      </p>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                          Creator: {frame.creator}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                          <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                            {frame.rating}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold" style={{ color: 'var(--accent-green)' }}>
-                          {frame.price === 0 ? "Free" : `${frame.price} CC`}
-                        </span>
-                        <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                          {frame.downloads} downloads
-                        </span>
-                      </div>
-                      <button className="crd-button-primary w-full mt-4">
-                        Use Frame
-                      </button>
-                    </div>
-                  </div>
-                ))}
+            {/* Category Filter */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  selectedCategory === 'all' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                All Categories
+              </button>
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 py-2 rounded-lg transition-colors capitalize ${
+                    selectedCategory === category 
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+
+            {framesLoading ? (
+              <div className="flex justify-center py-12">
+                <Loader className="w-8 h-8 animate-spin" style={{ color: 'var(--text-secondary)' }} />
               </div>
-            </section>
-            
-            {/* Locked Frames Section */}
-            <section>
-              <h2 className="text-3xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
-                Locked & Official Frames
-              </h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {framesLocked.map((frame) => (
-                  <div key={frame.name} 
-                       className={`card-item ${frame.rarity} rounded-xl overflow-hidden relative`}
-                       style={{ aspectRatio: 'auto', background: 'var(--card-bg)' }}>
-                    {frame.locked && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 z-10 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="w-16 h-16 rounded-full bg-yellow-400 flex items-center justify-center mx-auto mb-2">
-                            <Crown className="h-8 w-8 text-black" />
+            ) : (
+              <>
+                {/* Trending Frames Section */}
+                {trendingFrames.length > 0 && (
+                  <section>
+                    <h2 className="text-3xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
+                      Trending Frames
+                    </h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {trendingFrames.map((frame) => {
+                        const frameRarity = getFrameRarity(frame.price);
+                        return (
+                          <div key={frame.id} 
+                               className={`card-item ${frameRarity} rounded-xl overflow-hidden`}
+                               style={{ aspectRatio: 'auto', background: 'var(--card-bg)' }}>
+                            <div className="relative h-48 overflow-hidden">
+                              {frame.preview_images && frame.preview_images.length > 0 ? (
+                                <img src={frame.preview_images[0]} alt={frame.name} 
+                                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
+                              ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-purple-400 to-blue-600 flex items-center justify-center">
+                                  <Palette className="h-12 w-12 text-white opacity-50" />
+                                </div>
+                              )}
+                              <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full"
+                                   style={{ background: 'rgba(0, 0, 0, 0.7)' }}>
+                                {getRarityIcon(frameRarity)}
+                                <span className="text-xs font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
+                                  {frameRarity}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="p-6">
+                              <h3 className="font-bold text-lg mb-2" style={{ color: 'var(--text-primary)' }}>
+                                {frame.name}
+                              </h3>
+                              <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                                {frame.description || 'Custom frame design'}
+                              </p>
+                              <div className="flex items-center justify-between mb-4">
+                                <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                                  By: {frame.creator_name}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                  <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                                    {frame.rating.toFixed(1)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold" style={{ color: frame.price === 0 ? 'var(--accent-green)' : 'var(--accent-orange)' }}>
+                                  {frame.price === 0 ? "Free" : `$${frame.price}`}
+                                </span>
+                                <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                                  {frame.sales_count} uses
+                                </span>
+                              </div>
+                              <button className="crd-button-primary w-full mt-4">
+                                Use Frame
+                              </button>
+                            </div>
                           </div>
-                          <span className="text-yellow-400 font-bold">LOCKED</span>
-                        </div>
-                      </div>
-                    )}
-                    <div className="relative h-48 overflow-hidden">
-                      <img src={frame.preview} alt={frame.name} 
-                           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                           style={{ background: 'var(--secondary-bg)' }} />
-                      <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full"
-                           style={{ background: 'rgba(0, 0, 0, 0.7)' }}>
-                        {getRarityIcon(frame.rarity)}
-                        <span className="text-xs font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
-                          {frame.rarity}
-                        </span>
-                      </div>
+                        );
+                      })}
                     </div>
-                    <div className="p-6">
-                      <h3 className="font-bold text-lg mb-2" style={{ color: 'var(--text-primary)' }}>
-                        {frame.name}
-                      </h3>
-                      <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                        {frame.description}
-                      </p>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                          Creator: {frame.creator}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                          <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                            {frame.rating}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold" style={{ color: 'var(--accent-orange)' }}>
-                          {frame.price > 0 ? `${frame.price} CC` : "Free"}
-                        </span>
-                        <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                          {frame.downloads} downloads
-                        </span>
-                      </div>
-                      <button className="crd-button-secondary w-full mt-4" disabled={frame.locked}>
-                        {frame.locked ? 'Unlock Frame' : 'Use Frame'}
-                      </button>
+                  </section>
+                )}
+
+                {/* All Frames Section */}
+                <section>
+                  <h2 className="text-3xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
+                    {selectedCategory === 'all' ? 'All Frames' : `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Frames`}
+                  </h2>
+                  {frames.length === 0 ? (
+                    <p className="text-center py-12" style={{ color: 'var(--text-secondary)' }}>
+                      No frames found in this category. Be the first to create one!
+                    </p>
+                  ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {frames.map((frame) => {
+                        const frameRarity = getFrameRarity(frame.price);
+                        return (
+                          <div key={frame.id} 
+                               className={`card-item ${frameRarity} rounded-xl overflow-hidden`}
+                               style={{ aspectRatio: 'auto', background: 'var(--card-bg)' }}>
+                            <div className="relative h-48 overflow-hidden">
+                              {frame.preview_images && frame.preview_images.length > 0 ? (
+                                <img src={frame.preview_images[0]} alt={frame.name} 
+                                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
+                              ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center">
+                                  <Palette className="h-12 w-12 text-white opacity-50" />
+                                </div>
+                              )}
+                              <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full"
+                                   style={{ background: 'rgba(0, 0, 0, 0.7)' }}>
+                                {getRarityIcon(frameRarity)}
+                                <span className="text-xs font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
+                                  {frameRarity}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="p-6">
+                              <h3 className="font-bold text-lg mb-2" style={{ color: 'var(--text-primary)' }}>
+                                {frame.name}
+                              </h3>
+                              <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                                {frame.description || 'Custom frame design'}
+                              </p>
+                              <div className="flex items-center justify-between mb-4">
+                                <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                                  By: {frame.creator_name}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                  <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                                    {frame.rating.toFixed(1)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold" style={{ color: frame.price === 0 ? 'var(--accent-green)' : 'var(--accent-orange)' }}>
+                                  {frame.price === 0 ? "Free" : `$${frame.price}`}
+                                </span>
+                                <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                                  {frame.sales_count} uses
+                                </span>
+                              </div>
+                              <button className="crd-button-primary w-full mt-4">
+                                Use Frame
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  </div>
-                ))}
-              </div>
-            </section>
+                  )}
+                </section>
+              </>
+            )}
 
             {/* CTA Section */}
             <div className="text-center p-8 rounded-2xl" style={{ background: 'var(--card-bg)', border: '1px solid var(--border-primary)' }}>
@@ -269,7 +277,8 @@ export default function Creators() {
                 Become a CRD Frame Creator
               </h3>
               <p className="mb-6 max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
-                Want to build and share new Frames? Design with our editor, submit to the commons, or set your own price for premium frames. Unlock more by joining the creator program and get featured or monetize your designs!
+                Ready to design and share new frames? Create your designer profile, submit to the community, 
+                or set your own price for premium frames. Join our creator program to get featured and monetize your designs!
               </p>
               <button className="crd-button-primary">
                 Start Designing
@@ -280,7 +289,7 @@ export default function Creators() {
           <TabsContent value="collections" className="space-y-8">
             {collectionsLoading ? (
               <div className="flex justify-center py-12">
-                <div className="loading-shimmer w-8 h-8 rounded-full"></div>
+                <Loader className="w-8 h-8 animate-spin" style={{ color: 'var(--text-secondary)' }} />
               </div>
             ) : (
               <>
@@ -288,56 +297,31 @@ export default function Creators() {
                   <h2 className="text-3xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                     Featured Collections
                   </h2>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    {Array(3).fill(null).map((_, i) => (
-                      <div key={i} className="card-item rounded-xl overflow-hidden" 
-                           style={{ aspectRatio: 'auto', background: 'var(--card-bg)' }}>
-                        <div className="h-40" style={{ background: 'var(--secondary-bg)' }}></div>
-                        <div className="p-6">
-                          <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                            Collection {i+1}
-                          </h3>
-                          <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                            By Creator {i+1}
-                          </p>
-                          <p className="text-sm mb-4" style={{ color: 'var(--text-tertiary)' }}>
-                            A curated collection of unique cards showcasing the best in digital art.
-                          </p>
-                          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                            12 cards
-                          </p>
+                  {collections.length === 0 ? (
+                    <p className="text-center py-12" style={{ color: 'var(--text-secondary)' }}>
+                      No collections found. Create the first one!
+                    </p>
+                  ) : (
+                    <div className="grid md:grid-cols-3 gap-6">
+                      {collections.slice(0, 6).map((collection) => (
+                        <div key={collection.id} className="card-item rounded-xl overflow-hidden" 
+                             style={{ aspectRatio: 'auto', background: 'var(--card-bg)' }}>
+                          <div className="h-40" style={{ background: collection.cover_image_url ? `url(${collection.cover_image_url})` : 'var(--secondary-bg)' }}></div>
+                          <div className="p-6">
+                            <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+                              {collection.title}
+                            </h3>
+                            <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                              {collection.description || 'A curated collection of unique cards showcasing the best in digital art.'}
+                            </p>
+                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                              Collection
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-                
-                <section>
-                  <h2 className="text-3xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
-                    Community Collections
-                  </h2>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    {Array(3).fill(null).map((_, i) => (
-                      <div key={i} className="card-item rounded-xl overflow-hidden" 
-                           style={{ aspectRatio: 'auto', background: 'var(--card-bg)' }}>
-                        <div className="h-40" style={{ background: 'var(--secondary-bg)' }}></div>
-                        <div className="p-6">
-                          <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                            Community Set {i+1}
-                          </h3>
-                          <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                            Collaborative Collection
-                          </p>
-                          <p className="text-sm mb-4" style={{ color: 'var(--text-tertiary)' }}>
-                            An open collection where community members can contribute their cards.
-                          </p>
-                          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                            24 cards
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </section>
                 
                 <div className="text-center p-8 rounded-2xl" style={{ background: 'var(--card-bg)', border: '1px solid var(--border-primary)' }}>

@@ -1,138 +1,165 @@
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useCallback } from 'react';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { CardMigrationService } from '@/services/cardMigration';
+import { CardFetchingService } from '@/services/cardFetching';
+import { useCardsState } from './useCardsState';
+import { useRealtimeCardSubscription } from './useRealtimeCardSubscription';
 import { toast } from 'sonner';
-import type { Tables } from '@/integrations/supabase/types';
-
-// Use the database type directly instead of custom interface
-type Card = Tables<'cards'>;
 
 export const useCards = () => {
   const { user } = useAuth();
-  const [cards, setCards] = useState<Card[]>([]);
-  const [featuredCards, setFeaturedCards] = useState<Card[]>([]);
-  const [userCards, setUserCards] = useState<Card[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    cards,
+    featuredCards,
+    userCards,
+    loading,
+    dataSource,
+    setLoading,
+    updateCards,
+    updateUserCards,
+    updateDataSource
+  } = useCardsState();
 
-  const fetchPublicCards = async () => {
-    try {
-      console.log('Fetching public cards...');
-      const { data, error } = await supabase
-        .from('cards')
-        .select('*')
-        .eq('is_public', true)
-        .order('created_at', { ascending: false });
+  const fetchAllCardsFromDatabase = useCallback(async () => {
+    console.log('🔍 Starting fetchAllCardsFromDatabase...');
+    const { cards: fetchedCards, dataSource: source } = await CardFetchingService.fetchAllCardsFromDatabase();
+    console.log(`📊 Fetched ${fetchedCards.length} cards from ${source}`);
+    console.log('🔍 First few cards:', fetchedCards.slice(0, 3).map(c => ({ id: c.id, title: c.title, created_at: c.created_at })));
+    updateCards(fetchedCards);
+    updateDataSource(source);
+    return fetchedCards;
+  }, [updateCards, updateDataSource]);
 
-      if (error) {
-        console.error('Error fetching public cards:', error);
-        throw error;
-      }
-      
-      console.log('Fetched public cards:', data?.length || 0);
-      setCards(data || []);
-      setFeaturedCards(data?.slice(0, 8) || []);
-    } catch (error) {
-      console.error('Error fetching public cards:', error);
-      // Don't show error toast immediately, might be expected during app initialization
-      setCards([]);
-      setFeaturedCards([]);
-    }
-  };
-
-  const fetchUserCards = async (userId?: string) => {
+  const fetchUserCards = useCallback(async (userId?: string) => {
     const targetUserId = userId || user?.id;
-    if (!targetUserId) {
-      console.log('No user ID available for fetching user cards');
-      return [];
-    }
+    if (!targetUserId) return [];
     
-    try {
-      console.log('Fetching user cards for:', targetUserId);
-      const { data, error } = await supabase
-        .from('cards')
-        .select('*')
-        .eq('creator_id', targetUserId)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching user cards:', error);
-        throw error;
-      }
-      
-      console.log('Fetched user cards:', data?.length || 0);
-      const userCardsData = data || [];
-      if (!userId || userId === user?.id) {
-        setUserCards(userCardsData);
-      }
-      return userCardsData;
-    } catch (error) {
-      console.error('Error fetching user cards:', error);
-      return [];
+    console.log(`🔍 Fetching user cards for: ${targetUserId}`);
+    const userCardsData = await CardFetchingService.fetchUserCards(targetUserId);
+    console.log(`📊 Fetched ${userCardsData.length} user cards`);
+    if (!userId || userId === user?.id) {
+      updateUserCards(userCardsData);
     }
-  };
+    return userCardsData;
+  }, [user?.id, updateUserCards]);
 
-  const fetchCards = async () => {
-    console.log('Starting card fetch process...');
+  const fetchCards = useCallback(async () => {
+    console.log('🔄 Starting card fetch process...');
     setLoading(true);
-    
     try {
       await Promise.all([
-        fetchPublicCards(),
+        fetchAllCardsFromDatabase(),
         fetchUserCards()
       ]);
+      console.log('✅ Card fetch completed successfully');
     } catch (error) {
-      console.error('Error in fetchCards:', error);
+      console.error('💥 Error in fetchCards:', error);
     } finally {
       setLoading(false);
-      console.log('Card fetch process completed');
     }
-  };
+  }, [fetchAllCardsFromDatabase, fetchUserCards, setLoading]);
+
+  // Enhanced migration with detailed error reporting
+  const migrateLocalCardsToDatabase = useCallback(async () => {
+    if (!user?.id) {
+      toast.error('Please sign in to migrate cards');
+      return;
+    }
+
+    try {
+      console.log('🔄 Starting enhanced card migration...');
+      
+      // First, preview the migration
+      const preview = await CardMigrationService.previewMigration(user.id);
+      
+      if (preview.report.totalCards === 0) {
+        toast.info('No local cards found to migrate');
+        return;
+      }
+
+      console.log('📋 Migration preview:', preview);
+      
+      // Show preview to user
+      if (preview.invalidCards > 0) {
+        toast.warning(`Found ${preview.invalidCards} cards with validation issues. Check console for details.`);
+        console.warn('Validation issues:', preview.validationIssues);
+      }
+
+      // Execute migration
+      toast.loading(`Migrating ${preview.report.totalCards} cards...`, { id: 'migration' });
+      
+      const result = await CardMigrationService.executeMigration(user.id);
+      
+      toast.dismiss('migration');
+      
+      if (result.success) {
+        const message = `Successfully migrated ${result.migratedCount} cards${
+          result.failedCount > 0 ? ` (${result.failedCount} failed)` : ''
+        }`;
+        toast.success(message);
+        
+        if (result.warnings.length > 0) {
+          console.warn('Migration warnings:', result.warnings);
+        }
+        
+        // Refresh cards after successful migration
+        await fetchCards();
+      } else {
+        toast.error(`Migration failed: ${result.failedCount} cards could not be migrated`);
+      }
+      
+      // Log detailed results
+      if (result.errors.length > 0) {
+        console.group('❌ Migration Errors');
+        result.errors.forEach(error => {
+          console.error(`${error.cardTitle} (${error.cardId}): ${error.error}`);
+        });
+        console.groupEnd();
+      }
+      
+      console.log('🎯 Migration completed:', {
+        total: result.totalCards,
+        migrated: result.migratedCount,
+        failed: result.failedCount,
+        success: result.success
+      });
+      
+    } catch (error) {
+      console.error('💥 Migration system error:', error);
+      toast.error('Migration system error. Check console for details.');
+    }
+  }, [user?.id, fetchCards]);
+
+  // Set up real-time subscription
+  useRealtimeCardSubscription(fetchCards, user?.id);
 
   useEffect(() => {
-    console.log('useCards effect triggered, user:', user?.id);
+    // Initial fetch
+    console.log('🚀 useCards mounted, starting initial fetch...');
     fetchCards();
+  }, [fetchCards]);
 
-    // Only set up real-time subscription if we have a user
-    let subscription: any = null;
-    
-    try {
-      subscription = supabase
-        .channel('cards-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'cards'
-          },
-          (payload) => {
-            console.log('Real-time card change:', payload);
-            fetchCards(); // Refresh cards when changes occur
-          }
-        )
-        .subscribe();
-        
-      console.log('Real-time subscription created');
-    } catch (error) {
-      console.error('Error setting up real-time subscription:', error);
-    }
-
-    return () => {
-      if (subscription) {
-        console.log('Cleaning up real-time subscription');
-        supabase.removeChannel(subscription);
-      }
-    };
-  }, [user?.id]);
+  // Debug log current state
+  useEffect(() => {
+    console.log('📊 Current card state:', {
+      totalCards: cards.length,
+      featuredCards: featuredCards.length,
+      userCards: userCards.length,
+      loading,
+      dataSource
+    });
+  }, [cards.length, featuredCards.length, userCards.length, loading, dataSource]);
 
   return {
     cards,
     featuredCards,
     userCards,
     loading,
+    dataSource,
     fetchCards,
-    fetchPublicCards,
-    fetchUserCards
+    fetchAllCardsFromDatabase,
+    fetchUserCards,
+    migrateLocalCardsToDatabase
   };
 };

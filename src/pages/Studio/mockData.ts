@@ -1,101 +1,109 @@
 
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 export const mockCards: CardData[] = [
   {
-    id: 'card-1',
-    title: 'LeBron James',
-    description: 'Los Angeles Lakers - Forward',
+    id: '498e5467-7818-49a3-9a19-4a3bc2995fc7',
+    title: 'Mystic Dragon',
+    description: 'A legendary dragon card with mystical powers',
     rarity: 'legendary',
-    tags: ['basketball', 'nba', 'lebron', 'lakers'],
-    image_url: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=600&fit=crop',
+    tags: ['dragon', 'fantasy', 'legendary'],
+    image_url: '/lovable-uploads/cd4cf59d-5ff5-461d-92e9-61b6e2c63e2e.png',
     design_metadata: {
-      player: {
-        name: 'LeBron James',
-        team: 'Los Angeles Lakers',
-        position: 'Forward',
-        stats: {
-          points: 27.2,
-          rebounds: 7.5,
-          assists: 7.3
-        }
-      }
+      background: 'mystical',
+      effects: ['glow', 'particles'],
+      colorScheme: 'purple-gold'
     },
     visibility: 'public',
     creator_attribution: {
-      creator_name: 'CRD Studio'
+      creator_name: 'Studio Artist',
+      creator_id: 'studio-artist-1',
+      collaboration_type: 'solo'
     },
     publishing_options: {
-      marketplace_listing: false,
+      marketplace_listing: true,
       crd_catalog_inclusion: true,
-      print_available: false,
+      print_available: true,
       pricing: {
+        base_price: 25.99,
         currency: 'USD'
-      }
-    }
-  },
-  {
-    id: 'card-2',
-    title: 'Stephen Curry',
-    description: 'Golden State Warriors - Point Guard',
-    rarity: 'epic',
-    tags: ['basketball', 'nba', 'curry', 'warriors'],
-    image_url: 'https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=400&h=600&fit=crop',
-    design_metadata: {
-      player: {
-        name: 'Stephen Curry',
-        team: 'Golden State Warriors',
-        position: 'Point Guard',
-        stats: {
-          points: 29.5,
-          rebounds: 5.1,
-          assists: 6.3
-        }
+      },
+      distribution: {
+        limited_edition: true,
+        edition_size: 1000
       }
     },
-    visibility: 'public',
-    creator_attribution: {
-      creator_name: 'CRD Studio'
-    },
-    publishing_options: {
-      marketplace_listing: false,
-      crd_catalog_inclusion: true,
-      print_available: false,
-      pricing: {
-        currency: 'USD'
-      }
-    }
+    verification_status: 'verified',
+    view_count: 1250,
+    created_at: '2024-01-15T10:30:00Z'
   },
   {
-    id: 'card-3',
-    title: 'Kevin Durant',
-    description: 'Phoenix Suns - Forward',
+    id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    title: 'Crystal Warrior',
+    description: 'A rare warrior forged from pure crystal',
     rarity: 'rare',
-    tags: ['basketball', 'nba', 'durant', 'suns'],
-    image_url: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&h=600&fit=crop',
+    tags: ['warrior', 'crystal', 'rare'],
+    image_url: '/lovable-uploads/5e4b9905-1b9a-481e-b51d-9cf0bda7ff0f.png',
     design_metadata: {
-      player: {
-        name: 'Kevin Durant',
-        team: 'Phoenix Suns',
-        position: 'Forward',
-        stats: {
-          points: 26.8,
-          rebounds: 6.7,
-          assists: 5.0
-        }
-      }
+      background: 'crystalline',
+      effects: ['shine', 'refraction'],
+      colorScheme: 'blue-white'
     },
     visibility: 'public',
     creator_attribution: {
-      creator_name: 'CRD Studio'
+      creator_name: 'Crystal Studios',
+      creator_id: 'crystal-studios-1',
+      collaboration_type: 'solo'
     },
     publishing_options: {
-      marketplace_listing: false,
+      marketplace_listing: true,
       crd_catalog_inclusion: true,
-      print_available: false,
+      print_available: true,
       pricing: {
+        base_price: 15.99,
         currency: 'USD'
+      },
+      distribution: {
+        limited_edition: false
       }
-    }
+    },
+    verification_status: 'verified',
+    view_count: 840,
+    created_at: '2024-01-20T14:15:00Z'
+  },
+  {
+    id: 'f7e8d9c0-b1a2-3456-789a-bcdef0123456',
+    title: 'Shadow Assassin',
+    description: 'An epic assassin that strikes from the shadows',
+    rarity: 'epic',
+    tags: ['assassin', 'shadow', 'stealth'],
+    image_url: '/lovable-uploads/68c31062-5697-489f-a2f1-8ff47d5f5e1e.png',
+    design_metadata: {
+      background: 'dark',
+      effects: ['shadow', 'smoke'],
+      colorScheme: 'black-purple'
+    },
+    visibility: 'public',
+    creator_attribution: {
+      creator_name: 'Shadow Arts',
+      creator_id: 'shadow-arts-1',
+      collaboration_type: 'solo'
+    },
+    publishing_options: {
+      marketplace_listing: true,
+      crd_catalog_inclusion: true,
+      print_available: true,
+      pricing: {
+        base_price: 19.99,
+        currency: 'USD'
+      },
+      distribution: {
+        limited_edition: true,
+        edition_size: 500
+      }
+    },
+    verification_status: 'verified',
+    view_count: 2100,
+    created_at: '2024-01-10T09:45:00Z'
   }
 ];

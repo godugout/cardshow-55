@@ -1,42 +1,45 @@
 
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { OverlayProvider } from '@/components/overlay/OverlayProvider';
-import { MainLayout } from '@/components/layout/MainLayout';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import { AuthProvider } from '@/features/auth/providers/AuthProvider';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { Navbar } from '@/components/layout/Navbar';
 import Index from '@/pages/Index';
+import CreateCard from '@/pages/CreateCard';
 import Gallery from '@/pages/Gallery';
-import Profile from '@/pages/Profile';
-import AccountSettings from '@/pages/AccountSettings';
-import Creators from '@/pages/Creators';
-import DebugDetection from '@/pages/DebugDetection';
 import Studio from '@/pages/Studio';
-import Collections from '@/pages/Collections';
-import { AuthPage } from '@/components/auth/AuthPage';
-import { CardCreationFlow } from '@/components/editor/CardCreationFlow';
 
-function App() {
+const App = () => {
   return (
-    <OverlayProvider>
-      <div className="min-h-screen bg-crd-darkest">
-        <Routes>
-          <Route path="/" element={<MainLayout />}>
-            <Route index element={<Index />} />
-            <Route path="studio" element={<Studio />} />
-            <Route path="studio/:cardId" element={<Studio />} />
-            <Route path="studio/:cardId/preset/:presetId" element={<Studio />} />
-            <Route path="cards" element={<Navigate to="/cards/create" replace />} />
-            <Route path="cards/create" element={<CardCreationFlow />} />
-            <Route path="gallery" element={<Gallery />} />
-            <Route path="collections" element={<Collections />} />
-            <Route path="auth" element={<AuthPage />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<AccountSettings />} />
-            <Route path="creators" element={<Creators />} />
-            <Route path="debug-detection" element={<DebugDetection />} />
-          </Route>
-        </Routes>
-      </div>
-    </OverlayProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <div className="min-h-screen bg-crd-darkest">
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/create" element={<CreateCard />} />
+              <Route path="/gallery" element={<Gallery />} />
+              <Route path="/studio" element={<Studio />} />
+              <Route path="/studio/:cardId" element={<Studio />} />
+            </Routes>
+            <Toaster 
+              position="top-right"
+              theme="dark"
+              toastOptions={{
+                style: {
+                  background: '#1A1A1A',
+                  color: '#FCFCFD',
+                  border: '1px solid #353945'
+                }
+              }}
+            />
+          </div>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
-}
+};
 
 export default App;

@@ -2,28 +2,12 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
-import type { User } from '@/types/user';
-
-interface ProfileData {
-  username?: string;
-  full_name?: string;
-  bio?: string;
-  avatar_url?: string;
-}
-
-interface UserPreferences {
-  darkMode?: boolean;
-  emailNotifications?: boolean;
-  pushNotifications?: boolean;
-  profileVisibility?: boolean;
-  showCardValue?: boolean;
-  compactView?: boolean;
-}
+import { profileService, type ProfileData } from '@/features/auth/services/profileService';
 
 export const useProfile = (userId?: string) => {
   const queryClient = useQueryClient();
   
-  // Get user profile
+  // Get user profile from database
   const {
     data: profile,
     isLoading,
@@ -31,56 +15,22 @@ export const useProfile = (userId?: string) => {
     refetch
   } = useQuery({
     queryKey: ['profile', userId],
-    queryFn: async () => {
-      if (!userId) return null;
-      
-      try {
-        // For now, return mock profile data from localStorage
-        // Once database tables are set up, this will fetch from Supabase
-        const stored = localStorage.getItem(`profile_${userId}`);
-        return stored ? JSON.parse(stored) : {
-          id: userId,
-          username: `user_${userId}`,
-          full_name: '',
-          bio: '',
-          avatar_url: '',
-          preferences: {}
-        };
-      } catch (err) {
-        console.error('Error in useProfile hook:', err);
-        throw err;
-      }
-    },
+    queryFn: () => profileService.getProfile(userId!),
     enabled: !!userId,
     retry: 1
   });
 
-  // Update profile
+  // Update profile mutation
   const updateProfileMutation = useMutation({
-    mutationFn: async ({ profileData, preferences }: { profileData: ProfileData, preferences?: UserPreferences }) => {
+    mutationFn: async (updates: ProfileData) => {
       if (!userId) throw new Error('User ID is required');
-      
-      try {
-        // For now, save to localStorage
-        // Once database tables are set up, this will save to Supabase
-        const current = profile || {};
-        const updated = {
-          ...current,
-          ...profileData,
-          preferences: preferences || current.preferences || {}
-        };
-        localStorage.setItem(`profile_${userId}`, JSON.stringify(updated));
-        return true;
-      } catch (err) {
-        console.error('Error updating profile:', err);
-        throw err;
-      }
+      return await profileService.updateProfile(userId, updates);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile', userId] });
       toast({
         title: 'Profile Updated',
-        description: 'Your profile has been updated'
+        description: 'Your profile has been updated successfully'
       });
     },
     onError: (error: Error) => {

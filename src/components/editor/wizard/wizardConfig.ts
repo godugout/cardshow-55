@@ -1,5 +1,4 @@
-
-import type { DesignTemplate } from '@/hooks/useCardEditor';
+import type { DesignTemplate } from '@/types/card';
 
 export interface WizardStep {
   number: number;
@@ -15,6 +14,27 @@ export const WIZARD_STEPS: WizardStep[] = [
 ];
 
 export const DEFAULT_TEMPLATES: DesignTemplate[] = [
+  {
+    id: 'blank-card',
+    name: 'No Frame',
+    category: 'Basic',
+    description: 'Clean blank card - perfect for complete card images',
+    preview_url: '',
+    template_data: {
+      style: 'blank',
+      aspectRatio: '2.5:3.5',
+      layout: 'clean',
+      colors: {
+        primary: '#ffffff',
+        secondary: '#f8f9fa',
+        background: '#ffffff',
+        text: '#000000'
+      }
+    },
+    is_premium: false,
+    usage_count: 9999,
+    tags: ['blank', 'clean', 'minimal', 'default']
+  },
   { 
     id: 'tcg-classic', 
     name: 'TCG Classic', 

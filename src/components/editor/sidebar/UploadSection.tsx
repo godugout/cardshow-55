@@ -20,11 +20,22 @@ export const UploadSection = ({ cardEditor }: UploadSectionProps) => {
   const { user } = useCustomAuth();
 
   const handleFileSelection = (file: File) => {
+    console.log('📁 File selected:', {
+      name: file.name,
+      size: file.size,
+      type: file.type
+    });
+
     setFileToUpload(file);
     
     const reader = new FileReader();
     reader.onload = () => {
       setUploadPreview(reader.result as string);
+      console.log('👁️ Preview generated successfully');
+    };
+    reader.onerror = (error) => {
+      console.error('❌ FileReader error:', error);
+      toast.error('Failed to generate preview');
     };
     reader.readAsDataURL(file);
     
@@ -44,6 +55,7 @@ export const UploadSection = ({ cardEditor }: UploadSectionProps) => {
       return;
     }
 
+    console.log('🚀 Starting upload process...');
     setIsUploading(true);
     setUploadProgress(0);
 
@@ -55,7 +67,10 @@ export const UploadSection = ({ cardEditor }: UploadSectionProps) => {
         onProgress: setUploadProgress
       });
 
-      if (result) {
+      if (result && result.url && !result.error) {
+        console.log('✅ Upload successful:', result.url);
+        
+        // Update card with the persistent image URL
         cardEditor.updateCardField('image_url', result.url);
         if (result.thumbnailUrl) {
           cardEditor.updateCardField('thumbnail_url', result.thumbnailUrl);
@@ -63,14 +78,21 @@ export const UploadSection = ({ cardEditor }: UploadSectionProps) => {
         }
         
         toast.success('Image uploaded successfully', {
-          description: 'Your card image has been updated.',
+          description: 'Your card image has been saved permanently.',
         });
 
         cancelUpload();
+      } else {
+        console.error('❌ Upload failed:', result?.error);
+        toast.error('Upload failed', {
+          description: result?.error || 'Unknown error occurred'
+        });
       }
-    } catch (error) {
-      console.error('Upload error:', error);
-      toast.error('Failed to upload image');
+    } catch (error: any) {
+      console.error('💥 Upload error:', error);
+      toast.error('Failed to upload image', {
+        description: error.message || 'Unknown error occurred'
+      });
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
@@ -78,6 +100,7 @@ export const UploadSection = ({ cardEditor }: UploadSectionProps) => {
   };
 
   const cancelUpload = () => {
+    console.log('❌ Upload cancelled');
     setFileToUpload(null);
     setUploadPreview(null);
     setUploadProgress(0);

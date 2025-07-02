@@ -1,151 +1,116 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Share2, RotateCcw, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Download, Save, Share2, FileImage, FileText } from 'lucide-react';
 import type { CardData } from '@/hooks/useCardEditor';
-import type { EnvironmentScene, LightingPreset } from '../types';
 
 interface ExportSaveStepProps {
   card: CardData;
-  selectedScene: EnvironmentScene;
-  selectedLighting: LightingPreset;
-  selectedPresetName?: string;
-  activeEffectsCount: number;
-  onDownload: (card: CardData) => void;
-  onShare: (card: CardData) => void;
-  onResetAll: () => void;
-  onBack: () => void;
+  onExport: (format: 'png' | 'pdf' | 'json') => void;
+  onSave: () => void;
+  onShare: () => void;
 }
 
-export const ExportSaveStep: React.FC<ExportSaveStepProps> = ({
-  card,
-  selectedScene,
-  selectedLighting,
-  selectedPresetName,
-  activeEffectsCount,
-  onDownload,
-  onShare,
-  onResetAll,
-  onBack
-}) => {
+export const ExportSaveStep = ({ card, onExport, onSave, onShare }: ExportSaveStepProps) => {
+  const [filename, setFilename] = useState(card.title.replace(/\s+/g, '_').toLowerCase());
+  const [selectedFormat, setSelectedFormat] = useState<'png' | 'pdf' | 'json'>('png');
+
+  const formats = [
+    { value: 'png', label: 'PNG Image', icon: FileImage, description: 'High-quality image format' },
+    { value: 'pdf', label: 'PDF Document', icon: FileText, description: 'Print-ready format' },
+    { value: 'json', label: 'JSON Data', icon: FileText, description: 'Card data export' }
+  ] as const;
+
+  const handleExport = () => {
+    onExport(selectedFormat);
+  };
+
+  const getRarityBadgeColor = (rarity: string) => {
+    switch (rarity) {
+      case 'common':
+        return 'bg-gray-500';
+      case 'uncommon':
+        return 'bg-green-500';
+      case 'rare':
+        return 'bg-blue-500';
+      case 'ultra-rare':
+        return 'bg-purple-500';
+      case 'legendary':
+        return 'bg-orange-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
   return (
-    <div className="space-y-6 p-4">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <h3 className="text-white text-xl font-semibold flex items-center justify-center">
-          <Check className="w-5 h-5 mr-2 text-crd-green" />
-          Save & Export
-        </h3>
-        <p className="text-crd-lightGray text-sm">
-          Your enhanced card is ready to save or share
-        </p>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h2 className="text-white font-semibold">Export & Save</h2>
+        <p className="text-gray-400">Choose your preferred format and save options.</p>
       </div>
-
-      {/* Settings Summary */}
-      <div className="bg-editor-dark border border-editor-border rounded-lg p-4 space-y-3">
-        <h4 className="text-white font-medium mb-3">Current Settings Summary</h4>
-        
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-crd-lightGray">Card:</span>
-            <p className="text-white font-medium">{card.title}</p>
+      
+      <div className="bg-editor-darker rounded-lg p-4">
+        <h3 className="text-white font-medium mb-3">Card Preview</h3>
+        <div className="flex items-center space-x-3">
+          <div className="w-16 h-20 bg-editor-tool rounded border overflow-hidden">
+            {card.image_url && (
+              <img src={card.image_url} alt={card.title} className="w-full h-full object-cover" />
+            )}
           </div>
-          
-          <div>
-            <span className="text-crd-lightGray">Rarity:</span>
-            <p className={`font-medium capitalize ${
-              card.rarity === 'legendary' ? 'text-yellow-400' :
-              card.rarity === 'epic' ? 'text-purple-400' :
-              card.rarity === 'rare' ? 'text-blue-400' :
-              card.rarity === 'uncommon' ? 'text-green-400' :
-              'text-gray-300'
-            }`}>
-              {card.rarity || 'Common'}
-            </p>
-          </div>
-          
-          <div>
-            <span className="text-crd-lightGray">Effect Style:</span>
-            <p className="text-white font-medium">{selectedPresetName || 'Custom'}</p>
-          </div>
-          
-          <div>
-            <span className="text-crd-lightGray">Environment:</span>
-            <p className="text-white font-medium">{selectedScene.name}</p>
-          </div>
-          
-          <div>
-            <span className="text-crd-lightGray">Lighting:</span>
-            <p className="text-white font-medium">{selectedLighting.name}</p>
-          </div>
-          
-          <div>
-            <span className="text-crd-lightGray">Active Effects:</span>
-            <p className="text-white font-medium">{activeEffectsCount}</p>
+          <div className="flex-1">
+            <h4 className="text-white font-medium">{card.title}</h4>
+            <p className="text-gray-400 text-sm">{card.description || 'No description'}</p>
+            <div className="flex items-center space-x-2 mt-2">
+              <span className={`px-2 py-1 rounded text-xs font-medium text-white ${getRarityBadgeColor(card.rarity)}`}>
+                {card.rarity}
+              </span>
+              <span className="text-gray-400 text-xs">
+                {card.tags.length} tags
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Export Options */}
-      <div className="space-y-3">
-        <h4 className="text-white font-medium">Export Options</h4>
-        
-        <div className="grid grid-cols-1 gap-3">
-          <Button 
-            className="w-full bg-crd-green hover:bg-crd-green/90 text-black py-3 flex items-center justify-center"
-            onClick={() => onDownload(card)}
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Download High Quality Image
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            className="w-full border-gray-600 text-white hover:bg-gray-700 py-3 flex items-center justify-center"
-            onClick={() => onShare(card)}
-          >
-            <Share2 className="w-4 h-4 mr-2" />
-            Share with Community
-          </Button>
+      <div className="space-y-4">
+        <h3 className="text-white font-medium">Export Options</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {formats.map((format) => (
+            <Button
+              key={format.value}
+              variant={selectedFormat === format.value ? 'default' : 'outline'}
+              className="justify-start space-x-2"
+              onClick={() => setSelectedFormat(format.value)}
+            >
+              <format.icon className="w-4 h-4" />
+              <span>{format.label}</span>
+            </Button>
+          ))}
+        </div>
+        <div>
+          <Label htmlFor="filename" className="text-white">Filename</Label>
+          <Input
+            id="filename"
+            className="bg-editor-darker border-editor-border text-white mt-1"
+            value={filename}
+            onChange={(e) => setFilename(e.target.value)}
+          />
         </div>
       </div>
 
-      {/* Quality Settings Info */}
-      <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3">
-        <h5 className="text-blue-400 font-medium text-sm mb-1">Export Quality</h5>
-        <p className="text-blue-300 text-xs">
-          High resolution (2048x2560) with full effect rendering and transparency support
-        </p>
-      </div>
-
-      {/* Advanced Actions */}
-      <div className="space-y-3">
-        <h4 className="text-white font-medium">Advanced Actions</h4>
-        
-        <Button
-          onClick={onResetAll}
-          variant="outline"
-          className="w-full border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-        >
-          <RotateCcw className="w-4 h-4 mr-2" />
-          Reset All Settings
+      <div className="flex justify-end space-x-2">
+        <Button variant="secondary" onClick={onShare}>
+          <Share2 className="w-4 h-4 mr-2" />
+          Share
         </Button>
-      </div>
-
-      {/* Navigation */}
-      <div className="flex space-x-3 pt-4 border-t border-editor-border">
-        <Button
-          onClick={onBack}
-          variant="outline"
-          className="flex-1 border-editor-border text-white hover:bg-gray-700"
-        >
-          Back to Environment
+        <Button variant="secondary" onClick={onSave}>
+          <Save className="w-4 h-4 mr-2" />
+          Save
         </Button>
-        <Button
-          onClick={() => onDownload(card)}
-          className="flex-1 bg-crd-green text-black hover:bg-crd-green/90"
-        >
-          Download Now
+        <Button onClick={handleExport}>
+          <Download className="w-4 h-4 mr-2" />
+          Export
         </Button>
       </div>
     </div>
