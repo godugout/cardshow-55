@@ -16,8 +16,8 @@ export const Navbar = () => {
           <Link to="/" className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
               <img
-                src="/lovable-uploads/ffcc3926-a637-4938-a3d6-6b0b366e95d4.png"
-                alt="Green and Yellow CRD Logo"
+                src="/lovable-uploads/cc3cb17c-e19f-48fa-8991-e6d5ac855379.png"
+                alt="Green and Yellow Stylized G Logo"
                 className="w-8 h-8"
               />
               <span className="text-white font-bold text-xl font-orbitron">CARDSHOW</span>
