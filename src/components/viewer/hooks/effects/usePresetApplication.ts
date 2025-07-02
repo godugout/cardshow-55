@@ -61,18 +61,25 @@ export const usePresetApplication = () => {
         
         // Apply preset effects with enhanced validation and clamping
         Object.entries(preset).forEach(([effectId, effectParams]) => {
+          console.log(`🎨 usePresetApplication: Processing effect ${effectId}:`, effectParams);
           if (newEffectValues[effectId] && effectParams) {
             Object.entries(effectParams).forEach(([paramId, value]) => {
               if (newEffectValues[effectId][paramId] !== undefined) {
                 // Apply clamping during preset application
                 const clampedValue = clampEffectValue(effectId, paramId, value);
                 newEffectValues[effectId][paramId] = clampedValue;
+                console.log(`🎛️ usePresetApplication: Set ${effectId}.${paramId} = ${clampedValue}`);
+              } else {
+                console.warn(`⚠️ usePresetApplication: Unknown parameter ${effectId}.${paramId}`);
               }
             });
+          } else {
+            console.warn(`⚠️ usePresetApplication: Unknown effect ${effectId} or missing params`);
           }
         });
         
         // Apply atomically
+        console.log('🎨 usePresetApplication: Applying final effect values:', newEffectValues);
         setEffectValues(newEffectValues);
         
         // Step 3: State validation and cleanup

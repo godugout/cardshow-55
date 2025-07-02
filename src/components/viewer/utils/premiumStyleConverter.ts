@@ -6,6 +6,7 @@ import type { EffectValues } from '../hooks/useEnhancedCardEffects';
  * Maps Premium Style properties to existing effect parameters
  */
 export const convertPremiumStyleToEffects = (style: CRDVisualStyle): EffectValues => {
+  console.log('🔄 convertPremiumStyleToEffects: Converting style:', style.id, style.displayName);
   const effects: EffectValues = {};
 
   // Map based on style ID and configuration
@@ -182,6 +183,7 @@ export const convertPremiumStyleToEffects = (style: CRDVisualStyle): EffectValue
       break;
   }
 
+  console.log('✅ convertPremiumStyleToEffects: Generated effects for', style.id, ':', effects);
   return effects;
 };
 
@@ -189,9 +191,10 @@ export const convertPremiumStyleToEffects = (style: CRDVisualStyle): EffectValue
  * Creates a combo preset from a Premium Visual Style
  */
 export const createComboFromPremiumStyle = (style: CRDVisualStyle) => {
+  console.log('🎨 createComboFromPremiumStyle: Creating combo for', style.id);
   const effects = convertPremiumStyleToEffects(style);
   
-  return {
+  const combo = {
     id: style.id,
     name: style.displayName,
     description: style.visualVibe,
@@ -201,4 +204,7 @@ export const createComboFromPremiumStyle = (style: CRDVisualStyle) => {
     category: style.category,
     unlockMethod: style.unlockMethod
   };
+  
+  console.log('✅ createComboFromPremiumStyle: Created combo:', combo);
+  return combo;
 };

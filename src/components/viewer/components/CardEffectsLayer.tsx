@@ -44,14 +44,24 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
     interactiveLighting
   );
 
-  if (!showEffects || !effectValues) return null;
+  if (!showEffects || !effectValues) {
+    console.log('🎭 CardEffectsLayer: Not rendering effects:', { showEffects, hasEffectValues: !!effectValues });
+    return null;
+  }
 
-  // Helper function to safely get effect parameter values
+  // Debug log effect values
+  console.log('🎭 CardEffectsLayer: Rendering with effectValues:', effectValues);
+
+  // Helper function to safely get effect parameter values with logging
   const getEffectParam = (effectId: string, paramId: string, defaultValue: any = 0) => {
-    return effectValues?.[effectId]?.[paramId] ?? defaultValue;
+    const value = effectValues?.[effectId]?.[paramId] ?? defaultValue;
+    if (value !== defaultValue) {
+      console.log(`🎭 CardEffectsLayer: ${effectId}.${paramId} = ${value}`);
+    }
+    return value;
   };
   
-  // Get individual effect intensities from effectValues
+  // Get individual effect intensities from effectValues with logging
   const holographicIntensity = getEffectParam('holographic', 'intensity', 0);
   const chromeIntensity = getEffectParam('chrome', 'intensity', 0);
   const brushedmetalIntensity = getEffectParam('brushedmetal', 'intensity', 0);
@@ -63,6 +73,27 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
   const goldIntensity = getEffectParam('gold', 'intensity', 0);
   const auroraIntensity = getEffectParam('aurora', 'intensity', 0);
   const wavesIntensity = getEffectParam('waves', 'intensity', 0);
+
+  // Log total active intensity for debugging
+  const totalIntensity = holographicIntensity + chromeIntensity + brushedmetalIntensity + 
+                        crystalIntensity + vintageIntensity + interferenceIntensity + 
+                        prizemIntensity + foilsprayIntensity + goldIntensity + auroraIntensity + wavesIntensity;
+  
+  if (totalIntensity > 0) {
+    console.log(`🎭 CardEffectsLayer: Total effect intensity: ${totalIntensity}`, {
+      holographic: holographicIntensity,
+      chrome: chromeIntensity,
+      brushedmetal: brushedmetalIntensity,
+      crystal: crystalIntensity,
+      vintage: vintageIntensity,
+      interference: interferenceIntensity,
+      prizm: prizemIntensity,
+      foilspray: foilsprayIntensity,
+      gold: goldIntensity,
+      aurora: auroraIntensity,
+      waves: wavesIntensity
+    });
+  }
 
   // Apply effects only to frame borders if applyToFrame is true
   const effectMaskStyle: React.CSSProperties | undefined = applyToFrame ? {

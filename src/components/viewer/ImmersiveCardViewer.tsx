@@ -95,19 +95,31 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   });
 
   // Enhanced reset that includes all state
-  const handleResetWithEffects = () => {
+  const handleResetWithEffects = (resetAllEffects: () => void) => {
+    console.log('🔄 ImmersiveCardViewer: Reset with effects');
     handleReset();
+    resetAllEffects();
   };
 
-  // Enhanced combo application
-  const handleApplyCombo = (combo: any) => {
-    console.log('🚀 Applying style combo:', combo.id);
+  // Enhanced combo application that actually applies effects
+  const handleApplyCombo = (combo: any, applyPreset: (preset: any, presetId?: string) => void) => {
+    console.log('🚀 ImmersiveCardViewer: Applying style combo:', combo.id, 'Effects:', combo.effects);
+    
+    // Update viewer state
     actions.setSelectedPresetId(combo.id);
     if (combo.scene) {
       actions.setSelectedScene(combo.scene);
     }
     if (combo.lighting) {
       actions.setSelectedLighting(combo.lighting);
+    }
+    
+    // CRITICAL: Apply the actual effects to the renderer
+    if (combo.effects && applyPreset) {
+      console.log('🎨 ImmersiveCardViewer: Applying effects to renderer:', combo.effects);
+      applyPreset(combo.effects, combo.id);
+    } else {
+      console.warn('⚠️ ImmersiveCardViewer: No effects or applyPreset function available');
     }
   };
 
@@ -117,10 +129,18 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     <ViewerEffectsManager
       card={card}
       viewerState={viewerState}
-      onEffectChange={() => {}}
-      onResetAllEffects={() => {}}
-      onApplyPreset={() => {}}
-      onValidateEffectState={() => {}}
+      onEffectChange={(effectId, parameterId, value) => {
+        console.log('🎛️ ImmersiveCardViewer: Effect change received:', { effectId, parameterId, value });
+      }}
+      onResetAllEffects={() => {
+        console.log('🔄 ImmersiveCardViewer: Reset all effects called');
+      }}
+      onApplyPreset={(preset, presetId) => {
+        console.log('🎨 ImmersiveCardViewer: Apply preset called:', { preset, presetId });
+      }}
+      onValidateEffectState={() => {
+        console.log('🔍 ImmersiveCardViewer: Validate effect state called');
+      }}
     >
       {({
         effectValues,
@@ -188,7 +208,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
               handleDrag={handleDrag}
               handleDragEnd={handleDragEnd}
               handleZoom={handleZoom}
-              handleResetWithEffects={handleResetWithEffects}
+              handleResetWithEffects={() => handleResetWithEffects(resetAllEffects)}
               handleResetCamera={handleResetCamera}
               onCardClick={onCardClick}
               hasMultipleCards={hasMultipleCards}
@@ -216,7 +236,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
             onMaterialSettingsChange={actions.setMaterialSettings}
             selectedPresetId={viewerState.selectedPresetId}
             onPresetSelect={actions.setSelectedPresetId}
-            onApplyCombo={handleApplyCombo}
+            onApplyCombo={(combo) => handleApplyCombo(combo, applyPreset)}
             isApplyingPreset={isApplyingPreset}
             onResetCamera={handleResetCamera}
             solidCardTransition={viewerState.solidCardTransition}
