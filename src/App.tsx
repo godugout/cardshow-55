@@ -12,6 +12,8 @@ import Studio from '@/pages/Studio';
 import Collections from '@/pages/Collections';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { CardCreationFlow } from '@/components/editor/CardCreationFlow';
+import { EnhancedCardCreator } from '@/components/creation/EnhancedCardCreator';
+import { CRDElementsInterface } from '@/components/crdElements/CRDElementsInterface';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
             <Route path="studio/:cardId/preset/:presetId" element={<Studio />} />
             <Route path="cards" element={<Navigate to="/cards/create" replace />} />
             <Route path="cards/create" element={<CardCreationFlow />} />
+            <Route path="create/enhanced" element={<EnhancedCardCreator />} />
+            <Route path="create/psd" element={<CRDElementsInterface />} />
             <Route path="gallery" element={<Gallery />} />
             <Route path="collections" element={<Collections />} />
             <Route path="auth" element={<AuthPage />} />
