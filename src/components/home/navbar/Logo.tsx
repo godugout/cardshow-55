@@ -6,9 +6,9 @@ export const Logo = () => {
   return (
     <Link to="/" className="self-stretch flex items-center my-auto">
       <img
-        src="/lovable-uploads/818118d9-c823-4f86-b240-854bb79af713.png"
+        src="/lovable-uploads/03d7ff9d-b3c8-409a-97bc-138aac963994.png"
         className="h-16 w-16 object-contain shrink-0"
-        alt="CRD Logo"
+        alt="Green and Yellow CRD Logo"
       />
     </Link>
   );
