@@ -65,22 +65,33 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
           </button>
         </div>
 
-        {/* Transition Settings Section */}
+        {/* Performance Settings Section */}
         <div className="p-4 border-b border-white/10">
-          <h3 className="text-sm font-semibold text-white mb-3">Transition Style</h3>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="solid-transition" className="text-white cursor-pointer">
-              Solid Card Flip
-            </Label>
+          <h3 className="text-sm font-semibold text-white mb-3">Performance & Display</h3>
+          
+          {/* Solid Card Transition */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex-1">
+              <Label htmlFor="solid-transition" className="text-white cursor-pointer font-medium">
+                Solid Card Flip
+              </Label>
+              <p className="text-xs text-gray-400 mt-1">
+                Disables fade effect for smoother card rotation
+              </p>
+            </div>
             <Switch
               id="solid-transition"
               checked={solidCardTransition}
               onCheckedChange={onSolidCardTransitionChange}
             />
           </div>
-          <p className="text-xs text-gray-400 mt-2">
-            Disables the fade effect when rotating the card horizontally.
-          </p>
+
+          {/* Performance hint */}
+          <div className="p-2 rounded bg-crd-green/10 border border-crd-green/20">
+            <p className="text-xs text-crd-green">
+              💡 Enable for better performance on mobile devices
+            </p>
+          </div>
         </div>
 
         {/* Studio Content with Scroll Support */}

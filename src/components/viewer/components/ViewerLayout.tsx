@@ -7,7 +7,9 @@ import { CardNavigationHandler } from './CardNavigationHandler';
 import { ViewerInfoPanel } from './ViewerInfoPanel';
 import { BackgroundRenderer } from './BackgroundRenderer';
 import { EnhancedCardContainer } from './EnhancedCardContainer';
+import { ViewerStatusIndicators } from './ViewerStatusIndicators';
 import { useMousePosition } from '@/hooks/useMousePosition';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import type { CardData } from '@/types/card';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
@@ -119,6 +121,16 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
     hasNavigation: hasMultipleCards,
   });
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onToggleEffects: () => setShowEffects(!showEffects),
+    onToggleFullscreen: () => {}, // Will be implemented in parent
+    onResetCard: handleResetWithEffects,
+    onToggleFlip: () => setIsFlipped(!isFlipped),
+    onTogglePanel: () => setShowCustomizePanel(!showCustomizePanel),
+    isActive: true
+  });
+
   const handleCanvasDoubleClick = useDoubleClick({
     onDoubleClick: (event: React.MouseEvent) => {
       // Prevent flipping if click is on the card container itself
@@ -161,6 +173,17 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
         selectedScene={selectedScene}
         mousePosition={mousePosition}
         isHovering={isHovering}
+      />
+
+      {/* Status Indicators */}
+      <ViewerStatusIndicators
+        effectValues={effectValues}
+        selectedScene={selectedScene}
+        selectedLighting={selectedLighting}
+        showEffects={showEffects}
+        interactiveLighting={interactiveLighting}
+        showCustomizePanel={showCustomizePanel}
+        selectedPresetId={undefined} // Will be passed from parent
       />
 
       {/* Header */}

@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { CollapsibleSection } from '@/components/ui/design-system';
-import { CleanEffectsList } from '../../CleanEffectsList';
+import { StableEffectsList } from '../../StableEffectsList';
 import type { EffectValues } from '../../../hooks/useEnhancedCardEffects';
 
 interface EffectsSectionProps {
@@ -20,20 +19,23 @@ export const EffectsSection: React.FC<EffectsSectionProps> = ({
   selectedPresetId
 }) => {
   // Count active effects
-  const activeEffectsCount = Object.values(effectValues || {}).filter(effect => {
-    const intensity = effect.intensity;
-    return typeof intensity === 'number' && intensity > 0;
-  }).length;
+  const activeEffectCount = Object.entries(effectValues || {}).filter(([_, effect]) => 
+    effect && typeof effect.intensity === 'number' && effect.intensity > 0
+  ).length;
+  
+  const statusText = activeEffectCount > 0 
+    ? `${activeEffectCount} Active Effect${activeEffectCount !== 1 ? 's' : ''}`
+    : "No Active Effects";
 
   return (
     <CollapsibleSection
       title="Effects"
       emoji="✨"
-      statusCount={activeEffectsCount}
+      statusText={statusText}
       isOpen={isOpen}
       onToggle={onToggle}
     >
-      <CleanEffectsList
+      <StableEffectsList
         effectValues={effectValues}
         onEffectChange={onEffectChange}
         selectedPresetId={selectedPresetId}

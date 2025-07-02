@@ -1,10 +1,12 @@
 
 import React from 'react';
 import { Label } from '@/components/ui/label';
-import { ColoredSlider } from './ColoredSlider';
+import { EnhancedColoredSlider } from './EnhancedColoredSlider';
 import { ENHANCED_VISUAL_EFFECTS } from '../hooks/useEnhancedCardEffects';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
+import { getStyleColor } from './presets/styleColors';
 
 interface StableEffectsListProps {
   effectValues: EffectValues;
@@ -62,14 +64,15 @@ export const StableEffectsList: React.FC<StableEffectsListProps> = ({
                   {effectConfig.name}
                 </span>
                 <div className="flex-1">
-                  <ColoredSlider
+                  <EnhancedColoredSlider
                     value={[intensity]}
                     onValueChange={(value) => onEffectChange(effectId, 'intensity', value[0])}
                     min={0}
                     max={100}
                     step={1}
-                    color="green"
-                    variant="primary"
+                    isActive={isActive}
+                    styleColor={getStyleColor(effectId).primary}
+                    effectName={effectConfig.name}
                   />
                 </div>
                 <span className="text-xs text-gray-400 w-8 text-right">{intensity}</span>
@@ -92,14 +95,15 @@ export const StableEffectsList: React.FC<StableEffectsListProps> = ({
                         {param.name}
                       </Label>
                       <div className="flex-1">
-                        <ColoredSlider
+                        <EnhancedColoredSlider
                           value={[Number(value)]}
                           onValueChange={(newValue) => onEffectChange(effectId, param.id, newValue[0])}
                           min={param.min || 0}
                           max={param.max || 100}
                           step={param.step || 1}
-                          color="green"
-                          variant="secondary"
+                          isActive={Number(value) > (param.min || 0)}
+                          styleColor={getStyleColor(effectId).primary}
+                          effectName={param.name}
                         />
                       </div>
                       <span className="text-xs text-gray-400 w-6 text-right">{value}</span>
