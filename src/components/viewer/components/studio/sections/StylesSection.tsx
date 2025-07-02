@@ -33,15 +33,21 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
     "Select Style";
 
   const handlePremiumStyleSelect = (styleId: string) => {
-    const style = styles.find(s => s.id === styleId);
-    if (style) {
-      // Create combo from premium style and apply effects
-      const combo = createComboFromPremiumStyle(style);
-      console.log('🎨 Applying Premium Style:', style.displayName, 'Effects:', combo.effects);
-      
-      // Apply both the preset selection and the effect combo
-      onPresetSelect(styleId);
-      onApplyCombo(combo);
+    try {
+      const style = styles.find(s => s.id === styleId);
+      if (style) {
+        // Create combo from premium style and apply effects
+        const combo = createComboFromPremiumStyle(style);
+        console.log('🎨 Applying Premium Style:', style.displayName, 'Effects:', combo.effects);
+        
+        // Apply both the preset selection and the effect combo
+        onPresetSelect(styleId);
+        onApplyCombo(combo);
+      } else {
+        console.error('❌ Premium style not found:', styleId);
+      }
+    } catch (error) {
+      console.error('❌ Error applying premium style:', error);
     }
   };
 
