@@ -90,8 +90,10 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   const effectiveSurfaceTextureFront = cachedEffects?.SurfaceTexture || SurfaceTexture;
   const effectiveSurfaceTextureBack = undefined;
 
-  // Calculate the final rotation including the flip
-  // When flipped, we add 180 degrees to Y rotation to show the back
+  // Calculate the final rotation - normalize Y rotation to determine which face to show
+  const normalizedY = ((rotation.y % 360) + 360) % 360; // Ensure positive 0-360 range
+  const showBack = isFlipped || (normalizedY > 90 && normalizedY < 270);
+  
   const finalRotation = {
     x: rotation.x,
     y: rotation.y + (isFlipped ? 180 : 0),
@@ -136,9 +138,11 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             className="absolute inset-0 rounded-xl overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'translateZ(0px)', // Front face at Z=0
-              zIndex: 10,
-              background: '#ffffff'
+              transform: 'translateZ(1px)', // Slightly forward to avoid z-fighting
+              zIndex: showBack ? 5 : 15,
+              background: '#ffffff',
+              opacity: showBack ? 0 : 1,
+              pointerEvents: showBack ? 'none' : 'auto'
             }}
           >
             <CardFrontContainer
@@ -160,9 +164,11 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             className="absolute inset-0 rounded-xl overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg) translateZ(0px)', // Back face flipped 180°
-              zIndex: 10,
-              background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
+              transform: 'rotateY(180deg) translateZ(1px)', // Back face flipped 180°, slightly forward
+              zIndex: showBack ? 15 : 5,
+              background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)',
+              opacity: showBack ? 1 : 0,
+              pointerEvents: showBack ? 'auto' : 'none'
             }}
           >
             <CardBackContainer
