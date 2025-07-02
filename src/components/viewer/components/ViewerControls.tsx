@@ -6,7 +6,8 @@ import {
   ZoomOut,
   Move,
   Eye,
-  EyeOff
+  EyeOff,
+  FlipHorizontal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -58,7 +59,7 @@ export const ViewerControls: React.FC<ViewerControlsProps> = ({
         className={`bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20 ${isFlipped ? 'bg-opacity-40' : ''}`}
         title="Flip Card"
       >
-        <RotateCw className="w-4 h-4 text-white" style={{ transform: 'rotateY(180deg)' }} />
+        <FlipHorizontal className="w-4 h-4 text-white" />
       </Button>
       <Button
         variant="ghost"
