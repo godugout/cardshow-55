@@ -1675,6 +1675,75 @@ export type Database = {
         }
         Relationships: []
       }
+      crd_visual_styles: {
+        Row: {
+          animation_profile: Json | null
+          base_material: Json
+          category: Database["public"]["Enums"]["visual_style_category"]
+          created_at: string | null
+          display_name: string
+          id: string
+          is_active: boolean
+          is_locked: boolean
+          lighting_preset: Json
+          particle_effect: Json | null
+          performance_budget: Json
+          secondary_finish: Json | null
+          shader_config: Json
+          sort_order: number | null
+          texture_profile: Json
+          ui_preview_gradient: string
+          unlock_cost: number | null
+          unlock_method: Database["public"]["Enums"]["unlock_method"]
+          updated_at: string | null
+          visual_vibe: string
+        }
+        Insert: {
+          animation_profile?: Json | null
+          base_material?: Json
+          category?: Database["public"]["Enums"]["visual_style_category"]
+          created_at?: string | null
+          display_name: string
+          id: string
+          is_active?: boolean
+          is_locked?: boolean
+          lighting_preset?: Json
+          particle_effect?: Json | null
+          performance_budget?: Json
+          secondary_finish?: Json | null
+          shader_config?: Json
+          sort_order?: number | null
+          texture_profile?: Json
+          ui_preview_gradient: string
+          unlock_cost?: number | null
+          unlock_method?: Database["public"]["Enums"]["unlock_method"]
+          updated_at?: string | null
+          visual_vibe: string
+        }
+        Update: {
+          animation_profile?: Json | null
+          base_material?: Json
+          category?: Database["public"]["Enums"]["visual_style_category"]
+          created_at?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean
+          is_locked?: boolean
+          lighting_preset?: Json
+          particle_effect?: Json | null
+          performance_budget?: Json
+          secondary_finish?: Json | null
+          shader_config?: Json
+          sort_order?: number | null
+          texture_profile?: Json
+          ui_preview_gradient?: string
+          unlock_cost?: number | null
+          unlock_method?: Database["public"]["Enums"]["unlock_method"]
+          updated_at?: string | null
+          visual_vibe?: string
+        }
+        Relationships: []
+      }
       crdmkr_processing_jobs: {
         Row: {
           completed_at: string | null
@@ -5742,6 +5811,82 @@ export type Database = {
           },
         ]
       }
+      user_style_preferences: {
+        Row: {
+          created_at: string | null
+          custom_parameters: Json | null
+          id: string
+          last_used_at: string | null
+          style_id: string
+          updated_at: string | null
+          usage_count: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          custom_parameters?: Json | null
+          id?: string
+          last_used_at?: string | null
+          style_id: string
+          updated_at?: string | null
+          usage_count?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          custom_parameters?: Json | null
+          id?: string
+          last_used_at?: string | null
+          style_id?: string
+          updated_at?: string | null
+          usage_count?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_style_preferences_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "crd_visual_styles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_style_unlocks: {
+        Row: {
+          id: string
+          style_id: string
+          unlock_metadata: Json | null
+          unlock_method: Database["public"]["Enums"]["unlock_method"]
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          style_id: string
+          unlock_metadata?: Json | null
+          unlock_method: Database["public"]["Enums"]["unlock_method"]
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          style_id?: string
+          unlock_metadata?: Json | null
+          unlock_method?: Database["public"]["Enums"]["unlock_method"]
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_style_unlocks_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "crd_visual_styles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_trade_preferences: {
         Row: {
           auto_accept_threshold: number | null
@@ -5980,6 +6125,16 @@ export type Database = {
           achievements_count: number
         }[]
       }
+      get_user_unlocked_styles: {
+        Args: { user_uuid: string }
+        Returns: {
+          style_id: string
+          display_name: string
+          category: Database["public"]["Enums"]["visual_style_category"]
+          unlocked_at: string
+          unlock_method: Database["public"]["Enums"]["unlock_method"]
+        }[]
+      }
       has_admin_permission: {
         Args: { permission_name: string }
         Returns: boolean
@@ -6037,6 +6192,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      unlock_style_for_user: {
+        Args: {
+          user_uuid: string
+          style_id_param: string
+          unlock_method_param: Database["public"]["Enums"]["unlock_method"]
+          metadata_param?: Json
+        }
+        Returns: boolean
+      }
       update_market_analytics: {
         Args: { p_card_id: string; p_sale_price: number }
         Returns: undefined
@@ -6044,6 +6208,10 @@ export type Database = {
       update_seo_optimization: {
         Args: { listing_uuid: string }
         Returns: undefined
+      }
+      user_has_style_unlocked: {
+        Args: { user_uuid: string; style_id_param: string }
+        Returns: boolean
       }
     }
     Enums: {
@@ -6069,7 +6237,21 @@ export type Database = {
         | "card_shared"
         | "collection_shared"
       reaction_type: "like" | "love" | "wow" | "laugh" | "angry" | "sad"
+      unlock_method:
+        | "free"
+        | "subscription"
+        | "points"
+        | "marketplace"
+        | "premium_template"
+        | "achievement"
       visibility_type: "public" | "private" | "shared"
+      visual_style_category:
+        | "premium"
+        | "metallic"
+        | "specialty"
+        | "atmospheric"
+        | "classic"
+        | "experimental"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -6210,7 +6392,23 @@ export const Constants = {
         "collection_shared",
       ],
       reaction_type: ["like", "love", "wow", "laugh", "angry", "sad"],
+      unlock_method: [
+        "free",
+        "subscription",
+        "points",
+        "marketplace",
+        "premium_template",
+        "achievement",
+      ],
       visibility_type: ["public", "private", "shared"],
+      visual_style_category: [
+        "premium",
+        "metallic",
+        "specialty",
+        "atmospheric",
+        "classic",
+        "experimental",
+      ],
     },
   },
 } as const
