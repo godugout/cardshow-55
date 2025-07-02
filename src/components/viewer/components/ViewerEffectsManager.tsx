@@ -75,7 +75,7 @@ export const ViewerEffectsManager: React.FC<ViewerEffectsManagerProps> = ({
 
   // Enhanced combo application
   const handleApplyCombo = useCallback((combo: any) => {
-    console.log('🚀 Applying style combo:', combo.id);
+    console.log('🚀 Applying style combo:', combo.id, 'Effects:', combo.effects);
     validateEffectState();
     applyPreset(combo.effects, combo.id);
     onApplyPreset(combo.effects, combo.id);

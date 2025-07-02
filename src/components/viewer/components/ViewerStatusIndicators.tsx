@@ -28,10 +28,20 @@ export const ViewerStatusIndicators: React.FC<ViewerStatusIndicatorsProps> = ({
     effect && typeof effect.intensity === 'number' && effect.intensity > 0
   ).length;
 
-  // Get style name
-  const styleName = selectedPresetId 
-    ? selectedPresetId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-    : 'None';
+  // Get style name from preset data
+  const getStyleName = () => {
+    if (!selectedPresetId) return 'None';
+    
+    // Try to find in combo presets first
+    const comboPreset = Object.values(require('../components/presets/enhancedComboPresets').ENHANCED_COMBO_PRESETS)
+      .find((p: any) => p.id === selectedPresetId);
+    if (comboPreset) return (comboPreset as any).name;
+    
+    // Fallback to formatted ID
+    return selectedPresetId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  };
+  
+  const styleName = getStyleName();
 
   return (
     <div className="fixed top-4 left-4 z-40 flex flex-col space-y-2">

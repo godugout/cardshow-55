@@ -67,4 +67,14 @@
   .focus\:border-crd-blue:focus {
     @apply border-crd-blue;
   }
+
+  /* Card back logo animation */
+  @keyframes logo-glow-pulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+    }
+    50% {
+      filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 60px rgba(59, 130, 246, 0.4));
+    }
+  }
 }

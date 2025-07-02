@@ -30,6 +30,7 @@ export const EnhancedQuickComboPresets: React.FC<EnhancedQuickComboPresetsProps>
       return;
     }
     
+    console.log('🎨 Applying preset:', preset.name, 'Effects:', Object.keys(preset.effects || {}));
     onPresetSelect(preset.id);
     onApplyCombo(preset);
   };

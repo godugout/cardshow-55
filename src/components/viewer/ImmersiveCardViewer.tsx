@@ -193,6 +193,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
               onCardClick={onCardClick}
               hasMultipleCards={hasMultipleCards}
               solidCardTransition={viewerState.solidCardTransition}
+              selectedPresetId={viewerState.selectedPresetId}
             />
           </ViewerActionsManager>
 

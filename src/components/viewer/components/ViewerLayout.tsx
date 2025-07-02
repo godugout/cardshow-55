@@ -60,6 +60,7 @@ interface ViewerLayoutProps {
   onCardClick: (event: React.MouseEvent) => void;
   hasMultipleCards: boolean;
   solidCardTransition?: boolean;
+  selectedPresetId?: string;
 }
 
 export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
@@ -106,7 +107,8 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
   handleResetCamera,
   onCardClick,
   hasMultipleCards,
-  solidCardTransition
+  solidCardTransition,
+  selectedPresetId
 }) => {
   const panelWidth = 320;
   const shouldShowPanel = showCustomizePanel;
@@ -183,7 +185,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
         showEffects={showEffects}
         interactiveLighting={interactiveLighting}
         showCustomizePanel={showCustomizePanel}
-        selectedPresetId={undefined} // Will be passed from parent
+        selectedPresetId={selectedPresetId}
       />
 
       {/* Header */}

@@ -3,6 +3,7 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import { EnhancedColoredSlider } from './EnhancedColoredSlider';
 import { ENHANCED_VISUAL_EFFECTS } from '../hooks/useEnhancedCardEffects';
+import { ENHANCED_COMBO_PRESETS } from './presets/enhancedComboPresets';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
@@ -23,6 +24,19 @@ export const StableEffectsList: React.FC<StableEffectsListProps> = ({
   const getEffectsFromPreset = () => {
     if (!selectedPresetId) return [];
     
+    // Check if it's a combo preset first
+    const comboPreset = ENHANCED_COMBO_PRESETS.find(p => p.id === selectedPresetId);
+    if (comboPreset && comboPreset.effects && Object.keys(comboPreset.effects).length > 0) {
+      return Object.keys(comboPreset.effects); // Show all effects from the combo preset
+    }
+    
+    // Check if it's a single effect
+    const singleEffect = ENHANCED_VISUAL_EFFECTS.find(p => p.id === selectedPresetId);
+    if (singleEffect) {
+      return [selectedPresetId]; // Show just the selected effect
+    }
+    
+    // For combo presets, get effects from the current effectValues
     const currentEffects = effectValues || {};
     return Object.keys(currentEffects).filter(effectId => {
       const effect = currentEffects[effectId];

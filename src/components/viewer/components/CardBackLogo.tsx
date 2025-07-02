@@ -63,21 +63,45 @@ export const CardBackLogo: React.FC<CardBackLogoProps> = ({
         backfaceVisibility: 'hidden'
       }}
     >
-      <img 
-        src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
-        alt="CRD Logo" 
-        className="w-64 h-auto relative z-10 transition-all duration-700 ease-out"
-        style={{
-          ...getLogoEffects(),
-          imageRendering: 'crisp-edges',
-          objectFit: 'contain',
-          animation: interactiveLighting && isHovering ? 'logo-glow-pulse 4s ease-in-out infinite' : 'none',
-          backfaceVisibility: 'hidden'
-        }}
-        onLoad={() => console.log('✅ Enhanced CRD logo loaded successfully (back face)')}
-        onError={() => console.log('❌ Error loading enhanced CRD logo (back face)')}
-        draggable={false}
-      />
+      <div className="relative w-64 h-64 flex items-center justify-center">
+        <img 
+          src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
+          alt="CRD Logo" 
+          className="w-48 h-auto relative z-10 transition-all duration-700 ease-out"
+          style={{
+            ...getLogoEffects(),
+            imageRendering: 'crisp-edges',
+            objectFit: 'contain',
+            animation: interactiveLighting && isHovering ? 'logo-glow-pulse 4s ease-in-out infinite' : 'none',
+            backfaceVisibility: 'hidden',
+            maxWidth: '192px',
+            maxHeight: '192px'
+          }}
+          onLoad={() => console.log('✅ Enhanced CRD logo loaded successfully (back face)')}
+          onError={(e) => {
+            console.log('❌ Error loading enhanced CRD logo (back face)');
+            // Show fallback text
+            e.currentTarget.style.display = 'none';
+            const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+            if (fallback) fallback.style.display = 'flex';
+          }}
+          draggable={false}
+        />
+        
+        {/* Fallback CRD text if image fails */}
+        <div 
+          className="absolute inset-0 flex items-center justify-center text-6xl font-bold text-white/80"
+          style={{
+            ...getLogoEffects(),
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            textShadow: '0 4px 8px rgba(0,0,0,0.5)',
+            letterSpacing: '0.1em',
+            display: 'none' // Will be shown if image fails
+          }}
+        >
+          CRD
+        </div>
+      </div>
     </div>
   );
 };
