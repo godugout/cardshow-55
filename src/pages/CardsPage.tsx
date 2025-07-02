@@ -16,7 +16,7 @@ const CardsPage = () => {
             <p className="text-crd-lightGray">Create and manage your trading cards</p>
           </div>
           <CRDButton asChild variant="primary">
-            <Link to="/create">
+            <Link to="/cards/create">
               <Plus className="w-4 h-4 mr-2" />
               Create Card
             </Link>
@@ -33,7 +33,7 @@ const CardsPage = () => {
               Welcome to your card creation hub! Start by creating your first trading card.
             </p>
             <CRDButton asChild variant="primary">
-              <Link to="/create">
+              <Link to="/cards/create">
                 Create Your First Card
               </Link>
             </CRDButton>
