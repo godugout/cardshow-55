@@ -101,13 +101,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     resetAllEffects();
   };
 
-  // Enhanced combo application with auto-flip and timed flip-back
+  // Enhanced combo application - no auto-flip, only style effects
   const handleApplyCombo = (combo: any, applyPreset: (preset: any, presetId?: string) => void) => {
     console.log('🚀 ImmersiveCardViewer: Applying style combo:', combo.id, 'Full combo:', combo);
-    
-    // Step 1: Flip card to back to show the style effects
-    setIsFlipped(true);
-    console.log('🔄 ImmersiveCardViewer: Flipped card to back for style preview');
     
     // Update viewer state
     actions.setSelectedPresetId(combo.id);
@@ -118,10 +114,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
       actions.setSelectedLighting(combo.lighting);
     }
     
-    // CRITICAL: Apply the actual effects to the renderer
+    // Apply the actual effects to the renderer (no card flipping)
     if (combo.effects && applyPreset) {
       console.log('🎨 ImmersiveCardViewer: Applying effects to renderer:', combo.effects);
-      // Pass combo.effects (not combo) to applyPreset
       applyPreset(combo.effects, combo.id);
     } else {
       console.warn('⚠️ ImmersiveCardViewer: No effects or applyPreset function available', {
@@ -130,12 +125,6 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
         effectsType: typeof combo.effects
       });
     }
-
-    // Step 2: Set timer to flip back to front after 3 seconds
-    setTimeout(() => {
-      setIsFlipped(false);
-      console.log('🔄 ImmersiveCardViewer: Auto-flipped card back to front after 3 seconds');
-    }, 3000);
   };
 
   if (!isOpen) return null;

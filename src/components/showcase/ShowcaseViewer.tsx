@@ -69,7 +69,6 @@ export const ShowcaseViewer: React.FC<ShowcaseViewerProps> = ({
         cards={cards}
         currentCardIndex={currentCardIndex}
         onCardChange={onCardChange}
-        setIsFlipped={() => {}} // Not used in showcase
       />
     </div>
   );

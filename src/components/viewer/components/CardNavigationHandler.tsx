@@ -6,14 +6,12 @@ interface CardNavigationHandlerProps {
   cards: any[];
   currentCardIndex: number;
   onCardChange?: (index: number) => void;
-  setIsFlipped: (flipped: boolean) => void;
 }
 
 export const CardNavigationHandler: React.FC<CardNavigationHandlerProps> = ({
   cards,
   currentCardIndex,
-  onCardChange,
-  setIsFlipped
+  onCardChange
 }) => {
   const hasMultipleCards = cards.length > 1;
   const canGoNext = hasMultipleCards && currentCardIndex < cards.length - 1;
@@ -22,16 +20,14 @@ export const CardNavigationHandler: React.FC<CardNavigationHandlerProps> = ({
   const handlePreviousCard = useCallback(() => {
     if (canGoPrev && onCardChange) {
       onCardChange(currentCardIndex - 1);
-      setIsFlipped(false);
     }
-  }, [canGoPrev, currentCardIndex, onCardChange, setIsFlipped]);
+  }, [canGoPrev, currentCardIndex, onCardChange]);
 
   const handleNextCard = useCallback(() => {
     if (canGoNext && onCardChange) {
       onCardChange(currentCardIndex + 1);
-      setIsFlipped(false);
     }
-  }, [canGoNext, currentCardIndex, onCardChange, setIsFlipped]);
+  }, [canGoNext, currentCardIndex, onCardChange]);
 
   // Keyboard navigation
   useEffect(() => {

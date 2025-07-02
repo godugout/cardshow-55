@@ -125,7 +125,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
           setIsDragging(false);
           onMouseLeave();
         }}
-        onClick={() => {}} // Remove flip functionality
+        
       />
 
       {/* Updated instruction */}

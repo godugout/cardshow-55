@@ -31,7 +31,7 @@ interface EnhancedCardContainerProps {
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
-  onClick: (event: React.MouseEvent) => void;
+  
   environmentControls?: EnvironmentControls;
   solidCardTransition?: boolean;
 }
@@ -59,7 +59,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
-  onClick,
   environmentControls = {
     depthOfField: 1.0,
     parallaxIntensity: 1.0,
@@ -90,13 +89,12 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   const effectiveSurfaceTextureFront = cachedEffects?.SurfaceTexture || SurfaceTexture;
   const effectiveSurfaceTextureBack = undefined;
 
-  // Calculate the final rotation - normalize Y rotation to determine which face to show
-  const normalizedY = ((rotation.y % 360) + 360) % 360; // Ensure positive 0-360 range
-  const showBack = isFlipped || (normalizedY > 90 && normalizedY < 270);
+  // Calculate the final rotation - only use manual flip state for face visibility
+  const showBack = isFlipped;
   
   const finalRotation = {
     x: rotation.x,
-    y: rotation.y + (isFlipped ? 180 : 0),
+    y: rotation.y,
   };
 
   return (
@@ -111,7 +109,6 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      onClick={onClick}
     >
       {/* 3D Card with Realistic Thickness */}
       <div
@@ -138,8 +135,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             className="absolute inset-0 rounded-xl overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'translateZ(2px)', // Front face with proper spacing
-              zIndex: showBack ? 1 : 10,
+              transform: 'translateZ(3px)', // Front face with proper spacing
               background: '#ffffff'
             }}
           >
@@ -162,8 +158,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             className="absolute inset-0 rounded-xl overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'rotateY(-180deg) translateZ(-2px)', // Back face flipped correctly
-              zIndex: showBack ? 10 : 1,
+              transform: 'rotateY(-180deg) translateZ(-3px)', // Back face flipped correctly with proper spacing
               background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
             }}
           >
@@ -192,9 +187,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
               className="absolute top-0 left-0 right-0 h-1"
               style={{
                 background: 'linear-gradient(90deg, #2a2a2a 0%, #404040 50%, #2a2a2a 100%)',
-                transform: 'rotateX(90deg) translateZ(2px)',
-                transformOrigin: 'top',
-                zIndex: 5
+                transform: 'rotateX(90deg) translateZ(3px)',
+                transformOrigin: 'top'
               }}
             />
             {/* Bottom Edge */}
@@ -202,9 +196,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
               className="absolute bottom-0 left-0 right-0 h-1"
               style={{
                 background: 'linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)',
-                transform: 'rotateX(-90deg) translateZ(2px)',
-                transformOrigin: 'bottom',
-                zIndex: 5
+                transform: 'rotateX(-90deg) translateZ(3px)',
+                transformOrigin: 'bottom'
               }}
             />
             {/* Left Edge */}
@@ -212,9 +205,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
               className="absolute top-0 bottom-0 left-0 w-1"
               style={{
                 background: 'linear-gradient(180deg, #2a2a2a 0%, #404040 50%, #1a1a1a 100%)',
-                transform: 'rotateY(-90deg) translateZ(2px)',
-                transformOrigin: 'left',
-                zIndex: 5
+                transform: 'rotateY(-90deg) translateZ(3px)',
+                transformOrigin: 'left'
               }}
             />
             {/* Right Edge */}
@@ -222,9 +214,8 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
               className="absolute top-0 bottom-0 right-0 w-1"
               style={{
                 background: 'linear-gradient(180deg, #2a2a2a 0%, #404040 50%, #1a1a1a 100%)',
-                transform: 'rotateY(90deg) translateZ(2px)',
-                transformOrigin: 'right',
-                zIndex: 5
+                transform: 'rotateY(90deg) translateZ(3px)',
+                transformOrigin: 'right'
               }}
             />
           </div>

@@ -123,37 +123,14 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
     hasNavigation: hasMultipleCards,
   });
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts (removed flip functionality)
   useKeyboardShortcuts({
     onToggleEffects: () => setShowEffects(!showEffects),
     onToggleFullscreen: () => {}, // Will be implemented in parent
     onResetCard: handleResetWithEffects,
-    onToggleFlip: () => setIsFlipped(!isFlipped),
+    onToggleFlip: () => {}, // Disabled
     onTogglePanel: () => setShowCustomizePanel(!showCustomizePanel),
     isActive: true
-  });
-
-  const handleCanvasDoubleClick = useDoubleClick({
-    onDoubleClick: (event: React.MouseEvent) => {
-      // Only flip if double-clicking on the card area
-      if (cardContainerRef.current && cardContainerRef.current.contains(event.target as Node)) {
-        console.log('🎉 Canvas double-click: Flipping card');
-        setIsFlipped(!isFlipped);
-        return;
-      }
-
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        if (!isInSafeZone(event.clientX, event.clientY, rect)) {
-          // Prevent flip on interactive elements within overlays
-          const target = event.target as HTMLElement;
-          if (!target.closest('button, a, input, [role="slider"], [data-radix-collection-item]')) {
-            console.log('🎉 Canvas double-click: Flipping card (background)');
-            setIsFlipped(!isFlipped);
-          }
-        }
-      }
-    },
   });
 
   return (
@@ -172,7 +149,6 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleDragEnd}
       onMouseLeave={handleDragEnd}
-      onClick={handleCanvasDoubleClick}
     >
       <BackgroundRenderer
         selectedScene={selectedScene}
@@ -229,7 +205,6 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
         cards={cards}
         currentCardIndex={currentCardIndex}
         onCardChange={onCardChange}
-        setIsFlipped={setIsFlipped}
       />
 
       {/* Enhanced Card Container */}
@@ -258,7 +233,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
           onMouseMove={handleDrag}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          onClick={onCardClick}
+          
           solidCardTransition={solidCardTransition}
         />
       </div>
