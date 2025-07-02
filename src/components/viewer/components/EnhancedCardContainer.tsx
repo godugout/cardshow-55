@@ -111,58 +111,121 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseLeave={onMouseLeave}
       onClick={onClick}
     >
-      {/* This acts as the 3D stage */}
+      {/* 3D Card with Realistic Thickness */}
       <div
         className="relative"
         style={{
           width: '400px',
           height: '560px',
-          transform: `perspective(1000px) rotateX(${finalRotation.x}deg) rotateY(${finalRotation.y}deg)`,
           transformStyle: 'preserve-3d',
           transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
-          filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`
         }}
       >
-        {/* Card front: sits on front */}
+        {/* Card Container with 3D Transform */}
         <div
-          className="absolute inset-0"
           style={{
-            backfaceVisibility: 'hidden',
-            transform: 'rotateY(0deg)'
+            width: '100%',
+            height: '100%',
+            transformStyle: 'preserve-3d',
+            transform: `perspective(1000px) rotateX(${finalRotation.x}deg) rotateY(${finalRotation.y}deg)`,
+            filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`
           }}
         >
-          <CardFrontContainer
-            card={card}
-            rotation={finalRotation}
-            isHovering={isHovering}
-            showEffects={showEffects}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            frameStyles={effectiveFrameStyles}
-            enhancedEffectStyles={effectiveEnhancedEffectStyles}
-            SurfaceTexture={effectiveSurfaceTextureFront}
-            interactiveLighting={interactiveLighting}
-          />
-        </div>
-        {/* Card back: sits on back, flipped */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backfaceVisibility: 'hidden',
-            transform: 'rotateY(180deg)'
-          }}
-        >
-          <CardBackContainer
-            rotation={finalRotation}
-            isHovering={isHovering}
-            showEffects={showEffects}
-            effectValues={effectValues}
-            mousePosition={mousePosition}
-            frameStyles={effectiveFrameStyles}
-            enhancedEffectStyles={effectiveEnhancedEffectStyles}
-            SurfaceTexture={effectiveSurfaceTextureBack}
-            interactiveLighting={interactiveLighting}
-          />
+          {/* Card Thickness/Edges - Create 3D depth */}
+          <div
+            className="absolute inset-0"
+            style={{
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            {/* Top Edge */}
+            <div
+              className="absolute top-0 left-0 right-0 h-1"
+              style={{
+                background: 'linear-gradient(90deg, #2a2a2a 0%, #404040 50%, #2a2a2a 100%)',
+                transform: 'rotateX(90deg) translateZ(2.5px)',
+                transformOrigin: 'top',
+                zIndex: 5
+              }}
+            />
+            {/* Bottom Edge */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-1"
+              style={{
+                background: 'linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)',
+                transform: 'rotateX(-90deg) translateZ(2.5px)',
+                transformOrigin: 'bottom',
+                zIndex: 5
+              }}
+            />
+            {/* Left Edge */}
+            <div
+              className="absolute top-0 bottom-0 left-0 w-1"
+              style={{
+                background: 'linear-gradient(180deg, #2a2a2a 0%, #404040 50%, #1a1a1a 100%)',
+                transform: 'rotateY(-90deg) translateZ(2.5px)',
+                transformOrigin: 'left',
+                zIndex: 5
+              }}
+            />
+            {/* Right Edge */}
+            <div
+              className="absolute top-0 bottom-0 right-0 w-1"
+              style={{
+                background: 'linear-gradient(180deg, #2a2a2a 0%, #404040 50%, #1a1a1a 100%)',
+                transform: 'rotateY(90deg) translateZ(2.5px)',
+                transformOrigin: 'right',
+                zIndex: 5
+              }}
+            />
+          </div>
+
+          {/* CARD FRONT - Original Image Side */}
+          <div
+            className="absolute inset-0 rounded-xl overflow-hidden"
+            style={{
+              backfaceVisibility: 'hidden',
+              transform: 'translateZ(2.5px)',
+              zIndex: 10,
+              background: '#ffffff'
+            }}
+          >
+            <CardFrontContainer
+              card={card}
+              rotation={finalRotation}
+              isHovering={isHovering}
+              showEffects={showEffects}
+              effectValues={effectValues}
+              mousePosition={mousePosition}
+              frameStyles={effectiveFrameStyles}
+              enhancedEffectStyles={effectiveEnhancedEffectStyles}
+              SurfaceTexture={effectiveSurfaceTextureFront}
+              interactiveLighting={interactiveLighting}
+            />
+          </div>
+
+          {/* CARD BACK - CRD Logo Side */}
+          <div
+            className="absolute inset-0 rounded-xl overflow-hidden"
+            style={{
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg) translateZ(2.5px)',
+              zIndex: 10,
+              background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
+            }}
+          >
+            <CardBackContainer
+              rotation={finalRotation}
+              isHovering={isHovering}
+              showEffects={false} // Never show effects on back
+              effectValues={effectValues}
+              mousePosition={mousePosition}
+              frameStyles={effectiveFrameStyles}
+              enhancedEffectStyles={effectiveEnhancedEffectStyles}
+              SurfaceTexture={undefined} // No texture on back
+              interactiveLighting={interactiveLighting}
+            />
+          </div>
         </div>
       </div>
     </div>

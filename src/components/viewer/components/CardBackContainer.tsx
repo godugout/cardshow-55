@@ -42,7 +42,7 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
       className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
         opacity: 1,
-        zIndex: 15,
+        zIndex: 1,
         backfaceVisibility: 'hidden',
         background: selectedMaterial.background,
         border: `2px solid ${selectedMaterial.borderColor}`,
@@ -55,29 +55,37 @@ export const CardBackContainer: React.FC<CardBackContainerProps> = ({
         `,
         ...frameStyles,
         pointerEvents: 'auto',
+        backgroundColor: '#1a1a1a' // Solid dark background
       }}
       data-material={selectedMaterial.id}
       data-material-name={selectedMaterial.name}
       data-visibility={'visible'}
       data-back-rotation={rotation.y.toFixed(1)}
     >
-      {/* Clean card back - effects are applied to front only */}
+      {/* Card Back Material Overlay (z-10) */}
+      <div className="absolute inset-0" style={{ zIndex: 10 }}>
+        <CardBackMaterialOverlay selectedMaterial={selectedMaterial} />
+      </div>
 
-      <CardBackMaterialOverlay selectedMaterial={selectedMaterial} />
+      {/* CRD Logo - Centered (z-20) */}
+      <div className="absolute inset-0" style={{ zIndex: 20 }}>
+        <CardBackLogo
+          selectedMaterial={selectedMaterial}
+          isHovering={isHovering}
+          mousePosition={mousePosition}
+          interactiveLighting={interactiveLighting}
+        />
+      </div>
 
-      <CardBackLogo
-        selectedMaterial={selectedMaterial}
-        isHovering={isHovering}
-        mousePosition={mousePosition}
-        interactiveLighting={interactiveLighting}
-      />
-
-      <CardBackInteractiveLighting
-        selectedMaterial={selectedMaterial}
-        mousePosition={mousePosition}
-        isHovering={isHovering}
-        interactiveLighting={interactiveLighting}
-      />
+      {/* Interactive Lighting for Back (z-30) */}
+      <div className="absolute inset-0" style={{ zIndex: 30 }}>
+        <CardBackInteractiveLighting
+          selectedMaterial={selectedMaterial}
+          mousePosition={mousePosition}
+          isHovering={isHovering}
+          interactiveLighting={interactiveLighting}
+        />
+      </div>
     </div>
   );
 };
