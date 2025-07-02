@@ -2,6 +2,7 @@
 import React from 'react';
 import { CollapsibleSection } from '@/components/ui/design-system';
 import { EnhancedQuickComboPresets } from '../../EnhancedQuickComboPresets';
+import { PremiumStyleSelector } from '../../premium/PremiumStyleSelector';
 import type { EffectValues } from '../../../hooks/useEnhancedCardEffects';
 
 interface StylesSectionProps {
@@ -35,13 +36,32 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
       isOpen={isOpen}
       onToggle={onToggle}
     >
-      <EnhancedQuickComboPresets
-        onApplyCombo={onApplyCombo}
-        currentEffects={effectValues}
-        selectedPresetId={selectedPresetId}
-        onPresetSelect={onPresetSelect}
-        isApplyingPreset={isApplyingPreset}
-      />
+      <div className="space-y-6">
+        {/* Premium Visual Styles */}
+        <div>
+          <h4 className="text-sm font-medium text-crd-lightGray mb-3">Premium Visual Styles</h4>
+          <PremiumStyleSelector
+            selectedStyleId={selectedPresetId}
+            onStyleSelect={onPresetSelect}
+            onStyleUnlock={(styleId) => {
+              console.log('🔓 Unlock style:', styleId);
+              // TODO: Implement unlock flow
+            }}
+          />
+        </div>
+
+        {/* Legacy Styles */}
+        <div>
+          <h4 className="text-sm font-medium text-crd-lightGray mb-3">Legacy Style Library</h4>
+          <EnhancedQuickComboPresets
+            onApplyCombo={onApplyCombo}
+            currentEffects={effectValues}
+            selectedPresetId={selectedPresetId}
+            onPresetSelect={onPresetSelect}
+            isApplyingPreset={isApplyingPreset}
+          />
+        </div>
+      </div>
     </CollapsibleSection>
   );
 };
