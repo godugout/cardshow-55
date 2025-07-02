@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Sparkles, Eye, Zap, Settings } from 'lucide-react';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset } from '../types';
+import { ENHANCED_COMBO_PRESETS } from './presets/enhancedComboPresets';
 
 interface ViewerStatusIndicatorsProps {
   effectValues: EffectValues;
@@ -33,9 +34,8 @@ export const ViewerStatusIndicators: React.FC<ViewerStatusIndicatorsProps> = ({
     if (!selectedPresetId) return 'None';
     
     // Try to find in combo presets first
-    const comboPreset = Object.values(require('../components/presets/enhancedComboPresets').ENHANCED_COMBO_PRESETS)
-      .find((p: any) => p.id === selectedPresetId);
-    if (comboPreset) return (comboPreset as any).name;
+    const comboPreset = ENHANCED_COMBO_PRESETS.find(p => p.id === selectedPresetId);
+    if (comboPreset) return comboPreset.name;
     
     // Fallback to formatted ID
     return selectedPresetId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
