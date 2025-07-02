@@ -131,61 +131,12 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`
           }}
         >
-          {/* Card Thickness/Edges - Create 3D depth */}
-          <div
-            className="absolute inset-0"
-            style={{
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            {/* Top Edge */}
-            <div
-              className="absolute top-0 left-0 right-0 h-1"
-              style={{
-                background: 'linear-gradient(90deg, #2a2a2a 0%, #404040 50%, #2a2a2a 100%)',
-                transform: 'rotateX(90deg) translateZ(2.5px)',
-                transformOrigin: 'top',
-                zIndex: 5
-              }}
-            />
-            {/* Bottom Edge */}
-            <div
-              className="absolute bottom-0 left-0 right-0 h-1"
-              style={{
-                background: 'linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)',
-                transform: 'rotateX(-90deg) translateZ(2.5px)',
-                transformOrigin: 'bottom',
-                zIndex: 5
-              }}
-            />
-            {/* Left Edge */}
-            <div
-              className="absolute top-0 bottom-0 left-0 w-1"
-              style={{
-                background: 'linear-gradient(180deg, #2a2a2a 0%, #404040 50%, #1a1a1a 100%)',
-                transform: 'rotateY(-90deg) translateZ(2.5px)',
-                transformOrigin: 'left',
-                zIndex: 5
-              }}
-            />
-            {/* Right Edge */}
-            <div
-              className="absolute top-0 bottom-0 right-0 w-1"
-              style={{
-                background: 'linear-gradient(180deg, #2a2a2a 0%, #404040 50%, #1a1a1a 100%)',
-                transform: 'rotateY(90deg) translateZ(2.5px)',
-                transformOrigin: 'right',
-                zIndex: 5
-              }}
-            />
-          </div>
-
           {/* CARD FRONT - Original Image Side */}
           <div
             className="absolute inset-0 rounded-xl overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'translateZ(2.5px)',
+              transform: 'translateZ(0px)', // Front face at Z=0
               zIndex: 10,
               background: '#ffffff'
             }}
@@ -209,7 +160,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             className="absolute inset-0 rounded-xl overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg) translateZ(2.5px)',
+              transform: 'rotateY(180deg) translateZ(0px)', // Back face flipped 180°
               zIndex: 10,
               background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
             }}
@@ -224,6 +175,55 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
               enhancedEffectStyles={effectiveEnhancedEffectStyles}
               SurfaceTexture={undefined} // No texture on back
               interactiveLighting={interactiveLighting}
+            />
+          </div>
+
+          {/* Card Thickness/Edges - Create 3D depth */}
+          <div
+            className="absolute inset-0"
+            style={{
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            {/* Top Edge */}
+            <div
+              className="absolute top-0 left-0 right-0 h-1"
+              style={{
+                background: 'linear-gradient(90deg, #2a2a2a 0%, #404040 50%, #2a2a2a 100%)',
+                transform: 'rotateX(90deg) translateZ(2px)',
+                transformOrigin: 'top',
+                zIndex: 5
+              }}
+            />
+            {/* Bottom Edge */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-1"
+              style={{
+                background: 'linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)',
+                transform: 'rotateX(-90deg) translateZ(2px)',
+                transformOrigin: 'bottom',
+                zIndex: 5
+              }}
+            />
+            {/* Left Edge */}
+            <div
+              className="absolute top-0 bottom-0 left-0 w-1"
+              style={{
+                background: 'linear-gradient(180deg, #2a2a2a 0%, #404040 50%, #1a1a1a 100%)',
+                transform: 'rotateY(-90deg) translateZ(2px)',
+                transformOrigin: 'left',
+                zIndex: 5
+              }}
+            />
+            {/* Right Edge */}
+            <div
+              className="absolute top-0 bottom-0 right-0 w-1"
+              style={{
+                background: 'linear-gradient(180deg, #2a2a2a 0%, #404040 50%, #1a1a1a 100%)',
+                transform: 'rotateY(90deg) translateZ(2px)',
+                transformOrigin: 'right',
+                zIndex: 5
+              }}
             />
           </div>
         </div>
