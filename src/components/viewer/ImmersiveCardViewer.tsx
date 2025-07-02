@@ -103,7 +103,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
 
   // Enhanced combo application that actually applies effects
   const handleApplyCombo = (combo: any, applyPreset: (preset: any, presetId?: string) => void) => {
-    console.log('🚀 ImmersiveCardViewer: Applying style combo:', combo.id, 'Effects:', combo.effects);
+    console.log('🚀 ImmersiveCardViewer: Applying style combo:', combo.id, 'Full combo:', combo);
     
     // Update viewer state
     actions.setSelectedPresetId(combo.id);
@@ -117,9 +117,14 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     // CRITICAL: Apply the actual effects to the renderer
     if (combo.effects && applyPreset) {
       console.log('🎨 ImmersiveCardViewer: Applying effects to renderer:', combo.effects);
+      // Pass combo.effects (not combo) to applyPreset
       applyPreset(combo.effects, combo.id);
     } else {
-      console.warn('⚠️ ImmersiveCardViewer: No effects or applyPreset function available');
+      console.warn('⚠️ ImmersiveCardViewer: No effects or applyPreset function available', {
+        hasEffects: !!combo.effects,
+        hasApplyPreset: !!applyPreset,
+        effectsType: typeof combo.effects
+      });
     }
   };
 

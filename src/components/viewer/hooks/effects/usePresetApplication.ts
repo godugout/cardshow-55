@@ -29,7 +29,13 @@ export const usePresetApplication = () => {
     presetId?: string
   ) => {
     const sequenceId = `preset-${presetId}-${Date.now()}`;
-    console.log('🎨 Applying preset with enhanced synchronization:', { presetId, preset, sequenceId });
+    console.log('🎨 Applying preset with enhanced synchronization:', { presetId, preset, sequenceId, presetType: typeof preset });
+    
+    // Add null check to prevent runtime error
+    if (!preset || typeof preset !== 'object') {
+      console.error('❌ usePresetApplication: Invalid preset provided:', preset);
+      return;
+    }
     
     // Prevent overlapping applications
     if (presetState.isLocked) {
@@ -59,8 +65,11 @@ export const usePresetApplication = () => {
       presetTimeoutRef.current = setTimeout(() => {
         const newEffectValues = JSON.parse(JSON.stringify(defaultEffectValues)); // Deep copy
         
+        console.log('🎨 usePresetApplication: About to process preset entries:', preset);
+        
         // Apply preset effects with enhanced validation and clamping
-        Object.entries(preset).forEach(([effectId, effectParams]) => {
+        if (preset && typeof preset === 'object') {
+          Object.entries(preset).forEach(([effectId, effectParams]) => {
           console.log(`🎨 usePresetApplication: Processing effect ${effectId}:`, effectParams);
           if (newEffectValues[effectId] && effectParams) {
             Object.entries(effectParams).forEach(([paramId, value]) => {
@@ -76,7 +85,10 @@ export const usePresetApplication = () => {
           } else {
             console.warn(`⚠️ usePresetApplication: Unknown effect ${effectId} or missing params`);
           }
-        });
+          });
+        } else {
+          console.error('❌ usePresetApplication: Preset is not a valid object:', preset);
+        }
         
         // Apply atomically
         console.log('🎨 usePresetApplication: Applying final effect values:', newEffectValues);
