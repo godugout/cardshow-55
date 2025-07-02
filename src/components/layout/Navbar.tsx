@@ -16,7 +16,7 @@ export const Navbar = () => {
           <Link to="/" className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
               <img
-                src="/lovable-uploads/8b862ea9-8c97-4583-b217-1760341dbc2c.png"
+                src="/lovable-uploads/818118d9-c823-4f86-b240-854bb79af713.png"
                 alt="CRD Logo"
                 className="w-8 h-8"
               />
