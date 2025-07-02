@@ -61,9 +61,9 @@ export const CardContainer: React.FC<CardContainerProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Enhanced 3D Card with Proper Front/Back Separation */}
+      {/* Single 3D Plane Card with Front/Back sides */}
       <div
-        className="relative"
+        className="relative rounded-xl overflow-hidden"
         style={{
           width: '400px',
           height: '560px',
@@ -74,11 +74,10 @@ export const CardContainer: React.FC<CardContainerProps> = ({
         }}
         onClick={onClick}
       >
-        {/* Front of Card */}
+        {/* Front Side */}
         <div 
-          className="absolute inset-0 rounded-xl overflow-hidden backface-hidden"
+          className="absolute inset-0 rounded-xl overflow-hidden"
           style={{
-            transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
             backfaceVisibility: 'hidden'
           }}
         >
@@ -97,11 +96,11 @@ export const CardContainer: React.FC<CardContainerProps> = ({
           />
         </div>
 
-        {/* Back of Card */}
+        {/* Back Side */}
         <div 
-          className="absolute inset-0 rounded-xl overflow-hidden backface-hidden"
+          className="absolute inset-0 rounded-xl overflow-hidden"
           style={{
-            transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
+            transform: 'rotateY(180deg)',
             backfaceVisibility: 'hidden'
           }}
         >
