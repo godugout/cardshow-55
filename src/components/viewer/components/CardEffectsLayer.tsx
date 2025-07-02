@@ -51,6 +51,8 @@ export const CardEffectsLayer: React.FC<CardEffectsLayerProps> = ({
 
   // Debug log effect values
   console.log('🎭 CardEffectsLayer: Rendering with effectValues:', effectValues);
+  console.log('🎭 CardEffectsLayer: showEffects state:', showEffects);
+  console.log('🎭 CardEffectsLayer: interactiveLighting:', interactiveLighting);
 
   // Helper function to safely get effect parameter values with logging
   const getEffectParam = (effectId: string, paramId: string, defaultValue: any = 0) => {

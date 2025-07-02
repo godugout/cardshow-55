@@ -75,10 +75,18 @@ export const ViewerEffectsManager: React.FC<ViewerEffectsManagerProps> = ({
 
   // Enhanced combo application
   const handleApplyCombo = useCallback((combo: any) => {
-    console.log('🚀 Applying style combo:', combo.id, 'Effects:', combo.effects);
+    console.log('🚀 ViewerEffectsManager: Applying style combo:', combo.id, 'Effects:', combo.effects);
     validateEffectState();
     applyPreset(combo.effects, combo.id);
     onApplyPreset(combo.effects, combo.id);
+  }, [applyPreset, validateEffectState, onApplyPreset]);
+
+  // Enhanced preset application (for direct EffectValues)
+  const handleApplyPreset = useCallback((preset: EffectValues, presetId?: string) => {
+    console.log('🎨 ViewerEffectsManager: Applying preset:', { preset, presetId });
+    validateEffectState();
+    applyPreset(preset, presetId);
+    onApplyPreset(preset, presetId);
   }, [applyPreset, validateEffectState, onApplyPreset]);
 
   return (
@@ -87,7 +95,7 @@ export const ViewerEffectsManager: React.FC<ViewerEffectsManagerProps> = ({
         effectValues,
         handleEffectChange: handleManualEffectChange,
         resetAllEffects: handleResetWithEffects,
-        applyPreset: handleApplyCombo,
+        applyPreset: handleApplyPreset,
         validateEffectState,
         isApplyingPreset,
         frameStyles: getFrameStyles(),

@@ -2,6 +2,7 @@
 import React from 'react';
 import type { CardData } from '@/hooks/useCardEditor';
 import { CardEffectsLayer } from './CardEffectsLayer';
+import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 
 interface CardBackProps {
   card: CardData;
@@ -12,6 +13,8 @@ interface CardBackProps {
   mousePosition: { x: number; y: number };
   physicalEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
+  effectValues?: EffectValues;
+  interactiveLighting?: boolean;
 }
 
 export const CardBack: React.FC<CardBackProps> = ({
@@ -22,7 +25,9 @@ export const CardBack: React.FC<CardBackProps> = ({
   effectIntensity,
   mousePosition,
   physicalEffectStyles,
-  SurfaceTexture
+  SurfaceTexture,
+  effectValues,
+  interactiveLighting = false
 }) => {
   // Debug logging to see if this component is being used
   console.log('CardBack component rendering with isFlipped:', isFlipped);
@@ -74,6 +79,8 @@ export const CardBack: React.FC<CardBackProps> = ({
         effectIntensity={effectIntensity.map(i => i * 1.2)} // Boost intensity for better visibility on dark background
         mousePosition={mousePosition}
         physicalEffectStyles={physicalEffectStyles}
+        effectValues={effectValues}
+        interactiveLighting={interactiveLighting}
       />
     </div>
   );

@@ -3,6 +3,7 @@ import React from 'react';
 import type { CardData } from '@/types/card';
 import { CardFront } from './CardFront';
 import { CardBack } from './CardBack';
+import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 
 interface CardContainerProps {
   card: CardData;
@@ -17,6 +18,8 @@ interface CardContainerProps {
   frameStyles: React.CSSProperties;
   physicalEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
+  effectValues?: EffectValues;
+  interactiveLighting?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
@@ -37,6 +40,8 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   frameStyles,
   physicalEffectStyles,
   SurfaceTexture,
+  effectValues,
+  interactiveLighting = false,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
@@ -87,6 +92,8 @@ export const CardContainer: React.FC<CardContainerProps> = ({
             frameStyles={frameStyles}
             physicalEffectStyles={physicalEffectStyles}
             SurfaceTexture={SurfaceTexture}
+            effectValues={effectValues}
+            interactiveLighting={interactiveLighting}
           />
         </div>
 
@@ -107,6 +114,8 @@ export const CardContainer: React.FC<CardContainerProps> = ({
             mousePosition={mousePosition}
             physicalEffectStyles={physicalEffectStyles}
             SurfaceTexture={SurfaceTexture}
+            effectValues={effectValues}
+            interactiveLighting={interactiveLighting}
           />
         </div>
       </div>

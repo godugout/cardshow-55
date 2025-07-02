@@ -12,6 +12,7 @@ export const convertPremiumStyleToEffects = (style: CRDVisualStyle): EffectValue
   // Map based on style ID and configuration
   switch (style.id) {
     case 'holographic-burst':
+      console.log('🌈 Converting holographic-burst style');
       effects.holographic = {
         intensity: 80,
         shiftSpeed: 180,
@@ -26,6 +27,7 @@ export const convertPremiumStyleToEffects = (style: CRDVisualStyle): EffectValue
       break;
 
     case 'crystal-interference':
+      console.log('💎 Converting crystal-interference style');
       effects.crystal = {
         intensity: 75,
         facets: 15,
