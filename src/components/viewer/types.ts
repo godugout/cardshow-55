@@ -1,5 +1,5 @@
 
-import type { CardData } from '@/types/card';
+import type { CardData } from '@/hooks/useCardEditor';
 
 export interface EnvironmentScene {
   id: string;

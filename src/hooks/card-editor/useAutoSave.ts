@@ -1,7 +1,7 @@
 
 import { useEffect } from 'react';
 import { toast } from 'sonner';
-import type { CardData } from '@/types/card';
+import type { CardData } from './types';
 
 export const useAutoSave = (
   cardData: CardData,

@@ -19,17 +19,17 @@ export const usePresetApplication = () => {
   const lockTimeoutRef = useRef<NodeJS.Timeout>();
   const validationTimeoutRef = useRef<NodeJS.Timeout>();
 
-  // Memoize default values with initial effect for card back visibility
+  // Memoize default values
   const defaultEffectValues = createDefaultEffectValues();
 
-  // Enhanced direct effect merging without disruptive reset
+  // Enhanced atomic preset application with sequence tracking
   const applyPreset = useCallback((
     preset: EffectValues, 
     setEffectValues: (values: EffectValues | ((prev: EffectValues) => EffectValues)) => void, 
     presetId?: string
   ) => {
     const sequenceId = `preset-${presetId}-${Date.now()}`;
-    console.log('🎨 Applying preset with direct merging (no reset):', { presetId, preset, sequenceId });
+    console.log('🎨 Applying preset with enhanced synchronization:', { presetId, preset, sequenceId });
     
     // Prevent overlapping applications
     if (presetState.isLocked) {
@@ -40,51 +40,60 @@ export const usePresetApplication = () => {
     // Clear any existing timeouts
     clearTimeouts();
     
-    // Set application state without disruptive locking
+    // Set enhanced synchronization lock
     setPresetState({ 
       isApplying: true, 
       currentPresetId: presetId, 
       appliedAt: Date.now(),
-      isLocked: false, // Don't lock to prevent state conflicts
+      isLocked: true,
       sequenceId
     });
     
-    // Direct effect merging without reset
+    // Enhanced atomic application with state validation
     startTransition(() => {
-      setEffectValues(currentValues => {
-        // Start with current values to maintain base effects
-        const newEffectValues = { ...currentValues };
+      // Step 1: Complete reset with material clearing
+      const resetValues = JSON.parse(JSON.stringify(defaultEffectValues)); // Deep copy
+      setEffectValues(resetValues);
+      
+      // Step 2: Apply preset effects with clamping
+      presetTimeoutRef.current = setTimeout(() => {
+        const newEffectValues = JSON.parse(JSON.stringify(defaultEffectValues)); // Deep copy
         
-        // Merge preset effects with enhanced validation and clamping
+        // Apply preset effects with enhanced validation and clamping
         Object.entries(preset).forEach(([effectId, effectParams]) => {
-          if (effectParams) {
-            // Initialize effect if it doesn't exist
-            if (!newEffectValues[effectId]) {
-              newEffectValues[effectId] = {};
-            }
-            
-            // Merge parameters
+          if (newEffectValues[effectId] && effectParams) {
             Object.entries(effectParams).forEach(([paramId, value]) => {
-              const clampedValue = clampEffectValue(effectId, paramId, value);
-              newEffectValues[effectId][paramId] = clampedValue;
+              if (newEffectValues[effectId][paramId] !== undefined) {
+                // Apply clamping during preset application
+                const clampedValue = clampEffectValue(effectId, paramId, value);
+                newEffectValues[effectId][paramId] = clampedValue;
+              }
             });
           }
         });
         
-        console.log('✅ Direct effect merge complete:', newEffectValues);
-        return newEffectValues;
-      });
-      
-      // Complete application after brief transition
-      presetTimeoutRef.current = setTimeout(() => {
-        setPresetState(prev => ({ 
-          ...prev, 
-          isApplying: false 
-        }));
-        console.log('✅ Preset application complete:', sequenceId);
-      }, 100); // Reduced timeout for faster response
+        // Apply atomically
+        setEffectValues(newEffectValues);
+        
+        // Step 3: State validation and cleanup
+        validationTimeoutRef.current = setTimeout(() => {
+          console.log('🔍 Validating preset application state:', sequenceId);
+          
+          // Release lock after validation
+          lockTimeoutRef.current = setTimeout(() => {
+            setPresetState(prev => ({ 
+              ...prev, 
+              isApplying: false, 
+              isLocked: false 
+            }));
+            console.log('✅ Preset application complete:', sequenceId);
+          }, 200); // Extended for material recalculation
+          
+        }, 100); // Validation delay
+        
+      }, 150); // Increased reset delay
     });
-  }, [presetState.isLocked]);
+  }, [presetState.isLocked, defaultEffectValues]);
 
   // Clear all timeouts for cleanup
   const clearTimeouts = useCallback(() => {
@@ -97,7 +106,7 @@ export const usePresetApplication = () => {
     presetState,
     applyPreset,
     setPresetState,
-    isApplyingPreset: presetState.isApplying,
+    isApplyingPreset: presetState.isApplying || presetState.isLocked,
     clearTimeouts
   };
 };

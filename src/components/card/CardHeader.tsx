@@ -9,7 +9,7 @@ export const CardHeader = () => {
         <img
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/0c644015ec0ce7f9366b7df84be178b8bcf46b37"
           alt="Logo"
-          className="w-auto h-6"
+          className="w-[43px] h-8"
         />
         <span className="font-orbitron text-lg font-black text-[#F4F5F6]">
           CARDSHOW

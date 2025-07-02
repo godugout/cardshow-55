@@ -4,9 +4,17 @@ import { TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Star, Users } from 'lucide-react';
 import { CardGrid } from './CardGrid';
-import type { CardData } from '@/types/card';
 
 type ViewMode = 'feed' | 'grid' | 'masonry';
+
+interface CardData {
+  id: string;
+  title: string;
+  description?: string;
+  image_url?: string;
+  thumbnail_url?: string;
+  price?: string;
+}
 
 interface CardsTabContentProps {
   activeTab: string;

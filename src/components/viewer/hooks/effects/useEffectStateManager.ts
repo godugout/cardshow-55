@@ -4,14 +4,7 @@ import { createDefaultEffectValues, clampEffectValue } from './effectUtils';
 import type { EffectValues } from './types';
 
 export const useEffectStateManager = () => {
-  const [effectValues, setEffectValues] = useState<EffectValues>(() => {
-    const defaults = createDefaultEffectValues();
-    // Ensure card back is visible with minimal brushedmetal effect
-    if (defaults.brushedmetal) {
-      defaults.brushedmetal.intensity = 15; // Increased minimum for better visibility
-    }
-    return defaults;
-  });
+  const [effectValues, setEffectValues] = useState<EffectValues>(createDefaultEffectValues);
 
   const handleEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string, isPreset?: boolean) => {
     console.log('🎛️ Effect Change:', { effectId, parameterId, value, isPreset });
@@ -41,13 +34,8 @@ export const useEffectStateManager = () => {
   }, []);
 
   const resetAllEffects = useCallback(() => {
-    console.log('🔄 Resetting all effects while maintaining back visibility');
-    const defaults = createDefaultEffectValues();
-    // Maintain minimum effect for card back visibility
-    if (defaults.brushedmetal) {
-      defaults.brushedmetal.intensity = 15;
-    }
-    setEffectValues(defaults);
+    console.log('🔄 Resetting all effects');
+    setEffectValues(createDefaultEffectValues());
   }, []);
 
   return {

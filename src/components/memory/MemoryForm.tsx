@@ -3,10 +3,10 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Plus, Loader } from 'lucide-react';
 import { FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form';
-import { CRDInput } from '@/components/ui/design-system/Input';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CRDButton } from '@/components/ui/design-system/Button';
+import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import type { Team } from '@/types/team';
 import type { Visibility } from '@/types/common';
@@ -52,13 +52,9 @@ export const MemoryForm = ({
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-crd-white font-medium">Title</FormLabel>
+              <FormLabel>Title</FormLabel>
               <FormControl>
-                <CRDInput 
-                  variant="crd"
-                  placeholder="Enter memory title" 
-                  {...field} 
-                />
+                <Input placeholder="Enter memory title" {...field} />
               </FormControl>
             </FormItem>
           )}
@@ -69,11 +65,11 @@ export const MemoryForm = ({
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-crd-white font-medium">Description</FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="Describe your memory..."
-                  className="min-h-[100px] bg-crd-dark border-crd-mediumGray text-crd-white placeholder:text-crd-lightGray focus-visible:ring-crd-blue focus-visible:border-crd-blue"
+                  className="min-h-[100px]"
                   {...field}
                 />
               </FormControl>
@@ -86,24 +82,20 @@ export const MemoryForm = ({
           name="teamId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-crd-white font-medium">Team</FormLabel>
+              <FormLabel>Team</FormLabel>
               <Select
                 disabled={teamsLoading}
                 onValueChange={field.onChange}
                 value={field.value}
               >
                 <FormControl>
-                  <SelectTrigger className="bg-crd-dark border-crd-mediumGray text-crd-white">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select team" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className="bg-crd-dark border-crd-mediumGray">
+                <SelectContent>
                   {teams?.map(team => (
-                    <SelectItem 
-                      key={team.id} 
-                      value={team.id}
-                      className="text-crd-white hover:bg-crd-mediumGray"
-                    >
+                    <SelectItem key={team.id} value={team.id}>
                       {team.name}
                     </SelectItem>
                   ))}
@@ -118,29 +110,28 @@ export const MemoryForm = ({
           name="visibility"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-crd-white font-medium">Visibility</FormLabel>
+              <FormLabel>Visibility</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
               >
                 <FormControl>
-                  <SelectTrigger className="bg-crd-dark border-crd-mediumGray text-crd-white">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select visibility" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className="bg-crd-dark border-crd-mediumGray">
-                  <SelectItem value="private" className="text-crd-white hover:bg-crd-mediumGray">Private</SelectItem>
-                  <SelectItem value="public" className="text-crd-white hover:bg-crd-mediumGray">Public</SelectItem>
-                  <SelectItem value="shared" className="text-crd-white hover:bg-crd-mediumGray">Shared</SelectItem>
+                <SelectContent>
+                  <SelectItem value="private">Private</SelectItem>
+                  <SelectItem value="public">Public</SelectItem>
+                  <SelectItem value="shared">Shared</SelectItem>
                 </SelectContent>
               </Select>
             </FormItem>
           )}
         />
 
-        <CRDButton 
+        <Button 
           type="submit"
-          variant="primary"
           className="w-full"
           disabled={isCreating}
         >
@@ -150,7 +141,7 @@ export const MemoryForm = ({
             <Plus className="mr-2 h-4 w-4" />
           )}
           Create Memory
-        </CRDButton>
+        </Button>
       </form>
     </Form>
   );

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase-client';
 import { useCustomAuth } from '@/features/auth/hooks/useCustomAuth';
 import { v4 as uuidv4 } from 'uuid';
-import type { CardData } from '@/types/card';
+import type { CardData } from './types';
 
 // UUID validation function
 const isValidUUID = (str: string): boolean => {
@@ -30,8 +30,20 @@ const validateCardData = (cardData: CardData): { isValid: boolean; errors: strin
     errors.push(`Invalid template_id format: ${cardData.template_id}`);
   }
 
-  // Validate rarity enum - map to database values
-  const validRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+  if (cardData.shop_id && !isValidUUID(cardData.shop_id)) {
+    errors.push(`Invalid shop_id format: ${cardData.shop_id}`);
+  }
+
+  if (cardData.collection_id && !isValidUUID(cardData.collection_id)) {
+    errors.push(`Invalid collection_id format: ${cardData.collection_id}`);
+  }
+
+  if (cardData.team_id && !isValidUUID(cardData.team_id)) {
+    errors.push(`Invalid team_id format: ${cardData.team_id}`);
+  }
+
+  // Validate rarity enum
+  const validRarities = ['common', 'rare', 'legendary'];
   if (cardData.rarity && !validRarities.includes(cardData.rarity)) {
     errors.push(`Invalid rarity: ${cardData.rarity}. Must be one of: ${validRarities.join(', ')}`);
   }
@@ -81,32 +93,40 @@ export const useCardOperations = (
         return false;
       }
 
-      // Map rarity to database enum (database doesn't have epic)
-      const rarityMapping: Record<string, string> = {
-        'common': 'common',
-        'uncommon': 'uncommon', 
-        'rare': 'rare',
-        'epic': 'legendary', // Map epic to legendary
-        'legendary': 'legendary'
-      };
-
       // Clean and prepare the card data for saving
       const cardToSave = {
         id: cardId,
         title: cardData.title.trim(),
         description: cardData.description?.trim() || '',
-        creator_id: user.id,
+        creator_id: user.id, // Ensure this is set to the authenticated user's ID
         design_metadata: cardData.design_metadata || {},
         image_url: cardData.image_url || null,
         thumbnail_url: cardData.thumbnail_url || null,
-        rarity: rarityMapping[cardData.rarity || 'common'] as any,
+        rarity: cardData.rarity || 'common',
         tags: cardData.tags || [],
-        is_public: cardData.visibility === 'public',
+        is_public: cardData.is_public || false,
+        // Only include template_id if it's a valid UUID, otherwise set to null
         template_id: (cardData.template_id && isValidUUID(cardData.template_id)) ? cardData.template_id : null,
+        // Only include shop_id if it's a valid UUID, otherwise set to null
+        shop_id: (cardData.shop_id && isValidUUID(cardData.shop_id)) ? cardData.shop_id : null,
+        // Only include collection_id if it's a valid UUID, otherwise set to null
+        collection_id: (cardData.collection_id && isValidUUID(cardData.collection_id)) ? cardData.collection_id : null,
+        // Only include team_id if it's a valid UUID, otherwise set to null
+        team_id: (cardData.team_id && isValidUUID(cardData.team_id)) ? cardData.team_id : null,
+        creator_attribution: cardData.creator_attribution || { collaboration_type: 'solo' },
+        publishing_options: cardData.publishing_options || {
+          marketplace_listing: false,
+          crd_catalog_inclusion: true,
+          print_available: false,
+          pricing: { currency: 'USD' },
+          distribution: { limited_edition: false }
+        },
         verification_status: 'pending' as const,
         print_metadata: cardData.print_metadata || {},
+        edition_size: 1,
         marketplace_listing: false,
-        visibility: cardData.visibility || 'private'
+        print_available: false,
+        crd_catalog_inclusion: true
       };
 
       console.log('Attempting to save card with validated data:', { 
@@ -166,7 +186,7 @@ export const useCardOperations = (
         return false;
       }
       
-      updateCardData({ visibility: 'public' });
+      updateCardData({ is_public: true });
       toast.success('Card published successfully');
       return true;
     } catch (error) {

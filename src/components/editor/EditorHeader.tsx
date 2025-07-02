@@ -105,9 +105,8 @@ export const EditorHeader = ({ cardEditor }: EditorHeaderProps) => {
   const isDirty = cardEditor?.isDirty || false;
   const isSaving = cardEditor?.isSaving || false;
   
-  // Check if card exists in local storage (simplified check)
   const isLocalCard = cardEditor?.cardData.id ? 
-    !!localCardStorage.getCard(cardEditor.cardData.id) : false;
+    localCardStorage.getCard(cardEditor.cardData.id)?.isLocal : false;
 
   const getStatusDisplay = () => {
     if (isSaving) return 'Saving...';

@@ -21,24 +21,20 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {Array(6).fill(0).map((_, i) => (
+      <>
+        {Array(5).fill(0).map((_, i) => (
           <Skeleton key={i} className="h-48 rounded-lg" />
         ))}
-      </div>
+      </>
     );
   }
 
   if (!collections || collections.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-[#777E90]">No collections found</p>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <>
       {collections.map((collection, index) => (
         <Card key={index} className="bg-[#23262F] border-[#353945] overflow-hidden">
           <div 
@@ -60,6 +56,6 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({
           </CardFooter>
         </Card>
       ))}
-    </div>
+    </>
   );
 };

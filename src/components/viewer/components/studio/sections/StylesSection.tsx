@@ -12,7 +12,6 @@ interface StylesSectionProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
-  onExpandEffects?: () => void; // New prop to trigger Effects section expansion
 }
 
 export const StylesSection: React.FC<StylesSectionProps> = ({
@@ -22,30 +21,11 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
   selectedPresetId,
   onPresetSelect,
   onApplyCombo,
-  isApplyingPreset = false,
-  onExpandEffects
+  isApplyingPreset = false
 }) => {
-  const statusText = selectedPresetId && selectedPresetId !== 'custom-init' ? 
+  const statusText = selectedPresetId ? 
     selectedPresetId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : 
     "Select Style";
-
-  const handleComboClick = (combo: any) => {
-    console.log('🎨 StylesSection: Combo clicked with enhanced integration:', combo.id, combo.effects);
-    
-    // First set the selected preset
-    onPresetSelect(combo.id);
-    
-    // Apply the combo effects
-    onApplyCombo(combo);
-    
-    // Expand Effects section to show active sliders (after brief delay for state update)
-    if (onExpandEffects) {
-      setTimeout(() => {
-        onExpandEffects();
-        console.log('📈 Expanding Effects section to show active sliders');
-      }, 200);
-    }
-  };
 
   return (
     <CollapsibleSection
@@ -56,7 +36,7 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
       onToggle={onToggle}
     >
       <EnhancedQuickComboPresets
-        onApplyCombo={handleComboClick}
+        onApplyCombo={onApplyCombo}
         currentEffects={effectValues}
         selectedPresetId={selectedPresetId}
         onPresetSelect={onPresetSelect}

@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => ({
   },
   test: {
     globals: true,
-    environment: 'happy-dom', // Use happy-dom instead of jsdom for browser-compatible testing
+    environment: 'jsdom',
     setupFiles: ['./src/components/cards/hooks/__tests__/setup.ts'],
   },
   worker: {
@@ -30,17 +30,5 @@ export default defineConfig(({ mode }) => ({
   },
   optimizeDeps: {
     exclude: ['@/workers/cardDetectionWorker.ts']
-  },
-  build: {
-    rollupOptions: {
-      external: [],
-      output: {
-        manualChunks: undefined,
-      }
-    }
-  },
-  define: {
-    // Ensure browser environment
-    'process.env.NODE_ENV': JSON.stringify(mode === 'development' ? 'development' : 'production'),
   }
 }));

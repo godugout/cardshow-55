@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
 import { useCards } from "@/hooks/useCards";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -53,7 +53,8 @@ const FALLBACK_CARDS = [
 
 export const SimplifiedDiscover: React.FC = () => {
   const { cards, loading } = useCards();
-  const navigate = useNavigate();
+  const { selectedCardIndex, showImmersiveViewer, handleCardClick, handleCardChange, handleCloseViewer, handleShareCard, handleDownloadCard } = useGalleryActions();
+  const { convertCardsToCardData } = useCardConversion();
   
   // Use real cards if available, otherwise use fallback
   const displayCards = cards && cards.length > 0 
@@ -61,14 +62,18 @@ export const SimplifiedDiscover: React.FC = () => {
         id: card.id,
         title: card.title,
         image: card.image_url || card.thumbnail_url,
-        creator: "Creator"
+        creator: "Creator" // We'd get this from profiles later
       }))
     : FALLBACK_CARDS.slice(0, 6);
 
-  // Remove immersive logic (keep only this way to open Studio)
+  // Convert cards to CardData format for the viewer
+  const convertedCards = convertCardsToCardData(
+    cards && cards.length > 0 ? cards.slice(0, 6) : []
+  );
+
   const handleCardView = (card: any, index: number) => {
-    if (card?.id) {
-      navigate(`/studio/${card.id}`);
+    if (cards && cards.length > 0) {
+      handleCardClick(cards[index], cards.slice(0, 6));
     }
   };
 
@@ -110,6 +115,9 @@ export const SimplifiedDiscover: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <CRDButton size="sm" className="w-full">
+                      View in 3D
+                    </CRDButton>
                   </div>
                 </div>
                 <div className="mt-3">
@@ -122,7 +130,7 @@ export const SimplifiedDiscover: React.FC = () => {
         </div>
         
         <div className="text-center">
-          <Link to="/crdmkr">
+          <Link to="/editor">
             <CRDButton 
               variant="secondary" 
               size="lg"
@@ -131,7 +139,7 @@ export const SimplifiedDiscover: React.FC = () => {
               Browse All Cards
             </CRDButton>
           </Link>
-          <Link to="/crdmkr">
+          <Link to="/editor">
             <CRDButton 
               variant="primary" 
               size="lg"
@@ -142,6 +150,23 @@ export const SimplifiedDiscover: React.FC = () => {
           </Link>
         </div>
       </div>
+
+      {/* Immersive Viewer */}
+      {showImmersiveViewer && convertedCards.length > 0 && (
+        <ImmersiveCardViewer
+          card={convertedCards[selectedCardIndex]}
+          cards={convertedCards}
+          currentCardIndex={selectedCardIndex}
+          onCardChange={handleCardChange}
+          isOpen={showImmersiveViewer}
+          onClose={handleCloseViewer}
+          onShare={() => handleShareCard(convertedCards)}
+          onDownload={() => handleDownloadCard(convertedCards)}
+          allowRotation={true}
+          showStats={true}
+          ambient={true}
+        />
+      )}
     </>
   );
 };

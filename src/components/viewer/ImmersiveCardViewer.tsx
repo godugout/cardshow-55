@@ -1,16 +1,24 @@
-
-import React, { useRef } from 'react';
-import type { ExtendedImmersiveCardViewerProps } from './types/ImmersiveViewerTypes';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
+import type { ImmersiveCardViewerProps, MaterialSettings } from './types';
+import { 
+  useEnhancedCardEffects, 
+  type EffectValues 
+} from './hooks/useEnhancedCardEffects';
+import { useCardEffects } from './hooks/useCardEffects';
+import { useCardExport } from './hooks/useCardExport';
+import { ExportOptionsDialog } from './components/ExportOptionsDialog';
+import { StudioPanel } from './components/StudioPanel';
 import { useViewerState } from './hooks/useViewerState';
 import { useViewerInteractionManager } from './hooks/useViewerInteractionManager';
-import { useCardExport } from './hooks/useCardExport';
-import { useImmersiveViewerState } from './hooks/useImmersiveViewerState';
-import { ViewerEffectsManager } from './components/ViewerEffectsManager';
 import { ViewerActionsManager } from './components/ViewerActionsManager';
 import { ViewerLayout } from './components/ViewerLayout';
-import { StudioPanel } from './components/StudioPanel';
-import { ExportOptionsDialog } from './components/ExportOptionsDialog';
-import { useStudioEffectsBridge } from './hooks/useStudioEffectsBridge';
+
+// Update the interface to support card navigation
+interface ExtendedImmersiveCardViewerProps extends ImmersiveCardViewerProps {
+  cards?: any[];
+  currentCardIndex?: number;
+  onCardChange?: (index: number) => void;
+}
 
 export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = ({
   card,
@@ -25,13 +33,9 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   showStats = true,
   ambient = true
 }) => {
-  // Refs
-  const cardContainerRef = useRef<HTMLDivElement>(null);
-
-  // Use the custom state hooks
-  const viewerStateHook = useViewerState();
-  const { viewerState, actions } = useImmersiveViewerState();
-
+  // Use the custom state hook
+  const viewerState = useViewerState();
+  const [solidCardTransition, setSolidCardTransition] = useState(false);
   const {
     isFullscreen,
     rotation,
@@ -49,15 +53,45 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     setShowEffects,
     mousePosition,
     setMousePosition,
+    showCustomizePanel,
+    setShowCustomizePanel,
     isHovering,
     setIsHovering,
     isHoveringControls,
     setIsHoveringControls,
+    showExportDialog,
+    setShowExportDialog,
+    selectedScene,
+    setSelectedScene,
+    selectedLighting,
+    setSelectedLighting,
+    overallBrightness,
+    setOverallBrightness,
+    interactiveLighting,
+    setInteractiveLighting,
+    materialSettings,
+    setMaterialSettings,
+    selectedPresetId,
+    setSelectedPresetId,
     handleReset,
     handleZoom,
     handleResetCamera,
     onCardClick
-  } = viewerStateHook;
+  } = viewerState;
+
+  // Enhanced effects hook
+  const enhancedEffectsHook = useEnhancedCardEffects();
+  const {
+    effectValues,
+    handleEffectChange,
+    resetAllEffects,
+    applyPreset,
+    isApplyingPreset,
+    validateEffectState
+  } = enhancedEffectsHook;
+
+  // Refs
+  const cardContainerRef = useRef<HTMLDivElement>(null);
 
   // Viewer interactions manager
   const {
@@ -71,7 +105,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     allowRotation,
     cards,
     currentCardIndex,
-    showCustomizePanel: viewerState.showCustomizePanel,
+    showCustomizePanel,
     showStats,
     autoRotate,
     isDragging,
@@ -86,184 +120,177 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     handleZoom
   });
 
+  // Export functionality
+  const { exportCard, isExporting, exportProgress } = useCardExport({
+    cardRef: cardContainerRef,
+    card,
+    onRotationChange: setRotation,
+    onEffectChange: handleEffectChange,
+    effectValues
+  });
+
+  // Style generation hook
+  const { getFrameStyles, getEnhancedEffectStyles, SurfaceTexture } = useCardEffects({
+    card,
+    effectValues,
+    mousePosition,
+    showEffects,
+    overallBrightness,
+    interactiveLighting,
+    selectedScene,
+    selectedLighting,
+    materialSettings,
+    zoom,
+    rotation,
+    isHovering
+  });
+
+  // Enhanced state validation on card change
+  useEffect(() => {
+    if (card) {
+      validateEffectState();
+    }
+  }, [card, validateEffectState]);
+
+  // Enhanced reset that includes all state
+  const handleResetWithEffects = useCallback(() => {
+    handleReset();
+    resetAllEffects();
+    validateEffectState();
+  }, [handleReset, resetAllEffects, validateEffectState]);
+
+  // Enhanced combo application to connect StudioPanel to effect hooks
+  const handleApplyCombo = useCallback((combo: any) => {
+    console.log('🚀 Applying style combo:', combo.id);
+    validateEffectState();
+    applyPreset(combo.effects, combo.id);
+    setSelectedPresetId(combo.id);
+    if (combo.scene) {
+      setSelectedScene(combo.scene);
+    }
+    if (combo.lighting) {
+      setSelectedLighting(combo.lighting);
+    }
+  }, [applyPreset, validateEffectState, setSelectedPresetId, setSelectedScene, setSelectedLighting]);
+
+  // Enhanced manual effect change to clear preset selection
+  const handleManualEffectChange = useCallback((effectId: string, parameterId: string, value: number | boolean | string) => {
+    if (!isApplyingPreset) {
+      setSelectedPresetId(undefined);
+    }
+    handleEffectChange(effectId, parameterId, value);
+  }, [handleEffectChange, isApplyingPreset, setSelectedPresetId]);
+
+  // Add environment controls state
+  const [environmentControls, setEnvironmentControls] = useState({
+    depthOfField: 1.0,
+    parallaxIntensity: 1.0,
+    fieldOfView: 75,
+    atmosphericDensity: 1.0
+  });
+
   if (!isOpen) return null;
 
   return (
-    <ViewerEffectsManager
-      card={card}
-      viewerState={viewerState}
-      onEffectChange={() => {}}
-      onResetAllEffects={() => {}}
-      onApplyPreset={() => {}}
-      onValidateEffectState={() => {}}
-    >
-      {({
-        effectValues,
-        handleEffectChange,
-        resetAllEffects,
-        applyPreset,
-        validateEffectState,
-        isApplyingPreset,
-        frameStyles,
-        enhancedEffectStyles,
-        surfaceTextureStyles
-      }) => {
-        console.log('🎮 ImmersiveCardViewer: Current effectValues:', effectValues);
+    <>
+      <ViewerActionsManager
+        card={card}
+        onShare={onShare}
+        effectValues={effectValues}
+        handleEffectChange={handleEffectChange}
+        resetAllEffects={resetAllEffects}
+        applyPreset={applyPreset}
+        validateEffectState={validateEffectState}
+        isApplyingPreset={isApplyingPreset}
+        setSelectedPresetId={setSelectedPresetId}
+        setSelectedScene={setSelectedScene}
+        setSelectedLighting={setSelectedLighting}
+        setShowExportDialog={setShowExportDialog}
+      >
+        <ViewerLayout
+          card={card}
+          cards={cards}
+          currentCardIndex={currentCardIndex}
+          onCardChange={onCardChange}
+          onClose={onClose}
+          isFullscreen={isFullscreen}
+          showCustomizePanel={showCustomizePanel}
+          setShowCustomizePanel={setShowCustomizePanel}
+          isHovering={isHovering}
+          setIsHovering={setIsHovering}
+          isHoveringControls={isHoveringControls}
+          showEffects={showEffects}
+          setShowEffects={setShowEffects}
+          autoRotate={autoRotate}
+          setAutoRotate={setAutoRotate}
+          isFlipped={isFlipped}
+          setIsFlipped={setIsFlipped}
+          showStats={showStats}
+          effectValues={effectValues}
+          selectedScene={selectedScene}
+          selectedLighting={selectedLighting}
+          materialSettings={materialSettings}
+          overallBrightness={overallBrightness}
+          interactiveLighting={interactiveLighting}
+          mousePosition={mousePosition}
+          rotation={rotation}
+          zoom={zoom}
+          isDragging={isDragging}
+          frameStyles={getFrameStyles()}
+          enhancedEffectStyles={getEnhancedEffectStyles()}
+          SurfaceTexture={SurfaceTexture}
+          environmentControls={environmentControls}
+          containerRef={containerRef}
+          cardContainerRef={cardContainerRef}
+          handleMouseMove={handleMouseMove}
+          handleDragStart={handleDragStart}
+          handleDrag={handleDrag}
+          handleDragEnd={handleDragEnd}
+          handleZoom={handleZoom}
+          handleResetWithEffects={handleResetWithEffects}
+          handleResetCamera={handleResetCamera}
+          onCardClick={onCardClick}
+          hasMultipleCards={hasMultipleCards}
+          solidCardTransition={solidCardTransition}
+        />
+      </ViewerActionsManager>
 
-        // Studio Effects Bridge - NOW receives actual effect values
-        const studioBridge = useStudioEffectsBridge({
-          selectedScene: viewerState.selectedScene,
-          selectedLighting: viewerState.selectedLighting,
-          effectValues: effectValues, // Pass actual effect values here
-          materialSettings: viewerState.materialSettings,
-          overallBrightness: viewerState.overallBrightness,
-          interactiveLighting: viewerState.interactiveLighting
-        });
+      {/* Studio Panel with Environment Controls */}
+      <StudioPanel
+        isVisible={showCustomizePanel}
+        onClose={() => setShowCustomizePanel(false)}
+        selectedScene={selectedScene}
+        selectedLighting={selectedLighting}
+        effectValues={effectValues}
+        overallBrightness={overallBrightness}
+        interactiveLighting={interactiveLighting}
+        materialSettings={materialSettings}
+        environmentControls={environmentControls}
+        onSceneChange={setSelectedScene}
+        onLightingChange={setSelectedLighting}
+        onEffectChange={handleManualEffectChange}
+        onBrightnessChange={setOverallBrightness}
+        onInteractiveLightingToggle={() => setInteractiveLighting(!interactiveLighting)}
+        onMaterialSettingsChange={setMaterialSettings}
+        selectedPresetId={selectedPresetId}
+        onPresetSelect={setSelectedPresetId}
+        onApplyCombo={handleApplyCombo}
+        isApplyingPreset={isApplyingPreset}
+        onResetCamera={handleResetCamera}
+        solidCardTransition={solidCardTransition}
+        onSolidCardTransitionChange={setSolidCardTransition}
+      />
 
-        console.log('🌉 Studio Bridge Output:', studioBridge.bridgedEffects);
-
-        // Export functionality
-        const { exportCard, isExporting, exportProgress } = useCardExport({
-          cardRef: cardContainerRef,
-          card,
-          onRotationChange: setRotation,
-          onEffectChange: handleEffectChange,
-          effectValues: studioBridge.bridgedEffects
-        });
-
-        // Enhanced reset that includes all state
-        const handleResetWithEffects = () => {
-          handleReset();
-          resetAllEffects();
-        };
-
-        // Enhanced combo application that properly updates effects
-        const handleApplyCombo = (combo: any) => {
-          console.log('🚀 Applying style combo with effects:', combo.id, combo.effects);
-          
-          // Set the preset ID first
-          actions.setSelectedPresetId(combo.id);
-          
-          // Apply the preset effects through the ViewerEffectsManager
-          applyPreset(combo.effects, combo.id);
-          
-          // Apply scene and lighting changes if present
-          if (combo.scene) {
-            actions.setSelectedScene(combo.scene);
-          }
-          if (combo.lighting) {
-            actions.setSelectedLighting(combo.lighting);
-          }
-        };
-
-        // Use the bridged effects for the card rendering
-        const finalEffectValues = studioBridge.bridgedEffects;
-
-        return (
-          <>
-            <ViewerActionsManager
-              card={card}
-              onShare={onShare}
-              effectValues={finalEffectValues}
-              handleEffectChange={handleEffectChange}
-              resetAllEffects={resetAllEffects}
-              applyPreset={applyPreset}
-              validateEffectState={validateEffectState}
-              isApplyingPreset={isApplyingPreset}
-              setSelectedPresetId={actions.setSelectedPresetId}
-              setSelectedScene={actions.setSelectedScene}
-              setSelectedLighting={actions.setSelectedLighting}
-              setShowExportDialog={actions.setShowExportDialog}
-            >
-              <ViewerLayout
-                card={card}
-                cards={cards}
-                currentCardIndex={currentCardIndex}
-                onCardChange={onCardChange}
-                onClose={onClose}
-                isFullscreen={isFullscreen}
-                showCustomizePanel={viewerState.showCustomizePanel}
-                setShowCustomizePanel={actions.setShowCustomizePanel}
-                isHovering={isHovering}
-                setIsHovering={setIsHovering}
-                isHoveringControls={isHoveringControls}
-                showEffects={showEffects}
-                setShowEffects={setShowEffects}
-                autoRotate={autoRotate}
-                setAutoRotate={setAutoRotate}
-                isFlipped={isFlipped}
-                setIsFlipped={setIsFlipped}
-                showStats={showStats}
-                effectValues={finalEffectValues}
-                selectedScene={viewerState.selectedScene}
-                selectedLighting={viewerState.selectedLighting}
-                materialSettings={viewerState.materialSettings}
-                overallBrightness={viewerState.overallBrightness}
-                interactiveLighting={studioBridge.enhancedInteractiveLighting}
-                mousePosition={mousePosition}
-                rotation={rotation}
-                zoom={zoom}
-                isDragging={isDragging}
-                frameStyles={frameStyles}
-                enhancedEffectStyles={enhancedEffectStyles}
-                SurfaceTexture={<div style={surfaceTextureStyles} />}
-                environmentControls={viewerState.environmentControls}
-                containerRef={containerRef}
-                cardContainerRef={cardContainerRef}
-                handleMouseMove={handleMouseMove}
-                handleDragStart={handleDragStart}
-                handleDrag={handleDrag}
-                handleDragEnd={handleDragEnd}
-                handleZoom={handleZoom}
-                handleResetWithEffects={handleResetWithEffects}
-                handleResetCamera={handleResetCamera}
-                onCardClick={onCardClick}
-                hasMultipleCards={hasMultipleCards}
-                solidCardTransition={viewerState.solidCardTransition}
-                dynamicBrightness={studioBridge.dynamicBrightness}
-                activeEffectsCount={studioBridge.activeEffectsCount}
-              />
-            </ViewerActionsManager>
-
-            {/* Studio Panel with proper effect handling */}
-            <StudioPanel
-              isVisible={viewerState.showCustomizePanel}
-              onClose={() => actions.setShowCustomizePanel(false)}
-              selectedScene={viewerState.selectedScene}
-              selectedLighting={viewerState.selectedLighting}
-              effectValues={finalEffectValues}
-              overallBrightness={viewerState.overallBrightness}
-              interactiveLighting={viewerState.interactiveLighting}
-              materialSettings={viewerState.materialSettings}
-              environmentControls={viewerState.environmentControls}
-              onSceneChange={actions.setSelectedScene}
-              onLightingChange={actions.setSelectedLighting}
-              onEffectChange={handleEffectChange}
-              onBrightnessChange={actions.setOverallBrightness}
-              onInteractiveLightingToggle={() => actions.setInteractiveLighting(!viewerState.interactiveLighting)}
-              onMaterialSettingsChange={actions.setMaterialSettings}
-              selectedPresetId={viewerState.selectedPresetId}
-              onPresetSelect={actions.setSelectedPresetId}
-              onApplyCombo={handleApplyCombo}
-              isApplyingPreset={isApplyingPreset}
-              onResetCamera={handleResetCamera}
-              solidCardTransition={viewerState.solidCardTransition}
-              onSolidCardTransitionChange={actions.setSolidCardTransition}
-            />
-
-            {/* Export Options Dialog */}
-            <ExportOptionsDialog
-              isOpen={viewerState.showExportDialog}
-              onClose={() => actions.setShowExportDialog(false)}
-              onExport={exportCard}
-              isExporting={isExporting}
-              exportProgress={exportProgress}
-              cardTitle={card.title}
-            />
-          </>
-        );
-      }}
-    </ViewerEffectsManager>
+      {/* Export Options Dialog */}
+      <ExportOptionsDialog
+        isOpen={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        onExport={exportCard}
+        isExporting={isExporting}
+        exportProgress={exportProgress}
+        cardTitle={card.title}
+      />
+    </>
   );
 };
 

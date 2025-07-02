@@ -1,48 +1,52 @@
 
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Bug } from "lucide-react";
 
-export const NavLinks: React.FC = () => {
+export const NavLinks = () => {
   const location = useLocation();
   
-  const getLinkClassName = (path: string) => {
-    const isActive = location.pathname === path;
-    return `text-white hover:text-crd-green transition-colors duration-200 font-medium ${
-      isActive ? 'text-crd-green' : ''
-    }`;
-  };
-
+  const isActive = (path: string) => location.pathname === path;
+  
   return (
-    <div className="hidden md:flex items-center space-x-8">
-      <Link
-        to="/create"
-        className={getLinkClassName('/create')}
+    <div className="flex items-center gap-8">
+      <Link 
+        to="/" 
+        className={`nav-item ${isActive('/') ? 'active' : ''}`}
       >
-        Create
+        Home
       </Link>
-      <Link
-        to="/crdmkr"
-        className={getLinkClassName('/crdmkr')}
+      <Link 
+        to="/studio" 
+        className={`nav-item ${location.pathname.startsWith('/studio') ? 'active' : ''}`}
       >
-        CRDMKR
+        Studio
       </Link>
-      <Link
-        to="/cards"
-        className={getLinkClassName('/cards')}
+      <Link 
+        to="/cards" 
+        className={`nav-item ${location.pathname.startsWith('/cards') ? 'active' : ''}`}
       >
         Cards
       </Link>
-      <Link
-        to="/gallery"
-        className={getLinkClassName('/gallery')}
+      <Link 
+        to="/gallery" 
+        className={`nav-item ${isActive('/gallery') ? 'active' : ''}`}
       >
         Gallery
       </Link>
-      <Link
-        to="/studio"
-        className={getLinkClassName('/studio')}
+      <Link 
+        to="/creators" 
+        className={`nav-item ${isActive('/creators') ? 'active' : ''}`}
       >
-        Studio
+        Creators
+      </Link>
+      <Link 
+        to="/debug-detection" 
+        className={`nav-item ${isActive('/debug-detection') ? 'active' : ''} flex items-center gap-2`}
+        title="Debug Card Detection"
+      >
+        <Bug className="w-4 h-4" />
+        Debug
       </Link>
     </div>
   );

@@ -1,28 +1,37 @@
 
 import { useAuth } from '@/features/auth/providers/AuthProvider';
-import { useProfile } from '@/hooks/useProfile';
+import { useQuery } from '@tanstack/react-query';
+import type { User } from '@/types/user';
 
 export const useUser = () => {
   const { user: authUser, loading: authLoading } = useAuth();
-  const { profile, isLoading: profileLoading, error } = useProfile(authUser?.id);
 
-  // Combine auth user with profile data
-  const user = authUser && profile ? {
-    id: authUser.id,
-    email: authUser.email || '',
-    username: profile.username || authUser.email?.split('@')[0] || '',
-    full_name: profile.full_name || '',
-    avatar_url: profile.avatar_url || '',
-    bio: profile.bio || '',
-    team_id: '',
-    createdAt: profile.created_at || new Date().toISOString(),
-    preferences: profile.preferences || null,
-    profileImage: profile.avatar_url || '',
-  } : null;
+  const { data: user, isLoading: profileLoading, error } = useQuery({
+    queryKey: ['profile', authUser?.id],
+    queryFn: async () => {
+      if (!authUser) return null;
+      
+      // For now, return mock user data based on the auth user
+      // Once database tables are set up, this will fetch from Supabase
+      return {
+        id: authUser.id,
+        email: authUser.email || '',
+        username: authUser.email?.split('@')[0] || '', // Extract username from email
+        full_name: '',
+        avatar_url: '',
+        bio: '',
+        team_id: '',
+        createdAt: new Date().toISOString(),
+        preferences: null,
+        profileImage: '',
+      } as User;
+    },
+    enabled: !!authUser,
+  });
 
   return { 
     user, 
     loading: authLoading || profileLoading, 
-    error: error ? new Error(error.message || 'Profile error') : null 
+    error: error ? new Error(error.message) : null 
   };
 };

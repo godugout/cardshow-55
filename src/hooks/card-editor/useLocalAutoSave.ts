@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { localCardStorage } from '@/lib/localCardStorage';
 import { useCustomAuth } from '@/features/auth/hooks/useCustomAuth';
 import { supabase } from '@/lib/supabase-client';
-import type { CardData } from '@/types/card';
+import type { CardData } from './types';
 
 export const useLocalAutoSave = (
   cardData: CardData,
@@ -57,7 +57,7 @@ export const useLocalAutoSave = (
     }
 
     const localCard = localCardStorage.getCard(cardId);
-    if (!localCard) {
+    if (!localCard || !localCard.needsSync) {
       return;
     }
 
@@ -83,8 +83,11 @@ export const useLocalAutoSave = (
             thumbnail_url: localCard.thumbnail_url,
             rarity: localCard.rarity,
             tags: localCard.tags,
-            is_public: localCard.visibility === 'public',
+            is_public: localCard.is_public || false,
             template_id: localCard.template_id && localCard.template_id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) ? localCard.template_id : null,
+            creator_attribution: localCard.creator_attribution,
+            publishing_options: localCard.publishing_options,
+            print_metadata: localCard.print_metadata,
             updated_at: new Date().toISOString(),
           })
           .eq('id', cardId);
@@ -104,15 +107,19 @@ export const useLocalAutoSave = (
             thumbnail_url: localCard.thumbnail_url,
             rarity: localCard.rarity,
             tags: localCard.tags,
-            is_public: localCard.visibility === 'public',
+            is_public: localCard.is_public || false,
             template_id: localCard.template_id && localCard.template_id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) ? localCard.template_id : null,
+            creator_attribution: localCard.creator_attribution,
+            publishing_options: localCard.publishing_options,
             verification_status: 'pending',
-            print_metadata: localCard.print_metadata || {}
+            print_metadata: localCard.print_metadata
           });
         
         if (error) throw error;
       }
 
+      // Mark as synced
+      localCardStorage.markAsSynced(cardId);
       toast.success('Card synced to cloud', { duration: 2000 });
       
     } catch (error) {

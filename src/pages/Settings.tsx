@@ -1,340 +1,450 @@
 
-import React, { useState } from 'react';
-import { useAuth } from '@/features/auth/providers/AuthProvider';
-import { useProfile } from '@/hooks/useProfile';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import React, { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { LoadingState } from '@/components/common/LoadingState';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { toast } from 'sonner';
-import { User, Mail, Globe, MapPin, Save, Eye, EyeOff } from 'lucide-react';
+import { Bell, Shield, Palette, Globe, User, Save } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useUser } from '@/hooks/use-user';
+import { Label } from '@/components/ui/label';
+import { supabase } from '@/lib/supabase-client';
+import { BatchMediaUploader } from '@/components/media/BatchMediaUploader';
 
 interface UserPreferences {
-  darkMode?: boolean;
-  emailNotifications?: boolean;
-  pushNotifications?: boolean;
-  profileVisibility?: boolean;
-  showCardValue?: boolean;
-  compactView?: boolean;
+  darkMode: boolean;
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  profileVisibility: boolean;
+  showCardValue: boolean;
+  compactView: boolean;
 }
 
 const Settings = () => {
-  const { user, signOut } = useAuth();
-  const { profile, updateProfile, isLoading, isUpdating } = useProfile(user?.id);
-  
-  const [formData, setFormData] = useState({
-    username: profile?.username || '',
-    full_name: profile?.full_name || '',
-    bio: profile?.bio || '',
-    website: profile?.website || '',
-    location: profile?.location || '',
-    avatar_url: profile?.avatar_url || ''
-  });
+  const { toast } = useToast();
+  const { user } = useUser();
+  const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
+  const [uploading, setUploading] = useState(false);
 
-  const getPreferencesAsObject = (preferences: any): UserPreferences => {
-    if (!preferences) return {};
-    if (typeof preferences === 'string') {
-      try {
-        return JSON.parse(preferences);
-      } catch {
-        return {};
-      }
-    }
-    if (typeof preferences === 'object') {
-      return preferences as UserPreferences;
-    }
-    return {};
-  };
+  // Form fields
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [bio, setBio] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  const profilePreferences = getPreferencesAsObject(profile?.preferences);
-
+  // Preferences
   const [preferences, setPreferences] = useState<UserPreferences>({
-    darkMode: profilePreferences.darkMode || false,
-    emailNotifications: profilePreferences.emailNotifications || true,
-    pushNotifications: profilePreferences.pushNotifications || true,
-    profileVisibility: profilePreferences.profileVisibility || true,
-    showCardValue: profilePreferences.showCardValue || true,
-    compactView: profilePreferences.compactView || false
+    darkMode: false,
+    emailNotifications: true,
+    pushNotifications: true,
+    profileVisibility: true,
+    showCardValue: true,
+    compactView: false
   });
 
-  // Update form data when profile loads
-  React.useEffect(() => {
-    if (profile) {
-      setFormData({
-        username: profile.username || '',
-        full_name: profile.full_name || '',
-        bio: profile.bio || '',
-        website: profile.website || '',
-        location: profile.location || '',
-        avatar_url: profile.avatar_url || ''
-      });
-      
-      const updatedPreferences = getPreferencesAsObject(profile.preferences);
-      setPreferences({
-        darkMode: updatedPreferences.darkMode || false,
-        emailNotifications: updatedPreferences.emailNotifications || true,
-        pushNotifications: updatedPreferences.pushNotifications || true,
-        profileVisibility: updatedPreferences.profileVisibility || true,
-        showCardValue: updatedPreferences.showCardValue || true,
-        compactView: updatedPreferences.compactView || false
-      });
+  useEffect(() => {
+    if (user) {
+      fetchUserProfile();
     }
-  }, [profile]);
+  }, [user]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const fetchUserProfile = async () => {
+    if (!user) return;
     
     try {
-      await updateProfile({
-        ...formData,
-        preferences: preferences
+      setLoading(true);
+      
+      // Try Supabase first
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+          
+        if (!error && data) {
+          setProfile(data);
+          setUsername(data.username || '');
+          setBio(data.bio || '');
+          setAvatarUrl(data.avatar_url);
+          
+          // Try to get user preferences
+          const { data: prefsData, error: prefsError } = await supabase
+            .from('ui_preferences')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+            
+          if (!prefsError && prefsData) {
+            setPreferences({
+              darkMode: prefsData.theme_variant === 'dark',
+              emailNotifications: true,
+              pushNotifications: true,
+              profileVisibility: true,
+              showCardValue: true,
+              compactView: prefsData.reduced_motion || false
+            });
+          }
+        }
+      } catch (e) {
+        console.error('Supabase error, falling back to mock:', e);
+      }
+
+      // Fallback to mock API if Supabase fails
+      if (!profile && user) {
+        try {
+          const response = await fetch(`/api/users/${user.id}`);
+          const userData = await response.json();
+          
+          setProfile(userData);
+          setUsername(userData.username || '');
+          setEmail(userData.email || '');
+          setBio(userData.bio || '');
+          setAvatarUrl(userData.profileImage);
+          
+          // Set some default preferences
+          setPreferences({
+            darkMode: false,
+            emailNotifications: true,
+            pushNotifications: true,
+            profileVisibility: true,
+            showCardValue: true,
+            compactView: false
+          });
+        } catch (error) {
+          console.error('Failed to fetch user profile:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load your profile',
+        variant: 'destructive'
       });
-    } catch (error) {
-      console.error('Settings update error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSignOut = async () => {
+  const handleSaveChanges = async () => {
+    if (!user) return;
+    
     try {
-      await signOut();
-      toast.success('Signed out successfully');
+      setLoading(true);
+      
+      // Build update data
+      const profileData = {
+        username,
+        bio,
+        avatar_url: avatarUrl
+      };
+      
+      // Try Supabase first
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update(profileData)
+          .eq('id', user.id);
+          
+        if (error) throw error;
+        
+        // Update preferences
+        const preferencesData = {
+          theme_variant: preferences.darkMode ? 'dark' : 'default',
+          reduced_motion: preferences.compactView
+        };
+        
+        const { data: existingPrefs } = await supabase
+          .from('ui_preferences')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+          
+        if (existingPrefs) {
+          await supabase
+            .from('ui_preferences')
+            .update(preferencesData)
+            .eq('id', existingPrefs.id);
+        } else {
+          await supabase
+            .from('ui_preferences')
+            .insert({
+              user_id: user.id,
+              ...preferencesData
+            });
+        }
+      } catch (e) {
+        console.error('Supabase error, falling back to mock:', e);
+        
+        // Fallback to mock API
+        await fetch(`/api/users/${user.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username,
+            email,
+            bio,
+            profileImage: avatarUrl,
+            preferences: preferences
+          })
+        });
+      }
+      
+      toast({
+        title: 'Success!',
+        description: 'Your profile has been updated',
+      });
+      
+      // Refresh profile data
+      await fetchUserProfile();
     } catch (error) {
-      toast.error('Error signing out');
+      console.error('Failed to save profile:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save your profile',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (isLoading) {
-    return <LoadingState message="Loading settings..." fullPage size="lg" />;
-  }
+  const handleAvatarUpload = async (mediaItems: any[]) => {
+    if (mediaItems.length > 0) {
+      setAvatarUrl(mediaItems[0].url);
+      setUploading(false);
+    }
+  };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
-        <Card className="bg-crd-dark border-crd-mediumGray p-6 max-w-md w-full mx-4">
-          <CardContent className="text-center">
-            <h2 className="text-2xl font-bold text-crd-white mb-4">Please sign in to access settings</h2>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const togglePreference = (key: keyof UserPreferences) => {
+    setPreferences({
+      ...preferences,
+      [key]: !preferences[key]
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-crd-darkest">
-      <div className="container mx-auto p-6 max-w-4xl">
+    <div className="min-h-screen bg-[#141416]">
+      <div className="container mx-auto p-6 max-w-3xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-crd-white mb-2">Settings</h1>
-          <p className="text-crd-lightGray">Manage your account and preferences</p>
+          <h1 className="text-3xl font-bold text-[#FCFCFD]">Settings</h1>
+          <p className="text-[#777E90]">Manage your account preferences</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profile Settings */}
-          <div className="lg:col-span-2">
-            <Card className="bg-crd-dark border-crd-mediumGray">
-              <CardHeader>
-                <CardTitle className="text-crd-white flex items-center">
-                  <User className="w-5 h-5 mr-2" />
-                  Profile Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Avatar */}
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="w-20 h-20">
-                      <AvatarImage src={formData.avatar_url} alt={formData.full_name} />
-                      <AvatarFallback className="bg-crd-mediumGray text-crd-white text-xl">
-                        {(formData.full_name || formData.username)?.[0]?.toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <Label htmlFor="avatar_url" className="text-crd-lightGray">Avatar URL</Label>
-                      <Input
-                        id="avatar_url"
-                        value={formData.avatar_url}
-                        onChange={(e) => setFormData(prev => ({ ...prev, avatar_url: e.target.value }))}
-                        className="bg-crd-mediumGray border-crd-lightGray text-crd-white"
-                        placeholder="https://example.com/avatar.jpg"
+        <div className="space-y-6">
+          <Card className="bg-[#23262F] border-[#353945]">
+            <CardHeader>
+              <CardTitle className="text-[#FCFCFD] flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Profile Information
+              </CardTitle>
+              <CardDescription className="text-[#777E90]">
+                Update your personal information
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-[#FCFCFD]">Username</Label>
+                <Input
+                  id="username"
+                  placeholder="Your username"
+                  className="bg-[#353945] border-[#353945] text-[#FCFCFD]"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-[#FCFCFD]">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Your email"
+                  className="bg-[#353945] border-[#353945] text-[#FCFCFD]"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading || user?.email !== undefined}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="bio" className="text-[#FCFCFD]">Bio</Label>
+                <Input
+                  id="bio"
+                  placeholder="Tell us about yourself"
+                  className="bg-[#353945] border-[#353945] text-[#FCFCFD]"
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-[#FCFCFD]">Profile Picture</Label>
+                <div className="flex items-center gap-4">
+                  <div className="h-16 w-16 rounded-full overflow-hidden bg-[#353945] flex items-center justify-center">
+                    {avatarUrl ? (
+                      <img 
+                        src={avatarUrl} 
+                        alt="Avatar" 
+                        className="h-full w-full object-cover"
                       />
-                    </div>
-                  </div>
-
-                  {/* Username */}
-                  <div>
-                    <Label htmlFor="username" className="text-crd-lightGray">Username</Label>
-                    <Input
-                      id="username"
-                      value={formData.username}
-                      onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                      className="bg-crd-mediumGray border-crd-lightGray text-crd-white"
-                      required
-                    />
-                  </div>
-
-                  {/* Full Name */}
-                  <div>
-                    <Label htmlFor="full_name" className="text-crd-lightGray">Full Name</Label>
-                    <Input
-                      id="full_name"
-                      value={formData.full_name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                      className="bg-crd-mediumGray border-crd-lightGray text-crd-white"
-                    />
-                  </div>
-
-                  {/* Bio */}
-                  <div>
-                    <Label htmlFor="bio" className="text-crd-lightGray">Bio</Label>
-                    <Textarea
-                      id="bio"
-                      value={formData.bio}
-                      onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                      className="bg-crd-mediumGray border-crd-lightGray text-crd-white"
-                      rows={3}
-                      placeholder="Tell us about yourself..."
-                    />
-                  </div>
-
-                  {/* Website */}
-                  <div>
-                    <Label htmlFor="website" className="text-crd-lightGray flex items-center">
-                      <Globe className="w-4 h-4 mr-1" />
-                      Website
-                    </Label>
-                    <Input
-                      id="website"
-                      value={formData.website}
-                      onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-                      className="bg-crd-mediumGray border-crd-lightGray text-crd-white"
-                      placeholder="https://yourwebsite.com"
-                    />
-                  </div>
-
-                  {/* Location */}
-                  <div>
-                    <Label htmlFor="location" className="text-crd-lightGray flex items-center">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      Location
-                    </Label>
-                    <Input
-                      id="location"
-                      value={formData.location}
-                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                      className="bg-crd-mediumGray border-crd-lightGray text-crd-white"
-                      placeholder="City, Country"
-                    />
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-crd-green hover:bg-crd-green/90 text-white"
-                    disabled={isUpdating}
-                  >
-                    {isUpdating ? (
-                      <>Saving...</>
                     ) : (
-                      <>
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Changes
-                      </>
+                      <User className="h-8 w-8 text-[#777E90]" />
                     )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Preferences */}
-          <div className="space-y-6">
-            <Card className="bg-crd-dark border-crd-mediumGray">
-              <CardHeader>
-                <CardTitle className="text-crd-white">Preferences</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-crd-white">Email Notifications</Label>
-                    <p className="text-sm text-crd-lightGray">Receive email updates</p>
                   </div>
-                  <Switch
-                    checked={preferences.emailNotifications}
-                    onCheckedChange={(checked) => 
-                      setPreferences(prev => ({ ...prev, emailNotifications: checked }))
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-crd-white flex items-center">
-                      <Eye className="w-4 h-4 mr-1" />
-                      Profile Visibility
-                    </Label>
-                    <p className="text-sm text-crd-lightGray">Make profile public</p>
+                  <div className="flex-1">
+                    <BatchMediaUploader
+                      onUploadComplete={handleAvatarUpload}
+                      onError={(error) => {
+                        console.error('Upload error:', error);
+                        toast({
+                          title: 'Upload Error',
+                          description: error.message,
+                          variant: 'destructive'
+                        });
+                        setUploading(false);
+                      }}
+                      memoryId="avatar"
+                      userId={user?.id || 'guest'}
+                      maxFiles={1}
+                    />
                   </div>
-                  <Switch
-                    checked={preferences.profileVisibility}
-                    onCheckedChange={(checked) => 
-                      setPreferences(prev => ({ ...prev, profileVisibility: checked }))
-                    }
-                  />
                 </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-crd-white">Show Card Values</Label>
-                    <p className="text-sm text-crd-lightGray">Display card prices</p>
-                  </div>
-                  <Switch
-                    checked={preferences.showCardValue}
-                    onCheckedChange={(checked) => 
-                      setPreferences(prev => ({ ...prev, showCardValue: checked }))
-                    }
-                  />
+          <Card className="bg-[#23262F] border-[#353945]">
+            <CardHeader>
+              <CardTitle className="text-[#FCFCFD] flex items-center gap-2">
+                <Bell className="h-5 w-5" />
+                Notifications
+              </CardTitle>
+              <CardDescription className="text-[#777E90]">
+                Manage how you receive notifications
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[#FCFCFD]">Email Notifications</p>
+                  <p className="text-sm text-[#777E90]">Receive updates via email</p>
                 </div>
+                <Switch 
+                  checked={preferences.emailNotifications}
+                  onCheckedChange={() => togglePreference('emailNotifications')}
+                  disabled={loading}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[#FCFCFD]">Push Notifications</p>
+                  <p className="text-sm text-[#777E90]">Receive notifications in-app</p>
+                </div>
+                <Switch 
+                  checked={preferences.pushNotifications}
+                  onCheckedChange={() => togglePreference('pushNotifications')}
+                  disabled={loading}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-crd-white">Compact View</Label>
-                    <p className="text-sm text-crd-lightGray">Condensed layout</p>
-                  </div>
-                  <Switch
-                    checked={preferences.compactView}
-                    onCheckedChange={(checked) => 
-                      setPreferences(prev => ({ ...prev, compactView: checked }))
-                    }
-                  />
+          <Card className="bg-[#23262F] border-[#353945]">
+            <CardHeader>
+              <CardTitle className="text-[#FCFCFD] flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Privacy
+              </CardTitle>
+              <CardDescription className="text-[#777E90]">
+                Manage your privacy settings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[#FCFCFD]">Profile Visibility</p>
+                  <p className="text-sm text-[#777E90]">Make your profile public</p>
                 </div>
-              </CardContent>
-            </Card>
+                <Switch 
+                  checked={preferences.profileVisibility}
+                  onCheckedChange={() => togglePreference('profileVisibility')}
+                  disabled={loading}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[#FCFCFD]">Show Card Value</p>
+                  <p className="text-sm text-[#777E90]">Display card values on your profile</p>
+                </div>
+                <Switch 
+                  checked={preferences.showCardValue}
+                  onCheckedChange={() => togglePreference('showCardValue')}
+                  disabled={loading}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Account Actions */}
-            <Card className="bg-crd-dark border-crd-mediumGray">
-              <CardHeader>
-                <CardTitle className="text-crd-white">Account</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2 text-crd-lightGray">
-                  <Mail className="w-4 h-4" />
-                  <span className="text-sm">{user.email}</span>
+          <Card className="bg-[#23262F] border-[#353945]">
+            <CardHeader>
+              <CardTitle className="text-[#FCFCFD] flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Display
+              </CardTitle>
+              <CardDescription className="text-[#777E90]">
+                Customize your interface
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[#FCFCFD]">Dark Mode</p>
+                  <p className="text-sm text-[#777E90]">Switch between light and dark mode</p>
                 </div>
-                
-                <Separator className="bg-crd-mediumGray" />
-                
-                <Button 
-                  onClick={handleSignOut}
-                  variant="destructive"
-                  className="w-full"
-                >
-                  Sign Out
-                </Button>
-              </CardContent>
-            </Card>
+                <Switch 
+                  checked={preferences.darkMode}
+                  onCheckedChange={() => togglePreference('darkMode')}
+                  disabled={loading}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[#FCFCFD]">Compact View</p>
+                  <p className="text-sm text-[#777E90]">Show more items per page</p>
+                </div>
+                <Switch 
+                  checked={preferences.compactView}
+                  onCheckedChange={() => togglePreference('compactView')}
+                  disabled={loading}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end gap-4">
+            <Button 
+              variant="outline" 
+              className="border-[#353945] text-[#FCFCFD]"
+              onClick={fetchUserProfile}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button 
+              className="bg-[#3772FF] hover:bg-[#3772FF]/90"
+              onClick={handleSaveChanges}
+              disabled={loading}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Save Changes
+            </Button>
           </div>
         </div>
       </div>

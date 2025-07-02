@@ -1,165 +1,124 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ErrorBoundary } from '@/components/common/ErrorBoundary';
-import { LoadingState } from '@/components/common/LoadingState';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { useAllCollections } from '@/hooks/useCollections';
 import { useCards } from '@/hooks/useCards';
-import { useCollections } from '@/hooks/useCollections';
-import { useCreators } from '@/hooks/useCreators';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CRDButton } from '@/components/ui/design-system/Button';
-import { Plus, Grid, List, Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { CardsGrid } from './Gallery/components/CardsGrid';
-import { CollectionsGrid } from './Gallery/components/CollectionsGrid';
-import { CreatorsGrid } from './Gallery/components/CreatorsGrid';
+import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
+import { GallerySection } from './Gallery/components/GallerySection';
 import { GalleryHeader } from './Gallery/components/GalleryHeader';
+import { CollectionsGrid } from './Gallery/components/CollectionsGrid';
+import { CardsGrid } from './Gallery/components/CardsGrid';
+import { useCardConversion } from './Gallery/hooks/useCardConversion';
+import { useGalleryActions } from './Gallery/hooks/useGalleryActions';
+import { EmptyState } from '@/components/shared/EmptyState';
+import { Plus } from 'lucide-react';
+import type { Tables } from '@/integrations/supabase/types';
+
+// Use the database type directly
+type DbCard = Tables<'cards'>;
 
 const Gallery = () => {
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedTab, setSelectedTab] = useState('cards');
+  const [activeTab, setActiveTab] = useState('featured');
   
-  const { cards, loading: cardsLoading } = useCards();
-  const { collections, isLoading: collectionsLoading } = useCollections();
-  const { popularCreators: creators, loading: creatorsLoading } = useCreators();
+  const { collections, loading: collectionsLoading } = useAllCollections(1, 6);
+  const { featuredCards, loading: cardsLoading } = useCards();
+  
+  const { convertCardsToCardData } = useCardConversion();
+  const {
+    selectedCardIndex,
+    showImmersiveViewer,
+    handleCardClick,
+    handleCardChange,
+    handleCloseViewer,
+    handleShareCard,
+    handleDownloadCard
+  } = useGalleryActions();
 
-  console.log('Gallery: Loaded with navigation via React Router');
+  // Convert cards to CardData format for the viewer
+  const convertedCards = convertCardsToCardData(featuredCards || []);
+  const currentCard = convertedCards[selectedCardIndex];
 
-  const handleCreateCard = () => {
-    console.log('Navigating to create card page');
-    navigate('/create');
+  const handleCreateCollection = () => {
+    // TODO: Implement collection creation
+    console.log('Create collection clicked');
   };
-
-  const handleViewCard = (card: any) => {
-    console.log('Navigating to studio for card:', card.id);
-    navigate(`/studio/${card.id}`);
-  };
-
-  const filteredCards = cards?.filter(card => 
-    card.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    card.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
-
-  const filteredCollections = collections?.filter(collection =>
-    collection.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
-
-  const filteredCreators = creators?.filter(creator =>
-    creator.username?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
 
   return (
-    <div className="min-h-screen bg-crd-darkest">
-      <ErrorBoundary>
-        <GalleryHeader 
-          activeTab={selectedTab} 
-          onTabChange={setSelectedTab}
-        />
-        
-        {/* Controls Bar */}
-        <div className="bg-crd-darker border-b border-crd-mediumGray/20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <div className="flex items-center gap-4 flex-1">
-                <div className="relative max-w-md flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-crd-lightGray" />
-                  <Input
-                    placeholder="Search cards, collections, creators..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-crd-mediumGray/20 border-crd-mediumGray/30 text-crd-white"
+    <div className="container mx-auto p-6 max-w-7xl bg-[#121212]">
+      <GalleryHeader activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsContent value="featured" className="mt-8">
+          {/* Simplified Collections Section */}
+          <GallerySection title="Collections">
+            {collections && collections.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+                <CollectionsGrid collections={collections.slice(0, 5) || []} loading={collectionsLoading} />
+                <div className="flex items-center justify-center">
+                  <EmptyState
+                    title="Create Collection"
+                    description="Start your own collection of cards"
+                    icon={<Plus className="h-12 w-12 text-crd-mediumGray mb-4" />}
+                    action={{
+                      label: "Create Collection",
+                      onClick: handleCreateCollection,
+                      icon: <Plus className="mr-2 h-4 w-4" />
+                    }}
                   />
                 </div>
-                
-                <div className="flex items-center gap-2">
-                  <CRDButton
-                    variant={viewMode === 'grid' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setViewMode('grid')}
-                  >
-                    <Grid className="w-4 h-4" />
-                  </CRDButton>
-                  <CRDButton
-                    variant={viewMode === 'list' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setViewMode('list')}
-                  >
-                    <List className="w-4 h-4" />
-                  </CRDButton>
-                </div>
               </div>
-              
-              <CRDButton onClick={handleCreateCard} className="bg-crd-green hover:bg-crd-green/90 text-black">
-                <Plus className="w-4 h-4 mr-2" />
-                Create Card
-              </CRDButton>
-            </div>
+            ) : (
+              <EmptyState
+                title="No Collections Yet"
+                description="Be the first to create a collection and showcase your cards"
+                action={{
+                  label: "Create Collection",
+                  onClick: handleCreateCollection,
+                  icon: <Plus className="mr-2 h-4 w-4" />
+                }}
+              />
+            )}
+          </GallerySection>
+
+          {/* Main Focus: Featured Cards */}
+          <GallerySection title="Featured Cards">
+            <CardsGrid 
+              cards={featuredCards || []} 
+              loading={cardsLoading}
+              onCardClick={(card: DbCard) => handleCardClick(card, featuredCards || [])}
+            />
+          </GallerySection>
+        </TabsContent>
+        
+        <TabsContent value="trending">
+          <div className="py-16">
+            <p className="text-[#777E90] text-center">Trending content coming soon</p>
           </div>
-        </div>
+        </TabsContent>
+        
+        <TabsContent value="new">
+          <div className="py-16">
+            <p className="text-[#777E90] text-center">New content coming soon</p>
+          </div>
+        </TabsContent>
+      </Tabs>
 
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-crd-darker border border-crd-mediumGray/20">
-              <TabsTrigger value="cards" className="data-[state=active]:bg-crd-green data-[state=active]:text-black">
-                Cards
-                {filteredCards.length > 0 && (
-                  <Badge variant="outline" className="ml-2">{filteredCards.length}</Badge>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="collections" className="data-[state=active]:bg-crd-green data-[state=active]:text-black">
-                Collections
-                {filteredCollections.length > 0 && (
-                  <Badge variant="outline" className="ml-2">{filteredCollections.length}</Badge>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="creators" className="data-[state=active]:bg-crd-green data-[state=active]:text-black">
-                Creators
-                {filteredCreators.length > 0 && (
-                  <Badge variant="outline" className="ml-2">{filteredCreators.length}</Badge>
-                )}
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="cards" className="mt-6">
-              {cardsLoading ? (
-                <LoadingState message="Loading cards..." />
-              ) : (
-                <CardsGrid 
-                  cards={filteredCards} 
-                  loading={cardsLoading}
-                  onCardClick={handleViewCard}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="collections" className="mt-6">
-              {collectionsLoading ? (
-                <LoadingState message="Loading collections..." />
-              ) : (
-                <CollectionsGrid 
-                  collections={filteredCollections}
-                  loading={collectionsLoading}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="creators" className="mt-6">
-              {creatorsLoading ? (
-                <LoadingState message="Loading creators..." />
-              ) : (
-                <CreatorsGrid 
-                  creators={filteredCreators}
-                  loading={creatorsLoading}
-                />
-              )}
-            </TabsContent>
-          </Tabs>
-        </div>
-      </ErrorBoundary>
+      {/* Enhanced Immersive Card Viewer with Navigation */}
+      {showImmersiveViewer && currentCard && convertedCards.length > 0 && (
+        <ImmersiveCardViewer
+          card={currentCard}
+          cards={convertedCards}
+          currentCardIndex={selectedCardIndex}
+          onCardChange={handleCardChange}
+          isOpen={showImmersiveViewer}
+          onClose={handleCloseViewer}
+          onShare={() => handleShareCard(convertedCards)}
+          onDownload={() => handleDownloadCard(convertedCards)}
+          allowRotation={true}
+          showStats={true}
+          ambient={true}
+        />
+      )}
     </div>
   );
 };

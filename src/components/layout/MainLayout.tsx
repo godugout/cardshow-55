@@ -7,7 +7,7 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NotificationProvider } from '@/components/common/NotificationCenter';
 
 // Simple fallback component for when things go wrong
-const AppFallback: React.FC<{ error?: Error; resetError?: () => void }> = ({ error, resetError }) => (
+const AppFallback = ({ error }: { error?: Error }) => (
   <div className="min-h-screen bg-[#141416] flex items-center justify-center p-4">
     <div className="text-center max-w-md">
       <h1 className="text-2xl font-bold text-white mb-4">Loading Issue</h1>
@@ -23,25 +23,10 @@ const AppFallback: React.FC<{ error?: Error; resetError?: () => void }> = ({ err
         </details>
       )}
       <button 
-        onClick={resetError || (() => window.location.reload())} 
+        onClick={() => window.location.reload()} 
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         Reload App
-      </button>
-    </div>
-  </div>
-);
-
-const PageFallback: React.FC<{ error?: Error; resetError?: () => void }> = ({ error, resetError }) => (
-  <div className="min-h-screen bg-[#141416] flex items-center justify-center">
-    <div className="text-center text-white">
-      <h2 className="text-xl mb-4">Page Loading Error</h2>
-      <p className="text-gray-400 mb-4">This page encountered an issue.</p>
-      <button 
-        onClick={resetError || (() => window.location.href = '/')}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Go Home
       </button>
     </div>
   </div>
@@ -98,9 +83,29 @@ export const MainLayout = () => {
 
   return (
     <NotificationProvider>
-      <ErrorBoundary fallback={AppFallback}>
+      <ErrorBoundary 
+        fallback={<AppFallback />}
+        onError={(error, errorInfo) => {
+          console.error('MainLayout Error Boundary caught error:', error, errorInfo);
+        }}
+      >
         <Navbar />
-        <ErrorBoundary fallback={PageFallback}>
+        <ErrorBoundary 
+          fallback={
+            <div className="min-h-screen bg-[#141416] flex items-center justify-center">
+              <div className="text-center text-white">
+                <h2 className="text-xl mb-4">Page Loading Error</h2>
+                <p className="text-gray-400 mb-4">This page encountered an issue.</p>
+                <button 
+                  onClick={() => window.location.href = '/'}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                >
+                  Go Home
+                </button>
+              </div>
+            </div>
+          }
+        >
           <div className="outlet-container">
             <Outlet />
           </div>

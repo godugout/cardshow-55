@@ -27,20 +27,8 @@ export interface PublishingOptions {
   };
 }
 
-export interface DesignTemplate {
-  id: string;
-  name: string;
-  category: string;
-  preview_url?: string;
-  description?: string;
-  template_data?: Record<string, any>;
-  is_premium?: boolean;
-  usage_count?: number;
-  tags?: string[];
-}
-
 export interface CardData {
-  id: string;
+  id?: string;
   title: string;
   description?: string;
   rarity: CardRarity;
@@ -63,9 +51,4 @@ export interface CardData {
   marketplace_listing?: boolean;
   crd_catalog_inclusion?: boolean;
   print_available?: boolean;
-  view_count?: number;
-  created_at?: string;
-  type?: string;
-  series?: string;
-  isLocal?: boolean;
 }

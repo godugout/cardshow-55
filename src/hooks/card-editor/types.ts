@@ -1,27 +1,81 @@
 
-export interface CardElement {
-  id: string;
-  type: 'text' | 'image' | 'shape';
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  content?: string;
-  src?: string;
-  style?: Record<string, any>;
-}
+export type CardRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
-export interface CardTemplate {
+export type CardVisibility = 'private' | 'public' | 'shared';
+
+export interface DesignTemplate {
   id: string;
   name: string;
   category: string;
-  elements: CardElement[];
-  thumbnail?: string;
+  description?: string;
+  preview_url?: string;
+  template_data: Record<string, any>;
+  is_premium: boolean;
+  usage_count: number;
+  tags: string[];
 }
 
-export interface EditorState {
-  selectedElement: string | null;
-  zoom: number;
-  canvasSize: { width: number; height: number };
-  isPreviewMode: boolean;
+export interface Shop {
+  id: string;
+  name: string;
+  description?: string;
+  logo_url?: string;
+  banner_url?: string;
+  specialties: string[];
+  shop_status: 'active' | 'inactive' | 'under_review';
+  verification_status: 'unverified' | 'pending' | 'verified';
+}
+
+export interface CreatorAttribution {
+  creator_name?: string;
+  creator_id?: string;
+  collaboration_type?: 'solo' | 'collaboration' | 'commission';
+  additional_credits?: Array<{
+    name: string;
+    role: string;
+  }>;
+}
+
+export interface PublishingOptions {
+  marketplace_listing: boolean;
+  crd_catalog_inclusion: boolean;
+  print_available: boolean;
+  pricing?: {
+    base_price?: number;
+    print_price?: number;
+    currency: string;
+  };
+  distribution?: {
+    limited_edition: boolean;
+    edition_size?: number;
+  };
+}
+
+export interface CardData {
+  id?: string;
+  title: string;
+  description?: string;
+  type?: string;
+  series?: string;
+  rarity: CardRarity;
+  tags: string[];
+  image_url?: string;
+  thumbnail_url?: string;
+  design_metadata: Record<string, any>;
+  visibility: CardVisibility;
+  is_public?: boolean;
+  shop_id?: string;
+  template_id?: string;
+  collection_id?: string;
+  team_id?: string;
+  creator_attribution: CreatorAttribution;
+  publishing_options: PublishingOptions;
+  verification_status?: 'pending' | 'verified' | 'rejected';
+  print_metadata?: Record<string, any>;
+}
+
+export interface UseCardEditorOptions {
+  initialData?: Partial<CardData>;
+  autoSave?: boolean;
+  autoSaveInterval?: number;
 }

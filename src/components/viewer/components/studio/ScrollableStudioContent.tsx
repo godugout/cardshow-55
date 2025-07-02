@@ -22,7 +22,6 @@ interface ScrollableStudioContentProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
-  onExpandEffects?: () => void; // Add the missing prop
 }
 
 export const ScrollableStudioContent: React.FC<ScrollableStudioContentProps> = (props) => {

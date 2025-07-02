@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React from "react";
 
 const formatCredits = (amount: number | string) => {
   const n = typeof amount === "number" ? amount : parseInt(amount);
@@ -17,7 +18,6 @@ interface CardItemProps {
   stock?: string;
   highestBid?: string;
   avatars?: string[];
-  onClick?: () => void;
 }
 
 export const CardItem: React.FC<CardItemProps> = ({
@@ -27,52 +27,15 @@ export const CardItem: React.FC<CardItemProps> = ({
   stock = "3 in stock",
   highestBid = "10",
   avatars = [],
-  onClick
 }) => {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-
-  // Provide a proper placeholder image
-  const placeholderImage = "/placeholder.svg";
-  
-  // Use placeholder if no image provided or if image failed to load
-  const displayImage = !image || imageError || image.startsWith('blob:') ? placeholderImage : image;
-
-  const handleImageLoad = () => {
-    setImageLoading(false);
-  };
-
-  const handleImageError = () => {
-    setImageError(true);
-    setImageLoading(false);
-  };
-
-  const handleClick = () => {
-    if (onClick) {
-      onClick();
-    }
-  };
-
   return (
-    <div 
-      className={`self-stretch flex min-w-60 flex-col items-stretch justify-center grow shrink w-[205px] my-auto ${onClick ? 'cursor-pointer hover:transform hover:scale-105 transition-transform duration-200' : ''}`}
-      onClick={handleClick}
-    >
+    <div className="self-stretch flex min-w-60 flex-col items-stretch justify-center grow shrink w-[205px] my-auto">
       <div className="justify-center items-stretch bg-[#CDB4DB] flex w-full flex-col overflow-hidden rounded-2xl">
-        <div className="aspect-[0.84] w-full relative bg-gray-200">
-          {imageLoading && (
-            <div className="absolute inset-0 bg-gray-300 animate-pulse rounded-t-2xl"></div>
-          )}
-          <img
-            src={displayImage}
-            className={`aspect-[0.84] object-cover w-full rounded-t-2xl transition-opacity duration-200 ${
-              imageLoading ? 'opacity-0' : 'opacity-100'
-            }`}
-            alt={title}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-          />
-        </div>
+        <img
+          src={image}
+          className="aspect-[0.84] object-contain w-full"
+          alt={title}
+        />
       </div>
       <div className="flex w-full flex-col items-stretch justify-center py-5 rounded-[0px_0px_16px_16px]">
         <div className="flex w-full items-center gap-1.5 font-semibold justify-between">

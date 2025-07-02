@@ -42,7 +42,7 @@ export const useAuthState = () => {
           } else {
             // Auto-create dev session
             console.log('🔧 Development: Creating new dev session');
-            const { user, session, error } = devAuthService.createDevUserSession();
+            const { user, session, error } = await devAuthService.createDevUserSession();
             if (mounted && user && session) {
               console.log('🔧 Development: Dev session created for', user.email);
               setAuthState({

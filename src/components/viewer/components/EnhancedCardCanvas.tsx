@@ -1,6 +1,6 @@
 
 import React, { useRef, useState } from 'react';
-import type { CardData } from '@/types/card';
+import type { CardData } from '@/hooks/useCardEditor';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { EnhancedCardContainer } from './EnhancedCardContainer';

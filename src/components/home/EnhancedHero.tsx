@@ -1,9 +1,10 @@
 
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 import { useCards } from "@/hooks/useCards";
+import { ImmersiveCardViewer } from "@/components/viewer/ImmersiveCardViewer";
 import { useGalleryActions } from "@/pages/Gallery/hooks/useGalleryActions";
 import { useCardConversion } from "@/pages/Gallery/hooks/useCardConversion";
 import type { Tables } from '@/integrations/supabase/types';
@@ -14,17 +15,19 @@ type DbCard = Tables<'cards'>;
 export const EnhancedHero: React.FC = () => {
   const { containerPadding, isMobile } = useResponsiveLayout();
   const { featuredCards, loading } = useCards();
-  const { handleCardClick, handleCreateCollection } = useGalleryActions();
+  const { selectedCardIndex, showImmersiveViewer, handleCardClick, handleCardChange, handleCloseViewer, handleShareCard, handleDownloadCard } = useGalleryActions();
   const { convertCardsToCardData } = useCardConversion();
-  const navigate = useNavigate();
+  
+  // Convert cards to CardData format
+  const convertedCards = convertCardsToCardData(featuredCards || []);
   
   // Get top 3 featured cards for showcase
   const showcaseCards = (featuredCards || []).slice(0, 3);
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
 
-  // Make cards clickable, no immersive preview
-  const handleCardStudioOpen = (card: DbCard) => {
-    if (!card?.id) return;
-    navigate(`/studio/${card.id}`);
+  const handleCardPreview = (card: DbCard, index: number) => {
+    setActiveCardIndex(index);
+    handleCardClick(card, featuredCards || []); // Pass the full featuredCards array
   };
 
   return (
@@ -63,11 +66,13 @@ export const EnhancedHero: React.FC = () => {
                 Featured Creations
               </Typography>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {showcaseCards.map((card) => (
+                {showcaseCards.map((card, index) => (
                   <div 
                     key={card.id}
-                    className="relative group cursor-pointer transform transition-all duration-300 hover:scale-105"
-                    onClick={() => handleCardStudioOpen(card)}
+                    className={`relative group cursor-pointer transform transition-all duration-300 hover:scale-105 ${
+                      activeCardIndex === index ? 'ring-2 ring-crd-green' : ''
+                    }`}
+                    onClick={() => handleCardPreview(card, index)}
                   >
                     <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl overflow-hidden relative">
                       <img
@@ -78,6 +83,9 @@ export const EnhancedHero: React.FC = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="text-white text-sm font-semibold mb-1">{card.title}</div>
+                        <CRDButton size="sm" className="w-full">
+                          View in 3D
+                        </CRDButton>
                       </div>
                     </div>
                   </div>
@@ -87,7 +95,7 @@ export const EnhancedHero: React.FC = () => {
           )}
 
           {/* Primary CTA */}
-          <Link to="/create">
+          <Link to="/editor">
             <CRDButton 
               variant="primary"
               size="lg"
@@ -98,6 +106,23 @@ export const EnhancedHero: React.FC = () => {
           </Link>
         </div>
       </div>
+
+      {/* Immersive Viewer */}
+      {showImmersiveViewer && convertedCards.length > 0 && (
+        <ImmersiveCardViewer
+          card={convertedCards[selectedCardIndex]}
+          cards={convertedCards}
+          currentCardIndex={selectedCardIndex}
+          onCardChange={handleCardChange}
+          isOpen={showImmersiveViewer}
+          onClose={handleCloseViewer}
+          onShare={() => handleShareCard(convertedCards)}
+          onDownload={() => handleDownloadCard(convertedCards)}
+          allowRotation={true}
+          showStats={true}
+          ambient={true}
+        />
+      )}
     </>
   );
 };

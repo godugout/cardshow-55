@@ -15,6 +15,7 @@ interface CardFrontContainerProps {
   enhancedEffectStyles: React.CSSProperties;
   SurfaceTexture: React.ReactNode;
   interactiveLighting?: boolean;
+  solidCardTransition?: boolean;
 }
 
 export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
@@ -28,21 +29,75 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
   enhancedEffectStyles,
   SurfaceTexture,
   interactiveLighting = false,
+  solidCardTransition = false,
 }) => {
-  // No more visibility/opacity logic needed! Always render, CSS 3D takes care of switching faces.
+  // Improved visibility calculation with clearer angle ranges
+  const getVisibility = () => {
+    // Normalize rotation to 0-360 range
+    const normalizedRotation = ((rotation.y % 360) + 360) % 360;
+    
+    // Front is visible from 270° to 90° (crossing 0°/360°)
+    const isFrontVisible = normalizedRotation >= 270 || normalizedRotation <= 90;
+
+    if (solidCardTransition) {
+      return {
+        opacity: isFrontVisible ? 1 : 0,
+        zIndex: isFrontVisible ? 25 : 5,
+        display: isFrontVisible ? 'block' as const : 'none' as const
+      };
+    }
+    
+    // Enhanced debug logging
+    console.log('🔄 Card Front - Rotation:', normalizedRotation.toFixed(1), 'Visible:', isFrontVisible);
+    
+    if (!isFrontVisible) {
+      return { opacity: 0, zIndex: 5, display: 'none' as const };
+    }
+    
+    // Calculate smooth opacity transitions with longer fade ranges
+    let opacity = 1;
+    const fadeRange = 30; // Increased from 15 to 30 degrees for smoother transitions
+    
+    if (normalizedRotation >= 270 && normalizedRotation <= 270 + fadeRange) {
+      // Fade in from 270° to 300°
+      opacity = (normalizedRotation - 270) / fadeRange;
+      console.log('🔄 Card Front - Fade in (270°+):', opacity.toFixed(2));
+    } else if (normalizedRotation >= 90 - fadeRange && normalizedRotation <= 90) {
+      // Fade out from 60° to 90°
+      opacity = (90 - normalizedRotation) / fadeRange;
+      console.log('🔄 Card Front - Fade out (90°-):', opacity.toFixed(2));
+    }
+    
+    return { 
+      opacity: Math.max(0.1, opacity),
+      zIndex: opacity > 0.3 ? 25 : 15, // Higher z-index when more visible
+      display: 'block' as const
+    };
+  };
+
+  const { opacity: frontOpacity, zIndex: frontZIndex, display } = getVisibility();
+
+  // Don't render at all if not visible
+  if (display === 'none') {
+    return null;
+  }
+
   return (
     <div 
       className="absolute inset-0 rounded-xl overflow-hidden"
       style={{
-        ...frameStyles,
-        pointerEvents: 'auto',
-        // No need for backfaceVisibility: the outer wrapper handles it
+        opacity: frontOpacity,
+        zIndex: frontZIndex,
+        transition: 'opacity 0.3s ease, z-index 0.1s ease',
+        backfaceVisibility: 'hidden',
+        ...frameStyles
       }}
+      data-visibility={frontOpacity > 0.1 ? 'visible' : 'hidden'}
       data-front-rotation={rotation.y.toFixed(1)}
     >
       {/* Base Layer - Card Frame */}
       <div className="absolute inset-0 z-10" style={frameStyles} />
-        
+      
       {/* Effects Layer - Only on Frame */}
       <div className="absolute inset-0 z-20">
         <CardEffectsLayer
@@ -55,7 +110,7 @@ export const CardFrontContainer: React.FC<CardFrontContainerProps> = ({
           interactiveLighting={interactiveLighting}
           applyToFrame={true}
         />
-            
+        
         {/* Surface Texture - Only applied to frame areas */}
         <div className="relative">
           {SurfaceTexture}

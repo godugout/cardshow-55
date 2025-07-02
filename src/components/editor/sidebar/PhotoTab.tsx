@@ -2,10 +2,9 @@
 import React, { useState, useCallback } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Upload, Camera, Crop, RotateCw, Maximize, Minimize, Scissors } from 'lucide-react';
+import { Upload, Camera, Crop, RotateCw, Maximize, Minimize } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
-import { AdvancedCropper } from '../AdvancedCropper';
 
 interface PhotoTabProps {
   selectedTemplate: string;
@@ -14,7 +13,6 @@ interface PhotoTabProps {
 
 export const PhotoTab = ({ selectedTemplate, searchQuery }: PhotoTabProps) => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [showAdvancedCrop, setShowAdvancedCrop] = useState(false);
   const [cropMode, setCropMode] = useState(false);
   const [cropSettings, setCropSettings] = useState({
     scale: 1,
@@ -54,42 +52,6 @@ export const PhotoTab = ({ selectedTemplate, searchQuery }: PhotoTabProps) => {
     toast.success('Photo crop applied to card!');
     setCropMode(false);
   };
-
-  const handleAdvancedCropComplete = (crops: { main?: string; frame?: string; elements?: string[] }) => {
-    if (crops.main) {
-      setUploadedImage(crops.main);
-      toast.success('Advanced crop applied successfully!');
-    }
-    setShowAdvancedCrop(false);
-  };
-
-  // Show advanced cropper if active
-  if (showAdvancedCrop && uploadedImage) {
-    return (
-      <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-editor-border">
-          <h3 className="text-white font-medium">Advanced Crop Mode</h3>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowAdvancedCrop(false)}
-            className="border-editor-border text-white"
-          >
-            Back to Simple
-          </Button>
-        </div>
-        <div className="flex-1">
-          <AdvancedCropper
-            imageUrl={uploadedImage}
-            onCropComplete={handleAdvancedCropComplete}
-            onCancel={() => setShowAdvancedCrop(false)}
-            aspectRatio={2.5 / 3.5}
-            className="h-full"
-          />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <ScrollArea className="h-full px-4">
@@ -170,26 +132,15 @@ export const PhotoTab = ({ selectedTemplate, searchQuery }: PhotoTabProps) => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-medium text-sm uppercase tracking-wide">Photo Editing</h4>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={`border-editor-border text-white ${cropMode ? 'bg-crd-green text-black' : ''}`}
-                  onClick={() => setCropMode(!cropMode)}
-                >
-                  <Crop className="w-4 h-4 mr-1" />
-                  {cropMode ? 'Done' : 'Basic Crop'}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-editor-border text-white"
-                  onClick={() => setShowAdvancedCrop(true)}
-                >
-                  <Scissors className="w-4 h-4 mr-1" />
-                  Advanced
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className={`border-editor-border text-white ${cropMode ? 'bg-crd-green text-black' : ''}`}
+                onClick={() => setCropMode(!cropMode)}
+              >
+                <Crop className="w-4 h-4 mr-1" />
+                {cropMode ? 'Done' : 'Crop'}
+              </Button>
             </div>
 
             {cropMode && (
@@ -258,20 +209,6 @@ export const PhotoTab = ({ selectedTemplate, searchQuery }: PhotoTabProps) => {
                 <RotateCw className="w-4 h-4 mr-1" />
                 Auto Fit
               </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Advanced Cropping Info */}
-        {uploadedImage && (
-          <div className="bg-editor-tool p-4 rounded-lg">
-            <h4 className="text-white font-medium text-sm mb-2">Professional Cropping</h4>
-            <p className="text-crd-lightGray text-xs mb-3">
-              Use Advanced Crop to extract multiple elements from your image: main card image, frame elements, logos, and custom graphics.
-            </p>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-crd-lightGray">Features:</span>
-              <span className="text-white">Multi-element, Precision tools</span>
             </div>
           </div>
         )}

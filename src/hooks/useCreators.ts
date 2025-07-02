@@ -26,11 +26,5 @@ export const useCreators = () => {
     fetchData();
   }, []);
 
-  return { 
-    popularCreators, 
-    creators: popularCreators, // Alias for backward compatibility
-    loading, 
-    isLoading: loading, // Alias for backward compatibility
-    error 
-  };
+  return { popularCreators, loading, error };
 };

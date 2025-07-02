@@ -49,12 +49,12 @@ export const CompactCardDetails: React.FC<CompactCardDetailsProps> = ({
     .map(([effectId, params]) => ({
       id: effectId,
       name: effectId.charAt(0).toUpperCase() + effectId.slice(1),
-      intensity: Number(params.intensity) // Convert to primitive number
+      intensity: params.intensity as number
     }))
-    .sort((a, b) => Number(b.intensity) - Number(a.intensity)) : []; // Convert to primitive numbers for arithmetic
+    .sort((a, b) => b.intensity - a.intensity) : [];
 
   return (
-    <div className="bg-white bg-opacity-20 backdrop-blur border border-white/20 rounded-lg p-4 max-w-sm select-none hover:bg-opacity-30 transition-all duration-200" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
+    <div className="bg-black bg-opacity-90 backdrop-blur-lg rounded-lg p-4 border border-white/10 max-w-sm select-none" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
       {/* Card Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-white font-semibold text-sm truncate max-w-[160px]">
@@ -66,15 +66,15 @@ export const CompactCardDetails: React.FC<CompactCardDetailsProps> = ({
       </div>
       
       {/* Card Info Row */}
-      <div className="flex items-center space-x-3 text-xs text-gray-200 mb-3">
+      <div className="flex items-center space-x-3 text-xs text-gray-300 mb-3">
         <span className="flex items-center space-x-1">
-          <span className="w-2 h-2 bg-purple-400 rounded-full"></span>
+          <span className="w-2 h-2 bg-crd-purple rounded-full"></span>
           <span>{card.template_id}</span>
         </span>
         
         {card.tags && card.tags.length > 0 && (
           <span className="flex items-center space-x-1">
-            <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+            <span className="w-2 h-2 bg-crd-green rounded-full"></span>
             <span>{card.tags[0]}</span>
             {card.tags.length > 1 && <span>+{card.tags.length - 1}</span>}
           </span>
@@ -85,23 +85,23 @@ export const CompactCardDetails: React.FC<CompactCardDetailsProps> = ({
       <div className="space-y-2 text-xs">
         {/* Active Effects */}
         <div>
-          <h4 className="font-medium text-blue-300 mb-1">
+          <h4 className="font-medium text-blue-400 mb-1">
             Active Effects ({activeEffects.length})
           </h4>
           {activeEffects.length > 0 ? (
             <div className="space-y-1">
               {activeEffects.slice(0, 3).map(effect => (
                 <div key={effect.id} className="flex justify-between items-center">
-                  <span className="text-gray-200">{effect.name}</span>
-                  <span className="text-xs text-gray-300">{Number(effect.intensity)}%</span>
+                  <span className="text-gray-300">{effect.name}</span>
+                  <span className="text-xs text-gray-400">{effect.intensity}%</span>
                 </div>
               ))}
               {activeEffects.length > 3 && (
-                <span className="text-gray-400">+{activeEffects.length - 3} more</span>
+                <span className="text-gray-500">+{activeEffects.length - 3} more</span>
               )}
             </div>
           ) : (
-            <p className="text-gray-400">No effects active</p>
+            <p className="text-gray-500">No effects active</p>
           )}
         </div>
 
@@ -110,26 +110,26 @@ export const CompactCardDetails: React.FC<CompactCardDetailsProps> = ({
           <div className="grid grid-cols-2 gap-3">
             {/* Card Back Material */}
             <div>
-              <h4 className="font-medium text-purple-300 mb-1">Material</h4>
+              <h4 className="font-medium text-purple-400 mb-1">Material</h4>
               <div className="space-y-0.5">
-                <div className="text-gray-200">{selectedMaterial.name}</div>
-                <div className="text-gray-300">{Math.round(selectedMaterial.opacity * 100)}%</div>
+                <div className="text-gray-300">{selectedMaterial.name}</div>
+                <div className="text-gray-400">{Math.round(selectedMaterial.opacity * 100)}%</div>
               </div>
             </div>
 
             {/* Environment */}
             <div>
-              <h4 className="font-medium text-green-300 mb-1">Environment</h4>
+              <h4 className="font-medium text-green-400 mb-1">Environment</h4>
               <div className="space-y-0.5">
-                <div className="text-gray-200">{selectedScene.name}</div>
-                <div className="text-gray-200">{selectedLighting.name}</div>
+                <div className="text-gray-300">{selectedScene.name}</div>
+                <div className="text-gray-300">{selectedLighting.name}</div>
                 <div className="flex items-center">
                   {interactiveLighting ? (
-                    <Eye className="w-3 h-3 text-green-300 mr-1" />
+                    <Eye className="w-3 h-3 text-green-400 mr-1" />
                   ) : (
-                    <EyeOff className="w-3 h-3 text-gray-400 mr-1" />
+                    <EyeOff className="w-3 h-3 text-gray-500 mr-1" />
                   )}
-                  <span className="text-gray-300">{overallBrightness[0]}%</span>
+                  <span className="text-gray-400">{overallBrightness[0]}%</span>
                 </div>
               </div>
             </div>
@@ -139,23 +139,23 @@ export const CompactCardDetails: React.FC<CompactCardDetailsProps> = ({
         {/* Material Properties */}
         {materialSettings && (
           <div>
-            <h4 className="font-medium text-orange-300 mb-1">Properties</h4>
+            <h4 className="font-medium text-orange-400 mb-1">Properties</h4>
             <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
               <div className="flex justify-between">
-                <span className="text-gray-200">Rough:</span>
-                <span className="text-gray-300">{Math.round(materialSettings.roughness * 100)}%</span>
+                <span className="text-gray-300">Rough:</span>
+                <span className="text-gray-400">{Math.round(materialSettings.roughness * 100)}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-200">Metal:</span>
-                <span className="text-gray-300">{Math.round(materialSettings.metalness * 100)}%</span>
+                <span className="text-gray-300">Metal:</span>
+                <span className="text-gray-400">{Math.round(materialSettings.metalness * 100)}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-200">Clear:</span>
-                <span className="text-gray-300">{Math.round(materialSettings.clearcoat * 100)}%</span>
+                <span className="text-gray-300">Clear:</span>
+                <span className="text-gray-400">{Math.round(materialSettings.clearcoat * 100)}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-200">Reflect:</span>
-                <span className="text-gray-300">{Math.round(materialSettings.reflectivity * 100)}%</span>
+                <span className="text-gray-300">Reflect:</span>
+                <span className="text-gray-400">{Math.round(materialSettings.reflectivity * 100)}%</span>
               </div>
             </div>
           </div>

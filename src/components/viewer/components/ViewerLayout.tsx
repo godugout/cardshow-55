@@ -7,8 +7,7 @@ import { CardNavigationHandler } from './CardNavigationHandler';
 import { ViewerInfoPanel } from './ViewerInfoPanel';
 import { BackgroundRenderer } from './BackgroundRenderer';
 import { EnhancedCardContainer } from './EnhancedCardContainer';
-import { useMousePosition } from '@/hooks/useMousePosition';
-import type { CardData } from '@/types/card';
+import type { CardData } from '@/hooks/useCardEditor';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { useSafeZones } from '../hooks/useSafeZones';
@@ -58,8 +57,6 @@ interface ViewerLayoutProps {
   onCardClick: (event: React.MouseEvent) => void;
   hasMultipleCards: boolean;
   solidCardTransition?: boolean;
-  dynamicBrightness?: number;
-  activeEffectsCount?: number;
 }
 
 export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
@@ -106,15 +103,10 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
   handleResetCamera,
   onCardClick,
   hasMultipleCards,
-  solidCardTransition,
-  dynamicBrightness = 1.2,
-  activeEffectsCount = 0
+  solidCardTransition
 }) => {
   const panelWidth = 320;
   const shouldShowPanel = showCustomizePanel;
-  
-  // Track mouse position for auto-hide functionality
-  const globalMousePosition = useMousePosition(100);
 
   const { isInSafeZone } = useSafeZones({
     panelWidth,
@@ -239,13 +231,12 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
         />
       </div>
 
-      {/* Info Panel - Auto-hide based on mouse position */}
+      {/* Info Panel */}
       <ViewerInfoPanel
         showStats={showStats}
         isFlipped={isFlipped}
         shouldShowPanel={shouldShowPanel}
         hasMultipleCards={hasMultipleCards}
-        isVisible={globalMousePosition.isNearBottom}
       />
     </div>
   );
