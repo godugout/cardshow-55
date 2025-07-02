@@ -162,7 +162,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             className="absolute inset-0 rounded-xl overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg) translateZ(-2px)', // Back face with proper spacing and correct rotation
+              transform: 'rotateY(-180deg) translateZ(-2px)', // Back face flipped correctly
               zIndex: showBack ? 10 : 1,
               background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
             }}
