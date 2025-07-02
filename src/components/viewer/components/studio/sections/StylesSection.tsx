@@ -3,6 +3,8 @@ import React from 'react';
 import { CollapsibleSection } from '@/components/ui/design-system';
 import { EnhancedQuickComboPresets } from '../../EnhancedQuickComboPresets';
 import { PremiumStyleSelector } from '../../premium/PremiumStyleSelector';
+import { usePremiumVisualStyles } from '@/hooks/usePremiumVisualStyles';
+import { createComboFromPremiumStyle } from '../../../utils/premiumStyleConverter';
 import type { EffectValues } from '../../../hooks/useEnhancedCardEffects';
 
 interface StylesSectionProps {
@@ -24,9 +26,24 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
   onApplyCombo,
   isApplyingPreset = false
 }) => {
+  const { styles } = usePremiumVisualStyles();
+  
   const statusText = selectedPresetId ? 
     selectedPresetId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : 
     "Select Style";
+
+  const handlePremiumStyleSelect = (styleId: string) => {
+    const style = styles.find(s => s.id === styleId);
+    if (style) {
+      // Create combo from premium style and apply effects
+      const combo = createComboFromPremiumStyle(style);
+      console.log('🎨 Applying Premium Style:', style.displayName, 'Effects:', combo.effects);
+      
+      // Apply both the preset selection and the effect combo
+      onPresetSelect(styleId);
+      onApplyCombo(combo);
+    }
+  };
 
   return (
     <CollapsibleSection
@@ -42,7 +59,7 @@ export const StylesSection: React.FC<StylesSectionProps> = ({
           <h4 className="text-sm font-medium text-crd-lightGray mb-3">Premium Visual Styles</h4>
           <PremiumStyleSelector
             selectedStyleId={selectedPresetId}
-            onStyleSelect={onPresetSelect}
+            onStyleSelect={handlePremiumStyleSelect}
             onStyleUnlock={(styleId) => {
               console.log('🔓 Unlock style:', styleId);
               // TODO: Implement unlock flow
