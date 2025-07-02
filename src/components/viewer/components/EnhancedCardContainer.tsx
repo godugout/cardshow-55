@@ -138,11 +138,9 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             className="absolute inset-0 rounded-xl overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'translateZ(1px)', // Slightly forward to avoid z-fighting
-              zIndex: showBack ? 5 : 15,
-              background: '#ffffff',
-              opacity: showBack ? 0 : 1,
-              pointerEvents: showBack ? 'none' : 'auto'
+              transform: 'translateZ(2px)', // Front face with proper spacing
+              zIndex: showBack ? 1 : 10,
+              background: '#ffffff'
             }}
           >
             <CardFrontContainer
@@ -164,11 +162,9 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
             className="absolute inset-0 rounded-xl overflow-hidden"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg) translateZ(1px)', // Back face flipped 180°, slightly forward
-              zIndex: showBack ? 15 : 5,
-              background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)',
-              opacity: showBack ? 1 : 0,
-              pointerEvents: showBack ? 'auto' : 'none'
+              transform: 'rotateY(180deg) translateZ(-2px)', // Back face with proper spacing and correct rotation
+              zIndex: showBack ? 10 : 1,
+              background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
             }}
           >
             <CardBackContainer
