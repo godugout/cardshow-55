@@ -13,13 +13,13 @@ export const convertPremiumStyleToEffects = (style: CRDVisualStyle): EffectValue
   switch (style.id) {
     case 'holographic-burst':
       effects.holographic = {
-        intensity: 90,
+        intensity: 80,
         shiftSpeed: 180,
         rainbowSpread: 300,
         animated: true
       };
       effects.chrome = {
-        intensity: 50,
+        intensity: 60,
         sharpness: 85,
         highlightSize: 65
       };
@@ -27,14 +27,14 @@ export const convertPremiumStyleToEffects = (style: CRDVisualStyle): EffectValue
 
     case 'crystal-interference':
       effects.crystal = {
-        intensity: 85,
+        intensity: 75,
         facets: 15,
         dispersion: 90,
         clarity: 70,
         sparkle: true
       };
       effects.interference = {
-        intensity: 70,
+        intensity: 65,
         frequency: 18,
         thickness: 5
       };
@@ -42,12 +42,12 @@ export const convertPremiumStyleToEffects = (style: CRDVisualStyle): EffectValue
 
     case 'chrome-burst':
       effects.chrome = {
-        intensity: 95,
+        intensity: 85,
         sharpness: 98,
         highlightSize: 80
       };
       effects.brushedmetal = {
-        intensity: 45,
+        intensity: 55,
         direction: 90,
         grainDensity: 10
       };
@@ -55,7 +55,7 @@ export const convertPremiumStyleToEffects = (style: CRDVisualStyle): EffectValue
 
     case 'golden-fire':
       effects.gold = {
-        intensity: 85,
+        intensity: 75,
         shimmerSpeed: 120,
         platingThickness: 7,
         goldTone: 'rich',
@@ -63,7 +63,7 @@ export const convertPremiumStyleToEffects = (style: CRDVisualStyle): EffectValue
         colorEnhancement: true
       };
       effects.chrome = {
-        intensity: 45,
+        intensity: 55,
         sharpness: 70,
         highlightSize: 55
       };

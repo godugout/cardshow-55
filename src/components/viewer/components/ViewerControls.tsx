@@ -13,8 +13,10 @@ import { Button } from '@/components/ui/button';
 interface ViewerControlsProps {
   showEffects: boolean;
   autoRotate: boolean;
+  isFlipped: boolean;
   onToggleEffects: () => void;
   onToggleAutoRotate: () => void;
+  onToggleFlip: () => void;
   onReset: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
@@ -23,8 +25,10 @@ interface ViewerControlsProps {
 export const ViewerControls: React.FC<ViewerControlsProps> = ({
   showEffects,
   autoRotate,
+  isFlipped,
   onToggleEffects,
   onToggleAutoRotate,
+  onToggleFlip,
   onReset,
   onZoomIn,
   onZoomOut
@@ -46,6 +50,15 @@ export const ViewerControls: React.FC<ViewerControlsProps> = ({
         className={`bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20 ${autoRotate ? 'bg-opacity-40' : ''}`}
       >
         <RotateCw className="w-4 h-4 text-white" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onToggleFlip}
+        className={`bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur border border-white/20 ${isFlipped ? 'bg-opacity-40' : ''}`}
+        title="Flip Card"
+      >
+        <RotateCw className="w-4 h-4 text-white" style={{ transform: 'rotateY(180deg)' }} />
       </Button>
       <Button
         variant="ghost"

@@ -69,8 +69,14 @@ export const CardContainer: React.FC<CardContainerProps> = ({
         }}
         onClick={onClick}
       >
-        {/* Front of Card - With Image Priority */}
-        <div className={`absolute inset-0 ${isFlipped ? '' : 'z-30'}`}>
+        {/* Front of Card */}
+        <div 
+          className="absolute inset-0 rounded-xl overflow-hidden backface-hidden"
+          style={{
+            transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
+            backfaceVisibility: 'hidden'
+          }}
+        >
           <CardFront
             card={card}
             isFlipped={isFlipped}
@@ -84,8 +90,14 @@ export const CardContainer: React.FC<CardContainerProps> = ({
           />
         </div>
 
-        {/* Back of Card - Hidden when front is shown */}
-        <div className={`absolute inset-0 ${isFlipped ? 'z-30' : ''}`}>
+        {/* Back of Card */}
+        <div 
+          className="absolute inset-0 rounded-xl overflow-hidden backface-hidden"
+          style={{
+            transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
+            backfaceVisibility: 'hidden'
+          }}
+        >
           <CardBack
             card={card}
             isFlipped={isFlipped}

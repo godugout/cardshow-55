@@ -213,8 +213,10 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
         <ViewerControls
           showEffects={showEffects}
           autoRotate={autoRotate}
+          isFlipped={isFlipped}
           onToggleEffects={() => setShowEffects(!showEffects)}
           onToggleAutoRotate={() => setAutoRotate(!autoRotate)}
+          onToggleFlip={() => setIsFlipped(!isFlipped)}
           onReset={handleResetWithEffects}
           onZoomIn={() => handleZoom(0.1)}
           onZoomOut={() => handleZoom(-0.1)}
