@@ -21,12 +21,9 @@ export const NavActions = () => {
   return (
     <div className="flex items-center gap-3 ml-auto">
       <Link to="/auth">
-        <CRDButton
-          variant="outline"
-          size="sm"
-        >
+        <button className="cta-themed px-4 py-2 rounded-md text-sm font-medium">
           Sign In
-        </CRDButton>
+        </button>
       </Link>
     </div>
   );

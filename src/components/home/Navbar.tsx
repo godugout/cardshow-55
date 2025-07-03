@@ -41,21 +41,18 @@ const getDividerColorClasses = (color: string) => {
 };
 
 export const Navbar: React.FC = () => {
-  const [selectedLogoColor, setSelectedLogoColor] = useState('orange');
-  
-  const navbarColorClasses = getNavbarColorClasses(selectedLogoColor);
-  const dividerColorClasses = getDividerColorClasses(selectedLogoColor);
+  const [currentTheme, setCurrentTheme] = useState('sf-orange');
 
   return (
-    <div className={`bg-[#141416] w-full overflow-hidden transition-all duration-500 ${navbarColorClasses}`}>
+    <div className="navbar-themed w-full overflow-hidden">
       <div className="flex w-full items-center justify-between flex-wrap px-6 py-5 max-md:max-w-full max-md:px-5">
         <div className="flex items-center gap-8 my-auto">
-          <LogoSelector onColorChange={setSelectedLogoColor} />
+          <LogoSelector onThemeChange={setCurrentTheme} />
           <NavLinks />
         </div>
         <NavActions />
       </div>
-      <div className={`flex min-h-px w-full transition-all duration-500 ${dividerColorClasses}`} />
+      <div className="flex min-h-px w-full" style={{ background: `linear-gradient(90deg, hsl(var(--theme-accent) / 0.2), hsl(var(--theme-accent) / 0.1))` }} />
     </div>
   );
 };

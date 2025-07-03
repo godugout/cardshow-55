@@ -21,6 +21,213 @@
   --crd-warning: #EA6E48;
   --crd-error: #ff4444;
   --crd-info: #3772FF;
+
+  /* Dynamic Theme Variables - Updated by logo selection */
+  --theme-navbar-bg: 20 20 20; /* HSL values without hsl() wrapper */
+  --theme-navbar-border: 35 57 69;
+  --theme-text-primary: 252 252 253;
+  --theme-text-secondary: 119 126 144;
+  --theme-text-active: 69 178 107;
+  --theme-cta-bg: 69 178 107;
+  --theme-cta-text: 18 18 18;
+  --theme-accent: 69 178 107;
+  --theme-accent-hover: 89 198 127;
+}
+
+/* Logo-specific theme variations */
+/* SF Orange - Orange and white/cream theme */
+[data-theme="sf-orange"] {
+  --theme-navbar-bg: 252 250 247;
+  --theme-navbar-border: 251 146 60;
+  --theme-text-primary: 18 18 18;
+  --theme-text-secondary: 75 85 99;
+  --theme-text-active: 234 88 12;
+  --theme-cta-bg: 239 68 68;
+  --theme-cta-text: 255 255 255;
+  --theme-accent: 251 146 60;
+  --theme-accent-hover: 234 88 12;
+}
+
+/* Washington - Red, white, and navy theme */
+[data-theme="washington"] {
+  --theme-navbar-bg: 248 250 252;
+  --theme-navbar-border: 220 38 38;
+  --theme-text-primary: 15 23 42;
+  --theme-text-secondary: 51 65 85;
+  --theme-text-active: 220 38 38;
+  --theme-cta-bg: 29 78 216;
+  --theme-cta-text: 255 255 255;
+  --theme-accent: 220 38 38;
+  --theme-accent-hover: 185 28 28;
+}
+
+/* Oakland - Green and gold theme */
+[data-theme="oakland"] {
+  --theme-navbar-bg: 20 83 45;
+  --theme-navbar-border: 34 197 94;
+  --theme-text-primary: 255 255 255;
+  --theme-text-secondary: 187 247 208;
+  --theme-text-active: 250 204 21;
+  --theme-cta-bg: 250 204 21;
+  --theme-cta-text: 20 83 45;
+  --theme-accent: 34 197 94;
+  --theme-accent-hover: 22 163 74;
+}
+
+/* Pittsburgh - Black and gold theme */
+[data-theme="pittsburgh"] {
+  --theme-navbar-bg: 24 24 27;
+  --theme-navbar-border: 250 204 21;
+  --theme-text-primary: 250 204 21;
+  --theme-text-secondary: 161 161 170;
+  --theme-text-active: 250 204 21;
+  --theme-cta-bg: 250 204 21;
+  --theme-cta-text: 24 24 27;
+  --theme-accent: 250 204 21;
+  --theme-accent-hover: 234 179 8;
+}
+
+/* Toronto - Blue and white theme */
+[data-theme="toronto"] {
+  --theme-navbar-bg: 248 250 252;
+  --theme-navbar-border: 59 130 246;
+  --theme-text-primary: 15 23 42;
+  --theme-text-secondary: 71 85 105;
+  --theme-text-active: 29 78 216;
+  --theme-cta-bg: 29 78 216;
+  --theme-cta-text: 255 255 255;
+  --theme-accent: 59 130 246;
+  --theme-accent-hover: 37 99 235;
+}
+
+/* Cardshow Basic - Clean grayscale theme */
+[data-theme="cardshow-basic"] {
+  --theme-navbar-bg: 20 20 20;
+  --theme-navbar-border: 63 63 70;
+  --theme-text-primary: 244 244 245;
+  --theme-text-secondary: 161 161 170;
+  --theme-text-active: 244 244 245;
+  --theme-cta-bg: 244 244 245;
+  --theme-cta-text: 24 24 27;
+  --theme-accent: 161 161 170;
+  --theme-accent-hover: 212 212 216;
+}
+
+/* Cardshow Green - CRD signature green theme */
+[data-theme="cardshow-green"] {
+  --theme-navbar-bg: 20 20 20;
+  --theme-navbar-border: 69 178 107;
+  --theme-text-primary: 252 252 253;
+  --theme-text-secondary: 119 126 144;
+  --theme-text-active: 69 178 107;
+  --theme-cta-bg: 69 178 107;
+  --theme-cta-text: 18 18 18;
+  --theme-accent: 69 178 107;
+  --theme-accent-hover: 89 198 127;
+}
+
+/* Cardshow Green Sparkles - Enhanced green with emerald accents */
+[data-theme="cardshow-green-sparkles"] {
+  --theme-navbar-bg: 6 78 59;
+  --theme-navbar-border: 16 185 129;
+  --theme-text-primary: 236 253 245;
+  --theme-text-secondary: 167 243 208;
+  --theme-text-active: 52 211 153;
+  --theme-cta-bg: 16 185 129;
+  --theme-cta-text: 6 78 59;
+  --theme-accent: 52 211 153;
+  --theme-accent-hover: 34 197 94;
+}
+
+/* Cardshow Red/Blue - Patriotic theme */
+[data-theme="cardshow-red-blue"] {
+  --theme-navbar-bg: 30 27 75;
+  --theme-navbar-border: 139 92 246;
+  --theme-text-primary: 255 255 255;
+  --theme-text-secondary: 196 181 253;
+  --theme-text-active: 239 68 68;
+  --theme-cta-bg: 239 68 68;
+  --theme-cta-text: 255 255 255;
+  --theme-accent: 139 92 246;
+  --theme-accent-hover: 124 58 237;
+}
+
+/* Cardshow Blue - Professional blue theme */
+[data-theme="cardshow-blue"] {
+  --theme-navbar-bg: 30 58 138;
+  --theme-navbar-border: 59 130 246;
+  --theme-text-primary: 255 255 255;
+  --theme-text-secondary: 191 219 254;
+  --theme-text-active: 147 197 253;
+  --theme-cta-bg: 147 197 253;
+  --theme-cta-text: 30 58 138;
+  --theme-accent: 59 130 246;
+  --theme-accent-hover: 37 99 235;
+}
+
+/* Cardshow Orange - Vibrant orange theme */
+[data-theme="cardshow-orange"] {
+  --theme-navbar-bg: 154 52 18;
+  --theme-navbar-border: 251 146 60;
+  --theme-text-primary: 255 255 255;
+  --theme-text-secondary: 254 215 170;
+  --theme-text-active: 251 191 36;
+  --theme-cta-bg: 251 191 36;
+  --theme-cta-text: 154 52 18;
+  --theme-accent: 251 146 60;
+  --theme-accent-hover: 245 158 11;
+}
+
+/* Cardshow Block - Bold monospace theme */
+[data-theme="cardshow-block"] {
+  --theme-navbar-bg: 30 41 59;
+  --theme-navbar-border: 148 163 184;
+  --theme-text-primary: 248 250 252;
+  --theme-text-secondary: 203 213 225;
+  --theme-text-active: 148 163 184;
+  --theme-cta-bg: 148 163 184;
+  --theme-cta-text: 30 41 59;
+  --theme-accent: 100 116 139;
+  --theme-accent-hover: 71 85 105;
+}
+
+/* Cardshow Vintage - Warm vintage theme */
+[data-theme="cardshow-vintage"] {
+  --theme-navbar-bg: 120 53 15;
+  --theme-navbar-border: 245 158 11;
+  --theme-text-primary: 255 251 235;
+  --theme-text-secondary: 253 230 138;
+  --theme-text-active: 245 158 11;
+  --theme-cta-bg: 245 158 11;
+  --theme-cta-text: 120 53 15;
+  --theme-accent: 217 119 6;
+  --theme-accent-hover: 180 83 9;
+}
+
+/* Cardshow Retro - Neon cyan theme */
+[data-theme="cardshow-retro"] {
+  --theme-navbar-bg: 22 78 99;
+  --theme-navbar-border: 34 211 238;
+  --theme-text-primary: 236 254 255;
+  --theme-text-secondary: 165 243 252;
+  --theme-text-active: 103 232 249;
+  --theme-cta-bg: 236 72 153;
+  --theme-cta-text: 255 255 255;
+  --theme-accent: 34 211 238;
+  --theme-accent-hover: 6 182 212;
+}
+
+/* Cardshow Modern - Contemporary indigo theme */
+[data-theme="cardshow-modern"] {
+  --theme-navbar-bg: 49 46 129;
+  --theme-navbar-border: 129 140 248;
+  --theme-text-primary: 255 255 255;
+  --theme-text-secondary: 199 210 254;
+  --theme-text-active: 165 180 252;
+  --theme-cta-bg: 165 180 252;
+  --theme-cta-text: 49 46 129;
+  --theme-accent: 129 140 248;
+  --theme-accent-hover: 99 102 241;
 }
 
 /* CRD-specific utility classes */
@@ -43,6 +250,38 @@
 .border-crd-lightGray { border-color: var(--crd-lightGray); }
 .border-crd-green { border-color: var(--crd-green); }
 .border-crd-blue { border-color: var(--crd-blue); }
+
+/* Theme-based utility classes */
+.navbar-themed {
+  background: hsl(var(--theme-navbar-bg));
+  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.2);
+  transition: all 0.5s ease;
+}
+
+.text-themed-primary { color: hsl(var(--theme-text-primary)); }
+.text-themed-secondary { color: hsl(var(--theme-text-secondary)); }
+.text-themed-active { 
+  color: hsl(var(--theme-text-active));
+  background: hsl(var(--theme-accent) / 0.1);
+}
+
+.hover-themed:hover {
+  background: hsl(var(--theme-accent) / 0.1);
+  color: hsl(var(--theme-text-primary));
+}
+
+.cta-themed {
+  background: hsl(var(--theme-cta-bg));
+  color: hsl(var(--theme-cta-text));
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.cta-themed:hover {
+  background: hsl(var(--theme-accent-hover));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--theme-accent) / 0.3);
+}
 
 /* Button variants */
 .btn-crd-primary {

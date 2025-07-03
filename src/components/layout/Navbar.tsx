@@ -24,18 +24,17 @@ const getNavbarColorClasses = (color: string) => {
 
 export const Navbar = () => {
   const location = useLocation();
-  const [selectedLogoColor, setSelectedLogoColor] = useState('orange');
+  const [currentTheme, setCurrentTheme] = useState('sf-orange');
 
   const isActive = (path: string) => location.pathname === path;
-  const navbarColorClasses = getNavbarColorClasses(selectedLogoColor);
 
   return (
-    <nav className={`bg-crd-darker border-b border-crd-mediumGray/20 sticky top-0 z-50 transition-all duration-500 ${navbarColorClasses}`}>
+    <nav className="navbar-themed sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Selector */}
           <div className="flex items-center">
-            <LogoSelector onColorChange={setSelectedLogoColor} />
+            <LogoSelector onThemeChange={setCurrentTheme} />
           </div>
 
           {/* Navigation Links */}
@@ -44,8 +43,8 @@ export const Navbar = () => {
               to="/"
               className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 isActive('/') 
-                  ? 'text-crd-green bg-crd-green/10' 
-                  : 'text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20'
+                  ? 'text-themed-active' 
+                  : 'text-themed-secondary hover-themed'
               }`}
             >
               <Home className="w-4 h-4" />
@@ -56,8 +55,8 @@ export const Navbar = () => {
               to="/create"
               className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 isActive('/create') 
-                  ? 'text-crd-green bg-crd-green/10' 
-                  : 'text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20'
+                  ? 'text-themed-active' 
+                  : 'text-themed-secondary hover-themed'
               }`}
             >
               <Plus className="w-4 h-4" />
@@ -68,8 +67,8 @@ export const Navbar = () => {
               to="/gallery"
               className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 isActive('/gallery') 
-                  ? 'text-crd-green bg-crd-green/10' 
-                  : 'text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20'
+                  ? 'text-themed-active' 
+                  : 'text-themed-secondary hover-themed'
               }`}
             >
               <ImageIcon className="w-4 h-4" />
@@ -80,8 +79,8 @@ export const Navbar = () => {
               to="/studio"
               className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 isActive('/studio') 
-                  ? 'text-crd-green bg-crd-green/10' 
-                  : 'text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/20'
+                  ? 'text-themed-active' 
+                  : 'text-themed-secondary hover-themed'
               }`}
             >
               <Palette className="w-4 h-4" />

@@ -21,26 +21,26 @@ const logoGroups = [
   {
     label: 'Team Logos',
     logos: [
-      { name: 'SF ORANGE', component: SfOrangeLogo, hoverColor: 'orange' },
-      { name: 'WAS', component: WashingtonLogo, hoverColor: 'red' },
-      { name: 'OAK', component: OaklandLogo, hoverColor: 'green' },
-      { name: 'PIT', component: PittsburghLogo, hoverColor: 'yellow' },
-      { name: 'TOR', component: TorontoLogo, hoverColor: 'blue' },
+      { name: 'SF ORANGE', component: SfOrangeLogo, hoverColor: 'orange', themeId: 'sf-orange' },
+      { name: 'WAS', component: WashingtonLogo, hoverColor: 'red', themeId: 'washington' },
+      { name: 'OAK', component: OaklandLogo, hoverColor: 'green', themeId: 'oakland' },
+      { name: 'PIT', component: PittsburghLogo, hoverColor: 'yellow', themeId: 'pittsburgh' },
+      { name: 'TOR', component: TorontoLogo, hoverColor: 'blue', themeId: 'toronto' },
     ]
   },
   {
     label: 'Cardshow Logos',
     logos: [
-      { name: 'Cardshow Basic', component: CardshowBasicLogo, hoverColor: 'gray' },
-      { name: 'Cardshow Green', component: CardshowGreenLogo, hoverColor: 'green' },
-      { name: 'Cardshow Green Sparkles', component: CardshowGreenSparklesLogo, hoverColor: 'emerald' },
-      { name: 'Cardshow Red/Blue', component: CardshowRedBlueLogo, hoverColor: 'purple' },
-      { name: 'Cardshow Blue', component: CardshowBlueLogo, hoverColor: 'blue' },
-      { name: 'Cardshow Orange', component: CardshowOrangeLogo, hoverColor: 'orange' },
-      { name: 'Cardshow Block', component: CardshowBlockLettersLogo, hoverColor: 'slate' },
-      { name: 'Cardshow Vintage', component: CardshowVintageLogo, hoverColor: 'amber' },
-      { name: 'Cardshow Retro', component: CardshowRetroLogo, hoverColor: 'cyan' },
-      { name: 'Cardshow Modern', component: CardshowModernLogo, hoverColor: 'indigo' },
+      { name: 'Cardshow Basic', component: CardshowBasicLogo, hoverColor: 'gray', themeId: 'cardshow-basic' },
+      { name: 'Cardshow Green', component: CardshowGreenLogo, hoverColor: 'green', themeId: 'cardshow-green' },
+      { name: 'Cardshow Green Sparkles', component: CardshowGreenSparklesLogo, hoverColor: 'emerald', themeId: 'cardshow-green-sparkles' },
+      { name: 'Cardshow Red/Blue', component: CardshowRedBlueLogo, hoverColor: 'purple', themeId: 'cardshow-red-blue' },
+      { name: 'Cardshow Blue', component: CardshowBlueLogo, hoverColor: 'blue', themeId: 'cardshow-blue' },
+      { name: 'Cardshow Orange', component: CardshowOrangeLogo, hoverColor: 'orange', themeId: 'cardshow-orange' },
+      { name: 'Cardshow Block', component: CardshowBlockLettersLogo, hoverColor: 'slate', themeId: 'cardshow-block' },
+      { name: 'Cardshow Vintage', component: CardshowVintageLogo, hoverColor: 'amber', themeId: 'cardshow-vintage' },
+      { name: 'Cardshow Retro', component: CardshowRetroLogo, hoverColor: 'cyan', themeId: 'cardshow-retro' },
+      { name: 'Cardshow Modern', component: CardshowModernLogo, hoverColor: 'indigo', themeId: 'cardshow-modern' },
     ]
   }
 ];
@@ -64,19 +64,20 @@ const getHoverColorClasses = (color: string) => {
 };
 
 interface LogoSelectorProps {
-  onColorChange?: (color: string) => void;
+  onThemeChange?: (themeId: string) => void;
 }
 
-export const LogoSelector = ({ onColorChange }: LogoSelectorProps) => {
+export const LogoSelector = ({ onThemeChange }: LogoSelectorProps) => {
   const [selectedLogo, setSelectedLogo] = useState(logoGroups[0].logos[0]);
   const [isOpen, setIsOpen] = useState(false);
 
   const SelectedLogoComponent = selectedLogo.component;
 
-  // Notify parent of color changes
+  // Apply theme to document and notify parent
   useEffect(() => {
-    onColorChange?.(selectedLogo.hoverColor);
-  }, [selectedLogo.hoverColor, onColorChange]);
+    document.documentElement.setAttribute('data-theme', selectedLogo.themeId);
+    onThemeChange?.(selectedLogo.themeId);
+  }, [selectedLogo.themeId, onThemeChange]);
 
   const handleLogoSelect = (logo: typeof selectedLogo) => {
     setSelectedLogo(logo);

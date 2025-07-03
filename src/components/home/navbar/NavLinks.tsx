@@ -11,43 +11,71 @@ export const NavLinks = () => {
     <div className="flex items-center gap-8">
       <Link 
         to="/" 
-        className={`nav-item ${isActive('/') ? 'active' : ''}`}
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+          isActive('/') 
+            ? 'text-themed-active' 
+            : 'text-themed-secondary hover-themed'
+        }`}
       >
         Home
       </Link>
       <Link 
         to="/studio" 
-        className={`nav-item ${location.pathname.startsWith('/studio') ? 'active' : ''}`}
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+          location.pathname.startsWith('/studio') 
+            ? 'text-themed-active' 
+            : 'text-themed-secondary hover-themed'
+        }`}
       >
         Studio
       </Link>
       <Link 
         to="/showcase" 
-        className={`nav-item ${location.pathname.startsWith('/showcase') ? 'active' : ''}`}
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+          location.pathname.startsWith('/showcase') 
+            ? 'text-themed-active' 
+            : 'text-themed-secondary hover-themed'
+        }`}
       >
         Showcase
       </Link>
       <Link 
         to="/cards" 
-        className={`nav-item ${location.pathname.startsWith('/cards') ? 'active' : ''}`}
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+          location.pathname.startsWith('/cards') 
+            ? 'text-themed-active' 
+            : 'text-themed-secondary hover-themed'
+        }`}
       >
         Cards
       </Link>
       <Link 
         to="/gallery" 
-        className={`nav-item ${isActive('/gallery') ? 'active' : ''}`}
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+          isActive('/gallery') 
+            ? 'text-themed-active' 
+            : 'text-themed-secondary hover-themed'
+        }`}
       >
         Gallery
       </Link>
       <Link 
         to="/creators" 
-        className={`nav-item ${isActive('/creators') ? 'active' : ''}`}
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+          isActive('/creators') 
+            ? 'text-themed-active' 
+            : 'text-themed-secondary hover-themed'
+        }`}
       >
         Creators
       </Link>
       <Link 
         to="/cards/bulk-upload" 
-        className={`nav-item ${isActive('/cards/bulk-upload') ? 'active' : ''}`}
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+          isActive('/cards/bulk-upload') 
+            ? 'text-themed-active' 
+            : 'text-themed-secondary hover-themed'
+        }`}
       >
         Bulk Upload
       </Link>
