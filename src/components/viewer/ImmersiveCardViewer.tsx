@@ -1,10 +1,9 @@
 
 import React, { useRef, useEffect } from 'react';
 import type { ExtendedImmersiveCardViewerProps } from './types/ImmersiveViewerTypes';
-import { useViewerState } from './hooks/useViewerState';
+import { useUnifiedCardState } from './hooks/useUnifiedCardState';
 import { useViewerInteractionManager } from './hooks/useViewerInteractionManager';
 import { useCardExport } from './hooks/useCardExport';
-import { useImmersiveViewerState } from './hooks/useImmersiveViewerState';
 import { ViewerEffectsManager } from './components/ViewerEffectsManager';
 import { ViewerActionsManager } from './components/ViewerActionsManager';
 import { ViewerLayout } from './components/ViewerLayout';
@@ -27,36 +26,8 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   // Refs
   const cardContainerRef = useRef<HTMLDivElement>(null);
 
-  // Use the custom state hooks
-  const viewerStateHook = useViewerState();
-  const { viewerState, actions } = useImmersiveViewerState();
-
-  const {
-    isFullscreen,
-    rotation,
-    setRotation,
-    isDragging,
-    setIsDragging,
-    dragStart,
-    setDragStart,
-    zoom,
-    isFlipped,
-    setIsFlipped,
-    autoRotate,
-    setAutoRotate,
-    showEffects,
-    setShowEffects,
-    mousePosition,
-    setMousePosition,
-    isHovering,
-    setIsHovering,
-    isHoveringControls,
-    setIsHoveringControls,
-    handleReset,
-    handleZoom,
-    handleResetCamera,
-    onCardClick
-  } = viewerStateHook;
+  // Use the unified state hook
+  const { state, actions, validateEffectState, isApplyingPreset } = useUnifiedCardState(card);
 
   // Viewer interactions manager
   const {
@@ -70,34 +41,34 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
     allowRotation,
     cards,
     currentCardIndex,
-    showCustomizePanel: viewerState.showCustomizePanel,
+    showCustomizePanel: state.showCustomizePanel,
     showStats,
-    autoRotate,
-    isDragging,
-    rotation,
-    dragStart,
-    setIsDragging,
-    setDragStart,
-    setAutoRotate,
-    setRotation,
-    setMousePosition,
-    setIsHoveringControls,
-    handleZoom
+    autoRotate: state.autoRotate,
+    isDragging: state.isDragging,
+    rotation: state.rotation,
+    dragStart: state.dragStart,
+    setIsDragging: actions.setIsDragging,
+    setDragStart: actions.setDragStart,
+    setAutoRotate: actions.setAutoRotate,
+    setRotation: actions.setRotation,
+    setMousePosition: actions.setMousePosition,
+    setIsHoveringControls: actions.setIsHoveringControls,
+    handleZoom: actions.handleZoom
   });
 
   // Export functionality
   const { exportCard, isExporting, exportProgress } = useCardExport({
     cardRef: cardContainerRef,
     card,
-    onRotationChange: setRotation,
+    onRotationChange: actions.setRotation,
     onEffectChange: () => {},
-    effectValues: {}
+    effectValues: state.effectValues
   });
 
   // Enhanced reset that includes all state
   const handleResetWithEffects = (resetAllEffects: () => void) => {
     console.log('🔄 ImmersiveCardViewer: Reset with effects');
-    handleReset();
+    actions.handleReset();
     resetAllEffects();
   };
 
@@ -132,7 +103,7 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
   return (
     <ViewerEffectsManager
       card={card}
-      viewerState={viewerState}
+      viewerState={state}
       onEffectChange={(effectId, parameterId, value) => {
         console.log('🎛️ ImmersiveCardViewer: Effect change received:', { effectId, parameterId, value });
       }}
@@ -178,78 +149,78 @@ export const ImmersiveCardViewer: React.FC<ExtendedImmersiveCardViewerProps> = (
               currentCardIndex={currentCardIndex}
               onCardChange={onCardChange}
               onClose={onClose}
-              isFullscreen={isFullscreen}
-              showCustomizePanel={viewerState.showCustomizePanel}
+              isFullscreen={state.isFullscreen}
+              showCustomizePanel={state.showCustomizePanel}
               setShowCustomizePanel={actions.setShowCustomizePanel}
-              isHovering={isHovering}
-              setIsHovering={setIsHovering}
-              isHoveringControls={isHoveringControls}
-              showEffects={showEffects}
-              setShowEffects={setShowEffects}
-              autoRotate={autoRotate}
-              setAutoRotate={setAutoRotate}
-              isFlipped={isFlipped}
-              setIsFlipped={setIsFlipped}
+              isHovering={state.isHovering}
+              setIsHovering={actions.setIsHovering}
+              isHoveringControls={state.isHoveringControls}
+              showEffects={state.showEffects}
+              setShowEffects={actions.setShowEffects}
+              autoRotate={state.autoRotate}
+              setAutoRotate={actions.setAutoRotate}
+              isFlipped={state.isFlipped}
+              setIsFlipped={actions.setIsFlipped}
               showStats={showStats}
               effectValues={effectValues}
-              selectedScene={viewerState.selectedScene}
-              selectedLighting={viewerState.selectedLighting}
-              materialSettings={viewerState.materialSettings}
-              overallBrightness={viewerState.overallBrightness}
-              interactiveLighting={viewerState.interactiveLighting}
-              mousePosition={mousePosition}
-              rotation={rotation}
-              zoom={zoom}
-              isDragging={isDragging}
+              selectedScene={state.selectedScene}
+              selectedLighting={state.selectedLighting}
+              materialSettings={state.materialSettings}
+              overallBrightness={state.overallBrightness}
+              interactiveLighting={state.interactiveLighting}
+              mousePosition={state.mousePosition}
+              rotation={state.rotation}
+              zoom={state.zoom}
+              isDragging={state.isDragging}
               frameStyles={frameStyles}
               enhancedEffectStyles={enhancedEffectStyles}
               SurfaceTexture={<div style={surfaceTextureStyles} />}
-              environmentControls={viewerState.environmentControls}
+              environmentControls={state.environmentControls}
               containerRef={containerRef}
               cardContainerRef={cardContainerRef}
               handleMouseMove={handleMouseMove}
               handleDragStart={handleDragStart}
               handleDrag={handleDrag}
               handleDragEnd={handleDragEnd}
-              handleZoom={handleZoom}
+              handleZoom={actions.handleZoom}
               handleResetWithEffects={() => handleResetWithEffects(resetAllEffects)}
-              handleResetCamera={handleResetCamera}
-              onCardClick={onCardClick}
+              handleResetCamera={actions.handleResetCamera}
+              onCardClick={actions.onCardClick}
               hasMultipleCards={hasMultipleCards}
-              solidCardTransition={viewerState.solidCardTransition}
-              selectedPresetId={viewerState.selectedPresetId}
+              solidCardTransition={state.solidCardTransition}
+              selectedPresetId={state.selectedPresetId}
             />
           </ViewerActionsManager>
 
           {/* Studio Panel with Environment Controls */}
           <StudioPanel
-            isVisible={viewerState.showCustomizePanel}
+            isVisible={state.showCustomizePanel}
             onClose={() => actions.setShowCustomizePanel(false)}
-            selectedScene={viewerState.selectedScene}
-            selectedLighting={viewerState.selectedLighting}
+            selectedScene={state.selectedScene}
+            selectedLighting={state.selectedLighting}
             effectValues={effectValues}
-            overallBrightness={viewerState.overallBrightness}
-            interactiveLighting={viewerState.interactiveLighting}
-            materialSettings={viewerState.materialSettings}
-            environmentControls={viewerState.environmentControls}
+            overallBrightness={state.overallBrightness}
+            interactiveLighting={state.interactiveLighting}
+            materialSettings={state.materialSettings}
+            environmentControls={state.environmentControls}
             onSceneChange={actions.setSelectedScene}
             onLightingChange={actions.setSelectedLighting}
             onEffectChange={handleEffectChange}
             onBrightnessChange={actions.setOverallBrightness}
-            onInteractiveLightingToggle={() => actions.setInteractiveLighting(!viewerState.interactiveLighting)}
+            onInteractiveLightingToggle={() => actions.setInteractiveLighting(!state.interactiveLighting)}
             onMaterialSettingsChange={actions.setMaterialSettings}
-            selectedPresetId={viewerState.selectedPresetId}
+            selectedPresetId={state.selectedPresetId}
             onPresetSelect={actions.setSelectedPresetId}
             onApplyCombo={(combo) => handleApplyCombo(combo, applyPreset)}
             isApplyingPreset={isApplyingPreset}
-            onResetCamera={handleResetCamera}
-            solidCardTransition={viewerState.solidCardTransition}
+            onResetCamera={actions.handleResetCamera}
+            solidCardTransition={state.solidCardTransition}
             onSolidCardTransitionChange={actions.setSolidCardTransition}
           />
 
           {/* Export Options Dialog */}
           <ExportOptionsDialog
-            isOpen={viewerState.showExportDialog}
+            isOpen={state.showExportDialog}
             onClose={() => actions.setShowExportDialog(false)}
             onExport={exportCard}
             isExporting={isExporting}
