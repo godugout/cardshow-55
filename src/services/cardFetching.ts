@@ -6,6 +6,26 @@ import type { Tables } from '@/integrations/supabase/types';
 type Card = Tables<'cards'>;
 
 export class CardFetchingService {
+  /**
+   * Fetch only featured cards for better performance
+   */
+  static async fetchFeaturedCards(): Promise<Card[]> {
+    try {
+      console.log('🔍 Fetching featured cards only...');
+      
+      const result = await CardRepository.getCards({
+        pageSize: 4, // Only load what we need for featured section
+        includePrivate: false
+      });
+      
+      console.log(`✅ Fetched ${result.cards.length} featured cards`);
+      return result.cards.slice(0, 4); // Take first 4 as featured
+    } catch (error) {
+      console.error('💥 Error fetching featured cards:', error);
+      return [];
+    }
+  }
+
   static async fetchAllCardsFromDatabase(): Promise<{
     cards: Card[];
     dataSource: 'database' | 'local' | 'mixed';

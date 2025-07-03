@@ -21,6 +21,15 @@ export const useCards = () => {
     updateDataSource
   } = useCardsState();
 
+  const fetchFeaturedCards = useCallback(async () => {
+    console.log('🔍 Starting fetchFeaturedCards...');
+    const featuredCards = await CardFetchingService.fetchFeaturedCards();
+    console.log(`📊 Fetched ${featuredCards.length} featured cards`);
+    updateCards(featuredCards); // Update featured cards only initially
+    updateDataSource('database');
+    return featuredCards;
+  }, [updateCards, updateDataSource]);
+
   const fetchAllCardsFromDatabase = useCallback(async () => {
     console.log('🔍 Starting fetchAllCardsFromDatabase...');
     const { cards: fetchedCards, dataSource: source } = await CardFetchingService.fetchAllCardsFromDatabase();
@@ -44,21 +53,29 @@ export const useCards = () => {
     return userCardsData;
   }, [user?.id, updateUserCards]);
 
-  const fetchCards = useCallback(async () => {
+  const fetchCards = useCallback(async (loadAll = false) => {
     console.log('🔄 Starting card fetch process...');
     setLoading(true);
     try {
-      await Promise.all([
-        fetchAllCardsFromDatabase(),
-        fetchUserCards()
-      ]);
+      if (loadAll) {
+        await Promise.all([
+          fetchAllCardsFromDatabase(),
+          fetchUserCards()
+        ]);
+      } else {
+        // For initial load, only fetch featured cards for better performance
+        await Promise.all([
+          fetchFeaturedCards(),
+          fetchUserCards()
+        ]);
+      }
       console.log('✅ Card fetch completed successfully');
     } catch (error) {
       console.error('💥 Error in fetchCards:', error);
     } finally {
       setLoading(false);
     }
-  }, [fetchAllCardsFromDatabase, fetchUserCards, setLoading]);
+  }, [fetchFeaturedCards, fetchAllCardsFromDatabase, fetchUserCards, setLoading]);
 
   // Enhanced migration with detailed error reporting
   const migrateLocalCardsToDatabase = useCallback(async () => {
@@ -158,6 +175,7 @@ export const useCards = () => {
     loading,
     dataSource,
     fetchCards,
+    fetchFeaturedCards,
     fetchAllCardsFromDatabase,
     fetchUserCards,
     migrateLocalCardsToDatabase

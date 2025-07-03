@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { OptimizedImage } from "./OptimizedImage";
 
 const formatCredits = (amount: number | string) => {
   const n = typeof amount === "number" ? amount : parseInt(amount);
@@ -49,20 +50,13 @@ export const CardItem: React.FC<CardItemProps> = ({
   return (
     <div className="self-stretch flex min-w-60 flex-col items-stretch justify-center grow shrink w-[205px] my-auto">
       <div className="justify-center items-stretch bg-[#CDB4DB] flex w-full flex-col overflow-hidden rounded-2xl">
-        <div className="aspect-[0.84] w-full relative bg-gray-200">
-          {imageLoading && (
-            <div className="absolute inset-0 bg-gray-300 animate-pulse rounded-t-2xl"></div>
-          )}
-          <img
-            src={displayImage}
-            className={`aspect-[0.84] object-cover w-full rounded-t-2xl transition-opacity duration-200 ${
-              imageLoading ? 'opacity-0' : 'opacity-100'
-            }`}
-            alt={title}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-          />
-        </div>
+        <OptimizedImage
+          src={image}
+          alt={title}
+          className="aspect-[0.84] object-cover w-full rounded-t-2xl"
+          size="medium"
+          fallbackSrc={placeholderImage}
+        />
       </div>
       <div className="flex w-full flex-col items-stretch justify-center py-5 rounded-[0px_0px_16px_16px]">
         <div className="flex w-full items-center gap-1.5 font-semibold justify-between">

@@ -1,6 +1,7 @@
 
 import React from "react";
 import { CardItem } from "../shared/CardItem";
+import { OptimizedImage } from "../shared/OptimizedImage";
 import { useCards } from "@/hooks/useCards";
 import { Skeleton } from "@/components/ui/skeleton";
 
