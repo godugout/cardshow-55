@@ -50,7 +50,7 @@
 
 /* Washington - Red, white, and navy theme */
 [data-theme="washington"] {
-  --theme-navbar-bg: 210 20 98; /* HSL for light background */
+  --theme-navbar-bg: 0 0 100; /* HSL for pure white background */
   --theme-navbar-border: 0 83 51; /* HSL for red */
   --theme-text-primary: 222 84 16; /* HSL for navy */
   --theme-text-secondary: 215 25 25; /* HSL for slate */
@@ -89,7 +89,7 @@
 
 /* Toronto - Blue and white theme */
 [data-theme="toronto"] {
-  --theme-navbar-bg: 210 20 98; /* HSL for light background */
+  --theme-navbar-bg: 200 100 90; /* HSL for baby blue background */
   --theme-navbar-border: 217 91 60; /* HSL for blue */
   --theme-text-primary: 222 84 16; /* HSL for navy */
   --theme-text-secondary: 215 25 34; /* HSL for slate */
