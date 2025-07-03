@@ -37,7 +37,7 @@
 /* Logo-specific theme variations */
 /* SF Orange - Orange and white/cream theme */
 [data-theme="sf-orange"] {
-  --theme-navbar-bg: 32 25 9; /* HSL for cream/light orange */
+  --theme-navbar-bg: 25 100 95; /* HSL for light orange/cream background */
   --theme-navbar-border: 25 89 61; /* HSL for orange */
   --theme-text-primary: 0 0 7; /* HSL for dark text */
   --theme-text-secondary: 214 13 34; /* HSL for gray */
@@ -102,20 +102,20 @@
 
 /* Cardshow Basic - Clean grayscale theme */
 [data-theme="cardshow-basic"] {
-  --theme-navbar-bg: 0 0 8; /* HSL for dark */
+  --theme-navbar-bg: 240 5 92; /* HSL for light gray background */
   --theme-navbar-border: 240 5 27; /* HSL for gray */
-  --theme-text-primary: 0 0 96; /* HSL for white */
-  --theme-text-secondary: 240 4 65; /* HSL for light gray */
-  --theme-text-active: 0 0 96; /* HSL for white */
-  --theme-cta-bg: 0 0 96; /* HSL for white */
-  --theme-cta-text: 240 6 11; /* HSL for dark */
-  --theme-accent: 240 4 65; /* HSL for gray */
-  --theme-accent-hover: 240 2 83; /* HSL for lighter gray */
+  --theme-text-primary: 240 6 11; /* HSL for dark text */
+  --theme-text-secondary: 240 4 45; /* HSL for medium gray */
+  --theme-text-active: 240 6 11; /* HSL for dark */
+  --theme-cta-bg: 240 6 11; /* HSL for dark */
+  --theme-cta-text: 0 0 96; /* HSL for white */
+  --theme-accent: 240 5 27; /* HSL for gray */
+  --theme-accent-hover: 240 5 35; /* HSL for darker gray */
 }
 
 /* Cardshow Green - CRD signature green theme */
 [data-theme="cardshow-green"] {
-  --theme-navbar-bg: 0 0 8; /* HSL for dark */
+  --theme-navbar-bg: 142 30 15; /* HSL for dark green background */
   --theme-navbar-border: 142 42 55; /* HSL for green */
   --theme-text-primary: 0 0 99; /* HSL for white */
   --theme-text-secondary: 225 11 51; /* HSL for gray */
