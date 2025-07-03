@@ -9,7 +9,6 @@ import Index from '@/pages/Index';
 import CreateCard from '@/pages/CreateCard';
 import Gallery from '@/pages/Gallery';
 import Studio from '@/pages/Studio';
-import CRDStudio from '@/pages/CRDStudio';
 
 const App = () => {
   return (
@@ -24,7 +23,6 @@ const App = () => {
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/studio" element={<Studio />} />
               <Route path="/studio/:cardId" element={<Studio />} />
-              <Route path="/crd-studio/*" element={<CRDStudio />} />
             </Routes>
             <Toaster 
               position="top-right"

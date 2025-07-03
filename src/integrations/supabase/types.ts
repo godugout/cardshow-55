@@ -629,15 +629,11 @@ export type Database = {
           edition_number: number | null
           favorite_count: number | null
           id: string
-          image_locked: boolean | null
           image_url: string | null
           is_public: boolean | null
           is_tradeable: boolean | null
-          locked_image_url: string | null
           mana_cost: Json | null
           marketplace_listing: boolean | null
-          minting_metadata: Json | null
-          minting_status: string | null
           name: string | null
           power: number | null
           price: number | null
@@ -647,7 +643,6 @@ export type Database = {
           royalty_percentage: number | null
           serial_number: number | null
           series: string | null
-          series_one_number: number | null
           set_id: string | null
           tags: string[] | null
           team_id: string | null
@@ -678,15 +673,11 @@ export type Database = {
           edition_number?: number | null
           favorite_count?: number | null
           id?: string
-          image_locked?: boolean | null
           image_url?: string | null
           is_public?: boolean | null
           is_tradeable?: boolean | null
-          locked_image_url?: string | null
           mana_cost?: Json | null
           marketplace_listing?: boolean | null
-          minting_metadata?: Json | null
-          minting_status?: string | null
           name?: string | null
           power?: number | null
           price?: number | null
@@ -696,7 +687,6 @@ export type Database = {
           royalty_percentage?: number | null
           serial_number?: number | null
           series?: string | null
-          series_one_number?: number | null
           set_id?: string | null
           tags?: string[] | null
           team_id?: string | null
@@ -727,15 +717,11 @@ export type Database = {
           edition_number?: number | null
           favorite_count?: number | null
           id?: string
-          image_locked?: boolean | null
           image_url?: string | null
           is_public?: boolean | null
           is_tradeable?: boolean | null
-          locked_image_url?: string | null
           mana_cost?: Json | null
           marketplace_listing?: boolean | null
-          minting_metadata?: Json | null
-          minting_status?: string | null
           name?: string | null
           power?: number | null
           price?: number | null
@@ -745,7 +731,6 @@ export type Database = {
           royalty_percentage?: number | null
           serial_number?: number | null
           series?: string | null
-          series_one_number?: number | null
           set_id?: string | null
           tags?: string[] | null
           team_id?: string | null

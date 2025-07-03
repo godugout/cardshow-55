@@ -31,7 +31,7 @@ interface EnhancedCardContainerProps {
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
-  
+  onClick: (event: React.MouseEvent) => void;
   environmentControls?: EnvironmentControls;
   solidCardTransition?: boolean;
 }
@@ -59,6 +59,7 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
+  onClick,
   environmentControls = {
     depthOfField: 1.0,
     parallaxIntensity: 1.0,
@@ -89,12 +90,10 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
   const effectiveSurfaceTextureFront = cachedEffects?.SurfaceTexture || SurfaceTexture;
   const effectiveSurfaceTextureBack = undefined;
 
-  // Calculate the final rotation - only use manual flip state for face visibility
-  const showBack = isFlipped;
-  
+  // Calculate the final rotation including the flip
   const finalRotation = {
     x: rotation.x,
-    y: rotation.y,
+    y: rotation.y + (isFlipped ? 180 : 0),
   };
 
   return (
@@ -109,116 +108,60 @@ export const EnhancedCardContainer: React.FC<EnhancedCardContainerProps> = ({
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onClick={onClick}
     >
-      {/* 3D Card with Realistic Thickness */}
+      {/* This acts as the 3D stage */}
       <div
         className="relative"
         style={{
           width: '400px',
           height: '560px',
+          transform: `perspective(1000px) rotateX(${finalRotation.x}deg) rotateY(${finalRotation.y}deg)`,
           transformStyle: 'preserve-3d',
           transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
+          filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`
         }}
       >
-        {/* Card Container with 3D Transform */}
+        {/* Card front: sits on front */}
         <div
+          className="absolute inset-0"
           style={{
-            width: '100%',
-            height: '100%',
-            transformStyle: 'preserve-3d',
-            transform: `perspective(1000px) rotateX(${finalRotation.x}deg) rotateY(${finalRotation.y}deg)`,
-            filter: `drop-shadow(0 25px 50px rgba(0,0,0,${interactiveLighting && isHovering ? 0.9 : 0.8}))`
+            backfaceVisibility: 'hidden',
+            transform: 'rotateY(0deg)'
           }}
         >
-          {/* CARD FRONT - Original Image Side */}
-          <div
-            className="absolute inset-0 rounded-xl overflow-hidden"
-            style={{
-              backfaceVisibility: 'hidden',
-              transform: 'translateZ(3px)', // Front face with proper spacing
-              background: '#ffffff'
-            }}
-          >
-            <CardFrontContainer
-              card={card}
-              rotation={finalRotation}
-              isHovering={isHovering}
-              showEffects={showEffects}
-              effectValues={effectValues}
-              mousePosition={mousePosition}
-              frameStyles={effectiveFrameStyles}
-              enhancedEffectStyles={effectiveEnhancedEffectStyles}
-              SurfaceTexture={effectiveSurfaceTextureFront}
-              interactiveLighting={interactiveLighting}
-            />
-          </div>
-
-          {/* CARD BACK - CRD Logo Side */}
-          <div
-            className="absolute inset-0 rounded-xl overflow-hidden"
-            style={{
-              backfaceVisibility: 'hidden',
-              transform: 'rotateY(-180deg) translateZ(-3px)', // Back face flipped correctly with proper spacing
-              background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
-            }}
-          >
-            <CardBackContainer
-              rotation={finalRotation}
-              isHovering={isHovering}
-              showEffects={false} // Never show effects on back
-              effectValues={effectValues}
-              mousePosition={mousePosition}
-              frameStyles={effectiveFrameStyles}
-              enhancedEffectStyles={effectiveEnhancedEffectStyles}
-              SurfaceTexture={undefined} // No texture on back
-              interactiveLighting={interactiveLighting}
-            />
-          </div>
-
-          {/* Card Thickness/Edges - Create 3D depth */}
-          <div
-            className="absolute inset-0"
-            style={{
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            {/* Top Edge */}
-            <div
-              className="absolute top-0 left-0 right-0 h-1"
-              style={{
-                background: 'linear-gradient(90deg, #2a2a2a 0%, #404040 50%, #2a2a2a 100%)',
-                transform: 'rotateX(90deg) translateZ(3px)',
-                transformOrigin: 'top'
-              }}
-            />
-            {/* Bottom Edge */}
-            <div
-              className="absolute bottom-0 left-0 right-0 h-1"
-              style={{
-                background: 'linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)',
-                transform: 'rotateX(-90deg) translateZ(3px)',
-                transformOrigin: 'bottom'
-              }}
-            />
-            {/* Left Edge */}
-            <div
-              className="absolute top-0 bottom-0 left-0 w-1"
-              style={{
-                background: 'linear-gradient(180deg, #2a2a2a 0%, #404040 50%, #1a1a1a 100%)',
-                transform: 'rotateY(-90deg) translateZ(3px)',
-                transformOrigin: 'left'
-              }}
-            />
-            {/* Right Edge */}
-            <div
-              className="absolute top-0 bottom-0 right-0 w-1"
-              style={{
-                background: 'linear-gradient(180deg, #2a2a2a 0%, #404040 50%, #1a1a1a 100%)',
-                transform: 'rotateY(90deg) translateZ(3px)',
-                transformOrigin: 'right'
-              }}
-            />
-          </div>
+          <CardFrontContainer
+            card={card}
+            rotation={finalRotation}
+            isHovering={isHovering}
+            showEffects={showEffects}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            frameStyles={effectiveFrameStyles}
+            enhancedEffectStyles={effectiveEnhancedEffectStyles}
+            SurfaceTexture={effectiveSurfaceTextureFront}
+            interactiveLighting={interactiveLighting}
+          />
+        </div>
+        {/* Card back: sits on back, flipped */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)'
+          }}
+        >
+          <CardBackContainer
+            rotation={finalRotation}
+            isHovering={isHovering}
+            showEffects={showEffects}
+            effectValues={effectValues}
+            mousePosition={mousePosition}
+            frameStyles={effectiveFrameStyles}
+            enhancedEffectStyles={effectiveEnhancedEffectStyles}
+            SurfaceTexture={effectiveSurfaceTextureBack}
+            interactiveLighting={interactiveLighting}
+          />
         </div>
       </div>
     </div>

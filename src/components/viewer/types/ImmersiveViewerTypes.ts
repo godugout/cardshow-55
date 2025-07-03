@@ -21,24 +21,8 @@ export interface ExtendedImmersiveCardViewerProps extends ImmersiveCardViewerPro
 }
 
 export interface ViewerState {
-  // Viewer state
-  isFullscreen: boolean;
-  rotation: { x: number; y: number };
-  isDragging: boolean;
-  dragStart: { x: number; y: number };
-  zoom: number;
-  isFlipped: boolean;
-  autoRotate: boolean;
-  showEffects: boolean;
-  mousePosition: { x: number; y: number };
-  isHovering: boolean;
-  isHoveringControls: boolean;
-
-  // UI state
   showCustomizePanel: boolean;
   showExportDialog: boolean;
-
-  // Environment state
   selectedScene: EnvironmentScene;
   selectedLighting: LightingPreset;
   overallBrightness: number[];
@@ -52,7 +36,4 @@ export interface ViewerState {
     fieldOfView: number;
     atmosphericDensity: number;
   };
-
-  // Effects state
-  effectValues: EffectValues;
 }

@@ -123,14 +123,34 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
     hasNavigation: hasMultipleCards,
   });
 
-  // Keyboard shortcuts (removed flip functionality)
+  // Keyboard shortcuts
   useKeyboardShortcuts({
     onToggleEffects: () => setShowEffects(!showEffects),
     onToggleFullscreen: () => {}, // Will be implemented in parent
     onResetCard: handleResetWithEffects,
-    onToggleFlip: () => {}, // Disabled
+    onToggleFlip: () => setIsFlipped(!isFlipped),
     onTogglePanel: () => setShowCustomizePanel(!showCustomizePanel),
     isActive: true
+  });
+
+  const handleCanvasDoubleClick = useDoubleClick({
+    onDoubleClick: (event: React.MouseEvent) => {
+      // Prevent flipping if click is on the card container itself
+      if (cardContainerRef.current && cardContainerRef.current.contains(event.target as Node)) {
+        return;
+      }
+
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        if (!isInSafeZone(event.clientX, event.clientY, rect)) {
+          // Prevent flip on interactive elements within overlays
+          const target = event.target as HTMLElement;
+          if (!target.closest('button, a, input, [role="slider"], [data-radix-collection-item]')) {
+            setIsFlipped(!isFlipped);
+          }
+        }
+      }
+    },
   });
 
   return (
@@ -149,6 +169,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleDragEnd}
       onMouseLeave={handleDragEnd}
+      onClick={handleCanvasDoubleClick}
     >
       <BackgroundRenderer
         selectedScene={selectedScene}
@@ -205,6 +226,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
         cards={cards}
         currentCardIndex={currentCardIndex}
         onCardChange={onCardChange}
+        setIsFlipped={setIsFlipped}
       />
 
       {/* Enhanced Card Container */}
@@ -233,7 +255,7 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
           onMouseMove={handleDrag}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          
+          onClick={onCardClick}
           solidCardTransition={solidCardTransition}
         />
       </div>

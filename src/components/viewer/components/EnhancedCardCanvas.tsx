@@ -97,6 +97,19 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
+      {/* CRD Logo Branding - Upper Right */}
+      <div className="absolute top-4 right-4 z-50">
+        <img 
+          src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
+          alt="CRD Logo" 
+          className="w-16 h-auto opacity-60 hover:opacity-80 transition-opacity duration-200"
+          style={{
+            filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
+          }}
+          onLoad={() => console.log('Canvas CRD branding logo loaded successfully')}
+          onError={() => console.log('Error loading Canvas CRD branding logo')}
+        />
+      </div>
 
       {/* Enhanced Card Container with continuous rotation */}
       <EnhancedCardContainer
@@ -125,7 +138,7 @@ export const EnhancedCardCanvas: React.FC<EnhancedCardCanvasProps> = ({
           setIsDragging(false);
           onMouseLeave();
         }}
-        
+        onClick={() => {}} // Remove flip functionality
       />
 
       {/* Updated instruction */}
