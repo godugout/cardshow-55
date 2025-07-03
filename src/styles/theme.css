@@ -22,212 +22,212 @@
   --crd-error: #ff4444;
   --crd-info: #3772FF;
 
-  /* Dynamic Theme Variables - Updated by logo selection */
-  --theme-navbar-bg: 20 20 20; /* HSL values without hsl() wrapper */
-  --theme-navbar-border: 35 57 69;
-  --theme-text-primary: 252 252 253;
-  --theme-text-secondary: 119 126 144;
-  --theme-text-active: 69 178 107;
-  --theme-cta-bg: 69 178 107;
-  --theme-cta-text: 18 18 18;
-  --theme-accent: 69 178 107;
-  --theme-accent-hover: 89 198 127;
+/* Dynamic Theme Variables - Updated by logo selection */
+  --theme-navbar-bg: 0 0 8; /* HSL values without hsl() wrapper */
+  --theme-navbar-border: 140 17 24;
+  --theme-text-primary: 0 0 99;
+  --theme-text-secondary: 225 11 51;
+  --theme-text-active: 142 42 55;
+  --theme-cta-bg: 142 42 55;
+  --theme-cta-text: 0 0 7;
+  --theme-accent: 142 42 55;
+  --theme-accent-hover: 142 52 65;
 }
 
 /* Logo-specific theme variations */
 /* SF Orange - Orange and white/cream theme */
 [data-theme="sf-orange"] {
-  --theme-navbar-bg: 252 250 247;
-  --theme-navbar-border: 251 146 60;
-  --theme-text-primary: 18 18 18;
-  --theme-text-secondary: 75 85 99;
-  --theme-text-active: 234 88 12;
-  --theme-cta-bg: 239 68 68;
-  --theme-cta-text: 255 255 255;
-  --theme-accent: 251 146 60;
-  --theme-accent-hover: 234 88 12;
+  --theme-navbar-bg: 32 25 9; /* HSL for cream/light orange */
+  --theme-navbar-border: 25 89 61; /* HSL for orange */
+  --theme-text-primary: 0 0 7; /* HSL for dark text */
+  --theme-text-secondary: 214 13 34; /* HSL for gray */
+  --theme-text-active: 17 91 48; /* HSL for active orange */
+  --theme-cta-bg: 0 84 60; /* HSL for red CTA */
+  --theme-cta-text: 0 0 100; /* HSL for white */
+  --theme-accent: 25 89 61; /* HSL for orange accent */
+  --theme-accent-hover: 17 91 48; /* HSL for darker orange */
 }
 
 /* Washington - Red, white, and navy theme */
 [data-theme="washington"] {
-  --theme-navbar-bg: 248 250 252;
-  --theme-navbar-border: 220 38 38;
-  --theme-text-primary: 15 23 42;
-  --theme-text-secondary: 51 65 85;
-  --theme-text-active: 220 38 38;
-  --theme-cta-bg: 29 78 216;
-  --theme-cta-text: 255 255 255;
-  --theme-accent: 220 38 38;
-  --theme-accent-hover: 185 28 28;
+  --theme-navbar-bg: 210 20 98; /* HSL for light background */
+  --theme-navbar-border: 0 83 51; /* HSL for red */
+  --theme-text-primary: 222 84 16; /* HSL for navy */
+  --theme-text-secondary: 215 25 25; /* HSL for slate */
+  --theme-text-active: 0 83 51; /* HSL for red */
+  --theme-cta-bg: 225 90 60; /* HSL for blue */
+  --theme-cta-text: 0 0 100; /* HSL for white */
+  --theme-accent: 0 83 51; /* HSL for red */
+  --theme-accent-hover: 0 74 42; /* HSL for darker red */
 }
 
 /* Oakland - Green and gold theme */
 [data-theme="oakland"] {
-  --theme-navbar-bg: 20 83 45;
-  --theme-navbar-border: 34 197 94;
-  --theme-text-primary: 255 255 255;
-  --theme-text-secondary: 187 247 208;
-  --theme-text-active: 250 204 21;
-  --theme-cta-bg: 250 204 21;
-  --theme-cta-text: 20 83 45;
-  --theme-accent: 34 197 94;
-  --theme-accent-hover: 22 163 74;
+  --theme-navbar-bg: 149 76 21; /* HSL for forest green */
+  --theme-navbar-border: 142 71 45; /* HSL for green */
+  --theme-text-primary: 0 0 100; /* HSL for white */
+  --theme-text-secondary: 142 78 85; /* HSL for light green */
+  --theme-text-active: 50 91 53; /* HSL for gold */
+  --theme-cta-bg: 50 91 53; /* HSL for gold */
+  --theme-cta-text: 149 76 21; /* HSL for dark green */
+  --theme-accent: 142 71 45; /* HSL for green */
+  --theme-accent-hover: 142 76 36; /* HSL for darker green */
 }
 
 /* Pittsburgh - Black and gold theme */
 [data-theme="pittsburgh"] {
-  --theme-navbar-bg: 24 24 27;
-  --theme-navbar-border: 250 204 21;
-  --theme-text-primary: 250 204 21;
-  --theme-text-secondary: 161 161 170;
-  --theme-text-active: 250 204 21;
-  --theme-cta-bg: 250 204 21;
-  --theme-cta-text: 24 24 27;
-  --theme-accent: 250 204 21;
-  --theme-accent-hover: 234 179 8;
+  --theme-navbar-bg: 240 6 10; /* HSL for black */
+  --theme-navbar-border: 50 91 53; /* HSL for gold */
+  --theme-text-primary: 50 91 53; /* HSL for gold */
+  --theme-text-secondary: 240 3 65; /* HSL for gray */
+  --theme-text-active: 50 91 53; /* HSL for gold */
+  --theme-cta-bg: 50 91 53; /* HSL for gold */
+  --theme-cta-text: 240 6 10; /* HSL for black */
+  --theme-accent: 50 91 53; /* HSL for gold */
+  --theme-accent-hover: 50 93 47; /* HSL for darker gold */
 }
 
 /* Toronto - Blue and white theme */
 [data-theme="toronto"] {
-  --theme-navbar-bg: 248 250 252;
-  --theme-navbar-border: 59 130 246;
-  --theme-text-primary: 15 23 42;
-  --theme-text-secondary: 71 85 105;
-  --theme-text-active: 29 78 216;
-  --theme-cta-bg: 29 78 216;
-  --theme-cta-text: 255 255 255;
-  --theme-accent: 59 130 246;
-  --theme-accent-hover: 37 99 235;
+  --theme-navbar-bg: 210 20 98; /* HSL for light background */
+  --theme-navbar-border: 217 91 60; /* HSL for blue */
+  --theme-text-primary: 222 84 16; /* HSL for navy */
+  --theme-text-secondary: 215 25 34; /* HSL for slate */
+  --theme-text-active: 225 90 60; /* HSL for blue */
+  --theme-cta-bg: 225 90 60; /* HSL for blue */
+  --theme-cta-text: 0 0 100; /* HSL for white */
+  --theme-accent: 217 91 60; /* HSL for blue */
+  --theme-accent-hover: 217 92 54; /* HSL for darker blue */
 }
 
 /* Cardshow Basic - Clean grayscale theme */
 [data-theme="cardshow-basic"] {
-  --theme-navbar-bg: 20 20 20;
-  --theme-navbar-border: 63 63 70;
-  --theme-text-primary: 244 244 245;
-  --theme-text-secondary: 161 161 170;
-  --theme-text-active: 244 244 245;
-  --theme-cta-bg: 244 244 245;
-  --theme-cta-text: 24 24 27;
-  --theme-accent: 161 161 170;
-  --theme-accent-hover: 212 212 216;
+  --theme-navbar-bg: 0 0 8; /* HSL for dark */
+  --theme-navbar-border: 240 5 27; /* HSL for gray */
+  --theme-text-primary: 0 0 96; /* HSL for white */
+  --theme-text-secondary: 240 4 65; /* HSL for light gray */
+  --theme-text-active: 0 0 96; /* HSL for white */
+  --theme-cta-bg: 0 0 96; /* HSL for white */
+  --theme-cta-text: 240 6 11; /* HSL for dark */
+  --theme-accent: 240 4 65; /* HSL for gray */
+  --theme-accent-hover: 240 2 83; /* HSL for lighter gray */
 }
 
 /* Cardshow Green - CRD signature green theme */
 [data-theme="cardshow-green"] {
-  --theme-navbar-bg: 20 20 20;
-  --theme-navbar-border: 69 178 107;
-  --theme-text-primary: 252 252 253;
-  --theme-text-secondary: 119 126 144;
-  --theme-text-active: 69 178 107;
-  --theme-cta-bg: 69 178 107;
-  --theme-cta-text: 18 18 18;
-  --theme-accent: 69 178 107;
-  --theme-accent-hover: 89 198 127;
+  --theme-navbar-bg: 0 0 8; /* HSL for dark */
+  --theme-navbar-border: 142 42 55; /* HSL for green */
+  --theme-text-primary: 0 0 99; /* HSL for white */
+  --theme-text-secondary: 225 11 51; /* HSL for gray */
+  --theme-text-active: 142 42 55; /* HSL for green */
+  --theme-cta-bg: 142 42 55; /* HSL for green */
+  --theme-cta-text: 0 0 7; /* HSL for dark */
+  --theme-accent: 142 42 55; /* HSL for green */
+  --theme-accent-hover: 142 52 65; /* HSL for lighter green */
 }
 
 /* Cardshow Green Sparkles - Enhanced green with emerald accents */
 [data-theme="cardshow-green-sparkles"] {
-  --theme-navbar-bg: 6 78 59;
-  --theme-navbar-border: 16 185 129;
-  --theme-text-primary: 236 253 245;
-  --theme-text-secondary: 167 243 208;
-  --theme-text-active: 52 211 153;
-  --theme-cta-bg: 16 185 129;
-  --theme-cta-text: 6 78 59;
-  --theme-accent: 52 211 153;
-  --theme-accent-hover: 34 197 94;
+  --theme-navbar-bg: 162 82 16; /* HSL for dark emerald */
+  --theme-navbar-border: 162 85 59; /* HSL for emerald */
+  --theme-text-primary: 162 85 96; /* HSL for light emerald */
+  --theme-text-secondary: 162 78 80; /* HSL for medium emerald */
+  --theme-text-active: 162 85 70; /* HSL for bright emerald */
+  --theme-cta-bg: 162 85 59; /* HSL for emerald */
+  --theme-cta-text: 162 82 16; /* HSL for dark emerald */
+  --theme-accent: 162 85 70; /* HSL for emerald accent */
+  --theme-accent-hover: 142 71 45; /* HSL for green hover */
 }
 
 /* Cardshow Red/Blue - Patriotic theme */
 [data-theme="cardshow-red-blue"] {
-  --theme-navbar-bg: 30 27 75;
-  --theme-navbar-border: 139 92 246;
-  --theme-text-primary: 255 255 255;
-  --theme-text-secondary: 196 181 253;
-  --theme-text-active: 239 68 68;
-  --theme-cta-bg: 239 68 68;
-  --theme-cta-text: 255 255 255;
-  --theme-accent: 139 92 246;
-  --theme-accent-hover: 124 58 237;
+  --theme-navbar-bg: 243 58 20; /* HSL for dark blue */
+  --theme-navbar-border: 250 70 66; /* HSL for purple */
+  --theme-text-primary: 0 0 100; /* HSL for white */
+  --theme-text-secondary: 250 78 85; /* HSL for light purple */
+  --theme-text-active: 0 84 60; /* HSL for red */
+  --theme-cta-bg: 0 84 60; /* HSL for red */
+  --theme-cta-text: 0 0 100; /* HSL for white */
+  --theme-accent: 250 70 66; /* HSL for purple */
+  --theme-accent-hover: 250 78 58; /* HSL for darker purple */
 }
 
 /* Cardshow Blue - Professional blue theme */
 [data-theme="cardshow-blue"] {
-  --theme-navbar-bg: 30 58 138;
-  --theme-navbar-border: 59 130 246;
-  --theme-text-primary: 255 255 255;
-  --theme-text-secondary: 191 219 254;
-  --theme-text-active: 147 197 253;
-  --theme-cta-bg: 147 197 253;
-  --theme-cta-text: 30 58 138;
-  --theme-accent: 59 130 246;
-  --theme-accent-hover: 37 99 235;
+  --theme-navbar-bg: 225 65 33; /* HSL for dark blue */
+  --theme-navbar-border: 217 91 60; /* HSL for blue */
+  --theme-text-primary: 0 0 100; /* HSL for white */
+  --theme-text-secondary: 217 89 87; /* HSL for light blue */
+  --theme-text-active: 217 92 78; /* HSL for bright blue */
+  --theme-cta-bg: 217 92 78; /* HSL for bright blue */
+  --theme-cta-text: 225 65 33; /* HSL for dark blue */
+  --theme-accent: 217 91 60; /* HSL for blue */
+  --theme-accent-hover: 217 92 54; /* HSL for darker blue */
 }
 
 /* Cardshow Orange - Vibrant orange theme */
 [data-theme="cardshow-orange"] {
-  --theme-navbar-bg: 154 52 18;
-  --theme-navbar-border: 251 146 60;
-  --theme-text-primary: 255 255 255;
-  --theme-text-secondary: 254 215 170;
-  --theme-text-active: 251 191 36;
-  --theme-cta-bg: 251 191 36;
-  --theme-cta-text: 154 52 18;
-  --theme-accent: 251 146 60;
-  --theme-accent-hover: 245 158 11;
+  --theme-navbar-bg: 17 79 34; /* HSL for dark orange */
+  --theme-navbar-border: 25 89 61; /* HSL for orange */
+  --theme-text-primary: 0 0 100; /* HSL for white */
+  --theme-text-secondary: 35 91 83; /* HSL for light orange */
+  --theme-text-active: 44 94 56; /* HSL for golden */
+  --theme-cta-bg: 44 94 56; /* HSL for golden */
+  --theme-cta-text: 17 79 34; /* HSL for dark orange */
+  --theme-accent: 25 89 61; /* HSL for orange */
+  --theme-accent-hover: 33 93 50; /* HSL for darker orange */
 }
 
 /* Cardshow Block - Bold monospace theme */
 [data-theme="cardshow-block"] {
-  --theme-navbar-bg: 30 41 59;
-  --theme-navbar-border: 148 163 184;
-  --theme-text-primary: 248 250 252;
-  --theme-text-secondary: 203 213 225;
-  --theme-text-active: 148 163 184;
-  --theme-cta-bg: 148 163 184;
-  --theme-cta-text: 30 41 59;
-  --theme-accent: 100 116 139;
-  --theme-accent-hover: 71 85 105;
+  --theme-navbar-bg: 214 25 17; /* HSL for dark slate */
+  --theme-navbar-border: 214 14 65; /* HSL for slate */
+  --theme-text-primary: 210 20 98; /* HSL for light */
+  --theme-text-secondary: 214 15 84; /* HSL for light slate */
+  --theme-text-active: 214 14 65; /* HSL for slate */
+  --theme-cta-bg: 214 14 65; /* HSL for slate */
+  --theme-cta-text: 214 25 17; /* HSL for dark slate */
+  --theme-accent: 215 16 47; /* HSL for medium slate */
+  --theme-accent-hover: 215 21 35; /* HSL for darker slate */
 }
 
 /* Cardshow Vintage - Warm vintage theme */
 [data-theme="cardshow-vintage"] {
-  --theme-navbar-bg: 120 53 15;
-  --theme-navbar-border: 245 158 11;
-  --theme-text-primary: 255 251 235;
-  --theme-text-secondary: 253 230 138;
-  --theme-text-active: 245 158 11;
-  --theme-cta-bg: 245 158 11;
-  --theme-cta-text: 120 53 15;
-  --theme-accent: 217 119 6;
-  --theme-accent-hover: 180 83 9;
+  --theme-navbar-bg: 33 78 27; /* HSL for dark amber */
+  --theme-navbar-border: 33 93 50; /* HSL for amber */
+  --theme-text-primary: 48 94 96; /* HSL for cream */
+  --theme-text-secondary: 48 88 77; /* HSL for light amber */
+  --theme-text-active: 33 93 50; /* HSL for amber */
+  --theme-cta-bg: 33 93 50; /* HSL for amber */
+  --theme-cta-text: 33 78 27; /* HSL for dark amber */
+  --theme-accent: 33 94 44; /* HSL for amber accent */
+  --theme-accent-hover: 33 90 37; /* HSL for darker amber */
 }
 
 /* Cardshow Retro - Neon cyan theme */
 [data-theme="cardshow-retro"] {
-  --theme-navbar-bg: 22 78 99;
-  --theme-navbar-border: 34 211 238;
-  --theme-text-primary: 236 254 255;
-  --theme-text-secondary: 165 243 252;
-  --theme-text-active: 103 232 249;
-  --theme-cta-bg: 236 72 153;
-  --theme-cta-text: 255 255 255;
-  --theme-accent: 34 211 238;
-  --theme-accent-hover: 6 182 212;
+  --theme-navbar-bg: 189 68 24; /* HSL for dark cyan */
+  --theme-navbar-border: 186 100 53; /* HSL for cyan */
+  --theme-text-primary: 183 100 96; /* HSL for light cyan */
+  --theme-text-secondary: 186 94 81; /* HSL for medium cyan */
+  --theme-text-active: 186 96 69; /* HSL for bright cyan */
+  --theme-cta-bg: 324 91 60; /* HSL for magenta */
+  --theme-cta-text: 0 0 100; /* HSL for white */
+  --theme-accent: 186 100 53; /* HSL for cyan */
+  --theme-accent-hover: 186 94 43; /* HSL for darker cyan */
 }
 
 /* Cardshow Modern - Contemporary indigo theme */
 [data-theme="cardshow-modern"] {
-  --theme-navbar-bg: 49 46 129;
-  --theme-navbar-border: 129 140 248;
-  --theme-text-primary: 255 255 255;
-  --theme-text-secondary: 199 210 254;
-  --theme-text-active: 165 180 252;
-  --theme-cta-bg: 165 180 252;
-  --theme-cta-text: 49 46 129;
-  --theme-accent: 129 140 248;
-  --theme-accent-hover: 99 102 241;
+  --theme-navbar-bg: 243 75 34; /* HSL for dark indigo */
+  --theme-navbar-border: 236 86 78; /* HSL for indigo */
+  --theme-text-primary: 0 0 100; /* HSL for white */
+  --theme-text-secondary: 236 87 89; /* HSL for light indigo */
+  --theme-text-active: 236 92 82; /* HSL for bright indigo */
+  --theme-cta-bg: 236 92 82; /* HSL for bright indigo */
+  --theme-cta-text: 243 75 34; /* HSL for dark indigo */
+  --theme-accent: 236 86 78; /* HSL for indigo */
+  --theme-accent-hover: 236 87 67; /* HSL for darker indigo */
 }
 
 /* CRD-specific utility classes */
