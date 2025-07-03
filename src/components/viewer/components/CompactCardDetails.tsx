@@ -54,7 +54,7 @@ export const CompactCardDetails: React.FC<CompactCardDetailsProps> = ({
     .sort((a, b) => Number(b.intensity) - Number(a.intensity)) : []; // Convert to primitive numbers for arithmetic
 
   return (
-    <div className="bg-white bg-opacity-20 backdrop-blur border border-white/20 rounded-lg p-4 max-w-sm select-none hover:bg-opacity-30 transition-all duration-200" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
+    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 max-w-sm select-none hover:bg-white/15 transition-all duration-200" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
       {/* Card Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-white font-semibold text-sm truncate max-w-[160px]">
