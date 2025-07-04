@@ -130,6 +130,8 @@ const Studio = () => {
   const viewerCards = mockCards.map(convertCardForViewer);
 
   console.log('🎯 Converted viewer card:', viewerCard.title, 'Image URL:', viewerCard.image_url);
+  console.log('🔍 Studio: Total viewerCards:', viewerCards.length, 'Cards:', viewerCards.map(c => c.title));
+  console.log('🎮 Studio: About to render', viewerCards.slice(0, 2).length, 'card viewers');
 
   const handleViewerShare = (card: any) => {
     // Convert back to original CardData format for the handler
