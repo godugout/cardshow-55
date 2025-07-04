@@ -210,6 +210,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                       playerName={playerName}
                       teamName={teamName}
                       imageUrl={cardData.image_url}
+                      customColors={selectedColorScheme}
                       className="w-full h-full"
                     />
                     <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-1">
@@ -239,7 +240,11 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
               <div className="min-h-[300px]">
                 <TeamColorSelector
                   selectedColorScheme={selectedColorScheme}
-                  onColorSchemeSelect={setSelectedColorScheme}
+                  onColorSchemeSelect={(scheme) => {
+                    setSelectedColorScheme(scheme);
+                    // Force frame re-render with new colors
+                    console.log('Team colors updated:', scheme);
+                  }}
                   className=""
                 />
               </div>
