@@ -8,6 +8,7 @@ import { DatabaseSeedPrompt } from './Studio/components/DatabaseSeedPrompt';
 import { useStudioState } from './Studio/hooks/useStudioState';
 import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { Slider } from '@/components/ui/slider';
 import type { CardData } from '@/types/card';
 
 // Helper function to convert CardData to the format expected by ImmersiveCardViewer
@@ -61,6 +62,7 @@ const Studio = () => {
   const { user } = useAuth();
   const [showSeedPrompt, setShowSeedPrompt] = useState(false);
   const [hasCheckedDatabase, setHasCheckedDatabase] = useState(false);
+  const [cardSpacing, setCardSpacing] = useState([100]); // State for gap between cards
   
   const {
     selectedCard,
@@ -157,10 +159,40 @@ const Studio = () => {
           </div>
         )}
         
-        {/* Dual Card Viewers - show both cards side by side */}
-        <div className="flex justify-center items-center min-h-screen gap-[50px]">
+        {/* Spacing Control Slider */}
+        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-50 bg-crd-darkest/90 backdrop-blur-sm rounded-lg p-4 border border-crd-mediumGray/20">
+          <div className="flex items-center gap-4 min-w-[300px]">
+            <span className="text-white text-sm font-medium whitespace-nowrap">Card Spacing:</span>
+            <div className="flex-1">
+              <Slider
+                value={cardSpacing}
+                onValueChange={setCardSpacing}
+                max={200}
+                min={0}
+                step={10}
+                className="w-full"
+              />
+            </div>
+            <span className="text-crd-green text-sm font-mono w-12 text-right">{cardSpacing[0]}px</span>
+          </div>
+        </div>
+
+        {/* Dual Card Viewers - show both cards side by side with dynamic spacing */}
+        <div 
+          className="flex justify-center items-center min-h-screen"
+          style={{ gap: `${cardSpacing[0]}px` }}
+        >
           {viewerCards.slice(0, 2).map((cardData, index) => (
-            <div key={cardData.id} className="flex-shrink-0">
+            <div 
+              key={cardData.id} 
+              className="flex-shrink-0 relative"
+              style={{ 
+                width: '400px', 
+                height: '600px',
+                border: process.env.NODE_ENV === 'development' ? '2px solid rgba(34, 197, 94, 0.3)' : 'none',
+                borderRadius: '12px'
+              }}
+            >
               <ImmersiveCardViewer
                 card={cardData}
                 cards={viewerCards}
