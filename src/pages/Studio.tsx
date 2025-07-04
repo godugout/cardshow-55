@@ -157,20 +157,26 @@ const Studio = () => {
           </div>
         )}
         
-        {/* Immersive Card Viewer - the navbar logo will show through */}
-        <ImmersiveCardViewer
-          card={viewerCard}
-          cards={viewerCards}
-          currentCardIndex={currentCardIndex}
-          onCardChange={handleCardChange}
-          isOpen={true}
-          onClose={handleClose}
-          onShare={handleViewerShare}
-          onDownload={handleViewerDownload}
-          allowRotation={true}
-          showStats={true}
-          ambient={true}
-        />
+        {/* Dual Card Viewers - show both cards side by side */}
+        <div className="flex justify-center items-center min-h-screen gap-[50px]">
+          {viewerCards.slice(0, 2).map((cardData, index) => (
+            <div key={cardData.id} className="flex-shrink-0">
+              <ImmersiveCardViewer
+                card={cardData}
+                cards={viewerCards}
+                currentCardIndex={index}
+                onCardChange={handleCardChange}
+                isOpen={true}
+                onClose={handleClose}
+                onShare={handleViewerShare}
+                onDownload={handleViewerDownload}
+                allowRotation={true}
+                showStats={false}
+                ambient={true}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </ErrorBoundary>
   );
