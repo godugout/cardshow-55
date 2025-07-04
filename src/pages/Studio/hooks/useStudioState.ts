@@ -46,6 +46,19 @@ export const useStudioState = (cardId?: string) => {
       console.log('⚠️ Falling back to mock cards');
     }
 
+    // Create two copies of the blank card if showing a specific card
+    if (cardId && availableCards.length > 0) {
+      const targetCard = availableCards.find(c => c.id === cardId);
+      if (targetCard) {
+        const duplicatedCard = {
+          ...targetCard,
+          id: `${targetCard.id}-copy`,
+          title: `${targetCard.title} (Copy)`
+        };
+        availableCards = [targetCard, duplicatedCard];
+      }
+    }
+    
     setAllCards(availableCards);
     setDataSource(source);
 
