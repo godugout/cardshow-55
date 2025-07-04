@@ -283,6 +283,28 @@
   box-shadow: 0 4px 12px hsl(var(--theme-accent) / 0.3);
 }
 
+/* Extended theming utilities for all components */
+.border-themed { border-color: hsl(var(--theme-accent) / 0.3); }
+.border-themed-light { border-color: hsl(var(--theme-accent) / 0.1); }
+.border-themed-strong { border-color: hsl(var(--theme-accent)); }
+
+.bg-themed-subtle { background: hsl(var(--theme-accent) / 0.05); }
+.bg-themed-light { background: hsl(var(--theme-accent) / 0.1); }
+.bg-themed-medium { background: hsl(var(--theme-accent) / 0.2); }
+
+.accent-themed { color: hsl(var(--theme-accent)); }
+.accent-themed-hover:hover { color: hsl(var(--theme-accent-hover)); }
+
+/* Focus and active states */
+.focus-themed:focus {
+  outline: 2px solid hsl(var(--theme-accent));
+  outline-offset: 2px;
+}
+
+.ring-themed {
+  --tw-ring-color: hsl(var(--theme-accent) / 0.3);
+}
+
 /* Button variants */
 .btn-crd-primary {
   background-color: var(--crd-green);

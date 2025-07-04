@@ -90,6 +90,18 @@ export default {
           purple: '#9757D7',
           gold: '#FFD700',
         },
+        // Theme-aware colors using CSS variables
+        themed: {
+          'navbar-bg': 'hsl(var(--theme-navbar-bg))',
+          'navbar-border': 'hsl(var(--theme-navbar-border))',
+          'text-primary': 'hsl(var(--theme-text-primary))',
+          'text-secondary': 'hsl(var(--theme-text-secondary))',
+          'text-active': 'hsl(var(--theme-text-active))',
+          'cta-bg': 'hsl(var(--theme-cta-bg))',
+          'cta-text': 'hsl(var(--theme-cta-text))',
+          'accent': 'hsl(var(--theme-accent))',
+          'accent-hover': 'hsl(var(--theme-accent-hover))',
+        },
         // Cardshow colors to match CSS variables
         cardshow: {
           green: 'var(--cardshow-green)',
