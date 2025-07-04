@@ -11,9 +11,9 @@ interface ProgressIndicatorProps {
 
 const stepLabels: Record<CreationStep, string> = {
   intent: 'Intent',
-  upload: 'Upload',
-  details: 'Details',
-  design: 'Design',
+  create: 'Create Card',
+  templates: 'Browse Templates',
+  studio: 'Studio Preview',
   publish: 'Publish',
   complete: 'Complete'
 };

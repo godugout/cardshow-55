@@ -6,9 +6,9 @@ import type { CardData } from '@/hooks/useCardEditor';
 
 // Import step components
 import { IntentStep } from './steps/IntentStep';
-import { PhotoStep } from './steps/PhotoStep';
-import { DetailsStep } from './steps/DetailsStep';
-import { DesignStep } from './steps/DesignStep';
+import { CreateStep } from './steps/CreateStep';
+import { TemplateGalleryStep } from './steps/TemplateGalleryStep';
+import { StudioPreviewStep } from './steps/StudioPreviewStep';
 import { PublishStep } from './steps/PublishStep';
 import { CompleteStep } from './steps/CompleteStep';
 
@@ -39,26 +39,25 @@ export const StepRenderer = ({
           onBulkUpload={() => navigate('/cards/bulk-upload')}
         />
       );
-    case 'upload':
+    case 'create':
       return (
-        <PhotoStep
-          mode={selectedMode}
-          selectedPhoto={cardData.image_url}
-          onPhotoSelect={(photo) => onFieldUpdate('image_url', photo)}
-          cardData={cardData}
-        />
-      );
-    case 'details':
-      return (
-        <DetailsStep
+        <CreateStep
           mode={selectedMode}
           cardData={cardData}
           onFieldUpdate={onFieldUpdate}
         />
       );
-    case 'design':
+    case 'templates':
       return (
-        <DesignStep
+        <TemplateGalleryStep
+          mode={selectedMode}
+          cardData={cardData}
+          onFieldUpdate={onFieldUpdate}
+        />
+      );
+    case 'studio':
+      return (
+        <StudioPreviewStep
           mode={selectedMode}
           cardData={cardData}
           onFieldUpdate={onFieldUpdate}

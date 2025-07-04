@@ -1,7 +1,7 @@
 
 export type CreationMode = 'quick' | 'guided' | 'advanced' | 'bulk';
 
-export type CreationStep = 'intent' | 'upload' | 'details' | 'design' | 'publish' | 'complete';
+export type CreationStep = 'intent' | 'create' | 'templates' | 'studio' | 'publish' | 'complete';
 
 export interface CreationIntent {
   mode: CreationMode;

@@ -17,10 +17,10 @@ interface SimpleCardCreatorProps {
 
 // Static configuration to prevent re-creation
 const STEP_CONFIGS = {
-  quick: ['intent', 'upload', 'details', 'publish'] as CreationStep[],
-  guided: ['intent', 'upload', 'details', 'design', 'publish'] as CreationStep[],
-  advanced: ['intent', 'upload', 'design', 'details', 'publish'] as CreationStep[],
-  bulk: ['intent', 'upload', 'complete'] as CreationStep[]
+  quick: ['intent', 'create', 'templates', 'publish'] as CreationStep[],
+  guided: ['intent', 'create', 'templates', 'studio', 'publish'] as CreationStep[],
+  advanced: ['intent', 'create', 'templates', 'studio', 'publish'] as CreationStep[],
+  bulk: ['intent', 'create', 'complete'] as CreationStep[]
 };
 
 export const SimpleCardCreator = ({
@@ -36,7 +36,7 @@ export const SimpleCardCreator = ({
   // Simple, direct state management
   const [currentMode, setCurrentMode] = useState<CreationMode>(initialMode);
   const [currentStep, setCurrentStep] = useState<CreationStep>(
-    skipIntent ? 'upload' : 'intent'
+    skipIntent ? 'create' : 'intent'
   );
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +65,7 @@ export const SimpleCardCreator = ({
   const handleModeSelect = useCallback((mode: CreationMode) => {
     console.log('🎯 SimpleCardCreator: Mode selected:', mode);
     setCurrentMode(mode);
-    setCurrentStep(skipIntent ? 'upload' : STEP_CONFIGS[mode][1] || 'upload');
+    setCurrentStep(skipIntent ? 'create' : STEP_CONFIGS[mode][1] || 'create');
     setError(null);
   }, [skipIntent]);
 
@@ -101,11 +101,10 @@ export const SimpleCardCreator = ({
     switch (currentStep) {
       case 'intent':
         return true;
-      case 'upload':
-        return !!cardData.image_url;
-      case 'details':
-        return !!(cardData.title && cardData.title.trim() && cardData.title !== 'My New Card');
-      case 'design':
+      case 'create':
+        return !!(cardData.image_url && cardData.title && cardData.title.trim() && cardData.title !== 'My New Card');
+      case 'templates':
+      case 'studio':
       case 'publish':
       default:
         return true;
@@ -152,7 +151,7 @@ export const SimpleCardCreator = ({
       cardEditor.updateCardField('image_url', undefined);
     }
     setCurrentMode(initialMode);
-    setCurrentStep(skipIntent ? 'upload' : 'intent');
+    setCurrentStep(skipIntent ? 'create' : 'intent');
     setError(null);
     setIsCreating(false);
   }, [cardEditor, initialMode, skipIntent]);

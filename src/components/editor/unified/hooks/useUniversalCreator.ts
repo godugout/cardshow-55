@@ -19,7 +19,7 @@ const MODE_CONFIGS = {
     title: 'Quick Create',
     description: 'Simple form-based card creation',
     icon: 'Zap',
-    steps: ['intent', 'upload', 'details', 'publish'] as CreationStep[],
+    steps: ['intent', 'create', 'templates', 'publish'] as CreationStep[],
     features: ['AI assistance', 'Smart defaults', 'One-click publish']
   },
   guided: {
@@ -27,23 +27,23 @@ const MODE_CONFIGS = {
     title: 'Guided Create',
     description: 'Step-by-step wizard with help',
     icon: 'Navigation',
-    steps: ['intent', 'upload', 'details', 'design', 'publish'] as CreationStep[],
-    features: ['Progressive guidance', 'Templates', 'Live preview']
+    steps: ['intent', 'create', 'templates', 'studio', 'publish'] as CreationStep[],
+    features: ['Progressive guidance', 'Templates', '3D preview']
   },
   advanced: {
     id: 'advanced' as CreationMode,
     title: 'Advanced Create',
     description: 'Full editor with all features',
     icon: 'Settings',
-    steps: ['intent', 'upload', 'design', 'details', 'publish'] as CreationStep[],
-    features: ['Advanced cropping', 'Custom effects', 'Collaboration']
+    steps: ['intent', 'create', 'templates', 'studio', 'publish'] as CreationStep[],
+    features: ['Advanced cropping', 'Custom effects', '360° environments']
   },
   bulk: {
     id: 'bulk' as CreationMode,
     title: 'Bulk Create',
     description: 'Create multiple cards at once',
     icon: 'Copy',
-    steps: ['intent', 'upload', 'complete'] as CreationStep[],
+    steps: ['intent', 'create', 'complete'] as CreationStep[],
     features: ['Batch processing', 'AI analysis', 'Template application']
   }
 };
@@ -99,7 +99,7 @@ export const useUniversalCreator = ({
     if (config) {
       setMode(newMode);
       // Move to first step after intent
-      const nextStep = config.steps.length > 1 ? config.steps[1] : 'upload';
+      const nextStep = config.steps.length > 1 ? config.steps[1] : 'create';
       setCurrentStep(nextStep);
       setErrors({});
       setCreationError(null);
@@ -142,26 +142,24 @@ export const useUniversalCreator = ({
       case 'intent':
         return true;
         
-      case 'upload':
+      case 'create':
         const hasImage = !!cardData.image_url;
-        if (!hasImage) {
-          setErrors({ upload: 'Please upload an image to continue' });
-        } else {
-          setErrors({});
-        }
-        return hasImage;
-        
-      case 'details':
         const hasTitle = cardData.title && cardData.title.trim().length > 0;
         const titleValid = hasTitle && cardData.title !== 'My New Card';
-        if (!titleValid) {
-          setErrors({ details: 'Please provide a meaningful title for your card' });
-        } else {
-          setErrors({});
-        }
-        return titleValid;
         
-      case 'design':
+        if (!hasImage) {
+          setErrors({ create: 'Please upload an image to continue' });
+          return false;
+        }
+        if (!titleValid) {
+          setErrors({ create: 'Please provide a meaningful title for your card' });
+          return false;
+        }
+        setErrors({});
+        return true;
+        
+      case 'templates':
+      case 'studio':
       case 'publish':
       default:
         return true;
