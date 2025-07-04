@@ -58,7 +58,7 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
   };
 
   return (
-    <Card className="group bg-crd-dark border-crd-mediumGray hover:border-crd-blue transition-all duration-300 overflow-hidden">
+    <div className="group card-themed rounded-xl overflow-hidden team-spirit-glow">
       <div className="aspect-[3/4] relative overflow-hidden bg-crd-mediumGray">
         {imageLoading && (
           <Skeleton className="absolute inset-0 bg-crd-mediumGray" />
@@ -75,20 +75,20 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Badge variant="secondary" className="bg-crd-green/20 text-crd-green">
+          <span className="badge-themed-primary px-2 py-1 rounded-md text-sm font-semibold">
             {card.price ? `${card.price} ETH` : '1.5 ETH'}
-          </Badge>
+          </span>
         </div>
       </div>
-      <CardContent className="p-4">
-        <h3 className="text-crd-white font-semibold mb-1 line-clamp-1">{card.title || 'Untitled Card'}</h3>
-        <p className="text-crd-lightGray text-sm line-clamp-2">{card.description || 'Digital collectible card'}</p>
+      <div className="p-4">
+        <h3 className="text-themed-primary font-semibold mb-1 line-clamp-1">{card.title || 'Untitled Card'}</h3>
+        <p className="text-themed-secondary text-sm line-clamp-2">{card.description || 'Digital collectible card'}</p>
         <div className="flex items-center justify-between mt-3">
-          <span className="text-xs text-crd-lightGray">3 in stock</span>
-          <span className="text-xs text-crd-orange">0.001 ETH bid</span>
+          <span className="text-xs text-themed-secondary">3 in stock</span>
+          <span className="text-xs success-themed font-medium">0.001 ETH bid</span>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

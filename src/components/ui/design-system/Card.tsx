@@ -5,13 +5,13 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const cardVariants = cva(
-  "bg-crd-darkGray border border-current/20 rounded-xl overflow-hidden transition-all duration-200",
+  "card-themed rounded-xl overflow-hidden",
   {
     variants: {
       variant: {
         default: "hover:shadow-lg",
-        interactive: "hover:shadow-lg hover:border-current/50 cursor-pointer hover-themed",
-        elevated: "shadow-lg",
+        interactive: "cursor-pointer hover-glow team-spirit-glow",
+        elevated: "shadow-lg hover-glow",
         flat: "shadow-none",
       },
       padding: {

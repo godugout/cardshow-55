@@ -65,8 +65,8 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
   return (
     <div className="max-w-6xl mx-auto">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-crd-white mb-2">Create Your Card</h2>
-        <p className="text-crd-lightGray">
+        <h2 className="text-3xl font-bold text-themed-primary mb-2">Create Your Card</h2>
+        <p className="text-themed-secondary">
           Upload your photo, add details, and choose your initial design
         </p>
       </div>
@@ -75,24 +75,24 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
         {/* Left Column - Upload & Info */}
         <div className="space-y-6">
           {/* Photo Upload */}
-          <Card className="bg-crd-darker border-crd-mediumGray/20">
-            <CardHeader>
-              <CardTitle className="text-crd-white flex items-center gap-2">
+          <div className="card-themed">
+            <div className="p-6 border-b border-themed-light">
+              <h3 className="text-themed-primary flex items-center gap-2 text-lg font-semibold">
                 <Upload className="w-5 h-5" />
                 Upload Photo
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div className="p-6">
               <div
                 onDrop={handleDrop}
                 onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
                 onDragLeave={() => setDragActive(false)}
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                   dragActive 
-                    ? 'border-crd-green bg-crd-green/10' 
+                    ? 'border-themed-strong bg-themed-light' 
                     : cardData.image_url
-                      ? 'border-crd-green bg-crd-green/5'
-                      : 'border-crd-mediumGray/30 hover:border-crd-lightGray/50'
+                      ? 'border-themed-strong bg-themed-subtle'
+                      : 'border-themed-light hover:border-themed'
                 }`}
               >
                 {cardData.image_url ? (
@@ -131,8 +131,8 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Card Details */}
           <Card className="bg-crd-darker border-crd-mediumGray/20">

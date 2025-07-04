@@ -15,39 +15,45 @@ export const GalleryHeader: React.FC<GalleryHeaderProps> = ({
 }) => {
   return (
     <div className="mb-10">
-      <h1 className="text-4xl font-bold text-white mb-8">
-        Discover <span className="text-[#EA6E48]">Cards & Collectibles</span>
+      <h1 className="text-4xl font-bold text-themed-primary mb-8">
+        Discover <span className="highlight-themed font-extrabold">Cards & Collectibles</span>
       </h1>
       
       <div className="flex justify-between items-center">
         <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
           <div className="flex justify-between items-center w-full">
-            <TabsList className="bg-[#1A1A1A] p-1 rounded-md">
-              <TabsTrigger 
-                value="featured" 
-                className={`px-4 py-2 ${activeTab === 'featured' ? 'bg-[#3772FF] text-white' : 'text-[#777E90]'}`}
+            <div className="tabs-themed">
+              <button 
+                onClick={() => onTabChange('featured')}
+                className={`px-6 py-3 rounded-md transition-all duration-200 ${
+                  activeTab === 'featured' ? 'tab-themed-active' : 'tab-themed-inactive'
+                }`}
               >
                 Featured
-              </TabsTrigger>
-              <TabsTrigger 
-                value="trending" 
-                className={`px-4 py-2 ${activeTab === 'trending' ? 'bg-[#3772FF] text-white' : 'text-[#777E90]'}`}
+              </button>
+              <button 
+                onClick={() => onTabChange('trending')}
+                className={`px-6 py-3 rounded-md transition-all duration-200 ${
+                  activeTab === 'trending' ? 'tab-themed-active' : 'tab-themed-inactive'
+                }`}
               >
                 Trending
-              </TabsTrigger>
-              <TabsTrigger 
-                value="new" 
-                className={`px-4 py-2 ${activeTab === 'new' ? 'bg-[#3772FF] text-white' : 'text-[#777E90]'}`}
+              </button>
+              <button 
+                onClick={() => onTabChange('new')}
+                className={`px-6 py-3 rounded-md transition-all duration-200 ${
+                  activeTab === 'new' ? 'tab-themed-active' : 'tab-themed-inactive'
+                }`}
               >
                 New
-              </TabsTrigger>
-            </TabsList>
+              </button>
+            </div>
             
-            <Button className="bg-[#3772FF] text-white rounded-md flex items-center gap-2">
+            <button className="btn-themed-primary flex items-center gap-2 px-6 py-3 rounded-md">
               <Filter size={16} />
               Filter
               <span className="ml-1 bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs">×</span>
-            </Button>
+            </button>
           </div>
         </Tabs>
       </div>

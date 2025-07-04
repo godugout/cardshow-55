@@ -283,17 +283,147 @@
   box-shadow: 0 4px 12px hsl(var(--theme-accent) / 0.3);
 }
 
-/* Extended theming utilities for all components */
+/* COMPREHENSIVE THEMING SYSTEM - All UI elements use theme variables */
+
+/* Core Theme Variables - Extended for complete theming */
+:root {
+  /* Card theming */
+  --theme-card-bg: var(--theme-navbar-bg);
+  --theme-card-border: var(--theme-accent);
+  --theme-card-hover: var(--theme-accent-hover);
+  
+  /* Badge and pill theming */
+  --theme-badge-primary: var(--theme-accent);
+  --theme-badge-secondary: var(--theme-text-secondary);
+  --theme-badge-success: var(--theme-accent);
+  
+  /* Tab theming */
+  --theme-tab-active: var(--theme-accent);
+  --theme-tab-inactive: var(--theme-text-secondary);
+  --theme-tab-bg: var(--theme-navbar-bg);
+  
+  /* Button theming */
+  --theme-button-primary: var(--theme-cta-bg);
+  --theme-button-secondary: var(--theme-accent);
+  --theme-button-ghost: var(--theme-text-secondary);
+  
+  /* Interactive elements */
+  --theme-filter-bg: var(--theme-accent);
+  --theme-price-text: var(--theme-accent);
+  --theme-success-text: var(--theme-accent);
+  --theme-highlight: var(--theme-accent);
+}
+
+/* Extended Component Theming Classes */
 .border-themed { border-color: hsl(var(--theme-accent) / 0.3); }
 .border-themed-light { border-color: hsl(var(--theme-accent) / 0.1); }
 .border-themed-strong { border-color: hsl(var(--theme-accent)); }
+.border-themed-subtle { border-color: hsl(var(--theme-text-secondary) / 0.2); }
 
 .bg-themed-subtle { background: hsl(var(--theme-accent) / 0.05); }
 .bg-themed-light { background: hsl(var(--theme-accent) / 0.1); }
 .bg-themed-medium { background: hsl(var(--theme-accent) / 0.2); }
+.bg-themed-strong { background: hsl(var(--theme-accent)); }
+.bg-themed-card { background: hsl(var(--theme-card-bg)); }
 
 .accent-themed { color: hsl(var(--theme-accent)); }
 .accent-themed-hover:hover { color: hsl(var(--theme-accent-hover)); }
+.highlight-themed { color: hsl(var(--theme-highlight)); }
+.success-themed { color: hsl(var(--theme-success-text)); }
+
+/* Card theming */
+.card-themed {
+  background: hsl(var(--theme-card-bg));
+  border-color: hsl(var(--theme-card-border) / 0.2);
+  transition: all 0.3s ease;
+}
+
+.card-themed:hover {
+  border-color: hsl(var(--theme-card-hover) / 0.6);
+  box-shadow: 0 8px 32px hsl(var(--theme-accent) / 0.2);
+  transform: translateY(-2px);
+}
+
+/* Badge theming */
+.badge-themed-primary {
+  background: hsl(var(--theme-badge-primary) / 0.2);
+  color: hsl(var(--theme-badge-primary));
+  border: 1px solid hsl(var(--theme-badge-primary) / 0.4);
+}
+
+.badge-themed-secondary {
+  background: hsl(var(--theme-badge-secondary) / 0.1);
+  color: hsl(var(--theme-badge-secondary));
+  border: 1px solid hsl(var(--theme-badge-secondary) / 0.3);
+}
+
+/* Tab theming */
+.tab-themed-active {
+  background: hsl(var(--theme-tab-active));
+  color: hsl(var(--theme-cta-text));
+  font-weight: 600;
+}
+
+.tab-themed-inactive {
+  background: transparent;
+  color: hsl(var(--theme-tab-inactive));
+  transition: all 0.2s ease;
+}
+
+.tab-themed-inactive:hover {
+  background: hsl(var(--theme-accent) / 0.1);
+  color: hsl(var(--theme-text-primary));
+}
+
+.tabs-themed {
+  background: hsl(var(--theme-tab-bg));
+  border: 1px solid hsl(var(--theme-accent) / 0.2);
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+}
+
+/* Button enhancements */
+.btn-themed-primary {
+  background: hsl(var(--theme-button-primary));
+  color: hsl(var(--theme-cta-text));
+  border: 2px solid hsl(var(--theme-button-primary));
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-themed-primary:hover {
+  background: hsl(var(--theme-accent-hover));
+  border-color: hsl(var(--theme-accent-hover));
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px hsl(var(--theme-accent) / 0.4);
+}
+
+.btn-themed-secondary {
+  background: transparent;
+  color: hsl(var(--theme-button-secondary));
+  border: 2px solid hsl(var(--theme-button-secondary));
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-themed-secondary:hover {
+  background: hsl(var(--theme-button-secondary) / 0.1);
+  border-color: hsl(var(--theme-accent-hover));
+  color: hsl(var(--theme-accent-hover));
+}
+
+.btn-themed-ghost {
+  background: transparent;
+  color: hsl(var(--theme-button-ghost));
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.btn-themed-ghost:hover {
+  background: hsl(var(--theme-accent) / 0.1);
+  color: hsl(var(--theme-text-primary));
+  border-color: hsl(var(--theme-accent) / 0.3);
+}
 
 /* Focus and active states */
 .focus-themed:focus {
@@ -303,6 +433,31 @@
 
 .ring-themed {
   --tw-ring-color: hsl(var(--theme-accent) / 0.3);
+}
+
+/* Interactive hover effects */
+.hover-glow:hover {
+  box-shadow: 0 0 20px hsl(var(--theme-accent) / 0.5);
+}
+
+.team-spirit-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.team-spirit-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, hsl(var(--theme-accent) / 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.team-spirit-glow:hover::before {
+  left: 100%;
 }
 
 /* Button variants */

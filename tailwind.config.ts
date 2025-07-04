@@ -90,17 +90,48 @@ export default {
           purple: '#9757D7',
           gold: '#FFD700',
         },
-        // Theme-aware colors using CSS variables
+        // Comprehensive theme-aware colors using CSS variables
         themed: {
+          // Navigation theming
           'navbar-bg': 'hsl(var(--theme-navbar-bg))',
           'navbar-border': 'hsl(var(--theme-navbar-border))',
+          
+          // Text theming
           'text-primary': 'hsl(var(--theme-text-primary))',
           'text-secondary': 'hsl(var(--theme-text-secondary))',
           'text-active': 'hsl(var(--theme-text-active))',
+          
+          // Button theming
           'cta-bg': 'hsl(var(--theme-cta-bg))',
           'cta-text': 'hsl(var(--theme-cta-text))',
+          'button-primary': 'hsl(var(--theme-button-primary))',
+          'button-secondary': 'hsl(var(--theme-button-secondary))',
+          'button-ghost': 'hsl(var(--theme-button-ghost))',
+          
+          // Core accent colors
           'accent': 'hsl(var(--theme-accent))',
           'accent-hover': 'hsl(var(--theme-accent-hover))',
+          'highlight': 'hsl(var(--theme-highlight))',
+          
+          // Card theming
+          'card-bg': 'hsl(var(--theme-card-bg))',
+          'card-border': 'hsl(var(--theme-card-border))',
+          'card-hover': 'hsl(var(--theme-card-hover))',
+          
+          // Badge theming
+          'badge-primary': 'hsl(var(--theme-badge-primary))',
+          'badge-secondary': 'hsl(var(--theme-badge-secondary))',
+          'badge-success': 'hsl(var(--theme-badge-success))',
+          
+          // Tab theming
+          'tab-active': 'hsl(var(--theme-tab-active))',
+          'tab-inactive': 'hsl(var(--theme-tab-inactive))',
+          'tab-bg': 'hsl(var(--theme-tab-bg))',
+          
+          // Interactive elements
+          'filter-bg': 'hsl(var(--theme-filter-bg))',
+          'price-text': 'hsl(var(--theme-price-text))',
+          'success-text': 'hsl(var(--theme-success-text))',
         },
         // Cardshow colors to match CSS variables
         cardshow: {

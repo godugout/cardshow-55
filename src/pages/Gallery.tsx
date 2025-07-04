@@ -63,7 +63,7 @@ const Gallery = () => {
         
         {/* Data source indicator in development */}
         {process.env.NODE_ENV === 'development' && (
-          <div className="mb-4 p-2 bg-black/50 rounded text-xs text-white">
+          <div className="mb-4 p-2 bg-themed-subtle border border-themed-light rounded text-xs text-themed-secondary">
             Source: {dataSource} | Total: {cards.length} | Showing: {displayCards.length}
           </div>
         )}
@@ -76,8 +76,8 @@ const Gallery = () => {
         
         {displayCards.length === 0 && !loading && (
           <div className="text-center py-12">
-            <h3 className="text-xl font-semibold text-white mb-4">No Cards Found</h3>
-            <p className="text-crd-lightGray mb-6">
+            <h3 className="text-xl font-semibold text-themed-primary mb-4">No Cards Found</h3>
+            <p className="text-themed-secondary mb-6">
               {cards.length === 0 
                 ? "No cards have been created yet. Start by creating your first card!"
                 : "No cards match the current filter. Try switching tabs or check other categories."
@@ -86,7 +86,7 @@ const Gallery = () => {
             {cards.length === 0 && (
               <a 
                 href="/create"
-                className="inline-flex items-center px-4 py-2 bg-crd-green text-white rounded-lg hover:bg-crd-green/90 transition-colors"
+                className="btn-themed-primary inline-flex items-center px-6 py-3 rounded-lg team-spirit-glow"
               >
                 Create Your First Card
               </a>

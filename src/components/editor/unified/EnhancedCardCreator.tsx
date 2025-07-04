@@ -127,14 +127,14 @@ export const EnhancedCardCreator = ({ onComplete, onCancel }: EnhancedCardCreato
   return (
     <div className="min-h-screen bg-crd-darkest">
       <div className="max-w-5xl mx-auto py-12 px-6">
-        <h1 className="text-3xl font-bold text-crd-white text-center mb-8">
+        <h1 className="text-3xl font-bold text-themed-primary text-center mb-8">
           Create Your Card
         </h1>
 
         <StepIndicator steps={WIZARD_STEPS} currentStep={currentStep} />
 
         {/* Navigation Bar - Moved here from footer */}
-        <div className="flex justify-between items-center mb-8 bg-crd-darker border border-crd-mediumGray/20 rounded-lg p-4">
+        <div className="flex justify-between items-center mb-8 card-themed rounded-lg p-4">
           <CRDButton
             variant="secondary"
             onClick={onCancel}
@@ -168,11 +168,11 @@ export const EnhancedCardCreator = ({ onComplete, onCancel }: EnhancedCardCreato
           </div>
         </div>
 
-        <Card className="bg-crd-darker border-crd-mediumGray/20">
-          <CardContent className="p-8">
+        <div className="card-themed">
+          <div className="p-8">
             {renderStepContent()}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

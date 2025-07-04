@@ -1,7 +1,9 @@
 
-// Design System Components Export
+// Team Spirit Themed Design System - Transformative Experience
 export { CRDButton } from './Button';
 export { CRDCard } from './Card';
+export { CRDBadge } from './Badge';
+export { ThemedLayout, ThemedPage, ThemedSection } from './ThemedLayout';
 export { CRDInput } from './Input';
 export { Typography, Heading, AccentText } from './Typography';
 export { PresetCard } from './PresetCard';

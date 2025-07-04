@@ -9,16 +9,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Themed variants using theme variables
-        primary: "cta-themed",
-        secondary: "bg-transparent border border-current text-themed-secondary hover:bg-current/10 hover:text-themed-primary",
-        outline: "bg-transparent border border-current text-themed-secondary hover:bg-current/10 hover:text-themed-primary",
-        ghost: "bg-transparent text-themed-secondary hover-themed",
-        action: "p-3 rounded-full border-2 border-current bg-transparent hover:bg-current/10 text-themed-secondary hover:text-themed-primary",
-        // Standard variants
+        // Team spirit themed variants - transformative experience
+        primary: "btn-themed-primary team-spirit-glow",
+        secondary: "btn-themed-secondary team-spirit-glow",
+        outline: "btn-themed-secondary",
+        ghost: "btn-themed-ghost",
+        action: "p-3 rounded-full btn-themed-secondary team-spirit-glow",
+        // Fallback variants
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        link: "text-current underline-offset-4 hover:underline",
+        link: "accent-themed underline-offset-4 hover:underline hover:highlight-themed",
       },
       size: {
         default: "h-10 px-4 py-2",
