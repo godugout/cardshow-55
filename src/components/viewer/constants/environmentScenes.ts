@@ -174,5 +174,34 @@ export const ENVIRONMENT_SCENES: EnvironmentScene[] = [
       parallaxIntensity: 0.8,
       fieldOfView: 110
     }
+  },
+  {
+    id: 'forest-360',
+    name: 'Forest 360°',
+    type: '360',
+    icon: '🌲🔄',
+    category: 'natural',
+    description: 'Immersive 360° forest environment',
+    panoramicUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=4096&h=2048&fit=crop&crop=center',
+    previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop&crop=center',
+    backgroundImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&h=1080&fit=crop&crop=center',
+    gradient: 'linear-gradient(135deg, #2d4a36 0%, #4a7c59 100%)',
+    lighting: {
+      color: '#4a7c59',
+      intensity: 0.9,
+      elevation: 45,
+      azimuth: 0
+    },
+    atmosphere: {
+      fog: true,
+      fogColor: '#2d4a36',
+      fogDensity: 0.2,
+      particles: true
+    },
+    depth: {
+      layers: 8,
+      parallaxIntensity: 2.5,
+      fieldOfView: 120
+    }
   }
 ];

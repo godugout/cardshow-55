@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NoCardSelected } from './Studio/components/NoCardSelected';
@@ -9,6 +8,8 @@ import { useStudioState } from './Studio/hooks/useStudioState';
 import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { Slider } from '@/components/ui/slider';
+import { SharedStudioEnvironment } from '@/components/viewer/shared/SharedStudioEnvironment';
+import { useImmersiveViewerState } from '@/components/viewer/hooks/useImmersiveViewerState';
 import type { CardData } from '@/types/card';
 
 // Helper function to convert CardData to the format expected by ImmersiveCardViewer
@@ -63,6 +64,9 @@ const Studio = () => {
   const [showSeedPrompt, setShowSeedPrompt] = useState(false);
   const [hasCheckedDatabase, setHasCheckedDatabase] = useState(false);
   const [cardSpacing, setCardSpacing] = useState([100]); // State for gap between cards
+  
+  // Initialize shared viewer state for the environment
+  const { viewerState, actions } = useImmersiveViewerState();
   
   const {
     selectedCard,
@@ -151,6 +155,18 @@ const Studio = () => {
     handleDownload(originalCard);
   };
 
+  // Handle card interactions in the shared environment
+  const handleCardInteraction = (cardIndex: number, event: React.MouseEvent) => {
+    console.log(`🎯 Card ${cardIndex} interaction:`, event.type);
+    // You can add specific interaction logic here
+  };
+
+  // Handle camera changes in the shared environment
+  const handleCameraChange = (position: { x: number; y: number; z: number }, rotation: { x: number; y: number }) => {
+    console.log('📷 Camera changed:', { position, rotation });
+    // You can add camera state management here
+  };
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-crd-darkest">
@@ -179,37 +195,24 @@ const Studio = () => {
           </div>
         </div>
 
-        {/* Dual Card Viewers - show both cards side by side with dynamic spacing */}
-        <div 
-          className="flex justify-center items-center min-h-screen"
-          style={{ gap: `${cardSpacing[0]}px` }}
-        >
-          {viewerCards.slice(0, 2).map((cardData, index) => (
-            <div 
-              key={cardData.id} 
-              className="flex-shrink-0 relative"
-              style={{ 
-                width: '400px', 
-                height: '600px',
-                border: process.env.NODE_ENV === 'development' ? '2px solid rgba(34, 197, 94, 0.3)' : 'none',
-                borderRadius: '12px'
-              }}
-            >
-              <ImmersiveCardViewer
-                card={cardData}
-                cards={viewerCards}
-                currentCardIndex={index}
-                onCardChange={handleCardChange}
-                isOpen={true}
-                onClose={handleClose}
-                onShare={handleViewerShare}
-                onDownload={handleViewerDownload}
-                allowRotation={true}
-                showStats={false}
-                ambient={true}
-              />
-            </div>
-          ))}
+        {/* Shared 3D Environment with Both Cards */}
+        <div className="w-full h-screen">
+          <SharedStudioEnvironment
+            cards={viewerCards.slice(0, 2)}
+            selectedScene={viewerState.selectedScene}
+            selectedLighting={viewerState.selectedLighting}
+            materialSettings={viewerState.materialSettings}
+            environmentControls={viewerState.environmentControls}
+            overallBrightness={viewerState.overallBrightness}
+            interactiveLighting={viewerState.interactiveLighting}
+            effectValues={{}} // We'll need to implement effects integration
+            cardSpacing={cardSpacing[0]}
+            allowRotation={true}
+            autoRotate={false}
+            zoom={1}
+            onCardInteraction={handleCardInteraction}
+            onCameraChange={handleCameraChange}
+          />
         </div>
       </div>
     </ErrorBoundary>
