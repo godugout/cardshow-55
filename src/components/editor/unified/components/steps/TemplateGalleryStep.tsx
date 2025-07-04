@@ -57,14 +57,14 @@ export const TemplateGalleryStep = ({ mode, cardData, onFieldUpdate }: TemplateG
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sidebar - Filters */}
         <div className="lg:col-span-1">
-          <Card className="bg-crd-darker border-crd-mediumGray/20 sticky top-4">
+          <Card className="bg-crd-darker border-crd-mediumGray/20">
             <CardHeader>
               <CardTitle className="text-crd-white flex items-center gap-2">
                 <Filter className="w-5 h-5" />
                 Filters
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 min-h-[600px]">
               {/* Search */}
               <div className="space-y-2">
                 <label className="text-crd-white text-sm">Search Templates</label>

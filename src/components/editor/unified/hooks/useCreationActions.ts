@@ -23,12 +23,12 @@ export const useCreationActions = ({
     switch (step) {
       case 'intent':
         return !!state.intent?.mode;
-      case 'upload':
-        return !!cardEditor.cardData.image_url;
-      case 'details':
-        return !!cardEditor.cardData.title;
-      case 'design':
-        return true; // Design step is always valid
+      case 'create':
+        return !!cardEditor.cardData.image_url && !!cardEditor.cardData.title;
+      case 'templates':
+        return true; // Template selection is optional
+      case 'studio':
+        return true; // Studio preview is always valid
       case 'publish':
         return !!cardEditor.cardData.title;
       case 'complete':

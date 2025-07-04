@@ -236,11 +236,13 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
               <p className="text-crd-lightGray text-sm">Personalize with team colors</p>
             </CardHeader>
             <CardContent>
-              <TeamColorSelector
-                selectedColorScheme={selectedColorScheme}
-                onColorSchemeSelect={setSelectedColorScheme}
-                className="h-64 overflow-y-auto"
-              />
+              <div className="min-h-[300px]">
+                <TeamColorSelector
+                  selectedColorScheme={selectedColorScheme}
+                  onColorSchemeSelect={setSelectedColorScheme}
+                  className=""
+                />
+              </div>
             </CardContent>
           </Card>
         </div>

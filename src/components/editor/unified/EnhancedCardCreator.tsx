@@ -26,7 +26,7 @@ export const EnhancedCardCreator = ({ onComplete, onCancel }: EnhancedCardCreato
 
   const handleModeSelect = (mode: CreationMode) => {
     setSelectedMode(mode);
-    setCurrentStep('upload');
+    setCurrentStep('create');
   };
 
   const handleFrameSelect = (frame: DesignTemplate) => {
@@ -37,15 +37,15 @@ export const EnhancedCardCreator = ({ onComplete, onCancel }: EnhancedCardCreato
   const handleNext = () => {
     switch (currentStep) {
       case 'intent':
-        setCurrentStep('upload');
+        setCurrentStep('create');
         break;
-      case 'upload':
-        setCurrentStep('details');
+      case 'create':
+        setCurrentStep('templates');
         break;
-      case 'details':
-        setCurrentStep('design');
+      case 'templates':
+        setCurrentStep('studio');
         break;
-      case 'design':
+      case 'studio':
         setCurrentStep('publish');
         break;
       case 'publish':
@@ -58,17 +58,17 @@ export const EnhancedCardCreator = ({ onComplete, onCancel }: EnhancedCardCreato
 
   const handleBack = () => {
     switch (currentStep) {
-      case 'upload':
+      case 'create':
         setCurrentStep('intent');
         break;
-      case 'details':
-        setCurrentStep('upload');
+      case 'templates':
+        setCurrentStep('create');
         break;
-      case 'design':
-        setCurrentStep('details');
+      case 'studio':
+        setCurrentStep('templates');
         break;
       case 'publish':
-        setCurrentStep('design');
+        setCurrentStep('studio');
         break;
       case 'complete':
         setCurrentStep('publish');
@@ -100,20 +100,9 @@ export const EnhancedCardCreator = ({ onComplete, onCancel }: EnhancedCardCreato
           />
         );
 
-      case 'upload':
-        return (
-          <PhotoStep
-            mode={selectedMode}
-            selectedPhoto={cardEditor.cardData.image_url}
-            onPhotoSelect={(photo) => cardEditor.updateCardField('image_url', photo)}
-            cardData={cardEditor.cardData}
-            selectedFrame={selectedFrame}
-            onFrameSelect={handleFrameSelect}
-          />
-        );
-
-      case 'details':
-      case 'design':
+      case 'create':
+      case 'templates':
+      case 'studio':
       case 'publish':
       case 'complete':
         return (

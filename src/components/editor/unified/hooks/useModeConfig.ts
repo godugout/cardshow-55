@@ -9,7 +9,7 @@ export const useModeConfig = () => {
       title: 'Quick Create',
       description: 'Simple form-based card creation',
       icon: 'Zap',
-      steps: ['intent', 'upload', 'details', 'publish'],
+      steps: ['intent', 'create', 'templates', 'publish'],
       features: ['AI assistance', 'Smart defaults', 'One-click publish']
     },
     {
@@ -17,7 +17,7 @@ export const useModeConfig = () => {
       title: 'Guided Create',
       description: 'Step-by-step wizard with help',
       icon: 'Navigation',
-      steps: ['intent', 'upload', 'details', 'design', 'publish'],
+      steps: ['intent', 'create', 'templates', 'studio', 'publish'],
       features: ['Progressive guidance', 'Templates', 'Live preview']
     },
     {
@@ -25,7 +25,7 @@ export const useModeConfig = () => {
       title: 'Advanced Create',
       description: 'Full editor with all features',
       icon: 'Settings',
-      steps: ['intent', 'upload', 'design', 'details', 'publish'],
+      steps: ['intent', 'create', 'templates', 'studio', 'publish'],
       features: ['Advanced cropping', 'Custom effects', 'Collaboration']
     },
     {
@@ -33,7 +33,7 @@ export const useModeConfig = () => {
       title: 'Bulk Create',
       description: 'Create multiple cards at once',
       icon: 'Copy',
-      steps: ['intent', 'upload', 'complete'],
+      steps: ['intent', 'create', 'complete'],
       features: ['Batch processing', 'AI analysis', 'Template application']
     }
   ], []);

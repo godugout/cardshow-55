@@ -133,7 +133,7 @@ export const StudioPreviewStep = ({ mode, cardData, onFieldUpdate }: StudioPrevi
         </div>
 
         {/* Controls Panel */}
-        <div className="space-y-6">
+        <div className="space-y-6 min-h-[800px]">
           {/* Environment Selection */}
           <Card className="bg-crd-darker border-crd-mediumGray/20">
             <CardHeader>
