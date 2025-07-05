@@ -84,7 +84,7 @@ const Labs = () => {
             <div 
               className="absolute w-48 h-72 bg-gradient-to-br from-white to-gray-100 rounded-lg shadow-2xl transform-gpu transition-all duration-700"
               style={{
-                transform: `translateX(-${cardSpacing[0] / 2}px) translateZ(20px) rotateY(60deg)`
+                transform: `translateX(-${cardSpacing[0] / 2}px) translateZ(20px) rotateY(90deg)`
               }}
             >
               <div className="p-4 h-full flex flex-col">
@@ -121,7 +121,7 @@ const Labs = () => {
             <div 
               className="absolute w-48 h-72 bg-gradient-to-br from-white to-gray-100 rounded-lg shadow-2xl transform-gpu transition-all duration-700"
               style={{
-                transform: `translateX(${cardSpacing[0] / 2}px) translateZ(20px) rotateY(-60deg)`
+                transform: `translateX(${cardSpacing[0] / 2}px) translateZ(20px) rotateY(-90deg)`
               }}
             >
               <div className="p-4 h-full flex flex-col">
