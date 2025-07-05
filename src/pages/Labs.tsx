@@ -12,6 +12,8 @@ const Labs = () => {
   const [selectedVariation, setSelectedVariation] = useState([0]);
   const [isDragging, setIsDragging] = useState(false);
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
+  const [activePads, setActivePads] = useState<number[]>([]);
+  const [animationSync, setAnimationSync] = useState(false);
 
   // 9 different sandwich variations
   const sandwichVariations = [
@@ -175,7 +177,7 @@ const Labs = () => {
             style={{
               perspective: `${1000 * cameraZoom[0]}px`,
               transformStyle: 'preserve-3d',
-              transform: `rotateX(${cameraRotation.x}deg) rotateY(${cameraRotation.y}deg) scale(${cameraZoom[0]})`
+              transform: `rotateX(${cameraRotation.x}deg) rotateY(${cameraRotation.y}deg)`
             }}
           >
             {sandwichVariations.map((variation, index) => {
@@ -184,17 +186,38 @@ const Labs = () => {
               const xOffset = (col - 1) * 400;
               const yOffset = (row - 1) * 300;
               const isSelected = selectedVariation[0] === index;
+              const isActive = activePads.includes(index);
+              
+              // Unique effects for each card
+              const getCardEffects = (cardIndex: number) => {
+                const effects = [
+                  { filter: 'hue-rotate(0deg) saturate(1.2)', animation: 'none' },
+                  { filter: 'hue-rotate(45deg) saturate(1.5) brightness(1.1)', animation: 'pulse 2s infinite' },
+                  { filter: 'hue-rotate(90deg) contrast(1.3)', animation: 'none' },
+                  { filter: 'hue-rotate(135deg) saturate(1.8) brightness(0.9)', animation: 'none' },
+                  { filter: 'hue-rotate(180deg) invert(0.1)', animation: 'pulse 3s infinite' },
+                  { filter: 'hue-rotate(225deg) sepia(0.3)', animation: 'none' },
+                  { filter: 'hue-rotate(270deg) saturate(2) brightness(1.2)', animation: 'pulse 1.5s infinite' },
+                  { filter: 'hue-rotate(315deg) contrast(1.5)', animation: 'none' },
+                  { filter: 'hue-rotate(360deg) saturate(1.3) brightness(1.1)', animation: 'pulse 2.5s infinite' }
+                ];
+                return effects[cardIndex];
+              };
+              
+              const cardEffect = getCardEffects(index);
               
               return (
                 <div
                   key={index}
-                  className={`absolute transition-all duration-500 ${isSelected ? 'z-20 shadow-2xl' : 'z-10'}`}
+                  className={`absolute transition-all duration-500 ${isSelected || isActive ? 'z-20 shadow-2xl' : 'z-10'}`}
                   style={{
                     transform: `
-                      translate3d(${xOffset}px, ${yOffset}px, ${isSelected ? 50 : 0}px)
-                      scale(${isSelected ? 1.2 : 0.8})
+                      translate3d(${xOffset}px, ${yOffset}px, ${isSelected ? 50 : isActive ? 30 : 0}px)
+                      scale(${isSelected ? 1.2 : isActive ? 1.1 : 0.8})
                     `,
-                    transformStyle: 'preserve-3d'
+                    transformStyle: 'preserve-3d',
+                    filter: isActive ? cardEffect.filter : 'none',
+                    animation: isActive ? cardEffect.animation : 'none'
                   }}
                   onClick={() => setSelectedVariation([index])}
                 >
@@ -365,6 +388,76 @@ const Labs = () => {
             </div>
           </div>
         </div>
+
+        {/* Drum Pad Controller */}
+        <Card className="bg-crd-dark/50 border-crd-mediumGray/20 mb-8">
+          <CardHeader>
+            <CardTitle className="text-crd-lightGray">🎛️ Drum Pad Controller</CardTitle>
+            <p className="text-sm text-crd-mediumGray">Click pads to activate card effects • Multiple selections for synchronized animations</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
+              {sandwichVariations.map((variation, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setActivePads(prev => 
+                      prev.includes(index) 
+                        ? prev.filter(i => i !== index)
+                        : [...prev, index]
+                    );
+                  }}
+                  className={`
+                    relative aspect-square rounded-lg border-2 transition-all duration-300 
+                    flex flex-col items-center justify-center p-3 text-xs font-medium
+                    ${activePads.includes(index) 
+                      ? 'border-crd-green bg-crd-green/20 text-crd-green shadow-lg' 
+                      : 'border-crd-mediumGray/40 bg-crd-darkest/60 text-crd-lightGray hover:border-crd-green/50'
+                    }
+                  `}
+                  style={{
+                    boxShadow: activePads.includes(index) 
+                      ? `0 0 20px hsl(var(--crd-green) / 0.3)` 
+                      : 'none'
+                  }}
+                >
+                  <div className={`text-lg mb-1 ${activePads.includes(index) ? 'animate-pulse' : ''}`}>
+                    {index + 1}
+                  </div>
+                  <div className="text-center leading-tight">
+                    {variation.name}
+                  </div>
+                  {activePads.includes(index) && (
+                    <div className="absolute inset-0 rounded-lg bg-crd-green/10 animate-pulse" />
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="mt-6 flex gap-4 justify-center">
+              <Button
+                onClick={() => setActivePads([])}
+                variant="outline"
+                size="sm"
+              >
+                Clear All
+              </Button>
+              <Button
+                onClick={() => setActivePads([0, 1, 2, 3, 4, 5, 6, 7, 8])}
+                variant="outline" 
+                size="sm"
+              >
+                Select All
+              </Button>
+              <Button
+                onClick={() => setAnimationSync(!animationSync)}
+                variant={animationSync ? "default" : "outline"}
+                size="sm"
+              >
+                Sync: {animationSync ? 'ON' : 'OFF'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Feature Cards */}
