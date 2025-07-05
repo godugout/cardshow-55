@@ -200,16 +200,50 @@ const Labs = () => {
                 >
                   {/* Left Card */}
                   <div 
-                    className="absolute w-32 h-48 bg-gradient-to-br from-white to-gray-100 rounded-lg shadow-xl transform-gpu transition-all duration-700"
+                    className="absolute w-32 h-48 rounded-lg shadow-xl transform-gpu transition-all duration-700 overflow-hidden"
                     style={{
                       transform: `translateX(-${variation.spacing / 3}px) translateZ(15px) rotateY(90deg)`,
-                      filter: isSelected ? 'brightness(1.1)' : 'brightness(0.9)'
+                      filter: isSelected ? 'brightness(1.1)' : 'brightness(0.9)',
+                      transformStyle: 'preserve-3d'
                     }}
                   >
-                    <div className="p-2 h-full flex flex-col">
-                      <div className={`w-full h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded mb-2`}></div>
-                      <h4 className="font-bold text-gray-800 text-xs mb-1">{variation.name} A</h4>
-                      <p className="text-xs text-gray-600 flex-1">Sample card</p>
+                    {/* Front Face */}
+                    <div 
+                      className="absolute inset-0 backface-hidden"
+                      style={{
+                        background: `linear-gradient(135deg, 
+                          hsl(${index * 40}, 70%, 50%) 0%, 
+                          hsl(${index * 40 + 60}, 80%, 60%) 100%)`,
+                        backgroundImage: `
+                          radial-gradient(circle at 20% 80%, rgba(255,255,255,0.3) 0%, transparent 50%),
+                          radial-gradient(circle at 80% 20%, rgba(255,255,255,0.2) 0%, transparent 50%),
+                          linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%)
+                        `
+                      }}
+                    >
+                      <div className="p-2 h-full flex flex-col justify-between text-white">
+                        <div>
+                          <h4 className="font-bold text-xs mb-1">{variation.name}</h4>
+                          <div className="text-xs opacity-80">Card #{index + 1}</div>
+                        </div>
+                        <div className="text-xs opacity-60">CRD Labs</div>
+                      </div>
+                    </div>
+                    
+                    {/* Back Face */}
+                    <div 
+                      className="absolute inset-0 backface-hidden flex items-center justify-center"
+                      style={{
+                        transform: 'rotateY(180deg)',
+                        background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
+                      }}
+                    >
+                      <img 
+                        src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
+                        alt="CRD Logo" 
+                        className="w-16 h-auto opacity-80"
+                        style={{ filter: 'brightness(1.2)' }}
+                      />
                     </div>
                   </div>
 
@@ -242,16 +276,50 @@ const Labs = () => {
 
                   {/* Right Card */}
                   <div 
-                    className="absolute w-32 h-48 bg-gradient-to-br from-white to-gray-100 rounded-lg shadow-xl transform-gpu transition-all duration-700"
+                    className="absolute w-32 h-48 rounded-lg shadow-xl transform-gpu transition-all duration-700 overflow-hidden"
                     style={{
                       transform: `translateX(${variation.spacing / 3}px) translateZ(15px) rotateY(-90deg)`,
-                      filter: isSelected ? 'brightness(1.1)' : 'brightness(0.9)'
+                      filter: isSelected ? 'brightness(1.1)' : 'brightness(0.9)',
+                      transformStyle: 'preserve-3d'
                     }}
                   >
-                    <div className="p-2 h-full flex flex-col">
-                      <div className={`w-full h-16 bg-gradient-to-br from-red-500 to-orange-600 rounded mb-2`}></div>
-                      <h4 className="font-bold text-gray-800 text-xs mb-1">{variation.name} B</h4>
-                      <p className="text-xs text-gray-600 flex-1">Sample card</p>
+                    {/* Front Face */}
+                    <div 
+                      className="absolute inset-0 backface-hidden"
+                      style={{
+                        background: `linear-gradient(135deg, 
+                          hsl(${(index + 5) * 40}, 65%, 45%) 0%, 
+                          hsl(${(index + 5) * 40 + 80}, 75%, 55%) 100%)`,
+                        backgroundImage: `
+                          radial-gradient(circle at 80% 20%, rgba(255,255,255,0.4) 0%, transparent 60%),
+                          radial-gradient(circle at 20% 80%, rgba(255,255,255,0.2) 0%, transparent 40%),
+                          linear-gradient(-45deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%)
+                        `
+                      }}
+                    >
+                      <div className="p-2 h-full flex flex-col justify-between text-white">
+                        <div>
+                          <h4 className="font-bold text-xs mb-1">{variation.name}</h4>
+                          <div className="text-xs opacity-80">Card #{index + 1}B</div>
+                        </div>
+                        <div className="text-xs opacity-60">CRD Labs</div>
+                      </div>
+                    </div>
+                    
+                    {/* Back Face */}
+                    <div 
+                      className="absolute inset-0 backface-hidden flex items-center justify-center"
+                      style={{
+                        transform: 'rotateY(180deg)',
+                        background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
+                      }}
+                    >
+                      <img 
+                        src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
+                        alt="CRD Logo" 
+                        className="w-16 h-auto opacity-80"
+                        style={{ filter: 'brightness(1.2)' }}
+                      />
                     </div>
                   </div>
 
