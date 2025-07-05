@@ -79,7 +79,13 @@ const Labs = () => {
           />
 
           {/* Card Demo Container */}
-          <div className="relative w-full h-full flex items-center justify-center perspective-1000">
+          <div 
+            className="relative w-full h-full flex items-center justify-center perspective-1000"
+            style={{
+              transform: 'rotateX(15deg) rotateY(25deg)',
+              transformStyle: 'preserve-3d'
+            }}
+          >
             {/* Left Card */}
             <div 
               className="absolute w-48 h-72 bg-gradient-to-br from-white to-gray-100 rounded-lg shadow-2xl transform-gpu transition-all duration-700"
