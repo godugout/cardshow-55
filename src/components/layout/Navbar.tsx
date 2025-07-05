@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Plus, Home, ImageIcon, Palette } from 'lucide-react';
+import { Plus, Home, ImageIcon, Palette, FlaskConical } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
 
 const getNavbarColorClasses = (color: string) => {
@@ -85,6 +85,18 @@ export const Navbar = () => {
             >
               <Palette className="w-4 h-4" />
               <span>Studio</span>
+            </Link>
+
+            <Link
+              to="/labs"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive('/labs') 
+                  ? 'text-themed-active' 
+                  : 'text-themed-secondary hover-themed'
+              }`}
+            >
+              <FlaskConical className="w-4 h-4" />
+              <span>Labs</span>
             </Link>
           </div>
         </div>

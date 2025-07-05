@@ -44,15 +44,15 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
     const startX = -totalWidth / 2;
 
     for (let i = 0; i < cards.length; i++) {
-      // Create a more immersive 3D arrangement
+      // Keep cards on same center axis for sandwich effects
       const baseX = startX + (i * cardSpacing);
       
-      // Add slight depth variation for more realistic positioning
-      const depthOffset = Math.sin(i * 0.5) * 50;
-      const heightOffset = Math.cos(i * 0.3) * 20;
+      // Keep all cards centered vertically and at same depth
+      const depthOffset = 0; // Same depth for sandwich effects
+      const heightOffset = 0; // Same height - perfectly centered
       
-      // Slight rotation for more dynamic feel
-      const rotationOffset = (i - (cards.length - 1) / 2) * 5;
+      // No rotation for clean sandwich alignment
+      const rotationOffset = 0;
 
       positions.push({
         x: baseX,
@@ -114,6 +114,9 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
         const cardMouseDistance = Math.abs(mousePosition.x - (0.5 + position.x / 1000));
         const cardIsNear = cardMouseDistance < 0.3;
         const cardHoverIntensity = Math.max(0, 1 - cardMouseDistance * 3);
+        
+        // Ensure consistent scaling for all cards
+        const baseScale = zoom;
 
         return (
           <div
@@ -125,7 +128,7 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
                 rotateX(${finalRotation.x + position.rotation.x}deg)
                 rotateY(${finalRotation.y + position.rotation.y}deg)
                 rotateZ(${position.rotation.z}deg)
-                scale(${zoom * (0.9 + cardHoverIntensity * 0.1)})
+                scale(${baseScale})
               `,
               transformStyle: 'preserve-3d',
               transition: autoRotate ? 'none' : 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
