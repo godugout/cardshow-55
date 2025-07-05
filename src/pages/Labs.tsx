@@ -40,101 +40,54 @@ const Labs = () => {
         </div>
       </div>
 
-      {/* Enhanced Controls Panel */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <Card className="bg-crd-dark/50 border-crd-mediumGray/20 mb-8">
-          <CardHeader>
-            <CardTitle className="text-crd-lightGray">Interactive 3D Sandwich Lab</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Variation Selector */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-crd-lightGray">Sandwich Variation ({currentVariation.name})</label>
-              <Slider
-                value={selectedVariation}
-                onValueChange={setSelectedVariation}
-                max={8}
-                min={0}
-                step={1}
-                className="w-full"
-              />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {sandwichVariations.map((variation, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => setSelectedVariation([index])}
-                    variant={selectedVariation[0] === index ? "default" : "outline"}
-                    size="sm"
-                    className="text-xs"
-                  >
-                    {variation.name}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-crd-lightGray">Camera Zoom</label>
-                <Slider
-                  value={cameraZoom}
-                  onValueChange={setCameraZoom}
-                  max={2}
-                  min={0.5}
-                  step={0.1}
-                  className="w-full"
-                />
-                <span className="text-xs text-crd-mediumGray">{cameraZoom[0].toFixed(1)}x</span>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-crd-lightGray">Card Spacing</label>
-                <Slider
-                  value={[currentVariation.spacing]}
-                  onValueChange={(value) => {
-                    const newVariations = [...sandwichVariations];
-                    newVariations[selectedVariation[0]].spacing = value[0];
-                  }}
-                  max={300}
-                  min={30}
-                  step={10}
-                  className="w-full"
-                />
-                <span className="text-xs text-crd-mediumGray">{currentVariation.spacing}px</span>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-crd-lightGray">Glow Intensity</label>
-                <Slider
-                  value={[currentVariation.intensity]}
-                  onValueChange={(value) => {
-                    const newVariations = [...sandwichVariations];
-                    newVariations[selectedVariation[0]].intensity = value[0];
-                  }}
-                  max={100}
-                  min={0}
-                  step={5}
-                  className="w-full"
-                />
-                <span className="text-xs text-crd-mediumGray">{currentVariation.intensity}%</span>
-              </div>
-
-              <div className="flex items-center space-x-2">
+      {/* Main Content Area */}
+      <div className="flex flex-col h-screen">
+        {/* Enhanced Controls Panel - Compact */}
+        <div className="px-4 py-4">
+          <Card className="bg-crd-dark/50 border-crd-mediumGray/20">
+            <CardContent className="p-4">
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-crd-lightGray whitespace-nowrap">
+                    {currentVariation.name}
+                  </label>
+                  <Slider
+                    value={selectedVariation}
+                    onValueChange={setSelectedVariation}
+                    max={8}
+                    min={0}
+                    step={1}
+                    className="w-24"
+                  />
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-crd-lightGray whitespace-nowrap">Zoom</label>
+                  <Slider
+                    value={cameraZoom}
+                    onValueChange={setCameraZoom}
+                    max={2}
+                    min={0.5}
+                    step={0.1}
+                    className="w-20"
+                  />
+                </div>
+                
                 <Button
                   onClick={() => setShowSandwichEffect(!showSandwichEffect)}
                   variant={showSandwichEffect ? "default" : "outline"}
-                  className="w-full"
+                  size="sm"
                 >
                   {showSandwichEffect ? 'Hide' : 'Show'} Effects
                 </Button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* Interactive 3D Canvas */}
+        {/* Interactive 3D Canvas - Full Width & Height */}
         <div 
-          className="relative w-full h-[800px] bg-gradient-to-r from-crd-dark/30 to-crd-darkest/30 rounded-lg border border-crd-mediumGray/20 overflow-hidden cursor-grab"
+          className="relative flex-1 w-full bg-gradient-to-r from-crd-dark/30 to-crd-darkest/30 border-t border-crd-mediumGray/20 overflow-hidden cursor-grab"
           onMouseDown={(e) => {
             setIsDragging(true);
             setLastMousePos({ x: e.clientX, y: e.clientY });
@@ -389,15 +342,11 @@ const Labs = () => {
           </div>
         </div>
 
-        {/* Drum Pad Controller */}
-        <Card className="bg-crd-dark/50 border-crd-mediumGray/20 mb-8">
-          <CardHeader>
-            <CardTitle className="text-crd-lightGray">🎛️ Drum Pad Controller</CardTitle>
-            <p className="text-sm text-crd-mediumGray">Click pads to activate card effects • Multiple selections for synchronized animations</p>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
-              {sandwichVariations.map((variation, index) => (
+        {/* Drum Pad Controller - Bottom Fixed */}
+        <div className="px-4 py-2 bg-crd-darkest/95 backdrop-blur-sm border-t border-crd-mediumGray/20">
+          <div className="max-w-md mx-auto">
+            <div className="grid grid-cols-3 gap-2">
+              {sandwichVariations.slice(0, 3).map((variation, index) => (
                 <button
                   key={index}
                   onClick={() => {
@@ -409,7 +358,7 @@ const Labs = () => {
                   }}
                   className={`
                     relative aspect-square rounded-lg border-2 transition-all duration-300 
-                    flex flex-col items-center justify-center p-3 text-xs font-medium
+                    flex flex-col items-center justify-center p-2 text-xs font-medium
                     ${activePads.includes(index) 
                       ? 'border-crd-green bg-crd-green/20 text-crd-green shadow-lg' 
                       : 'border-crd-mediumGray/40 bg-crd-darkest/60 text-crd-lightGray hover:border-crd-green/50'
@@ -417,14 +366,14 @@ const Labs = () => {
                   `}
                   style={{
                     boxShadow: activePads.includes(index) 
-                      ? `0 0 20px hsl(var(--crd-green) / 0.3)` 
+                      ? `0 0 15px hsl(var(--crd-green) / 0.3)` 
                       : 'none'
                   }}
                 >
-                  <div className={`text-lg mb-1 ${activePads.includes(index) ? 'animate-pulse' : ''}`}>
+                  <div className={`text-sm mb-1 ${activePads.includes(index) ? 'animate-pulse' : ''}`}>
                     {index + 1}
                   </div>
-                  <div className="text-center leading-tight">
+                  <div className="text-center leading-tight text-xs">
                     {variation.name}
                   </div>
                   {activePads.includes(index) && (
@@ -433,77 +382,33 @@ const Labs = () => {
                 </button>
               ))}
             </div>
-            <div className="mt-6 flex gap-4 justify-center">
+            <div className="mt-2 flex gap-2 justify-center">
               <Button
                 onClick={() => setActivePads([])}
                 variant="outline"
                 size="sm"
+                className="text-xs px-2 py-1"
               >
-                Clear All
+                Clear
               </Button>
               <Button
                 onClick={() => setActivePads([0, 1, 2, 3, 4, 5, 6, 7, 8])}
                 variant="outline" 
                 size="sm"
+                className="text-xs px-2 py-1"
               >
-                Select All
+                All
               </Button>
               <Button
                 onClick={() => setAnimationSync(!animationSync)}
                 variant={animationSync ? "default" : "outline"}
                 size="sm"
+                className="text-xs px-2 py-1"
               >
                 Sync: {animationSync ? 'ON' : 'OFF'}
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Feature Cards */}
-      <div className="max-w-7xl mx-auto px-4 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="bg-crd-dark/30 border-crd-mediumGray/20">
-            <CardHeader>
-              <CardTitle className="text-crd-lightGray text-lg">🌟 Premium Visual Styles</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-crd-mediumGray mb-4">
-                20 proprietary photorealistic visual effects for CRD rendering.
-              </p>
-              <Button variant="outline" size="sm" disabled>
-                Coming Soon
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-crd-dark/30 border-crd-mediumGray/20">
-            <CardHeader>
-              <CardTitle className="text-crd-lightGray text-lg">🔄 360° Photography</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-crd-mediumGray mb-4">
-                Immersive 360-degree environments for card viewing.
-              </p>
-              <Button variant="outline" size="sm" disabled>
-                In Development
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-crd-dark/30 border-crd-mediumGray/20">
-            <CardHeader>
-              <CardTitle className="text-crd-lightGray text-lg">⚡ WebGL Effects</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-crd-mediumGray mb-4">
-                Real-time shader effects and particle systems.
-              </p>
-              <Button variant="outline" size="sm" disabled>
-                Experimental
-              </Button>
-            </CardContent>
-          </Card>
+          </div>
         </div>
       </div>
     </div>
