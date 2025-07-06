@@ -10,6 +10,7 @@ import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { Slider } from '@/components/ui/slider';
 import { SharedStudioEnvironment } from '@/components/viewer/shared/SharedStudioEnvironment';
 import { useImmersiveViewerState } from '@/components/viewer/hooks/useImmersiveViewerState';
+import { useEnhancedCardEffects } from '@/components/viewer/hooks/useEnhancedCardEffects';
 import type { CardData } from '@/types/card';
 
 // Helper function to convert CardData to the format expected by ImmersiveCardViewer
@@ -67,6 +68,9 @@ const Studio = () => {
   
   // Initialize shared viewer state for the environment
   const { viewerState, actions } = useImmersiveViewerState();
+  
+  // Initialize card effects for proper rendering
+  const { effectValues } = useEnhancedCardEffects();
   
   const {
     selectedCard,
@@ -205,7 +209,7 @@ const Studio = () => {
             environmentControls={viewerState.environmentControls}
             overallBrightness={viewerState.overallBrightness}
             interactiveLighting={viewerState.interactiveLighting}
-            effectValues={{}} // We'll need to implement effects integration
+            effectValues={effectValues} // Use proper effect values from hook
             cardSpacing={cardSpacing[0]}
             allowRotation={true}
             autoRotate={false}
