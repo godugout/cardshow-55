@@ -138,14 +138,7 @@ export const SharedStudioEnvironment: React.FC<SharedStudioEnvironmentProps> = (
       <div 
         className="relative z-20"
         style={{
-          transform: `
-            perspective(${immersiveFOV * 15}px)
-            translateZ(${cameraPosition.z * 10}px)
-            rotateX(${cameraRotation.x}deg)
-            rotateY(${cameraRotation.y}deg)
-          `,
-          transformStyle: 'preserve-3d',
-          transition: autoRotate ? 'none' : 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)'
+          transformStyle: 'preserve-3d'
         }}
       >
         <StudioCardManager
