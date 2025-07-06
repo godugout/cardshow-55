@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import type { CardData } from '@/types/card';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
-import { EnhancedCardContainer } from '../components/EnhancedCardContainer';
+import { CleanCardRenderer } from '../components/CleanCardRenderer';
 
 interface StudioCardManagerProps {
   cards: CardData[];
@@ -137,31 +137,22 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
               `
             }}
           >
-            <EnhancedCardContainer
+            <CleanCardRenderer
               card={card}
-              isFlipped={false}
-              isHovering={cardIsNear && isHovering}
-              showEffects={true}
               effectValues={effectValues}
-              mousePosition={mousePosition}
-              rotation={finalRotation}
-              zoom={1} // Zoom is handled by the container
+              showEffects={true}
+              rotation={{ x: 0, y: 0 }} // Individual cards don't rotate, only the group does
+              zoom={1}
+              isHovering={cardIsNear && isHovering}
               isDragging={false}
-              frameStyles={{}}
-              enhancedEffectStyles={{}}
-              SurfaceTexture={<div />}
+              autoRotate={false}
               interactiveLighting={interactiveLighting && cardIsNear}
-              selectedScene={selectedScene}
-              selectedLighting={selectedLighting}
-              materialSettings={materialSettings}
-              overallBrightness={overallBrightness}
-              showBackgroundInfo={false}
+              mousePosition={mousePosition}
               onMouseDown={(e) => onCardInteraction?.(index, e)}
               onMouseMove={() => {}}
               onMouseEnter={() => {}}
               onMouseLeave={() => {}}
               onClick={(e) => onCardInteraction?.(index, e)}
-              solidCardTransition={true}
             />
           </div>
         );
