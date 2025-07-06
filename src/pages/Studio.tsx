@@ -165,11 +165,6 @@ const Studio = () => {
     // You can add specific interaction logic here
   };
 
-  // Handle camera changes in the shared environment
-  const handleCameraChange = (position: { x: number; y: number; z: number }, rotation: { x: number; y: number }) => {
-    console.log('📷 Camera changed:', { position, rotation });
-    // You can add camera state management here
-  };
 
   return (
     <ErrorBoundary>
@@ -215,7 +210,6 @@ const Studio = () => {
             autoRotate={false}
             zoom={1}
             onCardInteraction={handleCardInteraction}
-            onCameraChange={handleCameraChange}
           />
         </div>
       </div>

@@ -100,10 +100,10 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
     return () => cancelAnimationFrame(animationId);
   }, [autoRotate]);
 
-  // Interactive rotation based on mouse for both cards
+  // Interactive rotation based on mouse for both cards (simplified)
   const interactiveRotation = {
-    x: (mousePosition.y - 0.5) * (allowRotation ? 30 : 0),
-    y: (mousePosition.x - 0.5) * (allowRotation ? 40 : 0)
+    x: (mousePosition.y - 0.5) * (allowRotation ? 20 : 0), // Reduced sensitivity
+    y: (mousePosition.x - 0.5) * (allowRotation ? 30 : 0)  // Reduced sensitivity
   };
 
   // Combine rotations
@@ -124,8 +124,8 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
         
         // Calculate individual card effects based on position and mouse proximity
         const cardMouseDistance = Math.abs(mousePosition.x - (0.5 + position.x / 1000));
-        const cardIsNear = cardMouseDistance < 0.3;
-        const cardHoverIntensity = Math.max(0, 1 - cardMouseDistance * 3);
+        const cardIsNear = cardMouseDistance < 0.4; // Increased threshold
+        const cardHoverIntensity = Math.max(0, 1 - cardMouseDistance * 2); // Reduced multiplier
         
         // Ensure consistent scaling for all cards
         const baseScale = zoom;
@@ -143,7 +143,7 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
                 scale(${baseScale})
               `,
               transformStyle: 'preserve-3d',
-              transition: autoRotate ? 'none' : 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
+              transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)', // Faster transition
               filter: `
                 brightness(${1 + cardHoverIntensity * 0.2}) 
                 contrast(${1.1 + cardHoverIntensity * 0.1})

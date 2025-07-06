@@ -4,7 +4,7 @@ import type { EnvironmentScene, LightingPreset, MaterialSettings, EnvironmentCon
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import { EnvironmentSphere } from '../components/EnvironmentSphere';
 import { StudioCardManager } from './StudioCardManager';
-import { SharedCameraController } from './SharedCameraController';
+
 import { SharedLightingSystem } from './SharedLightingSystem';
 
 interface SharedStudioEnvironmentProps {
@@ -21,7 +21,6 @@ interface SharedStudioEnvironmentProps {
   autoRotate: boolean;
   zoom: number;
   onCardInteraction?: (cardIndex: number, event: React.MouseEvent) => void;
-  onCameraChange?: (position: { x: number; y: number; z: number }, rotation: { x: number; y: number }) => void;
 }
 
 export const SharedStudioEnvironment: React.FC<SharedStudioEnvironmentProps> = ({
@@ -37,14 +36,11 @@ export const SharedStudioEnvironment: React.FC<SharedStudioEnvironmentProps> = (
   allowRotation,
   autoRotate,
   zoom,
-  onCardInteraction,
-  onCameraChange
+  onCardInteraction
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = React.useState({ x: 0.5, y: 0.5 });
   const [isHovering, setIsHovering] = React.useState(false);
-  const [cameraPosition, setCameraPosition] = React.useState({ x: 0, y: 0, z: 8 });
-  const [cameraRotation, setCameraRotation] = React.useState({ x: 0, y: 0 });
 
   // Handle mouse movement for interactive lighting and parallax
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -57,20 +53,11 @@ export const SharedStudioEnvironment: React.FC<SharedStudioEnvironmentProps> = (
     setMousePosition({ x, y });
   }, []);
 
-  // Handle camera updates
-  const handleCameraUpdate = useCallback((position: { x: number; y: number; z: number }, rotation: { x: number; y: number }) => {
-    setCameraPosition(position);
-    setCameraRotation(rotation);
-    onCameraChange?.(position, rotation);
-  }, [onCameraChange]);
 
-  // Calculate immersive field of view based on scene
-  const immersiveFOV = selectedScene.depth?.fieldOfView || 75;
-  
-  // Enhanced parallax for 360° photography feel
-  const parallaxOffset = {
-    x: (mousePosition.x - 0.5) * (environmentControls.parallaxIntensity * 50),
-    y: (mousePosition.y - 0.5) * (environmentControls.parallaxIntensity * 25)
+  // Simple static parallax for background only (no camera rotation coupling)
+  const staticParallaxOffset = {
+    x: (mousePosition.x - 0.5) * 20, // Much reduced parallax
+    y: (mousePosition.y - 0.5) * 10
   };
 
   return (
@@ -85,20 +72,16 @@ export const SharedStudioEnvironment: React.FC<SharedStudioEnvironmentProps> = (
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Shared Environment Background with 360° Support */}
+      {/* Static Environment Background - NO rotation coupling */}
       <div 
         className="absolute inset-0 z-0"
         style={{
           transform: `
-            perspective(${immersiveFOV * 20}px) 
-            rotateX(${cameraRotation.x * 0.1}deg) 
-            rotateY(${cameraRotation.y * 0.1}deg)
-            translateX(${parallaxOffset.x}px) 
-            translateY(${parallaxOffset.y}px)
-            scale(${1 + zoom * 0.1})
+            translateX(${staticParallaxOffset.x}px) 
+            translateY(${staticParallaxOffset.y}px)
           `,
           transformOrigin: 'center center',
-          transition: 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)'
+          transition: 'transform 0.2s ease-out'
         }}
       >
         <EnvironmentSphere
@@ -159,31 +142,7 @@ export const SharedStudioEnvironment: React.FC<SharedStudioEnvironmentProps> = (
         />
       </div>
 
-      {/* Shared Camera Controller */}
-      <SharedCameraController
-        allowRotation={allowRotation}
-        autoRotate={autoRotate}
-        mousePosition={mousePosition}
-        containerRef={containerRef}
-        onCameraUpdate={handleCameraUpdate}
-        environmentControls={environmentControls}
-        immersive360Mode={selectedScene.type === '360'}
-      />
 
-      {/* Depth of Field Effect */}
-      {environmentControls.depthOfField > 1 && (
-        <div 
-          className="absolute inset-0 z-30 pointer-events-none"
-          style={{
-            background: `radial-gradient(
-              circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
-              transparent 30%, 
-              rgba(0,0,0,${(environmentControls.depthOfField - 1) * 0.3}) 100%
-            )`,
-            filter: `blur(${(environmentControls.depthOfField - 1) * 2}px)`
-          }}
-        />
-      )}
     </div>
   );
 };
