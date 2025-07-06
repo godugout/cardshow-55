@@ -200,7 +200,7 @@ const Studio = () => {
         </div>
 
         {/* Shared 3D Environment with Both Cards */}
-        <div className="w-full h-screen">
+        <div className="w-full h-screen flex items-center justify-center">
           <SharedStudioEnvironment
             cards={viewerCards.slice(0, 2)}
             selectedScene={viewerState.selectedScene}
