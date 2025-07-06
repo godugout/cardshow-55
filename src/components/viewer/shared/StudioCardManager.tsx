@@ -37,42 +37,24 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
   allowRotation,
   onCardInteraction
 }) => {
-  // Calculate 3D positions for cards in the shared environment - "book opening" effect
+  // Simple side-by-side positioning - both cards face the same direction
   const cardPositions = useMemo(() => {
     const positions = [];
-    
-    // Reverse spacing logic: 0 = closed sandwich, higher = more open
     const actualSpacing = Math.max(0, cardSpacing);
     
     for (let i = 0; i < cards.length; i++) {
-      // Calculate "book opening" positions
       const isLeftCard = i === 0;
-      const isRightCard = i === 1;
       
-      // X positioning: spread cards apart based on spacing
+      // Simple X positioning: left card negative, right card positive
       const baseX = isLeftCard ? -actualSpacing / 2 : actualSpacing / 2;
       
-      // Y positioning: keep centered (no offset)
-      const heightOffset = 0;
-      
-      // Z positioning: slight depth variation for visual interest
-      const depthOffset = isLeftCard ? 5 : -5;
-      
-      // "Book opening" Y-rotations that scale with spacing
-      let yRotation = 0;
-      if (actualSpacing > 0) {
-        const maxRotation = 45; // Maximum rotation at full spacing
-        const rotationAmount = (actualSpacing / 200) * maxRotation; // Scale to max spacing
-        yRotation = isLeftCard ? -rotationAmount : rotationAmount;
-      }
-
       positions.push({
         x: baseX,
-        y: heightOffset,
-        z: depthOffset,
+        y: 0, // Same height
+        z: 0, // Same depth - both face the same direction
         rotation: {
           x: 0,
-          y: yRotation,
+          y: 0, // No individual rotation - both face forward
           z: 0
         }
       });
@@ -141,10 +123,9 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
             key={card.id}
             className="absolute"
             style={{
-              // Apply only individual card positioning and rotation (no global rotation here)
+              // Simple positioning - no individual rotations
               transform: `
                 translate3d(${position.x}px, ${position.y}px, ${position.z}px)
-                rotateY(${position.rotation.y}deg)
                 scale(${baseScale})
               `,
               transformStyle: 'preserve-3d',
