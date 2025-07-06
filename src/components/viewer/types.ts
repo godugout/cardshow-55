@@ -4,7 +4,7 @@ import type { CardData } from '@/types/card';
 export interface EnvironmentScene {
   id: string;
   name: string;
-  type: '2d' | '3d';
+  type: '2d' | '3d' | '360';
   icon: string;
   category: 'natural' | 'fantasy' | 'futuristic' | 'architectural' | 'professional' | 'luxury' | 'artistic' | 'abstract' | 'minimalist';
   description: string;
@@ -43,6 +43,12 @@ export interface LightingPreset {
   temperature: number;
   position: { x: number; y: number; z: number };
   shadowSoftness: number;
+  // Enhanced lighting properties
+  color?: string;
+  intensity?: number;
+  fillColor?: string;
+  ambientColor?: string;
+  dramatic?: boolean;
 }
 
 export interface VisualEffect {
