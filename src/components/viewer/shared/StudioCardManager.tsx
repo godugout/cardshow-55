@@ -37,22 +37,34 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
   allowRotation,
   onCardInteraction
 }) => {
-  // Calculate 3D positions for cards in the shared environment
+  // Calculate 3D positions for cards in the shared environment - "book opening" effect
   const cardPositions = useMemo(() => {
     const positions = [];
-    const totalWidth = (cards.length - 1) * cardSpacing;
-    const startX = -totalWidth / 2;
-
+    
+    // Reverse spacing logic: 0 = closed sandwich, higher = more open
+    const actualSpacing = Math.max(0, cardSpacing);
+    
     for (let i = 0; i < cards.length; i++) {
-      // Keep cards on same center axis for sandwich effects
-      const baseX = startX + (i * cardSpacing);
+      // Calculate "book opening" positions
+      const isLeftCard = i === 0;
+      const isRightCard = i === 1;
       
-      // Keep all cards centered vertically and at same depth
-      const depthOffset = 0; // Same depth for sandwich effects
-      const heightOffset = 0; // Same height - perfectly centered
+      // X positioning: spread cards apart based on spacing
+      const baseX = isLeftCard ? -actualSpacing / 2 : actualSpacing / 2;
       
-      // No rotation for clean sandwich alignment
-      const rotationOffset = 0;
+      // Y positioning: keep centered (no offset)
+      const heightOffset = 0;
+      
+      // Z positioning: slight depth variation for visual interest
+      const depthOffset = isLeftCard ? 5 : -5;
+      
+      // "Book opening" Y-rotations that scale with spacing
+      let yRotation = 0;
+      if (actualSpacing > 0) {
+        const maxRotation = 45; // Maximum rotation at full spacing
+        const rotationAmount = (actualSpacing / 200) * maxRotation; // Scale to max spacing
+        yRotation = isLeftCard ? -rotationAmount : rotationAmount;
+      }
 
       positions.push({
         x: baseX,
@@ -60,7 +72,7 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
         z: depthOffset,
         rotation: {
           x: 0,
-          y: rotationOffset,
+          y: yRotation,
           z: 0
         }
       });
