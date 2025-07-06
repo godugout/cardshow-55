@@ -81,7 +81,7 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
     return positions;
   }, [cards.length, cardSpacing]);
 
-  // Auto-rotation logic for the entire card group
+  // Auto-rotation logic for the entire card group - rotate around shared center
   const [globalRotation, setGlobalRotation] = React.useState({ x: 0, y: 0 });
   
   React.useEffect(() => {
@@ -90,8 +90,8 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
     let animationId: number;
     const animate = () => {
       setGlobalRotation(prev => ({
-        x: Math.sin(Date.now() * 0.0005) * 8,
-        y: prev.y + 0.3
+        x: Math.sin(Date.now() * 0.0003) * 5, // Reduced amplitude
+        y: prev.y + 0.2 // Slower rotation
       }));
       animationId = requestAnimationFrame(animate);
     };
@@ -116,7 +116,13 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
     <div 
       className="relative w-full h-full flex items-center justify-center"
       style={{
-        transformStyle: 'preserve-3d'
+        transformStyle: 'preserve-3d',
+        // Apply global rotation to the entire group container
+        transform: `
+          rotateX(${finalRotation.x}deg)
+          rotateY(${finalRotation.y}deg)
+        `,
+        transition: autoRotate ? 'none' : 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)'
       }}
     >
       {cards.map((card, index) => {
@@ -135,15 +141,14 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
             key={card.id}
             className="absolute"
             style={{
+              // Apply only individual card positioning and rotation (no global rotation here)
               transform: `
                 translate3d(${position.x}px, ${position.y}px, ${position.z}px)
-                rotateX(${finalRotation.x + position.rotation.x}deg)
-                rotateY(${finalRotation.y + position.rotation.y}deg)
-                rotateZ(${position.rotation.z}deg)
+                rotateY(${position.rotation.y}deg)
                 scale(${baseScale})
               `,
               transformStyle: 'preserve-3d',
-              transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)', // Faster transition
+              transformOrigin: 'center center',
               filter: `
                 brightness(${1 + cardHoverIntensity * 0.2}) 
                 contrast(${1.1 + cardHoverIntensity * 0.1})
