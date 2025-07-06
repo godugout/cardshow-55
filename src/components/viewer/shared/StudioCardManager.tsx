@@ -37,24 +37,31 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
   allowRotation,
   onCardInteraction
 }) => {
-  // Simple side-by-side positioning - both cards face the same direction
+  // Position cards at the forest convergence point (where perspective lines meet)
   const cardPositions = useMemo(() => {
     const positions = [];
     const actualSpacing = Math.max(0, cardSpacing);
     
+    // Forest convergence point: center horizontally, 40% down vertically (typical horizon line)
+    const convergencePoint = {
+      x: 0, // Center horizontally
+      y: -80, // Slightly above center (40% from top = -80px from center)
+      z: -50 // Slightly pushed back to match the depth of the forest focal point
+    };
+    
     for (let i = 0; i < cards.length; i++) {
       const isLeftCard = i === 0;
       
-      // Simple X positioning: left card negative, right card positive
-      const baseX = isLeftCard ? -actualSpacing / 2 : actualSpacing / 2;
+      // Position cards around the convergence point
+      const baseX = convergencePoint.x + (isLeftCard ? -actualSpacing / 2 : actualSpacing / 2);
       
       positions.push({
         x: baseX,
-        y: 0, // Same height
-        z: 0, // Same depth - both face the same direction
+        y: convergencePoint.y, // At the forest horizon line
+        z: convergencePoint.z, // At the depth where the forest path converges
         rotation: {
           x: 0,
-          y: 0, // No individual rotation - both face forward
+          y: 0, // Both face forward toward viewer
           z: 0
         }
       });
