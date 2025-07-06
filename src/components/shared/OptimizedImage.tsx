@@ -100,6 +100,8 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       className={className}
       onError={handleImageError}
       loading="lazy"
+      decoding="async"
+      style={{ contentVisibility: 'auto' }}
     />
   );
 };

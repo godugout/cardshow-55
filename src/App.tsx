@@ -4,7 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
-import { Navbar } from '@/components/layout/Navbar';
+import { AppLayout } from '@/components/layout/AppLayout';
+import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
 import Index from '@/pages/Index';
 import CreateCard from '@/pages/CreateCard';
 import Gallery from '@/pages/Gallery';
@@ -15,30 +16,30 @@ const App = () => {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-crd-darkest">
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/create" element={<CreateCard />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/studio" element={<Studio />} />
-              <Route path="/studio/:cardId" element={<Studio />} />
-              <Route path="/labs" element={<Labs />} />
-            </Routes>
-            <Toaster 
-              position="top-right"
-              theme="dark"
-              toastOptions={{
-                style: {
-                  background: '#1A1A1A',
-                  color: '#FCFCFD',
-                  border: '1px solid #353945'
-                }
-              }}
-            />
-          </div>
-        </Router>
+    <div className={`min-h-screen bg-crd-darkest ${className}`}>
+      <AppLayout maxWidth="full">
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/create" element={<CreateCard />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/studio" element={<Studio />} />
+          <Route path="/studio/:cardId" element={<Studio />} />
+          <Route path="/labs" element={<Labs />} />
+        </Routes>
+      </AppLayout>
+      <PerformanceMonitor />
+      <Toaster 
+        position="top-right"
+        theme="dark"
+        toastOptions={{
+          style: {
+            background: '#1A1A1A',
+            color: '#FCFCFD',
+            border: '1px solid #353945'
+          }
+        }}
+      />
+    </div>
       </AuthProvider>
     </ErrorBoundary>
   );

@@ -27,13 +27,20 @@ export const BaseCard: React.FC<BaseCardProps> = ({
         ...style
       }}
     >
-      {/* Pure card image - no effects */}
+      {/* Pure card image - no effects, optimized loading */}
       <div className="absolute inset-0">
         <img
-          src={card.image_url || '/placeholder-card.png'}
+          src={card.image_url || '/placeholder.svg'}
           alt={card.title}
           className="w-full h-full object-cover"
+          loading="lazy"
           draggable={false}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            if (target.src !== '/placeholder.svg') {
+              target.src = '/placeholder.svg';
+            }
+          }}
         />
       </div>
       

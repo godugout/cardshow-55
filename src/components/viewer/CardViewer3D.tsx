@@ -14,7 +14,14 @@ interface CardViewer3DProps {
 
 function CardMesh({ card }: { card: CardData }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useTexture(card.image_url || '/placeholder-card.jpg');
+  // Safe texture loading with error handling
+  let texture;
+  try {
+    texture = useTexture(card.image_url || '/placeholder.svg');
+  } catch (error) {
+    console.warn('CardViewer3D texture loading failed:', error);
+    texture = useTexture('/placeholder.svg');
+  }
   
   // Standard trading card dimensions
   const cardWidth = 2.5;

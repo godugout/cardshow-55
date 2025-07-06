@@ -89,7 +89,14 @@ const CardMesh: React.FC<CardMeshProps> = ({ card, style }) => {
   const { clock } = useThree();
   
   // Load card texture with fallback
-  const texture = useTexture(card.image_url || '/placeholder.svg');
+  // Safe texture loading with error handling
+  let texture;
+  try {
+    texture = useTexture(card.image_url || '/placeholder.svg');
+  } catch (error) {
+    console.warn('PremiumStyleRenderer texture loading failed:', error);
+    texture = useTexture('/placeholder.svg');
+  }
   
   useEffect(() => {
     if (texture) {
