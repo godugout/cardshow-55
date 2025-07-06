@@ -33,6 +33,35 @@
   --cardshow-mediumGray: #353945;
   --cardshow-darkGray: #23262F;
   --cardshow-darkest: #121212;
+
+  /* Color palette for 3D effects in Labs */
+  --emerald-300: 52 211% 77%;
+  --emerald-400: 167 85% 59%;
+  --emerald-500: 160 84% 39%;
+  --blue-300: 213 97% 87%;
+  --blue-400: 213 94% 68%;
+  --blue-500: 217 91% 60%;
+  --purple-300: 256 65% 85%;
+  --purple-400: 263 70% 76%;
+  --purple-500: 262 83% 58%;
+  --red-300: 0 93% 94%;
+  --red-400: 0 86% 80%;
+  --red-500: 0 84% 60%;
+  --cyan-300: 165 96% 90%;
+  --cyan-400: 174 83% 72%;
+  --cyan-500: 188 86% 53%;
+  --orange-300: 20 97% 90%;
+  --orange-400: 20 91% 70%;
+  --orange-500: 20 91% 48%;
+  --pink-300: 326 85% 90%;
+  --pink-400: 330 81% 76%;
+  --pink-500: 330 81% 60%;
+  --yellow-300: 50 98% 84%;
+  --yellow-400: 54 91% 68%;
+  --yellow-500: 45 93% 47%;
+  --indigo-300: 225 100% 94%;
+  --indigo-400: 234 89% 74%;
+  --indigo-500: 239 84% 67%;
   --editor-dark: #1a1a1a;
   --editor-darker: #121212;
   --editor-tool: #2a2a2a;
