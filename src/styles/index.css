@@ -5,6 +5,7 @@
 @import './components.css';
 @import './utilities.css';
 @import './custom.css';
+@import './card-effects.css';
 
 /* Ensure button text color utilities take priority */
 @layer utilities {
