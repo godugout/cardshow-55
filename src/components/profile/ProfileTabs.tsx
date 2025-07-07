@@ -7,6 +7,7 @@ import { MemoryCard } from '@/components/memory/MemoryCard';
 import { CardGrid } from '@/components/cards/CardGrid';
 import { Loader, Image } from 'lucide-react';
 import type { Memory } from '@/types/memory';
+import type { CardData } from '@/types/card';
 
 interface ProfileTabsProps {
   activeTab: string;
@@ -25,10 +26,18 @@ export const ProfileTabs = ({
   hasMore, 
   onLoadMore 
 }: ProfileTabsProps) => {
-  // Separate cards from memories based on the presence of card-specific fields
-  const cards = memories.filter(item => 
-    'rarity' in item || 'design_metadata' in item || 'creator_id' in item
-  );
+  // Convert memories that have card properties to CardData format for CardGrid
+  const cards = memories
+    .filter(item => 'rarity' in item || 'design_metadata' in item || 'creator_id' in item)
+    .map(memory => ({
+      id: memory.id,
+      title: memory.title,
+      description: memory.description,
+      image_url: (memory as any).image_url,
+      thumbnail_url: (memory as any).thumbnail_url,
+      price: '0',
+      rarity: (memory as any).rarity || 'common'
+    }));
   const actualMemories = memories.filter(item => 
     !('rarity' in item) && !('design_metadata' in item) && !('creator_id' in item)
   );
