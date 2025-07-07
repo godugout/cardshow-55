@@ -91,12 +91,32 @@ const Studio = () => {
         }
         setHasCheckedDatabase(true);
       } catch (error) {
-        console.error('Error checking database:', error);
+        console.error('❌ Studio: Error checking database:', error);
         setHasCheckedDatabase(true);
+        
+        // Don't show seed prompt if there's a database error
+        // The app can still function with mock data
+        if (error instanceof Error && error.message.includes('auth')) {
+          console.warn('⚠️ Studio: Authentication error - continuing with mock data');
+        } else {
+          console.warn('⚠️ Studio: Database error - continuing with mock data');
+        }
       }
     };
 
-    checkDatabase();
+    // Add timeout to prevent hanging
+    const timeoutId = setTimeout(() => {
+      if (!hasCheckedDatabase) {
+        console.warn('⚠️ Studio: Database check timeout - continuing with mock data');
+        setHasCheckedDatabase(true);
+      }
+    }, 5000);
+
+    checkDatabase().finally(() => {
+      clearTimeout(timeoutId);
+    });
+
+    return () => clearTimeout(timeoutId);
   }, [user, hasCheckedDatabase]);
 
   const handleSeedComplete = () => {

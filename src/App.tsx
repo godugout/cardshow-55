@@ -12,6 +12,7 @@ import Gallery from '@/pages/Gallery';
 import Studio from '@/pages/Studio';
 
 const App = () => {
+  // Main App Error Boundary wrapper
   return (
     <ErrorBoundary>
       <ProductionOptimizer />

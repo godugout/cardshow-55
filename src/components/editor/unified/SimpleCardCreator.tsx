@@ -111,31 +111,62 @@ export const SimpleCardCreator = ({
     }
   }, [currentStep, cardEditor?.cardData]);
 
-  // Complete creation
+  // Complete creation with comprehensive error handling
   const handleCompleteCreation = useCallback(async () => {
-    if (!cardEditor) return;
+    if (!cardEditor) {
+      setError('Card editor not initialized');
+      return;
+    }
     
     console.log('🚀 SimpleCardCreator: Starting card creation');
     setIsCreating(true);
     setError(null);
 
     try {
+      // Validate card data before saving
+      if (!cardEditor.cardData.title || cardEditor.cardData.title.trim() === '' || cardEditor.cardData.title === 'My New Card') {
+        throw new Error('Please enter a card title');
+      }
+      
+      if (!cardEditor.cardData.image_url) {
+        throw new Error('Please select an image for your card');
+      }
+
       const success = await cardEditor.saveCard();
       
       if (success) {
         setCurrentStep('complete');
         
         if (onComplete) {
-          onComplete(cardEditor.cardData);
+          try {
+            onComplete(cardEditor.cardData);
+          } catch (callbackError) {
+            console.warn('⚠️ SimpleCardCreator: Callback error:', callbackError);
+            // Don't fail the creation if callback fails
+          }
         }
         
         console.log('✅ SimpleCardCreator: Card created successfully');
       } else {
-        throw new Error('Failed to save card');
+        throw new Error('Failed to save card - please check your connection and try again');
       }
     } catch (err) {
       console.error('❌ SimpleCardCreator: Error creating card:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create card';
+      let errorMessage = 'Failed to create card';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      }
+      
+      // Add more specific error handling
+      if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        errorMessage = 'Network error - please check your connection and try again';
+      } else if (errorMessage.includes('auth')) {
+        errorMessage = 'Authentication error - please sign in and try again';
+      }
+      
       setError(errorMessage);
     } finally {
       setIsCreating(false);

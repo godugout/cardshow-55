@@ -76,7 +76,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // Show skeleton while loading
   if (loading && showSkeleton) {
-    return <Skeleton className={className} />;
+    return <Skeleton className={`bg-crd-mediumGray/20 ${className}`} />;
   }
 
   // Show error state
