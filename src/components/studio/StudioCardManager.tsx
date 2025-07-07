@@ -6,6 +6,7 @@ import type { CardData } from '@/types/card';
 import { Card3DPositioned } from './components/Card3DPositioned';
 import { StudioScene } from './components/StudioScene';
 import { BackgroundAnalyzer } from './utils/BackgroundAnalyzer';
+import { StudioErrorBoundary } from './components/StudioErrorBoundary';
 
 interface StudioCardManagerProps {
   cards: CardData[];
@@ -60,7 +61,39 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
 }) => {
   const [cardPositions, setCardPositions] = useState<CardPosition[]>([]);
   const [convergencePoint, setConvergencePoint] = useState<THREE.Vector3>(FOREST_CONVERGENCE_POINT);
+  const [texturesReady, setTexturesReady] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Preload textures for 3D rendering
+  useEffect(() => {
+    const preloadTextures = async () => {
+      setTexturesReady(false);
+      
+      try {
+        // Preload all card textures for stable 3D rendering
+        await Promise.all(
+          cards.map(card => 
+            card.image_url ? new Promise<void>((resolve, reject) => {
+              const img = new Image();
+              img.onload = () => resolve();
+              img.onerror = () => resolve(); // Continue even if one fails
+              img.src = card.image_url;
+            }) : Promise.resolve()
+          )
+        );
+        
+        console.log('🎮 Studio textures preloaded for 3D rendering');
+        setTexturesReady(true);
+      } catch (error) {
+        console.warn('Some textures failed to preload, continuing anyway:', error);
+        setTexturesReady(true);
+      }
+    };
+
+    if (cards.length > 0) {
+      preloadTextures();
+    }
+  }, [cards]);
 
   // Calculate optimal card positions based on background analysis
   const calculateCardPositions = useMemo(() => {
@@ -132,8 +165,17 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
   }, [cardPositions]);
 
   return (
-    <div className="relative w-full h-full">
-      <Canvas
+    <StudioErrorBoundary>
+      <div className="relative w-full h-full">
+        {!texturesReady && (
+          <div className="absolute inset-0 bg-crd-darkest flex items-center justify-center z-10">
+            <div className="text-center text-white">
+              <div className="w-8 h-8 border-2 border-crd-blue border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+              <div className="text-sm">Loading 3D scene...</div>
+            </div>
+          </div>
+        )}
+        <Canvas
         ref={canvasRef}
         camera={{ 
           position: [0, 5, 20], 
@@ -175,7 +217,7 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
         />
 
         {/* Render Cards in 3D Space */}
-        {cardPositions.map((cardPos, index) => (
+        {texturesReady && cardPositions.map((cardPos, index) => (
           <Card3DPositioned
             key={cardPos.id}
             card={cards[index]}
@@ -236,7 +278,8 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </StudioErrorBoundary>
   );
 };
 
