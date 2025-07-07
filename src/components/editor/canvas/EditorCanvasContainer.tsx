@@ -92,14 +92,9 @@ export const EditorCanvasContainer = ({ cardEditor, children }: EditorCanvasCont
         ...prev,
         effects: {
           ...prev.effects,
-          holographicIntensity: effects.holographic || 0,
-          refractorIntensity: effects.refractor || 0,
-          foilIntensity: effects.foil || 0,
-          prizmIntensity: effects.prizm || 0,
-          rainbowIntensity: effects.rainbow || 0,
-          chromeIntensity: effects.chrome || 0,
-          goldIntensity: effects.gold || 0,
-          blackIntensity: effects.black || 0
+          holographic: typeof effects.holographic === 'boolean' ? effects.holographic : false,
+          chrome: typeof effects.chrome === 'boolean' ? effects.chrome : false,
+          vintage: typeof effects.foil === 'boolean' ? effects.foil : false
         }
       }));
     }
@@ -127,14 +122,9 @@ export const EditorCanvasContainer = ({ cardEditor, children }: EditorCanvasCont
           ...prev,
           effects: {
             ...prev.effects,
-            holographicIntensity: effects.holographic || 0,
-            refractorIntensity: effects.refractor || 0,
-            foilIntensity: effects.foil || 0,
-            prizmIntensity: effects.prizm || 0,
-            rainbowIntensity: effects.rainbow || 0,
-            chromeIntensity: effects.chrome || 0,
-            goldIntensity: effects.gold || 0,
-            blackIntensity: effects.black || 0
+            holographic: typeof effects.holographic === 'boolean' ? effects.holographic : false,
+            chrome: typeof effects.chrome === 'boolean' ? effects.chrome : false,
+            vintage: typeof effects.foil === 'boolean' ? effects.foil : false
           }
         }));
       } else {

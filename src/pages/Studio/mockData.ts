@@ -11,7 +11,12 @@ export const mockCards: CardData[] = [
     image_url: '/lovable-uploads/cd4cf59d-5ff5-461d-92e9-61b6e2c63e2e.png',
     design_metadata: {
       background: 'mystical',
-      effects: ['glow', 'particles'],
+      effects: {
+        chrome: false,
+        holographic: true,
+        foil: false
+      },
+      effectIntensity: 0.8,
       colorScheme: 'purple-gold'
     },
     visibility: 'public',
@@ -46,7 +51,12 @@ export const mockCards: CardData[] = [
     image_url: '/lovable-uploads/5e4b9905-1b9a-481e-b51d-9cf0bda7ff0f.png',
     design_metadata: {
       background: 'crystalline',
-      effects: ['shine', 'refraction'],
+      effects: {
+        chrome: true,
+        holographic: false,
+        foil: true
+      },
+      effectIntensity: 0.6,
       colorScheme: 'blue-white'
     },
     visibility: 'public',
@@ -80,7 +90,12 @@ export const mockCards: CardData[] = [
     image_url: '/lovable-uploads/68c31062-5697-489f-a2f1-8ff47d5f5e1e.png',
     design_metadata: {
       background: 'dark',
-      effects: ['shadow', 'smoke'],
+      effects: {
+        chrome: false,
+        holographic: false,
+        foil: false
+      },
+      effectIntensity: 0.4,
       colorScheme: 'black-purple'
     },
     visibility: 'public',

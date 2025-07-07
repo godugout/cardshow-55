@@ -13,13 +13,14 @@ export const useCardEffects = (card: CardData) => {
   const effects = useMemo(() => {
     // Use design_metadata instead of metadata to match CardData interface
     const effectsData = card.design_metadata?.effects;
+    const intensity = card.design_metadata?.effectIntensity || 0.5;
     return {
       holographic: effectsData?.holographic || false,
       chrome: effectsData?.chrome || false,
       foil: effectsData?.foil || false,
-      intensity: effectsData?.intensity || 0.5
+      intensity: intensity
     };
-  }, [card.design_metadata?.effects]);
+  }, [card.design_metadata?.effects, card.design_metadata?.effectIntensity]);
 
   const effectClasses = useMemo(() => {
     const classes: string[] = [];

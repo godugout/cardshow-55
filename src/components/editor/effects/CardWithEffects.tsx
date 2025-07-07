@@ -1,9 +1,9 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import type { CardVisualEffects } from './CardEffectsControls';
+import type { CardVisualEffects } from '@/types/card';
 
 interface CardWithEffectsProps {
-  effects?: CardEffects;
+  effects?: CardVisualEffects;
   effectIntensity?: number;
   children: React.ReactNode;
   className?: string;
