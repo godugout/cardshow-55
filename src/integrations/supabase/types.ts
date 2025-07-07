@@ -5680,21 +5680,27 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
+          cards_created_count: number | null
           cover_image_url: string | null
           created_at: string | null
+          days_active_streak: number | null
+          effects_applied_count: number | null
           email: string
           experience_points: number | null
           full_name: string | null
           id: string
           is_creator: boolean | null
           is_verified: boolean | null
+          last_active_date: string | null
           level: number | null
           location: string | null
           privacy_settings: Json | null
+          progress_milestones: Json | null
           social_links: Json | null
           subscription_tier: string | null
           total_followers: number | null
           total_following: number | null
+          unique_templates_used: number | null
           updated_at: string | null
           username: string
           verification_status: string | null
@@ -5703,21 +5709,27 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          cards_created_count?: number | null
           cover_image_url?: string | null
           created_at?: string | null
+          days_active_streak?: number | null
+          effects_applied_count?: number | null
           email: string
           experience_points?: number | null
           full_name?: string | null
           id: string
           is_creator?: boolean | null
           is_verified?: boolean | null
+          last_active_date?: string | null
           level?: number | null
           location?: string | null
           privacy_settings?: Json | null
+          progress_milestones?: Json | null
           social_links?: Json | null
           subscription_tier?: string | null
           total_followers?: number | null
           total_following?: number | null
+          unique_templates_used?: number | null
           updated_at?: string | null
           username: string
           verification_status?: string | null
@@ -5726,21 +5738,27 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          cards_created_count?: number | null
           cover_image_url?: string | null
           created_at?: string | null
+          days_active_streak?: number | null
+          effects_applied_count?: number | null
           email?: string
           experience_points?: number | null
           full_name?: string | null
           id?: string
           is_creator?: boolean | null
           is_verified?: boolean | null
+          last_active_date?: string | null
           level?: number | null
           location?: string | null
           privacy_settings?: Json | null
+          progress_milestones?: Json | null
           social_links?: Json | null
           subscription_tier?: string | null
           total_followers?: number | null
           total_following?: number | null
+          unique_templates_used?: number | null
           updated_at?: string | null
           username?: string
           verification_status?: string | null

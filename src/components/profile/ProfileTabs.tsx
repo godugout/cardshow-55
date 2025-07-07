@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MemoryCard } from '@/components/memory/MemoryCard';
 import { CardGrid } from '@/components/cards/CardGrid';
+import { ProgressStats } from '@/components/profile/ProgressStats';
 import { Loader, Image } from 'lucide-react';
 import type { Memory } from '@/types/memory';
 import type { CardData } from '@/types/card';
@@ -46,6 +47,7 @@ export const ProfileTabs = ({
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList className="mb-6">
         <TabsTrigger value="memories">My Cards ({cards.length})</TabsTrigger>
+        <TabsTrigger value="progress">Progress</TabsTrigger>
         <TabsTrigger value="collections">Collections</TabsTrigger>
         <TabsTrigger value="liked">Liked</TabsTrigger>
       </TabsList>
@@ -88,6 +90,10 @@ export const ProfileTabs = ({
             )}
           </>
         )}
+      </TabsContent>
+      
+      <TabsContent value="progress">
+        <ProgressStats />
       </TabsContent>
       
       <TabsContent value="collections">
