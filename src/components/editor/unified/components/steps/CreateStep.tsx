@@ -4,8 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Upload, Image, Palette, Sparkles } from 'lucide-react';
+import { Upload, Image, Palette, Sparkles, Zap, Chrome, Stars } from 'lucide-react';
 import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRenderer';
 import { BASEBALL_CARD_TEMPLATES } from '@/components/editor/templates/BaseballCardTemplates';
 import { TeamColorSelector } from '@/components/editor/templates/TeamColorSelector';
@@ -27,6 +30,14 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
   const [selectedColorScheme, setSelectedColorScheme] = useState<TeamColorScheme | null>(null);
   const [playerName, setPlayerName] = useState(cardData?.title || 'PLAYER NAME');
   const [teamName, setTeamName] = useState('TEAM');
+  
+  // Effect states
+  const [chromeEffect, setChromeEffect] = useState(false);
+  const [holographicEffect, setHolographicEffect] = useState(false);
+  const [foilEffect, setFoilEffect] = useState(false);
+  const [chromeIntensity, setChromeIntensity] = useState([50]);
+  const [holographicIntensity, setHolographicIntensity] = useState([50]);
+  const [foilIntensity, setFoilIntensity] = useState([50]);
   
   const { colorThemes, loading: themesLoading } = useColorThemes();
 
@@ -173,10 +184,15 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                     <SelectItem value="common" className="text-crd-white">Common</SelectItem>
                     <SelectItem value="uncommon" className="text-crd-white">Uncommon</SelectItem>
                     <SelectItem value="rare" className="text-crd-white">Rare</SelectItem>
-                    <SelectItem value="epic" className="text-crd-white">Epic</SelectItem>
                     <SelectItem value="legendary" className="text-crd-white">Legendary</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              {/* Character Count */}
+              <div className="grid grid-cols-2 gap-4 text-xs text-crd-lightGray">
+                <div>Title: {cardData.title?.length || 0}/50</div>
+                <div>Description: {cardData.description?.length || 0}/200</div>
               </div>
             </CardContent>
           </Card>
@@ -227,6 +243,112 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
             </CardContent>
           </Card>
 
+          {/* Card Effects */}
+          <Card className="bg-crd-darker border-crd-mediumGray/20">
+            <CardHeader>
+              <CardTitle className="text-crd-white flex items-center gap-2">
+                <Sparkles className="w-5 h-5" />
+                Card Effects
+              </CardTitle>
+              <p className="text-crd-lightGray text-sm">Add special effects to your card</p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Chrome Effect */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Chrome className="w-4 h-4 text-crd-lightGray" />
+                    <Label className="text-crd-white">Chrome Effect</Label>
+                  </div>
+                  <Switch
+                    checked={chromeEffect}
+                    onCheckedChange={setChromeEffect}
+                  />
+                </div>
+                {chromeEffect && (
+                  <div className="ml-6 space-y-2">
+                    <Label className="text-crd-lightGray text-sm">Intensity</Label>
+                    <Slider
+                      value={chromeIntensity}
+                      onValueChange={setChromeIntensity}
+                      max={100}
+                      min={0}
+                      step={1}
+                      className="w-full"
+                    />
+                    <div className="text-xs text-crd-lightGray">{chromeIntensity[0]}%</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Holographic Effect */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-crd-lightGray" />
+                    <Label className="text-crd-white">Holographic</Label>
+                  </div>
+                  <Switch
+                    checked={holographicEffect}
+                    onCheckedChange={setHolographicEffect}
+                  />
+                </div>
+                {holographicEffect && (
+                  <div className="ml-6 space-y-2">
+                    <Label className="text-crd-lightGray text-sm">Intensity</Label>
+                    <Slider
+                      value={holographicIntensity}
+                      onValueChange={setHolographicIntensity}
+                      max={100}
+                      min={0}
+                      step={1}
+                      className="w-full"
+                    />
+                    <div className="text-xs text-crd-lightGray">{holographicIntensity[0]}%</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Foil Effect */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Stars className="w-4 h-4 text-crd-lightGray" />
+                    <Label className="text-crd-white">Foil Effect</Label>
+                  </div>
+                  <Switch
+                    checked={foilEffect}
+                    onCheckedChange={setFoilEffect}
+                  />
+                </div>
+                {foilEffect && (
+                  <div className="ml-6 space-y-2">
+                    <Label className="text-crd-lightGray text-sm">Intensity</Label>
+                    <Slider
+                      value={foilIntensity}
+                      onValueChange={setFoilIntensity}
+                      max={100}
+                      min={0}
+                      step={1}
+                      className="w-full"
+                    />
+                    <div className="text-xs text-crd-lightGray">{foilIntensity[0]}%</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Live Preview Badge */}
+              {(chromeEffect || holographicEffect || foilEffect) && (
+                <div className="flex items-center justify-center pt-4 border-t border-crd-mediumGray/20">
+                  <Badge className="bg-crd-green/20 text-crd-green border-crd-green/30">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    Effects will show in live preview
+                  </Badge>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Team Colors */}
           <Card className="bg-crd-darker border-crd-mediumGray/20">
             <CardHeader>
@@ -237,12 +359,11 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
               <p className="text-crd-lightGray text-sm">Personalize with team colors</p>
             </CardHeader>
             <CardContent>
-              <div className="min-h-[300px]">
+              <div className="min-h-[200px]">
                 <TeamColorSelector
                   selectedColorScheme={selectedColorScheme}
                   onColorSchemeSelect={(scheme) => {
                     setSelectedColorScheme(scheme);
-                    // Force frame re-render with new colors
                     console.log('Team colors updated:', scheme);
                   }}
                   className=""

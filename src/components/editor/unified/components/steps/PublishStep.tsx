@@ -5,7 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Lock, Users, Tag, FileText, Settings, ImageIcon } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Globe, Lock, Users, Tag, FileText, Settings, ImageIcon, FolderOpen, Eye } from 'lucide-react';
+import { useCollections } from '@/hooks/useCollections';
 import { getRarityColor } from '@/utils/cardEffectUtils';
 import type { CreationMode } from '../../types';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -26,6 +28,7 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
 
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
+  const { collections, isLoading: collectionsLoading } = useCollections();
 
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const tagsString = e.target.value;
@@ -233,15 +236,69 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h5 className="text-crd-white font-medium">Make Public</h5>
-                  <p className="text-crd-lightGray text-sm">Allow others to view this card</p>
+              {/* Visibility Toggle */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h5 className="text-crd-white font-medium">Visibility</h5>
+                    <p className="text-crd-lightGray text-sm">Control who can see your card</p>
+                  </div>
+                  <Select 
+                    value={cardData.visibility || 'private'} 
+                    onValueChange={(value) => {
+                      onFieldUpdate('visibility', value);
+                      onFieldUpdate('is_public', value === 'public');
+                    }}
+                  >
+                    <SelectTrigger className="w-32 bg-crd-darkest border-crd-mediumGray/30 text-crd-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-crd-darker border-crd-mediumGray/30">
+                      <SelectItem value="private" className="text-crd-white">
+                        <div className="flex items-center gap-2">
+                          <Lock className="w-4 h-4" />
+                          Private
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="public" className="text-crd-white">
+                        <div className="flex items-center gap-2">
+                          <Globe className="w-4 h-4" />
+                          Public
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <Switch
-                  checked={cardData.is_public}
-                  onCheckedChange={(checked) => onFieldUpdate('is_public', checked)}
-                />
+              </div>
+
+              {/* Collection Selector */}
+              <div className="space-y-2">
+                <h5 className="text-crd-white font-medium">Add to Collection</h5>
+                <p className="text-crd-lightGray text-sm mb-2">Organize your card in a collection</p>
+                <Select 
+                  value={cardData.collection_id || ''} 
+                  onValueChange={(value) => onFieldUpdate('collection_id', value || null)}
+                >
+                  <SelectTrigger className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white">
+                    <SelectValue placeholder="Select collection (optional)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-crd-darker border-crd-mediumGray/30">
+                    <SelectItem value="" className="text-crd-white">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4" />
+                        No collection
+                      </div>
+                    </SelectItem>
+                    {!collectionsLoading && collections.map((collection) => (
+                      <SelectItem key={collection.id} value={collection.id} className="text-crd-white">
+                        <div className="flex items-center gap-2">
+                          <FolderOpen className="w-4 h-4" />
+                          {collection.title || collection.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex items-center justify-between">
@@ -284,6 +341,49 @@ export const PublishStep = ({ mode, cardData, onFieldUpdate }: PublishStepProps)
           </Card>
         </div>
       </div>
+
+      {/* Gallery Preview */}
+      <Card className="bg-crd-darker border-crd-mediumGray/20 mt-8">
+        <CardHeader>
+          <CardTitle className="text-crd-white flex items-center gap-2">
+            <Eye className="w-5 h-5" />
+            Gallery Preview
+          </CardTitle>
+          <p className="text-crd-lightGray text-sm">How your card will appear in the gallery</p>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4 p-4 bg-crd-mediumGray/10 rounded-lg">
+            {/* Mini card preview */}
+            <div className="w-16 h-20 bg-crd-mediumGray/20 rounded overflow-hidden flex-shrink-0">
+              {cardData.image_url && !imageError ? (
+                <img 
+                  src={cardData.image_url} 
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <ImageIcon className="w-6 h-6 text-crd-lightGray" />
+                </div>
+              )}
+            </div>
+            
+            {/* Card info */}
+            <div className="flex-1 min-w-0">
+              <h4 className="text-crd-white font-medium truncate">{cardData.title}</h4>
+              <p className="text-crd-lightGray text-sm truncate">
+                {cardData.description || 'No description'}
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                {getRarityBadge()}
+                <Badge variant="outline" className="text-xs border-crd-mediumGray/30 text-crd-lightGray">
+                  {cardData.visibility === 'public' ? 'Public' : 'Private'}
+                </Badge>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Ready to Publish Notice */}
       <Card className="bg-crd-green/10 border-crd-green/30 mt-8">

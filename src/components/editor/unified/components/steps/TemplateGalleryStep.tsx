@@ -22,19 +22,21 @@ export const TemplateGalleryStep = ({ mode, cardData, onFieldUpdate }: TemplateG
 
   const categories = [
     { id: 'all', name: 'All Templates', icon: Grid },
-    { id: 'popular', name: 'Popular', icon: Star },
-    { id: 'premium', name: 'Premium', icon: Zap },
-    { id: 'modern', name: 'Modern', icon: Grid },
-    { id: 'classic', name: 'Classic', icon: Grid },
+    { id: 'sports', name: 'Sports', icon: Star },
+    { id: 'fantasy', name: 'Fantasy', icon: Zap },
+    { id: 'scifi', name: 'Sci-Fi', icon: Grid },
+    { id: 'vintage', name: 'Vintage', icon: Grid },
   ];
 
   const filteredTemplates = BASEBALL_CARD_TEMPLATES.filter(template => {
-    const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         template.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    
     const matchesCategory = selectedCategory === 'all' || 
-                           (selectedCategory === 'popular' && template.id !== 'no-frame') ||
-                           (selectedCategory === 'premium' && template.name.includes('Premium')) ||
-                           (selectedCategory === 'modern' && template.name.includes('Modern')) ||
-                           (selectedCategory === 'classic' && !template.name.includes('Modern'));
+                           (selectedCategory === 'sports' && (template.name.includes('Baseball') || template.name.includes('Sports'))) ||
+                           (selectedCategory === 'fantasy' && (template.name.includes('Fantasy') || template.name.includes('Magic'))) ||
+                           (selectedCategory === 'scifi' && (template.name.includes('Sci-Fi') || template.name.includes('Cyber'))) ||
+                           (selectedCategory === 'vintage' && (template.name.includes('Vintage') || template.name.includes('Classic')));
     
     return matchesSearch && matchesCategory;
   });
