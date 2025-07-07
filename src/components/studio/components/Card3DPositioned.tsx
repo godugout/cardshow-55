@@ -61,24 +61,37 @@ export const Card3DPositioned: React.FC<Card3DPositionedProps> = ({
     if (!meshRef.current || !groupRef.current) return;
 
     // Smooth position and rotation transitions
-    groupRef.current.position.lerp(position, 0.1);
+    groupRef.current.position.lerp(position, 0.15);
     groupRef.current.rotation.copy(rotation);
-    groupRef.current.scale.lerp(new THREE.Vector3(scale, scale, scale), 0.1);
+    groupRef.current.scale.lerp(new THREE.Vector3(scale, scale, scale), 0.15);
 
-    // Hover effect - gentle floating
+    // Enhanced hover effect - gentle floating with rotation
     if (hovered && !isDragging) {
-      const floatY = Math.sin(state.clock.elapsedTime * 2) * 0.1;
+      const floatY = Math.sin(state.clock.elapsedTime * 2) * 0.15;
+      const floatX = Math.cos(state.clock.elapsedTime * 1.5) * 0.05;
       groupRef.current.position.y = position.y + floatY;
+      groupRef.current.position.x = position.x + floatX;
+      
+      // Subtle rotation on hover
+      groupRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 1.2) * 0.02;
     }
 
-    // Selected card special effects
+    // Selected card special effects - enhanced
     if (isSelected) {
-      // Gentle glow effect through material emission
+      // Dynamic glow effect
       const material = meshRef.current.material as THREE.MeshStandardMaterial;
       if (material.emissive) {
-        const glowIntensity = 0.1 + Math.sin(state.clock.elapsedTime * 3) * 0.05;
+        const glowIntensity = 0.15 + Math.sin(state.clock.elapsedTime * 2.5) * 0.08;
         material.emissiveIntensity = glowIntensity;
       }
+      
+      // Gentle pulse scale effect
+      const pulseMod = 1 + Math.sin(state.clock.elapsedTime * 3) * 0.02;
+      groupRef.current.scale.multiplyScalar(pulseMod);
+      
+      // Enhanced floating for selected card
+      const selectedFloat = Math.sin(state.clock.elapsedTime * 1.8) * 0.1;
+      groupRef.current.position.y += selectedFloat;
     }
   });
 
@@ -104,20 +117,24 @@ export const Card3DPositioned: React.FC<Card3DPositionedProps> = ({
     }
   }, [isDragging, onPositionChange]);
 
-  // Create materials
+  // Create materials with enhanced effects
   const frontMaterial = useMemo(() => new THREE.MeshStandardMaterial({
     map: texture,
-    roughness: isSelected ? 0.1 : 0.3,
-    metalness: isSelected ? 0.2 : 0.1,
-    emissive: isSelected ? new THREE.Color(0x004488) : new THREE.Color(0x000000),
-    emissiveIntensity: isSelected ? 0.1 : 0
-  }), [texture, isSelected]);
+    roughness: isSelected ? 0.05 : 0.25,
+    metalness: isSelected ? 0.3 : 0.1,
+    emissive: isSelected ? new THREE.Color(0x0066cc) : new THREE.Color(0x000000),
+    emissiveIntensity: isSelected ? 0.15 : 0,
+    transparent: hovered || isSelected,
+    opacity: hovered && !isSelected ? 0.9 : 1.0
+  }), [texture, isSelected, hovered]);
 
   const backMaterial = useMemo(() => new THREE.MeshStandardMaterial({
-    color: 0x1a1a2e,
-    roughness: 0.4,
-    metalness: 0.1
-  }), []);
+    color: isSelected ? 0x2a2a4e : 0x1a1a2e,
+    roughness: 0.3,
+    metalness: 0.2,
+    emissive: isSelected ? new THREE.Color(0x001122) : new THREE.Color(0x000000),
+    emissiveIntensity: isSelected ? 0.1 : 0
+  }), [isSelected]);
 
   return (
     <group 
@@ -135,33 +152,85 @@ export const Card3DPositioned: React.FC<Card3DPositionedProps> = ({
         receiveShadow
       >
         <boxGeometry args={[CARD_WIDTH, CARD_HEIGHT, CARD_DEPTH]} />
-        <meshStandardMaterial
-          map={texture}
-          roughness={isSelected ? 0.1 : 0.3}
-          metalness={isSelected ? 0.2 : 0.1}
-          emissive={isSelected ? new THREE.Color(0x004488) : new THREE.Color(0x000000)}
-          emissiveIntensity={isSelected ? 0.1 : 0}
-        />
+        <primitive object={frontMaterial} attach="material" />
       </mesh>
 
-      {/* Selection Indicator */}
+      {/* Enhanced Selection Indicator */}
       {isSelected && (
-        <mesh position={[0, 0, -0.1]}>
-          <ringGeometry args={[CARD_WIDTH * 0.6, CARD_WIDTH * 0.65, 32]} />
-          <meshBasicMaterial color={0x4488ff} transparent opacity={0.6} />
+        <group>
+          {/* Outer ring */}
+          <mesh position={[0, 0, -0.1]}>
+            <ringGeometry args={[CARD_WIDTH * 0.65, CARD_WIDTH * 0.75, 64]} />
+            <meshBasicMaterial 
+              color={0x0088ff} 
+              transparent 
+              opacity={0.4}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+          {/* Inner glow ring */}
+          <mesh position={[0, 0, -0.08]}>
+            <ringGeometry args={[CARD_WIDTH * 0.55, CARD_WIDTH * 0.62, 32]} />
+            <meshBasicMaterial 
+              color={0x44aaff} 
+              transparent 
+              opacity={0.6}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+          {/* Particle-like dots around the card */}
+          {Array.from({ length: 8 }).map((_, i) => {
+            const angle = (i / 8) * Math.PI * 2;
+            const radius = CARD_WIDTH * 0.8;
+            return (
+              <mesh 
+                key={i}
+                position={[
+                  Math.cos(angle) * radius,
+                  Math.sin(angle) * radius,
+                  0.1
+                ]}
+              >
+                <sphereGeometry args={[0.05, 8, 8]} />
+                <meshBasicMaterial 
+                  color={0x66ccff} 
+                  transparent 
+                  opacity={0.8}
+                />
+              </mesh>
+            );
+          })}
+        </group>
+      )}
+
+      {/* Hover glow effect */}
+      {hovered && !isSelected && (
+        <mesh position={[0, 0, -0.12]}>
+          <ringGeometry args={[CARD_WIDTH * 0.6, CARD_WIDTH * 0.68, 32]} />
+          <meshBasicMaterial 
+            color={0xffffff} 
+            transparent 
+            opacity={0.2}
+            side={THREE.DoubleSide}
+          />
         </mesh>
       )}
 
-      {/* Card Info Overlay (when hovered and not dragging) */}
+      {/* Enhanced Card Info Overlay */}
       {hovered && !isDragging && (
         <Html
-          position={[0, CARD_HEIGHT * 0.6, 0]}
+          position={[0, CARD_HEIGHT * 0.65, 0]}
           center
-          distanceFactor={8}
+          distanceFactor={6}
           occlude
         >
-          <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-            {card.title}
+          <div className="bg-gradient-to-r from-black/90 to-black/80 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap border border-white/20 shadow-lg">
+            <div className="font-semibold text-crd-blue">{card.title}</div>
+            {card.rarity && (
+              <div className="text-xs text-white/70 mt-1 capitalize">
+                {card.rarity} • Click to select
+              </div>
+            )}
           </div>
         </Html>
       )}

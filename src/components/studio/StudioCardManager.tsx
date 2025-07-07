@@ -26,10 +26,21 @@ interface CardPosition {
   isSelected: boolean;
 }
 
-const FOREST_CONVERGENCE_POINT = new THREE.Vector3(0, -80, -50);
-const DEFAULT_CARD_SPACING = 5;
-const SELECTED_CARD_SCALE = 1.2;
+const FOREST_CONVERGENCE_POINT = new THREE.Vector3(0, -20, -30);
+const DEFAULT_CARD_SPACING = 8;
+const SELECTED_CARD_SCALE = 1.4;
 const DEFAULT_CARD_SCALE = 1.0;
+
+// Arrangement presets
+const ARRANGEMENT_PRESETS = {
+  CIRCLE: 'circle',
+  GRID: 'grid',
+  LINE: 'line',
+  SPIRAL: 'spiral',
+  SCATTER: 'scatter'
+} as const;
+
+type ArrangementType = typeof ARRANGEMENT_PRESETS[keyof typeof ARRANGEMENT_PRESETS];
 
 // Camera controller component
 const CameraController: React.FC<{
@@ -60,14 +71,78 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
 }) => {
   const [cardPositions, setCardPositions] = useState<CardPosition[]>([]);
   const [convergencePoint, setConvergencePoint] = useState<THREE.Vector3>(FOREST_CONVERGENCE_POINT);
+  const [currentArrangement, setCurrentArrangement] = useState<ArrangementType>(ARRANGEMENT_PRESETS.CIRCLE);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Calculate optimal card positions based on background analysis
+  // Generate positions based on arrangement type
+  const generateArrangementPositions = (arrangement: ArrangementType, convergence: THREE.Vector3) => {
+    switch (arrangement) {
+      case ARRANGEMENT_PRESETS.CIRCLE:
+        return cards.map((card, index) => {
+          const angle = (index / cards.length) * Math.PI * 2;
+          const radius = 12;
+          return new THREE.Vector3(
+            convergence.x + Math.cos(angle) * radius,
+            convergence.y + 3,
+            convergence.z + Math.sin(angle) * radius
+          );
+        });
+
+      case ARRANGEMENT_PRESETS.GRID:
+        const cols = Math.ceil(Math.sqrt(cards.length));
+        return cards.map((card, index) => {
+          const row = Math.floor(index / cols);
+          const col = index % cols;
+          return new THREE.Vector3(
+            convergence.x + (col - cols/2) * DEFAULT_CARD_SPACING,
+            convergence.y + 3,
+            convergence.z + (row - Math.ceil(cards.length/cols)/2) * DEFAULT_CARD_SPACING
+          );
+        });
+
+      case ARRANGEMENT_PRESETS.LINE:
+        return cards.map((card, index) => {
+          return new THREE.Vector3(
+            convergence.x + (index - cards.length/2) * DEFAULT_CARD_SPACING,
+            convergence.y + 3,
+            convergence.z
+          );
+        });
+
+      case ARRANGEMENT_PRESETS.SPIRAL:
+        return cards.map((card, index) => {
+          const angle = index * 0.5;
+          const radius = 5 + index * 2;
+          return new THREE.Vector3(
+            convergence.x + Math.cos(angle) * radius,
+            convergence.y + 3 + index * 0.5,
+            convergence.z + Math.sin(angle) * radius
+          );
+        });
+
+      case ARRANGEMENT_PRESETS.SCATTER:
+        return cards.map((card, index) => {
+          const angle1 = (index * 2.4) % (Math.PI * 2);
+          const angle2 = (index * 1.7) % (Math.PI * 2);
+          const radius = 8 + (index % 3) * 4;
+          return new THREE.Vector3(
+            convergence.x + Math.cos(angle1) * radius,
+            convergence.y + 3 + Math.sin(angle2) * 2,
+            convergence.z + Math.sin(angle1) * radius
+          );
+        });
+
+      default:
+        return cards.map(() => convergence.clone());
+    }
+  };
+
+  // Calculate optimal card positions based on arrangement and background analysis
   const calculateCardPositions = useMemo(() => {
     if (!cards.length) return [];
 
     const analyzer = new BackgroundAnalyzer();
-    let convergence = FOREST_CONVERGENCE_POINT;
+    let convergence = convergencePoint;
 
     // Analyze background image if provided
     if (backgroundImage) {
@@ -82,35 +157,40 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
       }
     }
 
-    // Calculate positions in a formation that leads to the convergence point
+    // Generate base positions using selected arrangement
+    const basePositions = generateArrangementPositions(currentArrangement, convergence);
+    
+    // Create card position objects with proper rotations and scales
     return cards.map((card, index) => {
       const isSelected = index === selectedCardIndex;
+      const basePosition = basePositions[index] || convergence.clone();
       
-      // Create a circular formation around the convergence point
-      const angle = (index / cards.length) * Math.PI * 2;
-      const radius = 10 + (index * 2); // Vary depth for visual interest
-      
-      const position = new THREE.Vector3(
-        convergence.x + Math.cos(angle) * radius,
-        convergence.y + 5 + (index * 1.5), // Slight vertical offset
-        convergence.z + Math.sin(angle) * radius
-      );
-
-      // Selected card moves closer to camera
+      // Selected card enhancement - move closer and up
+      const position = basePosition.clone();
       if (isSelected) {
-        position.z += 15;
-        position.y += 2;
+        position.z += 8;
+        position.y += 3;
+      }
+
+      // Calculate rotation to face camera or center based on arrangement
+      let rotation = new THREE.Euler(0, 0, 0);
+      if (currentArrangement === ARRANGEMENT_PRESETS.CIRCLE || currentArrangement === ARRANGEMENT_PRESETS.SPIRAL) {
+        const angle = Math.atan2(
+          position.x - convergence.x,
+          position.z - convergence.z
+        );
+        rotation = new THREE.Euler(0, angle + Math.PI, 0);
       }
 
       return {
         id: card.id,
         position,
-        rotation: new THREE.Euler(0, angle + Math.PI, 0), // Face towards center
+        rotation,
         scale: isSelected ? SELECTED_CARD_SCALE : DEFAULT_CARD_SCALE,
         isSelected
       };
     });
-  }, [cards, selectedCardIndex, backgroundImage, convergencePoint]);
+  }, [cards, selectedCardIndex, backgroundImage, convergencePoint, currentArrangement]);
 
   // Update card positions when cards or selection changes
   useEffect(() => {
@@ -131,6 +211,44 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
     return selectedCard?.position || new THREE.Vector3(0, 0, 0);
   }, [cardPositions]);
 
+  // Enhanced lighting setup
+  const lightingSetup = useMemo(() => (
+    <>
+      {/* Enhanced ambient lighting */}
+      <ambientLight intensity={0.3} color={0x404080} />
+      
+      {/* Main directional light with warmer tone */}
+      <directionalLight
+        position={[15, 20, 10]}
+        intensity={0.8}
+        color={0xffeedd}
+        castShadow
+        shadow-mapSize-width={4096}
+        shadow-mapSize-height={4096}
+        shadow-camera-far={100}
+        shadow-camera-left={-30}
+        shadow-camera-right={30}
+        shadow-camera-top={30}
+        shadow-camera-bottom={-30}
+      />
+      
+      {/* Fill light from opposite side */}
+      <directionalLight
+        position={[-10, 10, -5]}
+        intensity={0.3}
+        color={0x8899ff}
+      />
+      
+      {/* Subtle rim light */}
+      <pointLight
+        position={[0, 5, -20]}
+        intensity={0.5}
+        color={0x66ccff}
+        distance={50}
+      />
+    </>
+  ), []);
+
   return (
     <div className="relative w-full h-screen">
       <Canvas
@@ -150,20 +268,8 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
         }}
         style={{ width: '100%', height: '100%' }}
       >
-        {/* Lighting Setup */}
-        <ambientLight intensity={0.4} />
-        <directionalLight
-          position={[10, 10, 5]}
-          intensity={0.8}
-          castShadow
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          shadow-camera-far={50}
-          shadow-camera-left={-10}
-          shadow-camera-right={10}
-          shadow-camera-top={10}
-          shadow-camera-bottom={-10}
-        />
+        {/* Enhanced Lighting Setup */}
+        {lightingSetup}
 
         {/* Environment */}
         <Environment preset="studio" />
@@ -220,6 +326,26 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
           <div>Convergence: {convergencePoint.toArray().map(n => n.toFixed(1)).join(', ')}</div>
         </div>
       )}
+
+      {/* Arrangement Controls */}
+      <div className="absolute top-6 left-6 bg-black/80 backdrop-blur-sm text-white p-4 rounded-lg">
+        <h3 className="text-sm font-semibold mb-3 text-crd-blue">Card Arrangement</h3>
+        <div className="flex flex-col gap-2">
+          {Object.entries(ARRANGEMENT_PRESETS).map(([key, value]) => (
+            <button
+              key={value}
+              onClick={() => setCurrentArrangement(value)}
+              className={`px-3 py-2 rounded text-xs font-medium transition-all ${
+                currentArrangement === value
+                  ? 'bg-crd-blue text-white shadow-lg shadow-crd-blue/30'
+                  : 'bg-white/10 hover:bg-white/20 text-white/80 hover:text-white'
+              }`}
+            >
+              {key.charAt(0) + key.slice(1).toLowerCase()}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Card Navigation */}
       {cards.length > 1 && (
