@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Eye, Edit } from 'lucide-react';
 import { DetectedCard } from '@/services/cardCatalog/types';
+import { getRarityStyles, getRarityBadgeStyles, type CardRarity } from '@/utils/cardDisplayUtils';
 
 interface SmartCardGridItemProps {
   card: DetectedCard;
@@ -22,6 +23,12 @@ export const SmartCardGridItem: React.FC<SmartCardGridItemProps> = ({
   onEdit,
   onCreate
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  // Determine rarity based on confidence or other metadata
+  const rarity: CardRarity = card.confidence >= 0.8 ? 'rare' : card.confidence >= 0.6 ? 'uncommon' : 'common';
+  const rarityStyles = getRarityStyles(rarity);
+  const badgeStyles = getRarityBadgeStyles(rarity);
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'detected': return 'bg-blue-600';
@@ -44,9 +51,21 @@ export const SmartCardGridItem: React.FC<SmartCardGridItemProps> = ({
 
   return (
     <Card 
-      className={`bg-editor-dark border-editor-border overflow-hidden group hover:border-crd-green/50 transition-all ${
-        isSelected ? 'ring-2 ring-crd-green' : ''
-      }`}
+      className={`
+        bg-editor-dark border-editor-border overflow-hidden group cursor-pointer
+        transition-all duration-200 ease-out
+        hover:scale-105 hover:-translate-y-1
+        ${isSelected ? 'ring-2 ring-crd-green' : ''}
+      `}
+      style={{
+        border: `2px solid ${rarityStyles.borderColor}`,
+        boxShadow: rarityStyles.hasGlow 
+          ? `0 0 20px ${rarityStyles.glowColor}, 0 4px 12px rgba(0, 0, 0, 0.3)`
+          : '0 4px 12px rgba(0, 0, 0, 0.2)',
+        filter: rarityStyles.hasGlow ? `drop-shadow(0 0 8px ${rarityStyles.glowColor})` : 'none'
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative aspect-[3/4]">
         <img
@@ -54,6 +73,16 @@ export const SmartCardGridItem: React.FC<SmartCardGridItemProps> = ({
           alt={`Detected card ${card.id}`}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
         />
+        
+        {/* Glow Overlay */}
+        {rarityStyles.hasGlow && (
+          <div 
+            className="absolute inset-0 opacity-20 pointer-events-none"
+            style={{
+              background: `radial-gradient(circle at center, ${rarityStyles.glowColor} 0%, transparent 70%)`
+            }}
+          />
+        )}
         
         {/* Selection Checkbox */}
         <div className="absolute top-2 left-2">
@@ -64,8 +93,18 @@ export const SmartCardGridItem: React.FC<SmartCardGridItemProps> = ({
           />
         </div>
 
-        {/* Status Badge */}
+        {/* Rarity Badge */}
         <div className="absolute top-2 right-2">
+          <Badge 
+            className="px-2 py-1"
+            style={badgeStyles}
+          >
+            {rarity}
+          </Badge>
+        </div>
+
+        {/* Status Badge */}
+        <div className="absolute top-10 right-2">
           <Badge className={`${getStatusColor(card.status)} text-white text-xs`}>
             {card.status}
           </Badge>
@@ -80,24 +119,26 @@ export const SmartCardGridItem: React.FC<SmartCardGridItemProps> = ({
           </Badge>
         </div>
 
-        {/* Action Buttons */}
-        <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="flex gap-1">
-            <Button
-              onClick={() => onEdit?.(card)}
-              size="sm"
-              className="w-8 h-8 p-0 bg-black/70 hover:bg-black/90"
-            >
-              <Eye className="w-3 h-3" />
-            </Button>
-            <Button
-              onClick={() => onCreate?.(card)}
-              size="sm"
-              className="w-8 h-8 p-0 bg-crd-green/80 hover:bg-crd-green text-black"
-            >
-              <Edit className="w-3 h-3" />
-            </Button>
-          </div>
+        {/* Action Overlay */}
+        <div className={`
+          absolute inset-0 bg-black/60 flex items-center justify-center gap-2
+          transition-all duration-200 ease-out
+          ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+        `}>
+          <Button
+            onClick={() => onEdit?.(card)}
+            size="sm"
+            className="w-8 h-8 p-0 bg-black/70 hover:bg-black/90 border-white/20 text-white"
+          >
+            <Eye className="w-3 h-3" />
+          </Button>
+          <Button
+            onClick={() => onCreate?.(card)}
+            size="sm"
+            className="w-8 h-8 p-0 bg-crd-green/80 hover:bg-crd-green text-black"
+          >
+            <Edit className="w-3 h-3" />
+          </Button>
         </div>
       </div>
     </Card>

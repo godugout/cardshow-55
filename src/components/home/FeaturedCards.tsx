@@ -47,7 +47,9 @@ export const FeaturedCards: React.FC = () => {
     image: card.image_url || card.thumbnail_url || fallbackCards[0].image,
     stock: "3 in stock",
     highestBid: "0.001 ETH",
-  })) : fallbackCards;
+    rarity: card.rarity as any || 'common',
+    card: card // Pass the full card object for actions
+  })) : fallbackCards.map(card => ({ ...card, rarity: 'common' as any, card: null }));
 
   return (
     <div className="bg-[#141416] flex flex-col overflow-hidden pt-32 pb-12 px-[352px] max-md:max-w-full max-md:px-5">
@@ -93,6 +95,28 @@ export const FeaturedCards: React.FC = () => {
               image={card.image}
               stock={card.stock}
               highestBid={card.highestBid}
+              rarity={card.rarity}
+              onView={() => {
+                if (card.card) {
+                  // Navigate to card detail
+                  window.location.href = `/studio/${card.card.id}`;
+                }
+              }}
+              onEdit={() => {
+                if (card.card) {
+                  // Navigate to card editor
+                  window.location.href = `/create?edit=${card.card.id}`;
+                }
+              }}
+              onShare={() => {
+                if (card.card && navigator.share) {
+                  navigator.share({
+                    title: card.title,
+                    text: `Check out this card: ${card.title}`,
+                    url: `${window.location.origin}/studio/${card.card.id}`
+                  });
+                }
+              }}
             />
           ))
         )}

@@ -1,6 +1,10 @@
 
 import React, { useState } from "react";
 import { OptimizedImage } from "./OptimizedImage";
+import { Badge } from "@/components/ui/badge";
+import { CRDButton } from "@/components/ui/design-system/Button";
+import { Eye, Edit, Share2 } from "lucide-react";
+import { getRarityStyles, getRarityBadgeStyles, type CardRarity } from "@/utils/cardDisplayUtils";
 
 const formatCredits = (amount: number | string) => {
   const n = typeof amount === "number" ? amount : parseInt(amount);
@@ -19,6 +23,10 @@ interface CardItemProps {
   stock?: string;
   highestBid?: string;
   avatars?: string[];
+  rarity?: CardRarity;
+  onView?: () => void;
+  onEdit?: () => void;
+  onShare?: () => void;
 }
 
 export const CardItem: React.FC<CardItemProps> = ({
@@ -28,9 +36,17 @@ export const CardItem: React.FC<CardItemProps> = ({
   stock = "3 in stock",
   highestBid = "10",
   avatars = [],
+  rarity = 'common',
+  onView,
+  onEdit,
+  onShare,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const rarityStyles = getRarityStyles(rarity);
+  const badgeStyles = getRarityBadgeStyles(rarity);
 
   // Provide a proper placeholder image
   const placeholderImage = "/placeholder.svg";
@@ -48,15 +64,91 @@ export const CardItem: React.FC<CardItemProps> = ({
   };
 
   return (
-    <div className="self-stretch flex min-w-60 flex-col items-stretch justify-center grow shrink w-[205px] my-auto">
-      <div className="justify-center items-stretch bg-[#CDB4DB] flex w-full flex-col overflow-hidden rounded-2xl">
+    <div 
+      className="
+        self-stretch flex min-w-60 flex-col items-stretch justify-center grow shrink w-[205px] my-auto
+        relative cursor-pointer transition-all duration-200 ease-out
+        hover:scale-105 hover:-translate-y-1
+      "
+      style={{
+        filter: rarityStyles.hasGlow ? `drop-shadow(0 0 12px ${rarityStyles.glowColor})` : 'none'
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onView}
+    >
+      <div 
+        className="justify-center items-stretch flex w-full flex-col overflow-hidden rounded-2xl relative"
+        style={{
+          border: `2px solid ${rarityStyles.borderColor}`,
+          boxShadow: rarityStyles.hasGlow 
+            ? `0 0 20px ${rarityStyles.glowColor}, 0 4px 12px rgba(0, 0, 0, 0.3)`
+            : '0 4px 12px rgba(0, 0, 0, 0.2)'
+        }}
+      >
+        {/* Rarity Badge */}
+        <Badge 
+          className="absolute top-2 right-2 z-10 px-2 py-1"
+          style={badgeStyles}
+        >
+          {rarity}
+        </Badge>
+
         <OptimizedImage
           src={image}
           alt={title}
           className="aspect-[0.84] object-cover w-full rounded-t-2xl"
           size="medium"
           fallbackSrc={placeholderImage}
+          showSkeleton={true}
         />
+
+        {/* Quick Actions Overlay */}
+        <div className={`
+          absolute inset-0 bg-black/60 flex items-center justify-center gap-2
+          transition-all duration-200 ease-out rounded-2xl
+          ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+        `}>
+          {onView && (
+            <CRDButton
+              size="sm"
+              variant="outline"
+              onClick={(e) => {
+                e.stopPropagation();
+                onView();
+              }}
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <Eye className="w-4 h-4" />
+            </CRDButton>
+          )}
+          {onEdit && (
+            <CRDButton
+              size="sm"
+              variant="outline"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <Edit className="w-4 h-4" />
+            </CRDButton>
+          )}
+          {onShare && (
+            <CRDButton
+              size="sm"
+              variant="outline"
+              onClick={(e) => {
+                e.stopPropagation();
+                onShare();
+              }}
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <Share2 className="w-4 h-4" />
+            </CRDButton>
+          )}
+        </div>
       </div>
       <div className="flex w-full flex-col items-stretch justify-center py-5 rounded-[0px_0px_16px_16px]">
         <div className="flex w-full items-center gap-1.5 font-semibold justify-between">

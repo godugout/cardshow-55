@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CRDButton } from '@/components/ui/design-system/Button';
+import { Eye, Edit, Share2 } from 'lucide-react';
+import { getRarityStyles, getRarityBadgeStyles, type CardRarity } from '@/utils/cardDisplayUtils';
 
 interface CardData {
   id: string;
@@ -11,6 +14,7 @@ interface CardData {
   image_url?: string;
   thumbnail_url?: string;
   price?: string;
+  rarity?: string;
 }
 
 interface CardGridProps {
@@ -33,6 +37,11 @@ const UNSPLASH_IMAGES = [
 const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const rarity = (card.rarity || 'common') as CardRarity;
+  const rarityStyles = getRarityStyles(rarity);
+  const badgeStyles = getRarityBadgeStyles(rarity);
   
   const getDisplayImage = () => {
     // Check for valid image URLs, avoiding blob URLs
@@ -58,36 +67,98 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
   };
 
   return (
-    <div className="group card-themed rounded-xl overflow-hidden team-spirit-glow">
-      <div className="aspect-[3/4] relative overflow-hidden bg-crd-mediumGray">
-        {imageLoading && (
-          <Skeleton className="absolute inset-0 bg-crd-mediumGray" />
-        )}
-        <img
-          src={displayImage}
-          alt={card.title || 'Card'}
-          className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
-            imageLoading ? 'opacity-0' : 'opacity-100'
-          }`}
-          loading="lazy"
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <span className="badge-themed-primary px-2 py-1 rounded-md text-sm font-semibold">
-            {card.price ? `${card.price} ETH` : '1.5 ETH'}
-          </span>
+    <div 
+      className="
+        group cursor-pointer transition-all duration-200 ease-out
+        hover:scale-105 hover:-translate-y-1
+      "
+      style={{
+        filter: rarityStyles.hasGlow ? `drop-shadow(0 0 12px ${rarityStyles.glowColor})` : 'none'
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Card 
+        className="card-themed rounded-xl overflow-hidden relative"
+        style={{
+          border: `2px solid ${rarityStyles.borderColor}`,
+          boxShadow: rarityStyles.hasGlow 
+            ? `0 0 20px ${rarityStyles.glowColor}, 0 4px 12px rgba(0, 0, 0, 0.3)`
+            : '0 4px 12px rgba(0, 0, 0, 0.2)'
+        }}
+      >
+        {/* Rarity Badge */}
+        <Badge 
+          className="absolute top-2 right-2 z-10 px-2 py-1"
+          style={badgeStyles}
+        >
+          {rarity}
+        </Badge>
+
+        <div className="aspect-[3/4] relative overflow-hidden bg-crd-mediumGray">
+          {imageLoading && (
+            <Skeleton className="absolute inset-0 bg-crd-mediumGray" />
+          )}
+          <img
+            src={displayImage}
+            alt={card.title || 'Card'}
+            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+              imageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            loading="lazy"
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+          />
+          
+          {/* Glow Overlay */}
+          {rarityStyles.hasGlow && (
+            <div 
+              className="absolute inset-0 opacity-20 pointer-events-none"
+              style={{
+                background: `radial-gradient(circle at center, ${rarityStyles.glowColor} 0%, transparent 70%)`
+              }}
+            />
+          )}
+
+          {/* Quick Actions Overlay */}
+          <div className={`
+            absolute inset-0 bg-black/60 flex items-center justify-center gap-2
+            transition-all duration-200 ease-out
+            ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+          `}>
+            <CRDButton
+              size="sm"
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <Eye className="w-4 h-4" />
+            </CRDButton>
+            <CRDButton
+              size="sm"
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <Edit className="w-4 h-4" />
+            </CRDButton>
+            <CRDButton
+              size="sm"
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <Share2 className="w-4 h-4" />
+            </CRDButton>
+          </div>
         </div>
-      </div>
-      <div className="p-4">
-        <h3 className="text-themed-primary font-semibold mb-1 line-clamp-1">{card.title || 'Untitled Card'}</h3>
-        <p className="text-themed-secondary text-sm line-clamp-2">{card.description || 'Digital collectible card'}</p>
-        <div className="flex items-center justify-between mt-3">
-          <span className="text-xs text-themed-secondary">3 in stock</span>
-          <span className="text-xs success-themed font-medium">0.001 ETH bid</span>
+
+        <div className="p-4">
+          <h3 className="text-themed-primary font-semibold mb-1 line-clamp-1">{card.title || 'Untitled Card'}</h3>
+          <p className="text-themed-secondary text-sm line-clamp-2">{card.description || 'Digital collectible card'}</p>
+          <div className="flex items-center justify-between mt-3">
+            <span className="text-xs text-themed-secondary">3 in stock</span>
+            <span className="text-xs success-themed font-medium">0.001 ETH bid</span>
+          </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };
