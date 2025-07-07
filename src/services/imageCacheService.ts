@@ -26,30 +26,17 @@ export class ImageCacheService {
 
   private static imageCache = new Map<string, string>(); // url -> object URL
   private static loadingPromises = new Map<string, Promise<string>>();
-  private static referenceCount = new Map<string, number>(); // Track blob URL usage
-  private static permanentCache = new Map<string, string>(); // For 3D contexts
 
   /**
    * Get cached image URL or fetch and cache if not available
    */
-  static async getCachedImageUrl(imageUrl: string, size: 'thumbnail' | 'medium' | 'full' = 'medium', context: 'ui' | '3d' = 'ui'): Promise<string> {
+  static async getCachedImageUrl(imageUrl: string, size: 'thumbnail' | 'medium' | 'full' = 'medium'): Promise<string> {
     if (!imageUrl) return imageUrl;
 
     const cacheKey = this.getCacheKey(imageUrl, size);
     
-    // For 3D contexts, return original URL to avoid blob URL issues
-    if (context === '3d') {
-      // Check permanent cache first
-      if (this.permanentCache.has(cacheKey)) {
-        return this.permanentCache.get(cacheKey)!;
-      }
-      // Return original URL for 3D to avoid blob URL race conditions
-      return imageUrl;
-    }
-    
-    // Check memory cache first for UI contexts
+    // Check memory cache first
     if (this.imageCache.has(cacheKey)) {
-      this.incrementReference(cacheKey);
       return this.imageCache.get(cacheKey)!;
     }
 
@@ -65,7 +52,6 @@ export class ImageCacheService {
     try {
       const objectUrl = await loadingPromise;
       this.imageCache.set(cacheKey, objectUrl);
-      this.setReference(cacheKey, 1);
       return objectUrl;
     } finally {
       this.loadingPromises.delete(cacheKey);
@@ -309,40 +295,6 @@ export class ImageCacheService {
   }
 
   /**
-   * Reference counting methods for blob URL management
-   */
-  private static incrementReference(key: string): void {
-    const current = this.referenceCount.get(key) || 0;
-    this.referenceCount.set(key, current + 1);
-  }
-
-  private static setReference(key: string, count: number): void {
-    this.referenceCount.set(key, count);
-  }
-
-  private static decrementReference(key: string): number {
-    const current = this.referenceCount.get(key) || 0;
-    const newCount = Math.max(0, current - 1);
-    this.referenceCount.set(key, newCount);
-    return newCount;
-  }
-
-  /**
-   * Get stable URL for 3D contexts
-   */
-  static async getStable3DUrl(imageUrl: string, size: 'thumbnail' | 'medium' | 'full' = 'medium'): Promise<string> {
-    const cacheKey = this.getCacheKey(imageUrl, size);
-    
-    if (this.permanentCache.has(cacheKey)) {
-      return this.permanentCache.get(cacheKey)!;
-    }
-
-    // For 3D contexts, prefer original URLs to avoid blob URL race conditions
-    this.permanentCache.set(cacheKey, imageUrl);
-    return imageUrl;
-  }
-
-  /**
    * Cleanup memory cache on page unload
    */
   static cleanup(): void {
@@ -350,8 +302,6 @@ export class ImageCacheService {
       URL.revokeObjectURL(objectUrl);
     }
     this.imageCache.clear();
-    this.permanentCache.clear();
-    this.referenceCount.clear();
     this.loadingPromises.clear();
   }
 }

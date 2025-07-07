@@ -2,7 +2,6 @@
 export { StudioCardManager } from './StudioCardManager';
 export { default as Card3DPositioned } from './components/Card3DPositioned';
 export { default as StudioScene } from './components/StudioScene';
-export { StudioErrorBoundary } from './components/StudioErrorBoundary';
 
 // Studio Hooks
 export { useStudio3D } from './hooks/useStudio3D';

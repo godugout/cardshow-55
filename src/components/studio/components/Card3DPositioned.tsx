@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useRef, useState, useCallback, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -36,35 +36,12 @@ export const Card3DPositioned: React.FC<Card3DPositionedProps> = ({
   const [hovered, setHovered] = useState(false);
   const { camera, raycaster, pointer } = useThree();
 
-  const [textureUrl, setTextureUrl] = useState<string>(card.image_url || '/placeholder-card.jpg');
-  const [textureError, setTextureError] = useState(false);
-
-  // Load card texture with error handling
-  const texture = useTexture(textureUrl, (texture) => {
+  // Load card texture with simple fallback
+  const texture = useTexture(card.image_url || '/placeholder-card.jpg', (texture) => {
     texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
     texture.generateMipmaps = false;
-    setTextureError(false);
   });
-
-  // Handle texture loading errors and fallback
-  useEffect(() => {
-    if (!card.image_url) return;
-
-    const loadTexture = async () => {
-      try {
-        // Try to use original URL directly for 3D contexts to avoid blob URL issues
-        const imageUrl = card.image_url.startsWith('blob:') ? card.image_url : card.image_url;
-        setTextureUrl(imageUrl);
-      } catch (error) {
-        console.warn('Failed to load texture for 3D card:', error);
-        setTextureError(true);
-        setTextureUrl('/placeholder-card.jpg');
-      }
-    };
-
-    loadTexture();
-  }, [card.image_url]);
 
   // Animation and effects
   useFrame((state) => {
