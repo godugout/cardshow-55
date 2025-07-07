@@ -46,64 +46,44 @@ export const useStudioState = (cardId?: string) => {
       console.log('⚠️ Falling back to mock cards');
     }
 
+    setAllCards(availableCards);
+    setDataSource(source);
+
     let cardToSelect: CardData | undefined;
     let cardIndex = -1;
 
-    // Handle specific card ID requests
     if (cardId) {
-      // First, try to find the card in original available cards
-      const targetCard = availableCards.find(c => c.id === cardId);
+      // First, try to find the card in available cards
+      cardIndex = availableCards.findIndex(c => c.id === cardId);
       
-      if (targetCard) {
-        // Create two copies of the found card for dual display
-        const duplicatedCard = {
-          ...targetCard,
-          id: `${targetCard.id}-copy`,
-          title: `${targetCard.title} (Copy)`
-        };
-        availableCards = [targetCard, duplicatedCard];
-        cardToSelect = targetCard;
-        cardIndex = 0;
-        console.log(`🎯 Found requested card: ${targetCard.title} - created duplicate for dual view`);
-        console.log(`📊 Dual cards: [${targetCard.title}, ${duplicatedCard.title}]`);
+      if (cardIndex !== -1) {
+        cardToSelect = availableCards[cardIndex];
+        console.log(`🎯 Found requested card: ${cardToSelect.title} at index ${cardIndex} (${source})`);
       } else {
         // Card not found - show helpful error message
         console.warn(`❌ Card with ID "${cardId}" not found in ${source} cards`);
         console.log('🔍 Available card IDs:', availableCards.map(c => `${c.title}:${c.id}`));
         
-        // Default to first available card and create its duplicate
+        // Default to first available card
         cardToSelect = availableCards[0];
+        cardIndex = 0;
+        
         if (cardToSelect) {
-          const duplicatedCard = {
-            ...cardToSelect,
-            id: `${cardToSelect.id}-copy`,
-            title: `${cardToSelect.title} (Copy)`
-          };
-          availableCards = [cardToSelect, duplicatedCard];
-          cardIndex = 0;
           console.log(`🔄 Redirecting to first available card: ${cardToSelect.id}`);
           navigate(`/studio/${cardToSelect.id}`, { replace: true });
           toast.info(`Card not found in ${source} data. Showing ${cardToSelect.title} instead.`);
         }
       }
     } else {
-      // No card ID specified - default to first card and create its duplicate
+      // No card ID specified - default to first card
       cardToSelect = availableCards[0];
+      cardIndex = 0;
+      
       if (cardToSelect) {
-        const duplicatedCard = {
-          ...cardToSelect,
-          id: `${cardToSelect.id}-copy`,
-          title: `${cardToSelect.title} (Copy)`
-        };
-        availableCards = [cardToSelect, duplicatedCard];
-        cardIndex = 0;
         console.log(`📍 No card ID specified, redirecting to: ${cardToSelect.id}`);
         navigate(`/studio/${cardToSelect.id}`, { replace: true });
       }
     }
-    
-    setAllCards(availableCards);
-    setDataSource(source);
 
     if (cardToSelect) {
       setSelectedCard(cardToSelect);

@@ -156,9 +156,9 @@ export const ViewerLayout: React.FC<ViewerLayoutProps> = ({
   return (
     <div 
       ref={containerRef}
-      className={`relative w-full h-full flex items-center justify-center select-none ${
-        isFullscreen ? 'p-0' : 'p-4'
-      } ${shouldShowPanel ? `pr-[${panelWidth + 16}px]` : ''}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center select-none ${
+        isFullscreen ? 'p-0' : 'p-8'
+      } ${shouldShowPanel ? `pr-[${panelWidth + 32}px]` : ''}`}
       style={{
         paddingRight: shouldShowPanel ? `${panelWidth + 32}px` : isFullscreen ? '0' : '32px',
         userSelect: 'none',

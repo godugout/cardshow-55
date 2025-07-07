@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NoCardSelected } from './Studio/components/NoCardSelected';
@@ -7,10 +8,6 @@ import { DatabaseSeedPrompt } from './Studio/components/DatabaseSeedPrompt';
 import { useStudioState } from './Studio/hooks/useStudioState';
 import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
-import { Slider } from '@/components/ui/slider';
-import { SharedStudioEnvironment } from '@/components/viewer/shared/SharedStudioEnvironment';
-import { useImmersiveViewerState } from '@/components/viewer/hooks/useImmersiveViewerState';
-import { useEnhancedCardEffects } from '@/components/viewer/hooks/useEnhancedCardEffects';
 import type { CardData } from '@/types/card';
 
 // Helper function to convert CardData to the format expected by ImmersiveCardViewer
@@ -64,13 +61,6 @@ const Studio = () => {
   const { user } = useAuth();
   const [showSeedPrompt, setShowSeedPrompt] = useState(false);
   const [hasCheckedDatabase, setHasCheckedDatabase] = useState(false);
-  const [cardSpacing, setCardSpacing] = useState([100]); // State for gap between cards
-  
-  // Initialize shared viewer state for the environment
-  const { viewerState, actions } = useImmersiveViewerState();
-  
-  // Initialize card effects for proper rendering
-  const { effectValues } = useEnhancedCardEffects();
   
   const {
     selectedCard,
@@ -138,8 +128,6 @@ const Studio = () => {
   const viewerCards = mockCards.map(convertCardForViewer);
 
   console.log('🎯 Converted viewer card:', viewerCard.title, 'Image URL:', viewerCard.image_url);
-  console.log('🔍 Studio: Total viewerCards:', viewerCards.length, 'Cards:', viewerCards.map(c => c.title));
-  console.log('🎮 Studio: About to render', viewerCards.slice(0, 2).length, 'card viewers');
 
   const handleViewerShare = (card: any) => {
     // Convert back to original CardData format for the handler
@@ -159,13 +147,6 @@ const Studio = () => {
     handleDownload(originalCard);
   };
 
-  // Handle card interactions in the shared environment
-  const handleCardInteraction = (cardIndex: number, event: React.MouseEvent) => {
-    console.log(`🎯 Card ${cardIndex} interaction:`, event.type);
-    // You can add specific interaction logic here
-  };
-
-
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-crd-darkest">
@@ -176,42 +157,20 @@ const Studio = () => {
           </div>
         )}
         
-        {/* Spacing Control Slider */}
-        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-50 bg-crd-darkest/90 backdrop-blur-sm rounded-lg p-4 border border-crd-mediumGray/20">
-          <div className="flex items-center gap-4 min-w-[300px]">
-            <span className="text-white text-sm font-medium whitespace-nowrap">Card Spacing:</span>
-            <div className="flex-1">
-              <Slider
-                value={cardSpacing}
-                onValueChange={setCardSpacing}
-                max={200}
-                min={0}
-                step={10}
-                className="w-full"
-              />
-            </div>
-            <span className="text-crd-green text-sm font-mono w-12 text-right">{cardSpacing[0]}px</span>
-          </div>
-        </div>
-
-        {/* Shared 3D Environment with Both Cards */}
-        <div className="w-full h-screen flex items-center justify-center">
-          <SharedStudioEnvironment
-            cards={viewerCards.slice(0, 2)}
-            selectedScene={viewerState.selectedScene}
-            selectedLighting={viewerState.selectedLighting}
-            materialSettings={viewerState.materialSettings}
-            environmentControls={viewerState.environmentControls}
-            overallBrightness={viewerState.overallBrightness}
-            interactiveLighting={viewerState.interactiveLighting}
-            effectValues={effectValues} // Use proper effect values from hook
-            cardSpacing={cardSpacing[0]}
-            allowRotation={true}
-            autoRotate={false}
-            zoom={1}
-            onCardInteraction={handleCardInteraction}
-          />
-        </div>
+        {/* Immersive Card Viewer - the navbar logo will show through */}
+        <ImmersiveCardViewer
+          card={viewerCard}
+          cards={viewerCards}
+          currentCardIndex={currentCardIndex}
+          onCardChange={handleCardChange}
+          isOpen={true}
+          onClose={handleClose}
+          onShare={handleViewerShare}
+          onDownload={handleViewerDownload}
+          allowRotation={true}
+          showStats={true}
+          ambient={true}
+        />
       </div>
     </ErrorBoundary>
   );

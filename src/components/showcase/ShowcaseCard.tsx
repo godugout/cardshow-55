@@ -47,28 +47,12 @@ export const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
 
   const imageUrl = getValidImageUrl(card.image_url);
   
-  // Safe texture loading with fallback
   let texture;
   try {
     texture = useTexture(textureError ? FALLBACK_TEXTURE : imageUrl);
   } catch (error) {
-    console.warn('Texture loading failed, using fallback:', error);
-    try {
-      texture = useTexture(FALLBACK_TEXTURE);
-    } catch (fallbackError) {
-      console.error('Even fallback texture failed:', fallbackError);
-      // Create a basic canvas texture as last resort
-      const canvas = document.createElement('canvas');
-      canvas.width = canvas.height = 256;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(0, 0, 256, 256);
-        ctx.fillStyle = '#666666';
-        ctx.fillText('Card', 112, 128);
-      }
-      texture = new THREE.CanvasTexture(canvas);
-    }
+    console.error('Failed to load texture:', error);
+    texture = useTexture(FALLBACK_TEXTURE);
   }
 
   // Handle texture loading errors
