@@ -121,18 +121,18 @@ export const CreateCollectionModal = ({ isOpen, onClose, onCreate }: CreateColle
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-crd-white">Category</Label>
+                <Label className="text-crd-white">Theme</Label>
                 <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
                   <SelectTrigger className="bg-crd-mediumGray border-crd-lightGray text-crd-white">
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder="Select theme" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sports">Sports</SelectItem>
-                    <SelectItem value="entertainment">Entertainment</SelectItem>
-                    <SelectItem value="art">Art</SelectItem>
-                    <SelectItem value="gaming">Gaming</SelectItem>
-                    <SelectItem value="music">Music</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="sports">🏆 Sports</SelectItem>
+                    <SelectItem value="fantasy">🪄 Fantasy</SelectItem>
+                    <SelectItem value="scifi">🚀 Sci-Fi</SelectItem>
+                    <SelectItem value="personal">👤 Personal</SelectItem>
+                    <SelectItem value="art">🎨 Art</SelectItem>
+                    <SelectItem value="gaming">🎮 Gaming</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

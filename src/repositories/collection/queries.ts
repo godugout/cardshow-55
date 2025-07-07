@@ -26,8 +26,12 @@ export const getCollectionById = async (id: string): Promise<Collection | null> 
       ownerId: data.owner_id,
       coverImageUrl: data.cover_image_url,
       visibility: data.visibility as Visibility,
-      createdAt: data.created_at,
-      cardCount: 0
+      theme: data.theme || 'personal',
+      shareToken: data.share_token,
+      viewCount: data.view_count || 0,
+      cardCount: data.card_count || 0,
+      featuredCardId: data.featured_card_id,
+      createdAt: data.created_at
     };
   } catch (error) {
     console.error('Database not ready, using fallback:', error);
@@ -116,8 +120,12 @@ export const getCollectionsByUserId = async (
       ownerId: collection.owner_id,
       coverImageUrl: collection.cover_image_url,
       visibility: collection.visibility as Visibility,
-      createdAt: collection.created_at,
-      cardCount: 0
+      theme: collection.theme || 'personal',
+      shareToken: collection.share_token,
+      viewCount: collection.view_count || 0,
+      cardCount: collection.card_count || 0,
+      featuredCardId: collection.featured_card_id,
+      createdAt: collection.created_at
     }));
     
     return {
@@ -180,8 +188,12 @@ export const getPublicCollections = async (
       ownerId: collection.owner_id,
       coverImageUrl: collection.cover_image_url,
       visibility: collection.visibility as Visibility,
-      createdAt: collection.created_at,
-      cardCount: 0
+      theme: collection.theme || 'personal',
+      shareToken: collection.share_token,
+      viewCount: collection.view_count || 0,
+      cardCount: collection.card_count || 0,
+      featuredCardId: collection.featured_card_id,
+      createdAt: collection.created_at
     }));
     
     return {

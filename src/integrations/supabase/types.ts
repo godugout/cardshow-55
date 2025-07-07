@@ -1189,56 +1189,78 @@ export type Database = {
       collections: {
         Row: {
           allow_member_card_sharing: boolean | null
+          card_count: number | null
           cover_image_url: string | null
           created_at: string | null
           description: string | null
+          featured_card_id: string | null
           group_code: string | null
           id: string
           is_featured: boolean | null
           is_group: boolean | null
           metadata: Json | null
           name: string | null
+          share_token: string | null
           template_id: string | null
+          theme: string | null
           title: string
           updated_at: string | null
           user_id: string
+          view_count: number | null
           visibility: Database["public"]["Enums"]["visibility_type"] | null
         }
         Insert: {
           allow_member_card_sharing?: boolean | null
+          card_count?: number | null
           cover_image_url?: string | null
           created_at?: string | null
           description?: string | null
+          featured_card_id?: string | null
           group_code?: string | null
           id?: string
           is_featured?: boolean | null
           is_group?: boolean | null
           metadata?: Json | null
           name?: string | null
+          share_token?: string | null
           template_id?: string | null
+          theme?: string | null
           title: string
           updated_at?: string | null
           user_id: string
+          view_count?: number | null
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
         }
         Update: {
           allow_member_card_sharing?: boolean | null
+          card_count?: number | null
           cover_image_url?: string | null
           created_at?: string | null
           description?: string | null
+          featured_card_id?: string | null
           group_code?: string | null
           id?: string
           is_featured?: boolean | null
           is_group?: boolean | null
           metadata?: Json | null
           name?: string | null
+          share_token?: string | null
           template_id?: string | null
+          theme?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
+          view_count?: number | null
           visibility?: Database["public"]["Enums"]["visibility_type"] | null
         }
         Relationships: [
+          {
+            foreignKeyName: "collections_featured_card_id_fkey"
+            columns: ["featured_card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "collections_owner_id_fkey"
             columns: ["user_id"]
@@ -6086,6 +6108,10 @@ export type Database = {
         Returns: undefined
       }
       generate_group_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_share_token: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

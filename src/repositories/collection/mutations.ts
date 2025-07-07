@@ -46,10 +46,12 @@ export const createCollection = async (params: CreateCollectionParams): Promise<
     title: data.title,
     description: data.description,
     ownerId: data.owner_id,
-    visibility: data.visibility,
     coverImageUrl: data.cover_image_url,
-    createdAt: data.created_at,
-    cardCount: params.cards?.length || 0
+    visibility: data.visibility,
+    theme: data.theme || 'personal',
+    viewCount: data.view_count || 0,
+    cardCount: params.cards?.length || 0,
+    createdAt: data.created_at
   };
 };
 

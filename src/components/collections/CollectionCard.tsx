@@ -1,20 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Eye, Edit, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Eye, Edit, Trash2, Share2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-
-interface Collection {
-  id: string;
-  title: string;
-  description?: string;
-  coverImageUrl?: string;
-  coverTemplate?: string;
-  cardCount: number;
-  visibility: string;
-  createdAt: string;
-}
+import { CollectionThemeIcon } from './CollectionThemeIcon';
+import { CollectionStats } from './CollectionStats';
+import { CollectionShareModal } from './CollectionShareModal';
+import type { Collection } from '@/repositories/collection/types';
 
 interface CollectionCardProps {
   collection: Collection;
@@ -22,6 +15,7 @@ interface CollectionCardProps {
   onDelete: (collectionId: string) => void;
   onView: (collection: Collection) => void;
 }
+
 
 const coverTemplateGradients = {
   retro: 'from-purple-500 to-pink-500',
@@ -33,6 +27,8 @@ const coverTemplateGradients = {
 };
 
 export const CollectionCard = ({ collection, onEdit, onDelete, onView }: CollectionCardProps) => {
+  const [showShareModal, setShowShareModal] = useState(false);
+
   const getCoverElement = () => {
     if (collection.coverImageUrl) {
       return (
@@ -65,7 +61,10 @@ export const CollectionCard = ({ collection, onEdit, onDelete, onView }: Collect
         
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-2">
-            <h3 className="text-crd-white font-semibold text-lg truncate pr-2">{collection.title}</h3>
+            <div className="flex-1 pr-2">
+              <h3 className="text-crd-white font-semibold text-lg truncate mb-1">{collection.title}</h3>
+              <CollectionThemeIcon theme={collection.theme} />
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                 <Button variant="ghost" size="sm" className="text-crd-lightGray hover:text-crd-white">
@@ -82,6 +81,16 @@ export const CollectionCard = ({ collection, onEdit, onDelete, onView }: Collect
                 >
                   <Eye className="mr-2 h-4 w-4" />
                   View
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowShareModal(true);
+                  }}
+                  className="text-crd-white hover:bg-crd-mediumGray"
+                >
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Share
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={(e) => {
@@ -111,11 +120,17 @@ export const CollectionCard = ({ collection, onEdit, onDelete, onView }: Collect
             <p className="text-crd-lightGray text-sm mb-3 line-clamp-2">{collection.description}</p>
           )}
           
-          <div className="flex items-center justify-between text-xs text-crd-lightGray">
-            <span>{collection.cardCount} cards</span>
-            <span className="capitalize">{collection.visibility}</span>
-          </div>
+          <CollectionStats 
+            cardCount={collection.cardCount} 
+            viewCount={collection.viewCount} 
+          />
         </CardContent>
+
+        <CollectionShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          collection={collection}
+        />
       </div>
     </Card>
   );
