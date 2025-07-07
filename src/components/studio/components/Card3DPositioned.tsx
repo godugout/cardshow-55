@@ -36,8 +36,21 @@ export const Card3DPositioned: React.FC<Card3DPositionedProps> = ({
   const [hovered, setHovered] = useState(false);
   const { camera, raycaster, pointer } = useThree();
 
-  // Load card texture with simple fallback
-  const texture = useTexture(card.image_url || '/placeholder-card.jpg', (texture) => {
+  // Get safe texture URL - avoid blob URLs for Three.js
+  const getTextureUrl = useCallback(() => {
+    if (!card.image_url) return '/placeholder-card.jpg';
+    
+    // If it's a blob URL, it might get invalidated - use thumbnail or fallback
+    if (card.image_url.startsWith('blob:')) {
+      console.warn('⚠️ Blob URL detected for 3D texture, using fallback:', card.title);
+      return card.thumbnail_url || '/placeholder-card.jpg';
+    }
+    
+    return card.image_url;
+  }, [card]);
+
+  // Load card texture with blob URL protection
+  const texture = useTexture(getTextureUrl(), (texture) => {
     texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
     texture.generateMipmaps = false;
