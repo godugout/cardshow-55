@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import type { CardData } from '@/types/card';
+import { type CaseStyle, getCaseStyles } from './StudioCaseSelector';
 
 interface Card3DPositionedProps {
   card: CardData;
@@ -13,6 +14,7 @@ interface Card3DPositionedProps {
   onClick: () => void;
   onPositionChange?: (position: THREE.Vector3) => void;
   enableDrag?: boolean;
+  caseStyle?: CaseStyle;
 }
 
 // Standard trading card dimensions (scaled down for 3D scene)
@@ -28,7 +30,8 @@ export const Card3DPositioned: React.FC<Card3DPositionedProps> = ({
   isSelected,
   onClick,
   onPositionChange,
-  enableDrag = false
+  enableDrag = false,
+  caseStyle = 'none'
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
@@ -117,16 +120,47 @@ export const Card3DPositioned: React.FC<Card3DPositionedProps> = ({
     }
   }, [isDragging, onPositionChange]);
 
-  // Create materials with enhanced effects
-  const frontMaterial = useMemo(() => new THREE.MeshStandardMaterial({
-    map: texture,
-    roughness: isSelected ? 0.05 : 0.25,
-    metalness: isSelected ? 0.3 : 0.1,
-    emissive: isSelected ? new THREE.Color(0x0066cc) : new THREE.Color(0x000000),
-    emissiveIntensity: isSelected ? 0.15 : 0,
-    transparent: hovered || isSelected,
-    opacity: hovered && !isSelected ? 0.9 : 1.0
-  }), [texture, isSelected, hovered]);
+  // Case-specific material modifications
+  const getCaseMaterial = (baseMaterial: THREE.MeshStandardMaterial) => {
+    if (caseStyle === 'none') return baseMaterial;
+    
+    const material = baseMaterial.clone();
+    
+    switch (caseStyle) {
+      case 'penny-sleeve':
+        material.transparent = true;
+        material.opacity = 0.95;
+        break;
+      case 'toploader':
+        material.roughness = 0.1;
+        material.metalness = 0.05;
+        break;
+      case 'magnetic':
+        material.emissive = new THREE.Color(0x004400);
+        material.emissiveIntensity = 0.1;
+        break;
+      case 'graded':
+        material.roughness = 0.05;
+        material.metalness = 0.1;
+        break;
+    }
+    
+    return material;
+  };
+
+  // Create materials with enhanced effects and case styling
+  const frontMaterial = useMemo(() => {
+    const baseMaterial = new THREE.MeshStandardMaterial({
+      map: texture,
+      roughness: isSelected ? 0.05 : 0.25,
+      metalness: isSelected ? 0.3 : 0.1,
+      emissive: isSelected ? new THREE.Color(0x0066cc) : new THREE.Color(0x000000),
+      emissiveIntensity: isSelected ? 0.15 : 0,
+      transparent: hovered || isSelected,
+      opacity: hovered && !isSelected ? 0.9 : 1.0
+    });
+    return getCaseMaterial(baseMaterial);
+  }, [texture, isSelected, hovered, caseStyle]);
 
   const backMaterial = useMemo(() => new THREE.MeshStandardMaterial({
     color: isSelected ? 0x2a2a4e : 0x1a1a2e,

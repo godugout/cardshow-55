@@ -6,6 +6,9 @@ import type { CardData } from '@/types/card';
 import { Card3DPositioned } from './components/Card3DPositioned';
 import { StudioScene } from './components/StudioScene';
 import { BackgroundAnalyzer } from './utils/BackgroundAnalyzer';
+import { StudioViewControls } from './components/StudioViewControls';
+import { StudioCardInfoPanel } from './components/StudioCardInfoPanel';
+import { StudioCaseSelector, type CaseStyle, getCaseStyles } from './components/StudioCaseSelector';
 
 interface StudioCardManagerProps {
   cards: CardData[];
@@ -72,7 +75,12 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
   const [cardPositions, setCardPositions] = useState<CardPosition[]>([]);
   const [convergencePoint, setConvergencePoint] = useState<THREE.Vector3>(FOREST_CONVERGENCE_POINT);
   const [currentArrangement, setCurrentArrangement] = useState<ArrangementType>(ARRANGEMENT_PRESETS.CIRCLE);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [autoRotate, setAutoRotate] = useState(false);
+  const [selectedCase, setSelectedCase] = useState<CaseStyle>('none');
+  const [isLiked, setIsLiked] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const orbitControlsRef = useRef<any>(null);
 
   // Generate positions based on arrangement type
   const generateArrangementPositions = (arrangement: ArrangementType, convergence: THREE.Vector3) => {
@@ -211,6 +219,59 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
     return selectedCard?.position || new THREE.Vector3(0, 0, 0);
   }, [cardPositions]);
 
+  // View control handlers
+  const handleResetView = () => {
+    if (orbitControlsRef.current) {
+      orbitControlsRef.current.reset();
+    }
+  };
+
+  const handleToggleAutoRotate = () => {
+    setAutoRotate(!autoRotate);
+  };
+
+  const handleZoomIn = () => {
+    if (orbitControlsRef.current) {
+      const camera = orbitControlsRef.current.object;
+      camera.position.multiplyScalar(0.8);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (orbitControlsRef.current) {
+      const camera = orbitControlsRef.current.object;
+      camera.position.multiplyScalar(1.2);
+    }
+  };
+
+  const handleToggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+  };
+
+  const handleShare = () => {
+    const selectedCard = cards[selectedCardIndex];
+    if (selectedCard && navigator.share) {
+      navigator.share({
+        title: selectedCard.title,
+        text: `Check out this card: ${selectedCard.title}`,
+        url: window.location.href
+      });
+    }
+  };
+
+  // Get current selected card
+  const selectedCard = cards[selectedCardIndex];
+
   // Enhanced lighting setup
   const lightingSetup = useMemo(() => (
     <>
@@ -295,15 +356,19 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
               onPositionChange?.(cardPos.id, newPosition);
             }}
             enableDrag={enableInteraction}
+            caseStyle={selectedCase}
           />
         ))}
 
         {/* Camera Controls */}
         {cameraControls && (
           <OrbitControls
+            ref={orbitControlsRef}
             enablePan={true}
             enableZoom={true}
             enableRotate={true}
+            autoRotate={autoRotate}
+            autoRotateSpeed={2}
             minDistance={5}
             maxDistance={50}
             minPolarAngle={Math.PI / 6}
@@ -363,6 +428,37 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
           ))}
         </div>
       )}
+
+      {/* Studio View Controls */}
+      <StudioViewControls
+        onResetView={handleResetView}
+        autoRotate={autoRotate}
+        onToggleAutoRotate={handleToggleAutoRotate}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onToggleFullscreen={handleToggleFullscreen}
+        isFullscreen={isFullscreen}
+      />
+
+      {/* Card Information Panel */}
+      {selectedCard && (
+        <div className="absolute top-6 right-6 w-80 max-h-[50vh] overflow-y-auto">
+          <StudioCardInfoPanel
+            card={selectedCard}
+            onLike={handleLike}
+            onShare={handleShare}
+            isLiked={isLiked}
+          />
+        </div>
+      )}
+
+      {/* Case Selector */}
+      <div className="absolute bottom-6 left-6 w-60">
+        <StudioCaseSelector
+          selectedCase={selectedCase}
+          onCaseChange={setSelectedCase}
+        />
+      </div>
     </div>
   );
 };
