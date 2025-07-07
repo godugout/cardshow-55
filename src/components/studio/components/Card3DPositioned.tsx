@@ -38,12 +38,12 @@ export const Card3DPositioned: React.FC<Card3DPositionedProps> = ({
 
   // Get safe texture URL - avoid blob URLs for Three.js
   const getTextureUrl = useCallback(() => {
-    if (!card.image_url) return '/placeholder-card.jpg';
+    if (!card.image_url) return 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=600&fit=crop';
     
     // If it's a blob URL, it might get invalidated - use thumbnail or fallback
     if (card.image_url.startsWith('blob:')) {
       console.warn('⚠️ Blob URL detected for 3D texture, using fallback:', card.title);
-      return card.thumbnail_url || '/placeholder-card.jpg';
+      return card.thumbnail_url || 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=600&fit=crop';
     }
     
     return card.image_url;
