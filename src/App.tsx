@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { ProductionOptimizer } from '@/components/production/ProductionOptimizer';
 import { Navbar } from '@/components/layout/Navbar';
 import Index from '@/pages/Index';
 import CreateCard from '@/pages/CreateCard';
@@ -13,6 +14,7 @@ import Studio from '@/pages/Studio';
 const App = () => {
   return (
     <ErrorBoundary>
+      <ProductionOptimizer />
       <AuthProvider>
         <Router>
           <div className="min-h-screen bg-crd-darkest">

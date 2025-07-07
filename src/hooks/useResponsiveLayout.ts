@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 type BreakpointKey = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
