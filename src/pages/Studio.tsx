@@ -152,18 +152,6 @@ const Studio = () => {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-crd-darkest">
-        {/* Debug and Controls (only in development) */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="fixed top-4 left-4 z-50 bg-black/80 text-white px-2 py-1 rounded text-xs">
-            <div>Source: {dataSource} ({mockCards.length} cards) | Card: {cardId || 'auto-selected'}</div>
-            <button 
-              onClick={() => setUse3DMode(!use3DMode)}
-              className="mt-1 px-2 py-1 bg-crd-blue rounded text-xs"
-            >
-              {use3DMode ? 'Switch to Immersive' : 'Switch to 3D'}
-            </button>
-          </div>
-        )}
         
         {/* Render 3D Studio or Immersive Viewer based on mode */}
         {use3DMode ? (
