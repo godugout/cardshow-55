@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
+import { StudioCardManager } from '@/components/studio/StudioCardManager';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NoCardSelected } from './Studio/components/NoCardSelected';
@@ -61,6 +62,7 @@ const Studio = () => {
   const { user } = useAuth();
   const [showSeedPrompt, setShowSeedPrompt] = useState(false);
   const [hasCheckedDatabase, setHasCheckedDatabase] = useState(false);
+  const [use3DMode, setUse3DMode] = useState(true); // Toggle between 3D and immersive modes
   
   const {
     selectedCard,
@@ -150,27 +152,44 @@ const Studio = () => {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-crd-darkest">
-        {/* Data source indicator (only in development) */}
+        {/* Debug and Controls (only in development) */}
         {process.env.NODE_ENV === 'development' && (
           <div className="fixed top-4 left-4 z-50 bg-black/80 text-white px-2 py-1 rounded text-xs">
-            Source: {dataSource} ({mockCards.length} cards) | Card: {cardId || 'auto-selected'}
+            <div>Source: {dataSource} ({mockCards.length} cards) | Card: {cardId || 'auto-selected'}</div>
+            <button 
+              onClick={() => setUse3DMode(!use3DMode)}
+              className="mt-1 px-2 py-1 bg-crd-blue rounded text-xs"
+            >
+              {use3DMode ? 'Switch to Immersive' : 'Switch to 3D'}
+            </button>
           </div>
         )}
         
-        {/* Immersive Card Viewer - the navbar logo will show through */}
-        <ImmersiveCardViewer
-          card={viewerCard}
-          cards={viewerCards}
-          currentCardIndex={currentCardIndex}
-          onCardChange={handleCardChange}
-          isOpen={true}
-          onClose={handleClose}
-          onShare={handleViewerShare}
-          onDownload={handleViewerDownload}
-          allowRotation={true}
-          showStats={true}
-          ambient={true}
-        />
+        {/* Render 3D Studio or Immersive Viewer based on mode */}
+        {use3DMode ? (
+          <StudioCardManager
+            cards={mockCards}
+            selectedCardIndex={currentCardIndex}
+            onCardSelect={handleCardChange}
+            enableInteraction={true}
+            showGrid={process.env.NODE_ENV === 'development'}
+            cameraControls={true}
+          />
+        ) : (
+          <ImmersiveCardViewer
+            card={viewerCard}
+            cards={viewerCards}
+            currentCardIndex={currentCardIndex}
+            onCardChange={handleCardChange}
+            isOpen={true}
+            onClose={handleClose}
+            onShare={handleViewerShare}
+            onDownload={handleViewerDownload}
+            allowRotation={true}
+            showStats={true}
+            ambient={true}
+          />
+        )}
       </div>
     </ErrorBoundary>
   );
