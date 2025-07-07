@@ -151,7 +151,7 @@ const Studio = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-crd-darkest">
+      <div className="w-full h-screen bg-crd-darkest">
         
         {/* Render 3D Studio or Immersive Viewer based on mode */}
         {use3DMode ? (

@@ -132,7 +132,7 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
   }, [cardPositions]);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-screen">
       <Canvas
         ref={canvasRef}
         camera={{ 
@@ -148,6 +148,7 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
           alpha: true,
           powerPreference: "high-performance"
         }}
+        style={{ width: '100%', height: '100%' }}
       >
         {/* Lighting Setup */}
         <ambientLight intensity={0.4} />
@@ -212,7 +213,7 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
       </Canvas>
 
       {/* Debug Info (Development Only) */}
-      {process.env.NODE_ENV === 'development' && (
+      {process.env.NODE_ENV === 'development' && cards.length > 0 && (
         <div className="absolute top-4 right-4 bg-black/80 text-white p-2 rounded text-xs">
           <div>Cards: {cards.length}</div>
           <div>Selected: {selectedCardIndex}</div>
