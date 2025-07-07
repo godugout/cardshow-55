@@ -4,6 +4,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Sparkles, Calendar, Target } from 'lucide-react';
 import { useUserProgress } from '@/hooks/useUserProgress';
+import { ProgressNotificationTest } from './ProgressNotificationTest';
 
 export const ProgressStats = () => {
   const { progress, isLoading, milestones, getNextMilestone, getMilestoneProgress } = useUserProgress();
@@ -207,6 +208,9 @@ export const ProgressStats = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Development Tools */}
+      <ProgressNotificationTest />
     </div>
   );
 };
