@@ -16,7 +16,7 @@ const App = () => {
   return (
     <ErrorBoundary>
       <AuthProvider>
-    <div className={`min-h-screen bg-crd-darkest ${className}`}>
+    <div className="min-h-screen bg-crd-darkest">
       <AppLayout maxWidth="full">
         <Routes>
           <Route path="/" element={<Index />} />
