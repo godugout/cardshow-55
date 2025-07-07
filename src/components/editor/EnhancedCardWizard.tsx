@@ -11,7 +11,7 @@ import { PublishingOptionsStep } from './wizard/PublishingOptionsStep';
 import { useWizardState } from './wizard/useWizardState';
 import { WIZARD_STEPS } from './wizard/wizardConfig';
 import type { EnhancedCardWizardProps } from './wizard/types';
-import type { CardData, CardRarity, CardVisibility } from '@/hooks/useCardEditor';
+import type { CardData, CardRarity, CardVisibility } from '@/types/card';
 
 export const EnhancedCardWizard = ({ onComplete, onCancel }: EnhancedCardWizardProps) => {
   const { wizardState, cardData, handlers, isSaving, templates, updateCardField } = useWizardState(onComplete);

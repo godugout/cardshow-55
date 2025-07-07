@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { RotateCcw, Sparkles } from 'lucide-react';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { toast } from 'sonner';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 interface SimpleEditorProps {
   initialData: CardData | null;

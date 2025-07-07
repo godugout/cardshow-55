@@ -1,6 +1,6 @@
 
 import React from 'react';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import { CardEffectsLayer } from './CardEffectsLayer';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 

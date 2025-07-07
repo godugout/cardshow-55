@@ -7,7 +7,7 @@ import { PhotoUploadStep } from './wizard/PhotoUploadStep';
 import { TemplateSelectionStep } from './wizard/TemplateSelectionStep';
 import { EffectsTab } from './sidebar/EffectsTab';
 import { PublishingOptionsStep } from './wizard/PublishingOptionsStep';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 interface SimpleCardWizardProps {
   onComplete: (cardData: CardData) => void;

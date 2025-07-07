@@ -6,7 +6,7 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { StepContent } from './components/StepContent';
 import type { CreationMode, CreationStep } from './types';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 interface SimpleCardCreatorProps {
   initialMode?: CreationMode;

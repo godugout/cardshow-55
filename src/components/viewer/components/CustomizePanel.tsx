@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { EnvironmentScene, LightingPreset, VisualEffect, MaterialSettings } from '../types';
 import { ENVIRONMENT_SCENES, LIGHTING_PRESETS, VISUAL_EFFECTS } from '../constants';
 

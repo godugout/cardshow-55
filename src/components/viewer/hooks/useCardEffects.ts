@@ -1,6 +1,6 @@
 
 import { useMemo } from 'react';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 export interface CardEffects {
   holographic: boolean;

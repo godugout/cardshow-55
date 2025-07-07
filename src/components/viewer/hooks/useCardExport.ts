@@ -1,9 +1,8 @@
 
 import { useCallback, useState } from 'react';
-// @ts-ignore
 import GIF from 'gif.js';
 import { toast } from 'sonner';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 import type { EffectValues } from './useEnhancedCardEffects';
 
 export interface ExportOptions {

@@ -1,11 +1,11 @@
 
-import type { EffectValues } from '../../../hooks/useEnhancedCardEffects';
+import type { EffectValues } from '@/components/viewer/hooks/useEnhancedCardEffects';
 
 export const getHolographicEffectParam = (
   effectValues: EffectValues,
   effectId: string,
   paramId: string,
-  defaultValue: any = 0
+  defaultValue: number | boolean | string = 0
 ) => {
   return effectValues?.[effectId]?.[paramId] ?? defaultValue;
 };

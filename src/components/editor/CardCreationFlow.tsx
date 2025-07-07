@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { SimpleCardCreator } from './unified/SimpleCardCreator';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 interface CardCreationFlowProps {
   initialCardId?: string;

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useColorThemes } from '@/hooks/useColorThemes';
 import { TeamColorHeader } from './TeamColorHeader';
-import { TeamColorTabs } from '../../../editor/templates/TeamColorTabs';
+import { TeamColorTabs } from '@/components/editor/templates/TeamColorTabs';
 import { TeamColorPreview } from './TeamColorPreview';
 import { convertColorThemeToScheme } from './types';
 import type { 

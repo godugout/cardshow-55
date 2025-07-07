@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Eye, Maximize, Download, Share2, ArrowRight, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import AdvancedCardRenderer from '@/components/renderer/AdvancedCardRenderer';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 interface PreviewTabProps {
   selectedTemplate: string;

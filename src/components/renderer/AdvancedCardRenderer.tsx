@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Sparkles, Palette, Zap, Sun, Moon, Droplet, Flame, Diamond } from 'lucide-react';
-import type { CardData } from '@/hooks/useCardEditor';
+import type { CardData } from '@/types/card';
 
 interface CardEffect {
   type: 'holographic' | 'refractor' | 'foil' | 'prizm' | 'chrome' | 'rainbow' | 'gold' | 'black';

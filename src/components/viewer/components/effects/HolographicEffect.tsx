@@ -17,7 +17,7 @@ export const HolographicEffect: React.FC<HolographicEffectProps> = ({
   effectValues,
   mousePosition
 }) => {
-  const holographicIntensity = getHolographicEffectParam(effectValues, 'holographic', 'intensity', 0);
+  const holographicIntensity = Number(getHolographicEffectParam(effectValues, 'holographic', 'intensity', 0));
 
   if (holographicIntensity <= 0) return null;
 
