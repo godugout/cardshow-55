@@ -10,6 +10,7 @@ import Index from '@/pages/Index';
 import CreateCard from '@/pages/CreateCard';
 import Gallery from '@/pages/Gallery';
 import Studio from '@/pages/Studio';
+import UploadTestPage from '@/pages/UploadTestPage';
 
 const App = () => {
   // Main App Error Boundary wrapper
@@ -26,6 +27,7 @@ const App = () => {
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/studio" element={<Studio />} />
               <Route path="/studio/:cardId" element={<Studio />} />
+              <Route path="/upload-test" element={<UploadTestPage />} />
             </Routes>
             <Toaster 
               position="top-right"
