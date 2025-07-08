@@ -8,6 +8,7 @@ import { Eye, Edit, Share2 } from 'lucide-react';
 import { getRarityStyles, getRarityBadgeStyles, type CardRarity } from '@/utils/cardDisplayUtils';
 import { LikeButton } from '@/components/social/LikeButton';
 import { ShareButton } from '@/components/social/ShareButton';
+import { ProgressiveCard } from './ProgressiveCard';
 
 interface CardData {
   id: string;
@@ -23,6 +24,8 @@ interface CardGridProps {
   cards: CardData[];
   loading: boolean;
   viewMode: 'grid' | 'masonry' | 'feed';
+  useProgressiveLoading?: boolean;
+  onCardClick?: (cardId: string) => void;
 }
 
 const UNSPLASH_IMAGES = [
@@ -189,7 +192,13 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) => {
+export const CardGrid: React.FC<CardGridProps> = ({ 
+  cards, 
+  loading, 
+  viewMode, 
+  useProgressiveLoading = true,
+  onCardClick 
+}) => {
   // Mobile-optimized grid classes
   const getGridClasses = () => {
     if (viewMode === 'masonry') {
@@ -222,9 +231,27 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) 
 
   return (
     <div className={getGridClasses()}>
-      {cards.map((card, index) => (
-        <CardGridItem key={`card-${card.id}-${index}`} card={card} index={index} />
-      ))}
+      {cards.map((card, index) => {
+        // Use progressive loading for grid mode for better performance
+        if (useProgressiveLoading && viewMode === 'grid') {
+          return (
+            <ProgressiveCard
+              key={`progressive-card-${card.id}-${index}`}
+              imageUrl={card.image_url || card.thumbnail_url || '/placeholder.svg'}
+              title={card.title || 'Untitled Card'}
+              description={card.description || 'Digital collectible card'}
+              priority={index < 4 ? 'high' : index < 8 ? 'normal' : 'low'}
+              rarity={card.rarity as 'common' | 'uncommon' | 'rare' | 'legendary' || 'common'}
+              onClick={onCardClick ? () => onCardClick(card.id) : undefined}
+            />
+          );
+        }
+
+        // Fallback to original CardGridItem for other view modes
+        return (
+          <CardGridItem key={`card-${card.id}-${index}`} card={card} index={index} />
+        );
+      })}
     </div>
   );
 };
