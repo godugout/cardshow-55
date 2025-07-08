@@ -50,8 +50,12 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
   }, [colorThemes, themesLoading, selectedColorScheme]);
 
   const handleFileUpload = (file: File) => {
+    console.log('📁 CreateStep: File selected:', file.name, file.type, file.size);
     const url = URL.createObjectURL(file);
+    console.log('🔗 CreateStep: Generated URL:', url);
+    console.log('🔄 CreateStep: Calling onFieldUpdate with:', 'image_url', url);
     onFieldUpdate('image_url', url);
+    console.log('✅ CreateStep: File upload completed');
   };
 
   const handleDrop = (e: React.DragEvent) => {
