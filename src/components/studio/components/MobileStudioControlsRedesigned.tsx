@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { ChevronUp, Settings, Share2, Download, X, Palette, Camera, Grid3X3 } from 'lucide-react';
+import { ChevronUp, Settings, Share2, Download, X, Palette, Camera, Grid3X3, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { StudioCaseSelector, type CaseStyle } from './StudioCaseSelector';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import type { CardData } from '@/types/card';
 
 interface MobileStudioControlsRedesignedProps {
@@ -16,6 +17,9 @@ interface MobileStudioControlsRedesignedProps {
   onClose: () => void;
   use3DMode?: boolean;
   onToggle3D?: () => void;
+  cards?: CardData[];
+  currentCardIndex?: number;
+  onCardChange?: (index: number) => void;
 }
 
 export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesignedProps> = ({
@@ -26,15 +30,33 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
   onDownload,
   onClose,
   use3DMode = true,
-  onToggle3D
+  onToggle3D,
+  cards = [],
+  currentCardIndex = 0,
+  onCardChange
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { medium, light } = useHapticFeedback();
+  const { medium, light, cardFlip } = useHapticFeedback();
 
   const handleActionWithHaptic = (action: () => void) => {
     light();
     action();
+  };
+
+  // Enhanced navigation with haptic feedback
+  const handlePreviousCard = () => {
+    if (onCardChange && currentCardIndex > 0) {
+      cardFlip();
+      onCardChange(currentCardIndex - 1);
+    }
+  };
+
+  const handleNextCard = () => {
+    if (onCardChange && currentCardIndex < cards.length - 1) {
+      cardFlip();
+      onCardChange(currentCardIndex + 1);
+    }
   };
 
   if (!isMobile) {
@@ -110,6 +132,37 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
 
             <div className="overflow-y-auto" style={{ maxHeight: '60vh' }}>
               <div className="space-y-6 py-4">
+                {/* Card Navigation */}
+                {cards.length > 1 && onCardChange && (
+                  <div>
+                    <h4 className="text-themed-primary font-medium mb-3 flex items-center gap-2">
+                      <Grid3X3 className="w-4 h-4" />
+                      Card Navigation ({currentCardIndex + 1} of {cards.length})
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <CRDButton
+                        variant="outline"
+                        onClick={handlePreviousCard}
+                        disabled={currentCardIndex <= 0}
+                        className="min-h-[52px] flex items-center justify-center gap-2"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Previous
+                      </CRDButton>
+                      
+                      <CRDButton
+                        variant="outline"
+                        onClick={handleNextCard}
+                        disabled={currentCardIndex >= cards.length - 1}
+                        className="min-h-[52px] flex items-center justify-center gap-2"
+                      >
+                        Next
+                        <ChevronRight className="w-4 h-4" />
+                      </CRDButton>
+                    </div>
+                  </div>
+                )}
+
                 {/* Quick Actions */}
                 <div>
                   <h4 className="text-themed-primary font-medium mb-3 flex items-center gap-2">

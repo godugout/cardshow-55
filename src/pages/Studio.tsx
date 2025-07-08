@@ -7,6 +7,7 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NoCardSelected } from './Studio/components/NoCardSelected';
 import { DatabaseSeedPrompt } from './Studio/components/DatabaseSeedPrompt';
 import { MobileStudioControlsRedesigned } from '@/components/studio/components/MobileStudioControlsRedesigned';
+import { EnhancedMobileStudioInteractions } from '@/components/studio/components/EnhancedMobileStudioInteractions';
 import type { CaseStyle } from '@/components/studio/components/StudioCaseSelector';
 import { useStudioState } from './Studio/hooks/useStudioState';
 import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
@@ -185,30 +186,45 @@ const Studio = () => {
 
         {/* Main Content - Full Height */}
         <div className="flex-1 relative">
-          {use3DMode ? (
-            <StudioCardManager
-              cards={mockCards}
-              selectedCardIndex={currentCardIndex}
-              onCardSelect={handleCardChange}
-              enableInteraction={true}
-              showGrid={process.env.NODE_ENV === 'development'}
-              cameraControls={true}
-            />
-          ) : (
-            <ImmersiveCardViewer
-              card={viewerCard}
-              cards={viewerCards}
-              currentCardIndex={currentCardIndex}
-              onCardChange={handleCardChange}
-              isOpen={true}
-              onClose={handleClose}
-              onShare={handleViewerShare}
-              onDownload={handleViewerDownload}
-              allowRotation={true}
-              showStats={true}
-              ambient={true}
-            />
-          )}
+          <EnhancedMobileStudioInteractions
+            cards={mockCards}
+            currentCardIndex={currentCardIndex}
+            onCardChange={handleCardChange}
+            onRefresh={async () => {
+              console.log('🔄 Refreshing studio data...');
+              // Add refresh logic here - reload cards, update data, etc.
+              await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate refresh
+            }}
+            onRotationChange={(rotation) => {
+              console.log('🔄 Card rotation changed:', rotation);
+              // Handle rotation changes for 3D card
+            }}
+          >
+            {use3DMode ? (
+              <StudioCardManager
+                cards={mockCards}
+                selectedCardIndex={currentCardIndex}
+                onCardSelect={handleCardChange}
+                enableInteraction={true}
+                showGrid={process.env.NODE_ENV === 'development'}
+                cameraControls={true}
+              />
+            ) : (
+              <ImmersiveCardViewer
+                card={viewerCard}
+                cards={viewerCards}
+                currentCardIndex={currentCardIndex}
+                onCardChange={handleCardChange}
+                isOpen={true}
+                onClose={handleClose}
+                onShare={handleViewerShare}
+                onDownload={handleViewerDownload}
+                allowRotation={true}
+                showStats={true}
+                ambient={true}
+              />
+            )}
+          </EnhancedMobileStudioInteractions>
         </div>
 
         {/* New Mobile Controls - FAB + Drawer Pattern */}
@@ -221,6 +237,9 @@ const Studio = () => {
           onClose={handleClose}
           use3DMode={use3DMode}
           onToggle3D={() => setUse3DMode(!use3DMode)}
+          cards={mockCards}
+          currentCardIndex={currentCardIndex}
+          onCardChange={handleCardChange}
         />
       </div>
     </ErrorBoundary>
