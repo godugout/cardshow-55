@@ -8,7 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Upload, Image, Palette, Sparkles, Zap, Chrome, Stars } from 'lucide-react';
+import { Upload, Image, Palette, Sparkles, Zap, Chrome, Stars, Eye, Frame } from 'lucide-react';
 import { UniversalUploadComponent } from '@/components/media/UniversalUploadComponent';
 import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRenderer';
 import { BASEBALL_CARD_TEMPLATES } from '@/components/editor/templates/BaseballCardTemplates';
@@ -87,18 +87,18 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column - Upload & Info */}
-        <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Upload & Details */}
+        <div className="space-y-4">
           {/* Photo Upload */}
-          <div className="card-themed">
-            <div className="p-6 border-b border-themed-light">
-              <h3 className="text-themed-primary flex items-center gap-2 text-lg font-semibold">
-                <Upload className="w-5 h-5" />
+          <Card className="bg-crd-darker border-crd-mediumGray/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-crd-white flex items-center gap-2 text-base">
+                <Upload className="w-4 h-4" />
                 Upload Photo
-              </h3>
-            </div>
-            <div className="p-6">
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               <UniversalUploadComponent
                 onFilesSelected={(files) => {
                   if (files.length > 0) {
@@ -107,49 +107,48 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                 }}
                 onError={(error) => {
                   console.error('Upload error:', error);
-                  // You could add toast notification here if needed
                 }}
                 accept={{ 'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'] }}
                 maxSize={10 * 1024 * 1024} // 10MB
                 maxFiles={1}
                 multiple={false}
               />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Card Details */}
           <Card className="bg-crd-darker border-crd-mediumGray/20">
-            <CardHeader>
-              <CardTitle className="text-crd-white">Card Information</CardTitle>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-crd-white text-base">Card Information</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title" className="text-crd-white">Card Title *</Label>
+            <CardContent className="space-y-3">
+              <div className="space-y-1">
+                <Label htmlFor="title" className="text-crd-white text-sm">Card Title *</Label>
                 <Input
                   id="title"
                   value={cardData.title || ''}
                   onChange={(e) => onFieldUpdate('title', e.target.value)}
-                  placeholder="Enter player name or card title"
-                  className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white"
+                  placeholder="Enter player name"
+                  className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white h-9"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-crd-white">Description</Label>
+              <div className="space-y-1">
+                <Label htmlFor="description" className="text-crd-white text-sm">Description</Label>
                 <Textarea
                   id="description"
                   value={cardData.description || ''}
                   onChange={(e) => onFieldUpdate('description', e.target.value)}
                   placeholder="Describe your card..."
-                  rows={3}
-                  className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white"
+                  rows={2}
+                  className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white resize-none"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-crd-white">Card Rarity</Label>
+              <div className="space-y-1">
+                <Label className="text-crd-white text-sm">Card Rarity</Label>
                 <Select value={cardData.rarity || 'common'} onValueChange={(value) => onFieldUpdate('rarity', value)}>
-                  <SelectTrigger className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white">
+                  <SelectTrigger className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white h-9">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-crd-darker border-crd-mediumGray/30">
@@ -160,34 +159,104 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                   </SelectContent>
                 </Select>
               </div>
+            </CardContent>
+          </Card>
+        </div>
 
-              {/* Character Count */}
-              <div className="grid grid-cols-2 gap-4 text-xs text-crd-lightGray">
-                <div>Title: {cardData.title?.length || 0}/50</div>
-                <div>Description: {cardData.description?.length || 0}/200</div>
+        {/* Center Column - Preview Canvas */}
+        <div className="space-y-4">
+          <Card className="bg-crd-darker border-crd-mediumGray/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-crd-white flex items-center gap-2 text-base">
+                <Eye className="w-4 h-4" />
+                Live Preview
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="relative">
+                {/* Grid Background */}
+                <div 
+                  className="absolute inset-0 opacity-20"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+                    `,
+                    backgroundSize: '20px 20px'
+                  }}
+                />
+                
+                {/* Preview Canvas */}
+                <div className="aspect-[5/7] bg-crd-mediumGray/10 rounded-lg border border-crd-mediumGray/30 overflow-hidden relative">
+                  {cardData.image_url ? (
+                    <div className="w-full h-full relative">
+                      <SVGTemplateRenderer
+                        template={selectedFrame}
+                        imageUrl={cardData.image_url}
+                        playerName={playerName}
+                        teamName={teamName}
+                        customColors={selectedColorScheme}
+                        className="w-full h-full"
+                      />
+                      {/* Effect Overlays */}
+                      {chromeEffect && (
+                        <div 
+                          className="absolute inset-0 bg-gradient-to-br from-gray-300/20 to-gray-600/20 mix-blend-overlay pointer-events-none"
+                          style={{ opacity: chromeIntensity[0] / 100 }}
+                        />
+                      )}
+                      {holographicEffect && (
+                        <div 
+                          className="absolute inset-0 bg-gradient-to-br from-purple-400/20 via-blue-400/20 to-green-400/20 mix-blend-screen pointer-events-none animate-pulse"
+                          style={{ opacity: holographicIntensity[0] / 100 }}
+                        />
+                      )}
+                      {foilEffect && (
+                        <div 
+                          className="absolute inset-0 bg-gradient-to-br from-yellow-300/20 to-orange-400/20 mix-blend-overlay pointer-events-none"
+                          style={{ opacity: foilIntensity[0] / 100 }}
+                        />
+                      )}
+                    </div>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-16 h-16 bg-crd-mediumGray/20 rounded-lg mb-3 mx-auto flex items-center justify-center">
+                          <Image className="w-8 h-8 text-crd-mediumGray" />
+                        </div>
+                        <p className="text-crd-lightGray text-sm">Upload a photo to see preview</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Frame Info */}
+                <div className="mt-3 text-center">
+                  <h4 className="text-crd-white font-medium text-sm">{selectedFrame.name}</h4>
+                  <p className="text-crd-lightGray text-xs">{selectedFrame.description}</p>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Column - Frame & Team Colors */}
-        <div className="space-y-6">
+        {/* Right Column - Frame Selection, Team Colors & Effects */}
+        <div className="space-y-4">
           {/* Quick Frame Selection */}
           <Card className="bg-crd-darker border-crd-mediumGray/20">
-            <CardHeader>
-              <CardTitle className="text-crd-white flex items-center gap-2">
-                <Image className="w-5 h-5" />
+            <CardHeader className="pb-3">
+              <CardTitle className="text-crd-white flex items-center gap-2 text-base">
+                <Frame className="w-4 h-4" />
                 Choose Frame
               </CardTitle>
-              <p className="text-crd-lightGray text-sm">Select your starting template</p>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 {quickFrames.map((frame) => (
                   <div
                     key={frame.id}
                     onClick={() => setSelectedFrame(frame)}
-                    className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer transition-all ${
+                    className={`relative aspect-square rounded-md overflow-hidden cursor-pointer transition-all ${
                       selectedFrame.id === frame.id
                         ? 'ring-2 ring-crd-green scale-105'
                         : 'hover:scale-102 hover:ring-1 hover:ring-crd-lightGray/50'
@@ -195,9 +264,8 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                   >
                     <SVGTemplateRenderer
                       template={frame}
-                      playerName={playerName}
-                      teamName={teamName}
-                      imageUrl={cardData.image_url}
+                      playerName="PLAYER"
+                      teamName="TEAM"
                       customColors={selectedColorScheme}
                       className="w-full h-full"
                     />
@@ -207,30 +275,45 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                   </div>
                 ))}
               </div>
-              <div className="mt-4 text-center">
-                <p className="text-crd-lightGray text-sm">
-                  More templates available in the next step
-                </p>
+            </CardContent>
+          </Card>
+
+          {/* Team Colors */}
+          <Card className="bg-crd-darker border-crd-mediumGray/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-crd-white flex items-center gap-2 text-base">
+                <Palette className="w-4 h-4" />
+                Team Colors
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-48 overflow-hidden">
+                <TeamColorSelector
+                  selectedColorScheme={selectedColorScheme}
+                  onColorSchemeSelect={(scheme) => {
+                    setSelectedColorScheme(scheme);
+                  }}
+                  className="h-full"
+                />
               </div>
             </CardContent>
           </Card>
 
           {/* Card Effects */}
           <Card className="bg-crd-darker border-crd-mediumGray/20">
-            <CardHeader>
-              <CardTitle className="text-crd-white flex items-center gap-2">
-                <Sparkles className="w-5 h-5" />
+            <CardHeader className="pb-3">
+              <CardTitle className="text-crd-white flex items-center gap-2 text-base">
+                <Sparkles className="w-4 h-4" />
                 Card Effects
               </CardTitle>
-              <p className="text-crd-lightGray text-sm">Add special effects to your card</p>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
               {/* Chrome Effect */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Chrome className="w-4 h-4 text-crd-lightGray" />
-                    <Label className="text-crd-white">Chrome Effect</Label>
+                    <Chrome className="w-3 h-3 text-crd-lightGray" />
+                    <Label className="text-crd-white text-sm">Chrome</Label>
                   </div>
                   <Switch
                     checked={chromeEffect}
@@ -238,8 +321,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                   />
                 </div>
                 {chromeEffect && (
-                  <div className="ml-6 space-y-2">
-                    <Label className="text-crd-lightGray text-sm">Intensity</Label>
+                  <div className="ml-5 space-y-1">
                     <Slider
                       value={chromeIntensity}
                       onValueChange={setChromeIntensity}
@@ -254,11 +336,11 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
               </div>
 
               {/* Holographic Effect */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-crd-lightGray" />
-                    <Label className="text-crd-white">Holographic</Label>
+                    <Zap className="w-3 h-3 text-crd-lightGray" />
+                    <Label className="text-crd-white text-sm">Holographic</Label>
                   </div>
                   <Switch
                     checked={holographicEffect}
@@ -266,8 +348,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                   />
                 </div>
                 {holographicEffect && (
-                  <div className="ml-6 space-y-2">
-                    <Label className="text-crd-lightGray text-sm">Intensity</Label>
+                  <div className="ml-5 space-y-1">
                     <Slider
                       value={holographicIntensity}
                       onValueChange={setHolographicIntensity}
@@ -282,11 +363,11 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
               </div>
 
               {/* Foil Effect */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Stars className="w-4 h-4 text-crd-lightGray" />
-                    <Label className="text-crd-white">Foil Effect</Label>
+                    <Stars className="w-3 h-3 text-crd-lightGray" />
+                    <Label className="text-crd-white text-sm">Foil</Label>
                   </div>
                   <Switch
                     checked={foilEffect}
@@ -294,8 +375,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                   />
                 </div>
                 {foilEffect && (
-                  <div className="ml-6 space-y-2">
-                    <Label className="text-crd-lightGray text-sm">Intensity</Label>
+                  <div className="ml-5 space-y-1">
                     <Slider
                       value={foilIntensity}
                       onValueChange={setFoilIntensity}
@@ -307,39 +387,6 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                     <div className="text-xs text-crd-lightGray">{foilIntensity[0]}%</div>
                   </div>
                 )}
-              </div>
-
-              {/* Live Preview Badge */}
-              {(chromeEffect || holographicEffect || foilEffect) && (
-                <div className="flex items-center justify-center pt-4 border-t border-crd-mediumGray/20">
-                  <Badge className="bg-crd-green/20 text-crd-green border-crd-green/30">
-                    <Sparkles className="w-3 h-3 mr-1" />
-                    Effects will show in live preview
-                  </Badge>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Team Colors */}
-          <Card className="bg-crd-darker border-crd-mediumGray/20">
-            <CardHeader>
-              <CardTitle className="text-crd-white flex items-center gap-2">
-                <Palette className="w-5 h-5" />
-                Team Colors
-              </CardTitle>
-              <p className="text-crd-lightGray text-sm">Personalize with team colors</p>
-            </CardHeader>
-            <CardContent>
-              <div className="min-h-[200px]">
-                <TeamColorSelector
-                  selectedColorScheme={selectedColorScheme}
-                  onColorSchemeSelect={(scheme) => {
-                    setSelectedColorScheme(scheme);
-                    console.log('Team colors updated:', scheme);
-                  }}
-                  className=""
-                />
               </div>
             </CardContent>
           </Card>
