@@ -6,6 +6,8 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NoCardSelected } from './Studio/components/NoCardSelected';
 import { DatabaseSeedPrompt } from './Studio/components/DatabaseSeedPrompt';
+import { MobileStudioControlsRedesigned } from '@/components/studio/components/MobileStudioControlsRedesigned';
+import type { CaseStyle } from '@/components/studio/components/StudioCaseSelector';
 import { useStudioState } from './Studio/hooks/useStudioState';
 import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
@@ -63,6 +65,7 @@ const Studio = () => {
   const [showSeedPrompt, setShowSeedPrompt] = useState(false);
   const [hasCheckedDatabase, setHasCheckedDatabase] = useState(false);
   const [use3DMode, setUse3DMode] = useState(true); // Toggle between 3D and immersive modes
+  const [selectedCase, setSelectedCase] = useState<CaseStyle>('none');
   
   const {
     selectedCard,
@@ -171,24 +174,16 @@ const Studio = () => {
 
   return (
     <ErrorBoundary>
-      <div className="w-full h-screen bg-crd-darkest flex flex-col">
+      <div className="w-full h-screen bg-crd-darkest flex flex-col relative">
         
-        {/* Mobile Studio Header */}
-        <div className="lg:hidden bg-crd-darker border-b border-crd-mediumGray/20 p-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold text-crd-white">Studio</h1>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setUse3DMode(!use3DMode)}
-                className="px-3 py-2 bg-crd-mediumGray/20 rounded-lg text-crd-white text-sm min-h-[44px]"
-              >
-                {use3DMode ? '2D View' : '3D View'}
-              </button>
-            </div>
+        {/* Simplified Mobile Header - Only on mobile, only essential info */}
+        <div className="lg:hidden bg-crd-darker/50 backdrop-blur-sm border-b border-crd-mediumGray/20 px-4 py-3 relative z-10">
+          <div className="flex items-center justify-center">
+            <h1 className="text-lg font-semibold text-crd-white">Studio</h1>
           </div>
         </div>
 
-        {/* Render 3D Studio or Immersive Viewer based on mode */}
+        {/* Main Content - Full Height */}
         <div className="flex-1 relative">
           {use3DMode ? (
             <StudioCardManager
@@ -215,6 +210,18 @@ const Studio = () => {
             />
           )}
         </div>
+
+        {/* New Mobile Controls - FAB + Drawer Pattern */}
+        <MobileStudioControlsRedesigned
+          selectedCard={selectedCard}
+          selectedCase={selectedCase}
+          onCaseChange={setSelectedCase}
+          onShare={handleShare}
+          onDownload={handleDownload}
+          onClose={handleClose}
+          use3DMode={use3DMode}
+          onToggle3D={() => setUse3DMode(!use3DMode)}
+        />
       </div>
     </ErrorBoundary>
   );
