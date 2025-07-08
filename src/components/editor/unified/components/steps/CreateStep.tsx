@@ -61,58 +61,62 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
   const quickFrames = BASEBALL_CARD_TEMPLATES.slice(0, 6);
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-themed-primary mb-2">Create Your Card</h2>
-        <p className="text-themed-secondary">
+    <div className="h-screen flex flex-col bg-crd-darkest">
+      {/* Header */}
+      <div className="flex-shrink-0 px-6 py-4 border-b border-crd-mediumGray/20">
+        <h2 className="text-2xl font-bold text-crd-white mb-1">Create Your Card</h2>
+        <p className="text-crd-lightGray text-sm">
           Upload your photo, add details, and choose your initial design
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Details & Team Colors */}
-        <div className="space-y-4">
-
+      {/* Main Content */}
+      <div className="flex-1 grid grid-cols-12 gap-4 p-4 min-h-0">
+        {/* Left Sidebar - Details & Team Colors */}
+        <div className="col-span-3 space-y-4 overflow-y-auto">
           {/* Card Details */}
-          <Card className="bg-crd-darker border-crd-mediumGray/20">
+          <Card className="bg-crd-darker/80 border-crd-mediumGray/30 backdrop-blur-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-crd-white text-base">Card Information</CardTitle>
+              <CardTitle className="text-crd-white text-base flex items-center gap-2">
+                <Image className="w-4 h-4" />
+                Card Information
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="space-y-1">
-                <Label htmlFor="title" className="text-crd-white text-sm">Card Title *</Label>
+                <Label htmlFor="title" className="text-crd-lightGray text-sm">Card Title *</Label>
                 <Input
                   id="title"
                   value={cardData.title || ''}
                   onChange={(e) => onFieldUpdate('title', e.target.value)}
                   placeholder="Enter player name"
-                  className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white h-9"
+                  className="bg-crd-darkest/80 border-crd-mediumGray/40 text-crd-white h-9 focus:border-crd-green/50"
                 />
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="description" className="text-crd-white text-sm">Description</Label>
+                <Label htmlFor="description" className="text-crd-lightGray text-sm">Description</Label>
                 <Textarea
                   id="description"
                   value={cardData.description || ''}
                   onChange={(e) => onFieldUpdate('description', e.target.value)}
                   placeholder="Describe your card..."
-                  rows={2}
-                  className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white resize-none"
+                  rows={3}
+                  className="bg-crd-darkest/80 border-crd-mediumGray/40 text-crd-white resize-none focus:border-crd-green/50"
                 />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-crd-white text-sm">Card Rarity</Label>
+                <Label className="text-crd-lightGray text-sm">Card Rarity</Label>
                 <Select value={cardData.rarity || 'common'} onValueChange={(value) => onFieldUpdate('rarity', value)}>
-                  <SelectTrigger className="bg-crd-darkest border-crd-mediumGray/30 text-crd-white h-9">
+                  <SelectTrigger className="bg-crd-darkest/80 border-crd-mediumGray/40 text-crd-white h-9 focus:border-crd-green/50">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-crd-darker border-crd-mediumGray/30">
-                    <SelectItem value="common" className="text-crd-white">Common</SelectItem>
-                    <SelectItem value="uncommon" className="text-crd-white">Uncommon</SelectItem>
-                    <SelectItem value="rare" className="text-crd-white">Rare</SelectItem>
-                    <SelectItem value="legendary" className="text-crd-white">Legendary</SelectItem>
+                  <SelectContent className="bg-crd-darker border-crd-mediumGray/40 backdrop-blur-sm">
+                    <SelectItem value="common" className="text-crd-white hover:bg-crd-mediumGray/50">Common</SelectItem>
+                    <SelectItem value="uncommon" className="text-crd-white hover:bg-crd-mediumGray/50">Uncommon</SelectItem>
+                    <SelectItem value="rare" className="text-crd-white hover:bg-crd-mediumGray/50">Rare</SelectItem>
+                    <SelectItem value="legendary" className="text-crd-white hover:bg-crd-mediumGray/50">Legendary</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -120,15 +124,15 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
           </Card>
 
           {/* Team Colors */}
-          <Card className="bg-crd-darker border-crd-mediumGray/20">
+          <Card className="bg-crd-darker/80 border-crd-mediumGray/30 backdrop-blur-sm flex-1">
             <CardHeader className="pb-3">
               <CardTitle className="text-crd-white flex items-center gap-2 text-base">
                 <Palette className="w-4 h-4" />
                 Team Colors
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="h-48 overflow-hidden">
+            <CardContent className="flex-1">
+              <div className="h-full min-h-[300px] overflow-hidden">
                 <TeamColorSelector
                   selectedColorScheme={selectedColorScheme}
                   onColorSchemeSelect={(scheme) => {
@@ -142,19 +146,19 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
         </div>
 
         {/* Center Column - Preview Canvas */}
-        <div className="space-y-4">
-          <Card className="bg-crd-darker border-crd-mediumGray/20">
-            <CardHeader className="pb-3">
+        <div className="col-span-6 flex flex-col">
+          <Card className="bg-crd-darker/80 border-crd-mediumGray/30 backdrop-blur-sm flex-1 flex flex-col">
+            <CardHeader className="pb-3 flex-shrink-0">
               <CardTitle className="text-crd-white flex items-center gap-2 text-base">
                 <Eye className="w-4 h-4" />
                 Live Preview
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="relative">
+            <CardContent className="flex-1 flex flex-col justify-center p-6">
+              <div className="relative flex items-center justify-center h-full">
                 {/* Grid Background */}
                 <div 
-                  className="absolute inset-0 opacity-20"
+                  className="absolute inset-0 opacity-10 rounded-lg"
                   style={{
                     backgroundImage: `
                       linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
@@ -165,13 +169,13 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                 />
                 
                 {/* Preview Canvas */}
-                <div className="aspect-[5/7] bg-crd-mediumGray/10 rounded-lg border border-crd-mediumGray/30 overflow-hidden relative">
+                <div className="aspect-[5/7] max-h-full w-auto bg-crd-mediumGray/10 rounded-xl border border-crd-mediumGray/40 overflow-hidden relative shadow-2xl">
                   {cardData.image_url ? (
                     <div className="w-full h-full relative">
                       <SVGTemplateRenderer
                         template={selectedFrame}
                         imageUrl={cardData.image_url}
-                        playerName={playerName}
+                        playerName={cardData.title || 'PLAYER NAME'}
                         teamName={teamName}
                         customColors={selectedColorScheme}
                         className="w-full h-full"
@@ -179,25 +183,25 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                       {/* Effect Overlays */}
                       {chromeEffect && (
                         <div 
-                          className="absolute inset-0 bg-gradient-to-br from-gray-300/20 to-gray-600/20 mix-blend-overlay pointer-events-none"
+                          className="absolute inset-0 bg-gradient-to-br from-crd-lightGray/20 to-crd-mediumGray/20 mix-blend-overlay pointer-events-none"
                           style={{ opacity: chromeIntensity[0] / 100 }}
                         />
                       )}
                       {holographicEffect && (
                         <div 
-                          className="absolute inset-0 bg-gradient-to-br from-purple-400/20 via-blue-400/20 to-green-400/20 mix-blend-screen pointer-events-none animate-pulse"
+                          className="absolute inset-0 bg-gradient-to-br from-crd-blue/20 via-crd-purple/20 to-crd-green/20 mix-blend-screen pointer-events-none animate-pulse"
                           style={{ opacity: holographicIntensity[0] / 100 }}
                         />
                       )}
                       {foilEffect && (
                         <div 
-                          className="absolute inset-0 bg-gradient-to-br from-yellow-300/20 to-orange-400/20 mix-blend-overlay pointer-events-none"
+                          className="absolute inset-0 bg-gradient-to-br from-crd-orange/20 to-crd-green/20 mix-blend-overlay pointer-events-none"
                           style={{ opacity: foilIntensity[0] / 100 }}
                         />
                       )}
                     </div>
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center p-4">
+                    <div className="w-full h-full flex items-center justify-center p-6">
                       <UniversalUploadComponent
                         onFilesSelected={(files) => {
                           if (files.length > 0) {
@@ -215,21 +219,21 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                     </div>
                   )}
                 </div>
-                
-                {/* Frame Info */}
-                <div className="mt-3 text-center">
-                  <h4 className="text-crd-white font-medium text-sm">{selectedFrame.name}</h4>
-                  <p className="text-crd-lightGray text-xs">{selectedFrame.description}</p>
-                </div>
+              </div>
+              
+              {/* Frame Info */}
+              <div className="mt-4 text-center flex-shrink-0">
+                <h4 className="text-crd-white font-medium text-sm">{selectedFrame.name}</h4>
+                <p className="text-crd-lightGray text-xs">{selectedFrame.description}</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Column - Frame Selection & Effects */}
-        <div className="space-y-4">
+        {/* Right Sidebar - Frame Selection & Effects */}
+        <div className="col-span-3 space-y-4 overflow-y-auto">
           {/* Quick Frame Selection */}
-          <Card className="bg-crd-darker border-crd-mediumGray/20">
+          <Card className="bg-crd-darker/80 border-crd-mediumGray/30 backdrop-blur-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-crd-white flex items-center gap-2 text-base">
                 <Frame className="w-4 h-4" />
@@ -237,15 +241,15 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 {quickFrames.map((frame) => (
                   <div
                     key={frame.id}
                     onClick={() => setSelectedFrame(frame)}
-                    className={`relative aspect-square rounded-md overflow-hidden cursor-pointer transition-all ${
+                    className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${
                       selectedFrame.id === frame.id
-                        ? 'ring-2 ring-crd-green scale-105'
-                        : 'hover:scale-102 hover:ring-1 hover:ring-crd-lightGray/50'
+                        ? 'ring-2 ring-crd-green scale-105 shadow-lg shadow-crd-green/20'
+                        : 'hover:scale-102 hover:ring-1 hover:ring-crd-lightGray/50 hover:shadow-md'
                     }`}
                   >
                     <SVGTemplateRenderer
@@ -255,8 +259,8 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                       customColors={selectedColorScheme}
                       className="w-full h-full"
                     />
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-1">
-                      <p className="text-white text-xs text-center truncate">{frame.name}</p>
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                      <p className="text-crd-white text-xs text-center truncate font-medium">{frame.name}</p>
                     </div>
                   </div>
                 ))}
@@ -265,7 +269,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
           </Card>
 
           {/* Card Effects */}
-          <Card className="bg-crd-darker border-crd-mediumGray/20">
+          <Card className="bg-crd-darker/80 border-crd-mediumGray/30 backdrop-blur-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-crd-white flex items-center gap-2 text-base">
                 <Sparkles className="w-4 h-4" />
@@ -274,11 +278,11 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Chrome Effect */}
-              <div className="space-y-2">
+              <div className="space-y-3 p-3 rounded-lg bg-crd-darkest/40">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Chrome className="w-3 h-3 text-crd-lightGray" />
-                    <Label className="text-crd-white text-sm">Chrome</Label>
+                    <Chrome className="w-4 h-4 text-crd-lightGray" />
+                    <Label className="text-crd-white text-sm font-medium">Chrome</Label>
                   </div>
                   <Switch
                     checked={chromeEffect}
@@ -286,7 +290,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                   />
                 </div>
                 {chromeEffect && (
-                  <div className="ml-5 space-y-1">
+                  <div className="space-y-2">
                     <Slider
                       value={chromeIntensity}
                       onValueChange={setChromeIntensity}
@@ -295,17 +299,17 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                       step={1}
                       className="w-full"
                     />
-                    <div className="text-xs text-crd-lightGray">{chromeIntensity[0]}%</div>
+                    <div className="text-xs text-crd-lightGray text-center">{chromeIntensity[0]}% Intensity</div>
                   </div>
                 )}
               </div>
 
               {/* Holographic Effect */}
-              <div className="space-y-2">
+              <div className="space-y-3 p-3 rounded-lg bg-crd-darkest/40">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Zap className="w-3 h-3 text-crd-lightGray" />
-                    <Label className="text-crd-white text-sm">Holographic</Label>
+                    <Zap className="w-4 h-4 text-crd-lightGray" />
+                    <Label className="text-crd-white text-sm font-medium">Holographic</Label>
                   </div>
                   <Switch
                     checked={holographicEffect}
@@ -313,7 +317,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                   />
                 </div>
                 {holographicEffect && (
-                  <div className="ml-5 space-y-1">
+                  <div className="space-y-2">
                     <Slider
                       value={holographicIntensity}
                       onValueChange={setHolographicIntensity}
@@ -322,17 +326,17 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                       step={1}
                       className="w-full"
                     />
-                    <div className="text-xs text-crd-lightGray">{holographicIntensity[0]}%</div>
+                    <div className="text-xs text-crd-lightGray text-center">{holographicIntensity[0]}% Intensity</div>
                   </div>
                 )}
               </div>
 
               {/* Foil Effect */}
-              <div className="space-y-2">
+              <div className="space-y-3 p-3 rounded-lg bg-crd-darkest/40">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Stars className="w-3 h-3 text-crd-lightGray" />
-                    <Label className="text-crd-white text-sm">Foil</Label>
+                    <Stars className="w-4 h-4 text-crd-lightGray" />
+                    <Label className="text-crd-white text-sm font-medium">Foil</Label>
                   </div>
                   <Switch
                     checked={foilEffect}
@@ -340,7 +344,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                   />
                 </div>
                 {foilEffect && (
-                  <div className="ml-5 space-y-1">
+                  <div className="space-y-2">
                     <Slider
                       value={foilIntensity}
                       onValueChange={setFoilIntensity}
@@ -349,7 +353,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                       step={1}
                       className="w-full"
                     />
-                    <div className="text-xs text-crd-lightGray">{foilIntensity[0]}%</div>
+                    <div className="text-xs text-crd-lightGray text-center">{foilIntensity[0]}% Intensity</div>
                   </div>
                 )}
               </div>
