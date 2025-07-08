@@ -79,8 +79,21 @@ export const StudioCardManager: React.FC<StudioCardManagerProps> = ({
   const [autoRotate, setAutoRotate] = useState(false);
   const [selectedCase, setSelectedCase] = useState<CaseStyle>('none');
   const [isLiked, setIsLiked] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const orbitControlsRef = useRef<any>(null);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Generate positions based on arrangement type
   const generateArrangementPositions = (arrangement: ArrangementType, convergence: THREE.Vector3) => {

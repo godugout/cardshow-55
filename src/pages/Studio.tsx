@@ -171,33 +171,50 @@ const Studio = () => {
 
   return (
     <ErrorBoundary>
-      <div className="w-full h-screen bg-crd-darkest">
+      <div className="w-full h-screen bg-crd-darkest flex flex-col">
         
+        {/* Mobile Studio Header */}
+        <div className="lg:hidden bg-crd-darker border-b border-crd-mediumGray/20 p-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold text-crd-white">Studio</h1>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setUse3DMode(!use3DMode)}
+                className="px-3 py-2 bg-crd-mediumGray/20 rounded-lg text-crd-white text-sm min-h-[44px]"
+              >
+                {use3DMode ? '2D View' : '3D View'}
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Render 3D Studio or Immersive Viewer based on mode */}
-        {use3DMode ? (
-          <StudioCardManager
-            cards={mockCards}
-            selectedCardIndex={currentCardIndex}
-            onCardSelect={handleCardChange}
-            enableInteraction={true}
-            showGrid={process.env.NODE_ENV === 'development'}
-            cameraControls={true}
-          />
-        ) : (
-          <ImmersiveCardViewer
-            card={viewerCard}
-            cards={viewerCards}
-            currentCardIndex={currentCardIndex}
-            onCardChange={handleCardChange}
-            isOpen={true}
-            onClose={handleClose}
-            onShare={handleViewerShare}
-            onDownload={handleViewerDownload}
-            allowRotation={true}
-            showStats={true}
-            ambient={true}
-          />
-        )}
+        <div className="flex-1 relative">
+          {use3DMode ? (
+            <StudioCardManager
+              cards={mockCards}
+              selectedCardIndex={currentCardIndex}
+              onCardSelect={handleCardChange}
+              enableInteraction={true}
+              showGrid={process.env.NODE_ENV === 'development'}
+              cameraControls={true}
+            />
+          ) : (
+            <ImmersiveCardViewer
+              card={viewerCard}
+              cards={viewerCards}
+              currentCardIndex={currentCardIndex}
+              onCardChange={handleCardChange}
+              isOpen={true}
+              onClose={handleClose}
+              onShare={handleViewerShare}
+              onDownload={handleViewerDownload}
+              allowRotation={true}
+              showStats={true}
+              ambient={true}
+            />
+          )}
+        </div>
       </div>
     </ErrorBoundary>
   );

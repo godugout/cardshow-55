@@ -178,15 +178,21 @@ const LoadingSkeleton = () => (
 );
 
 export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) => {
+  // Mobile-optimized grid classes
+  const getGridClasses = () => {
+    if (viewMode === 'masonry') {
+      return 'columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6 space-y-4 sm:space-y-6';
+    }
+    if (viewMode === 'feed') {
+      return 'space-y-6';
+    }
+    // Grid mode with mobile-first responsive breakpoints
+    return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
+  };
+
   if (loading) {
     return (
-      <div className={
-        viewMode === 'grid' 
-          ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'
-          : viewMode === 'masonry'
-          ? 'columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6'
-          : 'space-y-6'
-      }>
+      <div className={getGridClasses()}>
         {Array(8).fill(0).map((_, i) => (
           <LoadingSkeleton key={`skeleton-${i}`} />
         ))}
@@ -203,13 +209,7 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, viewMode }) 
   }
 
   return (
-    <div className={
-      viewMode === 'grid' 
-        ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'
-        : viewMode === 'masonry'
-        ? 'columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6'
-        : 'space-y-6'
-    }>
+    <div className={getGridClasses()}>
       {cards.map((card, index) => (
         <CardGridItem key={`card-${card.id}-${index}`} card={card} index={index} />
       ))}
