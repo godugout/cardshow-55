@@ -88,7 +88,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Details */}
+        {/* Left Column - Details & Team Colors */}
         <div className="space-y-4">
 
           {/* Card Details */}
@@ -133,6 +133,27 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                     <SelectItem value="legendary" className="text-crd-white">Legendary</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Team Colors */}
+          <Card className="bg-crd-darker border-crd-mediumGray/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-crd-white flex items-center gap-2 text-base">
+                <Palette className="w-4 h-4" />
+                Team Colors
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-48 overflow-hidden">
+                <TeamColorSelector
+                  selectedColorScheme={selectedColorScheme}
+                  onColorSchemeSelect={(scheme) => {
+                    setSelectedColorScheme(scheme);
+                  }}
+                  className="h-full"
+                />
               </div>
             </CardContent>
           </Card>
@@ -223,7 +244,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
           </Card>
         </div>
 
-        {/* Right Column - Frame Selection, Team Colors & Effects */}
+        {/* Right Column - Frame Selection & Effects */}
         <div className="space-y-4">
           {/* Quick Frame Selection */}
           <Card className="bg-crd-darker border-crd-mediumGray/20">
@@ -257,27 +278,6 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                     </div>
                   </div>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Team Colors */}
-          <Card className="bg-crd-darker border-crd-mediumGray/20">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-crd-white flex items-center gap-2 text-base">
-                <Palette className="w-4 h-4" />
-                Team Colors
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-48 overflow-hidden">
-                <TeamColorSelector
-                  selectedColorScheme={selectedColorScheme}
-                  onColorSchemeSelect={(scheme) => {
-                    setSelectedColorScheme(scheme);
-                  }}
-                  className="h-full"
-                />
               </div>
             </CardContent>
           </Card>
