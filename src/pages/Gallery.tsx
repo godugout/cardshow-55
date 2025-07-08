@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { GalleryHeader } from './Gallery/components/GalleryHeader';
 import { CardGrid } from '@/components/cards/CardGrid';
 import { useCards } from '@/hooks/useCards';
@@ -7,6 +8,7 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { useCardConversion } from './Gallery/hooks/useCardConversion';
 import { SubscriptionBanner } from '@/components/monetization/SubscriptionBanner';
 import { ActivityFeed } from '@/components/social/ActivityFeed';
+import { CRDButton } from '@/components/ui/design-system/Button';
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
@@ -67,7 +69,7 @@ const Gallery = () => {
         
         {/* Data source indicator in development */}
         {process.env.NODE_ENV === 'development' && (
-          <div className="mb-4 p-2 bg-themed-subtle border border-themed-light rounded text-xs text-themed-secondary">
+          <div className="mb-4 p-2 bg-crd-mediumGray/10 border border-crd-mediumGray/30 rounded text-xs text-crd-lightGray">
             Source: {dataSource} | Total: {cards.length} | Showing: {displayCards.length}
           </div>
         )}
@@ -83,20 +85,19 @@ const Gallery = () => {
             
             {displayCards.length === 0 && !loading && (
               <div className="text-center py-12">
-                <h3 className="text-xl font-semibold text-themed-primary mb-4">No Cards Found</h3>
-                <p className="text-themed-secondary mb-6">
+                <h3 className="text-xl font-semibold text-crd-white mb-4">No Cards Found</h3>
+                <p className="text-crd-lightGray mb-6">
                   {cards.length === 0 
                     ? "No cards have been created yet. Start by creating your first card!"
                     : "No cards match the current filter. Try switching tabs or check other categories."
                   }
                 </p>
                 {cards.length === 0 && (
-                  <a 
-                    href="/create"
-                    className="btn-themed-primary inline-flex items-center px-6 py-3 rounded-lg team-spirit-glow"
-                  >
-                    Create Your First Card
-                  </a>
+                  <CRDButton asChild variant="primary">
+                    <Link to="/create">
+                      Create Your First Card
+                    </Link>
+                  </CRDButton>
                 )}
               </div>
             )}
