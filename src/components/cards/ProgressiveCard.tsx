@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { useProgressiveLoading } from '@/hooks/useProgressiveLoading';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { CardSkeleton } from './CardSkeleton';
 import { CardPreview } from './CardPreview';
 import { OptimizedImage } from '@/components/shared/OptimizedImage';
@@ -29,6 +30,7 @@ export const ProgressiveCard: React.FC<ProgressiveCardProps> = ({
 }) => {
   const { metrics, getQualitySettings } = usePerformanceMonitor();
   const qualitySettings = getQualitySettings();
+  const { rarity: hapticRarity, loadingComplete, loadingError } = useHapticFeedback();
   
   // Adjust loading timing based on performance and priority
   const loadingConfig = useMemo(() => {
@@ -69,7 +71,12 @@ export const ProgressiveCard: React.FC<ProgressiveCardProps> = ({
     setError
   } = useProgressiveLoading({
     stageConfig: loadingConfig,
-    onComplete: onLoad,
+    onComplete: () => {
+      onLoad?.();
+      loadingComplete();
+      // Rarity-based haptic feedback on load complete
+      hapticRarity(rarity);
+    },
     autoProgress: true,
   });
 
@@ -102,6 +109,7 @@ export const ProgressiveCard: React.FC<ProgressiveCardProps> = ({
 
   const handleImageError = () => {
     setError(new Error('Failed to load image'));
+    loadingError();
   };
 
   const cardContent = () => {

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSafeZones } from './useSafeZones';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 
 interface UseViewerInteractionsProps {
   allowRotation: boolean;
@@ -44,6 +45,12 @@ export const useViewerInteractions = ({
   const DRAG_THRESHOLD = 5; // pixels
   const [isMomentumActive, setIsMomentumActive] = useState(false);
   const restingRotationRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const rotationMilestoneRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  // Haptic feedback integration
+  const { dragStart: hapticDragStart, dragEnd: hapticDragEnd, rotationMilestone, medium } = useHapticFeedback({
+    respectPerformance: true
+  });
 
   // Safe zone detection
   const { isInSafeZone } = useSafeZones({
@@ -100,6 +107,7 @@ export const useViewerInteractions = ({
       e.preventDefault();
       const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
       handleZoom(zoomDelta);
+      medium(); // Subtle haptic feedback on zoom
     }
   }, [isInSafeZone, handleZoom]);
 
@@ -118,8 +126,9 @@ export const useViewerInteractions = ({
       setDragStart({ x: e.clientX - rotation.y, y: e.clientY - rotation.x });
       lastDragPositionRef.current = { x: e.clientX, y: e.clientY };
       setAutoRotate(false);
+      hapticDragStart(); // Haptic feedback on drag start
     }
-  }, [rotation, allowRotation, isInSafeZone, setDragStart, setAutoRotate]);
+  }, [rotation, allowRotation, isInSafeZone, setDragStart, setAutoRotate, hapticDragStart]);
 
   const handleDrag = useCallback((e: React.MouseEvent) => {
     if (allowRotation && initialDragPosition.current) {
@@ -134,6 +143,13 @@ export const useViewerInteractions = ({
         };
         setRotation(newRotation);
         restingRotationRef.current = newRotation; // Update resting rotation during drag
+
+        // Haptic feedback on rotation milestones (every 45 degrees)
+        const rotationDelta = Math.abs(newRotation.x - rotationMilestoneRef.current.x) + Math.abs(newRotation.y - rotationMilestoneRef.current.y);
+        if (rotationDelta > 45) {
+          rotationMilestone();
+          rotationMilestoneRef.current = newRotation;
+        }
 
         // Calculate velocity for momentum
         velocityRef.current = {
@@ -158,6 +174,7 @@ export const useViewerInteractions = ({
   const handleDragEnd = useCallback(() => {
     if (isDragging) {
       setIsDragging(false);
+      hapticDragEnd(); // Haptic feedback on drag end
       
       const hasMomentum = Math.abs(velocityRef.current.x) > 0.1 || Math.abs(velocityRef.current.y) > 0.1;
 
@@ -187,7 +204,7 @@ export const useViewerInteractions = ({
       }
     }
     initialDragPosition.current = null;
-  }, [isDragging, setIsDragging, autoRotate, setRotation]);
+  }, [isDragging, setIsDragging, autoRotate, setRotation, hapticDragEnd]);
 
   useEffect(() => {
     const container = containerRef.current;
