@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { ChevronUp, Settings, Share2, Download, X, Palette, Camera, Grid3X3, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronUp, Settings, Share2, Download, X, Palette, Camera, Grid3X3, ChevronLeft, ChevronRight, HelpCircle, Zap } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { StudioCaseSelector, type CaseStyle } from './StudioCaseSelector';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
+import { MobileOnboardingTour } from './MobileOnboardingTour';
+import { ProgressiveDisclosurePanel } from './ProgressiveDisclosurePanel';
+import { MobilePerformanceOptimizer } from './MobilePerformanceOptimizer';
 import type { CardData } from '@/types/card';
 
 interface MobileStudioControlsRedesignedProps {
@@ -36,12 +39,36 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
   onCardChange
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [experienceLevel, setExperienceLevel] = useState<'beginner' | 'intermediate' | 'expert'>('beginner');
+  const [activeTab, setActiveTab] = useState<'controls' | 'performance'>('controls');
   const isMobile = useIsMobile();
   const { medium, light, cardFlip } = useHapticFeedback();
+
+  
+  // Check if this is the user's first time (in a real app, this would be stored in user preferences)
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('studio-onboarding-seen');
+    if (!hasSeenOnboarding && isMobile) {
+      setShowOnboarding(true);
+    }
+  }, [isMobile]);
 
   const handleActionWithHaptic = (action: () => void) => {
     light();
     action();
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    localStorage.setItem('studio-onboarding-seen', 'true');
+    medium(); // Success haptic
+  };
+
+  const handleOnboardingSkip = () => {
+    setShowOnboarding(false);
+    localStorage.setItem('studio-onboarding-seen', 'true');
+    light();
   };
 
   // Enhanced navigation with haptic feedback
@@ -65,14 +92,38 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
 
   return (
     <>
+      {/* Mobile Onboarding Tour */}
+      <MobileOnboardingTour
+        isVisible={showOnboarding}
+        onComplete={handleOnboardingComplete}
+        onSkip={handleOnboardingSkip}
+      />
+
       {/* Floating Action Button (FAB) */}
       <div className="fixed bottom-6 right-6 z-50 lg:hidden">
+        {/* Help button - separate from main FAB */}
+        <div className="mb-3">
+          <CRDButton
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              light();
+              setShowOnboarding(true);
+            }}
+            className="w-12 h-12 rounded-full shadow-lg bg-themed-base/90 backdrop-blur-sm border border-themed-accent/20"
+            data-testid="help-button"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </CRDButton>
+        </div>
+        {/* Main FAB */}
         <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <SheetTrigger asChild>
             <CRDButton
               variant="primary"
               size="lg"
               className="w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 border-2 border-themed-accent/20"
+              data-testid="mobile-fab"
               onClick={() => {
                 medium();
                 setIsDrawerOpen(true);
@@ -95,14 +146,40 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
                 <SheetTitle className="text-themed-primary text-lg font-semibold">
                   Studio Controls
                 </SheetTitle>
-                <CRDButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsDrawerOpen(false)}
-                  className="w-8 h-8 p-0 text-themed-secondary hover:text-themed-primary"
-                >
-                  <X className="w-4 h-4" />
-                </CRDButton>
+                <div className="flex items-center gap-2">
+                  {/* Tab switcher */}
+                  <div className="flex bg-themed-light rounded-lg p-1">
+                    <button
+                      onClick={() => setActiveTab('controls')}
+                      className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                        activeTab === 'controls'
+                          ? 'bg-themed-accent text-white'
+                          : 'text-themed-secondary hover:text-themed-primary'
+                      }`}
+                    >
+                      Controls
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('performance')}
+                      className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                        activeTab === 'performance'
+                          ? 'bg-themed-accent text-white'
+                          : 'text-themed-secondary hover:text-themed-primary'
+                      }`}
+                    >
+                      Performance
+                    </button>
+                  </div>
+                  
+                  <CRDButton
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsDrawerOpen(false)}
+                    className="w-8 h-8 p-0 text-themed-secondary hover:text-themed-primary"
+                  >
+                    <X className="w-4 h-4" />
+                  </CRDButton>
+                </div>
               </div>
               
               {/* Card Summary */}
@@ -132,124 +209,26 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
 
             <div className="overflow-y-auto" style={{ maxHeight: '60vh' }}>
               <div className="space-y-6 py-4">
-                {/* Card Navigation */}
-                {cards.length > 1 && onCardChange && (
-                  <div>
-                    <h4 className="text-themed-primary font-medium mb-3 flex items-center gap-2">
-                      <Grid3X3 className="w-4 h-4" />
-                      Card Navigation ({currentCardIndex + 1} of {cards.length})
-                    </h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      <CRDButton
-                        variant="outline"
-                        onClick={handlePreviousCard}
-                        disabled={currentCardIndex <= 0}
-                        className="min-h-[52px] flex items-center justify-center gap-2"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                        Previous
-                      </CRDButton>
-                      
-                      <CRDButton
-                        variant="outline"
-                        onClick={handleNextCard}
-                        disabled={currentCardIndex >= cards.length - 1}
-                        className="min-h-[52px] flex items-center justify-center gap-2"
-                      >
-                        Next
-                        <ChevronRight className="w-4 h-4" />
-                      </CRDButton>
-                    </div>
-                  </div>
-                )}
-
-                {/* Quick Actions */}
-                <div>
-                  <h4 className="text-themed-primary font-medium mb-3 flex items-center gap-2">
-                    <Share2 className="w-4 h-4" />
-                    Quick Actions
-                  </h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <CRDButton
-                      variant="outline"
-                      onClick={() => handleActionWithHaptic(() => onShare(selectedCard))}
-                      className="min-h-[52px] flex items-center justify-center gap-2"
-                    >
-                      <Share2 className="w-4 h-4" />
-                      Share
-                    </CRDButton>
-                    
-                    <CRDButton
-                      variant="outline"
-                      onClick={() => handleActionWithHaptic(() => onDownload(selectedCard))}
-                      className="min-h-[52px] flex items-center justify-center gap-2"
-                    >
-                      <Download className="w-4 h-4" />
-                      Download
-                    </CRDButton>
-                  </div>
-                </div>
-
-                {/* View Mode Toggle */}
-                {onToggle3D && (
-                  <div>
-                    <h4 className="text-themed-primary font-medium mb-3 flex items-center gap-2">
-                      <Camera className="w-4 h-4" />
-                      View Mode
-                    </h4>
-                    <CRDButton
-                      variant={use3DMode ? "primary" : "outline"}
-                      onClick={() => handleActionWithHaptic(onToggle3D)}
-                      className="w-full min-h-[52px] flex items-center justify-center gap-2"
-                    >
-                      <Grid3X3 className="w-4 h-4" />
-                      {use3DMode ? '3D Studio Mode' : '2D Viewer Mode'}
-                    </CRDButton>
-                  </div>
-                )}
-
-                {/* Display Case */}
-                <div>
-                  <h4 className="text-themed-primary font-medium mb-3 flex items-center gap-2">
-                    <Palette className="w-4 h-4" />
-                    Display Case
-                  </h4>
-                  <StudioCaseSelector
+                
+                {/* Conditional content based on active tab */}
+                {activeTab === 'controls' ? (
+                  <ProgressiveDisclosurePanel
+                    selectedCard={selectedCard}
                     selectedCase={selectedCase}
-                    onCaseChange={(caseStyle) => {
-                      light();
-                      onCaseChange(caseStyle);
-                    }}
+                    onCaseChange={onCaseChange}
+                    userExperienceLevel={experienceLevel}
+                    onExperienceLevelChange={setExperienceLevel}
                   />
-                </div>
+                ) : (
+                  <MobilePerformanceOptimizer
+                    onSettingsChange={(settings) => {
+                      console.log('🎛️ Performance settings changed:', settings);
+                      // Apply performance settings to the 3D renderer
+                    }}
+                    autoOptimize={true}
+                  />
+                )}
 
-                {/* Advanced Options */}
-                <div>
-                  <h4 className="text-themed-primary font-medium mb-3 flex items-center gap-2">
-                    <Settings className="w-4 h-4" />
-                    Advanced Options
-                  </h4>
-                  <div className="space-y-3">
-                    <CRDButton
-                      variant="ghost"
-                      className="w-full justify-start min-h-[52px] text-themed-secondary hover:text-themed-primary"
-                    >
-                      Export Settings
-                    </CRDButton>
-                    <CRDButton
-                      variant="ghost"
-                      className="w-full justify-start min-h-[52px] text-themed-secondary hover:text-themed-primary"
-                    >
-                      Lighting Controls
-                    </CRDButton>
-                    <CRDButton
-                      variant="ghost"
-                      className="w-full justify-start min-h-[52px] text-themed-secondary hover:text-themed-primary"
-                    >
-                      Background Options
-                    </CRDButton>
-                  </div>
-                </div>
               </div>
             </div>
 
