@@ -1,11 +1,12 @@
 import { localForage } from '@/lib/localforage';
+import { ImageOptimizationService, ImageSize } from './imageOptimizationService';
 
 interface CachedImage {
   url: string;
   blob: Blob;
   timestamp: number;
   expiresAt: number;
-  size: 'thumbnail' | 'medium' | 'full';
+  size: ImageSize;
 }
 
 interface ImageCacheConfig {
@@ -30,7 +31,7 @@ export class ImageCacheService {
   /**
    * Get cached image URL or fetch and cache if not available
    */
-  static async getCachedImageUrl(imageUrl: string, size: 'thumbnail' | 'medium' | 'full' = 'medium'): Promise<string> {
+  static async getCachedImageUrl(imageUrl: string, size: ImageSize = 'medium'): Promise<string> {
     if (!imageUrl) return imageUrl;
 
     const cacheKey = this.getCacheKey(imageUrl, size);
@@ -61,7 +62,7 @@ export class ImageCacheService {
   /**
    * Load image from cache or network
    */
-  private static async loadImage(imageUrl: string, size: 'thumbnail' | 'medium' | 'full'): Promise<string> {
+  private static async loadImage(imageUrl: string, size: ImageSize): Promise<string> {
     const cacheKey = this.getCacheKey(imageUrl, size);
     
     try {
@@ -74,9 +75,9 @@ export class ImageCacheService {
         return objectUrl;
       }
 
-      // Fetch from network
-      console.log(`🌐 Fetching image from network: ${imageUrl}`);
-      const optimizedUrl = this.getOptimizedImageUrl(imageUrl, size);
+      // Try optimized image service first
+      console.log(`🌐 Fetching optimized image: ${size}`);
+      const optimizedUrl = await ImageOptimizationService.getOptimizedImageUrl(imageUrl, size);
       const response = await fetch(optimizedUrl);
       
       if (!response.ok) {
@@ -100,7 +101,7 @@ export class ImageCacheService {
   /**
    * Cache image in IndexedDB
    */
-  private static async cacheImage(imageUrl: string, blob: Blob, size: 'thumbnail' | 'medium' | 'full'): Promise<void> {
+  private static async cacheImage(imageUrl: string, blob: Blob, size: ImageSize): Promise<void> {
     try {
       const cacheKey = this.getCacheKey(imageUrl, size);
       const now = Date.now();
@@ -286,7 +287,7 @@ export class ImageCacheService {
   /**
    * Preload image into cache
    */
-  static async preloadImage(imageUrl: string, size: 'thumbnail' | 'medium' | 'full' = 'medium'): Promise<void> {
+  static async preloadImage(imageUrl: string, size: ImageSize = 'medium'): Promise<void> {
     try {
       await this.getCachedImageUrl(imageUrl, size);
     } catch (error) {
