@@ -62,12 +62,20 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
 
   return (
     <div className="h-screen flex flex-col bg-crd-darkest">
-      {/* Header */}
+      {/* Header with Title and Progress */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-crd-mediumGray/20">
-        <h2 className="text-2xl font-bold text-crd-white mb-1">Create Your Card</h2>
-        <p className="text-crd-lightGray text-sm">
-          Upload your photo, add details, and choose your initial design
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-crd-white mb-1">Create Your Card</h1>
+            <p className="text-crd-lightGray text-sm">
+              Upload your photo, add details, and choose your initial design
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-crd-lightGray">
+            <span className="bg-crd-green text-black px-2 py-1 rounded text-xs font-medium">Step 1</span>
+            <span>of 3</span>
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -154,22 +162,17 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                 Live Preview
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col justify-center p-6">
-              <div className="relative flex items-center justify-center h-full">
-                {/* Grid Background */}
-                <div 
-                  className="absolute inset-0 opacity-10 rounded-lg"
+            <CardContent className="flex-1 flex flex-col p-6">
+              {/* Preview Canvas - Top Aligned */}
+              <div className="flex justify-center mb-4">
+                <div className="aspect-[5/7] w-full max-w-sm bg-crd-mediumGray/10 rounded-xl border border-crd-mediumGray/40 overflow-hidden relative shadow-2xl"
                   style={{
                     backgroundImage: `
-                      linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+                      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
                     `,
                     backgroundSize: '20px 20px'
-                  }}
-                />
-                
-                {/* Preview Canvas */}
-                <div className="aspect-[5/7] max-h-full w-auto bg-crd-mediumGray/10 rounded-xl border border-crd-mediumGray/40 overflow-hidden relative shadow-2xl">
+                  }}>
                   {cardData.image_url ? (
                     <div className="w-full h-full relative">
                       <SVGTemplateRenderer
@@ -222,7 +225,7 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
               </div>
               
               {/* Frame Info */}
-              <div className="mt-4 text-center flex-shrink-0">
+              <div className="text-center">
                 <h4 className="text-crd-white font-medium text-sm">{selectedFrame.name}</h4>
                 <p className="text-crd-lightGray text-xs">{selectedFrame.description}</p>
               </div>
