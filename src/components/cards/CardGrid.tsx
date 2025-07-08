@@ -6,6 +6,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Eye, Edit, Share2 } from 'lucide-react';
 import { getRarityStyles, getRarityBadgeStyles, type CardRarity } from '@/utils/cardDisplayUtils';
+import { LikeButton } from '@/components/social/LikeButton';
+import { ShareButton } from '@/components/social/ShareButton';
 
 interface CardData {
   id: string;
@@ -152,9 +154,19 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
 
         <div className="p-4">
           <h3 className="text-themed-primary font-semibold mb-1 line-clamp-1">{card.title || 'Untitled Card'}</h3>
-          <p className="text-themed-secondary text-sm line-clamp-2">{card.description || 'Digital collectible card'}</p>
-          <div className="flex items-center justify-between mt-3">
-            <span className="text-xs text-themed-secondary">3 in stock</span>
+          <p className="text-themed-secondary text-sm line-clamp-2 mb-3">{card.description || 'Digital collectible card'}</p>
+          
+          {/* Social actions */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <LikeButton cardId={card.id} />
+              <ShareButton 
+                cardId={card.id}
+                cardTitle={card.title || 'Untitled Card'}
+                cardImage={card.image_url}
+                variant="icon"
+              />
+            </div>
             <span className="text-xs success-themed font-medium">0.001 ETH bid</span>
           </div>
         </div>

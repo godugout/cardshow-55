@@ -386,6 +386,27 @@ export type Database = {
           },
         ]
       }
+      card_likes: {
+        Row: {
+          card_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          card_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          card_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       card_recommendations: {
         Row: {
           card_id: string | null
@@ -4841,6 +4862,30 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           visibility?: string | null
+        }
+        Relationships: []
+      }
+      social_shares: {
+        Row: {
+          card_id: string
+          created_at: string | null
+          id: string
+          share_type: string
+          user_id: string | null
+        }
+        Insert: {
+          card_id: string
+          created_at?: string | null
+          id?: string
+          share_type: string
+          user_id?: string | null
+        }
+        Update: {
+          card_id?: string
+          created_at?: string | null
+          id?: string
+          share_type?: string
+          user_id?: string | null
         }
         Relationships: []
       }

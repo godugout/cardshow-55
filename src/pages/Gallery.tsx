@@ -6,6 +6,7 @@ import { useCards } from '@/hooks/useCards';
 import { LoadingState } from '@/components/common/LoadingState';
 import { useCardConversion } from './Gallery/hooks/useCardConversion';
 import { SubscriptionBanner } from '@/components/monetization/SubscriptionBanner';
+import { ActivityFeed } from '@/components/social/ActivityFeed';
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
@@ -70,32 +71,44 @@ const Gallery = () => {
             Source: {dataSource} | Total: {cards.length} | Showing: {displayCards.length}
           </div>
         )}
-        
-        <CardGrid 
-          cards={gridCards}
-          loading={false}
-          viewMode="grid"
-        />
-        
-        {displayCards.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-semibold text-themed-primary mb-4">No Cards Found</h3>
-            <p className="text-themed-secondary mb-6">
-              {cards.length === 0 
-                ? "No cards have been created yet. Start by creating your first card!"
-                : "No cards match the current filter. Try switching tabs or check other categories."
-              }
-            </p>
-            {cards.length === 0 && (
-              <a 
-                href="/create"
-                className="btn-themed-primary inline-flex items-center px-6 py-3 rounded-lg team-spirit-glow"
-              >
-                Create Your First Card
-              </a>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Main content */}
+          <div className="lg:col-span-3">
+            <CardGrid 
+              cards={gridCards}
+              loading={false}
+              viewMode="grid"
+            />
+            
+            {displayCards.length === 0 && !loading && (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-semibold text-themed-primary mb-4">No Cards Found</h3>
+                <p className="text-themed-secondary mb-6">
+                  {cards.length === 0 
+                    ? "No cards have been created yet. Start by creating your first card!"
+                    : "No cards match the current filter. Try switching tabs or check other categories."
+                  }
+                </p>
+                {cards.length === 0 && (
+                  <a 
+                    href="/create"
+                    className="btn-themed-primary inline-flex items-center px-6 py-3 rounded-lg team-spirit-glow"
+                  >
+                    Create Your First Card
+                  </a>
+                )}
+              </div>
             )}
           </div>
-        )}
+
+          {/* Social sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <ActivityFeed />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

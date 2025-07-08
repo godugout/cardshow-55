@@ -1,5 +1,6 @@
 
 import React from "react";
+import { FollowButton } from "@/components/social/FollowButton";
 
 interface CreatorBoxProps {
   rank: number;
@@ -7,6 +8,7 @@ interface CreatorBoxProps {
   avatar: string;
   credits: string;
   badgeColor?: string;
+  userId?: string;
 }
 
 export const CreatorBox: React.FC<CreatorBoxProps> = ({
@@ -15,6 +17,7 @@ export const CreatorBox: React.FC<CreatorBoxProps> = ({
   avatar,
   credits,
   badgeColor = "#3772FF",
+  userId
 }) => {
   return (
     <div className="justify-center items-stretch bg-[#141416] flex flex-col flex-1 shrink basis-[0%] p-6 rounded-2xl">
@@ -62,6 +65,17 @@ export const CreatorBox: React.FC<CreatorBoxProps> = ({
               C
             </div>
           </div>
+          
+          {userId && (
+            <div className="mt-4 w-full">
+              <FollowButton 
+                userId={userId} 
+                username={name}
+                variant="compact"
+                className="w-full"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
