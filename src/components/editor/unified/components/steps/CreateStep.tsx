@@ -88,33 +88,8 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Upload & Details */}
+        {/* Left Column - Details */}
         <div className="space-y-4">
-          {/* Photo Upload */}
-          <Card className="bg-crd-darker border-crd-mediumGray/20">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-crd-white flex items-center gap-2 text-base">
-                <Upload className="w-4 h-4" />
-                Upload Photo
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <UniversalUploadComponent
-                onFilesSelected={(files) => {
-                  if (files.length > 0) {
-                    handleFileUpload(files[0]);
-                  }
-                }}
-                onError={(error) => {
-                  console.error('Upload error:', error);
-                }}
-                accept={{ 'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'] }}
-                maxSize={10 * 1024 * 1024} // 10MB
-                maxFiles={1}
-                multiple={false}
-              />
-            </CardContent>
-          </Card>
 
           {/* Card Details */}
           <Card className="bg-crd-darker border-crd-mediumGray/20">
@@ -219,13 +194,21 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                       )}
                     </div>
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="w-16 h-16 bg-crd-mediumGray/20 rounded-lg mb-3 mx-auto flex items-center justify-center">
-                          <Image className="w-8 h-8 text-crd-mediumGray" />
-                        </div>
-                        <p className="text-crd-lightGray text-sm">Upload a photo to see preview</p>
-                      </div>
+                    <div className="w-full h-full flex items-center justify-center p-4">
+                      <UniversalUploadComponent
+                        onFilesSelected={(files) => {
+                          if (files.length > 0) {
+                            handleFileUpload(files[0]);
+                          }
+                        }}
+                        onError={(error) => {
+                          console.error('Upload error:', error);
+                        }}
+                        accept={{ 'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'] }}
+                        maxSize={10 * 1024 * 1024} // 10MB
+                        maxFiles={1}
+                        multiple={false}
+                      />
                     </div>
                   )}
                 </div>
