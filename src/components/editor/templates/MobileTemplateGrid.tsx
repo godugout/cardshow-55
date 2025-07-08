@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Check, Grid3X3, List } from 'lucide-react';
+import { Check, Grid3X3, List, Lock } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PremiumTooltip } from '@/components/monetization/PremiumTooltip';
+import { useMonetizationTracking } from '@/components/monetization/hooks/useMonetizationTracking';
 
 interface Template {
   id: string;
@@ -26,6 +28,7 @@ export const MobileTemplateGrid: React.FC<MobileTemplateGridProps> = ({
   loading = false
 }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const { trackEvent } = useMonetizationTracking();
 
   if (loading) {
     return (
@@ -49,14 +52,29 @@ export const MobileTemplateGrid: React.FC<MobileTemplateGridProps> = ({
 
   const TemplateCard = ({ template }: { template: Template }) => {
     const isSelected = selectedTemplate === template.id;
+    const isLocked = template.is_premium;
+    const creditCost = 50; // Mock cost for premium templates
     
-    return (
+    const handleTemplateClick = () => {
+      if (isLocked) {
+        trackEvent('premium_template_clicked', {
+          template_id: template.id,
+          template_name: template.name,
+          cost: creditCost
+        });
+        return;
+      }
+      onTemplateSelect(template);
+    };
+    
+    const templateCard = (
       <div 
         className={`
           relative cursor-pointer transition-all duration-200
           ${isSelected ? 'ring-2 ring-crd-green' : 'hover:ring-1 hover:ring-crd-green/50'}
+          ${isLocked ? 'opacity-75' : ''}
         `}
-        onClick={() => onTemplateSelect(template)}
+        onClick={handleTemplateClick}
       >
         <Card className="card-themed overflow-hidden">
           <div className="aspect-[3/4] relative bg-crd-mediumGray/20">
@@ -85,7 +103,8 @@ export const MobileTemplateGrid: React.FC<MobileTemplateGridProps> = ({
             
             {/* Premium badge */}
             {template.is_premium && (
-              <div className="absolute top-2 left-2 px-2 py-1 bg-crd-orange rounded text-xs text-black font-medium">
+              <div className="absolute top-2 left-2 px-2 py-1 bg-crd-orange rounded text-xs text-black font-medium flex items-center gap-1">
+                <Lock className="w-3 h-3" />
                 PRO
               </div>
             )}
@@ -107,6 +126,21 @@ export const MobileTemplateGrid: React.FC<MobileTemplateGridProps> = ({
         )}
       </div>
     );
+
+    if (isLocked) {
+      return (
+        <PremiumTooltip
+          cost={creditCost}
+          featureName={template.name}
+          description={`Unlock this premium ${template.category} template`}
+          isLocked={true}
+        >
+          {templateCard}
+        </PremiumTooltip>
+      );
+    }
+
+    return templateCard;
   };
 
   return (

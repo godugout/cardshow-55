@@ -5,6 +5,7 @@ import { CardGrid } from '@/components/cards/CardGrid';
 import { useCards } from '@/hooks/useCards';
 import { LoadingState } from '@/components/common/LoadingState';
 import { useCardConversion } from './Gallery/hooks/useCardConversion';
+import { SubscriptionBanner } from '@/components/monetization/SubscriptionBanner';
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
@@ -56,6 +57,8 @@ const Gallery = () => {
   return (
     <div className="min-h-screen bg-crd-darkest">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <SubscriptionBanner />
+        
         <GalleryHeader
           activeTab={activeTab}
           onTabChange={setActiveTab}
