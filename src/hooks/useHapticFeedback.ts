@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { hapticService, type HapticFeedbackConfig, type HapticPattern } from '@/lib/hapticService';
+export type { HapticPattern } from '@/lib/hapticService';
 import { usePerformanceMonitor } from './usePerformanceMonitor';
 
 export interface UseHapticFeedbackOptions {
@@ -44,21 +45,54 @@ export const useHapticFeedback = (options: UseHapticFeedbackOptions = {}) => {
     feedback({ pattern: `rarity_${rarityLevel}` as HapticPattern });
   }, [feedback]);
 
-  // Interaction-specific feedback
+  // Studio-specific interaction feedback with enhanced patterns
+  const cardInteraction = useCallback(() => {
+    hapticService.cardInteraction();
+  }, []);
+
+  const swipeNavigation = useCallback(() => {
+    hapticService.swipeNavigation();
+  }, []);
+
+  const rotationMilestone = useCallback(() => {
+    hapticService.rotationMilestone();
+  }, []);
+
+  const zoomFeedback = useCallback(() => {
+    hapticService.zoomFeedback();
+  }, []);
+
+  const pullRefresh = useCallback(() => {
+    hapticService.pullRefresh();
+  }, []);
+
+  const modeSwitch = useCallback(() => {
+    hapticService.modeSwitch();
+  }, []);
+
+  const effectApply = useCallback(() => {
+    hapticService.effectApply();
+  }, []);
+
+  const premiumUnlock = useCallback(() => {
+    hapticService.premiumUnlock();
+  }, []);
+
+  const studioEnter = useCallback(() => {
+    hapticService.studioEnter();
+  }, []);
+
+  const studioExit = useCallback(() => {
+    hapticService.studioExit();
+  }, []);
+
+  // Legacy interaction-specific feedback (maintained for backward compatibility)
   const dragStart = useCallback(() => {
     feedback({ pattern: 'light', duration: 8 });
   }, [feedback]);
 
   const dragEnd = useCallback(() => {
     feedback({ pattern: 'medium', duration: 15 });
-  }, [feedback]);
-
-  const rotationMilestone = useCallback(() => {
-    feedback({ pattern: 'light', duration: 5 });
-  }, [feedback]);
-
-  const effectApplied = useCallback(() => {
-    feedback({ pattern: 'medium', duration: 20 });
   }, [feedback]);
 
   const sliderAdjust = useCallback(() => {
@@ -77,9 +111,25 @@ export const useHapticFeedback = (options: UseHapticFeedbackOptions = {}) => {
     feedback({ pattern: 'error' });
   }, [feedback]);
 
-  // Control methods
+  // Enhanced control methods
   const setEnabled = useCallback((isEnabled: boolean) => {
     hapticService.setEnabled(isEnabled);
+  }, []);
+
+  const setPerformanceLevel = useCallback((level: typeof metrics.quality) => {
+    hapticService.setPerformanceLevel(level);
+  }, []);
+
+  const testPattern = useCallback((pattern: HapticPattern) => {
+    hapticService.testPattern(pattern);
+  }, []);
+
+  const calibrateIntensity = useCallback((multiplier: number) => {
+    hapticService.calibrateIntensity(multiplier);
+  }, []);
+
+  const getStatus = useCallback(() => {
+    return hapticService.getStatus();
   }, []);
 
   const stop = useCallback(() => {
@@ -98,18 +148,32 @@ export const useHapticFeedback = (options: UseHapticFeedbackOptions = {}) => {
     error,
     rarity,
     
-    // Interaction patterns
+    // Studio-specific patterns
+    cardInteraction,
+    swipeNavigation,
+    rotationMilestone,
+    zoomFeedback,
+    pullRefresh,
+    modeSwitch,
+    effectApply,
+    premiumUnlock,
+    studioEnter,
+    studioExit,
+    
+    // Legacy interaction patterns (backward compatibility)
     dragStart,
     dragEnd,
-    rotationMilestone,
-    effectApplied,
     sliderAdjust,
     cardFlip,
     loadingComplete,
     loadingError,
     
-    // Control
+    // Enhanced control
     setEnabled,
+    setPerformanceLevel,
+    testPattern,
+    calibrateIntensity,
+    getStatus,
     stop,
     
     // Status

@@ -35,7 +35,11 @@ export const EnhancedMobileStudioInteractions: React.FC<EnhancedMobileStudioInte
     heavy, 
     cardFlip, 
     success,
-    loadingComplete 
+    loadingComplete,
+    swipeNavigation,
+    rotationMilestone,
+    zoomFeedback,
+    pullRefresh
   } = useHapticFeedback({ respectPerformance: true });
 
   const SWIPE_THRESHOLD = 50;
@@ -51,7 +55,7 @@ export const EnhancedMobileStudioInteractions: React.FC<EnhancedMobileStudioInte
         setPullDistance(distance);
         
         if (distance > PULL_THRESHOLD && !isPullRefreshing) {
-          light(); // Haptic feedback when threshold reached
+          pullRefresh(); // Enhanced haptic for pull refresh threshold
         }
       }
       
@@ -63,12 +67,17 @@ export const EnhancedMobileStudioInteractions: React.FC<EnhancedMobileStudioInte
         };
         setRotation(newRotation);
         onRotationChange?.(newRotation);
+        
+        // Haptic feedback on rotation milestones
+        if (Math.abs(deltaY) > 20) {
+          rotationMilestone();
+        }
       }
       
       // Handle horizontal swipe for card navigation
       if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
         setIsDraggingForSwipe(true);
-        light(); // Subtle haptic feedback during swipe
+        swipeNavigation(); // Enhanced swipe haptic feedback
       }
     }, [rotation, onRotationChange, isPullRefreshing, isDraggingForSwipe]),
 
@@ -86,7 +95,7 @@ export const EnhancedMobileStudioInteractions: React.FC<EnhancedMobileStudioInte
     onPinch: useCallback((scale: number, centerX: number, centerY: number) => {
       // Pinch to zoom/scale - handled by parent 3D controls
       if (Math.abs(scale - 1) > 0.1) {
-        light(); // Subtle haptic feedback during pinch
+        zoomFeedback(); // Enhanced zoom haptic feedback
       }
     }, [light]),
 
@@ -98,8 +107,8 @@ export const EnhancedMobileStudioInteractions: React.FC<EnhancedMobileStudioInte
       };
       setRotation(newRotation);
       onRotationChange?.(newRotation);
-      light(); // Haptic feedback during rotation
-    }, [rotation, onRotationChange, light])
+      rotationMilestone(); // Enhanced rotation haptic feedback
+    }, [rotation, onRotationChange, rotationMilestone])
   };
 
   // Initialize touch gestures
@@ -111,7 +120,7 @@ export const EnhancedMobileStudioInteractions: React.FC<EnhancedMobileStudioInte
       // Handle pull-to-refresh completion
       if (pullDistance > PULL_THRESHOLD && onRefresh) {
         setIsPullRefreshing(true);
-        medium(); // Haptic feedback for refresh trigger
+        medium(); // Enhanced haptic for refresh trigger
         
         onRefresh();
         

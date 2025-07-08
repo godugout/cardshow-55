@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronUp, Settings, Share2, Download, X, Palette, Camera, Grid3X3, ChevronLeft, ChevronRight, HelpCircle, Zap } from 'lucide-react';
+import { ChevronUp, Settings, Share2, Download, X, Palette, Camera, Grid3X3, ChevronLeft, ChevronRight, HelpCircle, Zap, Vibrate } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { StudioCaseSelector, type CaseStyle } from './StudioCaseSelector';
@@ -9,6 +9,7 @@ import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { MobileOnboardingTour } from './MobileOnboardingTour';
 import { ProgressiveDisclosurePanel } from './ProgressiveDisclosurePanel';
 import { MobilePerformanceOptimizer } from './MobilePerformanceOptimizer';
+import { HapticTestingPanel } from './HapticTestingPanel';
 import type { CardData } from '@/types/card';
 
 interface MobileStudioControlsRedesignedProps {
@@ -41,9 +42,10 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [experienceLevel, setExperienceLevel] = useState<'beginner' | 'intermediate' | 'expert'>('beginner');
-  const [activeTab, setActiveTab] = useState<'controls' | 'performance'>('controls');
+  const [activeTab, setActiveTab] = useState<'controls' | 'performance' | 'haptics'>('controls');
+  const [showHapticTesting, setShowHapticTesting] = useState(false);
   const isMobile = useIsMobile();
-  const { medium, light, cardFlip } = useHapticFeedback();
+  const { medium, light, cardFlip, studioEnter } = useHapticFeedback();
 
   
   // Check if this is the user's first time (in a real app, this would be stored in user preferences)
@@ -52,7 +54,12 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
     if (!hasSeenOnboarding && isMobile) {
       setShowOnboarding(true);
     }
-  }, [isMobile]);
+    
+    // Haptic feedback when entering studio
+    if (isMobile) {
+      studioEnter();
+    }
+  }, [isMobile, studioEnter]);
 
   const handleActionWithHaptic = (action: () => void) => {
     light();
@@ -147,11 +154,14 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
                   Studio Controls
                 </SheetTitle>
                 <div className="flex items-center gap-2">
-                  {/* Tab switcher */}
+                  {/* Enhanced tab switcher with haptics option */}
                   <div className="flex bg-themed-light rounded-lg p-1">
                     <button
-                      onClick={() => setActiveTab('controls')}
-                      className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                      onClick={() => {
+                        light();
+                        setActiveTab('controls');
+                      }}
+                      className={`px-2 py-1 rounded text-xs font-medium transition-all ${
                         activeTab === 'controls'
                           ? 'bg-themed-accent text-white'
                           : 'text-themed-secondary hover:text-themed-primary'
@@ -160,14 +170,30 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
                       Controls
                     </button>
                     <button
-                      onClick={() => setActiveTab('performance')}
-                      className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                      onClick={() => {
+                        light();
+                        setActiveTab('performance');
+                      }}
+                      className={`px-2 py-1 rounded text-xs font-medium transition-all ${
                         activeTab === 'performance'
                           ? 'bg-themed-accent text-white'
                           : 'text-themed-secondary hover:text-themed-primary'
                       }`}
                     >
                       Performance
+                    </button>
+                    <button
+                      onClick={() => {
+                        light();
+                        setActiveTab('haptics');
+                      }}
+                      className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                        activeTab === 'haptics'
+                          ? 'bg-themed-accent text-white'
+                          : 'text-themed-secondary hover:text-themed-primary'
+                      }`}
+                    >
+                      Haptics
                     </button>
                   </div>
                   
@@ -210,7 +236,7 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
             <div className="overflow-y-auto" style={{ maxHeight: '60vh' }}>
               <div className="space-y-6 py-4">
                 
-                {/* Conditional content based on active tab */}
+                {/* Enhanced conditional content with haptics tab */}
                 {activeTab === 'controls' ? (
                   <ProgressiveDisclosurePanel
                     selectedCard={selectedCard}
@@ -219,7 +245,7 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
                     userExperienceLevel={experienceLevel}
                     onExperienceLevelChange={setExperienceLevel}
                   />
-                ) : (
+                ) : activeTab === 'performance' ? (
                   <MobilePerformanceOptimizer
                     onSettingsChange={(settings) => {
                       console.log('🎛️ Performance settings changed:', settings);
@@ -227,6 +253,66 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
                     }}
                     autoOptimize={true}
                   />
+                ) : (
+                  // Haptics tab content
+                  <div className="space-y-4">
+                    <div className="bg-themed-light/30 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Vibrate className="w-4 h-4 text-themed-accent" />
+                        <span className="text-sm font-medium text-themed-primary">
+                          Haptic Feedback
+                        </span>
+                      </div>
+                      <p className="text-xs text-themed-secondary mb-4">
+                        Premium haptic feedback enhances your studio experience with 
+                        tactile responses for every interaction.
+                      </p>
+                      <CRDButton
+                        variant="primary"
+                        size="sm"
+                        onClick={() => {
+                          medium();
+                          setShowHapticTesting(true);
+                        }}
+                        className="w-full"
+                      >
+                        <Zap className="w-4 h-4 mr-2" />
+                        Test & Calibrate Haptics
+                      </CRDButton>
+                    </div>
+                    
+                    <div className="bg-themed-light/30 rounded-lg p-4">
+                      <h4 className="text-sm font-medium text-themed-primary mb-3">
+                        Quick Tests
+                      </h4>
+                      <div className="grid grid-cols-3 gap-2">
+                        <CRDButton
+                          variant="outline"
+                          size="sm"
+                          onClick={() => light()}
+                          className="text-xs"
+                        >
+                          Light
+                        </CRDButton>
+                        <CRDButton
+                          variant="outline"
+                          size="sm"
+                          onClick={() => medium()}
+                          className="text-xs"
+                        >
+                          Medium
+                        </CRDButton>
+                        <CRDButton
+                          variant="outline"
+                          size="sm"
+                          onClick={() => cardFlip()}
+                          className="text-xs"
+                        >
+                          Card Flip
+                        </CRDButton>
+                      </div>
+                    </div>
+                  </div>
                 )}
 
               </div>
@@ -237,6 +323,12 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
           </SheetContent>
         </Sheet>
       </div>
+
+      {/* Haptic Testing Panel */}
+      <HapticTestingPanel
+        isVisible={showHapticTesting}
+        onClose={() => setShowHapticTesting(false)}
+      />
 
       {/* Quick Access Mini Panel */}
       <div 
