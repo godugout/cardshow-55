@@ -26,7 +26,6 @@ interface CreateStepProps {
 }
 
 export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) => {
-  const [dragActive, setDragActive] = useState(false);
   const [selectedFrame, setSelectedFrame] = useState<DesignTemplate>(BASEBALL_CARD_TEMPLATES[0]);
   const [selectedColorScheme, setSelectedColorScheme] = useState<TeamColorScheme | null>(null);
   const [playerName, setPlayerName] = useState(cardData?.title || 'PLAYER NAME');
@@ -57,23 +56,6 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
     console.log('🔄 CreateStep: Calling onFieldUpdate with:', 'image_url', url);
     onFieldUpdate('image_url', url);
     console.log('✅ CreateStep: File upload completed');
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(false);
-    
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0 && files[0].type.startsWith('image/')) {
-      handleFileUpload(files[0]);
-    }
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
   };
 
   const quickFrames = BASEBALL_CARD_TEMPLATES.slice(0, 6);
