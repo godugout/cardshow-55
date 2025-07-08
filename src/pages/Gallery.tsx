@@ -7,7 +7,6 @@ import { useCards } from '@/hooks/useCards';
 import { LoadingState } from '@/components/common/LoadingState';
 import { useCardConversion } from './Gallery/hooks/useCardConversion';
 import { SubscriptionBanner } from '@/components/monetization/SubscriptionBanner';
-import { ActivityFeed } from '@/components/social/ActivityFeed';
 import { CRDButton } from '@/components/ui/design-system/Button';
 
 const Gallery = () => {
@@ -119,42 +118,32 @@ const Gallery = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Main content */}
-          <div className="lg:col-span-3">
-            <CardGrid 
-              cards={gridCards}
-              loading={false}
-              viewMode="grid"
-              useProgressiveLoading={false}
-            />
-            
-            {displayCards.length === 0 && !loading && (
-              <div className="text-center py-12">
-                <h3 className="text-xl font-semibold text-crd-white mb-4">No Cards Found</h3>
-                <p className="text-crd-lightGray mb-6">
-                  {cards.length === 0 
-                    ? "No cards have been created yet. Start by creating your first card!"
-                    : "No cards match the current filter. Try switching tabs or check other categories."
-                  }
-                </p>
-                {cards.length === 0 && (
-                  <CRDButton asChild variant="primary">
-                    <Link to="/create">
-                      Create Your First Card
-                    </Link>
-                  </CRDButton>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Social sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <ActivityFeed />
+        <div className="w-full">
+          <CardGrid 
+            cards={gridCards}
+            loading={false}
+            viewMode="grid"
+            useProgressiveLoading={false}
+          />
+          
+          {displayCards.length === 0 && !loading && (
+            <div className="text-center py-12">
+              <h3 className="text-xl font-semibold text-crd-white mb-4">No Cards Found</h3>
+              <p className="text-crd-lightGray mb-6">
+                {cards.length === 0 
+                  ? "No cards have been created yet. Start by creating your first card!"
+                  : "No cards match the current filter. Try switching tabs or check other categories."
+                }
+              </p>
+              {cards.length === 0 && (
+                <CRDButton asChild variant="primary">
+                  <Link to="/create">
+                    Create Your First Card
+                  </Link>
+                </CRDButton>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
