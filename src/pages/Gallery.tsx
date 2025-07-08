@@ -126,6 +126,7 @@ const Gallery = () => {
               cards={gridCards}
               loading={false}
               viewMode="grid"
+              useProgressiveLoading={false}
             />
             
             {displayCards.length === 0 && !loading && (
