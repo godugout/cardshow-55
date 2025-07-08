@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Upload, Image, Palette, Sparkles, Zap, Chrome, Stars } from 'lucide-react';
+import { UniversalUploadComponent } from '@/components/media/UniversalUploadComponent';
 import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRenderer';
 import { BASEBALL_CARD_TEMPLATES } from '@/components/editor/templates/BaseballCardTemplates';
 import { TeamColorSelector } from '@/components/editor/templates/TeamColorSelector';
@@ -98,54 +99,21 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
               </h3>
             </div>
             <div className="p-6">
-              <div
-                onDrop={handleDrop}
-                onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
-                onDragLeave={() => setDragActive(false)}
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                  dragActive 
-                    ? 'border-themed-strong bg-themed-light' 
-                    : cardData.image_url
-                      ? 'border-themed-strong bg-themed-subtle'
-                      : 'border-themed-light hover:border-themed'
-                }`}
-              >
-                {cardData.image_url ? (
-                  <div className="space-y-4">
-                    <img 
-                      src={cardData.image_url} 
-                      alt="Card preview" 
-                      className="w-full max-w-xs mx-auto rounded-lg"
-                    />
-                    <div className="text-crd-green text-sm flex items-center justify-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Photo ready for card creation!
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <Image className="w-16 h-16 text-crd-lightGray mx-auto mb-4" />
-                    <p className="text-crd-white text-lg mb-2">Drop your image here</p>
-                    <p className="text-crd-lightGray text-sm mb-4">or click to browse</p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      className="hidden"
-                      id="file-upload"
-                    />
-                    <label htmlFor="file-upload">
-                      <CRDButton 
-                        variant="outline"
-                        className="cursor-pointer"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        Choose File
-                      </CRDButton>
-                    </label>
-                  </div>
-                )}
-              </div>
+              <UniversalUploadComponent
+                onFilesSelected={(files) => {
+                  if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                  }
+                }}
+                onError={(error) => {
+                  console.error('Upload error:', error);
+                  // You could add toast notification here if needed
+                }}
+                accept={{ 'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'] }}
+                maxSize={10 * 1024 * 1024} // 10MB
+                maxFiles={1}
+                multiple={false}
+              />
             </div>
           </div>
 

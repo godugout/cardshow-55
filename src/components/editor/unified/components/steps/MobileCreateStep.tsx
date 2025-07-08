@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, Camera, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { UniversalUploadComponent } from '@/components/media/UniversalUploadComponent';
 import type { CardData } from '@/hooks/useCardEditor';
 import type { CreationMode } from '../../types';
 
@@ -66,73 +67,25 @@ export const MobileCreateStep: React.FC<MobileCreateStepProps> = ({
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-crd-white">Add Your Photo</h3>
           
-          {/* Image Preview */}
-          <Card className="card-themed">
-            <CardContent className="p-4">
-              <div className="aspect-[3/4] relative bg-crd-mediumGray/20 rounded-lg overflow-hidden">
-                {cardData.image_url ? (
-                  <img
-                    src={cardData.image_url}
-                    alt="Card preview"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-crd-lightGray">
-                    <div className="text-center">
-                      <ImageIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p className="text-sm">No image selected</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Upload Options */}
-          <div className="grid grid-cols-1 gap-3">
-            <label className="cursor-pointer">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-              <CRDButton
-                variant="primary"
-                className="w-full min-h-[44px]"
-                asChild
-              >
-                <div>
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Photo
-                </div>
-              </CRDButton>
-            </label>
-
-            <CRDButton
-              variant="outline"
-              className="w-full border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[44px]"
-              onClick={() => {
-                // TODO: Implement camera capture
-                console.log('Camera capture not implemented yet');
-              }}
-            >
-              <Camera className="w-4 h-4 mr-2" />
-              Take Photo
-            </CRDButton>
-
-            <CRDButton
-              variant="outline"
-              className="w-full border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[44px]"
-              onClick={() => {
-                // TODO: Implement stock photos
-                console.log('Stock photos not implemented yet');
-              }}
-            >
-              <ImageIcon className="w-4 h-4 mr-2" />
-              Stock Photos
-            </CRDButton>
-          </div>
+          <UniversalUploadComponent
+            onFilesSelected={(files) => {
+              if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = () => {
+                  onFieldUpdate('image_url', reader.result as string);
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
+            onError={(error) => {
+              console.error('Upload error:', error);
+            }}
+            accept={{ 'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'] }}
+            maxSize={10 * 1024 * 1024} // 10MB
+            maxFiles={1}
+            multiple={false}
+          />
         </div>
       )}
 
