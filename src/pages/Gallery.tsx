@@ -26,21 +26,66 @@ const Gallery = () => {
     const allCardsConverted = convertCardsToCardData(cards);
     const featuredCardsConverted = convertCardsToCardData(featuredCards);
     
+    console.log('🎨 Gallery getDisplayCards debug:', {
+      activeTab,
+      allCardsCount: allCardsConverted.length,
+      featuredCardsCount: featuredCardsConverted.length,
+      rawCardsCount: cards.length,
+      rawFeaturedCount: featuredCards.length
+    });
+
+    // Filter out cards with blob URLs or invalid images
+    const filterValidCards = (cardList: any[]) => {
+      return cardList.filter(card => {
+        const hasValidImage = card.image_url && 
+          !card.image_url.startsWith('blob:') && 
+          !card.image_url.includes('undefined');
+        
+        if (!hasValidImage) {
+          console.log('🎨 Filtering out card with invalid image:', card.title, card.image_url);
+        }
+        
+        return hasValidImage || !card.image_url; // Allow cards without images
+      });
+    };
+    
     switch (activeTab) {
       case 'featured':
-        return featuredCardsConverted.length > 0 ? featuredCardsConverted : allCardsConverted.slice(0, 8);
+        // Show featured cards first, fallback to first 8 all cards
+        const validFeatured = filterValidCards(featuredCardsConverted);
+        const result = validFeatured.length > 0 ? validFeatured : filterValidCards(allCardsConverted).slice(0, 8);
+        console.log('🎨 Featured cards result:', result.length);
+        return result;
+        
       case 'trending':
-        // Filter cards with view_count > 10, with fallback for undefined view_count
-        return allCardsConverted.filter(card => (card.view_count || 0) > 10).slice(0, 20);
+        // Show cards with any views first, then recent cards if no views found
+        const validAll = filterValidCards(allCardsConverted);
+        const cardsWithViews = validAll.filter(card => (card.view_count || 0) > 0);
+        const trendingResult = cardsWithViews.length > 0 
+          ? cardsWithViews.slice(0, 20)
+          : validAll.sort((a, b) => {
+              const aDate = new Date(a.created_at || 0).getTime();
+              const bDate = new Date(b.created_at || 0).getTime();
+              return bDate - aDate;
+            }).slice(0, 20);
+        console.log('🎨 Trending cards result:', trendingResult.length, 'from', cardsWithViews.length, 'with views');
+        return trendingResult;
+        
       case 'new':
         // Sort by created_at with fallback for undefined created_at
-        return allCardsConverted.sort((a, b) => {
+        const validNew = filterValidCards(allCardsConverted);
+        const newResult = validNew.sort((a, b) => {
           const aDate = new Date(a.created_at || 0).getTime();
           const bDate = new Date(b.created_at || 0).getTime();
           return bDate - aDate;
         }).slice(0, 20);
+        console.log('🎨 New cards result:', newResult.length);
+        return newResult;
+        
       default:
-        return allCardsConverted;
+        const defaultResult = filterValidCards(allCardsConverted);
+        console.log('🎨 Default cards result:', defaultResult.length);
+        return defaultResult;
     }
   };
 
