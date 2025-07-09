@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   ZoomIn, ZoomOut, RotateCcw, Grid3x3, Ruler, 
-  Move, Maximize2 
+  Move, Maximize2, Home, Edit3 
 } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 
@@ -11,6 +11,7 @@ interface CRDToolbarProps {
   onZoomOut: () => void;
   onZoomReset: () => void;
   onZoomFit: () => void;
+  onResetView: () => void;
   showGrid: boolean;
   onGridToggle: () => void;
   gridType: 'standard' | 'print' | 'golden';
@@ -27,6 +28,7 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   onZoomOut,
   onZoomReset,
   onZoomFit,
+  onResetView,
   showGrid,
   onGridToggle,
   gridType,
@@ -36,6 +38,22 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   isPanning,
   onPanToggle
 }) => {
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && !e.repeat) {
+        e.preventDefault();
+        onPanToggle();
+      }
+      if (e.key === 'r' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        onResetView();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onPanToggle, onResetView]);
   return (
     <div className="border-b border-crd-mediumGray/20 bg-crd-darker/50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -127,21 +145,49 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
                 <Maximize2 className="w-3 h-3 mr-1" />
                 Fit
               </CRDButton>
+              
+              <CRDButton
+                variant="ghost"
+                size="sm"
+                onClick={onResetView}
+                className="h-8 px-2 text-xs"
+                title="Reset view (Ctrl+R)"
+              >
+                <Home className="w-3 h-3 mr-1" />
+                Reset View
+              </CRDButton>
             </div>
           </div>
 
           {/* Right: Interaction Controls */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-crd-lightGray font-medium">Mode:</span>
-            <CRDButton
-              variant={isPanning ? "primary" : "ghost"}
-              size="sm"
-              onClick={onPanToggle}
-              className="h-8 px-3 text-xs"
-            >
-              <Move className="w-3 h-3 mr-1" />
-              {isPanning ? 'Panning' : 'Edit'}
-            </CRDButton>
+            <div className="flex bg-crd-mediumGray/10 rounded-lg p-0.5">
+              <CRDButton
+                variant={!isPanning ? "primary" : "ghost"}
+                size="sm"
+                onClick={() => isPanning && onPanToggle()}
+                className="h-7 px-3 text-xs"
+                title="Edit Mode - Modify card elements with 3D perspective (Space to toggle)"
+              >
+                <Edit3 className="w-3 h-3 mr-1" />
+                Edit
+              </CRDButton>
+              <CRDButton
+                variant={isPanning ? "primary" : "ghost"}
+                size="sm"
+                onClick={() => !isPanning && onPanToggle()}
+                className="h-7 px-3 text-xs"
+                title="Pan Mode - Drag to move canvas view (Space to toggle)"
+              >
+                <Move className="w-3 h-3 mr-1" />
+                Pan
+              </CRDButton>
+            </div>
+            
+            <div className="text-xs text-crd-lightGray/60 ml-2">
+              {isPanning ? '🖱️ Drag to pan • Space to exit' : '✏️ Edit card • Space for pan mode'}
+            </div>
           </div>
         </div>
       </div>

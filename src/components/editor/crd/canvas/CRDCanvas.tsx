@@ -31,6 +31,9 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   const [gridType, setGridType] = useState<'standard' | 'print' | 'golden'>('standard');
   const [showRulers, setShowRulers] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   // Canvas controls
   const handleZoomIn = useCallback(() => {
@@ -47,6 +50,31 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
 
   const handleZoomFit = useCallback(() => {
     setZoom(85);
+    setPanOffset({ x: 0, y: 0 }); // Reset pan when fitting
+  }, []);
+
+  // Panning handlers
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!isPanning) return;
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
+  }, [isPanning, panOffset]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging || !isPanning) return;
+    setPanOffset({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  }, [isDragging, isPanning, dragStart]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleResetView = useCallback(() => {
+    setPanOffset({ x: 0, y: 0 });
+    setZoom(100);
   }, []);
   // Calculate card dimensions
   const cardAspectRatio = 2.5 / 3.5;
@@ -102,6 +130,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         onZoomOut={handleZoomOut}
         onZoomReset={handleZoomReset}
         onZoomFit={handleZoomFit}
+        onResetView={handleResetView}
         showGrid={showGrid}
         onGridToggle={() => setShowGrid(!showGrid)}
         gridType={gridType}
@@ -120,18 +149,70 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
       />
 
       {/* Canvas Area */}
-      <div className="flex-1 w-full flex items-start justify-center relative z-10 pt-16">
-        <div className="relative">
-          {/* Rulers */}
+      <div 
+        className={`flex-1 w-full flex items-center justify-center relative z-10 pt-16 overflow-hidden ${
+          isPanning ? 'cursor-grab' : 'cursor-default'
+        } ${isDragging ? 'cursor-grabbing' : ''}`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <div 
+          className="relative transition-transform duration-200 ease-out"
+          style={{
+            transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom / 100})`
+          }}
+        >
+          {/* Enhanced Rulers */}
           {showRulers && (
             <>
               {/* Horizontal ruler */}
-              <div className="absolute -top-6 left-0 w-full h-6 bg-crd-darker/90 border-b border-crd-mediumGray/20 text-xs text-crd-lightGray flex items-end">
-                <div className="w-full h-4 bg-gradient-to-r from-crd-mediumGray/10 to-crd-mediumGray/20" />
+              <div className="absolute -top-8 left-0 w-full h-8 bg-gray-800/95 border-b-2 border-gray-600/60 text-xs text-gray-200 z-40">
+                <div className="relative w-full h-full">
+                  {/* Measurement ticks */}
+                  {Array.from({ length: Math.ceil(cardWidth / 20) }, (_, i) => (
+                    <div
+                      key={i}
+                      className="absolute bottom-0 border-l border-gray-400/60"
+                      style={{ left: `${i * 20}px`, height: i % 5 === 0 ? '16px' : '8px' }}
+                    >
+                      {i % 5 === 0 && (
+                        <span className="absolute -top-4 -left-2 text-xs text-gray-300 font-mono">
+                          {Math.round((i * 20 * 2.5) / cardWidth * 100) / 100}"
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
+              
               {/* Vertical ruler */}
-              <div className="absolute -left-6 top-0 w-6 h-full bg-crd-darker/90 border-r border-crd-mediumGray/20 text-xs text-crd-lightGray flex justify-end">
-                <div className="w-4 h-full bg-gradient-to-b from-crd-mediumGray/10 to-crd-mediumGray/20" />
+              <div className="absolute -left-8 top-0 w-8 h-full bg-gray-800/95 border-r-2 border-gray-600/60 text-xs text-gray-200 z-40">
+                <div className="relative w-full h-full">
+                  {/* Measurement ticks */}
+                  {Array.from({ length: Math.ceil(cardHeight / 20) }, (_, i) => (
+                    <div
+                      key={i}
+                      className="absolute right-0 border-t border-gray-400/60"
+                      style={{ top: `${i * 20}px`, width: i % 5 === 0 ? '16px' : '8px' }}
+                    >
+                      {i % 5 === 0 && (
+                        <span 
+                          className="absolute -right-6 -top-2 text-xs text-gray-300 font-mono transform -rotate-90 origin-center"
+                          style={{ transformOrigin: 'center', whiteSpace: 'nowrap' }}
+                        >
+                          {Math.round((i * 20 * 3.5) / cardHeight * 100) / 100}"
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Corner ruler intersection */}
+              <div className="absolute -top-8 -left-8 w-8 h-8 bg-gray-900/95 border-b-2 border-r-2 border-gray-600/60 z-50 flex items-center justify-center">
+                <span className="text-xs text-gray-400 font-mono">IN</span>
               </div>
             </>
           )}
