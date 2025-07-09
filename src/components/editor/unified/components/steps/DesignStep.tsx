@@ -303,7 +303,6 @@ export const DesignStep = ({ mode, cardData, onFieldUpdate }: DesignStepProps) =
         leftPanel={leftPanel}
         centerPanel={centerPanel}
         rightPanel={rightPanel}
-        bottomSection={<CRDDetailsSection cardData={cardData} />}
       />
     </CreationLayout>
   );

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { useCardEditor } from '@/hooks/useCardEditor';
 import { StepContent } from './components/StepContent';
+import { CompactCRDDetails } from './components/shared/CompactCRDDetails';
 import type { CreationMode, CreationStep } from './types';
 import type { CardData } from '@/types/card';
 
@@ -297,20 +298,20 @@ export const SimpleCardCreator = ({
       {/* Navigation */}
       {showNavigation && (
         <div className="fixed bottom-0 left-0 right-0 bg-crd-darker border-t border-crd-mediumGray/20 p-4 safe-area-bottom">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            {/* Mobile: Stack buttons vertically */}
-            <div className="flex w-full sm:w-auto justify-between sm:justify-start items-center">
+          <div className="max-w-7xl mx-auto">
+            {/* Mobile Layout */}
+            <div className="flex sm:hidden w-full justify-between items-center">
               <CRDButton
                 variant="outline"
                 onClick={handlePreviousStep}
                 disabled={!canGoBack}
-                className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white disabled:opacity-50 min-h-[44px] flex-1 sm:flex-none"
+                className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white disabled:opacity-50 min-h-[44px] flex-1 mr-3"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </CRDButton>
 
-              <div className="text-crd-lightGray text-sm px-4 sm:hidden">
+              <div className="text-crd-lightGray text-sm px-4">
                 {currentIndex + 1}/{skipIntent ? currentSteps.length - 1 : currentSteps.length}
               </div>
 
@@ -319,7 +320,7 @@ export const SimpleCardCreator = ({
                   variant="primary"
                   onClick={handleCompleteCreation}
                   disabled={!canProceed || isCreating}
-                  className="bg-crd-green hover:bg-crd-green/80 text-black min-h-[44px] flex-1 sm:flex-none"
+                  className="bg-crd-green hover:bg-crd-green/80 text-black min-h-[44px] flex-1 ml-3"
                 >
                   {isCreating ? 'Creating...' : 'Create Card'}
                 </CRDButton>
@@ -328,7 +329,7 @@ export const SimpleCardCreator = ({
                   variant="primary"
                   onClick={handleNextStep}
                   disabled={!canProceed}
-                  className="min-h-[44px] flex-1 sm:flex-none"
+                  className="min-h-[44px] flex-1 ml-3"
                 >
                   Next
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -336,9 +337,56 @@ export const SimpleCardCreator = ({
               )}
             </div>
 
-            {/* Desktop: Show step indicator */}
-            <div className="hidden sm:block text-crd-lightGray text-sm">
-              Step {currentIndex + 1} of {skipIntent ? currentSteps.length - 1 : currentSteps.length}
+            {/* Desktop Layout */}
+            <div className="hidden sm:grid grid-cols-12 gap-4 items-center">
+              {/* Back Button */}
+              <div className="col-span-2">
+                <CRDButton
+                  variant="outline"
+                  onClick={handlePreviousStep}
+                  disabled={!canGoBack}
+                  className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white disabled:opacity-50 min-h-[44px] w-full"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </CRDButton>
+              </div>
+
+              {/* CRD Details - Centered */}
+              <div className="col-span-6 flex justify-center">
+                <CompactCRDDetails cardData={cardEditor.cardData} />
+              </div>
+
+              {/* Step Counter */}
+              <div className="col-span-2 text-center">
+                <div className="text-crd-lightGray text-sm">
+                  Step {currentIndex + 1} of {skipIntent ? currentSteps.length - 1 : currentSteps.length}
+                </div>
+              </div>
+
+              {/* Next/Create Button */}
+              <div className="col-span-2">
+                {currentStep === 'publish' ? (
+                  <CRDButton
+                    variant="primary"
+                    onClick={handleCompleteCreation}
+                    disabled={!canProceed || isCreating}
+                    className="bg-crd-green hover:bg-crd-green/80 text-black min-h-[44px] w-full"
+                  >
+                    {isCreating ? 'Creating...' : 'Create Card'}
+                  </CRDButton>
+                ) : (
+                  <CRDButton
+                    variant="primary"
+                    onClick={handleNextStep}
+                    disabled={!canProceed}
+                    className="min-h-[44px] w-full"
+                  >
+                    Next
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </CRDButton>
+                )}
+              </div>
             </div>
           </div>
         </div>

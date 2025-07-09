@@ -232,7 +232,6 @@ export const TemplateGalleryStep = ({ mode, cardData, onFieldUpdate }: TemplateG
         leftPanel={leftPanel}
         centerPanel={centerPanel}
         rightPanel={rightPanel}
-        bottomSection={<CRDDetailsSection cardData={cardData} />}
       />
     </CreationLayout>
   );
