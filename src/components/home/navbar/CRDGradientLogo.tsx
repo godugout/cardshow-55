@@ -12,7 +12,7 @@ export const CRDGradientLogo: React.FC<CRDGradientLogoProps> = ({ className = ""
         alt="CRD"
         className="h-16 w-auto"
       />
-      <span className="text-lg font-medium text-crd-lightGray tracking-wide relative z-10 -ml-3">
+      <span className="text-lg font-medium text-crd-lightGray tracking-wide relative z-10 -ml-1">
         MKR
       </span>
     </div>
