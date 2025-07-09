@@ -208,7 +208,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
 
       {/* Canvas Area */}
       <div 
-        className={`flex-1 w-full flex items-center justify-center relative z-10 pt-16 overflow-hidden ${
+        className={`flex-1 w-full flex items-center justify-center relative z-10 p-8 overflow-hidden ${
           isPanning ? 'cursor-grab' : 'cursor-default'
         } ${isDragging ? 'cursor-grabbing' : ''}`}
         onMouseDown={handleMouseDown}
