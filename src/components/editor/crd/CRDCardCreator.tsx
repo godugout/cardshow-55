@@ -139,7 +139,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   }, [cardData]);
   return <div className="h-screen w-full flex flex-col bg-crd-darkest">
       {/* Header */}
-      <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-gray-500 flex items-center justify-between">
+      <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/30 flex items-center justify-between">
         {/* Left: Tags */}
         <div className="flex items-center gap-2 text-xs text-crd-lightGray">
           <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
@@ -156,23 +156,14 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
           </div>
         </div>
 
-        {/* Center: Collaboration Logos and CRD Title */}
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <Layers className="w-5 h-5 text-crd-blue" />
-            <X className="w-4 h-4 text-crd-white" />
-            <div className="w-5 h-5 bg-gradient-to-br from-crd-blue to-crd-darkBlue rounded border border-crd-blue/30 flex items-center justify-center">
-              <span className="text-xs font-bold text-white">C</span>
-            </div>
-          </div>
-          <input 
-            type="text"
-            value={cardData.title}
-            onChange={(e) => updateCardData({ title: e.target.value })}
-            className="text-xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all text-center"
-            placeholder="Enter CRD name..."
-          />
-        </div>
+        {/* Center: CRD Title */}
+        <input 
+          type="text"
+          value={cardData.title}
+          onChange={(e) => updateCardData({ title: e.target.value })}
+          className="text-xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all text-center"
+          placeholder="Enter CRD name..."
+        />
         
         <div className="flex items-center gap-3">
           <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
