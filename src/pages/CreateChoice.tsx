@@ -10,7 +10,7 @@ export const CreateChoice: React.FC = () => {
   
   return (
     <NavbarAwareContainer className="h-screen bg-crd-darkest overflow-hidden">
-      <div className={`h-full max-w-6xl mx-auto ${isMobile ? 'px-5 py-8 pt-[60px]' : 'px-8 py-16 pt-[64px]'} overflow-y-auto`}>
+      <div className={`h-full max-w-6xl mx-auto ${isMobile ? 'px-5 py-8 pt-[88px]' : 'px-8 py-16 pt-[96px]'} overflow-y-auto`}>
         {/* Header */}
         <div className="text-center mb-16">
           <Typography 
