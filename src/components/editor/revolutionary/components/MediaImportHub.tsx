@@ -94,19 +94,11 @@ export const MediaImportHub: React.FC<MediaImportHubProps> = ({
 
             <div className="mt-4">
               <TabsContent value="upload" className="mt-0">
-                <UniversalUploadComponent
-                  onFilesSelected={handleFilesSelected}
-                  onError={(error) => console.error('Upload error:', error)}
-                  accept={{
-                    'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'],
-                    'video/*': ['.mp4', '.webm', '.mov'],
-                    'audio/*': ['.mp3', '.wav', '.ogg'],
-                    'model/*': ['.gltf', '.glb']
-                  }}
-                  maxSize={50 * 1024 * 1024} // 50MB
-                  maxFiles={10}
-                  multiple={true}
-                />
+                <div className="p-4 border border-dashed border-crd-mediumGray/40 rounded-lg text-center">
+                  <Upload className="w-8 h-8 mx-auto mb-2 text-crd-lightGray" />
+                  <p className="text-crd-lightGray text-sm">Upload Component Removed</p>
+                  <p className="text-xs text-crd-lightGray opacity-75">Upload functionality has been disabled</p>
+                </div>
               </TabsContent>
 
               <TabsContent value="url" className="mt-0">
