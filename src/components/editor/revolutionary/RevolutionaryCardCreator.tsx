@@ -152,68 +152,66 @@ export const RevolutionaryCardCreator: React.FC<RevolutionaryCardCreatorProps> =
   }, [cardData, onPreview]);
 
   return (
-    <div className="h-screen flex flex-col bg-crd-darkest">
+    <div className="h-screen w-full flex flex-col bg-crd-darkest">
       {/* Header */}
-      <div className="flex-shrink-0 px-6 py-4 border-b border-crd-mediumGray/20 bg-crd-darker/50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-crd-green" />
-              <h1 className="text-2xl font-bold text-crd-white">Revolutionary Card Creator</h1>
-            </div>
-            <div className="text-xs text-crd-lightGray bg-crd-mediumGray/20 px-2 py-1 rounded">
-              v{cardData.version} • {cardData.states.length} states • {cardData.behavior_rules.length} behaviors
-            </div>
+      <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-crd-green" />
+            <h1 className="text-2xl font-bold text-crd-white">Revolutionary Card Creator</h1>
+          </div>
+          <div className="text-xs text-crd-lightGray bg-crd-mediumGray/20 px-2 py-1 rounded">
+            v{cardData.version} • {cardData.states.length} states • {cardData.behavior_rules.length} behaviors
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
+            <button
+              onClick={() => setPreviewMode('edit')}
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                previewMode === 'edit' 
+                  ? 'bg-crd-green text-black' 
+                  : 'text-crd-lightGray hover:text-crd-white'
+              }`}
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setPreviewMode('preview')}
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                previewMode === 'preview' 
+                  ? 'bg-crd-green text-black' 
+                  : 'text-crd-lightGray hover:text-crd-white'
+              }`}
+            >
+              Preview
+            </button>
+            <button
+              onClick={() => setPreviewMode('test')}
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                previewMode === 'test' 
+                  ? 'bg-crd-green text-black' 
+                  : 'text-crd-lightGray hover:text-crd-white'
+              }`}
+            >
+              Test
+            </button>
           </div>
           
-          <div className="flex items-center gap-3">
-            <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
-              <button
-                onClick={() => setPreviewMode('edit')}
-                className={`px-3 py-1 text-sm rounded transition-colors ${
-                  previewMode === 'edit' 
-                    ? 'bg-crd-green text-black' 
-                    : 'text-crd-lightGray hover:text-crd-white'
-                }`}
-              >
-                <Eye className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setPreviewMode('preview')}
-                className={`px-3 py-1 text-sm rounded transition-colors ${
-                  previewMode === 'preview' 
-                    ? 'bg-crd-green text-black' 
-                    : 'text-crd-lightGray hover:text-crd-white'
-                }`}
-              >
-                Preview
-              </button>
-              <button
-                onClick={() => setPreviewMode('test')}
-                className={`px-3 py-1 text-sm rounded transition-colors ${
-                  previewMode === 'test' 
-                    ? 'bg-crd-green text-black' 
-                    : 'text-crd-lightGray hover:text-crd-white'
-                }`}
-              >
-                Test
-              </button>
-            </div>
-            
-            <CRDButton onClick={handleSave} variant="secondary" size="sm">
-              Save
-            </CRDButton>
-            <CRDButton onClick={handlePreview} variant="primary" size="sm">
-              Launch Preview
-            </CRDButton>
-          </div>
+          <CRDButton onClick={handleSave} variant="secondary" size="sm">
+            Save
+          </CRDButton>
+          <CRDButton onClick={handlePreview} variant="primary" size="sm">
+            Launch Preview
+          </CRDButton>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex min-h-0">
-        {/* Left Panel - Tools */}
-        <div className="w-80 border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto">
+      {/* Main Content - Full Width 3-Panel Layout */}
+      <div className="flex-1 flex min-h-0 w-full">
+        {/* Left Panel - Tools (20% width) */}
+        <div className="w-1/5 min-w-[320px] max-w-[400px] border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
             <TabsList className="grid grid-cols-3 w-full bg-crd-mediumGray/20 p-1 m-4 mb-0">
               <TabsTrigger value="states" className="text-xs">States</TabsTrigger>
@@ -263,8 +261,8 @@ export const RevolutionaryCardCreator: React.FC<RevolutionaryCardCreatorProps> =
           </Tabs>
         </div>
 
-        {/* Center Panel - Canvas/Preview */}
-        <div className="flex-1 flex flex-col">
+        {/* Center Panel - Canvas/Preview (60% width - MAIN FOCUS) */}
+        <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col">
           <LivePreview
             cardData={cardData}
             mode={previewMode}
@@ -272,8 +270,8 @@ export const RevolutionaryCardCreator: React.FC<RevolutionaryCardCreatorProps> =
           />
         </div>
 
-        {/* Right Panel - Advanced Features */}
-        <div className="w-80 border-l border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto">
+        {/* Right Panel - Advanced Features (20% width) */}
+        <div className="w-1/5 min-w-[320px] max-w-[400px] border-l border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto">
           <Tabs defaultValue="media" className="h-full">
             <TabsList className="grid grid-cols-2 w-full bg-crd-mediumGray/20 p-1 m-4 mb-0">
               <TabsTrigger value="media" className="text-xs">Media</TabsTrigger>
