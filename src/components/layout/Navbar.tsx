@@ -28,7 +28,10 @@ export const Navbar = () => {
   const [currentTheme, setCurrentTheme] = useState('sf-orange');
   const [isScrolled, setIsScrolled] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [showNavbar, setShowNavbar] = useState(true);
+  
+  // Hide navbar by default on studio and create routes
+  const isStudioOrCreateRoute = location.pathname === '/studio' || location.pathname.startsWith('/create');
+  const [showNavbar, setShowNavbar] = useState(!isStudioOrCreateRoute);
 
   useEffect(() => {
     const handleScroll = () => {
