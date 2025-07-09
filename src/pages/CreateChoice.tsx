@@ -43,7 +43,7 @@ export const CreateChoice: React.FC = () => {
               </div>
               <div>
                 <Typography variant="h2" className="text-crd-white text-xl font-bold">
-                  CRD Cards
+                  CRDMKR Cards
                 </Typography>
                 <Typography variant="body" className="text-crd-lightGray text-sm">
                   Traditional Trading Cards
@@ -66,7 +66,7 @@ export const CreateChoice: React.FC = () => {
               </div>
               <div className="flex items-center gap-2 text-sm text-crd-lightGray">
                 <div className="w-1.5 h-1.5 bg-crd-blue rounded-full"></div>
-                CRD standard compliance built-in
+                CRDMKR standard compliance built-in
               </div>
               <div className="flex items-center gap-2 text-sm text-crd-lightGray">
                 <div className="w-1.5 h-1.5 bg-crd-blue rounded-full"></div>
@@ -79,7 +79,7 @@ export const CreateChoice: React.FC = () => {
                 variant="primary" 
                 className="w-full bg-crd-blue hover:bg-crd-blue/80 text-white group-hover:scale-105 transition-transform"
               >
-                Create CRD Card
+                Create CRDMKR Card
                 <ArrowRight className="w-4 h-4 ml-2" />
               </CRDButton>
             </Link>
@@ -139,7 +139,7 @@ export const CreateChoice: React.FC = () => {
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <Typography variant="body" className="text-crd-lightGray text-sm">
-            Not sure which to choose? Start with CRD cards for traditional collecting, or Story cards for interactive experiences.
+            Not sure which to choose? Start with CRDMKR cards for traditional collecting, or Story cards for interactive experiences.
           </Typography>
         </div>
       </div>

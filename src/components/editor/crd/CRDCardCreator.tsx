@@ -127,7 +127,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Layers className="w-6 h-6 text-crd-blue" />
-            <h1 className="text-2xl font-bold text-crd-white">CRD Card Creator</h1>
+            <h1 className="text-2xl font-bold text-crd-white">CRDMKR</h1>
           </div>
           <div className="text-xs text-crd-lightGray bg-crd-mediumGray/20 px-2 py-1 rounded">
             v{cardData.version} • Print Ready • Professional
@@ -202,7 +202,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
                   </CardHeader>
                   <CardContent>
                     <p className="text-crd-lightGray text-sm">
-                      Choose from professional CRD templates and layouts optimized for trading cards.
+                      Choose from professional CRDMKR templates and layouts optimized for trading cards.
                     </p>
                   </CardContent>
                 </Card>
@@ -264,7 +264,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
           <div className="flex-1 flex items-center justify-center p-8">
             <div className="bg-crd-darker border border-crd-mediumGray/20 rounded-lg p-8 text-center">
               <Image className="w-16 h-16 text-crd-lightGray mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-crd-white mb-2">CRD Canvas</h3>
+              <h3 className="text-xl font-semibold text-crd-white mb-2">CRDMKR Canvas</h3>
               <p className="text-crd-lightGray">
                 Professional card creation canvas will be displayed here
               </p>
