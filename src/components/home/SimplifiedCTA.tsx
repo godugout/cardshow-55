@@ -69,43 +69,40 @@ export const SimplifiedCTA: React.FC = () => {
         <div className="flex gap-6 flex-wrap justify-center">
           {user ? (
             <>
-              <Link to="/cards/create">
+              <Link to="/create">
                 <CRDButton 
                   variant="primary" 
-                  size="lg"
-                  className="px-8 py-4 rounded-[90px]"
+                  className="bg-crd-green hover:bg-crd-green/80 text-black px-8 py-4 text-lg"
                 >
-                  Create New Card
+                  Create Cards
                 </CRDButton>
               </Link>
-              <Link to="/cards/create">
+              <Link to="/create">
                 <CRDButton 
                   variant="secondary" 
+                  className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white px-8 py-4 text-lg"
+                >
+                  Browse Templates
+                </CRDButton>
+              </Link>
+              <Link to="/create">
+                <CRDButton 
+                  variant="secondary"
                   size="lg"
                   className="px-8 py-4 rounded-[90px]"
                 >
-                  View My Cards
+                  Explore Gallery
                 </CRDButton>
               </Link>
             </>
           ) : (
             <>
-              <Link to="/auth/signup">
+              <Link to="/create">
                 <CRDButton 
                   variant="primary" 
-                  size="lg"
-                  className="px-8 py-4 rounded-[90px]"
+                  className="bg-crd-green hover:bg-crd-green/80 text-black px-8 py-4 text-lg"
                 >
-                  Get Started Free
-                </CRDButton>
-              </Link>
-              <Link to="/cards/create">
-                <CRDButton 
-                  variant="secondary" 
-                  size="lg"
-                  className="px-8 py-4 rounded-[90px]"
-                >
-                  Explore Gallery
+                  Create Cards
                 </CRDButton>
               </Link>
             </>

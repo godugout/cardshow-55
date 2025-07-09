@@ -16,8 +16,8 @@ const CreateRevolutionary = () => {
   };
 
   const handleCancel = () => {
-    console.log('Revolutionary card creation cancelled');
-    navigate('/create');
+    console.log('Card creation cancelled');
+    navigate('/');
   };
 
   return (

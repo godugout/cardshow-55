@@ -61,7 +61,7 @@ export const Footer: React.FC = () => {
           <div className="text-[#FCFCFD] text-base font-semibold mb-2">Create</div>
           <div className="text-[#777E90] flex flex-col gap-3">
             <Link to="/studio" className="hover:text-[#FCFCFD] transition-colors">Card Studio</Link>
-            <Link to="/cards/create" className="hover:text-[#FCFCFD] transition-colors">Create Cards</Link>
+            <Link to="/create" className="hover:text-[#FCFCFD] transition-colors">Create Cards</Link>
             <Link to="/gallery" className="hover:text-[#FCFCFD] transition-colors">Templates</Link>
             <Link to="/collections" className="hover:text-[#FCFCFD] transition-colors">Collections</Link>
           </div>

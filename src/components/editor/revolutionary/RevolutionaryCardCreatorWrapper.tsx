@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { RevolutionaryCardCreator } from './RevolutionaryCardCreator';
-import { useFeatureFlags } from '@/hooks/useFeatureFlags';
+
 import { InteractiveCardData } from '@/types/interactiveCard';
 import type { CardData, CardRarity } from '@/hooks/useCardEditor';
 
@@ -14,19 +14,7 @@ export const RevolutionaryCardCreatorWrapper: React.FC<RevolutionaryCardCreatorW
   onComplete,
   onCancel
 }) => {
-  const { isEnabled, loading } = useFeatureFlags();
   const [currentCard, setCurrentCard] = useState<InteractiveCardData | null>(null);
-
-  // Show loading state while checking feature flags
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
-        <div className="text-crd-white">Loading...</div>
-      </div>
-    );
-  }
-
-  // Skip feature flag check for direct access
 
   const handleRevolutionaryComplete = (interactiveCard: InteractiveCardData) => {
     // Convert InteractiveCardData to CardData format for compatibility

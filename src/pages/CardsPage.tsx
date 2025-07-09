@@ -16,29 +16,29 @@ const CardsPage = () => {
             <p className="text-crd-lightGray">Create and manage your trading cards</p>
           </div>
           <CRDButton asChild variant="primary">
-            <Link to="/cards/create">
+            <Link to="/create">
               <Plus className="w-4 h-4 mr-2" />
               Create Card
             </Link>
           </CRDButton>
         </div>
+      </div>
 
-        {/* Content */}
-        <Card className="bg-crd-darker border-crd-mediumGray/20">
-          <CardHeader>
-            <CardTitle className="text-crd-white">Get Started</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-crd-lightGray">
-              Welcome to your card creation hub! Start by creating your first trading card.
-            </p>
-            <CRDButton asChild variant="primary">
-              <Link to="/cards/create">
-                Create Your First Card
-              </Link>
-            </CRDButton>
-          </CardContent>
-        </Card>
+      <div className="space-y-6">
+        <div className="bg-crd-darker rounded-lg p-8 text-center">
+          <div className="w-16 h-16 bg-crd-mediumGray/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Plus className="w-8 h-8 text-crd-lightGray" />
+          </div>
+          <h3 className="text-xl font-semibold text-crd-white mb-2">No cards yet</h3>
+          <p className="text-crd-lightGray mb-6">
+            Start creating your first card to see it here
+          </p>
+          <CRDButton asChild variant="primary">
+            <Link to="/create">
+              Create Your First Card
+            </Link>
+          </CRDButton>
+        </div>
       </div>
     </div>
   );

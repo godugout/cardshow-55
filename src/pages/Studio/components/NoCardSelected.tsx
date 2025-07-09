@@ -32,7 +32,7 @@ export const NoCardSelected = () => {
 
           <CRDButton
             variant="outline"
-            onClick={() => navigate('/cards/create')}
+            onClick={() => navigate('/create')}
             className="w-full border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white"
           >
             <Plus className="w-4 h-4 mr-2" />

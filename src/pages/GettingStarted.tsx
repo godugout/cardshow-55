@@ -11,13 +11,13 @@ const GettingStarted = () => {
       title: "1. Choose Your Template",
       description: "Start with one of our professional templates or create from scratch",
       action: "Browse Templates",
-      link: "/cards/create"
+      link: "/create"
     },
     {
-      title: "2. Upload Your Image",
+      title: "Upload Your Content",
       description: "Add your photo or artwork to bring your card to life",
       action: "Start Creating",
-      link: "/cards/create"
+      link: "/create"
     },
     {
       title: "3. Customize & Edit",
@@ -51,69 +51,54 @@ const GettingStarted = () => {
           <p className="text-xl text-crd-lightGray mb-8">
             Create stunning digital trading cards in just a few simple steps
           </p>
-          <Link to="/cards/create">
+          <Link to="/create">
             <Button className="bg-crd-green hover:bg-crd-green/90 text-black px-8 py-3">
               <Play className="h-5 w-5 mr-2" />
-              Start Creating Now
+              Get Started
             </Button>
           </Link>
         </div>
-
-        {/* Steps */}
-        <div className="space-y-8 mb-12">
-          <h2 className="text-2xl font-bold text-white text-center mb-8">How it Works</h2>
+      </div>
+      
+      {/* Steps Section */}
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {steps.map((step, index) => (
-            <Card key={index} className="bg-crd-dark border-crd-mediumGray p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-white mb-2">{step.title}</h3>
-                  <p className="text-crd-lightGray mb-4">{step.description}</p>
-                </div>
-                <Link to={step.link}>
-                  <Button 
-                    variant="outline" 
-                    className="border-crd-green text-crd-green hover:bg-crd-green hover:text-black ml-6"
-                  >
-                    {step.action}
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
+            <div key={index} className="text-center">
+              <div className="w-16 h-16 bg-crd-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-black font-bold text-xl">{index + 1}</span>
               </div>
-            </Card>
+              <h3 className="text-xl font-semibold text-crd-white mb-3">{step.title}</h3>
+              <p className="text-crd-lightGray mb-4">{step.description}</p>
+              <Link to={step.link}>
+                <Button variant="outline" className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white">
+                  {step.action}
+                </Button>
+              </Link>
+            </div>
           ))}
         </div>
-
-        {/* Features */}
-        <Card className="bg-crd-dark border-crd-mediumGray p-8">
-          <h2 className="text-2xl font-bold text-white mb-6">What You Can Do</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {features.map((feature, index) => (
-              <div key={index} className="flex items-center">
-                <CheckCircle className="h-5 w-5 text-crd-green mr-3 flex-shrink-0" />
-                <span className="text-crd-lightGray">{feature}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* CTA */}
-        <div className="text-center mt-12">
-          <h2 className="text-2xl font-bold text-white mb-4">Ready to Create?</h2>
-          <p className="text-crd-lightGray mb-6">
-            Join thousands of creators making amazing cards every day
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/cards/create">
-              <Button className="bg-crd-green hover:bg-crd-green/90 text-black">
-                Create Your First Card
-              </Button>
-            </Link>
-            <Link to="/gallery">
-              <Button variant="outline" className="border-crd-mediumGray text-white hover:bg-crd-mediumGray">
-                Explore Gallery
-              </Button>
-            </Link>
-          </div>
+      </div>
+      
+      {/* Final CTA */}
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-crd-white mb-4">
+          Ready to Start Creating?
+        </h2>
+        <p className="text-crd-lightGray text-lg mb-8 max-w-2xl mx-auto">
+          Join thousands of creators who are already making amazing digital trading cards
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link to="/create">
+            <Button className="bg-crd-green hover:bg-crd-green/90 text-black">
+              Create Your First Card
+            </Button>
+          </Link>
+          <Link to="/gallery">
+            <Button variant="outline" className="border-crd-mediumGray text-white hover:bg-crd-mediumGray">
+              Explore Gallery
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
