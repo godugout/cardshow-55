@@ -12,6 +12,7 @@ interface CRDCanvasProps {
   playerImage: string | null;
   playerStats: Record<string, string>;
   previewMode: 'edit' | 'preview' | 'print';
+  onImageUpload?: (files: File[]) => void;
 }
 
 export const CRDCanvas: React.FC<CRDCanvasProps> = ({
@@ -23,7 +24,8 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   cardDescription,
   playerImage,
   playerStats,
-  previewMode
+  previewMode,
+  onImageUpload
 }) => {
   // Canvas state
   const [zoom, setZoom] = useState(150);
@@ -371,7 +373,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
                 </div>
 
                 {/* Player Image Area */}
-                <div className="flex-1 flex items-center justify-center mb-3">
+                <div className="flex-1 flex items-center justify-center mb-3 relative">
                   {playerImage ? (
                     <img
                       src={playerImage}
@@ -379,10 +381,46 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
                       className="max-w-full max-h-full object-contain rounded border-2 border-white/20"
                     />
                   ) : (
-                    <div className="w-32 h-40 border-2 border-dashed border-white/40 rounded flex items-center justify-center">
-                      <span className="text-white/60 text-xs text-center">
-                        Player<br />Image
-                      </span>
+                    <div 
+                      className="w-32 h-40 border-2 border-dashed border-white/40 rounded bg-transparent hover:border-white/60 hover:bg-white/5 transition-all duration-200 cursor-pointer relative z-20 flex items-center justify-center group"
+                      onClick={() => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.onchange = (e) => {
+                          const target = e.target as HTMLInputElement;
+                          const files = Array.from(target.files || []);
+                          if (files.length > 0 && onImageUpload) {
+                            onImageUpload(files);
+                          }
+                        };
+                        input.click();
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add('border-white/80', 'bg-white/10');
+                      }}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove('border-white/80', 'bg-white/10');
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove('border-white/80', 'bg-white/10');
+                        const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+                        if (files.length > 0 && onImageUpload) {
+                          onImageUpload(files);
+                        }
+                      }}
+                    >
+                      <div className="text-center">
+                        <div className="text-white/60 text-xs mb-1 group-hover:text-white/80 transition-colors">
+                          Drop image or click
+                        </div>
+                        <div className="text-white/40 text-xs">
+                          Player Image
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>

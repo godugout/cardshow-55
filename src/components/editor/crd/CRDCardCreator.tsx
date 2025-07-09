@@ -229,7 +229,24 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
 
         {/* Center Panel - Card Canvas */}
         <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col w-full">
-          <CRDCanvas template={selectedTemplate} colorPalette={colorPalette} typography={typography} effects={effects} cardTitle={cardData.title} cardDescription={cardData.description || ''} playerImage={playerImage} playerStats={playerStats} previewMode={previewMode} />
+          <CRDCanvas 
+            template={selectedTemplate} 
+            colorPalette={colorPalette} 
+            typography={typography} 
+            effects={effects} 
+            cardTitle={cardData.title} 
+            cardDescription={cardData.description || ''} 
+            playerImage={playerImage} 
+            playerStats={playerStats} 
+            previewMode={previewMode}
+            onImageUpload={(files) => {
+              if (files.length > 0) {
+                const file = files[0];
+                const imageUrl = URL.createObjectURL(file);
+                setPlayerImage(imageUrl);
+              }
+            }}
+          />
         </div>
 
         {/* Right Panel - Dusty + Properties */}
