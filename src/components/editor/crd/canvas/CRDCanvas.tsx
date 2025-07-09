@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { CRDCanvasGrid } from './CRDCanvasGrid';
-import { CRDCanvasControls } from './CRDCanvasControls';
+import { CRDToolbar } from '../toolbar/CRDToolbar';
 
 interface CRDCanvasProps {
   template: string;
@@ -94,16 +94,9 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   };
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-crd-darkest">
-      {/* Grid Background */}
-      <CRDCanvasGrid
-        showGrid={showGrid}
-        gridType={gridType}
-        gridSize={20}
-      />
-
-      {/* Canvas Controls */}
-      <CRDCanvasControls
+    <div className="relative h-full w-full overflow-hidden bg-crd-darkest flex flex-col">
+      {/* Toolbar */}
+      <CRDToolbar
         zoom={zoom}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
@@ -119,8 +112,15 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         onPanToggle={() => setIsPanning(!isPanning)}
       />
 
+      {/* Grid Background */}
+      <CRDCanvasGrid
+        showGrid={showGrid}
+        gridType={gridType}
+        gridSize={20}
+      />
+
       {/* Canvas Area */}
-      <div className="h-full w-full flex items-start justify-center relative z-10 pt-16">
+      <div className="flex-1 w-full flex items-start justify-center relative z-10 pt-16">
         <div className="relative">
           {/* Rulers */}
           {showRulers && (

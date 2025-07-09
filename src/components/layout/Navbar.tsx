@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Plus, Home, ImageIcon, Palette } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
+import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
 
 const getNavbarColorClasses = (color: string) => {
   const colorMap = {
@@ -27,6 +28,7 @@ export const Navbar = () => {
   const [currentTheme, setCurrentTheme] = useState('sf-orange');
 
   const isActive = (path: string) => location.pathname === path;
+  const isCRDRoute = location.pathname.startsWith('/create/');
 
   return (
     <nav className="navbar-themed sticky top-0 z-50">
@@ -35,58 +37,66 @@ export const Navbar = () => {
           {/* Logo Selector */}
           <div className="flex items-center">
             <LogoSelector onThemeChange={setCurrentTheme} />
+            {isCRDRoute && (
+              <>
+                <div className="w-px h-6 bg-themed-border mx-4" />
+                <CRDGradientLogo />
+              </>
+            )}
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex items-center space-x-8">
-            <Link
-              to="/"
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/') 
-                  ? 'text-themed-active' 
-                  : 'text-themed-secondary hover-themed'
-              }`}
-            >
-              <Home className="w-4 h-4" />
-              <span>Home</span>
-            </Link>
+          {/* Navigation Links - Hidden when in CRD mode */}
+          {!isCRDRoute && (
+            <div className="flex items-center space-x-8">
+              <Link
+                to="/"
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/') 
+                    ? 'text-themed-active' 
+                    : 'text-themed-secondary hover-themed'
+                }`}
+              >
+                <Home className="w-4 h-4" />
+                <span>Home</span>
+              </Link>
 
-            <Link
-              to="/create"
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/create') 
-                  ? 'text-themed-active' 
-                  : 'text-themed-secondary hover-themed'
-              }`}
-            >
-              <Plus className="w-4 h-4" />
-              <span>Create</span>
-            </Link>
+              <Link
+                to="/create"
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/create') 
+                    ? 'text-themed-active' 
+                    : 'text-themed-secondary hover-themed'
+                }`}
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create</span>
+              </Link>
 
-            <Link
-              to="/gallery"
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/gallery') 
-                  ? 'text-themed-active' 
-                  : 'text-themed-secondary hover-themed'
-              }`}
-            >
-              <ImageIcon className="w-4 h-4" />
-              <span>Gallery</span>
-            </Link>
+              <Link
+                to="/gallery"
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/gallery') 
+                    ? 'text-themed-active' 
+                    : 'text-themed-secondary hover-themed'
+                }`}
+              >
+                <ImageIcon className="w-4 h-4" />
+                <span>Gallery</span>
+              </Link>
 
-            <Link
-              to="/studio"
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/studio') 
-                  ? 'text-themed-active' 
-                  : 'text-themed-secondary hover-themed'
-              }`}
-            >
-              <Palette className="w-4 h-4" />
-              <span>Studio</span>
-            </Link>
-          </div>
+              <Link
+                to="/studio"
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/studio') 
+                    ? 'text-themed-active' 
+                    : 'text-themed-secondary hover-themed'
+                }`}
+              >
+                <Palette className="w-4 h-4" />
+                <span>Studio</span>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </nav>

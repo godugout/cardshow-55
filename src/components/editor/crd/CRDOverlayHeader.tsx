@@ -38,7 +38,7 @@ export const CRDOverlayHeader: React.FC<CRDOverlayHeaderProps> = ({
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">
-          {/* Left: Back button and title */}
+          {/* Left: Back button */}
           <div className="flex items-center space-x-4">
             <CRDButton
               variant="ghost"
@@ -49,10 +49,6 @@ export const CRDOverlayHeader: React.FC<CRDOverlayHeaderProps> = ({
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </CRDButton>
-            <div className="w-px h-6 bg-crd-mediumGray/30" />
-            <h1 className="text-lg font-semibold text-crd-white">
-              CRDMKR
-            </h1>
           </div>
 
           {/* Right: Action buttons */}
