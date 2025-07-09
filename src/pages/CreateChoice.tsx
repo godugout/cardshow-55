@@ -8,8 +8,8 @@ export const CreateChoice: React.FC = () => {
   const { isMobile } = useResponsiveLayout();
   
   return (
-    <div className="min-h-screen bg-crd-darkest">
-      <div className={`max-w-6xl mx-auto ${isMobile ? 'px-5 py-8' : 'px-8 py-16'}`}>
+    <div className="h-screen bg-crd-darkest overflow-hidden">
+      <div className={`h-full max-w-6xl mx-auto ${isMobile ? 'px-5 py-8' : 'px-8 py-16'} pt-20 overflow-y-auto`}>
         {/* Header */}
         <div className="text-center mb-16">
           <Typography 
