@@ -140,17 +140,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   return <div className="h-screen w-full flex flex-col bg-crd-darkest">
       {/* Header */}
       <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <Layers className="w-6 h-6 text-crd-blue" />
-          <input 
-            type="text"
-            value={cardData.title}
-            onChange={(e) => updateCardData({ title: e.target.value })}
-            className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all"
-            placeholder="Enter CRD name..."
-          />
-        </div>
+        {/* Left: Tags */}
         <div className="flex items-center gap-2 text-xs text-crd-lightGray">
           <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
             v{cardData.version}
@@ -165,8 +155,20 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             {cardData.card_dna?.genetic_code?.split('-')[0] || 'CRD'}
           </div>
         </div>
+
+        {/* Center: CRD Name */}
+        <div className="flex items-center gap-2">
+          <Layers className="w-6 h-6 text-crd-blue" />
+          <input 
+            type="text"
+            value={cardData.title}
+            onChange={(e) => updateCardData({ title: e.target.value })}
+            className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all"
+            placeholder="Enter CRD name..."
+          />
         </div>
         
+        {/* Right: Buttons */}
         <div className="flex items-center gap-3">
           <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
             <button onClick={() => setPreviewMode('edit')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'edit' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
