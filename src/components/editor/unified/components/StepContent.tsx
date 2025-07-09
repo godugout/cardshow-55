@@ -18,6 +18,7 @@ interface StepContentProps {
   onBulkUpload: () => void;
   onGoToGallery: () => void;
   onStartOver: () => void;
+  onRevolutionaryMode?: () => void;
 }
 
 export const StepContent = ({
@@ -29,7 +30,8 @@ export const StepContent = ({
   onFieldUpdate,
   onBulkUpload,
   onGoToGallery,
-  onStartOver
+  onStartOver,
+  onRevolutionaryMode
 }: StepContentProps) => {
   const defaultCardData: Partial<CardData> = {
     title: 'My New Card',
@@ -48,6 +50,7 @@ export const StepContent = ({
         <IntentStep
           onModeSelect={onModeSelect}
           onBulkUpload={onBulkUpload}
+          onRevolutionaryMode={onRevolutionaryMode}
         />
       );
 

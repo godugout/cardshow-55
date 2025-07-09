@@ -1,29 +1,23 @@
-
 import React from 'react';
-import { SimpleCardCreator } from '@/components/editor/unified/SimpleCardCreator';
+import { RevolutionaryCardCreatorWrapper } from '@/components/editor/revolutionary/RevolutionaryCardCreatorWrapper';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { SubscriptionBanner } from '@/components/monetization/SubscriptionBanner';
 import type { CardData } from '@/hooks/useCardEditor';
 
-const CreateCard = () => {
+const CreateRevolutionary = () => {
   const navigate = useNavigate();
 
-  console.log('CreateCard page loaded - starting directly at upload step');
+  console.log('CreateRevolutionary page loaded - Revolutionary card creator');
 
   const handleComplete = (cardData: CardData) => {
-    console.log('Card created successfully:', cardData);
+    console.log('Revolutionary card created successfully:', cardData);
     navigate('/gallery');
   };
 
   const handleCancel = () => {
-    console.log('Card creation cancelled');
-    navigate('/');
-  };
-
-  const handleRevolutionaryMode = () => {
-    console.log('Redirecting to revolutionary mode');
-    navigate('/create/revolutionary');
+    console.log('Revolutionary card creation cancelled');
+    navigate('/create');
   };
 
   return (
@@ -33,16 +27,13 @@ const CreateCard = () => {
       </div>
       
       <ErrorBoundary>
-        <SimpleCardCreator 
-          initialMode="quick"
+        <RevolutionaryCardCreatorWrapper 
           onComplete={handleComplete}
           onCancel={handleCancel}
-          skipIntent={true}
-          onRevolutionaryMode={handleRevolutionaryMode}
         />
       </ErrorBoundary>
     </div>
   );
 };
 
-export default CreateCard;
+export default CreateRevolutionary;
