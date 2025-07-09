@@ -51,23 +51,11 @@ export const useFeatureFlags = () => {
   const isEnabled = (flagName: string): boolean => {
     const flag = flags[flagName];
     
-    if (!flag?.is_enabled) {
+    if (!flag) {
       return false;
     }
     
-    // If rollout percentage is 100, enable for everyone
-    if (flag.rollout_percentage >= 100) {
-      return true;
-    }
-    
-    // If rollout percentage is 0, disable for everyone
-    if (flag.rollout_percentage <= 0) {
-      return false;
-    }
-    
-    // For now, enable for everyone when rollout_percentage > 0
-    // In a real app, you'd implement proper user-based rollout logic
-    return flag.rollout_percentage > 0;
+    return flag.is_enabled && flag.rollout_percentage >= 100;
   };
 
   const getFlag = (flagName: string): FeatureFlag | null => {
