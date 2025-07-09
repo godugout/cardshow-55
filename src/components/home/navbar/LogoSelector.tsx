@@ -15,6 +15,7 @@ import { CardshowBlockLettersLogo } from './CardshowBlockLettersLogo';
 import { CardshowRetroLogo } from './CardshowRetroLogo';
 import { CardshowVintageLogo } from './CardshowVintageLogo';
 import { CardshowModernLogo } from './CardshowModernLogo';
+import { CRDGradientLogo } from './CRDGradientLogo';
 import { ChevronDown } from 'lucide-react';
 
 const logoGroups = [
@@ -41,6 +42,7 @@ const logoGroups = [
       { name: 'Cardshow Vintage', component: CardshowVintageLogo, hoverColor: 'amber', themeId: 'cardshow-vintage' },
       { name: 'Cardshow Retro', component: CardshowRetroLogo, hoverColor: 'cyan', themeId: 'cardshow-retro' },
       { name: 'Cardshow Modern', component: CardshowModernLogo, hoverColor: 'indigo', themeId: 'cardshow-modern' },
+      { name: 'CRDMKR', component: CRDGradientLogo, hoverColor: 'cyan', themeId: 'crdmkr' },
     ]
   }
 ];
