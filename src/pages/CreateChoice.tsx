@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CRDButton, Typography } from '@/components/ui/design-system';
+import { CRDButton, Typography, Hero3 } from '@/components/ui/design-system';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { Sparkles, Layers, ArrowRight } from 'lucide-react';
 import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
@@ -10,29 +10,16 @@ export const CreateChoice: React.FC = () => {
   
   return (
     <NavbarAwareContainer className="h-screen bg-crd-darkest overflow-hidden">
-      <div className={`h-full max-w-6xl mx-auto ${isMobile ? 'px-5 py-8 pt-[88px]' : 'px-8 py-16 pt-[96px]'} overflow-y-auto`}>
-        {/* Header */}
-        <div className="text-center mb-16">
-          <Typography 
-            variant="caption" 
-            className="text-xs font-semibold leading-none uppercase mb-4 text-crd-lightGray"
-          >
-            CHOOSE YOUR CREATION MODE
-          </Typography>
-          <Typography 
-            as="h1" 
-            variant="h1"
-            className="text-[40px] font-black leading-[48px] tracking-[-0.4px] mb-6 max-md:text-3xl"
-          >
-            What type of card do you want to create?
-          </Typography>
-          <Typography 
-            variant="body" 
-            className="text-crd-lightGray text-lg max-w-3xl mx-auto"
-          >
-            Choose between traditional CRD cards optimized for collecting and trading, or interactive story cards with advanced animations and scripting.
-          </Typography>
-        </div>
+      <div className={`h-full max-w-6xl mx-auto ${isMobile ? 'px-5 py-8' : 'px-8 py-16'} overflow-y-auto`}>
+        {/* Hero Section */}
+        <Hero3
+          caption="CHOOSE YOUR CREATION MODE"
+          heading="What type of card do you want to create?"
+          bodyText="Choose between traditional CRD cards optimized for collecting and trading, or interactive story cards with advanced animations and scripting."
+          ctaText="Start Creating"
+          ctaLink="/create/crd"
+          className="!pt-0 !px-0 mb-16"
+        />
 
         {/* Creation Options */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">

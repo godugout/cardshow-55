@@ -10,5 +10,6 @@ export { PresetCard } from './PresetCard';
 export { FilterButton } from './FilterButton';
 export { EffectCard } from './EffectCard';
 export { CollapsibleSection } from './CollapsibleSection';
+export { Hero3 } from './Hero3';
 export { colors } from './colors';
 export type { BrandColor, NeutralColor, ColorKey } from './colors';

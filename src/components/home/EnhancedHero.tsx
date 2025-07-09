@@ -1,21 +1,15 @@
 
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { CRDButton, Typography } from "@/components/ui/design-system";
-import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Hero3 } from "@/components/ui/design-system";
 import { useCards } from "@/hooks/useCards";
-import { useGalleryActions } from "@/pages/Gallery/hooks/useGalleryActions";
-import { useCardConversion } from "@/pages/Gallery/hooks/useCardConversion";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
 type DbCard = Tables<'cards'>;
 
 export const EnhancedHero: React.FC = () => {
-  const { containerPadding, isMobile } = useResponsiveLayout();
   const { featuredCards, loading } = useCards();
-  const { handleCardClick, handleCreateCollection } = useGalleryActions();
-  const { convertCardsToCardData } = useCardConversion();
   const navigate = useNavigate();
   
   // Get top 3 featured cards for showcase
@@ -28,76 +22,15 @@ export const EnhancedHero: React.FC = () => {
   };
 
   return (
-    <>
-      <div className={`items-center bg-crd-darkest flex w-full flex-col overflow-hidden text-center pt-32 ${isMobile ? 'px-5' : 'px-[352px]'} max-md:max-w-full max-md:pt-[100px]`}>
-        <div className="flex w-full max-w-[900px] flex-col items-center max-md:max-w-full">
-          {/* Main Hero Content */}
-          <div className="flex w-full flex-col items-center mb-12">
-            <Typography 
-              variant="caption" 
-              className="text-xs font-semibold leading-none uppercase mb-2"
-            >
-              THE FIRST PRINT & MINT DIGITAL CARD MARKET
-            </Typography>
-            <Typography 
-              as="h1" 
-              variant="h1"
-              className="text-[40px] font-black leading-[48px] tracking-[-0.4px] mt-2 max-md:max-w-full text-center mb-4"
-            >
-              Create, collect, and trade
-              <br />
-              card art with stunning 3D effects
-            </Typography>
-            <Typography 
-              variant="body" 
-              className="text-crd-lightGray text-lg mb-8 max-w-2xl"
-            >
-              Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life.
-            </Typography>
-          </div>
-
-          {/* Featured Cards Showcase */}
-          {showcaseCards.length > 0 && (
-            <div className="w-full mb-12">
-              <Typography variant="h3" className="text-white mb-6">
-                Featured Creations
-              </Typography>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {showcaseCards.map((card) => (
-                  <div 
-                    key={card.id}
-                    className="relative group cursor-pointer transform transition-all duration-300 hover:scale-105"
-                    onClick={() => handleCardStudioOpen(card)}
-                  >
-                    <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl overflow-hidden relative">
-                      <img
-                        src={card.image_url || card.thumbnail_url || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"}
-                        alt={card.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="text-white text-sm font-semibold mb-1">{card.title}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Primary CTA */}
-          <Link to="/create">
-            <CRDButton 
-              variant="primary"
-              size="lg"
-              className="self-stretch gap-3 text-lg font-extrabold px-8 py-4 rounded-[90px] max-md:px-5"
-            >
-              Create Your First Card
-            </CRDButton>
-          </Link>
-        </div>
-      </div>
-    </>
+    <Hero3
+      caption="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
+      heading={`Create, collect, and trade\ncard art with stunning 3D effects`}
+      bodyText="Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life."
+      ctaText="Create Your First Card"
+      ctaLink="/create"
+      showFeaturedCards={true}
+      featuredCards={showcaseCards}
+      onCardClick={handleCardStudioOpen}
+    />
   );
 };
