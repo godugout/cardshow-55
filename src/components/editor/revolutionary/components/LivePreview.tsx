@@ -146,13 +146,17 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
       </div>
 
       {/* Preview Canvas */}
-      <div className="flex-1 p-4 bg-crd-darkest/50">
+      <div className="flex-1 bg-crd-darkest/50 p-2 sm:p-4 lg:p-6 xl:p-8">
         <div className="h-full flex items-center justify-center">
           <div 
-            className="bg-crd-darker/80 border border-crd-mediumGray/30 rounded-xl shadow-2xl transition-all duration-300 relative overflow-hidden"
+            className="bg-crd-darker/80 border border-crd-mediumGray/30 rounded-xl shadow-2xl transition-all duration-300 relative overflow-hidden w-full max-w-none"
             style={{ 
-              width: Math.min(deviceSize.width, 800), 
-              height: Math.min(deviceSize.height, 600),
+              width: deviceType === 'mobile' ? 'min(375px, 90vw)' : 
+                     deviceType === 'tablet' ? 'min(768px, 85vw)' : 
+                     'min(100%, 1400px)',
+              height: deviceType === 'mobile' ? 'min(667px, 80vh)' : 
+                      deviceType === 'tablet' ? 'min(1024px, 85vh)' : 
+                      'min(85vh, 900px)',
               aspectRatio: deviceType === 'mobile' ? '9/16' : deviceType === 'tablet' ? '3/4' : '16/10'
             }}
           >

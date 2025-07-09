@@ -208,18 +208,18 @@ export const RevolutionaryCardCreator: React.FC<RevolutionaryCardCreatorProps> =
         </div>
       </div>
 
-      {/* Main Content - Full Width 3-Panel Layout */}
+      {/* Main Content - Responsive 3-Panel Layout */}
       <div className="flex-1 flex min-h-0 w-full">
-        {/* Left Panel - Tools (20% width) */}
-        <div className="w-1/5 min-w-[320px] max-w-[400px] border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto">
+        {/* Left Panel - Tools (responsive width) */}
+        <div className="hidden lg:flex lg:w-80 xl:w-96 2xl:w-[420px] border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-            <TabsList className="grid grid-cols-3 w-full bg-crd-mediumGray/20 p-1 m-4 mb-0">
+            <TabsList className="grid grid-cols-3 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
               <TabsTrigger value="states" className="text-xs">States</TabsTrigger>
               <TabsTrigger value="behaviors" className="text-xs">Behaviors</TabsTrigger>
               <TabsTrigger value="effects" className="text-xs">Effects</TabsTrigger>
             </TabsList>
             
-            <div className="p-4 space-y-4">
+            <div className="p-3 space-y-4 flex-1 overflow-y-auto">
               <TabsContent value="states" className="mt-0">
                 <StateManager
                   states={cardData.states}
@@ -261,8 +261,8 @@ export const RevolutionaryCardCreator: React.FC<RevolutionaryCardCreatorProps> =
           </Tabs>
         </div>
 
-        {/* Center Panel - Canvas/Preview (60% width - MAIN FOCUS) */}
-        <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col">
+        {/* Center Panel - Canvas/Preview (MAIN FOCUS - Full screen on mobile) */}
+        <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col w-full">
           <LivePreview
             cardData={cardData}
             mode={previewMode}
@@ -270,15 +270,15 @@ export const RevolutionaryCardCreator: React.FC<RevolutionaryCardCreatorProps> =
           />
         </div>
 
-        {/* Right Panel - Advanced Features (20% width) */}
-        <div className="w-1/5 min-w-[320px] max-w-[400px] border-l border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto">
+        {/* Right Panel - Advanced Features (responsive width) */}
+        <div className="hidden xl:flex xl:w-80 2xl:w-96 border-l border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
           <Tabs defaultValue="media" className="h-full">
-            <TabsList className="grid grid-cols-2 w-full bg-crd-mediumGray/20 p-1 m-4 mb-0">
+            <TabsList className="grid grid-cols-2 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
               <TabsTrigger value="media" className="text-xs">Media</TabsTrigger>
               <TabsTrigger value="advanced" className="text-xs">Advanced</TabsTrigger>
             </TabsList>
             
-            <div className="p-4 space-y-4">
+            <div className="p-3 space-y-4 flex-1 overflow-y-auto">
               <TabsContent value="media" className="mt-0">
                 <MediaImportHub
                   assets={cardData.assets}
