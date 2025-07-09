@@ -1,8 +1,8 @@
 import React from 'react';
 import { CRDCardCreatorWrapper } from '@/components/editor/crd/CRDCardCreatorWrapper';
+import { CRDOverlayHeader } from '@/components/editor/crd/CRDOverlayHeader';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
-import { SubscriptionBanner } from '@/components/monetization/SubscriptionBanner';
 import type { CardData } from '@/hooks/useCardEditor';
 
 const CreateCRD = () => {
@@ -21,17 +21,19 @@ const CreateCRD = () => {
   };
 
   return (
-    <div className="min-h-screen bg-crd-darkest">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <SubscriptionBanner />
-      </div>
+    <div className="fixed inset-0 bg-crd-darkest overflow-hidden">
+      {/* Overlay Header */}
+      <CRDOverlayHeader />
       
-      <ErrorBoundary>
-        <CRDCardCreatorWrapper 
-          onComplete={handleComplete}
-          onCancel={handleCancel}
-        />
-      </ErrorBoundary>
+      {/* Main Content with top padding for header */}
+      <div className="pt-16 h-full">
+        <ErrorBoundary>
+          <CRDCardCreatorWrapper 
+            onComplete={handleComplete}
+            onCancel={handleCancel}
+          />
+        </ErrorBoundary>
+      </div>
     </div>
   );
 };

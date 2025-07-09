@@ -79,7 +79,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   const dustyAreaHeight = Math.floor(availableHeight * 0.4); // 40% for Dusty
 
   return (
-    <div className="flex flex-col relative h-screen">
+    <div className="flex flex-col relative h-full">
       {/* Upper Canvas Area - Fixed Height */}
       <div 
         className="flex flex-col items-center justify-center relative"

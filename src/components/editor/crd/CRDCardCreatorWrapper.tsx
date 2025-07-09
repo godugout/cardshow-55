@@ -57,7 +57,7 @@ export const CRDCardCreatorWrapper: React.FC<CRDCardCreatorWrapperProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-crd-darkest">
+    <div className="h-full bg-crd-darkest">
       <CRDCardCreator
         initialCard={currentCard || undefined}
         onSave={handleSave}
