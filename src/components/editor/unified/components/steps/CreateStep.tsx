@@ -8,7 +8,8 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Upload, Image, Palette, Sparkles, Zap, Chrome, Stars, Eye, Frame } from 'lucide-react';
+import { Upload, Image, Palette, Sparkles, Zap, Chrome, Stars, Eye, Frame, FolderOpen } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UniversalUploadComponent } from '@/components/media/UniversalUploadComponent';
 import { SVGTemplateRenderer } from '@/components/editor/templates/SVGTemplateRenderer';
 import { BASEBALL_CARD_TEMPLATES } from '@/components/editor/templates/BaseballCardTemplates';
@@ -204,21 +205,28 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
                       )}
                     </div>
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center p-8">
-                      <UniversalUploadComponent
-                        onFilesSelected={(files) => {
-                          if (files.length > 0) {
-                            handleFileUpload(files[0]);
-                          }
-                        }}
-                        onError={(error) => {
-                          console.error('Upload error:', error);
-                        }}
-                        accept={{ 'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'] }}
-                        maxSize={10 * 1024 * 1024} // 10MB
-                        maxFiles={1}
-                        multiple={false}
-                      />
+                    <div className="w-full h-full flex items-center justify-center text-center text-crd-lightGray relative">
+                      <div className="absolute inset-4 border-2 border-dashed border-crd-mediumGray/40 rounded-xl flex items-center justify-center">
+                        <div>
+                          <Upload className="w-12 h-12 mx-auto mb-3 text-crd-lightGray" />
+                          <p className="text-lg font-medium text-crd-white mb-2">Add Your Photo</p>
+                          <p className="text-sm text-crd-lightGray mb-4">Drag & drop or click to upload</p>
+                          <UniversalUploadComponent
+                            onFilesSelected={(files) => {
+                              if (files.length > 0) {
+                                handleFileUpload(files[0]);
+                              }
+                            }}
+                            onError={(error) => {
+                              console.error('Upload error:', error);
+                            }}
+                            accept={{ 'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'] }}
+                            maxSize={10 * 1024 * 1024} // 10MB
+                            maxFiles={1}
+                            multiple={false}
+                          />
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -233,134 +241,164 @@ export const CreateStep = ({ mode, cardData, onFieldUpdate }: CreateStepProps) =
           </Card>
         </div>
 
-        {/* Right Panel - Choose Frame & Card Effects */}
-        <div className="col-span-3 flex flex-col space-y-6">
-          {/* Quick Frame Selection */}
-          <Card className="bg-crd-darker/90 border-crd-mediumGray/40 backdrop-blur-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-crd-white flex items-center gap-3 text-lg">
-                <Frame className="w-5 h-5" />
-                Choose Frame
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                {quickFrames.map((frame) => (
-                  <div
-                    key={frame.id}
-                    onClick={() => setSelectedFrame(frame)}
-                    className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer transition-all duration-200 ${
-                      selectedFrame.id === frame.id
-                        ? 'ring-3 ring-crd-green scale-105 shadow-lg shadow-crd-green/20'
-                        : 'hover:scale-102 hover:ring-2 hover:ring-crd-lightGray/50 hover:shadow-md'
-                    }`}
-                  >
-                    <SVGTemplateRenderer
-                      template={frame}
-                      playerName="PLAYER"
-                      teamName="TEAM"
-                      customColors={selectedColorScheme}
-                      className="w-full h-full"
+        {/* Right Panel - Tabbed Interface */}
+        <div className="col-span-3 flex flex-col">
+          <Card className="bg-crd-darker/90 border-crd-mediumGray/40 backdrop-blur-sm flex-1 flex flex-col">
+            <Tabs defaultValue="frames" className="flex flex-col h-full">
+              <TabsList className="grid w-full grid-cols-3 bg-crd-darkest/50 border-crd-mediumGray/40 mx-4 mt-4">
+                <TabsTrigger value="frames" className="text-crd-lightGray data-[state=active]:text-crd-white data-[state=active]:bg-crd-green data-[state=active]:text-black">
+                  <Frame className="w-4 h-4 mr-2" />
+                  Frames
+                </TabsTrigger>
+                <TabsTrigger value="media" className="text-crd-lightGray data-[state=active]:text-crd-white data-[state=active]:bg-crd-green data-[state=active]:text-black">
+                  <FolderOpen className="w-4 h-4 mr-2" />
+                  Media
+                </TabsTrigger>
+                <TabsTrigger value="effects" className="text-crd-lightGray data-[state=active]:text-crd-white data-[state=active]:bg-crd-green data-[state=active]:text-black">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Effects
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="frames" className="flex-1 mt-4 mx-4 mb-4">
+                <div className="space-y-4 h-full">
+                  <h3 className="text-crd-white font-semibold text-base">Choose Frame</h3>
+                  <div className="grid grid-cols-2 gap-3 overflow-auto">
+                    {quickFrames.map((frame) => (
+                      <div
+                        key={frame.id}
+                        onClick={() => setSelectedFrame(frame)}
+                        className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer transition-all duration-200 ${
+                          selectedFrame.id === frame.id
+                            ? 'ring-2 ring-crd-green scale-105 shadow-lg shadow-crd-green/20'
+                            : 'hover:scale-102 hover:ring-2 hover:ring-crd-lightGray/50 hover:shadow-md'
+                        }`}
+                      >
+                        <SVGTemplateRenderer
+                          template={frame}
+                          playerName="PLAYER"
+                          teamName="TEAM"
+                          customColors={selectedColorScheme}
+                          className="w-full h-full"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                          <p className="text-crd-white text-xs text-center truncate font-medium">{frame.name}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="media" className="flex-1 mt-4 mx-4 mb-4">
+                <div className="space-y-4 h-full">
+                  <h3 className="text-crd-white font-semibold text-base">Upload Media</h3>
+                  <div className="h-full overflow-auto">
+                    <UniversalUploadComponent
+                      onFilesSelected={(files) => {
+                        if (files.length > 0) {
+                          handleFileUpload(files[0]);
+                        }
+                      }}
+                      onError={(error) => {
+                        console.error('Upload error:', error);
+                      }}
+                      accept={{ 'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'] }}
+                      maxSize={10 * 1024 * 1024} // 10MB
+                      maxFiles={1}
+                      multiple={false}
                     />
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                      <p className="text-crd-white text-xs text-center truncate font-medium">{frame.name}</p>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="effects" className="flex-1 mt-4 mx-4 mb-4">
+                <div className="space-y-4 h-full overflow-auto">
+                  <h3 className="text-crd-white font-semibold text-base">Card Effects</h3>
+                  
+                  {/* Chrome Effect */}
+                  <div className="space-y-3 p-4 rounded-xl bg-crd-darkest/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Chrome className="w-4 h-4 text-crd-lightGray" />
+                        <Label className="text-crd-white text-sm font-medium">Chrome</Label>
+                      </div>
+                      <Switch
+                        checked={chromeEffect}
+                        onCheckedChange={setChromeEffect}
+                      />
                     </div>
+                    {chromeEffect && (
+                      <div className="space-y-3">
+                        <Slider
+                          value={chromeIntensity}
+                          onValueChange={setChromeIntensity}
+                          max={100}
+                          min={0}
+                          step={1}
+                          className="w-full"
+                        />
+                        <div className="text-xs text-crd-lightGray text-center">{chromeIntensity[0]}% Intensity</div>
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Card Effects */}
-          <Card className="bg-crd-darker/90 border-crd-mediumGray/40 backdrop-blur-sm flex-1">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-crd-white flex items-center gap-3 text-lg">
-                <Sparkles className="w-5 h-5" />
-                Card Effects
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              {/* Chrome Effect */}
-              <div className="space-y-3 p-4 rounded-xl bg-crd-darkest/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Chrome className="w-4 h-4 text-crd-lightGray" />
-                    <Label className="text-crd-white text-sm font-medium">Chrome</Label>
+                  {/* Holographic Effect */}
+                  <div className="space-y-3 p-4 rounded-xl bg-crd-darkest/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Zap className="w-4 h-4 text-crd-lightGray" />
+                        <Label className="text-crd-white text-sm font-medium">Holographic</Label>
+                      </div>
+                      <Switch
+                        checked={holographicEffect}
+                        onCheckedChange={setHolographicEffect}
+                      />
+                    </div>
+                    {holographicEffect && (
+                      <div className="space-y-3">
+                        <Slider
+                          value={holographicIntensity}
+                          onValueChange={setHolographicIntensity}
+                          max={100}
+                          min={0}
+                          step={1}
+                          className="w-full"
+                        />
+                        <div className="text-xs text-crd-lightGray text-center">{holographicIntensity[0]}% Intensity</div>
+                      </div>
+                    )}
                   </div>
-                  <Switch
-                    checked={chromeEffect}
-                    onCheckedChange={setChromeEffect}
-                  />
-                </div>
-                {chromeEffect && (
-                  <div className="space-y-3">
-                    <Slider
-                      value={chromeIntensity}
-                      onValueChange={setChromeIntensity}
-                      max={100}
-                      min={0}
-                      step={1}
-                      className="w-full"
-                    />
-                    <div className="text-xs text-crd-lightGray text-center">{chromeIntensity[0]}% Intensity</div>
-                  </div>
-                )}
-              </div>
 
-              {/* Holographic Effect */}
-              <div className="space-y-3 p-4 rounded-xl bg-crd-darkest/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Zap className="w-4 h-4 text-crd-lightGray" />
-                    <Label className="text-crd-white text-sm font-medium">Holographic</Label>
+                  {/* Foil Effect */}
+                  <div className="space-y-3 p-4 rounded-xl bg-crd-darkest/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Stars className="w-4 h-4 text-crd-lightGray" />
+                        <Label className="text-crd-white text-sm font-medium">Foil</Label>
+                      </div>
+                      <Switch
+                        checked={foilEffect}
+                        onCheckedChange={setFoilEffect}
+                      />
+                    </div>
+                    {foilEffect && (
+                      <div className="space-y-3">
+                        <Slider
+                          value={foilIntensity}
+                          onValueChange={setFoilIntensity}
+                          max={100}
+                          min={0}
+                          step={1}
+                          className="w-full"
+                        />
+                        <div className="text-xs text-crd-lightGray text-center">{foilIntensity[0]}% Intensity</div>
+                      </div>
+                    )}
                   </div>
-                  <Switch
-                    checked={holographicEffect}
-                    onCheckedChange={setHolographicEffect}
-                  />
                 </div>
-                {holographicEffect && (
-                  <div className="space-y-3">
-                    <Slider
-                      value={holographicIntensity}
-                      onValueChange={setHolographicIntensity}
-                      max={100}
-                      min={0}
-                      step={1}
-                      className="w-full"
-                    />
-                    <div className="text-xs text-crd-lightGray text-center">{holographicIntensity[0]}% Intensity</div>
-                  </div>
-                )}
-              </div>
-
-              {/* Foil Effect */}
-              <div className="space-y-3 p-4 rounded-xl bg-crd-darkest/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Stars className="w-4 h-4 text-crd-lightGray" />
-                    <Label className="text-crd-white text-sm font-medium">Foil</Label>
-                  </div>
-                  <Switch
-                    checked={foilEffect}
-                    onCheckedChange={setFoilEffect}
-                  />
-                </div>
-                {foilEffect && (
-                  <div className="space-y-3">
-                    <Slider
-                      value={foilIntensity}
-                      onValueChange={setFoilIntensity}
-                      max={100}
-                      min={0}
-                      step={1}
-                      className="w-full"
-                    />
-                    <div className="text-xs text-crd-lightGray text-center">{foilIntensity[0]}% Intensity</div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
+              </TabsContent>
+            </Tabs>
           </Card>
         </div>
       </div>
