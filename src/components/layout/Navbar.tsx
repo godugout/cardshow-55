@@ -39,7 +39,7 @@ export const Navbar = () => {
             <LogoSelector onThemeChange={setCurrentTheme} />
             {isCRDRoute && (
               <>
-                <X className="w-4 h-4 text-themed-secondary/60 mx-2" />
+                <X className="w-4 h-4 text-themed-secondary/60 mx-1" />
                 <CRDGradientLogo />
               </>
             )}
