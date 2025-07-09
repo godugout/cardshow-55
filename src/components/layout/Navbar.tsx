@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Plus, Home, ImageIcon, Palette } from 'lucide-react';
+import { Plus, Home, ImageIcon, Palette, X } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
 import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
 
@@ -39,7 +39,7 @@ export const Navbar = () => {
             <LogoSelector onThemeChange={setCurrentTheme} />
             {isCRDRoute && (
               <>
-                <div className="w-px h-6 bg-themed-border mx-4" />
+                <X className="w-4 h-4 text-themed-secondary/60 mx-2" />
                 <CRDGradientLogo />
               </>
             )}
