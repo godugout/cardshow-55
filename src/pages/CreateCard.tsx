@@ -27,7 +27,7 @@ const CreateCard = () => {
 
   const handleRevolutionaryMode = () => {
     console.log('Redirecting to revolutionary mode');
-    navigate('/create/revolutionary');
+    navigate('/create/advanced');
   };
 
   return (

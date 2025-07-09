@@ -26,23 +26,7 @@ export const RevolutionaryCardCreatorWrapper: React.FC<RevolutionaryCardCreatorW
     );
   }
 
-  // Redirect if revolutionary mode is not enabled
-  if (!isEnabled('revolutionary_create_mode')) {
-    return (
-      <div className="min-h-screen bg-crd-darkest flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-crd-white text-xl mb-4">Revolutionary Mode Not Available</div>
-          <div className="text-crd-lightGray mb-6">This feature is currently disabled.</div>
-          <button 
-            onClick={onCancel}
-            className="bg-crd-green text-black px-6 py-2 rounded-lg hover:bg-crd-green/80 transition-colors"
-          >
-            Back to Standard Creator
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Skip feature flag check for direct access
 
   const handleRevolutionaryComplete = (interactiveCard: InteractiveCardData) => {
     // Convert InteractiveCardData to CardData format for compatibility
