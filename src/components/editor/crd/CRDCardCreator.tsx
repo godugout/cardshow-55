@@ -140,25 +140,10 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   return <div className="h-screen w-full flex flex-col bg-crd-darkest">
       {/* Header */}
       <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
-        {/* Left: Tags */}
-        <div className="flex items-center gap-2 text-xs text-crd-lightGray">
-          <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-            v{cardData.version}
-          </div>
-          <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-            {cardData.rarity.charAt(0).toUpperCase() + cardData.rarity.slice(1)}
-          </div>
-          <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-            Print Ready
-          </div>
-          <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-            {cardData.card_dna?.genetic_code?.split('-')[0] || 'CRD'}
-          </div>
-        </div>
-
-        {/* Center: CRD Name */}
-        <div className="flex items-center gap-2">
+        {/* Left: CRD Logo, Title, and Tags */}
+        <div className="flex items-center gap-4">
           <Layers className="w-6 h-6 text-crd-blue" />
+          
           <input 
             type="text"
             value={cardData.title}
@@ -166,6 +151,21 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all"
             placeholder="Enter CRD name..."
           />
+          
+          <div className="flex items-center gap-2 text-xs text-crd-lightGray">
+            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+              v{cardData.version}
+            </div>
+            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+              {cardData.rarity.charAt(0).toUpperCase() + cardData.rarity.slice(1)}
+            </div>
+            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+              Print Ready
+            </div>
+            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+              {cardData.card_dna?.genetic_code?.split('-')[0] || 'CRD'}
+            </div>
+          </div>
         </div>
         
         {/* Right: Buttons */}
