@@ -47,29 +47,19 @@ export const useActivityMonitor = (props: UseActivityMonitorProps): ActivityStat
       newStep = 'export';
     }
 
-    setActivityState(prev => {
-      const shouldUpdateStep = newStep !== prev.currentStep;
-      const now = new Date();
-      
-      if (shouldUpdateStep) {
-        setStepStartTime(now);
-      }
+    if (newStep !== activityState.currentStep) {
+      setStepStartTime(new Date());
+    }
 
-      return {
-        ...prev,
-        cardTitle: props.cardTitle,
-        playerImage: props.playerImage,
-        selectedTemplate: props.selectedTemplate,
-        colorPalette: props.colorPalette,
-        effects: props.effects,
-        previewMode: props.previewMode,
-        currentStep: newStep,
-        lastActivity: now,
-        timeOnStep: shouldUpdateStep ? 0 : Date.now() - stepStartTime.getTime(),
-        isIdle: false
-      };
-    });
-  }, [props.cardTitle, props.playerImage, props.selectedTemplate, props.colorPalette, props.effects, props.previewMode, stepStartTime]);
+    setActivityState(prev => ({
+      ...prev,
+      ...props,
+      currentStep: newStep,
+      lastActivity: new Date(),
+      timeOnStep: Date.now() - stepStartTime.getTime(),
+      isIdle: false
+    }));
+  }, [props]);
 
   // Idle detection
   useEffect(() => {

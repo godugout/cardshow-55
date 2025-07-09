@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Plus, Home, ImageIcon, Palette, X } from 'lucide-react';
+import { Plus, Home, ImageIcon, Palette } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
 import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
 
@@ -31,15 +31,15 @@ export const Navbar = () => {
   const isCRDRoute = location.pathname.startsWith('/create/');
 
   return (
-    <nav className="bg-gray-500 sticky top-0 z-50">
+    <nav className="navbar-themed sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo Collaboration */}
+          {/* Logo Selector */}
           <div className="flex items-center">
             <LogoSelector onThemeChange={setCurrentTheme} />
             {isCRDRoute && (
               <>
-                <X className="w-4 h-4 text-white mx-2" />
+                <div className="w-px h-6 bg-themed-border mx-4" />
                 <CRDGradientLogo />
               </>
             )}
