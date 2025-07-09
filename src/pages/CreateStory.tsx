@@ -5,18 +5,18 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { SubscriptionBanner } from '@/components/monetization/SubscriptionBanner';
 import type { CardData } from '@/hooks/useCardEditor';
 
-const CreateRevolutionary = () => {
+const CreateStory = () => {
   const navigate = useNavigate();
 
-  console.log('CreateRevolutionary page loaded - Revolutionary card creator');
+  console.log('CreateStory page loaded - Interactive story card creator');
 
   const handleComplete = (cardData: CardData) => {
-    console.log('Revolutionary card created successfully:', cardData);
+    console.log('Story card created successfully:', cardData);
     navigate('/gallery');
   };
 
   const handleCancel = () => {
-    console.log('Card creation cancelled');
+    console.log('Story card creation cancelled');
     navigate('/');
   };
 
@@ -36,4 +36,4 @@ const CreateRevolutionary = () => {
   );
 };
 
-export default CreateRevolutionary;
+export default CreateStory;

@@ -7,7 +7,9 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { ProductionOptimizer } from '@/components/production/ProductionOptimizer';
 import { Navbar } from '@/components/layout/Navbar';
 import Index from '@/pages/Index';
-import CreateRevolutionary from '@/pages/CreateRevolutionary';
+import { CreateChoice } from '@/pages/CreateChoice';
+import CreateStory from '@/pages/CreateStory';
+import CreateCRD from '@/pages/CreateCRD';
 import Gallery from '@/pages/Gallery';
 import Studio from '@/pages/Studio';
 import UploadTestPage from '@/pages/UploadTestPage';
@@ -23,8 +25,9 @@ const App = () => {
             <Navbar />
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/create" element={<CreateRevolutionary />} />
-              <Route path="/create/advanced" element={<CreateRevolutionary />} />
+              <Route path="/create" element={<CreateChoice />} />
+              <Route path="/create/story" element={<CreateStory />} />
+              <Route path="/create/crd" element={<CreateCRD />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/studio" element={<Studio />} />
               <Route path="/studio/:cardId" element={<Studio />} />

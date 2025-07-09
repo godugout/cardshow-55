@@ -1,0 +1,323 @@
+import React, { useState, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CRDButton } from '@/components/ui/design-system/Button';
+import { 
+  Layers, Image, Type, Palette, Settings, 
+  Eye, Save, Download 
+} from 'lucide-react';
+import { InteractiveCardData, CardState } from '@/types/interactiveCard';
+
+interface CRDCardCreatorProps {
+  initialCard?: Partial<InteractiveCardData>;
+  onSave: (card: InteractiveCardData) => void;
+  onPreview: (card: InteractiveCardData) => void;
+}
+
+export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
+  initialCard,
+  onSave,
+  onPreview
+}) => {
+  const [cardData, setCardData] = useState<InteractiveCardData>({
+    id: initialCard?.id || `crd_${Date.now()}`,
+    title: initialCard?.title || 'Untitled CRD Card',
+    description: initialCard?.description || '',
+    rarity: initialCard?.rarity || 'common',
+    creator_id: initialCard?.creator_id || 'current_user',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    
+    // CRD-specific features
+    is_interactive: false, // CRD cards are static by default
+    default_state_id: 'default',
+    states: [{
+      id: 'default',
+      name: 'Default State',
+      description: 'The card\'s standard appearance',
+      visual_properties: {
+        opacity: 1,
+        scale: 1,
+        rotation: 0
+      },
+      transition_rules: []
+    }],
+    behavior_rules: [],
+    
+    assets: {
+      images: [],
+      audio: [],
+      videos: [],
+      models_3d: []
+    },
+    
+    particle_systems: [],
+    mini_games: [],
+    kinetic_text: [],
+    biometric_triggers: [],
+    environmental_config: {
+      weather_enabled: false,
+      time_enabled: false,
+      location_enabled: false,
+      device_sensors_enabled: false,
+      weather_effects: [],
+      time_effects: []
+    },
+    
+    card_dna: {
+      genetic_code: generateCRDCode(),
+      remix_permissions: {
+        allow_visual_remix: true,
+        allow_behavior_remix: false, // CRD cards typically don't allow behavior remix
+        allow_audio_remix: false,
+        require_attribution: true,
+        commercial_use: true // CRD cards are commercial by nature
+      },
+      inheritance_traits: [],
+      generation: 0,
+      parent_cards: []
+    },
+    
+    fusion_history: [],
+    
+    platform_optimizations: {
+      discord: { animated: false, size_limit: 8 },
+      twitter: { gif_preview: '', static_fallback: '' },
+      instagram: { story_format: '', post_format: '' },
+      tiktok: { vertical_format: '', effects_enabled: false }
+    },
+    
+    performance_profile: {
+      target_fps: 60,
+      memory_budget: 64, // Lower for static cards
+      battery_impact: 'low',
+      network_requirements: 'minimal'
+    },
+    
+    api_endpoints: [],
+    version: 1,
+    edit_history: []
+  });
+
+  const [activeTab, setActiveTab] = useState('layout');
+  const [previewMode, setPreviewMode] = useState<'edit' | 'preview' | 'print'>('edit');
+
+  const updateCardData = useCallback((updates: Partial<InteractiveCardData>) => {
+    setCardData(prev => ({
+      ...prev,
+      ...updates,
+      updated_at: new Date().toISOString(),
+      version: prev.version + 1
+    }));
+  }, []);
+
+  const handleSave = useCallback(() => {
+    onSave(cardData);
+  }, [cardData, onSave]);
+
+  const handlePreview = useCallback(() => {
+    onPreview(cardData);
+    setPreviewMode('preview');
+  }, [cardData, onPreview]);
+
+  return (
+    <div className="h-screen w-full flex flex-col bg-crd-darkest">
+      {/* Header */}
+      <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Layers className="w-6 h-6 text-crd-blue" />
+            <h1 className="text-2xl font-bold text-crd-white">CRD Card Creator</h1>
+          </div>
+          <div className="text-xs text-crd-lightGray bg-crd-mediumGray/20 px-2 py-1 rounded">
+            v{cardData.version} • Print Ready • Professional
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
+            <button
+              onClick={() => setPreviewMode('edit')}
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                previewMode === 'edit' 
+                  ? 'bg-crd-blue text-white' 
+                  : 'text-crd-lightGray hover:text-crd-white'
+              }`}
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setPreviewMode('preview')}
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                previewMode === 'preview' 
+                  ? 'bg-crd-blue text-white' 
+                  : 'text-crd-lightGray hover:text-crd-white'
+              }`}
+            >
+              Preview
+            </button>
+            <button
+              onClick={() => setPreviewMode('print')}
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                previewMode === 'print' 
+                  ? 'bg-crd-blue text-white' 
+                  : 'text-crd-lightGray hover:text-crd-white'
+              }`}
+            >
+              Print
+            </button>
+          </div>
+          
+          <CRDButton onClick={handleSave} variant="secondary" size="sm">
+            <Save className="w-4 h-4 mr-2" />
+            Save
+          </CRDButton>
+          <CRDButton onClick={handlePreview} variant="primary" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </CRDButton>
+        </div>
+      </div>
+
+      {/* Main Content - CRD-focused 3-Panel Layout */}
+      <div className="flex-1 flex min-h-0 w-full">
+        {/* Left Panel - CRD Tools */}
+        <div className="hidden lg:flex lg:w-80 xl:w-96 border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+            <TabsList className="grid grid-cols-4 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
+              <TabsTrigger value="layout" className="text-xs">Layout</TabsTrigger>
+              <TabsTrigger value="design" className="text-xs">Design</TabsTrigger>
+              <TabsTrigger value="content" className="text-xs">Content</TabsTrigger>
+              <TabsTrigger value="export" className="text-xs">Export</TabsTrigger>
+            </TabsList>
+            
+            <div className="p-3 space-y-4 flex-1 overflow-y-auto">
+              <TabsContent value="layout" className="mt-0">
+                <Card className="bg-crd-darker border-crd-mediumGray/20">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-crd-white text-sm flex items-center gap-2">
+                      <Layers className="w-4 h-4" />
+                      Card Layout
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-crd-lightGray text-sm">
+                      Choose from professional CRD templates and layouts optimized for trading cards.
+                    </p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="design" className="mt-0">
+                <Card className="bg-crd-darker border-crd-mediumGray/20">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-crd-white text-sm flex items-center gap-2">
+                      <Palette className="w-4 h-4" />
+                      Visual Design
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-crd-lightGray text-sm">
+                      Professional styling tools for colors, typography, and effects.
+                    </p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="content" className="mt-0">
+                <Card className="bg-crd-darker border-crd-mediumGray/20">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-crd-white text-sm flex items-center gap-2">
+                      <Type className="w-4 h-4" />
+                      Card Content
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-crd-lightGray text-sm">
+                      Add images, text, stats, and other content to your card.
+                    </p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="export" className="mt-0">
+                <Card className="bg-crd-darker border-crd-mediumGray/20">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-crd-white text-sm flex items-center gap-2">
+                      <Settings className="w-4 h-4" />
+                      Export Settings
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-crd-lightGray text-sm">
+                      Configure print settings, resolution, and export formats.
+                    </p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
+
+        {/* Center Panel - Card Canvas */}
+        <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col w-full">
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="bg-crd-darker border border-crd-mediumGray/20 rounded-lg p-8 text-center">
+              <Image className="w-16 h-16 text-crd-lightGray mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-crd-white mb-2">CRD Canvas</h3>
+              <p className="text-crd-lightGray">
+                Professional card creation canvas will be displayed here
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Panel - Properties & Settings */}
+        <div className="hidden xl:flex xl:w-80 border-l border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
+          <div className="p-3 space-y-4">
+            <Card className="bg-crd-darker border-crd-mediumGray/20">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-crd-white text-sm">Card Properties</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs text-crd-lightGray block mb-1">Title</label>
+                    <input 
+                      type="text" 
+                      value={cardData.title}
+                      onChange={(e) => updateCardData({ title: e.target.value })}
+                      className="w-full bg-crd-darkest border border-crd-mediumGray/20 rounded px-2 py-1 text-sm text-crd-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-crd-lightGray block mb-1">Rarity</label>
+                    <select 
+                      value={cardData.rarity}
+                      onChange={(e) => updateCardData({ rarity: e.target.value as any })}
+                      className="w-full bg-crd-darkest border border-crd-mediumGray/20 rounded px-2 py-1 text-sm text-crd-white"
+                    >
+                      <option value="common">Common</option>
+                      <option value="uncommon">Uncommon</option>
+                      <option value="rare">Rare</option>
+                      <option value="epic">Epic</option>
+                      <option value="legendary">Legendary</option>
+                    </select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Helper function to generate CRD-specific codes
+function generateCRDCode(): string {
+  const prefixes = ['CRD', 'TCD', 'PRO', 'STD', 'PRE'];
+  const numbers = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  const suffix = Math.random().toString(36).substr(2, 2).toUpperCase();
+  return `${prefixes[Math.floor(Math.random() * prefixes.length)]}-${numbers}-${suffix}`;
+}
