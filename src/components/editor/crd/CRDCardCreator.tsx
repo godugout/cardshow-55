@@ -2,10 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { 
-  Layers, Image, Type, Palette, Settings, 
-  Eye, Save, Download 
-} from 'lucide-react';
+import { Layers, Image, Type, Palette, Settings, Eye, Save, Download } from 'lucide-react';
 import { InteractiveCardData, CardState } from '@/types/interactiveCard';
 import { CRDLayoutTab } from './tabs/CRDLayoutTab';
 import { CRDDesignTab } from './tabs/CRDDesignTab';
@@ -13,13 +10,11 @@ import { CRDContentTab } from './tabs/CRDContentTab';
 import { CRDExportTab } from './tabs/CRDExportTab';
 import { CRDCanvas } from './canvas/CRDCanvas';
 import { CRDSidebar } from './sidebar/CRDSidebar';
-
 interface CRDCardCreatorProps {
   initialCard?: Partial<InteractiveCardData>;
   onSave: (card: InteractiveCardData) => void;
   onPreview: (card: InteractiveCardData) => void;
 }
-
 export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   initialCard,
   onSave,
@@ -33,7 +28,6 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
     creator_id: initialCard?.creator_id || 'current_user',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    
     // CRD-specific features
     is_interactive: false,
     default_state_id: 'default',
@@ -49,14 +43,12 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
       transition_rules: []
     }],
     behavior_rules: [],
-    
     assets: {
       images: [],
       audio: [],
       videos: [],
       models_3d: []
     },
-    
     particle_systems: [],
     mini_games: [],
     kinetic_text: [],
@@ -69,7 +61,6 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
       weather_effects: [],
       time_effects: []
     },
-    
     card_dna: {
       genetic_code: generateCRDCode(),
       remix_permissions: {
@@ -83,23 +74,31 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
       generation: 0,
       parent_cards: []
     },
-    
     fusion_history: [],
-    
     platform_optimizations: {
-      discord: { animated: false, size_limit: 8 },
-      twitter: { gif_preview: '', static_fallback: '' },
-      instagram: { story_format: '', post_format: '' },
-      tiktok: { vertical_format: '', effects_enabled: false }
+      discord: {
+        animated: false,
+        size_limit: 8
+      },
+      twitter: {
+        gif_preview: '',
+        static_fallback: ''
+      },
+      instagram: {
+        story_format: '',
+        post_format: ''
+      },
+      tiktok: {
+        vertical_format: '',
+        effects_enabled: false
+      }
     },
-    
     performance_profile: {
       target_fps: 60,
       memory_budget: 64,
       battery_impact: 'low',
       network_requirements: 'minimal'
     },
-    
     api_endpoints: [],
     version: 1,
     edit_history: []
@@ -115,7 +114,6 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   const [playerImage, setPlayerImage] = useState<string | null>(null);
   const [playerStats, setPlayerStats] = useState<Record<string, string>>({});
   const [showGuides, setShowGuides] = useState(false);
-
   const updateCardData = useCallback((updates: Partial<InteractiveCardData>) => {
     setCardData(prev => ({
       ...prev,
@@ -124,29 +122,28 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
       version: prev.version + 1
     }));
   }, []);
-
   const handleSave = useCallback(() => {
     onSave(cardData);
   }, [cardData, onSave]);
-
   const handlePreview = useCallback(() => {
     onPreview(cardData);
     setPreviewMode('preview');
   }, [cardData, onPreview]);
-
   const handleExport = useCallback((format: string, options: any) => {
-    console.log('Exporting CRDMKR card:', { format, options, cardData });
+    console.log('Exporting CRDMKR card:', {
+      format,
+      options,
+      cardData
+    });
     // Implementation for actual export functionality
   }, [cardData]);
-
-  return (
-    <div className="h-screen w-full flex flex-col bg-crd-darkest">
+  return <div className="h-screen w-full flex flex-col bg-crd-darkest">
       {/* Header */}
       <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Layers className="w-6 h-6 text-crd-blue" />
-            <h1 className="text-2xl font-bold text-crd-white">CRDMKR</h1>
+            <h1 className="text-2xl font-bold text-crd-white">Inline CRD name should be here.</h1>
           </div>
           <div className="text-xs text-crd-lightGray bg-crd-mediumGray/20 px-2 py-1 rounded">
             v{cardData.version} • Print Ready • Professional
@@ -155,34 +152,13 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
         
         <div className="flex items-center gap-3">
           <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
-            <button
-              onClick={() => setPreviewMode('edit')}
-              className={`px-3 py-1 text-sm rounded transition-colors ${
-                previewMode === 'edit' 
-                  ? 'bg-crd-blue text-white' 
-                  : 'text-crd-lightGray hover:text-crd-white'
-              }`}
-            >
+            <button onClick={() => setPreviewMode('edit')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'edit' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
               <Eye className="w-4 h-4" />
             </button>
-            <button
-              onClick={() => setPreviewMode('preview')}
-              className={`px-3 py-1 text-sm rounded transition-colors ${
-                previewMode === 'preview' 
-                  ? 'bg-crd-blue text-white' 
-                  : 'text-crd-lightGray hover:text-crd-white'
-              }`}
-            >
+            <button onClick={() => setPreviewMode('preview')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'preview' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
               Preview
             </button>
-            <button
-              onClick={() => setPreviewMode('print')}
-              className={`px-3 py-1 text-sm rounded transition-colors ${
-                previewMode === 'print' 
-                  ? 'bg-crd-blue text-white' 
-                  : 'text-crd-lightGray hover:text-crd-white'
-              }`}
-            >
+            <button onClick={() => setPreviewMode('print')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'print' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
               Print
             </button>
           </div>
@@ -212,34 +188,19 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             
             <div className="p-3 space-y-4 flex-1 overflow-y-auto">
               <TabsContent value="layout" className="mt-0">
-                <CRDLayoutTab
-                  selectedTemplate={selectedTemplate}
-                  onTemplateSelect={setSelectedTemplate}
-                />
+                <CRDLayoutTab selectedTemplate={selectedTemplate} onTemplateSelect={setSelectedTemplate} />
               </TabsContent>
               
               <TabsContent value="design" className="mt-0">
-                <CRDDesignTab
-                  colorPalette={colorPalette}
-                  onColorPaletteChange={setColorPalette}
-                  typography={typography}
-                  onTypographyChange={setTypography}
-                  effects={effects}
-                  onEffectsChange={setEffects}
-                />
+                <CRDDesignTab colorPalette={colorPalette} onColorPaletteChange={setColorPalette} typography={typography} onTypographyChange={setTypography} effects={effects} onEffectsChange={setEffects} />
               </TabsContent>
               
               <TabsContent value="content" className="mt-0">
-                <CRDContentTab
-                  cardTitle={cardData.title}
-                  onCardTitleChange={(title) => updateCardData({ title })}
-                  cardDescription={cardData.description || ''}
-                  onCardDescriptionChange={(description) => updateCardData({ description })}
-                  playerImage={playerImage}
-                  onPlayerImageChange={setPlayerImage}
-                  playerStats={playerStats}
-                  onPlayerStatsChange={setPlayerStats}
-                />
+                <CRDContentTab cardTitle={cardData.title} onCardTitleChange={title => updateCardData({
+                title
+              })} cardDescription={cardData.description || ''} onCardDescriptionChange={description => updateCardData({
+                description
+              })} playerImage={playerImage} onPlayerImageChange={setPlayerImage} playerStats={playerStats} onPlayerStatsChange={setPlayerStats} />
               </TabsContent>
               
               <TabsContent value="export" className="mt-0">
@@ -251,35 +212,15 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
 
         {/* Center Panel - Card Canvas */}
         <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col w-full">
-          <CRDCanvas
-            template={selectedTemplate}
-            colorPalette={colorPalette}
-            typography={typography}
-            effects={effects}
-            cardTitle={cardData.title}
-            cardDescription={cardData.description || ''}
-            playerImage={playerImage}
-            playerStats={playerStats}
-            previewMode={previewMode}
-          />
+          <CRDCanvas template={selectedTemplate} colorPalette={colorPalette} typography={typography} effects={effects} cardTitle={cardData.title} cardDescription={cardData.description || ''} playerImage={playerImage} playerStats={playerStats} previewMode={previewMode} />
         </div>
 
         {/* Right Panel - Dusty + Properties */}
         <div className="hidden xl:flex xl:w-96 border-l border-crd-mediumGray/20 bg-crd-darker/30 backdrop-blur-sm overflow-y-auto flex-col">
-          <CRDSidebar
-            cardData={cardData}
-            onCardDataUpdate={updateCardData}
-            cardTitle={cardData.title}
-            playerImage={playerImage}
-            selectedTemplate={selectedTemplate}
-            colorPalette={colorPalette}
-            effects={effects}
-            previewMode={previewMode}
-          />
+          <CRDSidebar cardData={cardData} onCardDataUpdate={updateCardData} cardTitle={cardData.title} playerImage={playerImage} selectedTemplate={selectedTemplate} colorPalette={colorPalette} effects={effects} previewMode={previewMode} />
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
 
 // Helper function to generate CRD-specific codes
