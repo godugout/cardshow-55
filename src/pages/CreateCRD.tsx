@@ -22,11 +22,8 @@ const CreateCRD = () => {
 
   return (
     <div className="fixed inset-0 bg-crd-darkest overflow-hidden">
-      {/* Overlay Header */}
-      <CRDOverlayHeader />
-      
-      {/* Main Content with top padding for header */}
-      <div className="pt-16 h-full">
+      {/* Main Content - Full height */}
+      <div className="h-full">
         <ErrorBoundary>
           <CRDCardCreatorWrapper 
             onComplete={handleComplete}

@@ -27,8 +27,18 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   previewMode,
   onImageUpload
 }) => {
-  // Canvas state
-  const [zoom, setZoom] = useState(150);
+  // Canvas state - responsive default zoom
+  const getDefaultZoom = () => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth >= 1024) return 125; // lg and up
+      if (window.innerWidth >= 768) return 100;  // md
+      if (window.innerWidth >= 640) return 85;   // sm
+      return 70; // xs
+    }
+    return 125;
+  };
+  
+  const [zoom, setZoom] = useState(getDefaultZoom());
   const [showGrid, setShowGrid] = useState(false);
   const [gridType, setGridType] = useState<'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography'>('standard');
   const [showRulers, setShowRulers] = useState(false);
@@ -47,11 +57,13 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   }, []);
 
   const handleZoomReset = useCallback(() => {
-    setZoom(100);
+    setZoom(getDefaultZoom());
   }, []);
 
   const handleZoomFit = useCallback(() => {
-    setZoom(85);
+    // Fit zoom - slightly smaller than default for better view
+    const fitZoom = Math.max(getDefaultZoom() - 15, 50);
+    setZoom(fitZoom);
     setPanOffset({ x: 0, y: 0 }); // Reset pan when fitting
   }, []);
 

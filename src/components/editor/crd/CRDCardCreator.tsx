@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Layers, Image, Type, Palette, Settings, Eye, Save, Download } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { InteractiveCardData, CardState } from '@/types/interactiveCard';
 import { CRDLayoutTab } from './tabs/CRDLayoutTab';
 import { CRDDesignTab } from './tabs/CRDDesignTab';
@@ -20,6 +21,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   onSave,
   onPreview
 }) => {
+  const navigate = useNavigate();
   const [cardData, setCardData] = useState<InteractiveCardData>({
     id: initialCard?.id || `crd_${Date.now()}`,
     title: initialCard?.title || 'Untitled CRDMKR Card',
@@ -142,7 +144,13 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
       <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
         {/* Left: CRD Logo, Title, and Tags */}
         <div className="flex items-center gap-4">
-          <Layers className="w-6 h-6 text-crd-blue" />
+          <button 
+            onClick={() => navigate('/create')}
+            className="hover:bg-crd-mediumGray/20 p-1 rounded transition-colors"
+            title="Back to Create"
+          >
+            <Layers className="w-6 h-6 text-crd-blue hover:text-crd-lightBlue transition-colors" />
+          </button>
           
           <input 
             type="text"
