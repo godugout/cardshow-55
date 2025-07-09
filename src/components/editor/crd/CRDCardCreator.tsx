@@ -12,6 +12,7 @@ import { CRDDesignTab } from './tabs/CRDDesignTab';
 import { CRDContentTab } from './tabs/CRDContentTab';
 import { CRDExportTab } from './tabs/CRDExportTab';
 import { CRDCanvas } from './canvas/CRDCanvas';
+import { CRDSidebar } from './sidebar/CRDSidebar';
 
 interface CRDCardCreatorProps {
   initialCard?: Partial<InteractiveCardData>;
@@ -260,47 +261,21 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             playerImage={playerImage}
             playerStats={playerStats}
             previewMode={previewMode}
-            showGuides={showGuides}
-            onShowGuidesToggle={() => setShowGuides(!showGuides)}
           />
         </div>
 
-        {/* Right Panel - Properties & Settings */}
-        <div className="hidden xl:flex xl:w-80 border-l border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
-          <div className="p-3 space-y-4">
-            <Card className="bg-crd-darker border-crd-mediumGray/20">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-crd-white text-sm">Card Properties</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs text-crd-lightGray block mb-1">Title</label>
-                    <input 
-                      type="text" 
-                      value={cardData.title}
-                      onChange={(e) => updateCardData({ title: e.target.value })}
-                      className="w-full bg-crd-darkest border border-crd-mediumGray/20 rounded px-2 py-1 text-sm text-crd-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-crd-lightGray block mb-1">Rarity</label>
-                    <select 
-                      value={cardData.rarity}
-                      onChange={(e) => updateCardData({ rarity: e.target.value as any })}
-                      className="w-full bg-crd-darkest border border-crd-mediumGray/20 rounded px-2 py-1 text-sm text-crd-white"
-                    >
-                      <option value="common">Common</option>
-                      <option value="uncommon">Uncommon</option>
-                      <option value="rare">Rare</option>
-                      <option value="epic">Epic</option>
-                      <option value="legendary">Legendary</option>
-                    </select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Right Panel - Dusty + Properties */}
+        <div className="hidden xl:flex xl:w-96 border-l border-crd-mediumGray/20 bg-crd-darker/30 backdrop-blur-sm overflow-y-auto flex-col">
+          <CRDSidebar
+            cardData={cardData}
+            onCardDataUpdate={updateCardData}
+            cardTitle={cardData.title}
+            playerImage={playerImage}
+            selectedTemplate={selectedTemplate}
+            colorPalette={colorPalette}
+            effects={effects}
+            previewMode={previewMode}
+          />
         </div>
       </div>
     </div>

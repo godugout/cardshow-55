@@ -1,6 +1,6 @@
-import React from 'react';
-import { Ruler, Grid, Eye } from 'lucide-react';
-import { DustyAssistant } from '../assistant/DustyAssistant';
+import React, { useState, useCallback } from 'react';
+import { CRDCanvasGrid } from './CRDCanvasGrid';
+import { CRDCanvasControls } from './CRDCanvasControls';
 
 interface CRDCanvasProps {
   template: string;
@@ -12,8 +12,6 @@ interface CRDCanvasProps {
   playerImage: string | null;
   playerStats: Record<string, string>;
   previewMode: 'edit' | 'preview' | 'print';
-  showGuides: boolean;
-  onShowGuidesToggle: () => void;
 }
 
 export const CRDCanvas: React.FC<CRDCanvasProps> = ({
@@ -25,14 +23,37 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   cardDescription,
   playerImage,
   playerStats,
-  previewMode,
-  showGuides,
-  onShowGuidesToggle
+  previewMode
 }) => {
-  // Calculate card aspect ratio (standard trading card: 2.5" × 3.5")
+  // Canvas state
+  const [zoom, setZoom] = useState(100);
+  const [showGrid, setShowGrid] = useState(false);
+  const [gridType, setGridType] = useState<'standard' | 'print' | 'golden'>('standard');
+  const [showRulers, setShowRulers] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
+
+  // Canvas controls
+  const handleZoomIn = useCallback(() => {
+    setZoom(prev => Math.min(prev + 25, 300));
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    setZoom(prev => Math.max(prev - 25, 25));
+  }, []);
+
+  const handleZoomReset = useCallback(() => {
+    setZoom(100);
+  }, []);
+
+  const handleZoomFit = useCallback(() => {
+    setZoom(85);
+  }, []);
+  // Calculate card dimensions
   const cardAspectRatio = 2.5 / 3.5;
-  const canvasWidth = 320;
-  const canvasHeight = canvasWidth / cardAspectRatio;
+  const baseCardWidth = 420; // Increased from 320
+  const baseCardHeight = baseCardWidth / cardAspectRatio;
+  const cardWidth = (baseCardWidth * zoom) / 100;
+  const cardHeight = (baseCardHeight * zoom) / 100;
 
   const getBackgroundStyle = () => {
     const paletteColors = {
@@ -72,57 +93,69 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     return overlayEffects.join(' ');
   };
 
-  // Calculate layout heights
-  const headerHeight = 64; // Approximate header height
-  const availableHeight = typeof window !== 'undefined' ? window.innerHeight - headerHeight : 800;
-  const cardAreaHeight = Math.floor(availableHeight * 0.6); // 60% for card area
-  const dustyAreaHeight = Math.floor(availableHeight * 0.4); // 40% for Dusty
-
   return (
-    <div className="flex flex-col relative h-full">
-      {/* Upper Canvas Area - Fixed Height */}
-      <div 
-        className="flex flex-col items-center justify-center relative"
-        style={{ height: cardAreaHeight }}
-      >
-        {/* Canvas Controls */}
-        <div className="absolute top-4 left-4 flex gap-2 z-10">
-          <button
-            onClick={onShowGuidesToggle}
-            className={`p-2 rounded-lg border transition-colors ${
-              showGuides 
-                ? 'border-crd-blue bg-crd-blue/20 text-crd-blue' 
-                : 'border-crd-mediumGray/20 bg-crd-darker/80 text-crd-lightGray hover:text-crd-white'
-            }`}
-            title="Toggle guides"
-          >
-            <Grid className="w-4 h-4" />
-          </button>
-          <div className="p-2 rounded-lg border border-crd-mediumGray/20 bg-crd-darker/80 text-crd-lightGray">
-            <Eye className="w-4 h-4" />
-          </div>
-        </div>
+    <div className="relative h-full w-full overflow-hidden bg-crd-darkest">
+      {/* Grid Background */}
+      <CRDCanvasGrid
+        showGrid={showGrid}
+        gridType={gridType}
+        gridSize={20}
+      />
 
-        {/* Canvas Area - Perfectly Centered */}
-        <div className="flex flex-col items-center justify-center space-y-4">
+      {/* Canvas Controls */}
+      <CRDCanvasControls
+        zoom={zoom}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onZoomReset={handleZoomReset}
+        onZoomFit={handleZoomFit}
+        showGrid={showGrid}
+        onGridToggle={() => setShowGrid(!showGrid)}
+        gridType={gridType}
+        onGridTypeChange={setGridType}
+        showRulers={showRulers}
+        onRulersToggle={() => setShowRulers(!showRulers)}
+        isPanning={isPanning}
+        onPanToggle={() => setIsPanning(!isPanning)}
+      />
+
+      {/* Canvas Area */}
+      <div className="h-full w-full flex items-center justify-center relative z-10">
+        <div className="relative">
+          {/* Rulers */}
+          {showRulers && (
+            <>
+              {/* Horizontal ruler */}
+              <div className="absolute -top-6 left-0 w-full h-6 bg-crd-darker/90 border-b border-crd-mediumGray/20 text-xs text-crd-lightGray flex items-end">
+                <div className="w-full h-4 bg-gradient-to-r from-crd-mediumGray/10 to-crd-mediumGray/20" />
+              </div>
+              {/* Vertical ruler */}
+              <div className="absolute -left-6 top-0 w-6 h-full bg-crd-darker/90 border-r border-crd-mediumGray/20 text-xs text-crd-lightGray flex justify-end">
+                <div className="w-4 h-full bg-gradient-to-b from-crd-mediumGray/10 to-crd-mediumGray/20" />
+              </div>
+            </>
+          )}
+
+          {/* Floating Card Preview */}
           <div 
-            className="relative bg-white rounded-lg shadow-2xl overflow-hidden"
+            className="relative bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-3xl"
             style={{ 
-              width: canvasWidth, 
-              height: canvasHeight,
-              transform: previewMode === 'print' ? 'scale(0.7)' : 'scale(0.85)'
+              width: cardWidth, 
+              height: cardHeight,
+              transform: `perspective(1000px) rotateX(${isPanning ? '0deg' : '1deg'}) rotateY(${isPanning ? '0deg' : '1deg'})`,
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)'
             }}
           >
             {/* Print Guidelines */}
-            {(showGuides || previewMode === 'print') && (
+            {previewMode === 'print' && (
               <>
                 {/* Bleed area */}
-                <div className="absolute inset-0 border-2 border-red-500/50 pointer-events-none" />
+                <div className="absolute inset-0 border-2 border-red-500/50 pointer-events-none z-30" />
                 {/* Safe area */}
-                <div className="absolute inset-4 border border-green-500/50 pointer-events-none" />
+                <div className="absolute inset-4 border border-green-500/50 pointer-events-none z-30" />
                 {/* Center guides */}
-                <div className="absolute top-0 left-1/2 w-px h-full bg-blue-500/30 pointer-events-none" />
-                <div className="absolute left-0 top-1/2 w-full h-px bg-blue-500/30 pointer-events-none" />
+                <div className="absolute top-0 left-1/2 w-px h-full bg-blue-500/30 pointer-events-none z-30" />
+                <div className="absolute left-0 top-1/2 w-full h-px bg-blue-500/30 pointer-events-none z-30" />
               </>
             )}
 
@@ -195,32 +228,19 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
           </div>
 
           {/* Canvas Info */}
-          <div className="text-center">
-            <div className="text-crd-lightGray text-xs">
-              2.5" × 3.5" • 300 DPI • Print Ready
-            </div>
-            <div className="text-crd-lightGray/70 text-xs mt-1">
-              {previewMode === 'edit' && 'Edit Mode - Make changes to see live preview'}
-              {previewMode === 'preview' && 'Preview Mode - See how your card will look'}
-              {previewMode === 'print' && 'Print Mode - View with print guidelines'}
+          <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 text-center">
+            <div className="bg-crd-darker/90 backdrop-blur-sm border border-crd-mediumGray/20 rounded-lg px-3 py-2">
+              <div className="text-crd-lightGray text-xs">
+                2.5" × 3.5" • 300 DPI • {Math.round(zoom)}% • Print Ready
+              </div>
+              <div className="text-crd-lightGray/70 text-xs mt-1">
+                {previewMode === 'edit' && 'Edit Mode - Make changes to see live preview'}
+                {previewMode === 'preview' && 'Preview Mode - See how your card will look'}
+                {previewMode === 'print' && 'Print Mode - View with print guidelines'}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Dusty AI Assistant Area - Fixed Height */}
-      <div 
-        className="border-t border-crd-mediumGray/20 overflow-hidden"
-        style={{ height: dustyAreaHeight }}
-      >
-        <DustyAssistant 
-          cardTitle={cardTitle}
-          playerImage={playerImage}
-          selectedTemplate={template}
-          colorPalette={colorPalette}
-          effects={effects}
-          previewMode={previewMode}
-        />
       </div>
     </div>
   );
