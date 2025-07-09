@@ -26,7 +26,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   previewMode
 }) => {
   // Canvas state
-  const [zoom, setZoom] = useState(100);
+  const [zoom, setZoom] = useState(150);
   const [showGrid, setShowGrid] = useState(false);
   const [gridType, setGridType] = useState<'standard' | 'print' | 'golden'>('standard');
   const [showRulers, setShowRulers] = useState(false);
@@ -120,7 +120,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
       />
 
       {/* Canvas Area */}
-      <div className="h-full w-full flex items-center justify-center relative z-10">
+      <div className="h-full w-full flex items-start justify-center relative z-10 pt-16">
         <div className="relative">
           {/* Rulers */}
           {showRulers && (
