@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { 
   ZoomIn, ZoomOut, RotateCcw, Grid3x3, Ruler, 
-  Move, Maximize2, Home, Edit3 
+  Move, Maximize2, Edit3 
 } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 
@@ -11,7 +11,6 @@ interface CRDToolbarProps {
   onZoomOut: () => void;
   onZoomReset: () => void;
   onZoomFit: () => void;
-  onResetView: () => void;
   showGrid: boolean;
   onGridToggle: () => void;
   gridType: 'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography';
@@ -28,7 +27,6 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   onZoomOut,
   onZoomReset,
   onZoomFit,
-  onResetView,
   showGrid,
   onGridToggle,
   gridType,
@@ -45,15 +43,11 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
         e.preventDefault();
         onPanToggle();
       }
-      if (e.key === 'r' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        onResetView();
-      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onPanToggle, onResetView]);
+  }, [onPanToggle]);
   return (
     <div className="border-b border-crd-mediumGray/20 bg-crd-darker/50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -66,10 +60,10 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
                 variant={showGrid ? "primary" : "ghost"}
                 size="sm"
                 onClick={onGridToggle}
-                className="h-8 px-3 text-xs"
+                className="h-8 w-8 p-0"
+                title="Toggle Grid"
               >
-                <Grid3x3 className="w-3 h-3 mr-1" />
-                Grid
+                <Grid3x3 className="w-3 h-3" />
               </CRDButton>
               
               {showGrid && (
@@ -91,10 +85,10 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
                 variant={showRulers ? "primary" : "ghost"}
                 size="sm"
                 onClick={onRulersToggle}
-                className="h-8 px-3 text-xs"
+                className="h-8 w-8 p-0"
+                title="Toggle Rulers"
               >
-                <Ruler className="w-3 h-3 mr-1" />
-                Rulers
+                <Ruler className="w-3 h-3" />
               </CRDButton>
             </div>
 
@@ -147,17 +141,6 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
               >
                 <Maximize2 className="w-3 h-3 mr-1" />
                 Fit
-              </CRDButton>
-              
-              <CRDButton
-                variant="ghost"
-                size="sm"
-                onClick={onResetView}
-                className="h-8 px-2 text-xs"
-                title="Reset view (Ctrl+R)"
-              >
-                <Home className="w-3 h-3 mr-1" />
-                Reset View
               </CRDButton>
             </div>
           </div>

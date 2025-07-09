@@ -72,10 +72,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     setIsDragging(false);
   }, []);
 
-  const handleResetView = useCallback(() => {
-    setPanOffset({ x: 0, y: 0 });
-    setZoom(100);
-  }, []);
   // Calculate card dimensions
   const cardAspectRatio = 2.5 / 3.5;
   const baseCardWidth = 420; // Increased from 320
@@ -191,7 +187,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         onZoomOut={handleZoomOut}
         onZoomReset={handleZoomReset}
         onZoomFit={handleZoomFit}
-        onResetView={handleResetView}
         showGrid={showGrid}
         onGridToggle={() => setShowGrid(!showGrid)}
         gridType={gridType}
