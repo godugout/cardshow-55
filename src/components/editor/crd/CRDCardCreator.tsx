@@ -7,6 +7,11 @@ import {
   Eye, Save, Download 
 } from 'lucide-react';
 import { InteractiveCardData, CardState } from '@/types/interactiveCard';
+import { CRDLayoutTab } from './tabs/CRDLayoutTab';
+import { CRDDesignTab } from './tabs/CRDDesignTab';
+import { CRDContentTab } from './tabs/CRDContentTab';
+import { CRDExportTab } from './tabs/CRDExportTab';
+import { CRDCanvas } from './canvas/CRDCanvas';
 
 interface CRDCardCreatorProps {
   initialCard?: Partial<InteractiveCardData>;
@@ -21,7 +26,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
 }) => {
   const [cardData, setCardData] = useState<InteractiveCardData>({
     id: initialCard?.id || `crd_${Date.now()}`,
-    title: initialCard?.title || 'Untitled CRD Card',
+    title: initialCard?.title || 'Untitled CRDMKR Card',
     description: initialCard?.description || '',
     rarity: initialCard?.rarity || 'common',
     creator_id: initialCard?.creator_id || 'current_user',
@@ -29,7 +34,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
     updated_at: new Date().toISOString(),
     
     // CRD-specific features
-    is_interactive: false, // CRD cards are static by default
+    is_interactive: false,
     default_state_id: 'default',
     states: [{
       id: 'default',
@@ -68,10 +73,10 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
       genetic_code: generateCRDCode(),
       remix_permissions: {
         allow_visual_remix: true,
-        allow_behavior_remix: false, // CRD cards typically don't allow behavior remix
+        allow_behavior_remix: false,
         allow_audio_remix: false,
         require_attribution: true,
-        commercial_use: true // CRD cards are commercial by nature
+        commercial_use: true
       },
       inheritance_traits: [],
       generation: 0,
@@ -89,7 +94,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
     
     performance_profile: {
       target_fps: 60,
-      memory_budget: 64, // Lower for static cards
+      memory_budget: 64,
       battery_impact: 'low',
       network_requirements: 'minimal'
     },
@@ -99,8 +104,16 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
     edit_history: []
   });
 
+  // CRDMKR State
   const [activeTab, setActiveTab] = useState('layout');
   const [previewMode, setPreviewMode] = useState<'edit' | 'preview' | 'print'>('edit');
+  const [selectedTemplate, setSelectedTemplate] = useState('baseball-classic');
+  const [colorPalette, setColorPalette] = useState('classic');
+  const [typography, setTypography] = useState('modern');
+  const [effects, setEffects] = useState<string[]>([]);
+  const [playerImage, setPlayerImage] = useState<string | null>(null);
+  const [playerStats, setPlayerStats] = useState<Record<string, string>>({});
+  const [showGuides, setShowGuides] = useState(false);
 
   const updateCardData = useCallback((updates: Partial<InteractiveCardData>) => {
     setCardData(prev => ({
@@ -119,6 +132,11 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
     onPreview(cardData);
     setPreviewMode('preview');
   }, [cardData, onPreview]);
+
+  const handleExport = useCallback((format: string, options: any) => {
+    console.log('Exporting CRDMKR card:', { format, options, cardData });
+    // Implementation for actual export functionality
+  }, [cardData]);
 
   return (
     <div className="h-screen w-full flex flex-col bg-crd-darkest">
@@ -193,67 +211,38 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             
             <div className="p-3 space-y-4 flex-1 overflow-y-auto">
               <TabsContent value="layout" className="mt-0">
-                <Card className="bg-crd-darker border-crd-mediumGray/20">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-crd-white text-sm flex items-center gap-2">
-                      <Layers className="w-4 h-4" />
-                      Card Layout
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-crd-lightGray text-sm">
-                      Choose from professional CRDMKR templates and layouts optimized for trading cards.
-                    </p>
-                  </CardContent>
-                </Card>
+                <CRDLayoutTab
+                  selectedTemplate={selectedTemplate}
+                  onTemplateSelect={setSelectedTemplate}
+                />
               </TabsContent>
               
               <TabsContent value="design" className="mt-0">
-                <Card className="bg-crd-darker border-crd-mediumGray/20">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-crd-white text-sm flex items-center gap-2">
-                      <Palette className="w-4 h-4" />
-                      Visual Design
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-crd-lightGray text-sm">
-                      Professional styling tools for colors, typography, and effects.
-                    </p>
-                  </CardContent>
-                </Card>
+                <CRDDesignTab
+                  colorPalette={colorPalette}
+                  onColorPaletteChange={setColorPalette}
+                  typography={typography}
+                  onTypographyChange={setTypography}
+                  effects={effects}
+                  onEffectsChange={setEffects}
+                />
               </TabsContent>
               
               <TabsContent value="content" className="mt-0">
-                <Card className="bg-crd-darker border-crd-mediumGray/20">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-crd-white text-sm flex items-center gap-2">
-                      <Type className="w-4 h-4" />
-                      Card Content
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-crd-lightGray text-sm">
-                      Add images, text, stats, and other content to your card.
-                    </p>
-                  </CardContent>
-                </Card>
+                <CRDContentTab
+                  cardTitle={cardData.title}
+                  onCardTitleChange={(title) => updateCardData({ title })}
+                  cardDescription={cardData.description || ''}
+                  onCardDescriptionChange={(description) => updateCardData({ description })}
+                  playerImage={playerImage}
+                  onPlayerImageChange={setPlayerImage}
+                  playerStats={playerStats}
+                  onPlayerStatsChange={setPlayerStats}
+                />
               </TabsContent>
               
               <TabsContent value="export" className="mt-0">
-                <Card className="bg-crd-darker border-crd-mediumGray/20">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-crd-white text-sm flex items-center gap-2">
-                      <Settings className="w-4 h-4" />
-                      Export Settings
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-crd-lightGray text-sm">
-                      Configure print settings, resolution, and export formats.
-                    </p>
-                  </CardContent>
-                </Card>
+                <CRDExportTab onExport={handleExport} />
               </TabsContent>
             </div>
           </Tabs>
@@ -261,15 +250,19 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
 
         {/* Center Panel - Card Canvas */}
         <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col w-full">
-          <div className="flex-1 flex items-center justify-center p-8">
-            <div className="bg-crd-darker border border-crd-mediumGray/20 rounded-lg p-8 text-center">
-              <Image className="w-16 h-16 text-crd-lightGray mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-crd-white mb-2">CRDMKR Canvas</h3>
-              <p className="text-crd-lightGray">
-                Professional card creation canvas will be displayed here
-              </p>
-            </div>
-          </div>
+          <CRDCanvas
+            template={selectedTemplate}
+            colorPalette={colorPalette}
+            typography={typography}
+            effects={effects}
+            cardTitle={cardData.title}
+            cardDescription={cardData.description || ''}
+            playerImage={playerImage}
+            playerStats={playerStats}
+            previewMode={previewMode}
+            showGuides={showGuides}
+            onShowGuidesToggle={() => setShowGuides(!showGuides)}
+          />
         </div>
 
         {/* Right Panel - Properties & Settings */}
