@@ -21,18 +21,20 @@ const App = () => {
       <ProductionOptimizer />
       <AuthProvider>
         <Router>
-          <div className="min-h-screen bg-crd-darkest">
+          <div className="min-h-screen bg-crd-darkest flex flex-col">
             <Navbar />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/create" element={<CreateChoice />} />
-              <Route path="/create/story" element={<CreateStory />} />
-              <Route path="/create/crd" element={<CreateCRD />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/studio" element={<Studio />} />
-              <Route path="/studio/:cardId" element={<Studio />} />
-              <Route path="/upload-test" element={<UploadTestPage />} />
-            </Routes>
+            <main className="flex-1 transition-all duration-300 ease-in-out">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/create" element={<CreateChoice />} />
+                <Route path="/create/story" element={<CreateStory />} />
+                <Route path="/create/crd" element={<CreateCRD />} />
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/studio" element={<Studio />} />
+                <Route path="/studio/:cardId" element={<Studio />} />
+                <Route path="/upload-test" element={<UploadTestPage />} />
+              </Routes>
+            </main>
             <Toaster 
               position="top-right"
               theme="dark"

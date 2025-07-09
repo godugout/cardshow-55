@@ -8,6 +8,7 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { useCardConversion } from './Gallery/hooks/useCardConversion';
 import { SubscriptionBanner } from '@/components/monetization/SubscriptionBanner';
 import { CRDButton } from '@/components/ui/design-system/Button';
+import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
@@ -102,7 +103,7 @@ const Gallery = () => {
   }));
 
   return (
-    <div className="min-h-screen bg-crd-darkest">
+    <NavbarAwareContainer className="min-h-screen bg-crd-darkest">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <SubscriptionBanner />
         
@@ -146,7 +147,7 @@ const Gallery = () => {
           )}
         </div>
       </div>
-    </div>
+    </NavbarAwareContainer>
   );
 };
 

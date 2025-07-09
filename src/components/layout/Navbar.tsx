@@ -68,11 +68,12 @@ export const Navbar = () => {
   const isCRDRoute = location.pathname.startsWith('/create/');
 
   return (
-    <nav className={`navbar-themed sticky top-0 z-50 transition-transform duration-300 ${
+    <nav className={`navbar-themed fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${
       showNavbar ? 'translate-y-0' : '-translate-y-full'
-    } ${isScrolled ? 'backdrop-blur-md bg-opacity-90' : ''}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    } ${isScrolled ? 'backdrop-blur-md bg-opacity-90' : ''}`}
+         style={{ height: 'var(--navbar-height)' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="flex justify-between items-center h-full">
           {/* Logo Selector */}
           <div className="flex items-center">
             <LogoSelector onThemeChange={setCurrentTheme} />

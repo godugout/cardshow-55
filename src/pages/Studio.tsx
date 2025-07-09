@@ -178,7 +178,8 @@ const Studio = () => {
       <div className="w-full h-screen bg-crd-darkest flex flex-col relative">
         
         {/* Simplified Mobile Header - Only on mobile, only essential info */}
-        <div className="lg:hidden bg-crd-darker/50 backdrop-blur-sm border-b border-crd-mediumGray/20 px-4 py-3 relative z-10">
+        <div className="lg:hidden bg-crd-darker/50 backdrop-blur-sm border-b border-crd-mediumGray/20 px-4 py-3 relative z-10" 
+             style={{ marginTop: 'var(--navbar-height)' }}>
           <div className="flex items-center justify-center">
             <h1 className="text-lg font-semibold text-crd-white">Studio</h1>
           </div>

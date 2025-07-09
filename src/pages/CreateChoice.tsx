@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 import { CRDButton, Typography } from '@/components/ui/design-system';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { Sparkles, Layers, ArrowRight } from 'lucide-react';
+import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
 
 export const CreateChoice: React.FC = () => {
   const { isMobile } = useResponsiveLayout();
   
   return (
-    <div className="h-screen bg-crd-darkest overflow-hidden">
-      <div className={`h-full max-w-6xl mx-auto ${isMobile ? 'px-5 py-8' : 'px-8 py-16'} pt-20 overflow-y-auto`}>
+    <NavbarAwareContainer className="h-screen bg-crd-darkest overflow-hidden">
+      <div className={`h-full max-w-6xl mx-auto ${isMobile ? 'px-5 py-8' : 'px-8 py-16'} overflow-y-auto`}>
         {/* Header */}
         <div className="text-center mb-16">
           <Typography 
@@ -143,6 +144,6 @@ export const CreateChoice: React.FC = () => {
           </Typography>
         </div>
       </div>
-    </div>
+    </NavbarAwareContainer>
   );
 };

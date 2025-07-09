@@ -2,6 +2,9 @@
 @tailwind base;
 
 :root {
+  /* Layout Variables */
+  --navbar-height: 4rem; /* 64px */
+  
   --background: 0 0% 100%;
   --foreground: 222.2 47.4% 11.2%;
   --card: 0 0% 100%;
