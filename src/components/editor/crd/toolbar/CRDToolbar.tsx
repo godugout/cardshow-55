@@ -14,8 +14,8 @@ interface CRDToolbarProps {
   onResetView: () => void;
   showGrid: boolean;
   onGridToggle: () => void;
-  gridType: 'standard' | 'print' | 'golden';
-  onGridTypeChange: (type: 'standard' | 'print' | 'golden') => void;
+  gridType: 'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography';
+  onGridTypeChange: (type: 'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography') => void;
   showRulers: boolean;
   onRulersToggle: () => void;
   isPanning: boolean;
@@ -75,12 +75,15 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
               {showGrid && (
                 <select
                   value={gridType}
-                  onChange={(e) => onGridTypeChange(e.target.value as 'standard' | 'print' | 'golden')}
+                  onChange={(e) => onGridTypeChange(e.target.value as typeof gridType)}
                   className="bg-crd-darkest border border-crd-mediumGray/20 rounded px-2 py-1 text-xs text-crd-white h-8"
                 >
                   <option value="standard">Standard</option>
                   <option value="print">Print</option>
                   <option value="golden">Golden</option>
+                  <option value="isometric">Isometric</option>
+                  <option value="blueprint">Blueprint</option>
+                  <option value="photography">Photography</option>
                 </select>
               )}
               

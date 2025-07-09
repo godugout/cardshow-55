@@ -28,7 +28,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   // Canvas state
   const [zoom, setZoom] = useState(150);
   const [showGrid, setShowGrid] = useState(false);
-  const [gridType, setGridType] = useState<'standard' | 'print' | 'golden'>('standard');
+  const [gridType, setGridType] = useState<'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography'>('standard');
   const [showRulers, setShowRulers] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -103,6 +103,67 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     return { backgroundColor: baseColor };
   };
 
+  const getGridRulerColors = () => {
+    switch (gridType) {
+      case 'standard':
+        return {
+          background: 'rgb(30, 64, 175, 0.95)', // blue-800
+          border: 'rgb(59, 130, 246, 0.6)', // blue-500
+          tick: 'rgb(59, 130, 246, 0.6)', // blue-500
+          text: 'rgb(147, 197, 253)', // blue-300
+          label: 'STD'
+        };
+      case 'print':
+        return {
+          background: 'rgb(21, 128, 61, 0.95)', // green-800
+          border: 'rgb(34, 197, 94, 0.6)', // green-500
+          tick: 'rgb(34, 197, 94, 0.6)', // green-500
+          text: 'rgb(134, 239, 172)', // green-300
+          label: 'PRT'
+        };
+      case 'golden':
+        return {
+          background: 'rgb(180, 83, 9, 0.95)', // amber-800
+          border: 'rgb(251, 191, 36, 0.6)', // amber-500
+          tick: 'rgb(251, 191, 36, 0.6)', // amber-500
+          text: 'rgb(252, 211, 77)', // amber-300
+          label: 'GLD'
+        };
+      case 'isometric':
+        return {
+          background: 'rgb(88, 28, 135, 0.95)', // purple-800
+          border: 'rgb(147, 51, 234, 0.6)', // purple-500
+          tick: 'rgb(147, 51, 234, 0.6)', // purple-500
+          text: 'rgb(196, 181, 253)', // purple-300
+          label: 'ISO'
+        };
+      case 'blueprint':
+        return {
+          background: 'rgb(14, 116, 144, 0.95)', // cyan-800
+          border: 'rgb(6, 182, 212, 0.6)', // cyan-500
+          tick: 'rgb(6, 182, 212, 0.6)', // cyan-500
+          text: 'rgb(103, 232, 249)', // cyan-300
+          label: 'BLP'
+        };
+      case 'photography':
+        return {
+          background: 'rgb(157, 23, 77, 0.95)', // pink-800
+          border: 'rgb(236, 72, 153, 0.6)', // pink-500
+          tick: 'rgb(236, 72, 153, 0.6)', // pink-500
+          text: 'rgb(244, 114, 182)', // pink-300
+          label: 'PHO'
+        };
+      default:
+        return {
+          background: 'rgb(75, 85, 99, 0.95)',
+          border: 'rgb(156, 163, 175, 0.6)',
+          tick: 'rgb(156, 163, 175, 0.6)',
+          text: 'rgb(209, 213, 219)',
+          label: 'GEN'
+        };
+    }
+  };
+
   const getEffectsOverlay = () => {
     const overlayEffects = [];
     
@@ -164,58 +225,103 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
             transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom / 100})`
           }}
         >
-          {/* Enhanced Rulers */}
-          {showRulers && (
-            <>
-              {/* Horizontal ruler */}
-              <div className="absolute -top-8 left-0 w-full h-8 bg-gray-800/95 border-b-2 border-gray-600/60 text-xs text-gray-200 z-40">
-                <div className="relative w-full h-full">
-                  {/* Measurement ticks */}
-                  {Array.from({ length: Math.ceil(cardWidth / 20) }, (_, i) => (
-                    <div
-                      key={i}
-                      className="absolute bottom-0 border-l border-gray-400/60"
-                      style={{ left: `${i * 20}px`, height: i % 5 === 0 ? '16px' : '8px' }}
-                    >
-                      {i % 5 === 0 && (
-                        <span className="absolute -top-4 -left-2 text-xs text-gray-300 font-mono">
-                          {Math.round((i * 20 * 2.5) / cardWidth * 100) / 100}"
-                        </span>
-                      )}
-                    </div>
-                  ))}
+          {/* Enhanced Grid-Themed Rulers */}
+          {showRulers && (() => {
+            const rulerColors = getGridRulerColors();
+            return (
+              <>
+                {/* Horizontal ruler */}
+                <div 
+                  className="absolute -top-8 left-0 w-full h-8 border-b-2 text-xs z-40"
+                  style={{ 
+                    backgroundColor: rulerColors.background,
+                    borderBottomColor: rulerColors.border,
+                    color: rulerColors.text
+                  }}
+                >
+                  <div className="relative w-full h-full">
+                    {/* Measurement ticks */}
+                    {Array.from({ length: Math.ceil(cardWidth / 20) }, (_, i) => (
+                      <div
+                        key={i}
+                        className="absolute bottom-0 border-l"
+                        style={{ 
+                          left: `${i * 20}px`, 
+                          height: i % 5 === 0 ? '16px' : '8px',
+                          borderLeftColor: rulerColors.tick
+                        }}
+                      >
+                        {i % 5 === 0 && (
+                          <span 
+                            className="absolute -top-4 -left-2 text-xs font-mono font-semibold"
+                            style={{ color: rulerColors.text }}
+                          >
+                            {Math.round((i * 20 * 2.5) / cardWidth * 100) / 100}"
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              
-              {/* Vertical ruler */}
-              <div className="absolute -left-8 top-0 w-8 h-full bg-gray-800/95 border-r-2 border-gray-600/60 text-xs text-gray-200 z-40">
-                <div className="relative w-full h-full">
-                  {/* Measurement ticks */}
-                  {Array.from({ length: Math.ceil(cardHeight / 20) }, (_, i) => (
-                    <div
-                      key={i}
-                      className="absolute right-0 border-t border-gray-400/60"
-                      style={{ top: `${i * 20}px`, width: i % 5 === 0 ? '16px' : '8px' }}
-                    >
-                      {i % 5 === 0 && (
-                        <span 
-                          className="absolute -right-6 -top-2 text-xs text-gray-300 font-mono transform -rotate-90 origin-center"
-                          style={{ transformOrigin: 'center', whiteSpace: 'nowrap' }}
-                        >
-                          {Math.round((i * 20 * 3.5) / cardHeight * 100) / 100}"
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                
+                {/* Vertical ruler */}
+                <div 
+                  className="absolute -left-8 top-0 w-8 h-full border-r-2 text-xs z-40"
+                  style={{ 
+                    backgroundColor: rulerColors.background,
+                    borderRightColor: rulerColors.border,
+                    color: rulerColors.text
+                  }}
+                >
+                  <div className="relative w-full h-full">
+                    {/* Measurement ticks */}
+                    {Array.from({ length: Math.ceil(cardHeight / 20) }, (_, i) => (
+                      <div
+                        key={i}
+                        className="absolute right-0 border-t"
+                        style={{ 
+                          top: `${i * 20}px`, 
+                          width: i % 5 === 0 ? '16px' : '8px',
+                          borderTopColor: rulerColors.tick
+                        }}
+                      >
+                        {i % 5 === 0 && (
+                          <span 
+                            className="absolute -right-6 -top-2 text-xs font-mono font-semibold transform -rotate-90 origin-center"
+                            style={{ 
+                              color: rulerColors.text,
+                              transformOrigin: 'center', 
+                              whiteSpace: 'nowrap' 
+                            }}
+                          >
+                            {Math.round((i * 20 * 3.5) / cardHeight * 100) / 100}"
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              
-              {/* Corner ruler intersection */}
-              <div className="absolute -top-8 -left-8 w-8 h-8 bg-gray-900/95 border-b-2 border-r-2 border-gray-600/60 z-50 flex items-center justify-center">
-                <span className="text-xs text-gray-400 font-mono">IN</span>
-              </div>
-            </>
-          )}
+                
+                {/* Corner ruler intersection with grid type indicator */}
+                <div 
+                  className="absolute -top-8 -left-8 w-8 h-8 border-b-2 border-r-2 z-50 flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: rulerColors.background,
+                    borderBottomColor: rulerColors.border,
+                    borderRightColor: rulerColors.border
+                  }}
+                >
+                  <span 
+                    className="text-xs font-mono font-bold"
+                    style={{ color: rulerColors.text }}
+                    title={`${gridType.charAt(0).toUpperCase() + gridType.slice(1)} Grid`}
+                  >
+                    {rulerColors.label}
+                  </span>
+                </div>
+              </>
+            );
+          })()}
 
           {/* Floating Card Preview */}
           <div 
