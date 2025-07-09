@@ -43,10 +43,18 @@ export const Navbar = () => {
         setIsScrolled(false);
       }
 
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setShowNavbar(false);
+      // Only apply scroll-based showing/hiding on non-studio/create routes
+      if (!isStudioOrCreateRoute) {
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          setShowNavbar(false);
+        } else {
+          setShowNavbar(true);
+        }
       } else {
-        setShowNavbar(true);
+        // On studio/create routes, hide when scrolling down, but don't auto-show when scrolling up
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          setShowNavbar(false);
+        }
       }
 
       setLastScrollY(currentScrollY);
@@ -54,7 +62,7 @@ export const Navbar = () => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isStudioOrCreateRoute]);
 
   const isActive = (path: string) => location.pathname === path;
   const isCRDRoute = location.pathname.startsWith('/create/');
