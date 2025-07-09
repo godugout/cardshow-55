@@ -6,13 +6,13 @@ interface CRDGradientLogoProps {
 
 export const CRDGradientLogo: React.FC<CRDGradientLogoProps> = ({ className = "" }) => {
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-center relative ${className}`}>
       <img 
         src="/lovable-uploads/7697ffa5-ac9b-428b-9bc0-35500bcb2286.png" 
         alt="CRD"
         className="h-16 w-auto"
       />
-      <span className="text-lg font-medium text-crd-lightGray tracking-wide">
+      <span className="text-lg font-medium text-crd-lightGray tracking-wide relative z-10 -ml-3">
         MKR
       </span>
     </div>
