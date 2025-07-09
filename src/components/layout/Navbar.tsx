@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Plus, Home, ImageIcon, Palette, X } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
@@ -26,12 +26,40 @@ const getNavbarColorClasses = (color: string) => {
 export const Navbar = () => {
   const location = useLocation();
   const [currentTheme, setCurrentTheme] = useState('sf-orange');
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [showNavbar, setShowNavbar] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > 100) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setShowNavbar(false);
+      } else {
+        setShowNavbar(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const isActive = (path: string) => location.pathname === path;
   const isCRDRoute = location.pathname.startsWith('/create/');
 
   return (
-    <nav className="navbar-themed sticky top-0 z-50">
+    <nav className={`navbar-themed sticky top-0 z-50 transition-transform duration-300 ${
+      showNavbar ? 'translate-y-0' : '-translate-y-full'
+    } ${isScrolled ? 'backdrop-blur-md bg-opacity-90' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Selector */}
@@ -45,9 +73,8 @@ export const Navbar = () => {
             )}
           </div>
 
-          {/* Navigation Links - Hidden when in CRD mode */}
-          {!isCRDRoute && (
-            <div className="flex items-center space-x-8">
+          {/* Navigation Links */}
+          <div className="flex items-center space-x-8">
               <Link
                 to="/"
                 className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -96,7 +123,6 @@ export const Navbar = () => {
                 <span>Studio</span>
               </Link>
             </div>
-          )}
         </div>
       </div>
     </nav>
