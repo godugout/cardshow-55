@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CRDButton } from '@/components/ui/design-system/Button';
@@ -120,9 +120,46 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   const [playerStats, setPlayerStats] = useState<Record<string, string>>({});
   const [showGuides, setShowGuides] = useState(false);
   
-  // Sidebar collapse states
+  // Sidebar collapse states with mobile-first logic
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
+  
+  // Mobile detection and responsive behavior
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileDevice = window.innerWidth < 768; // md breakpoint
+      setIsMobile(isMobileDevice);
+      
+      // On mobile, default to both sidebars collapsed
+      if (isMobileDevice) {
+        setLeftSidebarCollapsed(true);
+        setRightSidebarCollapsed(true);
+      }
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Mobile sidebar logic - only allow one sidebar open at a time
+  const handleLeftSidebarToggle = useCallback(() => {
+    if (isMobile && !leftSidebarCollapsed && !rightSidebarCollapsed) {
+      // If both are open on mobile, close right when opening left
+      setRightSidebarCollapsed(true);
+    }
+    setLeftSidebarCollapsed(!leftSidebarCollapsed);
+  }, [leftSidebarCollapsed, rightSidebarCollapsed, isMobile]);
+  
+  const handleRightSidebarToggle = useCallback(() => {
+    if (isMobile && !rightSidebarCollapsed && !leftSidebarCollapsed) {
+      // If both are open on mobile, close left when opening right
+      setLeftSidebarCollapsed(true);
+    }
+    setRightSidebarCollapsed(!rightSidebarCollapsed);
+  }, [leftSidebarCollapsed, rightSidebarCollapsed, isMobile]);
   const updateCardData = useCallback((updates: Partial<InteractiveCardData>) => {
     setCardData(prev => ({
       ...prev,
@@ -235,6 +272,9 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
               playerImage={playerImage} 
               playerStats={playerStats} 
               previewMode={previewMode}
+              leftSidebarCollapsed={leftSidebarCollapsed}
+              rightSidebarCollapsed={rightSidebarCollapsed}
+              isMobile={isMobile}
               onImageUpload={(files) => {
                 if (files.length > 0) {
                   const file = files[0];
@@ -248,9 +288,11 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
           {/* Left Collapsible Sidebar - Tools */}
           <CollapsibleSidebar
             isCollapsed={leftSidebarCollapsed}
-            onToggle={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
+            onToggle={handleLeftSidebarToggle}
             side="left"
             collapsedContent={<LeftSidebarCollapsedContent activeTab={activeTab} />}
+            className=""
+            style={{ '--sidebar-width': isMobile ? '300px' : '380px' } as React.CSSProperties}
           >
             <LeftSidebarContent
               activeTab={activeTab}
@@ -276,9 +318,11 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
           {/* Right Collapsible Sidebar - Properties */}
           <CollapsibleSidebar
             isCollapsed={rightSidebarCollapsed}
-            onToggle={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}
+            onToggle={handleRightSidebarToggle}
             side="right"
             collapsedContent={<RightSidebarCollapsedContent />}
+            className=""
+            style={{ '--sidebar-width': isMobile ? '300px' : '380px' } as React.CSSProperties}
           >
             <CRDSidebar 
               cardData={cardData} 

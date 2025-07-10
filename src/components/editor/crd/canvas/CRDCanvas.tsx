@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { CRDCanvasGrid } from './CRDCanvasGrid';
 import { CRDToolbar } from '../toolbar/CRDToolbar';
 
@@ -13,6 +13,10 @@ interface CRDCanvasProps {
   playerStats: Record<string, string>;
   previewMode: 'edit' | 'preview' | 'print';
   onImageUpload?: (files: File[]) => void;
+  // New props for sidebar awareness
+  leftSidebarCollapsed?: boolean;
+  rightSidebarCollapsed?: boolean;
+  isMobile?: boolean;
 }
 
 export const CRDCanvas: React.FC<CRDCanvasProps> = ({
@@ -25,7 +29,10 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   playerImage,
   playerStats,
   previewMode,
-  onImageUpload
+  onImageUpload,
+  leftSidebarCollapsed = true,
+  rightSidebarCollapsed = true,
+  isMobile = false
 }) => {
   // Canvas state - responsive default zoom
   const getDefaultZoom = () => {
@@ -60,24 +67,75 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     setZoom(getDefaultZoom());
   }, []);
 
-  const handleZoomFit = useCallback(() => {
-    // Calculate available canvas space and fit card to fill most of it
-    if (typeof window !== 'undefined') {
-      const availableWidth = window.innerWidth * 0.7; // Use 70% of available width
-      const availableHeight = window.innerHeight * 0.6; // Use 60% of available height
-      
-      // Calculate zoom based on which dimension is more constraining
-      const widthZoom = (availableWidth / baseCardWidth) * 100;
-      const heightZoom = (availableHeight / baseCardHeight) * 100;
-      
-      // Use the smaller zoom to ensure card fits in both dimensions
-      const fitZoom = Math.min(widthZoom, heightZoom, 250); // Cap at 250%
-      setZoom(Math.max(fitZoom, 50)); // Minimum 50%
+  // Smart zoom calculation based on sidebar states
+  const calculateOptimalZoom = useCallback(() => {
+    if (typeof window === 'undefined') return 125;
+
+    // Calculate available space based on sidebar states
+    let availableWidth = window.innerWidth;
+    let availableHeight = window.innerHeight - 120; // Account for header + toolbar
+
+    // Subtract sidebar widths if they're open
+    if (!leftSidebarCollapsed) {
+      availableWidth -= isMobile ? 300 : 380; // Mobile uses smaller sidebar
     } else {
-      setZoom(125); // Fallback
+      availableWidth -= 48; // Collapsed width
     }
+
+    if (!rightSidebarCollapsed) {
+      availableWidth -= isMobile ? 300 : 380;
+    } else {
+      availableWidth -= 48; // Collapsed width
+    }
+
+    // Add padding for comfortable viewing
+    availableWidth *= 0.85; // 85% of available width
+    availableHeight *= 0.75; // 75% of available height
+
+    // Calculate zoom based on constraining dimension
+    const widthZoom = (availableWidth / baseCardWidth) * 100;
+    const heightZoom = (availableHeight / baseCardHeight) * 100;
+
+    // Use smaller zoom to ensure card fits, with caps
+    const idealZoom = Math.min(widthZoom, heightZoom);
+    
+    // Apply device-specific limits
+    if (isMobile) {
+      return Math.max(Math.min(idealZoom, 180), 60); // Mobile: 60-180%
+    } else {
+      return Math.max(Math.min(idealZoom, 250), 80); // Desktop: 80-250%
+    }
+  }, [leftSidebarCollapsed, rightSidebarCollapsed, isMobile]);
+
+  const handleZoomFit = useCallback(() => {
+    const optimalZoom = calculateOptimalZoom();
+    setZoom(optimalZoom);
     setPanOffset({ x: 0, y: 0 }); // Reset pan when fitting
-  }, []);
+  }, [calculateOptimalZoom]);
+
+  // Auto-resize when sidebar states change
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const optimalZoom = calculateOptimalZoom();
+      setZoom(optimalZoom);
+    }, 300); // Small delay to allow sidebar animation to complete
+
+    return () => clearTimeout(timeoutId);
+  }, [leftSidebarCollapsed, rightSidebarCollapsed, calculateOptimalZoom]);
+
+  // Window resize handler for responsive zoom
+  useEffect(() => {
+    const handleResize = () => {
+      const timeoutId = setTimeout(() => {
+        const optimalZoom = calculateOptimalZoom();
+        setZoom(optimalZoom);
+      }, 100);
+      return () => clearTimeout(timeoutId);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [calculateOptimalZoom]);
 
   // Panning handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {

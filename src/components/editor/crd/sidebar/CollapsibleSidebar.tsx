@@ -8,6 +8,7 @@ interface CollapsibleSidebarProps {
   side: 'left' | 'right';
   collapsedContent?: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
@@ -16,7 +17,8 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
   onToggle,
   side,
   collapsedContent,
-  className = ''
+  className = '',
+  style = {}
 }) => {
   const sideStyles = side === 'left' 
     ? { left: 0 } 
@@ -31,8 +33,9 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
       className={`absolute top-0 bottom-0 z-40 transition-all duration-300 ease-in-out ${className}`}
       style={{
         ...sideStyles,
-        width: isCollapsed ? '48px' : '380px',
-        transform: isCollapsed ? 'translateX(0)' : 'translateX(0)'
+        width: isCollapsed ? '48px' : 'var(--sidebar-width, 380px)',
+        transform: isCollapsed ? 'translateX(0)' : 'translateX(0)',
+        ...style
       }}
     >
       {/* Collapsed Icon Strip */}
