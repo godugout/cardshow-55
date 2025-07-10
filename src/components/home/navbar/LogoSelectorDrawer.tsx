@@ -8,6 +8,7 @@ import { OaklandLogo } from './OaklandLogo';
 import { PittsburghLogo } from './PittsburghLogo';
 import { TorontoLogo } from './TorontoLogo';
 import { CardshowBasicLogo } from './CardshowBasicLogo';
+import { CardshowGreenLogo } from './CardshowGreenLogo';
 import { CardshowRedBlueLogo } from './CardshowRedBlueLogo';
 import { CardshowBlueLogo } from './CardshowBlueLogo';
 import { CardshowOrangeLogo } from './CardshowOrangeLogo';
@@ -42,6 +43,7 @@ const logoGroups = [
     label: 'Cardshow Logos',
     logos: [
       { name: 'Cardshow Basic', component: CardshowBasicLogo, hoverColor: 'gray', themeId: 'cardshow-basic' },
+      { name: 'Cardshow Green', component: CardshowGreenLogo, hoverColor: 'green', themeId: 'cardshow-green' },
       { name: 'Cardshow Green Sparkles', component: CardshowGreenSparklesLogo, hoverColor: 'emerald', themeId: 'cardshow-green-sparkles' },
       { name: 'Cardshow Red/Blue', component: CardshowRedBlueLogo, hoverColor: 'purple', themeId: 'cardshow-red-blue' },
       { name: 'Cardshow Blue', component: CardshowBlueLogo, hoverColor: 'blue', themeId: 'cardshow-blue' },
