@@ -139,132 +139,147 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
     });
     // Implementation for actual export functionality
   }, [cardData]);
-  return <div className="h-screen w-full flex flex-col bg-crd-darkest pt-16">
-      {/* Header */}
-      <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
-        {/* Left: CRD Logo, Title, and Tags */}
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => navigate('/create')}
-            className="hover:bg-crd-mediumGray/20 p-1 rounded transition-colors"
-            title="Back to Create"
-          >
-            <Layers className="w-6 h-6 text-crd-blue hover:text-crd-lightBlue transition-colors" />
-          </button>
-          
-          <input 
-            type="text"
-            value={cardData.title}
-            onChange={(e) => updateCardData({ title: e.target.value })}
-            className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all"
-            placeholder="Enter CRD name..."
-          />
-          
-          <div className="flex items-center gap-2 text-xs text-crd-lightGray">
-            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-              v{cardData.version}
-            </div>
-            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-              {cardData.rarity.charAt(0).toUpperCase() + cardData.rarity.slice(1)}
-            </div>
-            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-              Print Ready
-            </div>
-            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-              {cardData.card_dna?.genetic_code?.split('-')[0] || 'CRD'}
-            </div>
-          </div>
-        </div>
-        
-        {/* Right: Buttons */}
-        <div className="flex items-center gap-3">
-          <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
-            <button onClick={() => setPreviewMode('edit')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'edit' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
-              <Eye className="w-4 h-4" />
-            </button>
-            <button onClick={() => setPreviewMode('preview')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'preview' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
-              Preview
-            </button>
-            <button onClick={() => setPreviewMode('print')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'print' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
-              Print
-            </button>
-          </div>
-          
-          <CRDButton onClick={handleSave} variant="secondary" size="sm">
-            <Save className="w-4 h-4 mr-2" />
-            Save
-          </CRDButton>
-          <CRDButton onClick={handlePreview} variant="primary" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </CRDButton>
-        </div>
+  return (
+    <div className="h-screen w-full flex flex-col relative pt-16">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&h=800&fit=crop&crop=center&auto=format"
+          alt="Creative workspace"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/90 via-crd-darkest/85 to-crd-darkest/90"></div>
       </div>
-
-      {/* Main Content - CRD-focused 3-Panel Layout */}
-      <div className="flex-1 flex min-h-0 w-full">
-        {/* Left Panel - CRD Tools */}
-        <div className="hidden lg:flex lg:w-80 xl:w-96 border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-            <TabsList className="grid grid-cols-4 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
-              <TabsTrigger value="layout" className="text-xs">Layout</TabsTrigger>
-              <TabsTrigger value="design" className="text-xs">Design</TabsTrigger>
-              <TabsTrigger value="content" className="text-xs">Content</TabsTrigger>
-              <TabsTrigger value="export" className="text-xs">Export</TabsTrigger>
-            </TabsList>
+      
+      {/* Content with higher z-index */}
+      <div className="relative z-10 h-full flex flex-col">
+        {/* Header */}
+        <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
+          {/* Left: CRD Logo, Title, and Tags */}
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => navigate('/create')}
+              className="hover:bg-crd-mediumGray/20 p-1 rounded transition-colors"
+              title="Back to Create"
+            >
+              <Layers className="w-6 h-6 text-crd-blue hover:text-crd-lightBlue transition-colors" />
+            </button>
             
-            <div className="p-3 space-y-4 flex-1 overflow-y-auto">
-              <TabsContent value="layout" className="mt-0">
-                <CRDLayoutTab selectedTemplate={selectedTemplate} onTemplateSelect={setSelectedTemplate} />
-              </TabsContent>
-              
-              <TabsContent value="design" className="mt-0">
-                <CRDDesignTab colorPalette={colorPalette} onColorPaletteChange={setColorPalette} typography={typography} onTypographyChange={setTypography} effects={effects} onEffectsChange={setEffects} />
-              </TabsContent>
-              
-              <TabsContent value="content" className="mt-0">
-                <CRDContentTab cardTitle={cardData.title} onCardTitleChange={title => updateCardData({
-                title
-              })} cardDescription={cardData.description || ''} onCardDescriptionChange={description => updateCardData({
-                description
-              })} playerImage={playerImage} onPlayerImageChange={setPlayerImage} playerStats={playerStats} onPlayerStatsChange={setPlayerStats} />
-              </TabsContent>
-              
-              <TabsContent value="export" className="mt-0">
-                <CRDExportTab onExport={handleExport} />
-              </TabsContent>
+            <input 
+              type="text"
+              value={cardData.title}
+              onChange={(e) => updateCardData({ title: e.target.value })}
+              className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all"
+              placeholder="Enter CRD name..."
+            />
+            
+            <div className="flex items-center gap-2 text-xs text-crd-lightGray">
+              <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+                v{cardData.version}
+              </div>
+              <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+                {cardData.rarity.charAt(0).toUpperCase() + cardData.rarity.slice(1)}
+              </div>
+              <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+                Print Ready
+              </div>
+              <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+                {cardData.card_dna?.genetic_code?.split('-')[0] || 'CRD'}
+              </div>
             </div>
-          </Tabs>
+          </div>
+          
+          {/* Right: Buttons */}
+          <div className="flex items-center gap-3">
+            <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
+              <button onClick={() => setPreviewMode('edit')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'edit' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
+                <Eye className="w-4 h-4" />
+              </button>
+              <button onClick={() => setPreviewMode('preview')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'preview' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
+                Preview
+              </button>
+              <button onClick={() => setPreviewMode('print')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'print' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
+                Print
+              </button>
+            </div>
+            
+            <CRDButton onClick={handleSave} variant="secondary" size="sm">
+              <Save className="w-4 h-4 mr-2" />
+              Save
+            </CRDButton>
+            <CRDButton onClick={handlePreview} variant="primary" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </CRDButton>
+          </div>
         </div>
 
-        {/* Center Panel - Card Canvas */}
-        <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col w-full">
-          <CRDCanvas 
-            template={selectedTemplate} 
-            colorPalette={colorPalette} 
-            typography={typography} 
-            effects={effects} 
-            cardTitle={cardData.title} 
-            cardDescription={cardData.description || ''} 
-            playerImage={playerImage} 
-            playerStats={playerStats} 
-            previewMode={previewMode}
-            onImageUpload={(files) => {
-              if (files.length > 0) {
-                const file = files[0];
-                const imageUrl = URL.createObjectURL(file);
-                setPlayerImage(imageUrl);
-              }
-            }}
-          />
-        </div>
+        {/* Main Content - CRD-focused 3-Panel Layout */}
+        <div className="flex-1 flex min-h-0 w-full">
+          {/* Left Panel - CRD Tools */}
+          <div className="hidden lg:flex lg:w-80 xl:w-96 border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+              <TabsList className="grid grid-cols-4 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
+                <TabsTrigger value="layout" className="text-xs">Layout</TabsTrigger>
+                <TabsTrigger value="design" className="text-xs">Design</TabsTrigger>
+                <TabsTrigger value="content" className="text-xs">Content</TabsTrigger>
+                <TabsTrigger value="export" className="text-xs">Export</TabsTrigger>
+              </TabsList>
+              
+              <div className="p-3 space-y-4 flex-1 overflow-y-auto">
+                <TabsContent value="layout" className="mt-0">
+                  <CRDLayoutTab selectedTemplate={selectedTemplate} onTemplateSelect={setSelectedTemplate} />
+                </TabsContent>
+                
+                <TabsContent value="design" className="mt-0">
+                  <CRDDesignTab colorPalette={colorPalette} onColorPaletteChange={setColorPalette} typography={typography} onTypographyChange={setTypography} effects={effects} onEffectsChange={setEffects} />
+                </TabsContent>
+                
+                <TabsContent value="content" className="mt-0">
+                  <CRDContentTab cardTitle={cardData.title} onCardTitleChange={title => updateCardData({
+                  title
+                })} cardDescription={cardData.description || ''} onCardDescriptionChange={description => updateCardData({
+                  description
+                })} playerImage={playerImage} onPlayerImageChange={setPlayerImage} playerStats={playerStats} onPlayerStatsChange={setPlayerStats} />
+                </TabsContent>
+                
+                <TabsContent value="export" className="mt-0">
+                  <CRDExportTab onExport={handleExport} />
+                </TabsContent>
+              </div>
+            </Tabs>
+          </div>
 
-        {/* Right Panel - Dusty + Properties */}
-        <div className="hidden xl:flex xl:w-96 border-l border-crd-mediumGray/20 bg-crd-darker/30 backdrop-blur-sm overflow-y-auto flex-col">
-          <CRDSidebar cardData={cardData} onCardDataUpdate={updateCardData} cardTitle={cardData.title} playerImage={playerImage} selectedTemplate={selectedTemplate} colorPalette={colorPalette} effects={effects} previewMode={previewMode} />
+          {/* Center Panel - Card Canvas */}
+          <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col w-full">
+            <CRDCanvas 
+              template={selectedTemplate} 
+              colorPalette={colorPalette} 
+              typography={typography} 
+              effects={effects} 
+              cardTitle={cardData.title} 
+              cardDescription={cardData.description || ''} 
+              playerImage={playerImage} 
+              playerStats={playerStats} 
+              previewMode={previewMode}
+              onImageUpload={(files) => {
+                if (files.length > 0) {
+                  const file = files[0];
+                  const imageUrl = URL.createObjectURL(file);
+                  setPlayerImage(imageUrl);
+                }
+              }}
+            />
+          </div>
+
+          {/* Right Panel - Dusty + Properties */}
+          <div className="hidden xl:flex xl:w-96 border-l border-crd-mediumGray/20 bg-crd-darker/30 backdrop-blur-sm overflow-y-auto flex-col">
+            <CRDSidebar cardData={cardData} onCardDataUpdate={updateCardData} cardTitle={cardData.title} playerImage={playerImage} selectedTemplate={selectedTemplate} colorPalette={colorPalette} effects={effects} previewMode={previewMode} />
+          </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 // Helper function to generate CRD-specific codes
