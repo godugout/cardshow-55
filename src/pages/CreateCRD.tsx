@@ -21,7 +21,7 @@ const CreateCRD = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-crd-darkest overflow-hidden pt-16">
+    <div className="fixed inset-0 bg-crd-darkest overflow-hidden">
       {/* Main Content - Full height */}
       <div className="h-full">
         <ErrorBoundary>

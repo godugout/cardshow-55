@@ -1,9 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Plus, Home, ImageIcon, Palette, X } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
 import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
+import { useEnhancedNavbar } from '@/hooks/useEnhancedNavbar';
 
 const getNavbarColorClasses = (color: string) => {
   const colorMap = {
@@ -26,112 +27,146 @@ const getNavbarColorClasses = (color: string) => {
 export const Navbar = () => {
   const location = useLocation();
   const [currentTheme, setCurrentTheme] = useState('sf-orange');
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
   
-  // Hide navbar by default on studio and create routes
-  const isStudioOrCreateRoute = location.pathname === '/studio' || location.pathname.startsWith('/create');
-  const [showNavbar, setShowNavbar] = useState(!isStudioOrCreateRoute);
+  // Get prefersReducedMotion first
+  const prefersReducedMotion = typeof window !== 'undefined' && 
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      if (currentScrollY > 100) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-
-      // Only apply scroll-based showing/hiding on non-studio/create routes
-      if (!isStudioOrCreateRoute) {
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
-          setShowNavbar(false);
-        } else {
-          setShowNavbar(true);
-        }
-      } else {
-        // On studio/create routes, hide when scrolling down, but don't auto-show when scrolling up
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
-          setShowNavbar(false);
-        }
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY, isStudioOrCreateRoute]);
+  const { 
+    isVisible, 
+    isScrolled, 
+    scrollMetrics, 
+    isSpecialRoute 
+  } = useEnhancedNavbar({
+    threshold: 20,
+    hideOffset: 100,
+    scrollVelocityThreshold: 8,
+    showDelay: prefersReducedMotion ? 0 : 150,
+    hideDelay: prefersReducedMotion ? 0 : 300
+  });
 
   const isActive = (path: string) => location.pathname === path;
   const isCRDRoute = location.pathname.startsWith('/create/');
 
+  // Calculate dynamic blur and opacity based on scroll velocity
+  const blurIntensity = Math.min(scrollMetrics.velocity * 2 + 8, 20);
+  const backgroundOpacity = Math.min(0.8 + scrollMetrics.velocity * 0.1, 0.98);
+  
+  const getTransitionClass = () => {
+    if (prefersReducedMotion) return 'transition-transform duration-200';
+    return scrollMetrics.isScrolling 
+      ? 'transition-all duration-200 ease-out' 
+      : 'transition-all duration-500 ease-out';
+  };
+
   return (
-    <nav className={`navbar-themed fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${
-      showNavbar ? 'translate-y-0' : '-translate-y-full'
-    } ${isScrolled ? 'backdrop-blur-md bg-opacity-90' : ''}`}
-         style={{ height: 'var(--navbar-height)' }}>
+    <nav 
+      className={`
+        navbar-themed fixed top-0 left-0 right-0 z-50
+        ${getTransitionClass()}
+        ${isVisible ? 'translate-y-0' : '-translate-y-full'}
+        ${isScrolled 
+          ? `backdrop-blur-[${blurIntensity}px] shadow-lg` 
+          : 'backdrop-blur-sm'
+        }
+      `}
+      style={{ 
+        height: 'var(--navbar-height)',
+        backgroundColor: isScrolled 
+          ? `hsla(var(--background) / ${backgroundOpacity})` 
+          : 'hsla(var(--background) / 0.8)',
+        borderBottomColor: isScrolled 
+          ? `hsla(var(--border) / 0.3)` 
+          : 'transparent',
+        borderBottomWidth: isScrolled ? '1px' : '0px'
+      }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex justify-between items-center h-full">
-          {/* Logo Selector */}
-          <div className="flex items-center">
-            <LogoSelector onThemeChange={setCurrentTheme} />
+          {/* Logo Selector with enhanced animation */}
+          <div className={`
+            flex items-center transition-all duration-300
+            ${scrollMetrics.isScrolling ? 'scale-[0.98]' : 'scale-100'}
+            ${!prefersReducedMotion && isScrolled ? 'drop-shadow-sm' : ''}
+          `}>
+            <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
+              <LogoSelector onThemeChange={setCurrentTheme} />
+            </div>
             {isCRDRoute && (
-              <>
-                <X className="w-4 h-4 text-themed-secondary/60 mx-1" />
-                <CRDGradientLogo />
-              </>
+              <div className="flex items-center animate-fade-in">
+                <X className="w-4 h-4 text-themed-secondary/60 mx-1 transition-colors duration-200" />
+                <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
+                  <CRDGradientLogo />
+                </div>
+              </div>
             )}
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex items-center space-x-8">
+          {/* Navigation Links with staggered animation */}
+          <div className={`
+            flex items-center space-x-8 transition-all duration-300
+            ${scrollMetrics.isScrolling ? 'scale-[0.98]' : 'scale-100'}
+          `}>
               <Link
                 to="/"
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/') 
-                    ? 'text-themed-active' 
+                className={`
+                  flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium
+                  transition-all duration-200 group
+                  ${isActive('/') 
+                    ? 'text-themed-active bg-themed-active/10' 
                     : 'text-themed-secondary hover-themed'
-                }`}
+                  }
+                  ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
+                `}
               >
-                <Home className="w-4 h-4" />
+                <Home className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110' : ''}`} />
                 <span>Home</span>
               </Link>
 
               <Link
                 to="/create"
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/create') 
-                    ? 'text-themed-active' 
+                className={`
+                  flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium
+                  transition-all duration-200 group
+                  ${isActive('/create') 
+                    ? 'text-themed-active bg-themed-active/10' 
                     : 'text-themed-secondary hover-themed'
-                }`}
+                  }
+                  ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
+                `}
               >
-                <Plus className="w-4 h-4" />
+                <Plus className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110 group-hover:rotate-90' : ''}`} />
                 <span>Create</span>
               </Link>
 
               <Link
                 to="/gallery"
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/gallery') 
-                    ? 'text-themed-active' 
+                className={`
+                  flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium
+                  transition-all duration-200 group
+                  ${isActive('/gallery') 
+                    ? 'text-themed-active bg-themed-active/10' 
                     : 'text-themed-secondary hover-themed'
-                }`}
+                  }
+                  ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
+                `}
               >
-                <ImageIcon className="w-4 h-4" />
+                <ImageIcon className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110' : ''}`} />
                 <span>Gallery</span>
               </Link>
 
               <Link
                 to="/studio"
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/studio') 
-                    ? 'text-themed-active' 
+                className={`
+                  flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium
+                  transition-all duration-200 group
+                  ${isActive('/studio') 
+                    ? 'text-themed-active bg-themed-active/10' 
                     : 'text-themed-secondary hover-themed'
-                }`}
+                  }
+                  ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
+                `}
               >
-                <Palette className="w-4 h-4" />
+                <Palette className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110' : ''}`} />
                 <span>Studio</span>
               </Link>
             </div>
