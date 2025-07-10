@@ -57,10 +57,12 @@ export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
       
       <div className="p-3 space-y-4 flex-1 overflow-y-auto">
         <TabsContent value="layout" className="mt-0">
-          <CRDLayoutTab 
-            selectedTemplate={selectedTemplate} 
-            onTemplateSelect={onTemplateSelect} 
-          />
+            <CRDLayoutTab 
+              selectedTemplate={selectedTemplate} 
+              onTemplateSelect={onTemplateSelect}
+              cardData={cardData}
+              updateCardData={updateCardData}
+            />
         </TabsContent>
         
         <TabsContent value="design" className="mt-0">
