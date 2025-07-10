@@ -22,7 +22,7 @@ export const CreateChoice: React.FC = () => {
               onLoad={() => console.log('✅ Background image loaded successfully')}
               onError={(e) => console.log('❌ Background image failed to load:', e)}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/40 via-crd-darkest/20 to-crd-darkest/60 z-1"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/30 via-crd-darkest/10 to-crd-darkest/40 z-[1]"></div>
           </div>
           
           {/* Hero Content */}
