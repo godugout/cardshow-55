@@ -2,12 +2,13 @@ import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { Layers, Image, Type, Palette, Settings, Eye, Save, Download, Printer, Share2, FileDown } from 'lucide-react';
+import { Layers, Image, Type, Palette, Settings, Eye, Save, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { InteractiveCardData, CardState } from '@/types/interactiveCard';
 import { CRDLayoutTab } from './tabs/CRDLayoutTab';
 import { CRDDesignTab } from './tabs/CRDDesignTab';
 import { CRDContentTab } from './tabs/CRDContentTab';
+import { CRDExportTab } from './tabs/CRDExportTab';
 import { CRDCanvas } from './canvas/CRDCanvas';
 import { CRDSidebar } from './sidebar/CRDSidebar';
 interface CRDCardCreatorProps {
@@ -206,85 +207,51 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
               <Save className="w-4 h-4 mr-2" />
               Save
             </CRDButton>
-            
-            {/* Export Actions */}
-            <div className="flex items-center gap-2">
-              <CRDButton onClick={() => handleExport('pdf-print', {})} variant="outline" size="sm">
-                <Printer className="w-4 h-4 mr-2" />
-                Print
-              </CRDButton>
-              <CRDButton onClick={() => handleExport('png-web', {})} variant="outline" size="sm">
-                <Share2 className="w-4 h-4 mr-2" />
-                Share
-              </CRDButton>
-              <CRDButton onClick={handlePreview} variant="primary" size="sm">
-                <FileDown className="w-4 h-4 mr-2" />
-                Export
-              </CRDButton>
-            </div>
+            <CRDButton onClick={handlePreview} variant="primary" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </CRDButton>
           </div>
         </div>
 
         {/* Main Content - CRD-focused 3-Panel Layout */}
         <div className="flex-1 flex min-h-0 w-full">
           {/* Left Panel - CRD Tools */}
-          <div className="hidden lg:flex lg:w-80 xl:w-96 border-r border-crd-mediumGray/20 bg-crd-darker/40 backdrop-blur-sm overflow-y-auto flex-col">
+          <div className="hidden lg:flex lg:w-80 xl:w-96 border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-              <TabsList className="grid grid-cols-3 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
-                <TabsTrigger value="layout" className="text-xs font-medium data-[state=active]:bg-crd-blue data-[state=active]:text-white">
-                  <Layers className="w-4 h-4 mr-1.5" />
-                  Templates
-                </TabsTrigger>
-                <TabsTrigger value="design" className="text-xs font-medium data-[state=active]:bg-crd-blue data-[state=active]:text-white">
-                  <Palette className="w-4 h-4 mr-1.5" />
-                  Styling
-                </TabsTrigger>
-                <TabsTrigger value="content" className="text-xs font-medium data-[state=active]:bg-crd-blue data-[state=active]:text-white">
-                  <Type className="w-4 h-4 mr-1.5" />
-                  Content
-                </TabsTrigger>
+              <TabsList className="grid grid-cols-4 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
+                <TabsTrigger value="layout" className="text-xs">Layout</TabsTrigger>
+                <TabsTrigger value="design" className="text-xs">Design</TabsTrigger>
+                <TabsTrigger value="content" className="text-xs">Content</TabsTrigger>
+                <TabsTrigger value="export" className="text-xs">Export</TabsTrigger>
               </TabsList>
               
-              <div className="p-4 space-y-6 flex-1 overflow-y-auto">
+              <div className="p-3 space-y-4 flex-1 overflow-y-auto">
                 <TabsContent value="layout" className="mt-0">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 pb-2 border-b border-crd-mediumGray/20">
-                      <Layers className="w-5 h-5 text-crd-blue" />
-                      <h2 className="text-crd-white font-medium">Card Templates</h2>
-                    </div>
-                    <CRDLayoutTab selectedTemplate={selectedTemplate} onTemplateSelect={setSelectedTemplate} />
-                  </div>
+                  <CRDLayoutTab selectedTemplate={selectedTemplate} onTemplateSelect={setSelectedTemplate} />
                 </TabsContent>
                 
                 <TabsContent value="design" className="mt-0">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 pb-2 border-b border-crd-mediumGray/20">
-                      <Palette className="w-5 h-5 text-crd-blue" />
-                      <h2 className="text-crd-white font-medium">Visual Styling</h2>
-                    </div>
-                    <CRDDesignTab colorPalette={colorPalette} onColorPaletteChange={setColorPalette} typography={typography} onTypographyChange={setTypography} effects={effects} onEffectsChange={setEffects} />
-                  </div>
+                  <CRDDesignTab colorPalette={colorPalette} onColorPaletteChange={setColorPalette} typography={typography} onTypographyChange={setTypography} effects={effects} onEffectsChange={setEffects} />
                 </TabsContent>
                 
                 <TabsContent value="content" className="mt-0">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 pb-2 border-b border-crd-mediumGray/20">
-                      <Type className="w-5 h-5 text-crd-blue" />
-                      <h2 className="text-crd-white font-medium">Card Content</h2>
-                    </div>
-                    <CRDContentTab cardTitle={cardData.title} onCardTitleChange={title => updateCardData({
-                    title
-                  })} cardDescription={cardData.description || ''} onCardDescriptionChange={description => updateCardData({
-                    description
-                  })} playerImage={playerImage} onPlayerImageChange={setPlayerImage} playerStats={playerStats} onPlayerStatsChange={setPlayerStats} />
-                  </div>
+                  <CRDContentTab cardTitle={cardData.title} onCardTitleChange={title => updateCardData({
+                  title
+                })} cardDescription={cardData.description || ''} onCardDescriptionChange={description => updateCardData({
+                  description
+                })} playerImage={playerImage} onPlayerImageChange={setPlayerImage} playerStats={playerStats} onPlayerStatsChange={setPlayerStats} />
+                </TabsContent>
+                
+                <TabsContent value="export" className="mt-0">
+                  <CRDExportTab onExport={handleExport} />
                 </TabsContent>
               </div>
             </Tabs>
           </div>
 
           {/* Center Panel - Card Canvas */}
-          <div className="flex-1 min-w-0 flex flex-col w-full relative overflow-hidden">
+          <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col w-full">
             <CRDCanvas 
               template={selectedTemplate} 
               colorPalette={colorPalette} 
@@ -306,7 +273,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
           </div>
 
           {/* Right Panel - Dusty + Properties */}
-          <div className="hidden xl:flex xl:w-96 border-l border-crd-mediumGray/20 bg-crd-darker/40 backdrop-blur-sm overflow-y-auto flex-col">
+          <div className="hidden xl:flex xl:w-96 border-l border-crd-mediumGray/20 bg-crd-darker/30 backdrop-blur-sm overflow-y-auto flex-col">
             <CRDSidebar cardData={cardData} onCardDataUpdate={updateCardData} cardTitle={cardData.title} playerImage={playerImage} selectedTemplate={selectedTemplate} colorPalette={colorPalette} effects={effects} previewMode={previewMode} />
           </div>
         </div>

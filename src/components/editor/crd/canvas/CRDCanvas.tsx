@@ -38,14 +38,11 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     return 125;
   };
   
-  
   const [zoom, setZoom] = useState(getDefaultZoom());
   const [showGrid, setShowGrid] = useState(false);
   const [gridType, setGridType] = useState<'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography'>('standard');
   const [showRulers, setShowRulers] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
-  
-  // Initialize card at center position with no pan offset
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -197,13 +194,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-transparent flex flex-col">
-      {/* Grid Background - Full Width */}
-      <CRDCanvasGrid
-        showGrid={showGrid}
-        gridType={gridType}
-        gridSize={20}
-      />
-
       {/* Toolbar */}
       <CRDToolbar
         zoom={zoom}
@@ -221,19 +211,23 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         onPanToggle={() => setIsPanning(!isPanning)}
       />
 
-      {/* Canvas Area with Rounded Container */}
-      <div className="flex-1 w-full relative">
-        {/* Canvas Content in Rounded Container */}
-        <div className="absolute inset-2 bg-gradient-to-br from-crd-darkest/60 to-crd-darkest/80 backdrop-blur-sm border border-crd-mediumGray/20 rounded-lg overflow-hidden">
-          <div 
-            className={`w-full h-full flex items-center justify-center relative z-10 pt-16 overflow-hidden ${
-              isPanning ? 'cursor-grab' : 'cursor-default'
-            } ${isDragging ? 'cursor-grabbing' : ''}`}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-          >
+      {/* Grid Background */}
+      <CRDCanvasGrid
+        showGrid={showGrid}
+        gridType={gridType}
+        gridSize={20}
+      />
+
+      {/* Canvas Area */}
+      <div 
+        className={`flex-1 w-full flex items-center justify-center relative z-10 pt-16 overflow-hidden ${
+          isPanning ? 'cursor-grab' : 'cursor-default'
+        } ${isDragging ? 'cursor-grabbing' : ''}`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
         <div 
           className="relative transition-transform duration-200 ease-out"
           style={{
@@ -477,8 +471,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
                 {previewMode === 'print' && 'Print Mode - View with print guidelines'}
               </div>
             </div>
-          </div>
-        </div>
           </div>
         </div>
       </div>
