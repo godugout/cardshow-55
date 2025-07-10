@@ -15,7 +15,7 @@ import { CollapsibleSidebar } from './sidebar/CollapsibleSidebar';
 import { LeftSidebarContent, LeftSidebarCollapsedContent } from './sidebar/LeftSidebarContent';
 import { RightSidebarCollapsedContent } from './sidebar/RightSidebarCollapsed';
 import { PSDModeRightSidebar } from './sidebar/PSDModeRightSidebar';
-import { PSDCanvasIntegration } from './canvas/PSDCanvasIntegration';
+import { PSDFabricCanvas } from './canvas/PSDFabricCanvas';
 import { PSDLayer } from '@/types/psd';
 interface CRDCardCreatorProps {
   initialCard?: Partial<InteractiveCardData>;
@@ -199,11 +199,23 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   const handlePSDModeChange = useCallback((isActive: boolean, layers?: PSDLayer[], thumbnail?: string) => {
     setIsPSDMode(isActive);
     if (isActive && layers) {
-      setPSDLayers(layers);
-      setPSDThumbnail(thumbnail || '');
-      setVisibleLayers(new Set(layers.map(layer => layer.id)));
-      setLayerOpacity(new Map(layers.map(layer => [layer.id, layer.opacity || 100])));
+      console.log('🔄 Activating PSD mode with', layers.length, 'layers');
+      
+      // Import smart layer visibility utility
+      import('@/utils/psdLayerUtils').then(({ getEssentialLayers, getLayerStats }) => {
+        const stats = getLayerStats(layers);
+        console.log('📊 Layer stats:', stats);
+        
+        const essentialLayers = getEssentialLayers(layers);
+        console.log('✅ Essential layers:', Array.from(essentialLayers));
+        
+        setPSDLayers(layers);
+        setPSDThumbnail(thumbnail || '');
+        setVisibleLayers(essentialLayers);
+        setLayerOpacity(new Map(layers.map(layer => [layer.id, layer.styleProperties?.opacity || 100])));
+      });
     } else {
+      console.log('⏹️ Exiting PSD mode');
       setPSDLayers([]);
       setPSDThumbnail('');
       setVisibleLayers(new Set());
@@ -321,10 +333,12 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
           {/* Full Width Canvas */}
           <div className="w-full h-full bg-crd-darkest relative">
             {isPSDMode ? (
-              <PSDCanvasIntegration
+              <PSDFabricCanvas
                 layers={psdLayers}
                 visibleLayers={visibleLayers}
-                targetCanvas={null} // Will integrate with existing canvas system
+                thumbnail={psdThumbnail}
+                onLayerSelect={setSelectedLayer}
+                selectedLayer={selectedLayer}
               />
             ) : (
               <CRDCanvas 
