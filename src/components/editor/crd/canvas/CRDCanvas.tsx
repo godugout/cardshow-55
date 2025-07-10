@@ -325,12 +325,12 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
 
           {/* Floating Card Preview */}
           <div 
-            className="relative bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-3xl"
+            className="relative rounded-xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-3xl"
             style={{ 
               width: cardWidth, 
               height: cardHeight,
               transform: `perspective(1000px) rotateX(${isPanning ? '0deg' : '1deg'}) rotateY(${isPanning ? '0deg' : '1deg'})`,
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
             }}
           >
             {/* Print Guidelines */}
