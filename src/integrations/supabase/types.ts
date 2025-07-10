@@ -5447,7 +5447,7 @@ export type Database = {
           {
             foreignKeyName: "team_color_palettes_team_id_fkey"
             columns: ["team_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "sports_teams"
             referencedColumns: ["id"]
           },
