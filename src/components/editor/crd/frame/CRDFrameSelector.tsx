@@ -8,19 +8,20 @@ import { Search, Star, Download, Filter, Eye } from 'lucide-react';
 import { useCRDFrame } from '@/hooks/useCRDFrame';
 import { CRDFrameEngine } from './CRDFrameEngine';
 import type { CRDFrame } from '@/types/crd-frame';
-
 interface CRDFrameSelectorProps {
   selectedFrameId?: string;
   onFrameSelect: (frame: CRDFrame) => void;
   className?: string;
 }
-
 export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
   selectedFrameId,
   onFrameSelect,
   className = ''
 }) => {
-  const { frames, loading } = useCRDFrame();
+  const {
+    frames,
+    loading
+  } = useCRDFrame();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -33,33 +34,25 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
   // Filter frames
   const filteredFrames = useMemo(() => {
     return frames.filter(frame => {
-      const matchesSearch = frame.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (frame.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
-      
+      const matchesSearch = frame.name.toLowerCase().includes(searchQuery.toLowerCase()) || (frame.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
       const matchesCategory = selectedCategory === 'all' || frame.category === selectedCategory;
-      
       return matchesSearch && matchesCategory;
     });
   }, [frames, searchQuery, selectedCategory]);
-
   if (loading) {
-    return (
-      <div className={`space-y-6 ${className}`}>
+    return <div className={`space-y-6 ${className}`}>
         {/* Header skeleton */}
         <div className="space-y-4">
           <div className="h-4 bg-crd-mediumGray/20 rounded w-32 animate-pulse" />
           <div className="h-10 bg-crd-mediumGray/20 rounded-lg animate-pulse" />
           <div className="flex gap-2">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-8 w-20 bg-crd-mediumGray/20 rounded animate-pulse" />
-            ))}
+            {[1, 2, 3, 4].map(i => <div key={i} className="h-8 w-20 bg-crd-mediumGray/20 rounded animate-pulse" />)}
           </div>
         </div>
         
         {/* Grid skeleton */}
         <div className="grid grid-cols-1 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-crd-darker border border-crd-mediumGray/20 rounded-lg p-4">
+          {[1, 2, 3, 4].map(i => <div key={i} className="bg-crd-darker border border-crd-mediumGray/20 rounded-lg p-4">
               <div className="flex gap-4">
                 <div className="w-16 h-20 bg-crd-mediumGray/20 rounded animate-pulse flex-shrink-0" />
                 <div className="flex-1 space-y-2">
@@ -68,74 +61,39 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                   <div className="h-3 bg-crd-mediumGray/20 rounded w-full animate-pulse" />
                 </div>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className={`space-y-6 ${className}`}>
+  return <div className={`space-y-6 ${className}`}>
       {/* Header */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-crd-white mb-2">Select CRD Frame</h3>
+          
           <p className="text-sm text-crd-lightGray">Choose from {frames.length} professional frame templates</p>
         </div>
 
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-crd-lightGray" />
-          <Input
-            placeholder="Search frames..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-crd-darker border-crd-mediumGray/30 text-crd-white placeholder:text-crd-lightGray focus:border-crd-blue"
-          />
+          <Input placeholder="Search frames..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10 bg-crd-darker border-crd-mediumGray/30 text-crd-white placeholder:text-crd-lightGray focus:border-crd-blue" />
         </div>
         
         {/* Category filters */}
         <div className="flex flex-wrap gap-2">
-          {categories.map(category => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(category)}
-              className={`capitalize ${
-                selectedCategory === category 
-                  ? 'bg-crd-blue hover:bg-crd-blue/80 text-white border-crd-blue' 
-                  : 'bg-transparent border-crd-mediumGray/30 text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-crd-white'
-              }`}
-            >
+          {categories.map(category => <Button key={category} variant={selectedCategory === category ? "default" : "outline"} size="sm" onClick={() => setSelectedCategory(category)} className={`capitalize ${selectedCategory === category ? 'bg-crd-blue hover:bg-crd-blue/80 text-white border-crd-blue' : 'bg-transparent border-crd-mediumGray/30 text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-crd-white'}`}>
               {category}
-            </Button>
-          ))}
+            </Button>)}
         </div>
       </div>
 
       {/* Frames Grid - Responsive 2-4 columns */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-y-auto max-h-[calc(100vh-300px)]">
-        {filteredFrames.map(frame => (
-          <div
-            key={frame.id}
-            className={`bg-crd-darker border rounded-lg p-3 cursor-pointer transition-all duration-200 hover:border-crd-blue/50 hover:bg-crd-darker/80 relative ${
-              selectedFrameId === frame.id 
-                ? 'border-crd-blue bg-crd-blue/10' 
-                : 'border-crd-mediumGray/20'
-            }`}
-            onClick={() => onFrameSelect(frame)}
-          >
+        {filteredFrames.map(frame => <div key={frame.id} className={`bg-crd-darker border rounded-lg p-3 cursor-pointer transition-all duration-200 hover:border-crd-blue/50 hover:bg-crd-darker/80 relative ${selectedFrameId === frame.id ? 'border-crd-blue bg-crd-blue/10' : 'border-crd-mediumGray/20'}`} onClick={() => onFrameSelect(frame)}>
             {/* Preview Button */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="absolute top-2 right-2 z-10 h-8 w-8 p-0 bg-crd-darker/80 border-crd-mediumGray/30 hover:bg-crd-mediumGray/20"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <Button variant="outline" size="sm" className="absolute top-2 right-2 z-10 h-8 w-8 p-0 bg-crd-darker/80 border-crd-mediumGray/30 hover:bg-crd-mediumGray/20" onClick={e => e.stopPropagation()}>
                   <Eye className="h-4 w-4 text-crd-lightGray" />
                 </Button>
               </PopoverTrigger>
@@ -143,14 +101,7 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                 <div className="space-y-3">
                   <h4 className="font-semibold text-crd-white">{frame.name}</h4>
                   <div className="flex justify-center">
-                    <CRDFrameEngine
-                      frame={frame}
-                      content={{}}
-                      selectedVisualStyle="classic_matte"
-                      onContentChange={() => {}}
-                      onCropComplete={() => {}}
-                      className="max-w-[200px]"
-                    />
+                    <CRDFrameEngine frame={frame} content={{}} selectedVisualStyle="classic_matte" onContentChange={() => {}} onCropComplete={() => {}} className="max-w-[200px]" />
                   </div>
                   <p className="text-sm text-crd-lightGray">{frame.description || 'Professional frame template'}</p>
                 </div>
@@ -192,11 +143,9 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                 </div>
                 
                 {/* Premium Badge */}
-                {frame.price_cents > 0 && (
-                  <Badge className="ml-2 bg-crd-lightBlue/20 text-crd-lightBlue border-crd-lightBlue/30 text-xs">
+                {frame.price_cents > 0 && <Badge className="ml-2 bg-crd-lightBlue/20 text-crd-lightBlue border-crd-lightBlue/30 text-xs">
                     Pro
-                  </Badge>
-                )}
+                  </Badge>}
               </div>
 
               {/* Stats */}
@@ -213,32 +162,20 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
               </div>
 
               {/* Tags */}
-              {frame.tags && frame.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {frame.tags.slice(0, 2).map(tag => (
-                    <Badge 
-                      key={tag} 
-                      variant="secondary" 
-                      className="text-xs py-0 px-1.5 bg-crd-mediumGray/20 text-crd-lightGray border-none"
-                    >
+              {frame.tags && frame.tags.length > 0 && <div className="flex flex-wrap gap-1">
+                  {frame.tags.slice(0, 2).map(tag => <Badge key={tag} variant="secondary" className="text-xs py-0 px-1.5 bg-crd-mediumGray/20 text-crd-lightGray border-none">
                       {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
+                    </Badge>)}
+                </div>}
             </div>
-          </div>
-        ))}
+          </div>)}
       </div>
 
       {/* Empty State */}
-      {filteredFrames.length === 0 && !loading && (
-        <div className="text-center py-8">
+      {filteredFrames.length === 0 && !loading && <div className="text-center py-8">
           <Filter className="h-12 w-12 mx-auto mb-3 text-crd-mediumGray" />
           <h4 className="text-crd-white font-medium mb-2">No frames found</h4>
           <p className="text-crd-lightGray text-sm">Try adjusting your search or category filters</p>
-        </div>
-      )}
-    </div>
-  );
+        </div>}
+    </div>;
 };
