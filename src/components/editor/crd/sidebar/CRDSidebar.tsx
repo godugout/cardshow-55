@@ -1,7 +1,20 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import { DustyAssistant } from '../assistant/DustyAssistant';
 import { InteractiveCardData } from '@/types/interactiveCard';
+import { 
+  FileText, 
+  MessageSquare, 
+  Sparkles, 
+  Hash, 
+  Printer, 
+  Monitor, 
+  Palette, 
+  Clock,
+  Settings
+} from 'lucide-react';
 
 interface CRDSidebarProps {
   cardData: InteractiveCardData;
@@ -24,10 +37,29 @@ export const CRDSidebar: React.FC<CRDSidebarProps> = ({
   effects,
   previewMode
 }) => {
+  const getRarityColor = (rarity: string) => {
+    switch (rarity) {
+      case 'legendary': return 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30';
+      case 'epic': return 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-500/30';
+      case 'rare': return 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border-blue-500/30';
+      case 'uncommon': return 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/30';
+      default: return 'bg-crd-darkest/80 border-crd-mediumGray/20';
+    }
+  };
+
   return (
-    <div className="w-96 border-l border-crd-mediumGray/20 bg-crd-darker/40 backdrop-blur-sm overflow-y-auto flex-col flex">
-      {/* Dusty Assistant - Top Section */}
-      <div className="p-4 border-b border-crd-mediumGray/20">
+    <div className="w-96 border-l border-crd-mediumGray/30 bg-crd-darker/60 backdrop-blur-md overflow-y-auto flex-col flex shadow-2xl">
+      {/* Enhanced Dusty Assistant Section */}
+      <div className="p-6 border-b border-crd-mediumGray/30 bg-gradient-to-b from-crd-darker/80 to-crd-darker/60">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 rounded-lg bg-crd-blue/20 border border-crd-blue/30">
+            <Sparkles className="w-4 h-4 text-crd-blue" />
+          </div>
+          <div>
+            <h2 className="text-crd-white font-medium text-sm">AI Assistant</h2>
+            <p className="text-crd-lightGray text-xs">Creative guidance & feedback</p>
+          </div>
+        </div>
         <DustyAssistant
           cardTitle={cardTitle}
           playerImage={playerImage}
@@ -38,42 +70,62 @@ export const CRDSidebar: React.FC<CRDSidebarProps> = ({
         />
       </div>
 
-      {/* Card Properties - Bottom Section */}
-      <div className="p-4 space-y-4 flex-1">
-        <Card className="bg-crd-darker/60 border-crd-mediumGray/20 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-crd-white text-sm">Card Properties</CardTitle>
+      {/* Enhanced Card Properties Section */}
+      <div className="p-6 space-y-6 flex-1">
+        {/* Card Details */}
+        <Card className="bg-crd-darker/80 border-crd-mediumGray/30 backdrop-blur-md shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-crd-blue/20 border border-crd-blue/30">
+                <FileText className="w-4 h-4 text-crd-blue" />
+              </div>
+              <CardTitle className="text-crd-white text-base font-medium">Card Details</CardTitle>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs text-crd-lightGray block mb-1">Title</label>
-                <input 
-                  type="text" 
-                  value={cardData.title}
-                  onChange={(e) => onCardDataUpdate({ title: e.target.value })}
-                  className="w-full bg-crd-darkest/80 border border-crd-mediumGray/20 rounded px-2 py-1 text-sm text-crd-white backdrop-blur-sm"
-                  placeholder="Enter card title..."
-                />
+          <CardContent className="space-y-4">
+            {/* Title Field */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-3 h-3 text-crd-lightGray" />
+                <label className="text-xs text-crd-lightGray font-medium">Title</label>
               </div>
-              
-              <div>
-                <label className="text-xs text-crd-lightGray block mb-1">Description</label>
-                <textarea 
-                  value={cardData.description || ''}
-                  onChange={(e) => onCardDataUpdate({ description: e.target.value })}
-                  className="w-full bg-crd-darkest/80 border border-crd-mediumGray/20 rounded px-2 py-1 text-sm text-crd-white backdrop-blur-sm resize-none"
-                  rows={3}
-                  placeholder="Enter card description..."
-                />
+              <input 
+                type="text" 
+                value={cardData.title}
+                onChange={(e) => onCardDataUpdate({ title: e.target.value })}
+                className="w-full bg-crd-darkest/90 border border-crd-mediumGray/30 rounded-lg px-3 py-2 text-sm text-crd-white backdrop-blur-sm focus:border-crd-blue/50 focus:ring-1 focus:ring-crd-blue/20 transition-all duration-200"
+                placeholder="Enter card title..."
+              />
+            </div>
+            
+            {/* Description Field */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <FileText className="w-3 h-3 text-crd-lightGray" />
+                <label className="text-xs text-crd-lightGray font-medium">Description</label>
               </div>
-              
-              <div>
-                <label className="text-xs text-crd-lightGray block mb-1">Rarity</label>
+              <textarea 
+                value={cardData.description || ''}
+                onChange={(e) => onCardDataUpdate({ description: e.target.value })}
+                className="w-full bg-crd-darkest/90 border border-crd-mediumGray/30 rounded-lg px-3 py-2 text-sm text-crd-white backdrop-blur-sm resize-none focus:border-crd-blue/50 focus:ring-1 focus:ring-crd-blue/20 transition-all duration-200"
+                rows={3}
+                placeholder="Enter card description..."
+              />
+            </div>
+            
+            <Separator className="bg-crd-mediumGray/20 my-4" />
+            
+            {/* Rarity Field */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3 h-3 text-crd-lightGray" />
+                <label className="text-xs text-crd-lightGray font-medium">Rarity</label>
+              </div>
+              <div className="relative">
                 <select 
                   value={cardData.rarity}
                   onChange={(e) => onCardDataUpdate({ rarity: e.target.value as any })}
-                  className="w-full bg-crd-darkest/80 border border-crd-mediumGray/20 rounded px-2 py-1 text-sm text-crd-white backdrop-blur-sm"
+                  className={`w-full ${getRarityColor(cardData.rarity)} rounded-lg px-3 py-2 text-sm text-crd-white backdrop-blur-sm focus:border-crd-blue/50 focus:ring-1 focus:ring-crd-blue/20 transition-all duration-200 appearance-none`}
                 >
                   <option value="common">Common</option>
                   <option value="uncommon">Uncommon</option>
@@ -81,42 +133,92 @@ export const CRDSidebar: React.FC<CRDSidebarProps> = ({
                   <option value="epic">Epic</option>
                   <option value="legendary">Legendary</option>
                 </select>
+                <Badge 
+                  variant="outline" 
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 text-xs ${
+                    cardData.rarity === 'legendary' ? 'border-yellow-500/50 text-yellow-300' :
+                    cardData.rarity === 'epic' ? 'border-purple-500/50 text-purple-300' :
+                    cardData.rarity === 'rare' ? 'border-blue-500/50 text-blue-300' :
+                    cardData.rarity === 'uncommon' ? 'border-green-500/50 text-green-300' :
+                    'border-crd-mediumGray/50 text-crd-lightGray'
+                  }`}
+                >
+                  {cardData.rarity.toUpperCase()}
+                </Badge>
               </div>
+            </div>
 
-              <div>
-                <label className="text-xs text-crd-lightGray block mb-1">Card Code</label>
-                <div className="text-crd-white bg-crd-darkest/80 border border-crd-mediumGray/20 rounded px-2 py-1 text-sm font-mono">
-                  {cardData.card_dna?.genetic_code || 'Generating...'}
+            {/* Card Code */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Hash className="w-3 h-3 text-crd-lightGray" />
+                <label className="text-xs text-crd-lightGray font-medium">Unique Code</label>
+              </div>
+              <div className="bg-crd-darkest/90 border border-crd-mediumGray/30 rounded-lg px-3 py-2 backdrop-blur-sm">
+                <div className="text-crd-white text-sm font-mono tracking-wider">
+                  {cardData.card_dna?.genetic_code || (
+                    <span className="text-crd-lightGray animate-pulse">Generating...</span>
+                  )}
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Additional Properties */}
-        <Card className="bg-crd-darker/60 border-crd-mediumGray/20 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-crd-white text-sm">Print Settings</CardTitle>
+        {/* Enhanced Print Settings */}
+        <Card className="bg-crd-darker/80 border-crd-mediumGray/30 backdrop-blur-md shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-green-500/20 border border-green-500/30">
+                <Printer className="w-4 h-4 text-green-400" />
+              </div>
+              <CardTitle className="text-crd-white text-base font-medium">Print Specifications</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <span className="text-crd-lightGray">Dimensions:</span>
-                  <div className="text-crd-white">2.5" × 3.5"</div>
+            <div className="grid grid-cols-1 gap-4">
+              {/* Technical Specs Grid */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-crd-darkest/60 rounded-lg p-3 border border-crd-mediumGray/20">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Monitor className="w-3 h-3 text-crd-lightGray" />
+                    <span className="text-xs text-crd-lightGray font-medium">Dimensions</span>
+                  </div>
+                  <div className="text-crd-white text-sm font-medium">2.5" × 3.5"</div>
                 </div>
-                <div>
-                  <span className="text-crd-lightGray">Resolution:</span>
-                  <div className="text-crd-white">300 DPI</div>
+                
+                <div className="bg-crd-darkest/60 rounded-lg p-3 border border-crd-mediumGray/20">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Settings className="w-3 h-3 text-crd-lightGray" />
+                    <span className="text-xs text-crd-lightGray font-medium">Resolution</span>
+                  </div>
+                  <div className="text-crd-white text-sm font-medium">300 DPI</div>
                 </div>
-                <div>
-                  <span className="text-crd-lightGray">Color Mode:</span>
-                  <div className="text-crd-white">CMYK</div>
+                
+                <div className="bg-crd-darkest/60 rounded-lg p-3 border border-crd-mediumGray/20">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Palette className="w-3 h-3 text-crd-lightGray" />
+                    <span className="text-xs text-crd-lightGray font-medium">Color Mode</span>
+                  </div>
+                  <div className="text-crd-white text-sm font-medium">CMYK</div>
                 </div>
-                <div>
-                  <span className="text-crd-lightGray">Version:</span>
-                  <div className="text-crd-white">v{cardData.version}</div>
+                
+                <div className="bg-crd-darkest/60 rounded-lg p-3 border border-crd-mediumGray/20">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Clock className="w-3 h-3 text-crd-lightGray" />
+                    <span className="text-xs text-crd-lightGray font-medium">Version</span>
+                  </div>
+                  <div className="text-crd-white text-sm font-medium">v{cardData.version}</div>
                 </div>
+              </div>
+              
+              {/* Print Ready Status */}
+              <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-lg p-3 mt-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-green-300 text-xs font-medium">Print Ready</span>
+                </div>
+                <p className="text-green-200/80 text-xs mt-1">Card meets all print specifications</p>
               </div>
             </div>
           </CardContent>
