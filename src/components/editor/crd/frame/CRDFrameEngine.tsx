@@ -110,12 +110,12 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
     const regionStyle: React.CSSProperties = {
       position: 'absolute',
       ...scaledBounds,
-      borderRadius: region.styling.border?.radius || 0,
-      border: region.styling.border ? 
+      borderRadius: region.styling?.border?.radius || 0,
+      border: region.styling?.border ? 
         `${region.styling.border.width}px ${region.styling.border.style} ${region.styling.border.color}` : 
         '2px dashed rgba(255, 255, 255, 0.4)',
-      background: region.styling.background?.value || 'transparent',
-      clipPath: region.styling.clipPath,
+      background: region.styling?.background?.value || 'transparent',
+      clipPath: region.styling?.clipPath,
       cursor: region.type === 'photo' ? 'pointer' : 'default',
       overflow: 'hidden'
     };
