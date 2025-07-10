@@ -42,14 +42,14 @@
   --theme-accent: 33 22 56; /* Cream/Tan */
   --theme-neutral: 0 0 100; /* White */
   
-  --theme-navbar-bg: 17 98 55; /* Orange background */
-  --theme-navbar-border: 33 22 56; /* Cream border */
+  --theme-navbar-bg: 0 0 16; /* Dark charcoal background for orange logo contrast */
+  --theme-navbar-border: 17 98 55; /* Orange border */
   --theme-text-primary: 0 0 100; /* White text */
   --theme-text-secondary: 33 22 70; /* Light cream */
-  --theme-text-active: 33 22 56; /* Cream active */
-  --theme-cta-bg: 0 0 0; /* Black CTA */
-  --theme-cta-text: 0 0 100; /* White text */
-  --theme-accent-hover: 33 30 46; /* Darker cream */
+  --theme-text-active: 17 98 55; /* Orange active */
+  --theme-cta-bg: 17 98 55; /* Orange CTA */
+  --theme-cta-text: 0 0 0; /* Black text */
+  --theme-accent-hover: 17 85 45; /* Darker orange */
 }
 
 /* Washington - Patriotic red, navy, and white with silver accents */
@@ -59,12 +59,12 @@
   --theme-accent: 197 71 73; /* Light Blue */
   --theme-neutral: 200 8 68; /* Silver */
   
-  --theme-navbar-bg: 0 0 100; /* White background */
+  --theme-navbar-bg: 222 84 13; /* Navy background for red logo contrast */
   --theme-navbar-border: 350 87 43; /* Red border */
-  --theme-text-primary: 222 84 13; /* Navy text */
+  --theme-text-primary: 0 0 100; /* White text */
   --theme-text-secondary: 200 8 68; /* Silver text */
   --theme-text-active: 350 87 43; /* Red active */
-  --theme-cta-bg: 222 84 13; /* Navy CTA */
+  --theme-cta-bg: 350 87 43; /* Red CTA */
   --theme-cta-text: 0 0 100; /* White text */
   --theme-accent-hover: 350 80 35; /* Darker red */
 }
@@ -76,13 +76,13 @@
   --theme-accent: 142 42 55; /* Bright Green */
   --theme-neutral: 126 30 25; /* Dark Green */
   
-  --theme-navbar-bg: 163 100 11; /* Forest green background */
-  --theme-navbar-border: 44 88 53; /* Gold border */
-  --theme-text-primary: 0 0 100; /* White text */
-  --theme-text-secondary: 44 88 70; /* Light gold */
+  --theme-navbar-bg: 45 15 95; /* Light cream background for forest green logo contrast */
+  --theme-navbar-border: 163 100 11; /* Forest green border */
+  --theme-text-primary: 163 100 11; /* Forest green text */
+  --theme-text-secondary: 126 30 25; /* Dark green text */
   --theme-text-active: 44 88 53; /* Gold active */
-  --theme-cta-bg: 44 88 53; /* Gold CTA */
-  --theme-cta-text: 163 100 11; /* Forest green text */
+  --theme-cta-bg: 163 100 11; /* Forest green CTA */
+  --theme-cta-text: 0 0 100; /* White text */
   --theme-accent-hover: 142 50 45; /* Darker green */
 }
 
@@ -93,7 +93,7 @@
   --theme-accent: 47 100 58; /* Bright Gold */
   --theme-neutral: 200 8 57; /* Gray */
   
-  --theme-navbar-bg: 0 0 0; /* Black background */
+  --theme-navbar-bg: 0 0 20; /* Dark gray background for black logo contrast */
   --theme-navbar-border: 44 100 53; /* Gold border */
   --theme-text-primary: 44 100 53; /* Gold text */
   --theme-text-secondary: 200 8 70; /* Light gray */
@@ -110,13 +110,13 @@
   --theme-accent: 198 72 58; /* Light Blue */
   --theme-neutral: 210 17 81; /* Light Gray */
   
-  --theme-navbar-bg: 217 100 25; /* Royal blue background */
-  --theme-navbar-border: 198 72 58; /* Light blue border */
-  --theme-text-primary: 0 0 100; /* White text */
-  --theme-text-secondary: 198 72 75; /* Lighter blue */
+  --theme-navbar-bg: 0 0 100; /* White background for royal blue logo contrast */
+  --theme-navbar-border: 217 100 25; /* Royal blue border */
+  --theme-text-primary: 217 100 25; /* Royal blue text */
+  --theme-text-secondary: 210 17 81; /* Light gray text */
   --theme-text-active: 198 72 58; /* Light blue active */
-  --theme-cta-bg: 198 72 58; /* Light blue CTA */
-  --theme-cta-text: 217 100 25; /* Royal blue text */
+  --theme-cta-bg: 217 100 25; /* Royal blue CTA */
+  --theme-cta-text: 0 0 100; /* White text */
   --theme-accent-hover: 198 80 50; /* Darker light blue */
 }
 
