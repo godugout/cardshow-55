@@ -113,8 +113,8 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
         </div>
       </div>
 
-      {/* Frames Grid - Wider with more columns */}
-      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 overflow-y-auto max-h-[calc(100vh-300px)] p-4">
+      {/* Frames Grid - Responsive 2-3 columns max */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 overflow-y-auto max-h-[calc(100vh-300px)] p-6">
         {filteredFrames.map(frame => (
           <div
             key={frame.id}
@@ -125,27 +125,28 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
             }`}
             onClick={() => onFrameSelect(frame)}
           >
-            {/* Large Frame Preview */}
-            <div className="aspect-[5/7] bg-crd-mediumGray/20 rounded mb-3 flex items-center justify-center border border-crd-mediumGray/30 overflow-hidden">
-              {frame.preview_image_url ? (
-                <img
-                  src={frame.preview_image_url}
-                  alt={frame.name}
-                  className="w-full h-full object-cover rounded"
-                  onError={(e) => {
-                    console.log('Image failed to load:', frame.preview_image_url);
-                    const target = e.currentTarget as HTMLImageElement;
-                    target.style.display = 'none';
-                    const sibling = target.nextElementSibling as HTMLElement;
-                    if (sibling) sibling.style.display = 'block';
-                  }}
-                />
-              ) : null}
-              <div className="text-center p-4" style={{ display: frame.preview_image_url ? 'none' : 'block' }}>
-                <div className="text-lg text-crd-lightGray font-mono mb-2">FRAME</div>
-                <div className="text-sm text-crd-blue font-semibold">{frame.category?.toUpperCase()}</div>
-                <div className="text-xs text-crd-lightGray mt-2">
+            {/* Frame Thumbnail - Enhanced Placeholder */}
+            <div className="aspect-[360/504] bg-gradient-to-br from-crd-dark to-crd-darkest border-2 border-crd-blue/40 rounded-lg flex flex-col items-center justify-center overflow-hidden group-hover:border-crd-blue/60 transition-colors mb-3">
+              <div className="text-center p-4">
+                {/* Category Icon */}
+                <div className="w-12 h-12 mx-auto mb-3 bg-crd-blue/20 rounded-full flex items-center justify-center">
+                  <div className="text-crd-blue text-xl font-bold">
+                    {frame.category?.charAt(0).toUpperCase() || 'F'}
+                  </div>
+                </div>
+                
+                {/* Frame Info */}
+                <div className="text-lg text-crd-white font-semibold mb-1">{frame.name}</div>
+                <div className="text-sm text-crd-blue font-medium mb-2">{frame.category?.toUpperCase()}</div>
+                <div className="text-xs text-crd-lightGray">
                   {frame.frame_config?.dimensions?.width || 400} × {frame.frame_config?.dimensions?.height || 560}px
+                </div>
+                
+                {/* Preview Elements */}
+                <div className="mt-3 space-y-1">
+                  <div className="h-1 bg-crd-blue/30 rounded mx-auto w-3/4"></div>
+                  <div className="h-1 bg-crd-blue/20 rounded mx-auto w-1/2"></div>
+                  <div className="h-1 bg-crd-blue/10 rounded mx-auto w-2/3"></div>
                 </div>
               </div>
             </div>

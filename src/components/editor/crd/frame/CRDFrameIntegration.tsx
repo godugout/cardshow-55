@@ -55,14 +55,14 @@ export const CRDFrameIntegration: React.FC<CRDFrameIntegrationProps> = ({
   }, [selectedFrame]);
 
   return (
-    <div className={`space-y-6 ${className}`}>
-      {/* Frame Browser - Now takes up the main space */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-crd-white">Select Your Frame</h3>
+    <div className={`w-full max-w-6xl mx-auto px-6 ${className}`}>
+      {/* Frame Browser - Expanded for better browsing */}
+      <div className="space-y-6">
+        <h3 className="text-xl font-semibold text-crd-white">Select Your Frame</h3>
         <CRDFrameSelector
           selectedFrameId={selectedFrame?.id}
           onFrameSelect={handleFrameSelect}
-          className="w-full" // Let it use full width
+          className="w-full"
         />
       </div>
     </div>
