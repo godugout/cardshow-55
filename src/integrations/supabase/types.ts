@@ -4593,6 +4593,107 @@ export type Database = {
           },
         ]
       }
+      psd_generated_frames: {
+        Row: {
+          auto_generated: boolean | null
+          created_at: string | null
+          frame_config: Json
+          frame_name: string
+          id: string
+          job_id: string | null
+          layer_mapping: Json | null
+          updated_at: string | null
+          user_modified: boolean | null
+        }
+        Insert: {
+          auto_generated?: boolean | null
+          created_at?: string | null
+          frame_config: Json
+          frame_name: string
+          id?: string
+          job_id?: string | null
+          layer_mapping?: Json | null
+          updated_at?: string | null
+          user_modified?: boolean | null
+        }
+        Update: {
+          auto_generated?: boolean | null
+          created_at?: string | null
+          frame_config?: Json
+          frame_name?: string
+          id?: string
+          job_id?: string | null
+          layer_mapping?: Json | null
+          updated_at?: string | null
+          user_modified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "psd_generated_frames_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "crdmkr_processing_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      psd_layers: {
+        Row: {
+          bounds: Json
+          content: Json | null
+          created_at: string | null
+          id: string
+          is_visible: boolean | null
+          job_id: string | null
+          layer_name: string
+          layer_order: number | null
+          layer_type: string
+          parent_layer_id: string | null
+          style_properties: Json | null
+        }
+        Insert: {
+          bounds: Json
+          content?: Json | null
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          job_id?: string | null
+          layer_name: string
+          layer_order?: number | null
+          layer_type: string
+          parent_layer_id?: string | null
+          style_properties?: Json | null
+        }
+        Update: {
+          bounds?: Json
+          content?: Json | null
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          job_id?: string | null
+          layer_name?: string
+          layer_order?: number | null
+          layer_type?: string
+          parent_layer_id?: string | null
+          style_properties?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "psd_layers_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "crdmkr_processing_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "psd_layers_parent_layer_id_fkey"
+            columns: ["parent_layer_id"]
+            isOneToOne: false
+            referencedRelation: "psd_layers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reactions: {
         Row: {
           card_id: string | null

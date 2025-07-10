@@ -4,8 +4,9 @@ import { CRDLayoutTab } from '../tabs/CRDLayoutTab';
 import { CRDDesignTab } from '../tabs/CRDDesignTab';
 import { CRDContentTab } from '../tabs/CRDContentTab';
 import { CRDExportTab } from '../tabs/CRDExportTab';
+import { CRDImportTab } from '../tabs/CRDImportTab';
 import { InteractiveCardData } from '@/types/interactiveCard';
-import { Layers, Palette, Type, Download } from 'lucide-react';
+import { Layers, Palette, Type, Download, Upload } from 'lucide-react';
 
 interface LeftSidebarContentProps {
   activeTab: string;
@@ -25,6 +26,8 @@ interface LeftSidebarContentProps {
   playerStats: Record<string, string>;
   setPlayerStats: (stats: Record<string, string>) => void;
   onExport: (format: string, options: any) => void;
+  onFrameGenerated?: (frameData: any) => void;
+  onCardGenerated?: (cardData: any) => void;
 }
 
 export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
@@ -44,11 +47,14 @@ export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
   setPlayerImage,
   playerStats,
   setPlayerStats,
-  onExport
+  onExport,
+  onFrameGenerated,
+  onCardGenerated
 }) => {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-      <TabsList className="grid grid-cols-4 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
+      <TabsList className="grid grid-cols-5 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
+        <TabsTrigger value="import" className="text-xs">Import</TabsTrigger>
         <TabsTrigger value="layout" className="text-xs">Layout</TabsTrigger>
         <TabsTrigger value="design" className="text-xs">Design</TabsTrigger>
         <TabsTrigger value="content" className="text-xs">Content</TabsTrigger>
@@ -56,6 +62,13 @@ export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
       </TabsList>
       
       <div className="p-3 space-y-4 flex-1 overflow-y-auto">
+        <TabsContent value="import" className="mt-0">
+          <CRDImportTab 
+            onFrameGenerated={onFrameGenerated}
+            onCardGenerated={onCardGenerated}
+          />
+        </TabsContent>
+        
         <TabsContent value="layout" className="mt-0">
             <CRDLayoutTab 
               selectedTemplate={selectedTemplate} 
@@ -100,6 +113,7 @@ export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
 export const LeftSidebarCollapsedContent: React.FC<{ activeTab: string }> = ({ activeTab }) => {
   const getIconForTab = (tab: string) => {
     switch (tab) {
+      case 'import': return <Upload className="w-4 h-4" />;
       case 'layout': return <Layers className="w-4 h-4" />;
       case 'design': return <Palette className="w-4 h-4" />;
       case 'content': return <Type className="w-4 h-4" />;
@@ -109,6 +123,7 @@ export const LeftSidebarCollapsedContent: React.FC<{ activeTab: string }> = ({ a
   };
 
   const tabs = [
+    { id: 'import', label: 'Import', icon: <Upload className="w-4 h-4" /> },
     { id: 'layout', label: 'Layout', icon: <Layers className="w-4 h-4" /> },
     { id: 'design', label: 'Design', icon: <Palette className="w-4 h-4" /> },
     { id: 'content', label: 'Content', icon: <Type className="w-4 h-4" /> },
