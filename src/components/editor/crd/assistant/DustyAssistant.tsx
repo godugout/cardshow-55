@@ -57,33 +57,16 @@ export const DustyAssistant: React.FC<DustyAssistantProps> = ({
   }
 
   return (
-    <Card className="bg-crd-darker/60 border-crd-mediumGray/20 backdrop-blur-sm">
-      {/* Compact Header */}
-      <div className="px-4 py-3 border-b border-crd-mediumGray/20 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <DustyAvatar size="small" expression="friendly" />
-          <div>
-            <h3 className="text-crd-white text-sm font-medium">Dusty Assistant</h3>
-            <p className="text-crd-lightGray text-xs">Your CRDMKR Guide</p>
-          </div>
-        </div>
-        <button
-          onClick={() => setIsMinimized(true)}
-          className="text-xs text-crd-lightGray hover:text-crd-white transition-colors"
-        >
-          Minimize
-        </button>
-      </div>
-
+    <div className="bg-gradient-to-br from-crd-darkest/80 to-crd-darkest/60 border border-crd-mediumGray/30 rounded-lg backdrop-blur-sm">
       {/* Compact Content */}
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-4">
         {/* Progress Tracker */}
         <DustyProgressTracker progress={progress} />
 
-        {/* Message Area - Horizontal Layout */}
+        {/* Message Area - Compact Layout */}
         <div className="flex items-start gap-3">
-          <DustyAvatar size="medium" expression={currentMessage.expression} />
-          <div className="flex-1 space-y-2">
+          <DustyAvatar size="small" expression={currentMessage.expression} />
+          <div className="flex-1 space-y-3">
             <DustyMessageBubble message={currentMessage} />
             {suggestedActions.length > 0 && (
               <DustyActionButtons actions={suggestedActions} />
@@ -91,6 +74,6 @@ export const DustyAssistant: React.FC<DustyAssistantProps> = ({
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
