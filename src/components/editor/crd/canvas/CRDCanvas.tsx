@@ -300,15 +300,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
               </>}
 
             {/* Card Content */}
-            <div className={`w-full h-full relative overflow-hidden ${getEffectsOverlay()}`} style={getBackgroundStyle()}>
-              {/* Background Pattern/Texture */}
-              {effects.includes('texture') && <div className="absolute inset-0 opacity-20">
-                  <div className="w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:20px_20px]" />
-                </div>}
-
-              {/* Main Content Area */}
-              
-            </div>
+            
           </div>
 
           {/* Canvas Info */}
