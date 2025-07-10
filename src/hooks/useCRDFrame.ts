@@ -27,21 +27,42 @@ export const useCRDFrame = () => {
       const { data, error } = await query;
       if (error) throw error;
 
-      // Map database rows to CRDFrame type
-      const mappedFrames: CRDFrame[] = (data || []).map(row => ({
-        ...row,
-        version: (row as any).version || '1.0.0',
-        frame_config: row.frame_config as any,
-        category: row.category || '',
-        name: row.name || '',
-        is_public: row.is_public || false,
-        price_cents: row.price_cents || 0,
-        rating_average: row.rating_average || 0,
-        rating_count: row.rating_count || 0,
-        download_count: row.download_count || 0,
-        tags: row.tags || [],
-        included_elements: row.included_elements || []
-      }));
+      // Map database rows to CRDFrame type with proper bounds transformation
+      const mappedFrames: CRDFrame[] = (data || []).map(row => {
+        // Transform the frame_config to match the expected structure
+        const frameConfig = row.frame_config as any;
+        
+        // Transform regions to have bounds object
+        if (frameConfig?.regions) {
+          frameConfig.regions = frameConfig.regions.map((region: any) => {
+            // If region has x, y, width, height directly, move them to bounds
+            if (region.x !== undefined || region.y !== undefined) {
+              const { x = 0, y = 0, width = 100, height = 100, ...otherProps } = region;
+              return {
+                ...otherProps,
+                bounds: { x, y, width, height }
+              };
+            }
+            // If bounds already exists, keep as is
+            return region;
+          });
+        }
+        
+        return {
+          ...row,
+          version: (row as any).version || '1.0.0',
+          frame_config: frameConfig,
+          category: row.category || '',
+          name: row.name || '',
+          is_public: row.is_public || false,
+          price_cents: row.price_cents || 0,
+          rating_average: row.rating_average || 0,
+          rating_count: row.rating_count || 0,
+          download_count: row.download_count || 0,
+          tags: row.tags || [],
+          included_elements: row.included_elements || []
+        };
+      });
 
       setFrames(mappedFrames);
     } catch (err) {
@@ -115,10 +136,25 @@ export const useCRDFrame = () => {
 
       if (error) throw error;
 
+      // Transform frame_config for consistency
+      const frameConfig = data.frame_config as any;
+      if (frameConfig?.regions) {
+        frameConfig.regions = frameConfig.regions.map((region: any) => {
+          if (region.x !== undefined || region.y !== undefined) {
+            const { x = 0, y = 0, width = 100, height = 100, ...otherProps } = region;
+            return {
+              ...otherProps,
+              bounds: { x, y, width, height }
+            };
+          }
+          return region;
+        });
+      }
+
       const mappedFrame: CRDFrame = {
         ...data,
         version: (data as any).version || '1.0.0',
-        frame_config: data.frame_config as any,
+        frame_config: frameConfig,
         category: data.category || '',
         name: data.name || '',
         is_public: data.is_public || false,
@@ -154,10 +190,25 @@ export const useCRDFrame = () => {
 
       if (error) throw error;
 
+      // Transform frame_config for consistency
+      const frameConfig = data.frame_config as any;
+      if (frameConfig?.regions) {
+        frameConfig.regions = frameConfig.regions.map((region: any) => {
+          if (region.x !== undefined || region.y !== undefined) {
+            const { x = 0, y = 0, width = 100, height = 100, ...otherProps } = region;
+            return {
+              ...otherProps,
+              bounds: { x, y, width, height }
+            };
+          }
+          return region;
+        });
+      }
+      
       const mappedFrame: CRDFrame = {
         ...data,
         version: (data as any).version || '1.0.0',
-        frame_config: data.frame_config as any,
+        frame_config: frameConfig,
         category: data.category || '',
         name: data.name || '',
         is_public: data.is_public || false,
@@ -189,10 +240,25 @@ export const useCRDFrame = () => {
 
       if (error) throw error;
       
+      // Transform frame_config for consistency
+      const frameConfig = data.frame_config as any;
+      if (frameConfig?.regions) {
+        frameConfig.regions = frameConfig.regions.map((region: any) => {
+          if (region.x !== undefined || region.y !== undefined) {
+            const { x = 0, y = 0, width = 100, height = 100, ...otherProps } = region;
+            return {
+              ...otherProps,
+              bounds: { x, y, width, height }
+            };
+          }
+          return region;
+        });
+      }
+      
       const mappedFrame: CRDFrame = {
         ...data,
         version: (data as any).version || '1.0.0',
-        frame_config: data.frame_config as any,
+        frame_config: frameConfig,
         category: data.category || '',
         name: data.name || '',
         is_public: data.is_public || false,
