@@ -3,8 +3,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Star, Download, Filter } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Search, Star, Download, Filter, Eye } from 'lucide-react';
 import { useCRDFrame } from '@/hooks/useCRDFrame';
+import { CRDFrameEngine } from './CRDFrameEngine';
 import type { CRDFrame } from '@/types/crd-frame';
 
 interface CRDFrameSelectorProps {
@@ -113,37 +115,67 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
         </div>
       </div>
 
-      {/* Frames Grid - Responsive 2-3 columns max */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 overflow-y-auto max-h-[calc(100vh-300px)] p-6">
+      {/* Frames Grid - Responsive 2-4 columns */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-y-auto max-h-[calc(100vh-300px)]">
         {filteredFrames.map(frame => (
           <div
             key={frame.id}
-            className={`bg-crd-darker border rounded-lg p-3 cursor-pointer transition-all duration-200 hover:border-crd-blue/50 hover:bg-crd-darker/80 ${
+            className={`bg-crd-darker border rounded-lg p-3 cursor-pointer transition-all duration-200 hover:border-crd-blue/50 hover:bg-crd-darker/80 relative ${
               selectedFrameId === frame.id 
                 ? 'border-crd-blue bg-crd-blue/10' 
                 : 'border-crd-mediumGray/20'
             }`}
             onClick={() => onFrameSelect(frame)}
           >
+            {/* Preview Button */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="absolute top-2 right-2 z-10 h-8 w-8 p-0 bg-crd-darker/80 border-crd-mediumGray/30 hover:bg-crd-mediumGray/20"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Eye className="h-4 w-4 text-crd-lightGray" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-4 bg-crd-darker border-crd-mediumGray/30">
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-crd-white">{frame.name}</h4>
+                  <div className="flex justify-center">
+                    <CRDFrameEngine
+                      frame={frame}
+                      content={{}}
+                      selectedVisualStyle="classic_matte"
+                      onContentChange={() => {}}
+                      onCropComplete={() => {}}
+                      className="max-w-[200px]"
+                    />
+                  </div>
+                  <p className="text-sm text-crd-lightGray">{frame.description || 'Professional frame template'}</p>
+                </div>
+              </PopoverContent>
+            </Popover>
+
             {/* Frame Thumbnail - Enhanced Placeholder */}
             <div className="aspect-[360/504] bg-gradient-to-br from-crd-dark to-crd-darkest border-2 border-crd-blue/40 rounded-lg flex flex-col items-center justify-center overflow-hidden group-hover:border-crd-blue/60 transition-colors mb-3">
               <div className="text-center p-4">
                 {/* Category Icon */}
-                <div className="w-12 h-12 mx-auto mb-3 bg-crd-blue/20 rounded-full flex items-center justify-center">
-                  <div className="text-crd-blue text-xl font-bold">
+                <div className="w-10 h-10 mx-auto mb-2 bg-crd-blue/20 rounded-full flex items-center justify-center">
+                  <div className="text-crd-blue text-lg font-bold">
                     {frame.category?.charAt(0).toUpperCase() || 'F'}
                   </div>
                 </div>
                 
                 {/* Frame Info */}
-                <div className="text-lg text-crd-white font-semibold mb-1">{frame.name}</div>
-                <div className="text-sm text-crd-blue font-medium mb-2">{frame.category?.toUpperCase()}</div>
+                <div className="text-sm text-crd-white font-semibold mb-1">{frame.name}</div>
+                <div className="text-xs text-crd-blue font-medium mb-2">{frame.category?.toUpperCase()}</div>
                 <div className="text-xs text-crd-lightGray">
                   {frame.frame_config?.dimensions?.width || 400} × {frame.frame_config?.dimensions?.height || 560}px
                 </div>
                 
                 {/* Preview Elements */}
-                <div className="mt-3 space-y-1">
+                <div className="mt-2 space-y-1">
                   <div className="h-1 bg-crd-blue/30 rounded mx-auto w-3/4"></div>
                   <div className="h-1 bg-crd-blue/20 rounded mx-auto w-1/2"></div>
                   <div className="h-1 bg-crd-blue/10 rounded mx-auto w-2/3"></div>
