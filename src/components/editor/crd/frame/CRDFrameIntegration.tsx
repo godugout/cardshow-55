@@ -82,7 +82,7 @@ export const CRDFrameIntegration: React.FC<CRDFrameIntegrationProps> = ({
               />
             </div>
           ) : (
-            <div className="flex items-center justify-center h-64 bg-crd-darker border border-crd-mediumGray/20 rounded-lg">
+            <div className="flex items-center justify-center h-64 bg-transparent rounded-lg">
               <p className="text-crd-lightGray">Select a frame to see preview</p>
             </div>
           )}
