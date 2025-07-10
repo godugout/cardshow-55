@@ -46,6 +46,100 @@ export interface PSDProcessingResult {
   };
 }
 
+// Simple processing function for PSDUploadModal
+export const processPSDFile = async (file: File): Promise<PSDLayer[]> => {
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const psd = readPsd(arrayBuffer, {
+      skipLayerImageData: false,
+      skipCompositeImageData: true,
+      useImageData: true
+    });
+
+    if (!psd || !psd.children) {
+      return [];
+    }
+
+    return extractLayers(psd.children);
+  } catch (error) {
+    console.error('Error processing PSD file:', error);
+    throw new Error(`Failed to process PSD: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+
+const extractLayers = (layers: Layer[]): PSDLayer[] => {
+  return layers.map((layer, index) => convertLayer(layer, index));
+};
+
+const convertLayer = (layer: Layer, index: number): PSDLayer => {
+  const bounds = {
+    x: layer.left || 0,
+    y: layer.top || 0,
+    width: (layer.right || 0) - (layer.left || 0),
+    height: (layer.bottom || 0) - (layer.top || 0)
+  };
+
+  let type: PSDLayer['type'] = 'image';
+  let content: any = {};
+
+  // Determine layer type and extract content
+  if (layer.text) {
+    type = 'text';
+    content = extractTextContent(layer.text);
+  } else if (layer.children && layer.children.length > 0) {
+    type = 'group';
+  } else if (layer.canvas) {
+    type = 'image';
+    content.imageData = canvasToDataURL(layer.canvas);
+  } else {
+    type = 'shape';
+  }
+
+  const psdLayer: PSDLayer = {
+    id: `layer_${index}_${Date.now()}`,
+    name: layer.name || `Layer ${index + 1}`,
+    type,
+    bounds,
+    content,
+    styleProperties: {
+      opacity: layer.opacity !== undefined ? layer.opacity / 255 : 1,
+      blendMode: layer.blendMode || 'normal'
+    },
+    visible: (layer as any).visible !== false
+  };
+
+  // Process child layers for groups
+  if (layer.children && layer.children.length > 0) {
+    psdLayer.children = extractLayers(layer.children);
+  }
+
+  return psdLayer;
+};
+
+const extractTextContent = (textData: LayerTextData): any => {
+  return {
+    text: textData.text || '',
+    fontSize: textData.style?.fontSize || 12,
+    fontFamily: (textData.style as any)?.fontName || 'Arial',
+    color: rgbToHex((textData.style as any)?.fillColor) || '#000000'
+  };
+};
+
+const canvasToDataURL = (canvas: HTMLCanvasElement): string => {
+  return canvas.toDataURL('image/png');
+};
+
+const rgbToHex = (color?: any): string => {
+  if (!color) return '#000000';
+  
+  // Handle different color formats from ag-psd
+  const r = Math.round((color.r || color[0] || 0) * 255);
+  const g = Math.round((color.g || color[1] || 0) * 255);
+  const b = Math.round((color.b || color[2] || 0) * 255);
+  
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+};
+
 export class CRDPSDProcessor {
   async processPSD(file: File, onProgress?: (progress: number) => void): Promise<PSDProcessingResult> {
     try {

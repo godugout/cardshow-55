@@ -1,16 +1,27 @@
+
 export interface PSDLayer {
   id: string;
   name: string;
   type: 'text' | 'image' | 'shape' | 'group';
-  bounds?: {
-    left: number;
-    top: number;
-    right: number;
-    bottom: number;
+  bounds: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
   };
+  content?: {
+    text?: string;
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+    imageData?: string;
+  };
+  styleProperties?: {
+    opacity?: number;
+    blendMode?: string;
+    effects?: any[];
+  };
+  visible: boolean;
   opacity?: number;
-  visible?: boolean;
   children?: PSDLayer[];
-  content?: string;
-  imageData?: string;
 }
