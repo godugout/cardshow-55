@@ -1,15 +1,16 @@
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Upload, FileImage, Layers, Eye, Loader2, AlertCircle } from 'lucide-react';
+import { Upload, FileImage, Layers, Eye, Loader2, AlertCircle, Sparkles, ArrowUp } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { CRDPSDProcessor } from '../import/CRDPSDProcessor';
-import { CRDPSDPreview } from '../import/CRDPSDPreview';
+import { PSDIntegratedPreview } from '../psd/PSDIntegratedPreview';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
 
 interface CRDImportTabProps {
   onFrameGenerated?: (frameData: any) => void;
   onCardGenerated?: (cardData: any) => void;
+  onApplyToCanvas?: (layers: any[], visibleLayers: Set<string>) => void;
 }
 
 interface ProcessingJob {
@@ -23,7 +24,8 @@ interface ProcessingJob {
 
 export const CRDImportTab: React.FC<CRDImportTabProps> = ({
   onFrameGenerated,
-  onCardGenerated
+  onCardGenerated,
+  onApplyToCanvas
 }) => {
   const [processingJob, setProcessingJob] = useState<ProcessingJob | null>(null);
   const [extractedLayers, setExtractedLayers] = useState<any[]>([]);
@@ -105,6 +107,12 @@ export const CRDImportTab: React.FC<CRDImportTabProps> = ({
     toast.success('Frame applied to editor!');
   }, [onFrameGenerated]);
 
+  const handleApplyToCanvas = useCallback((layers: any[], visibleLayers: Set<string>) => {
+    console.log('Applying PSD layers to canvas:', { layers, visibleLayers });
+    onApplyToCanvas?.(layers, visibleLayers);
+    toast.success('PSD layers applied to canvas!');
+  }, [onApplyToCanvas]);
+
   const resetImport = useCallback(() => {
     setProcessingJob(null);
     setExtractedLayers([]);
@@ -118,6 +126,10 @@ export const CRDImportTab: React.FC<CRDImportTabProps> = ({
           <CardTitle className="text-crd-white text-sm flex items-center gap-2">
             <Upload className="w-4 h-4" />
             Import PSD Files
+            <div className="ml-auto flex items-center gap-1 text-crd-blue">
+              <Sparkles className="w-3 h-3" />
+              <span className="text-xs">Enhanced</span>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -138,6 +150,10 @@ export const CRDImportTab: React.FC<CRDImportTabProps> = ({
                 <div>
                   <p className="text-crd-white mb-1">Drag & drop a PSD file here</p>
                   <p className="text-crd-lightGray text-xs">or click to browse</p>
+                  <div className="mt-2 flex items-center justify-center gap-2 text-xs text-crd-blue">
+                    <ArrowUp className="w-3 h-3" />
+                    <span>Layers will replace canvas content</span>
+                  </div>
                 </div>
               )}
             </div>
@@ -206,11 +222,12 @@ export const CRDImportTab: React.FC<CRDImportTabProps> = ({
       </Card>
 
       {processingJob?.status === 'completed' && extractedLayers.length > 0 && (
-        <CRDPSDPreview
+        <PSDIntegratedPreview
           layers={extractedLayers}
           generatedFrames={generatedFrames}
           onGenerateCard={handleGenerateCard}
           onUseFrame={handleUseFrame}
+          onApplyToCanvas={handleApplyToCanvas}
         />
       )}
     </div>

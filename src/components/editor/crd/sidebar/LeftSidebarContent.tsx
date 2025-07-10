@@ -66,6 +66,10 @@ export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
           <CRDImportTab 
             onFrameGenerated={onFrameGenerated}
             onCardGenerated={onCardGenerated}
+            onApplyToCanvas={(layers, visibleLayers) => {
+              // TODO: Integrate with canvas system
+              console.log('Apply PSD layers to canvas:', { layers, visibleLayers });
+            }}
           />
         </TabsContent>
         
