@@ -47,6 +47,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     x: 0,
     y: 0
   });
+  const [isCropping, setIsCropping] = useState(false);
 
   // Canvas controls
   const handleZoomIn = useCallback(() => {
@@ -59,10 +60,52 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     setZoom(125); // Reset to optimal default
   }, []);
 
+  // Upload and crop handlers
+  const handleImageUpload = useCallback(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file && onImageUpload) {
+        onImageUpload([file]);
+      }
+    };
+    input.click();
+  }, [onImageUpload]);
+
+  const handleCropToggle = useCallback(() => {
+    setIsCropping(!isCropping);
+  }, [isCropping]);
+
   // Calculate card dimensions
   const cardAspectRatio = 2.5 / 3.5;
   const baseCardWidth = 420; // Increased from 320
   const baseCardHeight = baseCardWidth / cardAspectRatio;
+
+  // Get photo region - use default for now, can be enhanced to read from template later
+  const photoRegion = { x: 15, y: 50, width: 220, height: 180 };
+
+  // Calculate dropzone position and size based on photo region
+  const getDropzoneStyle = () => {
+    const cardWidth = baseCardWidth * zoom / 100;
+    const cardHeight = baseCardHeight * zoom / 100;
+    
+    // Scale photo region to match card size
+    const scaleX = cardWidth / 250; // Assuming base card width in template is 250
+    const scaleY = cardHeight / 350; // Assuming base card height in template is 350
+    
+    const dropzoneWidth = photoRegion.width * scaleX;
+    const dropzoneHeight = photoRegion.height * scaleY;
+    const dropzoneX = photoRegion.x * scaleX;
+    const dropzoneY = photoRegion.y * scaleY;
+    
+    return {
+      width: `${dropzoneWidth}px`,
+      height: `${dropzoneHeight}px`,
+      transform: `translate(${panOffset.x + dropzoneX}px, ${panOffset.y + dropzoneY}px)`
+    };
+  };
 
   // Panning handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -202,7 +245,24 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   };
   return <div className="relative h-full w-full overflow-hidden bg-transparent flex flex-col">
       {/* Toolbar */}
-      <CRDToolbar zoom={zoom} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onZoomReset={handleZoomReset} showGrid={showGrid} onGridToggle={() => setShowGrid(!showGrid)} gridType={gridType} onGridTypeChange={setGridType} showRulers={showRulers} onRulersToggle={() => setShowRulers(!showRulers)} isPanning={isPanning} onPanToggle={() => setIsPanning(!isPanning)} />
+      <CRDToolbar 
+        zoom={zoom} 
+        onZoomIn={handleZoomIn} 
+        onZoomOut={handleZoomOut} 
+        onZoomReset={handleZoomReset} 
+        showGrid={showGrid} 
+        onGridToggle={() => setShowGrid(!showGrid)} 
+        gridType={gridType} 
+        onGridTypeChange={setGridType} 
+        showRulers={showRulers} 
+        onRulersToggle={() => setShowRulers(!showRulers)} 
+        isPanning={isPanning} 
+        onPanToggle={() => setIsPanning(!isPanning)}
+        hasImage={!!playerImage}
+        isCropping={isCropping}
+        onImageUpload={handleImageUpload}
+        onCropToggle={handleCropToggle}
+      />
 
       {/* Grid Background */}
       <CRDCanvasGrid showGrid={showGrid} gridType={gridType} gridSize={20} />
@@ -210,40 +270,33 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
       {/* Canvas Area */}
       <div className={`flex-1 w-full flex items-center justify-center relative z-10 pt-16 overflow-hidden ${isPanning ? 'cursor-grab' : 'cursor-default'} ${isDragging ? 'cursor-grabbing' : ''}`} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
         
-        {/* Card Dropzone */}
+        {/* Photo Region Dropzone */}
         <div 
-          className="relative z-20 transition-transform duration-300 ease-out"
-          style={{
-            width: `${cardWidth}px`,
-            height: `${cardHeight}px`,
-            transform: `translate(${panOffset.x}px, ${panOffset.y}px)`
-          }}
+          className="absolute z-20 transition-transform duration-300 ease-out"
+          style={getDropzoneStyle()}
         >
           {playerImage ? (
             // Show uploaded image
-            <div className="w-full h-full rounded-lg overflow-hidden bg-white shadow-2xl">
+            <div className={`w-full h-full rounded-lg overflow-hidden bg-white shadow-lg ${isCropping ? 'ring-2 ring-crd-blue' : ''}`}>
               <img
                 src={playerImage}
                 alt="Player"
                 className="w-full h-full object-cover"
               />
+              {isCropping && (
+                <div className="absolute inset-0 border-2 border-dashed border-crd-blue bg-crd-blue/10 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-crd-blue text-sm font-medium">Crop Mode Active</div>
+                    <div className="text-crd-lightGray text-xs mt-1">Adjust image position</div>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             // Show upload dropzone
             <div
               className="w-full h-full border-2 border-dashed border-crd-blue/50 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-crd-blue transition-all duration-300 bg-crd-darker/30 backdrop-blur-sm hover:bg-crd-darker/50 group"
-              onClick={() => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.onchange = (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0];
-                  if (file && onImageUpload) {
-                    onImageUpload([file]);
-                  }
-                };
-                input.click();
-              }}
+              onClick={handleImageUpload}
               onDragOver={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -258,19 +311,13 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
               }}
             >
               <div className="text-center group-hover:scale-105 transition-transform duration-300">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-crd-blue/20 flex items-center justify-center group-hover:bg-crd-blue/30 transition-colors">
-                  <svg className="w-8 h-8 text-crd-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-crd-blue/20 flex items-center justify-center group-hover:bg-crd-blue/30 transition-colors">
+                  <svg className="w-6 h-6 text-crd-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-crd-white mb-2">Add Player Image</h3>
-                <p className="text-sm text-crd-lightGray mb-1">Click to upload or drag & drop</p>
-                <p className="text-xs text-crd-lightGray/70">PNG, JPG up to 10MB</p>
-              </div>
-              
-              {/* Card dimensions indicator */}
-              <div className="absolute bottom-2 right-2 text-xs text-crd-lightGray/50 bg-crd-darkest/50 px-2 py-1 rounded">
-                2.5" × 3.5"
+                <div className="text-sm font-medium text-crd-white mb-1">Player Photo</div>
+                <div className="text-xs text-crd-lightGray">Click or drag to upload</div>
               </div>
             </div>
           )}
