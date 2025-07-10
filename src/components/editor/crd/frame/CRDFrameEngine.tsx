@@ -316,7 +316,7 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
     <div className={`relative ${className}`}>
       {/* Main Frame Container */}
       <div
-        className="relative bg-crd-surface border border-crd-border rounded-lg overflow-hidden"
+        className="relative bg-crd-surface rounded-lg overflow-hidden"
         style={{
           width: displayDimensions.width,
           height: displayDimensions.height
