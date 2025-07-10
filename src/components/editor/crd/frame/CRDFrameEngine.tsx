@@ -88,6 +88,12 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
 
   // Render individual region
   const renderRegion = useCallback((region: CRDRegion) => {
+    // Safety check for bounds
+    if (!region.bounds) {
+      console.warn('Region missing bounds:', region);
+      return null;
+    }
+    
     const { x, y, width, height } = region.bounds;
     const { scale } = displayDimensions;
     
