@@ -237,6 +237,121 @@ export const cardshowPalettes: TeamPalette[] = [
       buttons: 'Orange primary, brown secondary',
       text: 'Dark brown with orange highlights'
     }
+  },
+  {
+    id: 'cardshow-block',
+    name: 'Cardshow Block',
+    description: 'Industrial monospace with strong geometric elements',
+    colors: {
+      primary: '#2D3748',   // Dark Slate
+      secondary: '#F7FAFC',  // Light Gray
+      accent: '#A0AEC0',     // Medium Gray
+      neutral: '#1A202C'     // Very Dark
+    },
+    hsl: {
+      primary: '214 25 17',  // Dark Slate
+      secondary: '210 20 98', // Light Gray
+      accent: '214 14 65',   // Medium Gray
+      neutral: '214 32 11'   // Very Dark
+    },
+    usage: {
+      navbar: 'Dark slate background with light accents',
+      cards: 'Strong borders with high contrast',
+      buttons: 'Geometric styling with sharp edges',
+      text: 'High contrast for readability'
+    }
+  },
+  {
+    id: 'cardshow-vintage',
+    name: 'Cardshow Vintage',
+    description: 'Warm sepia tones with nostalgic brown palette',
+    colors: {
+      primary: '#8B4513',   // Saddle Brown
+      secondary: '#F5DEB3',  // Wheat
+      accent: '#DAA520',     // Goldenrod
+      neutral: '#FDF5E6'     // Old Lace
+    },
+    hsl: {
+      primary: '25 60 31',   // Saddle Brown
+      secondary: '39 77 83', // Wheat
+      accent: '43 74 49',    // Goldenrod
+      neutral: '36 67 95'    // Old Lace
+    },
+    usage: {
+      navbar: 'Warm brown background with wheat accents',
+      cards: 'Vintage paper styling with aged effects',
+      buttons: 'Classic styling with golden highlights',
+      text: 'Sepia tones for nostalgic feel'
+    }
+  },
+  {
+    id: 'cardshow-retro',
+    name: 'Cardshow Retro',
+    description: 'Neon synthwave with cyberpunk cyan and magenta',
+    colors: {
+      primary: '#0D1B2A',   // Dark Navy
+      secondary: '#00F5FF',  // Cyan
+      accent: '#FF1493',     // Deep Pink
+      neutral: '#1B263B'     // Medium Navy
+    },
+    hsl: {
+      primary: '207 65 11',  // Dark Navy
+      secondary: '186 100 50', // Cyan
+      accent: '328 100 54',  // Deep Pink
+      neutral: '207 50 17'   // Medium Navy
+    },
+    usage: {
+      navbar: 'Dark navy with neon cyan accents',
+      cards: 'Glowing borders with retro effects',
+      buttons: 'Neon styling with hover glows',
+      text: 'Bright colors on dark backgrounds'
+    }
+  },
+  {
+    id: 'cardshow-modern',
+    name: 'Cardshow Modern',
+    description: 'Contemporary minimalist with sophisticated purple-blue',
+    colors: {
+      primary: '#4C1D95',   // Purple
+      secondary: '#F8FAFC',  // Slate White
+      accent: '#8B5CF6',     // Violet
+      neutral: '#E2E8F0'     // Light Slate
+    },
+    hsl: {
+      primary: '256 70 35',  // Purple
+      secondary: '210 20 98', // Slate White
+      accent: '258 90 66',   // Violet
+      neutral: '214 32 91'   // Light Slate
+    },
+    usage: {
+      navbar: 'Clean purple background with violet accents',
+      cards: 'Minimal borders with subtle shadows',
+      buttons: 'Contemporary styling with smooth animations',
+      text: 'High contrast with purple highlights'
+    }
+  },
+  {
+    id: 'crdmkr',
+    name: 'CRDMKR',
+    description: 'Professional tech gradient with emerald and cyan fusion',
+    colors: {
+      primary: '#047857',   // Emerald
+      secondary: '#00D9FF',  // Bright Cyan
+      accent: '#10B981',     // Light Emerald
+      neutral: '#F0FDF4'     // Light Green
+    },
+    hsl: {
+      primary: '162 82 26',  // Emerald
+      secondary: '186 100 50', // Bright Cyan
+      accent: '158 64 51',   // Light Emerald
+      neutral: '138 76 97'   // Light Green
+    },
+    usage: {
+      navbar: 'Emerald gradient with cyan highlights',
+      cards: 'Tech-inspired borders with gradient effects',
+      buttons: 'Modern gradients with smooth transitions',
+      text: 'Tech color scheme with high readability'
+    }
   }
 ];
 
