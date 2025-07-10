@@ -255,15 +255,6 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   }, [visibleLayers]);
   return (
     <div className="h-screen w-full flex flex-col relative pt-16">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&h=800&fit=crop&crop=center&auto=format"
-          alt="Creative workspace"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/90 via-crd-darkest/85 to-crd-darkest/90"></div>
-      </div>
       
       {/* Content with higher z-index */}
       <div className="relative z-10 h-full flex flex-col">

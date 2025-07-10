@@ -46,8 +46,8 @@ export const CRDOverlayHeader: React.FC<CRDOverlayHeaderProps> = ({
         }
         ${isVisible ? 'translate-y-0' : '-translate-y-full'}
         ${isScrolled 
-          ? 'bg-crd-darkest/95 backdrop-blur-lg border-b border-crd-mediumGray/20 shadow-lg' 
-          : 'bg-crd-darkest/80 backdrop-blur-sm'
+          ? 'bg-[hsl(var(--theme-navbar-bg)/0.95)] backdrop-blur-lg border-b border-[hsl(var(--theme-navbar-border)/0.2)] shadow-lg' 
+          : 'bg-[hsl(var(--theme-navbar-bg)/0.8)] backdrop-blur-sm'
         }
         ${scrollMetrics.isScrolling ? 'scale-[0.995]' : 'scale-100'}
       `}
