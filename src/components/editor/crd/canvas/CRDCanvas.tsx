@@ -197,6 +197,13 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-transparent flex flex-col">
+      {/* Grid Background - Full Width */}
+      <CRDCanvasGrid
+        showGrid={showGrid}
+        gridType={gridType}
+        gridSize={20}
+      />
+
       {/* Toolbar */}
       <CRDToolbar
         zoom={zoom}
@@ -212,13 +219,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         onRulersToggle={() => setShowRulers(!showRulers)}
         isPanning={isPanning}
         onPanToggle={() => setIsPanning(!isPanning)}
-      />
-
-      {/* Grid Background */}
-      <CRDCanvasGrid
-        showGrid={showGrid}
-        gridType={gridType}
-        gridSize={20}
       />
 
       {/* Canvas Area */}
