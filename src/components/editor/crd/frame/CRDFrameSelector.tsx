@@ -113,85 +113,80 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
         </div>
       </div>
 
-      {/* Frames List */}
-      <div className="space-y-3 max-h-80 overflow-y-auto">
+      {/* Frames Grid - Now with larger thumbnails */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto">
         {filteredFrames.map(frame => (
           <div
             key={frame.id}
-            className={`bg-crd-darker border rounded-lg p-4 cursor-pointer transition-all duration-200 hover:border-crd-blue/50 hover:bg-crd-darker/80 ${
+            className={`bg-crd-darker border rounded-lg p-3 cursor-pointer transition-all duration-200 hover:border-crd-blue/50 hover:bg-crd-darker/80 ${
               selectedFrameId === frame.id 
                 ? 'border-crd-blue bg-crd-blue/10' 
                 : 'border-crd-mediumGray/20'
             }`}
             onClick={() => onFrameSelect(frame)}
           >
-            <div className="flex gap-4">
-              {/* Frame Preview */}
-              <div className="w-16 h-20 bg-crd-mediumGray/20 rounded flex items-center justify-center flex-shrink-0 border border-crd-mediumGray/30">
-                {frame.preview_image_url ? (
-                  <img
-                    src={frame.preview_image_url}
-                    alt={frame.name}
-                    className="w-full h-full object-cover rounded"
-                  />
-                ) : (
-                  <div className="text-center">
-                    <div className="text-xs text-crd-lightGray font-mono mb-1">FRAME</div>
-                    <div className="text-xs text-crd-blue">{frame.category?.toUpperCase()}</div>
+            {/* Large Frame Preview */}
+            <div className="aspect-[5/7] bg-crd-mediumGray/20 rounded mb-3 flex items-center justify-center border border-crd-mediumGray/30 overflow-hidden">
+              {frame.preview_image_url ? (
+                <img
+                  src={frame.preview_image_url}
+                  alt={frame.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-center p-4">
+                  <div className="text-lg text-crd-lightGray font-mono mb-2">FRAME</div>
+                  <div className="text-sm text-crd-blue font-semibold">{frame.category?.toUpperCase()}</div>
+                  <div className="text-xs text-crd-lightGray mt-2">
+                    {frame.frame_config.dimensions.width} × {frame.frame_config.dimensions.height}px
                   </div>
+                </div>
+              )}
+            </div>
+
+            {/* Frame Info */}
+            <div className="space-y-2">
+              <div className="flex items-start justify-between">
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-crd-white text-sm truncate">{frame.name}</h4>
+                  <p className="text-xs text-crd-lightGray capitalize">{frame.category}</p>
+                </div>
+                
+                {/* Premium Badge */}
+                {frame.price_cents > 0 && (
+                  <Badge className="ml-2 bg-crd-lightBlue/20 text-crd-lightBlue border-crd-lightBlue/30 text-xs">
+                    Pro
+                  </Badge>
                 )}
               </div>
 
-              {/* Frame Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-crd-white text-sm truncate">{frame.name}</h4>
-                    <p className="text-xs text-crd-lightGray capitalize mb-1">{frame.category}</p>
-                    {frame.description && (
-                      <p className="text-xs text-crd-lightGray/80 line-clamp-2 leading-relaxed">
-                        {frame.description}
-                      </p>
-                    )}
-                  </div>
-                  
-                  {/* Premium Badge */}
-                  {frame.price_cents > 0 && (
-                    <Badge className="ml-2 bg-crd-lightBlue/20 text-crd-lightBlue border-crd-lightBlue/30 text-xs">
-                      Pro
+              {/* Stats */}
+              <div className="flex items-center justify-between text-xs text-crd-lightGray">
+                <div className="flex items-center gap-1">
+                  <Star className="h-3 w-3 fill-crd-lightBlue text-crd-lightBlue" />
+                  <span>{frame.rating_average.toFixed(1)}</span>
+                </div>
+                
+                <div className="flex items-center gap-1">
+                  <Download className="h-3 w-3" />
+                  <span>{frame.download_count.toLocaleString()}</span>
+                </div>
+              </div>
+
+              {/* Tags */}
+              {frame.tags && frame.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {frame.tags.slice(0, 2).map(tag => (
+                    <Badge 
+                      key={tag} 
+                      variant="secondary" 
+                      className="text-xs py-0 px-1.5 bg-crd-mediumGray/20 text-crd-lightGray border-none"
+                    >
+                      {tag}
                     </Badge>
-                  )}
+                  ))}
                 </div>
-
-                {/* Stats */}
-                <div className="flex items-center gap-4 mt-2 text-xs text-crd-lightGray">
-                  <div className="flex items-center gap-1">
-                    <Star className="h-3 w-3 fill-crd-lightBlue text-crd-lightBlue" />
-                    <span>{frame.rating_average.toFixed(1)}</span>
-                    <span className="text-crd-lightGray/60">({frame.rating_count})</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-1">
-                    <Download className="h-3 w-3" />
-                    <span>{frame.download_count.toLocaleString()}</span>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                {frame.tags && frame.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {frame.tags.slice(0, 4).map(tag => (
-                      <Badge 
-                        key={tag} 
-                        variant="secondary" 
-                        className="text-xs py-0 px-2 bg-crd-mediumGray/20 text-crd-lightGray border-none"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
         ))}

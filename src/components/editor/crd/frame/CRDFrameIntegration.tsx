@@ -56,63 +56,15 @@ export const CRDFrameIntegration: React.FC<CRDFrameIntegrationProps> = ({
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* Frame Selector */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-semibold">Select CRD Frame</h3>
+      {/* Frame Browser - Now takes up the main space */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-crd-white">Select Your Frame</h3>
         <CRDFrameSelector
           selectedFrameId={selectedFrame?.id}
           onFrameSelect={handleFrameSelect}
+          className="h-[calc(100vh-200px)]" // Give it more height
         />
       </div>
-
-      {/* Frame Engine */}
-      {selectedFrame && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Design Your Card</h3>
-            
-            {/* Visual Style Selector */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Style:</label>
-              <select
-                value={selectedVisualStyle}
-                onChange={(e) => setSelectedVisualStyle(e.target.value)}
-                className="text-sm border border-border rounded px-2 py-1 bg-background"
-              >
-                <option value="classic_matte">Classic Matte</option>
-                <option value="premium_gloss">Premium Gloss</option>
-                <option value="holographic">Holographic</option>
-                <option value="foil_chrome">Foil Chrome</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="flex justify-center">
-            <CRDFrameEngine
-              frame={selectedFrame}
-              content={frameContent}
-              selectedVisualStyle={selectedVisualStyle}
-              onContentChange={handleContentChange}
-              onCropComplete={handleCropComplete}
-            />
-          </div>
-
-          {/* Content Summary */}
-          <div className="mt-4 p-4 bg-muted rounded-lg">
-            <h4 className="font-medium mb-2">Frame Content</h4>
-            <div className="text-sm space-y-1">
-              {selectedFrame.frame_config.regions.map(region => (
-                <div key={region.id} className="flex items-center justify-between">
-                  <span>{region.name}:</span>
-                  <span className={frameContent[region.id] ? 'text-green-600' : 'text-muted-foreground'}>
-                    {frameContent[region.id] ? '✓ Added' : 'Empty'}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
