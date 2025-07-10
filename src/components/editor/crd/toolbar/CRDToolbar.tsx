@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
-import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, Ruler, Move, Maximize2, Edit3 } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, Ruler, Move, Edit3 } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 interface CRDToolbarProps {
   zoom: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onZoomReset: () => void;
-  onZoomFit: () => void;
   showGrid: boolean;
   onGridToggle: () => void;
   gridType: 'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography';
@@ -21,7 +20,6 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   onZoomIn,
   onZoomOut,
   onZoomReset,
-  onZoomFit,
   showGrid,
   onGridToggle,
   gridType,
@@ -84,14 +82,9 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
                 <ZoomIn className="w-3 h-3" />
               </CRDButton>
               
-              <CRDButton variant="ghost" size="sm" onClick={onZoomReset} className="h-8 px-2 text-xs" title="Reset zoom (100%)">
+              <CRDButton variant="ghost" size="sm" onClick={onZoomReset} className="h-8 px-2 text-xs" title="Reset zoom (125%)">
                 <RotateCcw className="w-3 h-3 mr-1" />
                 Reset
-              </CRDButton>
-              
-              <CRDButton variant="ghost" size="sm" onClick={onZoomFit} className="h-8 px-2 text-xs" title="Fit to screen">
-                <Maximize2 className="w-3 h-3 mr-1" />
-                Fit
               </CRDButton>
             </div>
           </div>

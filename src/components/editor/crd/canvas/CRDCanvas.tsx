@@ -34,18 +34,8 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   rightSidebarCollapsed = true,
   isMobile = false
 }) => {
-  // Canvas state - responsive default zoom
-  const getDefaultZoom = () => {
-    if (typeof window !== 'undefined') {
-      if (window.innerWidth >= 1024) return 125; // lg and up
-      if (window.innerWidth >= 768) return 100;  // md
-      if (window.innerWidth >= 640) return 85;   // sm
-      return 70; // xs
-    }
-    return 125;
-  };
-  
-  const [zoom, setZoom] = useState(getDefaultZoom());
+  // Canvas state - fixed optimal default zoom
+  const [zoom, setZoom] = useState(125); // Single optimal default for engagement
   const [showGrid, setShowGrid] = useState(false);
   const [gridType, setGridType] = useState<'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography'>('standard');
   const [showRulers, setShowRulers] = useState(false);
@@ -64,78 +54,13 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   }, []);
 
   const handleZoomReset = useCallback(() => {
-    setZoom(getDefaultZoom());
+    setZoom(125); // Reset to optimal default
   }, []);
 
-  // Smart zoom calculation based on sidebar states
-  const calculateOptimalZoom = useCallback(() => {
-    if (typeof window === 'undefined') return 125;
-
-    // Calculate available space based on sidebar states
-    let availableWidth = window.innerWidth;
-    let availableHeight = window.innerHeight - 120; // Account for header + toolbar
-
-    // Subtract sidebar widths if they're open
-    if (!leftSidebarCollapsed) {
-      availableWidth -= isMobile ? 300 : 380; // Mobile uses smaller sidebar
-    } else {
-      availableWidth -= 48; // Collapsed width
-    }
-
-    if (!rightSidebarCollapsed) {
-      availableWidth -= isMobile ? 300 : 380;
-    } else {
-      availableWidth -= 48; // Collapsed width
-    }
-
-    // Add padding for comfortable viewing
-    availableWidth *= 0.85; // 85% of available width
-    availableHeight *= 0.75; // 75% of available height
-
-    // Calculate zoom based on constraining dimension
-    const widthZoom = (availableWidth / baseCardWidth) * 100;
-    const heightZoom = (availableHeight / baseCardHeight) * 100;
-
-    // Use smaller zoom to ensure card fits, with caps
-    const idealZoom = Math.min(widthZoom, heightZoom);
-    
-    // Apply device-specific limits
-    if (isMobile) {
-      return Math.max(Math.min(idealZoom, 180), 60); // Mobile: 60-180%
-    } else {
-      return Math.max(Math.min(idealZoom, 250), 80); // Desktop: 80-250%
-    }
-  }, [leftSidebarCollapsed, rightSidebarCollapsed, isMobile]);
-
-  const handleZoomFit = useCallback(() => {
-    const optimalZoom = calculateOptimalZoom();
-    setZoom(optimalZoom);
-    setPanOffset({ x: 0, y: 0 }); // Reset pan when fitting
-  }, [calculateOptimalZoom]);
-
-  // Auto-resize when sidebar states change
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const optimalZoom = calculateOptimalZoom();
-      setZoom(optimalZoom);
-    }, 300); // Small delay to allow sidebar animation to complete
-
-    return () => clearTimeout(timeoutId);
-  }, [leftSidebarCollapsed, rightSidebarCollapsed, calculateOptimalZoom]);
-
-  // Window resize handler for responsive zoom
-  useEffect(() => {
-    const handleResize = () => {
-      const timeoutId = setTimeout(() => {
-        const optimalZoom = calculateOptimalZoom();
-        setZoom(optimalZoom);
-      }, 100);
-      return () => clearTimeout(timeoutId);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [calculateOptimalZoom]);
+  // Calculate card dimensions
+  const cardAspectRatio = 2.5 / 3.5;
+  const baseCardWidth = 420; // Increased from 320
+  const baseCardHeight = baseCardWidth / cardAspectRatio;
 
   // Panning handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -156,10 +81,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     setIsDragging(false);
   }, []);
 
-  // Calculate card dimensions
-  const cardAspectRatio = 2.5 / 3.5;
-  const baseCardWidth = 420; // Increased from 320
-  const baseCardHeight = baseCardWidth / cardAspectRatio;
   const cardWidth = (baseCardWidth * zoom) / 100;
   const cardHeight = (baseCardHeight * zoom) / 100;
 
@@ -270,7 +191,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onZoomReset={handleZoomReset}
-        onZoomFit={handleZoomFit}
+        
         showGrid={showGrid}
         onGridToggle={() => setShowGrid(!showGrid)}
         gridType={gridType}
