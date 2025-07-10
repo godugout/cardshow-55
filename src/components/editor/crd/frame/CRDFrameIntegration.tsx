@@ -56,14 +56,37 @@ export const CRDFrameIntegration: React.FC<CRDFrameIntegrationProps> = ({
 
   return (
     <div className={`w-full max-w-6xl mx-auto px-6 ${className}`}>
-      {/* Frame Browser - Expanded for better browsing */}
-      <div className="space-y-6">
-        <h3 className="text-xl font-semibold text-crd-white">Select Your Frame</h3>
-        <CRDFrameSelector
-          selectedFrameId={selectedFrame?.id}
-          onFrameSelect={handleFrameSelect}
-          className="w-full"
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+        {/* Frame Browser - Left Side */}
+        <div className="space-y-6">
+          <h3 className="text-xl font-semibold text-crd-white">Select Your Frame</h3>
+          <CRDFrameSelector
+            selectedFrameId={selectedFrame?.id}
+            onFrameSelect={handleFrameSelect}
+            className="w-full"
+          />
+        </div>
+
+        {/* Frame Preview - Right Side */}
+        <div className="space-y-6">
+          <h3 className="text-xl font-semibold text-crd-white">Preview</h3>
+          {selectedFrame ? (
+            <div className="flex justify-center">
+              <CRDFrameEngine
+                frame={selectedFrame}
+                content={frameContent}
+                selectedVisualStyle={selectedVisualStyle}
+                onContentChange={handleContentChange}
+                onCropComplete={handleCropComplete}
+                className="max-w-md"
+              />
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-64 bg-crd-darker border border-crd-mediumGray/20 rounded-lg">
+              <p className="text-crd-lightGray">Select a frame to see preview</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
