@@ -54,7 +54,7 @@ export const CRDFrameIntegration: React.FC<CRDFrameIntegrationProps> = ({
   return <div className={`w-full mx-auto px-6 ${className}`}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
         {/* Frame Browser - Left Side (2/3 width) */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-3 space-y-6">
           <h3 className="text-xl font-semibold text-crd-white">Select Your Frame</h3>
           <CRDFrameSelector selectedFrameId={selectedFrame?.id} onFrameSelect={handleFrameSelect} className="w-full" />
         </div>
