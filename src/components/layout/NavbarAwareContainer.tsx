@@ -15,13 +15,14 @@ export const NavbarAwareContainer: React.FC<NavbarAwareContainerProps> = ({
   const location = useLocation();
   
   // Determine if we're on a route that needs navbar spacing
-  const isStudioOrCreateRoute = location.pathname === '/studio' || location.pathname.startsWith('/create');
+  const isStudioRoute = location.pathname === '/studio';
+  const isCRDEditorRoute = location.pathname === '/create/crd';
   
   // Apply navbar spacing only if:
   // 1. Not explicitly ignoring navbar
-  // 2. Not on studio/create routes (they handle their own spacing)
+  // 2. Not on studio route or CRD editor route (they handle their own spacing)
   // 3. Has potential for navbar to be visible
-  const shouldApplyNavbarSpacing = !ignoreNavbar && !isStudioOrCreateRoute;
+  const shouldApplyNavbarSpacing = !ignoreNavbar && !isStudioRoute && !isCRDEditorRoute;
   
   const navbarSpacingClass = shouldApplyNavbarSpacing 
     ? 'pt-[var(--navbar-height)] transition-all duration-300 ease-in-out' 
