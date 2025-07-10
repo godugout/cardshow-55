@@ -61,9 +61,21 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   }, []);
 
   const handleZoomFit = useCallback(() => {
-    // Fit zoom - slightly smaller than default for better view
-    const fitZoom = Math.max(getDefaultZoom() - 15, 50);
-    setZoom(fitZoom);
+    // Calculate available canvas space and fit card to fill most of it
+    if (typeof window !== 'undefined') {
+      const availableWidth = window.innerWidth * 0.7; // Use 70% of available width
+      const availableHeight = window.innerHeight * 0.6; // Use 60% of available height
+      
+      // Calculate zoom based on which dimension is more constraining
+      const widthZoom = (availableWidth / baseCardWidth) * 100;
+      const heightZoom = (availableHeight / baseCardHeight) * 100;
+      
+      // Use the smaller zoom to ensure card fits in both dimensions
+      const fitZoom = Math.min(widthZoom, heightZoom, 250); // Cap at 250%
+      setZoom(Math.max(fitZoom, 50)); // Minimum 50%
+    } else {
+      setZoom(125); // Fallback
+    }
     setPanOffset({ x: 0, y: 0 }); // Reset pan when fitting
   }, []);
 
