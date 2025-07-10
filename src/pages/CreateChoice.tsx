@@ -11,15 +11,30 @@ export const CreateChoice: React.FC = () => {
   return (
     <NavbarAwareContainer className="h-screen bg-crd-darkest overflow-hidden">
       <div className={`h-full max-w-6xl mx-auto ${isMobile ? 'px-5 py-8' : 'px-8 py-16'} overflow-y-auto`}>
-        {/* Hero Section */}
-        <Hero3
-          caption="CHOOSE YOUR CREATION MODE"
-          heading="What type of card do you want to create?"
-          bodyText="Choose between traditional CRD cards optimized for collecting and trading, or interactive story cards with advanced animations and scripting."
-          ctaText="Start Creating"
-          ctaLink="/create/crd"
-          className="!pt-0 !px-0 mb-16"
-        />
+        {/* Hero Section with Background Illustration */}
+        <div className="relative mb-16">
+          {/* Background Image - Blended */}
+          <div className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-10">
+            <img 
+              src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop&crop=center"
+              alt="Creative workspace"
+              className="w-full h-full object-cover scale-110 blur-sm"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/80 via-transparent to-crd-darkest/80"></div>
+          </div>
+          
+          {/* Hero Content */}
+          <div className="relative z-10">
+            <Hero3
+              caption="CHOOSE YOUR CREATION MODE"
+              heading="What type of card do you want to create?"
+              bodyText="Choose between traditional CRD cards optimized for collecting and trading, or interactive story cards with advanced animations and scripting."
+              ctaText="Start Creating"
+              ctaLink="/create/crd"
+              className="!pt-0 !px-0"
+            />
+          </div>
+        </div>
 
         {/* Creation Options */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
