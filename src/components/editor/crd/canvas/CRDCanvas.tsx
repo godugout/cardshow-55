@@ -38,11 +38,14 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     return 125;
   };
   
+  
   const [zoom, setZoom] = useState(getDefaultZoom());
   const [showGrid, setShowGrid] = useState(false);
   const [gridType, setGridType] = useState<'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography'>('standard');
   const [showRulers, setShowRulers] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
+  
+  // Initialize card at center position with no pan offset
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
