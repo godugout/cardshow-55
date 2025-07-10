@@ -4,12 +4,10 @@ import { CRDFrameSelector } from './CRDFrameSelector';
 import { CRDAdvancedCropper } from './CRDAdvancedCropper';
 import type { CRDFrame, CropResult } from '@/types/crd-frame';
 import { SAMPLE_CRD_FRAMES } from '@/data/sampleCRDFrames';
-
 interface CRDFrameIntegrationProps {
   onCardComplete?: (cardData: any) => void;
   className?: string;
 }
-
 export const CRDFrameIntegration: React.FC<CRDFrameIntegrationProps> = ({
   onCardComplete,
   className = ''
@@ -53,41 +51,16 @@ export const CRDFrameIntegration: React.FC<CRDFrameIntegrationProps> = ({
       setSelectedFrame(SAMPLE_CRD_FRAMES[0]);
     }
   }, [selectedFrame]);
-
-  return (
-    <div className={`w-full mx-auto px-6 ${className}`}>
+  return <div className={`w-full mx-auto px-6 ${className}`}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
         {/* Frame Browser - Left Side (2/3 width) */}
         <div className="lg:col-span-2 space-y-6">
           <h3 className="text-xl font-semibold text-crd-white">Select Your Frame</h3>
-          <CRDFrameSelector
-            selectedFrameId={selectedFrame?.id}
-            onFrameSelect={handleFrameSelect}
-            className="w-full"
-          />
+          <CRDFrameSelector selectedFrameId={selectedFrame?.id} onFrameSelect={handleFrameSelect} className="w-full" />
         </div>
 
         {/* Frame Preview - Right Side (1/3 width) */}
-        <div className="space-y-6">
-          <h3 className="text-xl font-semibold text-crd-white">Preview</h3>
-          {selectedFrame ? (
-            <div className="flex justify-center">
-              <CRDFrameEngine
-                frame={selectedFrame}
-                content={frameContent}
-                selectedVisualStyle={selectedVisualStyle}
-                onContentChange={handleContentChange}
-                onCropComplete={handleCropComplete}
-                className="max-w-sm"
-              />
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-64 bg-transparent rounded-lg">
-              <p className="text-crd-lightGray">Select a frame to see preview</p>
-            </div>
-          )}
-        </div>
+        
       </div>
-    </div>
-  );
+    </div>;
 };
