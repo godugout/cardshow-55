@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import type { CRDFrame, CRDRegion, CropResult, CropToolConfig } from '@/types/crd-frame';
 import { CRDAdvancedCropper } from './CRDAdvancedCropper';
-import { calculateSmartCrop, applyCropToImage, getImageDimensions, checkPrintQuality } from '@/utils/imageCropUtils';
 interface CRDFrameEngineProps {
   frame: CRDFrame;
   content: Record<string, any>;
@@ -66,68 +65,6 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
     }
   }, []);
 
-  // Handle file upload for regions with smart auto-cropping
-  const handleFileUpload = useCallback(async (regionId: string, file: File) => {
-    const reader = new FileReader();
-    reader.onload = async e => {
-      const imageUrl = e.target?.result as string;
-      const region = frameConfig.regions.find(r => r.id === regionId);
-      if (region?.type === 'photo' && region.constraints.aspectRatio) {
-        try {
-          // Get image dimensions
-          const imageDims = await getImageDimensions(imageUrl);
-
-          // Calculate smart crop
-          const smartCrop = calculateSmartCrop(imageDims.width, imageDims.height, region.constraints.aspectRatio);
-
-          // Check print quality
-          const printQuality = checkPrintQuality(imageDims.width, imageDims.height);
-
-          // Apply auto-crop if needed
-          let processedImageUrl = imageUrl;
-          if (!smartCrop.aspectRatioMatch) {
-            const {
-              width,
-              height
-            } = region.bounds;
-            processedImageUrl = await applyCropToImage(imageUrl, smartCrop.cropArea, width * 2,
-            // 2x resolution for better quality
-            height * 2);
-          }
-          onContentChange(regionId, {
-            type: 'image',
-            src: processedImageUrl,
-            originalFile: file,
-            originalSrc: imageUrl,
-            smartCrop: smartCrop,
-            printQuality: printQuality,
-            autoCropped: !smartCrop.aspectRatioMatch
-          });
-
-          // Show quality warning if needed
-          if (!printQuality.sufficient) {
-            console.warn(`Image resolution may be insufficient for print quality. Actual: ${printQuality.actualDPI} DPI, Recommended: ${printQuality.recommendedDPI} DPI`);
-          }
-        } catch (error) {
-          console.error('Error processing image:', error);
-          // Fallback to original behavior
-          onContentChange(regionId, {
-            type: 'image',
-            src: imageUrl,
-            originalFile: file
-          });
-        }
-      } else {
-        // Non-photo regions or regions without aspect ratio
-        onContentChange(regionId, {
-          type: 'image',
-          src: imageUrl,
-          originalFile: file
-        });
-      }
-    };
-    reader.readAsDataURL(file);
-  }, [frameConfig.regions, onContentChange]);
 
   // Render individual region
   const renderRegion = useCallback((region: CRDRegion) => {
@@ -157,33 +94,15 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
       position: 'absolute',
       ...scaledBounds,
       borderRadius: region.styling?.border?.radius || 0,
-      border: region.styling?.border && region.styling.border.width > 0 ? `${region.styling.border.width}px ${region.styling.border.style} ${region.styling.border.color}` : hasContent ? 'none' : '2px dashed rgba(255, 255, 255, 0.2)',
+      border: region.styling?.border && region.styling.border.width > 0 ? `${region.styling.border.width}px ${region.styling.border.style} ${region.styling.border.color}` : 'none',
       background: region.styling?.background?.value || 'transparent',
       clipPath: region.styling?.clipPath,
-      cursor: region.type === 'photo' ? 'pointer' : 'default',
+      cursor: 'default',
       overflow: 'hidden'
     };
-    return <div key={region.id} style={regionStyle} className={`
-          transition-all duration-200 hover:border-white/60 
-          ${region.type === 'photo' ? 'hover:bg-white/5' : ''}
-          ${hasContent ? 'border-solid border-white/20' : ''}
-        `} onClick={() => {
-      if (region.type === 'photo') {
-        if (hasContent) {
-          handleRegionClick(region);
-        } else {
-          // Trigger file upload
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = 'image/*';
-          input.onchange = e => {
-            const file = (e.target as HTMLInputElement).files?.[0];
-            if (file) {
-              handleFileUpload(region.id, file);
-            }
-          };
-          input.click();
-        }
+    return <div key={region.id} style={regionStyle} onClick={() => {
+      if (region.type === 'photo' && hasContent) {
+        handleRegionClick(region);
       }
     }}>
         {/* Region Content */}
@@ -207,7 +126,7 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
             Crop
           </div>}
       </div>;
-  }, [content, displayDimensions, handleRegionClick, handleFileUpload]);
+  }, [content, displayDimensions, handleRegionClick]);
 
   // Render frame elements (decorative elements, text, etc.)
   const renderElements = useCallback(() => {
