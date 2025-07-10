@@ -6,7 +6,7 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
     name: 'Classic Baseball Card',
     category: 'sports',
     version: '1.0.0',
-    description: 'Traditional baseball card layout with vintage styling',
+    description: 'Traditional baseball card layout with full-surface image',
     frame_config: {
       dimensions: {
         width: 400,
@@ -14,66 +14,25 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
       },
       regions: [
         {
-          id: 'player-photo',
+          id: 'main-photo',
           type: 'photo',
-          name: 'Player Photo',
-          bounds: { x: 20, y: 20, width: 360, height: 300 },
+          name: 'Card Image',
+          bounds: { x: 0, y: 0, width: 400, height: 560 },
           shape: 'rectangle',
           constraints: {
-            aspectRatio: 6/5,
-            minSize: { width: 200, height: 150 },
-            position: 'flexible',
-            scalable: true
+            aspectRatio: 400/560, // 2.5:3.5 ratio
+            position: 'fixed',
+            scalable: false
           },
           styling: {
-            border: { width: 2, style: 'solid', color: '#333333', radius: 8 },
-            background: { type: 'color', value: '#f5f5f5' }
+            border: { width: 0, style: 'solid', color: 'transparent' },
+            background: { type: 'color', value: 'transparent' }
           },
           cropSettings: {
             enabled: true,
-            aspectRatio: 6/5,
+            aspectRatio: 400/560,
             allowRotation: true,
-            allowBackgroundRemoval: true
-          }
-        },
-        {
-          id: 'team-logo',
-          type: 'logo',
-          name: 'Team Logo',
-          bounds: { x: 300, y: 340, width: 80, height: 80 },
-          shape: 'circle',
-          constraints: {
-            minSize: { width: 40, height: 40 },
-            maxSize: { width: 120, height: 120 },
-            position: 'flexible'
-          },
-          styling: {
-            border: { width: 2, style: 'solid', color: '#ffffff' }
-          }
-        },
-        {
-          id: 'player-name',
-          type: 'text',
-          name: 'Player Name',
-          bounds: { x: 20, y: 340, width: 270, height: 40 },
-          shape: 'rectangle',
-          constraints: {
-            position: 'flexible'
-          },
-          styling: {}
-        },
-        {
-          id: 'stats-area',
-          type: 'stats',
-          name: 'Player Stats',
-          bounds: { x: 20, y: 390, width: 360, height: 120 },
-          shape: 'rectangle',
-          constraints: {
-            position: 'flexible'
-          },
-          styling: {
-            background: { type: 'color', value: '#f8f9fa', opacity: 0.9 },
-            border: { width: 1, style: 'solid', color: '#dee2e6', radius: 4 }
+            allowBackgroundRemoval: false
           }
         }
       ],
@@ -89,22 +48,6 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
           },
           behavior: { responsive: true },
           variations: []
-        },
-        {
-          id: 'team-colors-stripe',
-          type: 'shape',
-          name: 'Team Colors',
-          properties: {
-            position: { x: 0, y: 520 },
-            size: { width: 400, height: 40 },
-            color: '#0066cc'
-          },
-          behavior: { responsive: true },
-          variations: [
-            { name: 'red', properties: { color: '#cc0000' } },
-            { name: 'blue', properties: { color: '#0066cc' } },
-            { name: 'green', properties: { color: '#006600' } }
-          ]
         }
       ]
     },
@@ -124,7 +67,7 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
     name: 'Modern Soccer Card',
     category: 'sports',
     version: '1.0.0',
-    description: 'Dynamic soccer card with gradient background and modern typography',
+    description: 'Dynamic soccer card with full-surface image and modern styling',
     frame_config: {
       dimensions: {
         width: 400,
@@ -132,42 +75,26 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
       },
       regions: [
         {
-          id: 'player-photo',
+          id: 'main-photo',
           type: 'photo',
-          name: 'Player Photo',
-          bounds: { x: 0, y: 0, width: 400, height: 400 },
+          name: 'Card Image',
+          bounds: { x: 0, y: 0, width: 400, height: 600 },
           shape: 'rectangle',
           constraints: {
-            aspectRatio: 1,
-            position: 'fixed'
+            aspectRatio: 400/600, // 2.5:3.75 ratio for modern card
+            position: 'fixed',
+            scalable: false
           },
           styling: {
-            clipPath: 'polygon(0 0, 100% 0, 100% 85%, 0 100%)'
+            border: { width: 0, style: 'solid', color: 'transparent' },
+            background: { type: 'color', value: 'transparent' }
           },
           cropSettings: {
             enabled: true,
-            aspectRatio: 1,
+            aspectRatio: 400/600,
             allowRotation: true,
-            allowBackgroundRemoval: true
+            allowBackgroundRemoval: false
           }
-        },
-        {
-          id: 'player-name',
-          type: 'text',
-          name: 'Player Name',
-          bounds: { x: 20, y: 420, width: 360, height: 50 },
-          shape: 'rectangle',
-          constraints: { position: 'flexible' },
-          styling: {}
-        },
-        {
-          id: 'team-info',
-          type: 'text',
-          name: 'Team & Position',
-          bounds: { x: 20, y: 480, width: 360, height: 80 },
-          shape: 'rectangle',
-          constraints: { position: 'flexible' },
-          styling: {}
         }
       ],
       elements: [
@@ -176,8 +103,8 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
           type: 'gradient',
           name: 'Background Gradient',
           properties: {
-            position: { x: 0, y: 350 },
-            size: { width: 400, height: 250 }
+            position: { x: 0, y: 450 },
+            size: { width: 400, height: 150 }
           },
           behavior: { responsive: true },
           variations: []

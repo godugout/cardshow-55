@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import type { CRDFrame, CRDRegion, CropResult, CropToolConfig } from '@/types/crd-frame';
 import { CRDAdvancedCropper } from './CRDAdvancedCropper';
+import { calculateSmartCrop, applyCropToImage, getImageDimensions, checkPrintQuality } from '@/utils/imageCropUtils';
 
 interface CRDFrameEngineProps {
   frame: CRDFrame;
@@ -66,25 +67,75 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
     }
   }, []);
 
-  // Handle file upload for regions
-  const handleFileUpload = useCallback((regionId: string, file: File) => {
+  // Handle file upload for regions with smart auto-cropping
+  const handleFileUpload = useCallback(async (regionId: string, file: File) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const imageUrl = e.target?.result as string;
-      onContentChange(regionId, { 
-        type: 'image', 
-        src: imageUrl, 
-        originalFile: file 
-      });
-      
-      // Auto-open crop tool for photo regions
       const region = frameConfig.regions.find(r => r.id === regionId);
-      if (region?.type === 'photo' && region.cropSettings?.enabled) {
-        handleRegionClick(region);
+      
+      if (region?.type === 'photo' && region.constraints.aspectRatio) {
+        try {
+          // Get image dimensions
+          const imageDims = await getImageDimensions(imageUrl);
+          
+          // Calculate smart crop
+          const smartCrop = calculateSmartCrop(
+            imageDims.width,
+            imageDims.height,
+            region.constraints.aspectRatio
+          );
+          
+          // Check print quality
+          const printQuality = checkPrintQuality(imageDims.width, imageDims.height);
+          
+          // Apply auto-crop if needed
+          let processedImageUrl = imageUrl;
+          if (!smartCrop.aspectRatioMatch) {
+            const { width, height } = region.bounds;
+            processedImageUrl = await applyCropToImage(
+              imageUrl,
+              smartCrop.cropArea,
+              width * 2, // 2x resolution for better quality
+              height * 2
+            );
+          }
+          
+          onContentChange(regionId, { 
+            type: 'image', 
+            src: processedImageUrl, 
+            originalFile: file,
+            originalSrc: imageUrl,
+            smartCrop: smartCrop,
+            printQuality: printQuality,
+            autoCropped: !smartCrop.aspectRatioMatch
+          });
+          
+          // Show quality warning if needed
+          if (!printQuality.sufficient) {
+            console.warn(`Image resolution may be insufficient for print quality. Actual: ${printQuality.actualDPI} DPI, Recommended: ${printQuality.recommendedDPI} DPI`);
+          }
+          
+        } catch (error) {
+          console.error('Error processing image:', error);
+          // Fallback to original behavior
+          onContentChange(regionId, { 
+            type: 'image', 
+            src: imageUrl, 
+            originalFile: file 
+          });
+        }
+      } else {
+        // Non-photo regions or regions without aspect ratio
+        onContentChange(regionId, { 
+          type: 'image', 
+          src: imageUrl, 
+          originalFile: file 
+        });
       }
     };
     reader.readAsDataURL(file);
-  }, [frameConfig.regions, onContentChange, handleRegionClick]);
+  }, [frameConfig.regions, onContentChange]);
 
   // Render individual region
   const renderRegion = useCallback((region: CRDRegion) => {
@@ -111,9 +162,9 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
       position: 'absolute',
       ...scaledBounds,
       borderRadius: region.styling?.border?.radius || 0,
-      border: region.styling?.border ? 
+      border: region.styling?.border && region.styling.border.width > 0 ? 
         `${region.styling.border.width}px ${region.styling.border.style} ${region.styling.border.color}` : 
-        '2px dashed rgba(255, 255, 255, 0.4)',
+        hasContent ? 'none' : '2px dashed rgba(255, 255, 255, 0.2)',
       background: region.styling?.background?.value || 'transparent',
       clipPath: region.styling?.clipPath,
       cursor: region.type === 'photo' ? 'pointer' : 'default',
@@ -151,20 +202,37 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
       >
         {/* Region Content */}
         {hasContent ? (
-          <img
-            src={regionContent.src}
-            alt={regionContent.alt || region.name}
-            className="w-full h-full object-cover"
-            style={{
-              transform: regionContent.transform || 'none'
-            }}
-          />
+          <div className="relative w-full h-full">
+            <img
+              src={regionContent.src}
+              alt={regionContent.alt || region.name}
+              className="w-full h-full object-cover"
+              style={{
+                transform: regionContent.transform || 'none'
+              }}
+            />
+            {/* Auto-crop indicator */}
+            {regionContent.autoCropped && (
+              <div className="absolute top-2 left-2 bg-primary/90 text-white text-xs px-2 py-1 rounded">
+                Auto-cropped
+              </div>
+            )}
+            {/* Print quality warning */}
+            {regionContent.printQuality && !regionContent.printQuality.sufficient && (
+              <div className="absolute top-2 right-2 bg-yellow-500/90 text-white text-xs px-2 py-1 rounded">
+                Low DPI
+              </div>
+            )}
+          </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center bg-crd-surface/10">
             {region.type === 'photo' ? (
               <div className="text-center text-white/60">
                 <div className="text-sm font-medium mb-1">{region.name}</div>
-                <div className="text-xs opacity-75">Click to add photo</div>
+                <div className="text-xs opacity-75">Click to add image</div>
+                <div className="text-xs opacity-50 mt-1">
+                  Will auto-fit to card dimensions
+                </div>
               </div>
             ) : (
               <div className="text-center text-white/40">
