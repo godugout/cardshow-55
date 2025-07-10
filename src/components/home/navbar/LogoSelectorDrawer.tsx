@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAppSettings } from '@/hooks/useAppSettings';
 import { SfOrangeLogo } from './SfOrangeLogo';
 import { WashingtonLogo } from './WashingtonLogo';
 import { OaklandLogo } from './OaklandLogo';
@@ -104,10 +105,33 @@ interface LogoSelectorDrawerProps {
 }
 
 export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) => {
-  const [selectedLogo, setSelectedLogo] = useState(logoGroups[0].logos[0]);
+  const { settings, saveSettings } = useAppSettings();
   const [open, setOpen] = useState(false);
 
+  // Find logo by theme ID with fallback
+  const findLogoByThemeId = (themeId: string) => {
+    for (const group of logoGroups) {
+      const found = group.logos.find(logo => logo.themeId === themeId);
+      if (found) return found;
+    }
+    return logoGroups[0].logos[0]; // Fallback to SF ORANGE
+  };
+
+  // Initialize selected logo from settings or default
+  const [selectedLogo, setSelectedLogo] = useState(() => {
+    const savedTheme = settings?.theme;
+    return savedTheme ? findLogoByThemeId(savedTheme) : logoGroups[0].logos[0];
+  });
+
   const SelectedLogoComponent = selectedLogo.component;
+
+  // Load saved theme on settings change
+  useEffect(() => {
+    if (settings?.theme && settings.theme !== selectedLogo.themeId) {
+      const savedLogo = findLogoByThemeId(settings.theme);
+      setSelectedLogo(savedLogo);
+    }
+  }, [settings?.theme]);
 
   // Apply theme to document and notify parent
   useEffect(() => {
@@ -117,6 +141,8 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
 
   const handleLogoSelect = (logo: typeof selectedLogo) => {
     setSelectedLogo(logo);
+    // Save theme to persistent storage
+    saveSettings({ theme: logo.themeId });
     setOpen(false);
   };
 
