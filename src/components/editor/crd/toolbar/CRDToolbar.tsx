@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import { ZoomIn, ZoomOut, RotateCcw, Camera, Crop } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, Ruler, Move, Edit3 } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
-import { CRDMoreMenu } from './CRDMoreMenu';
 interface CRDToolbarProps {
   zoom: number;
   onZoomIn: () => void;
@@ -15,11 +14,6 @@ interface CRDToolbarProps {
   onRulersToggle: () => void;
   isPanning: boolean;
   onPanToggle: () => void;
-  // New crop and upload props
-  hasImage: boolean;
-  isCropping: boolean;
-  onImageUpload: () => void;
-  onCropToggle: () => void;
 }
 export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   zoom,
@@ -33,11 +27,7 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   showRulers,
   onRulersToggle,
   isPanning,
-  onPanToggle,
-  hasImage,
-  isCropping,
-  onImageUpload,
-  onCropToggle
+  onPanToggle
 }) => {
   // Keyboard shortcuts
   useEffect(() => {
@@ -53,33 +43,27 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   return <div className="border-b border-crd-mediumGray/20 bg-crd-darker/50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-12">
-          {/* Left: Primary Tools */}
+          {/* Left: View Controls */}
           <div className="flex items-center gap-4">
-            {/* Image Upload */}
-            <CRDButton 
-              variant="primary" 
-              size="sm" 
-              onClick={onImageUpload}
-              className="h-8 px-3 text-xs"
-              title="Upload image"
-            >
-              <Camera className="w-3 h-3 mr-1" />
-              Upload
-            </CRDButton>
-
-            {/* Crop Tool - only visible when image is present */}
-            {hasImage && (
-              <CRDButton 
-                variant={isCropping ? "primary" : "ghost"} 
-                size="sm" 
-                onClick={onCropToggle}
-                className="h-8 px-3 text-xs"
-                title="Crop image"
-              >
-                <Crop className="w-3 h-3 mr-1" />
-                Crop
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-crd-lightGray font-medium">View:</span>
+              <CRDButton variant={showGrid ? "primary" : "ghost"} size="sm" onClick={onGridToggle} className="h-8 w-8 p-0" title="Toggle Grid">
+                <Grid3x3 className="w-3 h-3" />
               </CRDButton>
-            )}
+              
+              {showGrid && <select value={gridType} onChange={e => onGridTypeChange(e.target.value as typeof gridType)} className="bg-crd-darkest border border-crd-mediumGray/20 rounded px-2 py-1 text-xs text-crd-white h-8">
+                  <option value="standard">Standard</option>
+                  <option value="print">Print</option>
+                  <option value="golden">Golden</option>
+                  <option value="isometric">Isometric</option>
+                  <option value="blueprint">Blueprint</option>
+                  <option value="photography">Photography</option>
+                </select>}
+              
+              <CRDButton variant={showRulers ? "primary" : "ghost"} size="sm" onClick={onRulersToggle} className="h-8 w-8 p-0" title="Toggle Rulers">
+                <Ruler className="w-3 h-3" />
+              </CRDButton>
+            </div>
 
             <div className="w-px h-6 bg-crd-mediumGray/30" />
 
@@ -105,18 +89,21 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
             </div>
           </div>
 
-          {/* Right: More Menu */}
+          {/* Right: Interaction Controls */}
           <div className="flex items-center gap-2">
-            <CRDMoreMenu
-              showGrid={showGrid}
-              onGridToggle={onGridToggle}
-              gridType={gridType}
-              onGridTypeChange={onGridTypeChange}
-              showRulers={showRulers}
-              onRulersToggle={onRulersToggle}
-              isPanning={isPanning}
-              onPanToggle={onPanToggle}
-            />
+            <span className="text-xs text-crd-lightGray font-medium">Mode:</span>
+            <div className="flex bg-crd-mediumGray/10 rounded-lg p-0.5">
+              <CRDButton variant={!isPanning ? "primary" : "ghost"} size="sm" onClick={() => isPanning && onPanToggle()} className="h-7 px-3 text-xs" title="Edit Mode - Modify card elements with 3D perspective (Space to toggle)">
+                <Edit3 className="w-3 h-3 mr-1" />
+                Edit
+              </CRDButton>
+              <CRDButton variant={isPanning ? "primary" : "ghost"} size="sm" onClick={() => !isPanning && onPanToggle()} className="h-7 px-3 text-xs" title="Pan Mode - Drag to move canvas view (Space to toggle)">
+                <Move className="w-3 h-3 mr-1" />
+                Pan
+              </CRDButton>
+            </div>
+            
+            
           </div>
         </div>
       </div>
