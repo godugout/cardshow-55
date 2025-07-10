@@ -229,46 +229,48 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
               />
             </div>
           ) : (
-            // Show clean card placeholder
-            <div className="w-full h-full bg-gradient-to-br from-white to-gray-100 rounded-lg shadow-2xl border border-gray-200 flex flex-col items-center justify-center relative overflow-hidden">
-              {/* Card header */}
-              <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-center">
-                <h3 className="text-white text-sm font-bold tracking-wide">CLASSIC BASEBALL CARD</h3>
-              </div>
-              
-              {/* Main content area */}
-              <div className="flex flex-col items-center justify-center text-center mt-6">
-                <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            // Show upload dropzone
+            <div
+              className="w-full h-full border-2 border-dashed border-crd-blue/50 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-crd-blue transition-all duration-300 bg-crd-darker/30 backdrop-blur-sm hover:bg-crd-darker/50 group"
+              onClick={() => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (file && onImageUpload) {
+                    onImageUpload([file]);
+                  }
+                };
+                input.click();
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const files = Array.from(e.dataTransfer.files);
+                if (files.length > 0 && onImageUpload) {
+                  onImageUpload(files);
+                }
+              }}
+            >
+              <div className="text-center group-hover:scale-105 transition-transform duration-300">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-crd-blue/20 flex items-center justify-center group-hover:bg-crd-blue/30 transition-colors">
+                  <svg className="w-8 h-8 text-crd-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                 </div>
-                <h4 className="text-gray-800 text-lg font-semibold mb-1">Player Name</h4>
-                <p className="text-gray-600 text-sm mb-2">Position • Team</p>
-                <p className="text-gray-500 text-xs">Season 2024</p>
-              </div>
-              
-              {/* Stats area placeholder */}
-              <div className="absolute bottom-4 left-4 right-4 bg-white/80 rounded p-2">
-                <div className="grid grid-cols-3 gap-2 text-xs">
-                  <div className="text-center">
-                    <div className="text-gray-400">AVG</div>
-                    <div className="text-gray-600 font-semibold">---</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-gray-400">HR</div>
-                    <div className="text-gray-600 font-semibold">--</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-gray-400">RBI</div>
-                    <div className="text-gray-600 font-semibold">--</div>
-                  </div>
-                </div>
+                <h3 className="text-lg font-semibold text-crd-white mb-2">Add Player Image</h3>
+                <p className="text-sm text-crd-lightGray mb-1">Click to upload or drag & drop</p>
+                <p className="text-xs text-crd-lightGray/70">PNG, JPG up to 10MB</p>
               </div>
               
               {/* Card dimensions indicator */}
-              <div className="absolute bottom-1 right-1 text-xs text-gray-400 bg-white/70 px-1 py-0.5 rounded text-[10px]">
-                400×560px
+              <div className="absolute bottom-2 right-2 text-xs text-crd-lightGray/50 bg-crd-darkest/50 px-2 py-1 rounded">
+                2.5" × 3.5"
               </div>
             </div>
           )}

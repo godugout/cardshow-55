@@ -14,8 +14,6 @@ import { CRDSidebar } from './sidebar/CRDSidebar';
 import { CollapsibleSidebar } from './sidebar/CollapsibleSidebar';
 import { LeftSidebarContent, LeftSidebarCollapsedContent } from './sidebar/LeftSidebarContent';
 import { RightSidebarCollapsedContent } from './sidebar/RightSidebarCollapsed';
-import { CRDToolbar } from './toolbar/CRDToolbar';
-import { ModeSwitcher, ViewMode, InteractionMode } from './ModeSwitcher';
 interface CRDCardCreatorProps {
   initialCard?: Partial<InteractiveCardData>;
   onSave: (card: InteractiveCardData) => void;
@@ -113,8 +111,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
 
   // CRDMKR State
   const [activeTab, setActiveTab] = useState('layout');
-  const [previewMode, setPreviewMode] = useState<ViewMode>('edit');
-  const [interactionMode, setInteractionMode] = useState<InteractionMode>('edit');
+  const [previewMode, setPreviewMode] = useState<'edit' | 'preview' | 'print'>('edit');
   const [selectedTemplate, setSelectedTemplate] = useState('baseball-classic');
   const [colorPalette, setColorPalette] = useState('classic');
   const [typography, setTypography] = useState('modern');
@@ -122,12 +119,6 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   const [playerImage, setPlayerImage] = useState<string | null>(null);
   const [playerStats, setPlayerStats] = useState<Record<string, string>>({});
   const [showGuides, setShowGuides] = useState(false);
-  
-  // Toolbar state
-  const [zoom, setZoom] = useState(125);
-  const [showGrid, setShowGrid] = useState(false);
-  const [gridType, setGridType] = useState<'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography'>('standard');
-  const [showRulers, setShowRulers] = useState(false);
   
   // Sidebar collapse states with mobile-first logic
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
@@ -242,14 +233,19 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             </div>
           </div>
           
-          {/* Right: Mode Switcher and Buttons */}
+          {/* Right: Buttons */}
           <div className="flex items-center gap-3">
-            <ModeSwitcher 
-              viewMode={previewMode}
-              onViewModeChange={setPreviewMode}
-              interactionMode={interactionMode}
-              onInteractionModeToggle={() => setInteractionMode(prev => prev === 'edit' ? 'pan' : 'edit')}
-            />
+            <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
+              <button onClick={() => setPreviewMode('edit')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'edit' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
+                <Eye className="w-4 h-4" />
+              </button>
+              <button onClick={() => setPreviewMode('preview')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'preview' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
+                Preview
+              </button>
+              <button onClick={() => setPreviewMode('print')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'print' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
+                Print
+              </button>
+            </div>
             
             <CRDButton onClick={handleSave} variant="secondary" size="sm">
               <Save className="w-4 h-4 mr-2" />
@@ -261,24 +257,6 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             </CRDButton>
           </div>
         </div>
-
-        {/* Toolbar - only show in edit mode */}
-        {previewMode === 'edit' && (
-          <CRDToolbar 
-            zoom={zoom}
-            onZoomIn={() => setZoom(Math.min(300, zoom + 25))}
-            onZoomOut={() => setZoom(Math.max(25, zoom - 25))}
-            onZoomReset={() => setZoom(125)}
-            showGrid={showGrid}
-            onGridToggle={() => setShowGrid(!showGrid)}
-            gridType={gridType}
-            onGridTypeChange={setGridType}
-            showRulers={showRulers}
-            onRulersToggle={() => setShowRulers(!showRulers)}
-            isPanning={interactionMode === 'pan'}
-            onPanToggle={() => setInteractionMode(prev => prev === 'edit' ? 'pan' : 'edit')}
-          />
-        )}
 
         {/* Main Content - Full Width Canvas with Overlay Sidebars */}
         <div className="flex-1 relative w-full">

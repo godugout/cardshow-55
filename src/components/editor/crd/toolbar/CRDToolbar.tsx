@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, Ruler } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, Ruler, Move, Edit3 } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 interface CRDToolbarProps {
   zoom: number;
@@ -89,9 +89,21 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
             </div>
           </div>
 
-          {/* Right: Additional Controls (mode controls moved to title bar) */}
+          {/* Right: Interaction Controls */}
           <div className="flex items-center gap-2">
-            {/* Future: Additional toolbar controls can go here */}
+            <span className="text-xs text-crd-lightGray font-medium">Mode:</span>
+            <div className="flex bg-crd-mediumGray/10 rounded-lg p-0.5">
+              <CRDButton variant={!isPanning ? "primary" : "ghost"} size="sm" onClick={() => isPanning && onPanToggle()} className="h-7 px-3 text-xs" title="Edit Mode - Modify card elements with 3D perspective (Space to toggle)">
+                <Edit3 className="w-3 h-3 mr-1" />
+                Edit
+              </CRDButton>
+              <CRDButton variant={isPanning ? "primary" : "ghost"} size="sm" onClick={() => !isPanning && onPanToggle()} className="h-7 px-3 text-xs" title="Pan Mode - Drag to move canvas view (Space to toggle)">
+                <Move className="w-3 h-3 mr-1" />
+                Pan
+              </CRDButton>
+            </div>
+            
+            
           </div>
         </div>
       </div>
