@@ -23,15 +23,15 @@
   --crd-info: #3772FF;
 
 /* Dynamic Theme Variables - Updated by logo selection */
-  --theme-navbar-bg: 0 0 8; /* HSL values without hsl() wrapper */
-  --theme-navbar-border: 140 17 24;
-  --theme-text-primary: 0 0 99;
-  --theme-text-secondary: 225 11 51;
-  --theme-text-active: 142 42 55;
-  --theme-cta-bg: 142 42 55;
-  --theme-cta-text: 0 0 7;
-  --theme-accent: 142 42 55;
-  --theme-accent-hover: 142 52 65;
+  --theme-navbar-bg: 240 5 95; /* HSL for very light gray background */
+  --theme-navbar-border: 240 5 85; /* HSL for light gray border */
+  --theme-text-primary: 240 6 11; /* HSL for dark text */
+  --theme-text-secondary: 240 4 45; /* HSL for medium gray */
+  --theme-text-active: 142 42 55; /* HSL for green active state */
+  --theme-cta-bg: 142 42 55; /* HSL for green CTA */
+  --theme-cta-text: 0 0 100; /* HSL for white text */
+  --theme-accent: 142 42 55; /* HSL for green accent */
+  --theme-accent-hover: 142 52 65; /* HSL for lighter green hover */
 }
 
 /* Logo-specific theme variations */
