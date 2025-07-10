@@ -85,50 +85,6 @@ export const CRDContentTab: React.FC<CRDContentTabProps> = ({
         </CardContent>
       </Card>
 
-      {/* Player Image */}
-      <Card className="bg-crd-darker border-crd-mediumGray/20">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-crd-white text-sm flex items-center gap-2">
-            <Image className="w-4 h-4" />
-            Player Image
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {playerImage ? (
-            <div className="relative">
-              <img
-                src={playerImage}
-                alt="Player"
-                className="w-full h-32 object-cover rounded border border-crd-mediumGray/20"
-              />
-              <CRDButton
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute top-2 right-2 text-xs"
-              >
-                Change
-              </CRDButton>
-            </div>
-          ) : (
-            <div
-              className="w-full h-32 border-2 border-dashed border-crd-mediumGray/20 rounded flex flex-col items-center justify-center cursor-pointer hover:border-crd-blue/50 transition-colors"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload className="w-8 h-8 text-crd-lightGray mb-2" />
-              <span className="text-sm text-crd-lightGray">Upload Player Image</span>
-              <span className="text-xs text-crd-lightGray/70">PNG, JPG up to 10MB</span>
-            </div>
-          )}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="hidden"
-          />
-        </CardContent>
-      </Card>
 
       {/* Player Stats */}
       <Card className="bg-crd-darker border-crd-mediumGray/20">

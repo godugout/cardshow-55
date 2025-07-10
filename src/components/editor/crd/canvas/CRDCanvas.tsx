@@ -210,6 +210,71 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
       {/* Canvas Area */}
       <div className={`flex-1 w-full flex items-center justify-center relative z-10 pt-16 overflow-hidden ${isPanning ? 'cursor-grab' : 'cursor-default'} ${isDragging ? 'cursor-grabbing' : ''}`} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
         
+        {/* Card Dropzone */}
+        <div 
+          className="relative z-20 transition-transform duration-300 ease-out"
+          style={{
+            width: `${cardWidth}px`,
+            height: `${cardHeight}px`,
+            transform: `translate(${panOffset.x}px, ${panOffset.y}px)`
+          }}
+        >
+          {playerImage ? (
+            // Show uploaded image
+            <div className="w-full h-full rounded-lg overflow-hidden bg-white shadow-2xl">
+              <img
+                src={playerImage}
+                alt="Player"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            // Show upload dropzone
+            <div
+              className="w-full h-full border-2 border-dashed border-crd-blue/50 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-crd-blue transition-all duration-300 bg-crd-darker/30 backdrop-blur-sm hover:bg-crd-darker/50 group"
+              onClick={() => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (file && onImageUpload) {
+                    onImageUpload([file]);
+                  }
+                };
+                input.click();
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const files = Array.from(e.dataTransfer.files);
+                if (files.length > 0 && onImageUpload) {
+                  onImageUpload(files);
+                }
+              }}
+            >
+              <div className="text-center group-hover:scale-105 transition-transform duration-300">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-crd-blue/20 flex items-center justify-center group-hover:bg-crd-blue/30 transition-colors">
+                  <svg className="w-8 h-8 text-crd-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-crd-white mb-2">Add Player Image</h3>
+                <p className="text-sm text-crd-lightGray mb-1">Click to upload or drag & drop</p>
+                <p className="text-xs text-crd-lightGray/70">PNG, JPG up to 10MB</p>
+              </div>
+              
+              {/* Card dimensions indicator */}
+              <div className="absolute bottom-2 right-2 text-xs text-crd-lightGray/50 bg-crd-darkest/50 px-2 py-1 rounded">
+                2.5" × 3.5"
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>;
 };
