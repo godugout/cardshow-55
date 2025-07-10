@@ -37,11 +37,11 @@
 /* Logo-specific theme variations */
 /* SF Orange - Orange and white/cream theme */
 [data-theme="sf-orange"] {
-  --theme-navbar-bg: 25 100 95; /* HSL for light orange/cream background */
+  --theme-navbar-bg: 25 45 25; /* HSL for dark orange background */
   --theme-navbar-border: 25 89 61; /* HSL for orange */
-  --theme-text-primary: 0 0 7; /* HSL for dark text */
-  --theme-text-secondary: 214 13 34; /* HSL for gray */
-  --theme-text-active: 17 91 48; /* HSL for active orange */
+  --theme-text-primary: 0 0 100; /* HSL for white text */
+  --theme-text-secondary: 25 65 85; /* HSL for light orange */
+  --theme-text-active: 25 89 61; /* HSL for active orange */
   --theme-cta-bg: 0 84 60; /* HSL for red CTA */
   --theme-cta-text: 0 0 100; /* HSL for white */
   --theme-accent: 25 89 61; /* HSL for orange accent */
@@ -89,10 +89,10 @@
 
 /* Toronto - Blue and white theme */
 [data-theme="toronto"] {
-  --theme-navbar-bg: 200 100 90; /* HSL for baby blue background */
+  --theme-navbar-bg: 217 75 20; /* HSL for dark blue background */
   --theme-navbar-border: 217 91 60; /* HSL for blue */
-  --theme-text-primary: 222 84 16; /* HSL for navy */
-  --theme-text-secondary: 215 25 34; /* HSL for slate */
+  --theme-text-primary: 0 0 100; /* HSL for white */
+  --theme-text-secondary: 217 65 80; /* HSL for light blue */
   --theme-text-active: 225 90 60; /* HSL for blue */
   --theme-cta-bg: 225 90 60; /* HSL for blue */
   --theme-cta-text: 0 0 100; /* HSL for white */
@@ -228,6 +228,19 @@
   --theme-cta-text: 243 75 34; /* HSL for dark indigo */
   --theme-accent: 236 86 78; /* HSL for indigo */
   --theme-accent-hover: 236 87 67; /* HSL for darker indigo */
+}
+
+/* CRDMKR - Professional gradient theme */
+[data-theme="crdmkr"] {
+  --theme-navbar-bg: 162 82 12; /* HSL for dark emerald */
+  --theme-navbar-border: 162 85 45; /* HSL for emerald */
+  --theme-text-primary: 0 0 100; /* HSL for white */
+  --theme-text-secondary: 162 45 75; /* HSL for light emerald */
+  --theme-text-active: 186 100 65; /* HSL for cyan accent */
+  --theme-cta-bg: 186 100 65; /* HSL for cyan */
+  --theme-cta-text: 162 82 12; /* HSL for dark emerald */
+  --theme-accent: 186 94 55; /* HSL for cyan */
+  --theme-accent-hover: 186 85 45; /* HSL for darker cyan */
 }
 
 /* CRD-specific utility classes */

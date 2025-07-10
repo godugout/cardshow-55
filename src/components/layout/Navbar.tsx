@@ -72,13 +72,8 @@ export const Navbar = () => {
       `}
       style={{ 
         height: 'var(--navbar-height)',
-        backgroundColor: isScrolled 
-          ? `hsla(var(--background) / ${backgroundOpacity})` 
-          : 'hsla(var(--background) / 0.8)',
-        borderBottomColor: isScrolled 
-          ? `hsla(var(--border) / 0.3)` 
-          : 'transparent',
-        borderBottomWidth: isScrolled ? '1px' : '0px'
+        transform: `translateY(${isVisible ? '0' : '-100%'})`,
+        backdropFilter: isScrolled ? `blur(${blurIntensity}px)` : 'blur(4px)'
       }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex justify-between items-center h-full">
