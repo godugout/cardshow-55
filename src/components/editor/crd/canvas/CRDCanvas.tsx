@@ -464,7 +464,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
                     />
                   ) : (
                     <div 
-                      className="w-32 h-40 border-2 border-dashed border-white/40 rounded bg-transparent hover:border-white/60 hover:bg-white/5 transition-all duration-200 cursor-pointer relative z-20 flex items-center justify-center group"
+                      className="w-full h-full border-2 border-dashed border-white/40 rounded bg-transparent hover:border-white/60 hover:bg-white/5 transition-all duration-200 cursor-pointer relative z-20 flex items-center justify-center group"
                       onClick={() => {
                         const input = document.createElement('input');
                         input.type = 'file';
