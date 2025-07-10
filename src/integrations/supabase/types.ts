@@ -1809,6 +1809,7 @@ export type Database = {
       }
       crdmkr_processing_jobs: {
         Row: {
+          cached_layers_count: number | null
           completed_at: string | null
           created_at: string | null
           error_message: string | null
@@ -1816,14 +1817,18 @@ export type Database = {
           file_size: number | null
           file_url: string
           id: string
+          last_accessed_at: string | null
+          original_file_path: string | null
           progress: number | null
           result: Json | null
           started_at: string | null
           status: string | null
+          thumbnail_url: string | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          cached_layers_count?: number | null
           completed_at?: string | null
           created_at?: string | null
           error_message?: string | null
@@ -1831,14 +1836,18 @@ export type Database = {
           file_size?: number | null
           file_url: string
           id?: string
+          last_accessed_at?: string | null
+          original_file_path?: string | null
           progress?: number | null
           result?: Json | null
           started_at?: string | null
           status?: string | null
+          thumbnail_url?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          cached_layers_count?: number | null
           completed_at?: string | null
           created_at?: string | null
           error_message?: string | null
@@ -1846,10 +1855,13 @@ export type Database = {
           file_size?: number | null
           file_url?: string
           id?: string
+          last_accessed_at?: string | null
+          original_file_path?: string | null
           progress?: number | null
           result?: Json | null
           started_at?: string | null
           status?: string | null
+          thumbnail_url?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -4640,11 +4652,14 @@ export type Database = {
       psd_layers: {
         Row: {
           bounds: Json
+          cached_image_url: string | null
           content: Json | null
           created_at: string | null
           id: string
           is_visible: boolean | null
           job_id: string | null
+          last_modified_at: string | null
+          layer_hash: string | null
           layer_name: string
           layer_order: number | null
           layer_type: string
@@ -4653,11 +4668,14 @@ export type Database = {
         }
         Insert: {
           bounds: Json
+          cached_image_url?: string | null
           content?: Json | null
           created_at?: string | null
           id?: string
           is_visible?: boolean | null
           job_id?: string | null
+          last_modified_at?: string | null
+          layer_hash?: string | null
           layer_name: string
           layer_order?: number | null
           layer_type: string
@@ -4666,11 +4684,14 @@ export type Database = {
         }
         Update: {
           bounds?: Json
+          cached_image_url?: string | null
           content?: Json | null
           created_at?: string | null
           id?: string
           is_visible?: boolean | null
           job_id?: string | null
+          last_modified_at?: string | null
+          layer_hash?: string | null
           layer_name?: string
           layer_order?: number | null
           layer_type?: string
@@ -5933,6 +5954,53 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      user_psd_sessions: {
+        Row: {
+          auto_saved_at: string | null
+          canvas_state: Json | null
+          created_at: string | null
+          id: string
+          job_id: string
+          layer_modifications: Json | null
+          session_data: Json
+          updated_at: string | null
+          user_id: string
+          visible_layers: string[] | null
+        }
+        Insert: {
+          auto_saved_at?: string | null
+          canvas_state?: Json | null
+          created_at?: string | null
+          id?: string
+          job_id: string
+          layer_modifications?: Json | null
+          session_data?: Json
+          updated_at?: string | null
+          user_id: string
+          visible_layers?: string[] | null
+        }
+        Update: {
+          auto_saved_at?: string | null
+          canvas_state?: Json | null
+          created_at?: string | null
+          id?: string
+          job_id?: string
+          layer_modifications?: Json | null
+          session_data?: Json
+          updated_at?: string | null
+          user_id?: string
+          visible_layers?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_psd_sessions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "crdmkr_processing_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_relationships: {
         Row: {
