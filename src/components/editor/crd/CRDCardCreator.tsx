@@ -11,6 +11,9 @@ import { CRDContentTab } from './tabs/CRDContentTab';
 import { CRDExportTab } from './tabs/CRDExportTab';
 import { CRDCanvas } from './canvas/CRDCanvas';
 import { CRDSidebar } from './sidebar/CRDSidebar';
+import { CollapsibleSidebar } from './sidebar/CollapsibleSidebar';
+import { LeftSidebarContent, LeftSidebarCollapsedContent } from './sidebar/LeftSidebarContent';
+import { RightSidebarCollapsedContent } from './sidebar/RightSidebarCollapsed';
 interface CRDCardCreatorProps {
   initialCard?: Partial<InteractiveCardData>;
   onSave: (card: InteractiveCardData) => void;
@@ -116,6 +119,10 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   const [playerImage, setPlayerImage] = useState<string | null>(null);
   const [playerStats, setPlayerStats] = useState<Record<string, string>>({});
   const [showGuides, setShowGuides] = useState(false);
+  
+  // Sidebar collapse states
+  const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
+  const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
   const updateCardData = useCallback((updates: Partial<InteractiveCardData>) => {
     setCardData(prev => ({
       ...prev,
@@ -214,44 +221,10 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
           </div>
         </div>
 
-        {/* Main Content - CRD-focused 3-Panel Layout */}
-        <div className="flex-1 flex min-h-0 w-full">
-          {/* Left Panel - CRD Tools */}
-          <div className="hidden lg:flex lg:w-80 xl:w-96 border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-              <TabsList className="grid grid-cols-4 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
-                <TabsTrigger value="layout" className="text-xs">Layout</TabsTrigger>
-                <TabsTrigger value="design" className="text-xs">Design</TabsTrigger>
-                <TabsTrigger value="content" className="text-xs">Content</TabsTrigger>
-                <TabsTrigger value="export" className="text-xs">Export</TabsTrigger>
-              </TabsList>
-              
-              <div className="p-3 space-y-4 flex-1 overflow-y-auto">
-                <TabsContent value="layout" className="mt-0">
-                  <CRDLayoutTab selectedTemplate={selectedTemplate} onTemplateSelect={setSelectedTemplate} />
-                </TabsContent>
-                
-                <TabsContent value="design" className="mt-0">
-                  <CRDDesignTab colorPalette={colorPalette} onColorPaletteChange={setColorPalette} typography={typography} onTypographyChange={setTypography} effects={effects} onEffectsChange={setEffects} />
-                </TabsContent>
-                
-                <TabsContent value="content" className="mt-0">
-                  <CRDContentTab cardTitle={cardData.title} onCardTitleChange={title => updateCardData({
-                  title
-                })} cardDescription={cardData.description || ''} onCardDescriptionChange={description => updateCardData({
-                  description
-                })} playerImage={playerImage} onPlayerImageChange={setPlayerImage} playerStats={playerStats} onPlayerStatsChange={setPlayerStats} />
-                </TabsContent>
-                
-                <TabsContent value="export" className="mt-0">
-                  <CRDExportTab onExport={handleExport} />
-                </TabsContent>
-              </div>
-            </Tabs>
-          </div>
-
-          {/* Center Panel - Card Canvas */}
-          <div className="flex-1 min-w-0 bg-crd-darkest flex flex-col w-full">
+        {/* Main Content - Full Width Canvas with Overlay Sidebars */}
+        <div className="flex-1 relative w-full">
+          {/* Full Width Canvas */}
+          <div className="w-full h-full bg-crd-darkest">
             <CRDCanvas 
               template={selectedTemplate} 
               colorPalette={colorPalette} 
@@ -272,10 +245,52 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             />
           </div>
 
-          {/* Right Panel - Dusty + Properties */}
-          <div className="hidden xl:flex xl:w-96 border-l border-crd-mediumGray/20 bg-crd-darker/30 backdrop-blur-sm overflow-y-auto flex-col">
-            <CRDSidebar cardData={cardData} onCardDataUpdate={updateCardData} cardTitle={cardData.title} playerImage={playerImage} selectedTemplate={selectedTemplate} colorPalette={colorPalette} effects={effects} previewMode={previewMode} />
-          </div>
+          {/* Left Collapsible Sidebar - Tools */}
+          <CollapsibleSidebar
+            isCollapsed={leftSidebarCollapsed}
+            onToggle={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
+            side="left"
+            collapsedContent={<LeftSidebarCollapsedContent activeTab={activeTab} />}
+          >
+            <LeftSidebarContent
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              selectedTemplate={selectedTemplate}
+              onTemplateSelect={setSelectedTemplate}
+              colorPalette={colorPalette}
+              onColorPaletteChange={setColorPalette}
+              typography={typography}
+              onTypographyChange={setTypography}
+              effects={effects}
+              onEffectsChange={setEffects}
+              cardData={cardData}
+              updateCardData={updateCardData}
+              playerImage={playerImage}
+              setPlayerImage={setPlayerImage}
+              playerStats={playerStats}
+              setPlayerStats={setPlayerStats}
+              onExport={handleExport}
+            />
+          </CollapsibleSidebar>
+
+          {/* Right Collapsible Sidebar - Properties */}
+          <CollapsibleSidebar
+            isCollapsed={rightSidebarCollapsed}
+            onToggle={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}
+            side="right"
+            collapsedContent={<RightSidebarCollapsedContent />}
+          >
+            <CRDSidebar 
+              cardData={cardData} 
+              onCardDataUpdate={updateCardData} 
+              cardTitle={cardData.title} 
+              playerImage={playerImage} 
+              selectedTemplate={selectedTemplate} 
+              colorPalette={colorPalette} 
+              effects={effects} 
+              previewMode={previewMode} 
+            />
+          </CollapsibleSidebar>
         </div>
       </div>
     </div>
