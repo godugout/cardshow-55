@@ -28,6 +28,7 @@ interface LeftSidebarContentProps {
   onExport: (format: string, options: any) => void;
   onFrameGenerated?: (frameData: any) => void;
   onCardGenerated?: (cardData: any) => void;
+  onApplyToCanvas?: (layers: any[], visibleLayers: Set<string>) => void;
   isPSDMode?: boolean;
   psdLayers?: any[];
   onPSDModeChange?: (isActive: boolean, layers?: any[], thumbnail?: string) => void;
@@ -52,8 +53,16 @@ export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
   setPlayerStats,
   onExport,
   onFrameGenerated,
-  onCardGenerated
+  onCardGenerated,
+  onPSDModeChange
 }) => {
+  const onApplyToCanvas = (layers: any[], visibleLayers: Set<string>) => {
+    console.log('Apply PSD layers to canvas:', { layers, visibleLayers });
+  };
+
+  const handlePSDModeActivate = (layers: any[], thumbnail?: string) => {
+    onPSDModeChange?.(true, layers, thumbnail);
+  };
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
       <TabsList className="grid grid-cols-5 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
@@ -69,10 +78,8 @@ export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
           <CRDImportTab 
             onFrameGenerated={onFrameGenerated}
             onCardGenerated={onCardGenerated}
-            onApplyToCanvas={(layers, visibleLayers) => {
-              // TODO: Integrate with canvas system
-              console.log('Apply PSD layers to canvas:', { layers, visibleLayers });
-            }}
+            onApplyToCanvas={onApplyToCanvas}
+            onPSDModeActivate={handlePSDModeActivate}
           />
         </TabsContent>
         
