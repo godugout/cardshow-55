@@ -13,8 +13,8 @@ export const CreateChoice: React.FC = () => {
       <div className={`h-full max-w-6xl mx-auto ${isMobile ? 'px-5 py-8' : 'px-8 py-16'} overflow-y-auto`}>
         {/* Hero Section with Background Illustration */}
         <div className="relative mb-16">
-          {/* Background Image - More Visible */}
-          <div className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-60">
+          {/* Background Image - Proper Z-Index */}
+          <div className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-60 z-0">
             <img 
               src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&h=800&fit=crop&crop=center&auto=format"
               alt="Creative workspace"
@@ -22,7 +22,7 @@ export const CreateChoice: React.FC = () => {
               onLoad={() => console.log('✅ Background image loaded successfully')}
               onError={(e) => console.log('❌ Background image failed to load:', e)}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/40 via-crd-darkest/20 to-crd-darkest/60"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/40 via-crd-darkest/20 to-crd-darkest/60 z-1"></div>
           </div>
           
           {/* Hero Content */}
