@@ -84,10 +84,22 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
         </div>
         
         {/* Category filters */}
-        <div className="flex flex-wrap gap-2">
-          {categories.map(category => <Button key={category} variant={selectedCategory === category ? "default" : "outline"} size="sm" onClick={() => setSelectedCategory(category)} className={`capitalize ${selectedCategory === category ? 'bg-crd-blue hover:bg-crd-blue/80 text-white border-crd-blue' : 'bg-transparent border-crd-mediumGray/30 text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-crd-white'}`}>
+        <div className="flex flex-wrap gap-2 justify-center">
+          {categories.map(category => (
+            <Button 
+              key={category} 
+              variant={selectedCategory === category ? "default" : "outline"} 
+              size="sm" 
+              onClick={() => setSelectedCategory(category)} 
+              className={`capitalize ${
+                selectedCategory === category 
+                  ? 'bg-crd-blue hover:bg-crd-blue/80 text-white border-crd-blue' 
+                  : 'bg-transparent border-crd-mediumGray/30 text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-crd-white'
+              }`}
+            >
               {category}
-            </Button>)}
+            </Button>
+          ))}
         </div>
       </div>
 
