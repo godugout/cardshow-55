@@ -13,16 +13,24 @@ export const CreateChoice: React.FC = () => {
       <div className={`h-full max-w-6xl mx-auto ${isMobile ? 'px-5 py-8' : 'px-8 py-16'} overflow-y-auto`}>
         {/* Hero Section with Background Illustration */}
         <div className="relative mb-16">
-          {/* Background Image - Proper Z-Index */}
-          <div className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-60 z-0">
+          {/* Background Image - Debug Mode */}
+          <div className="absolute inset-0 z-0 bg-red-500/10">
             <img 
               src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&h=800&fit=crop&crop=center&auto=format"
               alt="Creative workspace"
-              className="w-full h-full object-cover"
-              onLoad={() => console.log('✅ Background image loaded successfully')}
-              onError={(e) => console.log('❌ Background image failed to load:', e)}
+              className="w-full h-full object-cover opacity-80"
+              onLoad={(e) => {
+                const img = e.target as HTMLImageElement;
+                console.log('✅ Background image loaded successfully');
+                console.log('Image dimensions:', img.naturalWidth, 'x', img.naturalHeight);
+                console.log('Image src:', img.src);
+              }}
+              onError={(e) => {
+                const img = e.target as HTMLImageElement;
+                console.log('❌ Background image failed to load:', e);
+                console.log('Failed image src:', img.src);
+              }}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/30 via-crd-darkest/10 to-crd-darkest/40 z-[1]"></div>
           </div>
           
           {/* Hero Content */}
