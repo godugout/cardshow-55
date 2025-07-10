@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppSettings } from '@/hooks/useAppSettings';
+import { useTeamTheme } from '@/hooks/useTeamTheme';
+import { PalettePreview } from '@/components/ui/design-system';
 import { SfOrangeLogo } from './SfOrangeLogo';
 import { WashingtonLogo } from './WashingtonLogo';
 import { OaklandLogo } from './OaklandLogo';
@@ -106,6 +108,7 @@ interface LogoSelectorDrawerProps {
 
 export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) => {
   const { settings, saveSettings } = useAppSettings();
+  const { setTheme, currentPalette, availablePalettes } = useTeamTheme();
   const [open, setOpen] = useState(false);
 
   // Find logo by theme ID with fallback
@@ -141,8 +144,11 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
 
   const handleLogoSelect = (logo: typeof selectedLogo) => {
     setSelectedLogo(logo);
+    // Apply team theme with 4-color palette
+    setTheme(logo.themeId);
     // Save theme to persistent storage
     saveSettings({ theme: logo.themeId });
+    onThemeChange?.(logo.themeId);
     setOpen(false);
   };
 
@@ -173,9 +179,9 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
           <div className="w-full px-6 pb-6 space-y-8 overflow-y-auto max-h-[60vh]">
             {logoGroups.map((group, groupIndex) => (
               <div key={group.label} className="w-full">
-                <h3 className="text-gray-300 text-sm font-semibold mb-6 px-2 tracking-wide">
-                  {group.label}
-                </h3>
+                    <h3 className="text-themed-secondary text-sm font-semibold mb-6 px-2 tracking-wide">
+                      {group.label}
+                    </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                   {group.logos.map((logo) => {
                     const LogoComponent = logo.component;
@@ -186,18 +192,28 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
                       <button
                         key={logo.name}
                         onClick={() => handleLogoSelect(logo)}
-                        className={`group bg-[#2A2D37] rounded-xl p-3 transition-all duration-300 hover:scale-105 border-2 ${
+                        className={`group bg-themed-card rounded-xl p-3 transition-all duration-300 hover:scale-105 border-2 ${
                           isSelected 
-                            ? 'border-blue-500 bg-blue-500/10' 
-                            : `border-transparent ${hoverClasses}`
-                        } hover:shadow-lg flex items-center justify-center min-h-[80px]`}
+                            ? 'border-themed-strong bg-themed-light' 
+                            : `border-transparent hover:border-themed-light hover:bg-themed-subtle`
+                        } hover:shadow-lg flex items-center justify-center min-h-[100px]`}
                         title={logo.name}
                       >
-                        <LogoWithFallback 
-                          LogoComponent={LogoComponent} 
-                          logoName={logo.name}
-                          className="h-8 w-20 object-contain transition-all duration-300 group-hover:brightness-110" 
-                        />
+                        <div className="flex flex-col items-center gap-2">
+                          <LogoWithFallback 
+                            LogoComponent={LogoComponent} 
+                            logoName={logo.name}
+                            className="h-8 w-20 object-contain transition-all duration-300 group-hover:brightness-110" 
+                          />
+                          {/* Show palette preview for themed logos */}
+                          {availablePalettes.find(p => p.id === logo.themeId) && (
+                            <PalettePreview 
+                              palette={availablePalettes.find(p => p.id === logo.themeId)!}
+                              size="sm"
+                              className="opacity-60 group-hover:opacity-100 transition-opacity"
+                            />
+                          )}
+                        </div>
                       </button>
                     );
                   })}

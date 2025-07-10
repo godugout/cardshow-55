@@ -35,69 +35,89 @@
 }
 
 /* Logo-specific theme variations */
-/* SF Orange - Orange and white/cream theme */
+/* SF Orange - Bold orange with classic black and cream accents */
 [data-theme="sf-orange"] {
-  --theme-navbar-bg: 25 45 25; /* HSL for dark orange background */
-  --theme-navbar-border: 25 89 61; /* HSL for orange */
-  --theme-text-primary: 0 0 100; /* HSL for white text */
-  --theme-text-secondary: 25 65 85; /* HSL for light orange */
-  --theme-text-active: 25 89 61; /* HSL for active orange */
-  --theme-cta-bg: 0 84 60; /* HSL for red CTA */
-  --theme-cta-text: 0 0 100; /* HSL for white */
-  --theme-accent: 25 89 61; /* HSL for orange accent */
-  --theme-accent-hover: 17 91 48; /* HSL for darker orange */
+  --theme-primary: 17 98 55; /* SF Orange */
+  --theme-secondary: 0 0 0; /* Black */
+  --theme-accent: 33 22 56; /* Cream/Tan */
+  --theme-neutral: 0 0 100; /* White */
+  
+  --theme-navbar-bg: 17 98 55; /* Orange background */
+  --theme-navbar-border: 33 22 56; /* Cream border */
+  --theme-text-primary: 0 0 100; /* White text */
+  --theme-text-secondary: 33 22 70; /* Light cream */
+  --theme-text-active: 33 22 56; /* Cream active */
+  --theme-cta-bg: 0 0 0; /* Black CTA */
+  --theme-cta-text: 0 0 100; /* White text */
+  --theme-accent-hover: 33 30 46; /* Darker cream */
 }
 
-/* Washington - Red, white, and navy theme */
+/* Washington - Patriotic red, navy, and white with silver accents */
 [data-theme="washington"] {
-  --theme-navbar-bg: 0 0 100; /* HSL for pure white background */
-  --theme-navbar-border: 0 83 51; /* HSL for red */
-  --theme-text-primary: 222 84 16; /* HSL for navy */
-  --theme-text-secondary: 215 25 25; /* HSL for slate */
-  --theme-text-active: 0 83 51; /* HSL for red */
-  --theme-cta-bg: 225 90 60; /* HSL for blue */
-  --theme-cta-text: 0 0 100; /* HSL for white */
-  --theme-accent: 0 83 51; /* HSL for red */
-  --theme-accent-hover: 0 74 42; /* HSL for darker red */
+  --theme-primary: 350 87 43; /* Washington Red */
+  --theme-secondary: 222 84 13; /* Navy Blue */
+  --theme-accent: 197 71 73; /* Light Blue */
+  --theme-neutral: 200 8 68; /* Silver */
+  
+  --theme-navbar-bg: 0 0 100; /* White background */
+  --theme-navbar-border: 350 87 43; /* Red border */
+  --theme-text-primary: 222 84 13; /* Navy text */
+  --theme-text-secondary: 200 8 68; /* Silver text */
+  --theme-text-active: 350 87 43; /* Red active */
+  --theme-cta-bg: 222 84 13; /* Navy CTA */
+  --theme-cta-text: 0 0 100; /* White text */
+  --theme-accent-hover: 350 80 35; /* Darker red */
 }
 
-/* Oakland - Green and gold theme */
+/* Oakland - Forest green and gold with natural earth tones */
 [data-theme="oakland"] {
-  --theme-navbar-bg: 149 76 21; /* HSL for forest green */
-  --theme-navbar-border: 142 71 45; /* HSL for green */
-  --theme-text-primary: 0 0 100; /* HSL for white */
-  --theme-text-secondary: 142 78 85; /* HSL for light green */
-  --theme-text-active: 50 91 53; /* HSL for gold */
-  --theme-cta-bg: 50 91 53; /* HSL for gold */
-  --theme-cta-text: 149 76 21; /* HSL for dark green */
-  --theme-accent: 142 71 45; /* HSL for green */
-  --theme-accent-hover: 142 76 36; /* HSL for darker green */
+  --theme-primary: 163 100 11; /* Forest Green */
+  --theme-secondary: 44 88 53; /* Gold */
+  --theme-accent: 142 42 55; /* Bright Green */
+  --theme-neutral: 126 30 25; /* Dark Green */
+  
+  --theme-navbar-bg: 163 100 11; /* Forest green background */
+  --theme-navbar-border: 44 88 53; /* Gold border */
+  --theme-text-primary: 0 0 100; /* White text */
+  --theme-text-secondary: 44 88 70; /* Light gold */
+  --theme-text-active: 44 88 53; /* Gold active */
+  --theme-cta-bg: 44 88 53; /* Gold CTA */
+  --theme-cta-text: 163 100 11; /* Forest green text */
+  --theme-accent-hover: 142 50 45; /* Darker green */
 }
 
-/* Pittsburgh - Black and gold theme */
+/* Pittsburgh - Classic black and gold with gray support tones */
 [data-theme="pittsburgh"] {
-  --theme-navbar-bg: 240 6 10; /* HSL for black */
-  --theme-navbar-border: 50 91 53; /* HSL for gold */
-  --theme-text-primary: 50 91 53; /* HSL for gold */
-  --theme-text-secondary: 240 3 65; /* HSL for gray */
-  --theme-text-active: 50 91 53; /* HSL for gold */
-  --theme-cta-bg: 50 91 53; /* HSL for gold */
-  --theme-cta-text: 240 6 10; /* HSL for black */
-  --theme-accent: 50 91 53; /* HSL for gold */
-  --theme-accent-hover: 50 93 47; /* HSL for darker gold */
+  --theme-primary: 0 0 0; /* Black */
+  --theme-secondary: 44 100 53; /* Gold */
+  --theme-accent: 47 100 58; /* Bright Gold */
+  --theme-neutral: 200 8 57; /* Gray */
+  
+  --theme-navbar-bg: 0 0 0; /* Black background */
+  --theme-navbar-border: 44 100 53; /* Gold border */
+  --theme-text-primary: 44 100 53; /* Gold text */
+  --theme-text-secondary: 200 8 70; /* Light gray */
+  --theme-text-active: 47 100 58; /* Bright gold active */
+  --theme-cta-bg: 44 100 53; /* Gold CTA */
+  --theme-cta-text: 0 0 0; /* Black text */
+  --theme-accent-hover: 44 90 45; /* Darker gold */
 }
 
-/* Toronto - Blue and white theme */
+/* Toronto - Royal blue with white and light blue accents */
 [data-theme="toronto"] {
-  --theme-navbar-bg: 217 75 20; /* HSL for dark blue background */
-  --theme-navbar-border: 217 91 60; /* HSL for blue */
-  --theme-text-primary: 0 0 100; /* HSL for white */
-  --theme-text-secondary: 217 65 80; /* HSL for light blue */
-  --theme-text-active: 225 90 60; /* HSL for blue */
-  --theme-cta-bg: 225 90 60; /* HSL for blue */
-  --theme-cta-text: 0 0 100; /* HSL for white */
-  --theme-accent: 217 91 60; /* HSL for blue */
-  --theme-accent-hover: 217 92 54; /* HSL for darker blue */
+  --theme-primary: 217 100 25; /* Royal Blue */
+  --theme-secondary: 0 0 100; /* White */
+  --theme-accent: 198 72 58; /* Light Blue */
+  --theme-neutral: 210 17 81; /* Light Gray */
+  
+  --theme-navbar-bg: 217 100 25; /* Royal blue background */
+  --theme-navbar-border: 198 72 58; /* Light blue border */
+  --theme-text-primary: 0 0 100; /* White text */
+  --theme-text-secondary: 198 72 75; /* Lighter blue */
+  --theme-text-active: 198 72 58; /* Light blue active */
+  --theme-cta-bg: 198 72 58; /* Light blue CTA */
+  --theme-cta-text: 217 100 25; /* Royal blue text */
+  --theme-accent-hover: 198 80 50; /* Darker light blue */
 }
 
 /* Cardshow Basic - Clean grayscale theme */

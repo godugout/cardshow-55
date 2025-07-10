@@ -13,3 +13,5 @@ export { CollapsibleSection } from './CollapsibleSection';
 export { Hero3 } from './Hero3';
 export { colors } from './colors';
 export type { BrandColor, NeutralColor, ColorKey } from './colors';
+export { PalettePreview } from './PalettePreview';
+export { TeamThemeShowcase } from './TeamThemeShowcase';
