@@ -115,8 +115,8 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
         </div>
       </div>
 
-      {/* Frames Grid - Responsive 2-4 columns */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-y-auto max-h-[calc(100vh-300px)]">
+      {/* Frames Grid - Responsive 2-4 columns with proper aspect ratios */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto max-h-[calc(100vh-300px)]">
         {filteredFrames.map(frame => (
           <div
             key={frame.id}
@@ -157,8 +157,8 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
               </PopoverContent>
             </Popover>
 
-            {/* Frame Thumbnail - Enhanced Placeholder */}
-            <div className="aspect-[360/504] bg-gradient-to-br from-crd-dark to-crd-darkest border-2 border-crd-blue/40 rounded-lg flex flex-col items-center justify-center overflow-hidden group-hover:border-crd-blue/60 transition-colors mb-3">
+            {/* Frame Thumbnail - Enhanced Placeholder with proper dimensions */}
+            <div className="aspect-[5/7] bg-gradient-to-br from-crd-dark to-crd-darkest border-2 border-crd-blue/40 rounded-lg flex flex-col items-center justify-center overflow-hidden group-hover:border-crd-blue/60 transition-colors mb-3">
               <div className="text-center p-4">
                 {/* Category Icon */}
                 <div className="w-10 h-10 mx-auto mb-2 bg-crd-blue/20 rounded-full flex items-center justify-center">

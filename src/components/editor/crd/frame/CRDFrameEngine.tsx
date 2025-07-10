@@ -200,15 +200,7 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
                 Low DPI
               </div>}
           </div> : <div className="w-full h-full flex items-center justify-center bg-transparent">
-            {region.type === 'photo' ? <div className="text-center text-white/60">
-                <div className="text-sm font-medium mb-1">{region.name}</div>
-                <div className="text-xs opacity-75">Click to add image</div>
-                <div className="text-xs opacity-50 mt-1">
-                  Will auto-fit to card dimensions
-                </div>
-              </div> : <div className="text-center text-white/40">
-                <div className="text-xs">{region.name}</div>
-              </div>}
+            {/* Empty region placeholder */}
           </div>}
 
         {/* Crop indicator */}
