@@ -17,13 +17,18 @@ export const DustyMessageBubble: React.FC<DustyMessageBubbleProps> = ({ message 
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
+    // Reset state for new message
     setIsVisible(true);
     setIsTyping(true);
     setDisplayText('');
 
-    // Typing animation
+    // Typing animation with proper cleanup
     let currentIndex = 0;
+    let isActive = true;
+    
     const typingInterval = setInterval(() => {
+      if (!isActive) return;
+      
       if (currentIndex <= message.text.length) {
         setDisplayText(message.text.slice(0, currentIndex));
         currentIndex++;
@@ -33,8 +38,11 @@ export const DustyMessageBubble: React.FC<DustyMessageBubbleProps> = ({ message 
       }
     }, 30);
 
-    return () => clearInterval(typingInterval);
-  }, [message.text]);
+    return () => {
+      isActive = false;
+      clearInterval(typingInterval);
+    };
+  }, [message.id]); // Use message.id instead of message.text to prevent unnecessary re-runs
 
   const getBubbleStyle = () => {
     switch (message.type) {

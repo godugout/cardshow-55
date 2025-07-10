@@ -77,7 +77,7 @@ export const useDustyConversation = (activityState: ActivityState) => {
     ];
   };
 
-  // Generate contextual messages based on activity
+  // Generate contextual messages based on activity - use individual dependencies to prevent unnecessary re-runs
   useEffect(() => {
     const generateMessage = (): DustyMessage => {
       if (activityState.isIdle && activityState.timeOnStep > 60000) {
@@ -160,8 +160,20 @@ export const useDustyConversation = (activityState: ActivityState) => {
     if (newMessage.id !== currentMessage.id) {
       setCurrentMessage(newMessage);
     }
+  }, [
+    activityState.currentStep,
+    activityState.selectedTemplate,
+    activityState.colorPalette,
+    activityState.cardTitle,
+    activityState.playerImage,
+    activityState.effects.length,
+    activityState.isIdle,
+    activityState.timeOnStep,
+    currentMessage.id
+  ]);
 
-    // Generate contextual actions
+  // Generate contextual actions - separate effect to prevent coupling
+  useEffect(() => {
     const actions: DustySuggestedAction[] = [];
 
     if (activityState.currentStep === 'template' && !activityState.selectedTemplate) {
@@ -195,7 +207,12 @@ export const useDustyConversation = (activityState: ActivityState) => {
     }
 
     setSuggestedActions(actions);
-  }, [activityState, currentMessage.id]);
+  }, [
+    activityState.currentStep,
+    activityState.selectedTemplate,
+    activityState.effects.length,
+    activityState.playerImage
+  ]);
 
   return {
     currentMessage,

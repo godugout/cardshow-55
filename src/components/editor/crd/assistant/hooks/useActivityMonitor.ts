@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 interface ActivityState {
   cardTitle: string;
@@ -23,52 +23,75 @@ interface UseActivityMonitorProps {
 }
 
 export const useActivityMonitor = (props: UseActivityMonitorProps): ActivityState => {
-  const [activityState, setActivityState] = useState<ActivityState>({
-    ...props,
-    lastActivity: new Date(),
-    currentStep: 'template',
-    timeOnStep: 0,
-    isIdle: false
-  });
-
   const [stepStartTime, setStepStartTime] = useState(new Date());
+  const [lastActivity, setLastActivity] = useState(new Date());
+  const [isIdle, setIsIdle] = useState(false);
 
-  // Detect current step based on completion
-  useEffect(() => {
-    let newStep: ActivityState['currentStep'] = 'template';
-    
-    if (props.selectedTemplate && props.colorPalette) {
-      newStep = 'design';
+  // Calculate current step based on completion (memoized to prevent recalculation)
+  const currentStep = useMemo((): ActivityState['currentStep'] => {
+    if (props.previewMode === 'print' || props.previewMode === 'preview') {
+      return 'export';
     }
     if (props.cardTitle || props.playerImage) {
-      newStep = 'content';
+      return 'content';
     }
-    if (props.previewMode === 'print' || props.previewMode === 'preview') {
-      newStep = 'export';
+    if (props.selectedTemplate && props.colorPalette) {
+      return 'design';
     }
+    return 'template';
+  }, [props.selectedTemplate, props.colorPalette, props.cardTitle, props.playerImage, props.previewMode]);
 
-    if (newStep !== activityState.currentStep) {
+  // Reset step start time when step changes
+  const [prevStep, setPrevStep] = useState(currentStep);
+  useEffect(() => {
+    if (currentStep !== prevStep) {
       setStepStartTime(new Date());
+      setPrevStep(currentStep);
     }
+  }, [currentStep, prevStep]);
 
-    setActivityState(prev => ({
-      ...prev,
-      ...props,
-      currentStep: newStep,
-      lastActivity: new Date(),
-      timeOnStep: Date.now() - stepStartTime.getTime(),
-      isIdle: false
-    }));
-  }, [props]);
+  // Update last activity when any props change
+  useEffect(() => {
+    setLastActivity(new Date());
+    setIsIdle(false);
+  }, [props.cardTitle, props.playerImage, props.selectedTemplate, props.colorPalette, props.effects, props.previewMode]);
 
   // Idle detection
   useEffect(() => {
     const idleTimer = setTimeout(() => {
-      setActivityState(prev => ({ ...prev, isIdle: true }));
+      setIsIdle(true);
     }, 30000); // 30 seconds idle threshold
 
     return () => clearTimeout(idleTimer);
-  }, [activityState.lastActivity]);
+  }, [lastActivity]);
 
-  return activityState;
+  // Calculate time on step
+  const timeOnStep = useMemo(() => {
+    return Date.now() - stepStartTime.getTime();
+  }, [stepStartTime]);
+
+  // Return stable activity state
+  return useMemo((): ActivityState => ({
+    cardTitle: props.cardTitle,
+    playerImage: props.playerImage,
+    selectedTemplate: props.selectedTemplate,
+    colorPalette: props.colorPalette,
+    effects: props.effects,
+    previewMode: props.previewMode,
+    lastActivity,
+    currentStep,
+    timeOnStep,
+    isIdle
+  }), [
+    props.cardTitle,
+    props.playerImage, 
+    props.selectedTemplate,
+    props.colorPalette,
+    props.effects,
+    props.previewMode,
+    lastActivity,
+    currentStep,
+    timeOnStep,
+    isIdle
+  ]);
 };
