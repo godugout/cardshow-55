@@ -20,16 +20,12 @@ export interface CRDFrame {
 }
 
 export interface CRDFrameConfig {
-  canvas: {
+  dimensions: {
     width: number;
     height: number;
-    aspectRatio: number;
   };
   regions: CRDRegion[];
   elements: CRDFrameElement[];
-  constraints: CRDConstraints;
-  customization: CRDCustomization;
-  metadata: CRDFrameMetadata;
 }
 
 export interface CRDRegion {

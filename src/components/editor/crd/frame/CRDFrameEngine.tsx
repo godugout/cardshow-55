@@ -31,7 +31,7 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
   const displayDimensions = useMemo(() => {
     const maxWidth = 400;
     const maxHeight = 600;
-    const { width, height } = frameConfig.canvas;
+    const { width, height } = frameConfig.dimensions;
     
     const widthRatio = maxWidth / width;
     const heightRatio = maxHeight / height;
@@ -42,7 +42,7 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
       height: height * scale,
       scale
     };
-  }, [frameConfig.canvas]);
+  }, [frameConfig.dimensions]);
 
   // Handle region click for photo regions
   const handleRegionClick = useCallback((region: CRDRegion) => {
@@ -246,8 +246,7 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
         <div 
           className="absolute inset-0"
           style={{
-            background: frameConfig.customization?.colors?.[0]?.background || 
-              'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
+            background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
           }}
         />
 
@@ -291,7 +290,7 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
       <div className="mt-2 text-center text-sm text-muted-foreground">
         <div className="font-medium">{frame.name}</div>
         <div className="text-xs opacity-75">
-          {frameConfig.canvas.width} × {frameConfig.canvas.height}px
+          {frameConfig.dimensions.width} × {frameConfig.dimensions.height}px
         </div>
       </div>
     </div>

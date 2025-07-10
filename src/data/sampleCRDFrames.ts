@@ -8,10 +8,9 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
     version: '1.0.0',
     description: 'Traditional baseball card layout with vintage styling',
     frame_config: {
-      canvas: {
+      dimensions: {
         width: 400,
-        height: 560,
-        aspectRatio: 5/7
+        height: 560
       },
       regions: [
         {
@@ -107,46 +106,7 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
             { name: 'green', properties: { color: '#006600' } }
           ]
         }
-      ],
-      constraints: {
-        minWidth: 300,
-        minHeight: 420,
-        maxWidth: 600,
-        maxHeight: 840,
-        aspectRatioLocked: true,
-        printSafe: true,
-        bleedArea: 10
-      },
-      customization: {
-        colors: [
-          {
-            name: 'Classic',
-            primary: '#333333',
-            secondary: '#666666',
-            accent: '#0066cc',
-            text: '#000000',
-            background: '#ffffff'
-          }
-        ],
-        fonts: [
-          {
-            name: 'Classic',
-            heading: { family: 'Inter', size: 24, weight: 700, style: 'normal' },
-            body: { family: 'Inter', size: 14, weight: 400, style: 'normal' },
-            caption: { family: 'Inter', size: 12, weight: 300, style: 'normal' }
-          }
-        ],
-        layouts: [],
-        effects: []
-      },
-      metadata: {
-        sport: 'baseball',
-        era: 'modern',
-        style: 'classic',
-        difficulty: 'basic',
-        tags: ['sports', 'baseball', 'classic'],
-        is_premium: false
-      }
+      ]
     },
     included_elements: [],
     is_public: true,
@@ -166,10 +126,9 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
     version: '1.0.0',
     description: 'Dynamic soccer card with gradient background and modern typography',
     frame_config: {
-      canvas: {
+      dimensions: {
         width: 400,
-        height: 600,
-        aspectRatio: 2/3
+        height: 600
       },
       regions: [
         {
@@ -223,47 +182,7 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
           behavior: { responsive: true },
           variations: []
         }
-      ],
-      constraints: {
-        minWidth: 300,
-        minHeight: 450,
-        maxWidth: 600,
-        maxHeight: 900,
-        aspectRatioLocked: true,
-        printSafe: true
-      },
-      customization: {
-        colors: [
-          {
-            name: 'Electric',
-            primary: '#00ff88',
-            secondary: '#0066ff',
-            accent: '#ff0066',
-            text: '#ffffff',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-          }
-        ],
-        fonts: [
-          {
-            name: 'Modern',
-            heading: { family: 'Poppins', size: 28, weight: 800, style: 'normal' },
-            body: { family: 'Poppins', size: 16, weight: 500, style: 'normal' },
-            caption: { family: 'Poppins', size: 14, weight: 400, style: 'normal' }
-          }
-        ],
-        layouts: [],
-        effects: [
-          { type: 'glow', parameters: { color: '#00ff88', intensity: 0.6 } }
-        ]
-      },
-      metadata: {
-        sport: 'soccer',
-        era: 'modern',
-        style: 'dynamic',
-        difficulty: 'intermediate',
-        tags: ['sports', 'soccer', 'modern', 'gradient'],
-        is_premium: false
-      }
+      ]
     },
     included_elements: [],
     is_public: true,

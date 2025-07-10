@@ -136,7 +136,8 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                   />
                 ) : (
                   <div className="text-center">
-                    <div className="text-xs text-crd-lightGray font-mono">FRAME</div>
+                    <div className="text-xs text-crd-lightGray font-mono mb-1">FRAME</div>
+                    <div className="text-xs text-crd-blue">{frame.category?.toUpperCase()}</div>
                   </div>
                 )}
               </div>
