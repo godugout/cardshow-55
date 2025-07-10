@@ -193,7 +193,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   };
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-crd-darkest flex flex-col">
+    <div className="relative h-full w-full overflow-hidden bg-transparent flex flex-col">
       {/* Toolbar */}
       <CRDToolbar
         zoom={zoom}
