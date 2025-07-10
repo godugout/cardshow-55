@@ -28,6 +28,9 @@ interface LeftSidebarContentProps {
   onExport: (format: string, options: any) => void;
   onFrameGenerated?: (frameData: any) => void;
   onCardGenerated?: (cardData: any) => void;
+  isPSDMode?: boolean;
+  psdLayers?: any[];
+  onPSDModeChange?: (isActive: boolean, layers?: any[], thumbnail?: string) => void;
 }
 
 export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({

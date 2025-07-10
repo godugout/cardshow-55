@@ -14,6 +14,9 @@ import { CRDSidebar } from './sidebar/CRDSidebar';
 import { CollapsibleSidebar } from './sidebar/CollapsibleSidebar';
 import { LeftSidebarContent, LeftSidebarCollapsedContent } from './sidebar/LeftSidebarContent';
 import { RightSidebarCollapsedContent } from './sidebar/RightSidebarCollapsed';
+import { PSDModeRightSidebar } from './sidebar/PSDModeRightSidebar';
+import { PSDCanvasIntegration } from './canvas/PSDCanvasIntegration';
+import { PSDLayer } from '@/types/psd';
 interface CRDCardCreatorProps {
   initialCard?: Partial<InteractiveCardData>;
   onSave: (card: InteractiveCardData) => void;
@@ -124,6 +127,14 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
   
+  // PSD Integration State
+  const [isPSDMode, setIsPSDMode] = useState(false);
+  const [psdLayers, setPSDLayers] = useState<PSDLayer[]>([]);
+  const [psdThumbnail, setPSDThumbnail] = useState<string>('');
+  const [visibleLayers, setVisibleLayers] = useState<Set<string>>(new Set());
+  const [selectedLayer, setSelectedLayer] = useState<string | null>(null);
+  const [layerOpacity, setLayerOpacity] = useState<Map<string, number>>(new Map());
+  
   // Mobile detection and responsive behavior
   const [isMobile, setIsMobile] = useState(false);
   
@@ -183,6 +194,53 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
     });
     // Implementation for actual export functionality
   }, [cardData]);
+
+  // PSD Integration Handlers
+  const handlePSDModeChange = useCallback((isActive: boolean, layers?: PSDLayer[], thumbnail?: string) => {
+    setIsPSDMode(isActive);
+    if (isActive && layers) {
+      setPSDLayers(layers);
+      setPSDThumbnail(thumbnail || '');
+      setVisibleLayers(new Set(layers.map(layer => layer.id)));
+      setLayerOpacity(new Map(layers.map(layer => [layer.id, layer.opacity || 100])));
+    } else {
+      setPSDLayers([]);
+      setPSDThumbnail('');
+      setVisibleLayers(new Set());
+      setSelectedLayer(null);
+      setLayerOpacity(new Map());
+    }
+  }, []);
+
+  const handleLayerVisibilityToggle = useCallback((layerId: string) => {
+    setVisibleLayers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(layerId)) {
+        newSet.delete(layerId);
+      } else {
+        newSet.add(layerId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handleLayerOpacityChange = useCallback((layerId: string, opacity: number) => {
+    setLayerOpacity(prev => {
+      const newMap = new Map(prev);
+      newMap.set(layerId, opacity);
+      return newMap;
+    });
+  }, []);
+
+  const handleApplyToCanvas = useCallback(() => {
+    console.log('Applying PSD layers to canvas:', Array.from(visibleLayers));
+    // Apply visible layers to the main canvas
+  }, [visibleLayers]);
+
+  const handleGenerateCard = useCallback(() => {
+    console.log('Generating card from PSD layers:', Array.from(visibleLayers));
+    // Generate a card based on current PSD layer setup
+  }, [visibleLayers]);
   return (
     <div className="h-screen w-full flex flex-col relative pt-16">
       {/* Background Image */}
@@ -261,28 +319,36 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
         {/* Main Content - Full Width Canvas with Overlay Sidebars */}
         <div className="flex-1 relative w-full">
           {/* Full Width Canvas */}
-          <div className="w-full h-full bg-crd-darkest">
-            <CRDCanvas 
-              template={selectedTemplate} 
-              colorPalette={colorPalette} 
-              typography={typography} 
-              effects={effects} 
-              cardTitle={cardData.title} 
-              cardDescription={cardData.description || ''} 
-              playerImage={playerImage} 
-              playerStats={playerStats} 
-              previewMode={previewMode}
-              leftSidebarCollapsed={leftSidebarCollapsed}
-              rightSidebarCollapsed={rightSidebarCollapsed}
-              isMobile={isMobile}
-              onImageUpload={(files) => {
-                if (files.length > 0) {
-                  const file = files[0];
-                  const imageUrl = URL.createObjectURL(file);
-                  setPlayerImage(imageUrl);
-                }
-              }}
-            />
+          <div className="w-full h-full bg-crd-darkest relative">
+            {isPSDMode ? (
+              <PSDCanvasIntegration
+                layers={psdLayers}
+                visibleLayers={visibleLayers}
+                targetCanvas={null} // Will integrate with existing canvas system
+              />
+            ) : (
+              <CRDCanvas 
+                template={selectedTemplate} 
+                colorPalette={colorPalette} 
+                typography={typography} 
+                effects={effects} 
+                cardTitle={cardData.title} 
+                cardDescription={cardData.description || ''} 
+                playerImage={playerImage} 
+                playerStats={playerStats} 
+                previewMode={previewMode}
+                leftSidebarCollapsed={leftSidebarCollapsed}
+                rightSidebarCollapsed={rightSidebarCollapsed}
+                isMobile={isMobile}
+                onImageUpload={(files) => {
+                  if (files.length > 0) {
+                    const file = files[0];
+                    const imageUrl = URL.createObjectURL(file);
+                    setPlayerImage(imageUrl);
+                  }
+                }}
+              />
+            )}
           </div>
 
           {/* Left Collapsible Sidebar - Tools */}
@@ -312,6 +378,9 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
               playerStats={playerStats}
               setPlayerStats={setPlayerStats}
               onExport={handleExport}
+              isPSDMode={isPSDMode}
+              psdLayers={psdLayers}
+              onPSDModeChange={handlePSDModeChange}
             />
           </CollapsibleSidebar>
 
@@ -324,16 +393,30 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             className=""
             style={{ '--sidebar-width': isMobile ? '300px' : '380px' } as React.CSSProperties}
           >
-            <CRDSidebar 
-              cardData={cardData} 
-              onCardDataUpdate={updateCardData} 
-              cardTitle={cardData.title} 
-              playerImage={playerImage} 
-              selectedTemplate={selectedTemplate} 
-              colorPalette={colorPalette} 
-              effects={effects} 
-              previewMode={previewMode} 
-            />
+            {isPSDMode ? (
+              <PSDModeRightSidebar
+                layers={psdLayers}
+                visibleLayers={visibleLayers}
+                selectedLayer={selectedLayer}
+                layerOpacity={layerOpacity}
+                onLayerVisibilityToggle={handleLayerVisibilityToggle}
+                onLayerSelect={setSelectedLayer}
+                onLayerOpacityChange={handleLayerOpacityChange}
+                onApplyToCanvas={handleApplyToCanvas}
+                onGenerateCard={handleGenerateCard}
+              />
+            ) : (
+              <CRDSidebar 
+                cardData={cardData} 
+                onCardDataUpdate={updateCardData} 
+                cardTitle={cardData.title} 
+                playerImage={playerImage} 
+                selectedTemplate={selectedTemplate} 
+                colorPalette={colorPalette} 
+                effects={effects} 
+                previewMode={previewMode} 
+              />
+            )}
           </CollapsibleSidebar>
         </div>
       </div>
