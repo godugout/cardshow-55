@@ -225,7 +225,7 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
             )}
           </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-crd-surface/10">
+          <div className="w-full h-full flex items-center justify-center bg-transparent">
             {region.type === 'photo' ? (
               <div className="text-center text-white/60">
                 <div className="text-sm font-medium mb-1">{region.name}</div>
@@ -326,7 +326,7 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
         <div 
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
+            background: 'transparent'
           }}
         />
 
