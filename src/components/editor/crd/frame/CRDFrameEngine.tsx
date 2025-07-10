@@ -186,10 +186,16 @@ export const CRDFrameEngine: React.FC<CRDFrameEngineProps> = ({
 
   // Render frame elements (decorative elements, text, etc.)
   const renderElements = useCallback(() => {
+    // Safety check for elements array
+    if (!frameConfig.elements || !Array.isArray(frameConfig.elements)) {
+      return [];
+    }
+    
     return frameConfig.elements.map(element => {
       const { scale } = displayDimensions;
       
-      if (!element.properties.position) return null;
+      // Add safety checks for element properties
+      if (!element?.properties?.position) return null;
 
       const elementStyle: React.CSSProperties = {
         position: 'absolute',
