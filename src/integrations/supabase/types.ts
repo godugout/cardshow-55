@@ -5011,6 +5011,145 @@ export type Database = {
         }
         Relationships: []
       }
+      sport_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          region: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          region?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          region?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      sports_leagues: {
+        Row: {
+          abbreviation: string | null
+          country: string | null
+          created_at: string | null
+          founded_year: number | null
+          id: string
+          name: string
+          official_website: string | null
+          sport_category_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          abbreviation?: string | null
+          country?: string | null
+          created_at?: string | null
+          founded_year?: number | null
+          id?: string
+          name: string
+          official_website?: string | null
+          sport_category_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          abbreviation?: string | null
+          country?: string | null
+          created_at?: string | null
+          founded_year?: number | null
+          id?: string
+          name?: string
+          official_website?: string | null
+          sport_category_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sports_leagues_sport_category_id_fkey"
+            columns: ["sport_category_id"]
+            isOneToOne: false
+            referencedRelation: "sport_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sports_teams: {
+        Row: {
+          accent_color: string | null
+          alternate_colors: Json | null
+          brand_guidelines: Json | null
+          city: string
+          created_at: string | null
+          founded_year: number | null
+          id: string
+          league_id: string | null
+          logo_url: string | null
+          name: string
+          neutral_color: string | null
+          nickname: string | null
+          official_website: string | null
+          primary_color: string
+          secondary_color: string
+          stadium_arena: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          alternate_colors?: Json | null
+          brand_guidelines?: Json | null
+          city: string
+          created_at?: string | null
+          founded_year?: number | null
+          id?: string
+          league_id?: string | null
+          logo_url?: string | null
+          name: string
+          neutral_color?: string | null
+          nickname?: string | null
+          official_website?: string | null
+          primary_color: string
+          secondary_color: string
+          stadium_arena?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          alternate_colors?: Json | null
+          brand_guidelines?: Json | null
+          city?: string
+          created_at?: string | null
+          founded_year?: number | null
+          id?: string
+          league_id?: string | null
+          logo_url?: string | null
+          name?: string
+          neutral_color?: string | null
+          nickname?: string | null
+          official_website?: string | null
+          primary_color?: string
+          secondary_color?: string
+          stadium_arena?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sports_teams_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "sports_leagues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stream_interactions: {
         Row: {
           id: string
@@ -5254,6 +5393,65 @@ export type Database = {
           usage_count?: number | null
         }
         Relationships: []
+      }
+      team_color_palettes: {
+        Row: {
+          accent_hsl: string
+          accessibility_level: string | null
+          contrast_ratio: number | null
+          created_at: string | null
+          cta_bg_hsl: string
+          id: string
+          navbar_bg_hsl: string
+          neutral_hsl: string
+          primary_hsl: string
+          secondary_hsl: string
+          team_id: string | null
+          text_primary_hsl: string
+          text_secondary_hsl: string
+          updated_at: string | null
+        }
+        Insert: {
+          accent_hsl: string
+          accessibility_level?: string | null
+          contrast_ratio?: number | null
+          created_at?: string | null
+          cta_bg_hsl: string
+          id?: string
+          navbar_bg_hsl: string
+          neutral_hsl: string
+          primary_hsl: string
+          secondary_hsl: string
+          team_id?: string | null
+          text_primary_hsl: string
+          text_secondary_hsl: string
+          updated_at?: string | null
+        }
+        Update: {
+          accent_hsl?: string
+          accessibility_level?: string | null
+          contrast_ratio?: number | null
+          created_at?: string | null
+          cta_bg_hsl?: string
+          id?: string
+          navbar_bg_hsl?: string
+          neutral_hsl?: string
+          primary_hsl?: string
+          secondary_hsl?: string
+          team_id?: string | null
+          text_primary_hsl?: string
+          text_secondary_hsl?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_color_palettes_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "sports_teams"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       teams: {
         Row: {
