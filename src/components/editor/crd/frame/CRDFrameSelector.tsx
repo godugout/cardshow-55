@@ -113,8 +113,8 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
         </div>
       </div>
 
-      {/* Frames Grid - Now with larger thumbnails */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto">
+      {/* Frames Grid - Wider with more columns */}
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 overflow-y-auto max-h-[calc(100vh-300px)] p-4">
         {filteredFrames.map(frame => (
           <div
             key={frame.id}
@@ -131,17 +131,23 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                 <img
                   src={frame.preview_image_url}
                   alt={frame.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded"
+                  onError={(e) => {
+                    console.log('Image failed to load:', frame.preview_image_url);
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.style.display = 'none';
+                    const sibling = target.nextElementSibling as HTMLElement;
+                    if (sibling) sibling.style.display = 'block';
+                  }}
                 />
-              ) : (
-                <div className="text-center p-4">
-                  <div className="text-lg text-crd-lightGray font-mono mb-2">FRAME</div>
-                  <div className="text-sm text-crd-blue font-semibold">{frame.category?.toUpperCase()}</div>
-                  <div className="text-xs text-crd-lightGray mt-2">
-                    {frame.frame_config.dimensions.width} × {frame.frame_config.dimensions.height}px
-                  </div>
+              ) : null}
+              <div className="text-center p-4" style={{ display: frame.preview_image_url ? 'none' : 'block' }}>
+                <div className="text-lg text-crd-lightGray font-mono mb-2">FRAME</div>
+                <div className="text-sm text-crd-blue font-semibold">{frame.category?.toUpperCase()}</div>
+                <div className="text-xs text-crd-lightGray mt-2">
+                  {frame.frame_config?.dimensions?.width || 400} × {frame.frame_config?.dimensions?.height || 560}px
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Frame Info */}

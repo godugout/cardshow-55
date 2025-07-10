@@ -62,7 +62,7 @@ export const CRDFrameIntegration: React.FC<CRDFrameIntegrationProps> = ({
         <CRDFrameSelector
           selectedFrameId={selectedFrame?.id}
           onFrameSelect={handleFrameSelect}
-          className="h-[calc(100vh-200px)]" // Give it more height
+          className="w-full" // Let it use full width
         />
       </div>
     </div>
