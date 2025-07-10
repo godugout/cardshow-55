@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -137,10 +138,10 @@ export const PSDFullScreenPreview: React.FC<PSDFullScreenPreviewProps> = ({
                       visibleLayers.has(layer.id) ? 'opacity-100' : 'opacity-30'
                     }`}
                     style={{
-                      left: `${(layer.bounds?.left || 0) / 10}%`,
-                      top: `${(layer.bounds?.top || 0) / 10}%`,
-                      width: `${((layer.bounds?.right || 100) - (layer.bounds?.left || 0)) / 10}%`,
-                      height: `${((layer.bounds?.bottom || 100) - (layer.bounds?.top || 0)) / 10}%`,
+                      left: `${(layer.bounds?.x || 0) / 10}%`,
+                      top: `${(layer.bounds?.y || 0) / 10}%`,
+                      width: `${(layer.bounds?.width || 100) / 10}%`,
+                      height: `${(layer.bounds?.height || 100) / 10}%`,
                     }}
                   >
                     <div className="w-full h-full border border-crd-blue/30 bg-crd-blue/5 rounded" />
@@ -182,7 +183,7 @@ export const PSDFullScreenPreview: React.FC<PSDFullScreenPreviewProps> = ({
                         {layer.name}
                       </p>
                       <p className="text-xs text-crd-lightGray">
-                        {layer.type} • {layer.opacity}% opacity
+                        {layer.type} • {Math.round((layer.styleProperties?.opacity || 1) * 100)}% opacity
                       </p>
                     </div>
                     
