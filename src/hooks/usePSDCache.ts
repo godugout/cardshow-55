@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { psdCacheService, PSDSessionData, CachedPSDJob } from '@/services/psdCacheService';
 import { PSDLayer } from '@/types/psd';
 import { supabase } from '@/integrations/supabase/client';
-import { useUser } from '@supabase/auth-helpers-react';
 
 export interface UsePSDCacheResult {
   // Processing state
@@ -31,7 +30,7 @@ export interface UsePSDCacheResult {
 }
 
 export const usePSDCache = (): UsePSDCacheResult => {
-  const user = useUser();
+  const [user, setUser] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [processingStep, setProcessingStep] = useState('');
@@ -41,6 +40,21 @@ export const usePSDCache = (): UsePSDCacheResult => {
   const [lastAutoSave, setLastAutoSave] = useState<Date | null>(null);
   
   const autoSaveCleanupRef = useRef<(() => void) | null>(null);
+
+  // Get current user
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Load cached jobs on mount
   useEffect(() => {

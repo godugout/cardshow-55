@@ -108,15 +108,11 @@ class PSDCacheService {
     const { data: job, error: jobError } = await supabase
       .from('crdmkr_processing_jobs')
       .insert({
-        user_id: userId,
         file_name: file.name,
         file_url: originalFilePath,
-        original_file_path: originalFilePath,
-        thumbnail_url: thumbnail,
-        cached_layers_count: layers.length,
         status: 'completed',
         progress: 100,
-        result: {
+        result: JSON.stringify({
           layers,
           metadata: {
             width: psd.width || 0,
@@ -124,8 +120,7 @@ class PSDCacheService {
             colorMode: psd.colorMode?.toString() || 'RGB',
             bitsPerChannel: psd.bitsPerChannel || 8
           }
-        },
-        last_accessed_at: new Date().toISOString()
+        })
       })
       .select()
       .single();
@@ -412,8 +407,8 @@ class PSDCacheService {
 
     return {
       visibleLayers: data.visible_layers || [],
-      layerModifications: data.layer_modifications || {},
-      canvasState: data.canvas_state || {},
+      layerModifications: (data.layer_modifications as Record<string, any>) || {},
+      canvasState: (data.canvas_state as any) || {},
       autoSavedAt: new Date(data.auto_saved_at)
     };
   }
@@ -422,7 +417,6 @@ class PSDCacheService {
     const { data, error } = await supabase
       .from('crdmkr_processing_jobs')
       .select('*')
-      .eq('user_id', userId)
       .eq('status', 'completed')
       .order('created_at', { ascending: false });
 
@@ -434,16 +428,28 @@ class PSDCacheService {
     return data.map(job => ({
       id: job.id,
       fileName: job.file_name,
-      originalFilePath: job.original_file_path || '',
-      thumbnailUrl: job.thumbnail_url || '',
-      layersCount: job.cached_layers_count || 0,
-      lastAccessed: new Date(job.last_accessed_at || job.created_at),
-      metadata: job.result?.metadata || {
-        width: 0,
-        height: 0,
-        colorMode: 'RGB',
-        bitsPerChannel: 8
-      }
+      originalFilePath: job.file_url || '',
+      thumbnailUrl: '',
+      layersCount: 0,
+      lastAccessed: new Date(job.created_at),
+      metadata: (() => {
+        try {
+          const result = typeof job.result === 'string' ? JSON.parse(job.result) : job.result;
+          return result?.metadata || {
+            width: 0,
+            height: 0,
+            colorMode: 'RGB',
+            bitsPerChannel: 8
+          };
+        } catch {
+          return {
+            width: 0,
+            height: 0,
+            colorMode: 'RGB',
+            bitsPerChannel: 8
+          };
+        }
+      })()
     }));
   }
 
