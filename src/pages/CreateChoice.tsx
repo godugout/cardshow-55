@@ -14,13 +14,15 @@ export const CreateChoice: React.FC = () => {
         {/* Hero Section with Background Illustration */}
         <div className="relative mb-16">
           {/* Background Image - Blended */}
-          <div className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-10">
+          <div className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-30">
             <img 
-              src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop&crop=center"
+              src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&h=800&fit=crop&crop=center"
               alt="Creative workspace"
-              className="w-full h-full object-cover scale-110 blur-sm"
+              className="w-full h-full object-cover scale-105"
+              onLoad={() => console.log('Background image loaded successfully')}
+              onError={() => console.log('Background image failed to load')}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/80 via-transparent to-crd-darkest/80"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/60 via-crd-darkest/20 to-crd-darkest/80"></div>
           </div>
           
           {/* Hero Content */}
