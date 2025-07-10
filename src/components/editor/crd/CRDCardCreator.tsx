@@ -139,7 +139,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
     });
     // Implementation for actual export functionality
   }, [cardData]);
-  return <div className="h-screen w-full flex flex-col bg-crd-darkest">
+  return <div className="h-screen w-full flex flex-col bg-crd-darkest pt-16">
       {/* Header */}
       <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
         {/* Left: CRD Logo, Title, and Tags */}
