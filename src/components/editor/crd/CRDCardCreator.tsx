@@ -284,7 +284,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
           </div>
 
           {/* Center Panel - Card Canvas */}
-          <div className="flex-1 min-w-0 bg-gradient-to-br from-crd-darkest/60 to-crd-darkest/80 backdrop-blur-sm border border-crd-mediumGray/20 rounded-lg m-2 flex flex-col w-full overflow-hidden">
+          <div className="flex-1 min-w-0 flex flex-col w-full relative overflow-hidden">
             <CRDCanvas 
               template={selectedTemplate} 
               colorPalette={colorPalette} 
