@@ -195,24 +195,24 @@ export const cardshowPalettes: TeamPalette[] = [
   {
     id: 'cardshow-blue',
     name: 'Cardshow Blue', 
-    description: 'Professional blue with modern accents',
+    description: 'Professional blue with clean white navbar design',
     colors: {
       primary: '#3772FF',   // CRD Blue
       secondary: '#FFFFFF',  // White
       accent: '#5B8FFF',     // Light Blue
-      neutral: '#E6EFFF'     // Very Light Blue
+      neutral: '#F8FAFC'     // Very Light Gray
     },
     hsl: {
       primary: '225 100 61', // CRD Blue
       secondary: '0 0 100',  // White
       accent: '225 100 69',  // Light Blue
-      neutral: '225 100 93'  // Very Light Blue
+      neutral: '210 20 98'   // Very Light Gray
     },
     usage: {
-      navbar: 'Blue background with light blue accents',
+      navbar: 'White background with blue accents for logo visibility',
       cards: 'Blue borders with white backgrounds',
       buttons: 'Blue primary, light blue secondary', 
-      text: 'White on blue, blue for highlights'
+      text: 'Blue on white, darker blue for highlights'
     }
   },
   {
