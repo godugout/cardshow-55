@@ -103,51 +103,85 @@ const Gallery = () => {
   }));
 
   return (
-    <NavbarAwareContainer className="min-h-screen bg-crd-darkest">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <SubscriptionBanner />
-        
-        <GalleryHeader
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-        
-        {/* Data source indicator in development */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mb-4 p-2 bg-crd-mediumGray/10 border border-crd-mediumGray/30 rounded text-xs text-crd-lightGray">
-            Source: {dataSource} | Total: {cards.length} | Showing: {displayCards.length}
-          </div>
-        )}
-
-        <div className="w-full">
-          <CardGrid 
-            cards={gridCards}
-            loading={false}
-            viewMode="grid"
-            useProgressiveLoading={false}
-          />
-          
-          {displayCards.length === 0 && !loading && (
-            <div className="text-center py-12">
-              <h3 className="text-xl font-semibold text-crd-white mb-4">No Cards Found</h3>
-              <p className="text-crd-lightGray mb-6">
-                {cards.length === 0 
-                  ? "No cards have been created yet. Start by creating your first card!"
-                  : "No cards match the current filter. Try switching tabs or check other categories."
-                }
-              </p>
-              {cards.length === 0 && (
-                <CRDButton asChild variant="primary">
-                  <Link to="/create">
-                    Create Your First Card
-                  </Link>
-                </CRDButton>
-              )}
+    <div className="fixed inset-0 bg-crd-darkest overflow-hidden">
+      {/* Main Content - Full height with CRD theme */}
+      <div className="h-full pt-16">
+        <div className="h-full flex flex-col">
+          {/* Header matching CRD style */}
+          <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="text-2xl font-bold text-crd-white">Gallery</div>
+              <div className="flex items-center gap-2 text-xs text-crd-lightGray">
+                <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+                  {displayCards.length} Cards
+                </div>
+                <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                </div>
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+                    {dataSource}
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+            
+            <div className="flex items-center gap-3">
+              <CRDButton asChild variant="primary" size="sm">
+                <Link to="/create/crd">
+                  Create CRD
+                </Link>
+              </CRDButton>
+            </div>
+          </div>
+
+          {/* Gallery Header with Tabs */}
+          <div className="flex-shrink-0 px-6 py-4 bg-crd-darker/30 border-b border-crd-mediumGray/10">
+            <GalleryHeader
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+          </div>
+
+          {/* Main Content Area */}
+          <div className="flex-1 overflow-auto bg-crd-darkest">
+            <div className="p-6">
+              <SubscriptionBanner />
+              
+              <div className="w-full">
+                <CardGrid 
+                  cards={gridCards}
+                  loading={false}
+                  viewMode="grid"
+                  useProgressiveLoading={false}
+                />
+                
+                {displayCards.length === 0 && !loading && (
+                  <div className="text-center py-16">
+                    <div className="bg-crd-darker/30 border border-crd-mediumGray/20 rounded-xl p-12 max-w-md mx-auto">
+                      <h3 className="text-xl font-semibold text-crd-white mb-4">No Cards Found</h3>
+                      <p className="text-crd-lightGray mb-6">
+                        {cards.length === 0 
+                          ? "No cards have been created yet. Start by creating your first card!"
+                          : "No cards match the current filter. Try switching tabs or check other categories."
+                        }
+                      </p>
+                      {cards.length === 0 && (
+                        <CRDButton asChild variant="primary">
+                          <Link to="/create/crd">
+                            Create Your First Card
+                          </Link>
+                        </CRDButton>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </NavbarAwareContainer>
+    </div>
   );
 };
 
