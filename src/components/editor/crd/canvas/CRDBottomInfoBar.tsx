@@ -19,8 +19,9 @@ export const CRDBottomInfoBar: React.FC<CRDBottomInfoBarProps> = ({
   cardVersion = '1.0'
 }) => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-30 bg-crd-darker/70 backdrop-blur-lg border-t border-crd-mediumGray/20 shadow-2xl">
-      <div className="flex items-center justify-between px-6 py-3 gap-6">
+    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30 bg-crd-darker/80 backdrop-blur-sm border border-crd-mediumGray/30 rounded-lg shadow-lg">
+      <div className="px-6 py-4">
+        <div className="flex items-center justify-between gap-8">
         {/* Card Details Section */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
@@ -91,6 +92,7 @@ export const CRDBottomInfoBar: React.FC<CRDBottomInfoBarProps> = ({
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
           <span className="text-green-300 text-xs font-medium">Ready</span>
+        </div>
         </div>
       </div>
     </div>
