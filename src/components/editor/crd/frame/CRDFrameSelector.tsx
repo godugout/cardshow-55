@@ -159,9 +159,9 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                             rarity: 'rare'
                           }}
                           colorTheme={{
-                            primary: 'hsl(220, 100%, 50%)',
-                            secondary: 'hsl(220, 100%, 70%)',
-                            accent: 'hsl(45, 100%, 60%)',
+                            primary: frame.id === 'mystical-fantasy' ? '#8B5CF6' : 'hsl(220, 100%, 50%)',
+                            secondary: frame.id === 'mystical-fantasy' ? '#A78BFA' : 'hsl(220, 100%, 70%)',
+                            accent: frame.id === 'mystical-fantasy' ? '#DDD6FE' : 'hsl(45, 100%, 60%)',
                             neutral: 'hsl(220, 10%, 80%)'
                           }}
                           className="w-full h-full" 
@@ -186,15 +186,17 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                     rarity: ['common', 'uncommon', 'rare', 'epic', 'legendary'][Math.floor(Math.random() * 5)]
                   }}
                   colorTheme={{
-                    primary: frame.category === 'sports' ? 'hsl(220, 100%, 50%)' : 
+                    primary: frame.id === 'mystical-fantasy' ? '#8B5CF6' : 
+                             frame.category === 'sports' ? 'hsl(220, 100%, 50%)' : 
                              frame.category === 'vintage' ? 'hsl(30, 70%, 40%)' :
                              frame.category === 'fantasy' ? 'hsl(280, 100%, 50%)' :
                              frame.category === 'modern' ? 'hsl(200, 100%, 60%)' : 'hsl(220, 100%, 50%)',
-                    secondary: frame.category === 'sports' ? 'hsl(220, 100%, 70%)' : 
+                    secondary: frame.id === 'mystical-fantasy' ? '#A78BFA' :
+                               frame.category === 'sports' ? 'hsl(220, 100%, 70%)' : 
                                frame.category === 'vintage' ? 'hsl(30, 50%, 60%)' :
                                frame.category === 'fantasy' ? 'hsl(280, 80%, 70%)' :
                                frame.category === 'modern' ? 'hsl(200, 80%, 80%)' : 'hsl(220, 100%, 70%)',
-                    accent: 'hsl(45, 100%, 60%)',
+                    accent: frame.id === 'mystical-fantasy' ? '#DDD6FE' : 'hsl(45, 100%, 60%)',
                     neutral: 'hsl(220, 10%, 80%)'
                   }}
                   className="w-full h-full scale-75 origin-center" 
