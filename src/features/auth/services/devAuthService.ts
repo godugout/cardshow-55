@@ -6,8 +6,32 @@ export class DevAuthService {
   private readonly DEV_SESSION_KEY = 'dev_auth_session';
 
   isDevMode(): boolean {
-    return process.env.NODE_ENV === 'development' && 
-           window.location.hostname === 'localhost';
+    const isDevEnv = process.env.NODE_ENV === 'development';
+    const hostname = window.location.hostname;
+    const isLocalhost = ['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname) || hostname.startsWith('localhost');
+    
+    console.log('🔧 Dev mode check:', { 
+      nodeEnv: process.env.NODE_ENV, 
+      hostname, 
+      isDevEnv, 
+      isLocalhost,
+      result: isDevEnv && isLocalhost 
+    });
+    
+    return isDevEnv && isLocalhost;
+  }
+
+  getDiagnosticInfo(): string {
+    const hostname = window.location.hostname;
+    const nodeEnv = process.env.NODE_ENV;
+    const isDevModeActive = this.isDevMode();
+    
+    return `Environment: ${nodeEnv}, Hostname: ${hostname}, Dev Mode: ${isDevModeActive}`;
+  }
+
+  forceCreateDevSession() {
+    console.log('🔧 Force creating dev session...');
+    return this.createDevUserSession();
   }
 
   createDevUserSession() {

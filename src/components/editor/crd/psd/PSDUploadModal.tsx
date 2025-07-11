@@ -6,6 +6,7 @@ import { Upload, FileImage, X, Check, AlertCircle } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { PSDLayer } from '@/types/psd';
 import { usePSDCache } from '@/hooks/usePSDCache';
+import { devAuthService } from '@/features/auth/services/devAuthService';
 import { toast } from 'sonner';
 
 interface PSDUploadModalProps {
@@ -90,6 +91,20 @@ export const PSDUploadModal: React.FC<PSDUploadModalProps> = ({
     disabled: isProcessing || authLoading || !user
   });
 
+  const handleDevLogin = () => {
+    try {
+      const result = devAuthService.forceCreateDevSession();
+      if (result.error) {
+        toast.error('Failed to create development session');
+      } else {
+        toast.success('Development user created - please refresh');
+        window.location.reload();
+      }
+    } catch (error) {
+      toast.error('Development login failed');
+    }
+  };
+
   const handleClose = () => {
     if (!isProcessing) {
       onClose();
@@ -141,16 +156,34 @@ export const PSDUploadModal: React.FC<PSDUploadModalProps> = ({
               <h3 className="text-crd-white text-lg font-semibold mb-2">
                 Authentication Required
               </h3>
-              <p className="text-crd-lightGray mb-6 max-w-sm mx-auto">
+              <p className="text-crd-lightGray mb-4 max-w-sm mx-auto">
                 You need to be signed in to use PSD processing features. Your PSDs are cached per user for security and performance.
               </p>
-              <div className="space-y-2">
-                <p className="text-sm text-crd-lightGray">
-                  Running on <strong>localhost</strong>? Development mode should auto-login.
+              
+              <div className="bg-crd-darkest/50 p-4 rounded-lg mb-4 max-w-sm mx-auto">
+                <p className="text-xs text-crd-lightGray mb-2">Debug Info:</p>
+                <p className="text-xs text-crd-lightGray/70 font-mono">
+                  {devAuthService.getDiagnosticInfo()}
                 </p>
-                <p className="text-xs text-crd-lightGray/70">
-                  If you're seeing this message, try refreshing the page or contact support.
-                </p>
+              </div>
+
+              <div className="space-y-3">
+                {process.env.NODE_ENV === 'development' && (
+                  <Button 
+                    onClick={handleDevLogin}
+                    className="bg-crd-blue hover:bg-crd-blue/80 text-white"
+                  >
+                    Sign in as Dev User
+                  </Button>
+                )}
+                <div className="space-y-1">
+                  <p className="text-sm text-crd-lightGray">
+                    Running on <strong>localhost</strong>? Development mode should auto-login.
+                  </p>
+                  <p className="text-xs text-crd-lightGray/70">
+                    If auto-login fails, use the button above or refresh the page.
+                  </p>
+                </div>
               </div>
             </div>
           ) : (
