@@ -48,7 +48,7 @@ export const CRDSidebar: React.FC<CRDSidebarProps> = ({
   };
 
   return (
-    <div className="w-full h-full bg-transparent overflow-y-auto flex-col flex">
+    <div className="w-full h-full bg-crd-darker/60 backdrop-blur-md overflow-y-auto flex-col flex border-r border-crd-mediumGray/20">
       {/* Enhanced Dusty Assistant Section */}
       <div className="p-6 border-b border-crd-mediumGray/30 bg-gradient-to-b from-crd-darker/80 to-crd-darker/60">
         <div className="flex items-center gap-3 mb-4">

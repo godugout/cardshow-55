@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { CRDCanvasGrid } from './CRDCanvasGrid';
 import { CRDToolbar } from '../toolbar/CRDToolbar';
 import { CRDFrameRenderer } from '../frame/CRDFrameRenderer';
+import { CRDBottomInfoBar } from './CRDBottomInfoBar';
 interface CRDCanvasProps {
   template: string;
   colorPalette: string;
@@ -214,7 +215,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
       <CRDCanvasGrid showGrid={showGrid} gridType={gridType} gridSize={20} />
 
       {/* Canvas Area */}
-      <div className={`flex-1 w-full flex items-center justify-center relative z-10 pt-16 overflow-hidden ${isPanning ? 'cursor-grab' : 'cursor-default'} ${isDragging ? 'cursor-grabbing' : ''}`} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+      <div className={`flex-1 w-full flex items-center justify-center relative z-10 pt-16 pb-20 overflow-hidden ${isPanning ? 'cursor-grab' : 'cursor-default'} ${isDragging ? 'cursor-grabbing' : ''}`} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
         
         {/* Card Dropzone */}
         <div 
@@ -314,5 +315,14 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
           )}
         </div>
       </div>
+
+      {/* Bottom Info Bar */}
+      <CRDBottomInfoBar
+        cardTitle={cardTitle}
+        selectedTemplate={template}
+        colorPalette={colorPalette}
+        effects={effects}
+        previewMode={previewMode}
+      />
     </div>;
 };

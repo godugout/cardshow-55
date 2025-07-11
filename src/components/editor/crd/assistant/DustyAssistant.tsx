@@ -24,30 +24,6 @@ export const DustyAssistant: React.FC<DustyAssistantProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Card Details & Specs */}
-      <div className="space-y-3">
-        <div className="bg-crd-darker/30 rounded-lg p-3">
-          <h4 className="text-crd-white text-sm font-medium mb-2">Card Details</h4>
-          <div className="space-y-1 text-xs text-crd-lightGray">
-            <div>Title: {cardTitle || 'Untitled Card'}</div>
-            <div>Template: {selectedTemplate || 'No template selected'}</div>
-            <div>Colors: {colorPalette || 'Default palette'}</div>
-            <div>Effects: {effects.length > 0 ? effects.join(', ') : 'None'}</div>
-            <div>Mode: {previewMode}</div>
-          </div>
-        </div>
-
-        <div className="bg-crd-darker/30 rounded-lg p-3">
-          <h4 className="text-crd-white text-sm font-medium mb-2">Specifications</h4>
-          <div className="space-y-1 text-xs text-crd-lightGray">
-            <div>Dimensions: 400 × 560px</div>
-            <div>DPI: 300 (Print Ready)</div>
-            <div>Format: PNG/JPG Export</div>
-            <div>Quality: Professional</div>
-          </div>
-        </div>
-      </div>
-
       {/* Chat Controls */}
       <div className="space-y-2">
         <Button
