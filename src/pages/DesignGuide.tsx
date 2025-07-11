@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
-import { Code2, Palette, Type, MousePointer, Layout, Paintbrush, Sparkles } from 'lucide-react';
+import { Code2, Palette, Type, MousePointer, Layout, Paintbrush, Sparkles, Image } from 'lucide-react';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { CRDButton, CRDCard, CRDBadge, TeamThemeShowcase, PalettePreview } from '@/components/ui/design-system';
+import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
+import { CardshowBasicLogo } from '@/components/home/navbar/CardshowBasicLogo';
+import { CardshowBlueLogo } from '@/components/home/navbar/CardshowBlueLogo';
+import { CardshowOrangeLogo } from '@/components/home/navbar/CardshowOrangeLogo';
+import { CardshowModernLogo } from '@/components/home/navbar/CardshowModernLogo';
+import { CardshowRetroLogo } from '@/components/home/navbar/CardshowRetroLogo';
+import { CardshowVintageLogo } from '@/components/home/navbar/CardshowVintageLogo';
+import { CardshowRedBlueLogo } from '@/components/home/navbar/CardshowRedBlueLogo';
+import { CardshowBlockLettersLogo } from '@/components/home/navbar/CardshowBlockLettersLogo';
+import { CardshowGreenLogo } from '@/components/home/navbar/CardshowGreenLogo';
+import { CardshowGreenSparklesLogo } from '@/components/home/navbar/CardshowGreenSparklesLogo';
 
 const DesignGuide = () => {
   const [activeSection, setActiveSection] = useState('overview');
@@ -9,6 +20,7 @@ const DesignGuide = () => {
 
   const sidebarSections = [
     { id: 'overview', label: 'Overview', icon: Layout },
+    { id: 'brand-assets', label: 'Brand & Visual Assets', icon: Image },
     { id: 'color-palette', label: 'Color Palette', icon: Palette },
     { id: 'team-themes', label: 'Team Themes', icon: Sparkles },
     { id: 'typography', label: 'Typography', icon: Type },
@@ -214,6 +226,192 @@ const DesignGuide = () => {
                         Optimized components with minimal bundle impact.
                       </p>
                     </div>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {activeSection === 'brand-assets' && (
+              <div className="space-y-12">
+                <h2 className="text-2xl font-bold text-crd-white">Brand & Visual Assets</h2>
+                
+                {/* CRD Brand Identity */}
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-6">CRD Brand Identity</h3>
+                  <div className="bg-crd-dark rounded-2xl p-8 border border-crd-mediumGray/30">
+                    <div className="text-center mb-6">
+                      <CRDGradientLogo className="mx-auto mb-4" />
+                      <h4 className="text-lg font-medium text-crd-white mb-2">Primary CRD Logo</h4>
+                      <p className="text-crd-lightGray text-sm">
+                        The CRD gradient logo with "MKR" suffix. This is our primary brand mark for the CRD platform.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="bg-crd-darkest rounded-lg p-4 text-center">
+                        <div className="text-crd-lightGray mb-1">File Path</div>
+                        <div className="font-mono text-crd-blue text-xs">/lovable-uploads/7697ffa5...</div>
+                      </div>
+                      <div className="bg-crd-darkest rounded-lg p-4 text-center">
+                        <div className="text-crd-lightGray mb-1">Component</div>
+                        <div className="font-mono text-crd-green text-xs">CRDGradientLogo</div>
+                      </div>
+                      <div className="bg-crd-darkest rounded-lg p-4 text-center">
+                        <div className="text-crd-lightGray mb-1">Usage</div>
+                        <div className="text-crd-orange text-xs">Primary branding</div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Cardshow Logo Collection */}
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-6">Cardshow Logo Collection</h3>
+                  
+                  {/* Basic/Classic Collection */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-medium text-crd-white mb-4">Basic & Classic Logos</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30 text-center">
+                        <CardshowBasicLogo className="mx-auto mb-4 h-12" />
+                        <div className="text-sm font-medium text-crd-white mb-1">Basic Logo</div>
+                        <div className="text-xs text-crd-lightGray">Clean, minimal design</div>
+                      </div>
+                      <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30 text-center">
+                        <CardshowGreenLogo className="mx-auto mb-4 h-12" />
+                        <div className="text-sm font-medium text-crd-white mb-1">Green Logo</div>
+                        <div className="text-xs text-crd-lightGray">Nature-inspired variant</div>
+                      </div>
+                      <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30 text-center">
+                        <CardshowGreenSparklesLogo className="mx-auto mb-4 h-12" />
+                        <div className="text-sm font-medium text-crd-white mb-1">Green Sparkles</div>
+                        <div className="text-xs text-crd-lightGray">Magical green variant</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Modern Collection */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-medium text-crd-white mb-4">Modern Collection</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                      <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30 text-center">
+                        <CardshowModernLogo className="mx-auto mb-4 h-12" />
+                        <div className="text-sm font-medium text-crd-white mb-1">Modern</div>
+                        <div className="text-xs text-crd-lightGray">Contemporary style</div>
+                      </div>
+                      <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30 text-center">
+                        <CardshowBlueLogo className="mx-auto mb-4 h-12" />
+                        <div className="text-sm font-medium text-crd-white mb-1">Blue</div>
+                        <div className="text-xs text-crd-lightGray">Professional blue</div>
+                      </div>
+                      <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30 text-center">
+                        <CardshowOrangeLogo className="mx-auto mb-4 h-12" />
+                        <div className="text-sm font-medium text-crd-white mb-1">Orange</div>
+                        <div className="text-xs text-crd-lightGray">Energetic orange</div>
+                      </div>
+                      <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30 text-center">
+                        <CardshowBlockLettersLogo className="mx-auto mb-4 h-12" />
+                        <div className="text-sm font-medium text-crd-white mb-1">Block Letters</div>
+                        <div className="text-xs text-crd-lightGray">Bold typography</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Vintage Collection */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-medium text-crd-white mb-4">Vintage Collection</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30 text-center">
+                        <CardshowVintageLogo className="mx-auto mb-4 h-12" />
+                        <div className="text-sm font-medium text-crd-white mb-1">Vintage</div>
+                        <div className="text-xs text-crd-lightGray">Classic nostalgia</div>
+                      </div>
+                      <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30 text-center">
+                        <CardshowRetroLogo className="mx-auto mb-4 h-12" />
+                        <div className="text-sm font-medium text-crd-white mb-1">Retro</div>
+                        <div className="text-xs text-crd-lightGray">80s/90s aesthetic</div>
+                      </div>
+                      <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30 text-center">
+                        <CardshowRedBlueLogo className="mx-auto mb-4 h-12" />
+                        <div className="text-sm font-medium text-crd-white mb-1">Red Blue</div>
+                        <div className="text-xs text-crd-lightGray">Patriotic colors</div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Usage Guidelines */}
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-6">Usage Guidelines</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30">
+                      <h4 className="text-lg font-medium text-crd-white mb-4">When to Use CRD Logo</h4>
+                      <ul className="text-crd-lightGray text-sm space-y-2">
+                        <li>• Platform-wide branding</li>
+                        <li>• Technical documentation</li>
+                        <li>• Developer tools</li>
+                        <li>• API integrations</li>
+                        <li>• System architecture</li>
+                      </ul>
+                    </div>
+                    <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30">
+                      <h4 className="text-lg font-medium text-crd-white mb-4">When to Use Cardshow Logos</h4>
+                      <ul className="text-crd-lightGray text-sm space-y-2">
+                        <li>• User-facing applications</li>
+                        <li>• Marketing materials</li>
+                        <li>• Social media content</li>
+                        <li>• Community features</li>
+                        <li>• Creator tools</li>
+                      </ul>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Technical Specifications */}
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-6">Technical Specifications</h3>
+                  <div className="bg-crd-dark rounded-xl p-6 border border-crd-mediumGray/30">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div>
+                        <h4 className="text-lg font-medium text-crd-white mb-3">Logo Sizing</h4>
+                        <div className="text-sm text-crd-lightGray space-y-1">
+                          <div>Minimum: 24px height</div>
+                          <div>Standard: 48-64px height</div>
+                          <div>Large: 96px+ height</div>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-medium text-crd-white mb-3">File Formats</h4>
+                        <div className="text-sm text-crd-lightGray space-y-1">
+                          <div>PNG (web optimized)</div>
+                          <div>React components</div>
+                          <div>Responsive scaling</div>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-medium text-crd-white mb-3">Accessibility</h4>
+                        <div className="text-sm text-crd-lightGray space-y-1">
+                          <div>Alt text included</div>
+                          <div>High contrast ready</div>
+                          <div>Screen reader friendly</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Code Example */}
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-6">Implementation Example</h3>
+                  <div className="bg-crd-darkest rounded-xl p-6 border border-crd-mediumGray/30">
+                    <pre className="text-crd-lightGray text-sm overflow-x-auto">
+                      <code>{`// Import the logo component
+import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
+import { CardshowBasicLogo } from '@/components/home/navbar/CardshowBasicLogo';
+
+// Use in your component
+<CRDGradientLogo className="h-16" />
+<CardshowBasicLogo className="h-12" />`}</code>
+                    </pre>
                   </div>
                 </section>
               </div>
