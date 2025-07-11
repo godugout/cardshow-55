@@ -99,20 +99,20 @@ export const GamingAttributesPlayground: React.FC<GamingAttributesPlaygroundProp
 
   if (!stats) {
     return (
-      <Card className="bg-crd-base border-crd-border">
+      <Card className="bg-[#1A1D24] border-[#353945] rounded-2xl hover:bg-[#23262F] transition-all duration-300">
         <CardHeader>
-          <CardTitle className="text-crd-bright flex items-center gap-2">
+          <CardTitle className="text-[#FCFCFD] flex items-center gap-2">
             <Target className="h-5 w-5" />
             Gaming Attributes Playground
           </CardTitle>
-          <CardDescription className="text-crd-light">
+          <CardDescription className="text-[#E6E8EC]">
             Analyze gaming properties, rarity distributions, and collectibility metrics of your DNA selection.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-12">
-            <Trophy className="h-12 w-12 text-crd-mediumGray mx-auto mb-4" />
-            <p className="text-crd-light">Select DNA segments to analyze their gaming attributes</p>
+            <Trophy className="h-12 w-12 text-[#777E90] mx-auto mb-4" />
+            <p className="text-[#E6E8EC]">Select DNA segments to analyze their gaming attributes</p>
           </div>
         </CardContent>
       </Card>
@@ -123,13 +123,13 @@ export const GamingAttributesPlayground: React.FC<GamingAttributesPlaygroundProp
     <div className="space-y-6">
       {/* Overview Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="bg-crd-base border-crd-border">
+        <Card className="bg-[#1A1D24] border-[#353945] rounded-xl hover:bg-[#23262F] transition-all duration-300">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Zap className="h-4 w-4 text-yellow-400" />
-              <span className="text-sm text-crd-light">Avg Power</span>
+              <Zap className="h-4 w-4 text-[#F97316]" />
+              <span className="text-sm text-[#E6E8EC]">Avg Power</span>
             </div>
-            <div className="text-2xl font-bold text-crd-bright">{Math.round(stats.avgPowerLevel)}</div>
+            <div className="text-2xl font-bold text-[#FCFCFD]">{Math.round(stats.avgPowerLevel)}</div>
             <Progress value={stats.avgPowerLevel} className="h-1 mt-2" />
           </CardContent>
         </Card>

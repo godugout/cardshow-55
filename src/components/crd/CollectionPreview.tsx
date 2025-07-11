@@ -153,20 +153,20 @@ export const CollectionPreview: React.FC<CollectionPreviewProps> = ({ selectedDN
 
   if (!collectionData) {
     return (
-      <Card className="bg-crd-base border-crd-border">
+      <Card className="bg-[#1A1D24] border-[#353945] rounded-2xl hover:bg-[#23262F] transition-all duration-300">
         <CardHeader>
-          <CardTitle className="text-crd-bright flex items-center gap-2">
+          <CardTitle className="text-[#FCFCFD] flex items-center gap-2">
             <Trophy className="h-5 w-5" />
             Collection Preview
           </CardTitle>
-          <CardDescription className="text-crd-light">
+          <CardDescription className="text-[#E6E8EC]">
             Track your collection progress, set completions, and team bonuses.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-12">
-            <Award className="h-12 w-12 text-crd-mediumGray mx-auto mb-4" />
-            <p className="text-crd-light">Select DNA segments to preview your collection progress</p>
+            <Award className="h-12 w-12 text-[#777E90] mx-auto mb-4" />
+            <p className="text-[#E6E8EC]">Select DNA segments to preview your collection progress</p>
           </div>
         </CardContent>
       </Card>

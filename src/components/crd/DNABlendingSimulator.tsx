@@ -119,13 +119,13 @@ export const DNABlendingSimulator: React.FC<DNABlendingSimulatorProps> = ({ sele
 
   return (
     <div className="space-y-6">
-      <Card className="bg-crd-base border-crd-border">
+      <Card className="bg-[#1A1D24] border-[#353945] rounded-2xl hover:bg-[#23262F] transition-all duration-300">
         <CardHeader>
-          <CardTitle className="text-crd-bright flex items-center gap-2">
+          <CardTitle className="text-[#FCFCFD] flex items-center gap-2">
             <Shuffle className="h-5 w-5" />
             DNA Blending Simulator
           </CardTitle>
-          <CardDescription className="text-crd-light">
+          <CardDescription className="text-[#E6E8EC]">
             Experiment with combining DNA segments to create new hybrid characteristics.
           </CardDescription>
         </CardHeader>
@@ -133,8 +133,8 @@ export const DNABlendingSimulator: React.FC<DNABlendingSimulatorProps> = ({ sele
           {/* Selected DNA for Blending */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-crd-bright font-medium">Blendable DNA Segments</h3>
-              <Badge variant="outline" className="text-xs">
+              <h3 className="text-[#FCFCFD] font-medium">Blendable DNA Segments</h3>
+              <Badge variant="outline" className="text-xs border-[#353945] text-[#777E90]">
                 {blendableDNA.length} of {selectedDNA.length} selected
               </Badge>
             </div>

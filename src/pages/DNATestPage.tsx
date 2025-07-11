@@ -55,7 +55,7 @@ const DNATestPage: React.FC = () => {
 
           {/* Main Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsList className="grid w-full grid-cols-5 mb-8 bg-[#1A1D24] border-[#353945]">
               <TabsTrigger value="browser">DNA Browser</TabsTrigger>
               <TabsTrigger value="generator">Card Generator</TabsTrigger>
               <TabsTrigger value="blending">DNA Blending</TabsTrigger>
