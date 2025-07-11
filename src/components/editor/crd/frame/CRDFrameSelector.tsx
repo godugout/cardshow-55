@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Search, Star, Download, Filter, Eye } from 'lucide-react';
-import { useCRDFrame } from '@/hooks/useCRDFrame';
-import { CRDFrameEngine } from './CRDFrameEngine';
+import { CRDFrameRenderer } from './CRDFrameRenderer';
+import { SAMPLE_CRD_FRAMES } from '@/data/sampleCRDFrames';
 import type { CRDFrame } from '@/types/crd-frame';
 interface CRDFrameSelectorProps {
   selectedFrameId?: string;
@@ -18,10 +18,9 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
   onFrameSelect,
   className = ''
 }) => {
-  const {
-    frames,
-    loading
-  } = useCRDFrame();
+  // Use sample frames for now
+  const frames = SAMPLE_CRD_FRAMES;
+  const loading = false;
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -85,7 +84,7 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
         
         {/* Category filters - Emoji Only */}
         <div className="flex flex-wrap gap-2 justify-center">
-          {categories.map(category => {
+          {categories.map((category) => {
             const getCategoryEmoji = (cat: string) => {
               switch (cat.toLowerCase()) {
                 case 'all': return '📋';
@@ -104,15 +103,15 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                 key={category} 
                 variant={selectedCategory === category ? "default" : "outline"} 
                 size="sm" 
-                onClick={() => setSelectedCategory(category)} 
+                onClick={() => setSelectedCategory(category as string)} 
                 className={`${
                   selectedCategory === category 
                     ? 'bg-crd-blue hover:bg-crd-blue/80 text-white border-crd-blue' 
                     : 'bg-transparent border-crd-mediumGray/30 text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-crd-white'
                 }`}
-                title={category.charAt(0).toUpperCase() + category.slice(1)}
+                title={(category as string).charAt(0).toUpperCase() + (category as string).slice(1)}
               >
-                {getCategoryEmoji(category)}
+                {getCategoryEmoji(category as string)}
               </Button>
             );
           })}
@@ -147,12 +146,22 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                   <div className="space-y-3">
                     <h4 className="font-semibold text-crd-white">{frame.name}</h4>
                     <div className="flex justify-center">
-                      <CRDFrameEngine 
-                        frame={frame} 
-                        content={{}} 
-                        selectedVisualStyle="classic_matte" 
-                        onContentChange={() => {}} 
-                        onCropComplete={() => {}} 
+                      <CRDFrameRenderer 
+                        frame={frame}
+                        content={{
+                          catalogNumber: 'PRE-001',
+                          seriesNumber: '#001',
+                          available: '1:1',
+                          crdName: frame.name,
+                          creator: 'Demo',
+                          rarity: 'rare'
+                        }}
+                        colorTheme={{
+                          primary: 'hsl(220, 100%, 50%)',
+                          secondary: 'hsl(220, 100%, 70%)',
+                          accent: 'hsl(45, 100%, 60%)',
+                          neutral: 'hsl(220, 10%, 80%)'
+                        }}
                         className="max-w-[200px]" 
                       />
                     </div>
@@ -163,12 +172,28 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
 
               {/* Frame Thumbnail with CRD Frame Preview */}
               <div className="aspect-[2/3] bg-crd-darkest rounded-lg overflow-hidden mb-2 relative">
-                <CRDFrameEngine 
-                  frame={frame} 
-                  content={{}} 
-                  selectedVisualStyle="classic_matte" 
-                  onContentChange={() => {}} 
-                  onCropComplete={() => {}} 
+                <CRDFrameRenderer 
+                  frame={frame}
+                  content={{
+                    catalogNumber: 'PRE-001',
+                    seriesNumber: `#${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`,
+                    available: Math.random() > 0.7 ? '1:1' : `1:${Math.floor(Math.random() * 100) + 2}`,
+                    crdName: frame.name,
+                    creator: 'Demo Creator',
+                    rarity: ['common', 'uncommon', 'rare', 'epic', 'legendary'][Math.floor(Math.random() * 5)]
+                  }}
+                  colorTheme={{
+                    primary: frame.category === 'sports' ? 'hsl(220, 100%, 50%)' : 
+                             frame.category === 'vintage' ? 'hsl(30, 70%, 40%)' :
+                             frame.category === 'fantasy' ? 'hsl(280, 100%, 50%)' :
+                             frame.category === 'modern' ? 'hsl(200, 100%, 60%)' : 'hsl(220, 100%, 50%)',
+                    secondary: frame.category === 'sports' ? 'hsl(220, 100%, 70%)' : 
+                               frame.category === 'vintage' ? 'hsl(30, 50%, 60%)' :
+                               frame.category === 'fantasy' ? 'hsl(280, 80%, 70%)' :
+                               frame.category === 'modern' ? 'hsl(200, 80%, 80%)' : 'hsl(220, 100%, 70%)',
+                    accent: 'hsl(45, 100%, 60%)',
+                    neutral: 'hsl(220, 10%, 80%)'
+                  }}
                   className="w-full h-full scale-75 origin-center" 
                 />
                 {/* Frame info overlay */}
