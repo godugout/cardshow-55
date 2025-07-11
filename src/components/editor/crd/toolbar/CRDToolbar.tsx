@@ -1,6 +1,12 @@
 import React, { useEffect } from 'react';
-import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, Ruler, Move, Edit3 } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, LayoutGrid, Grid, Diamond, Construction, Camera, X, Ruler, Move, Edit3, ChevronDown } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 interface CRDToolbarProps {
   zoom: number;
   onZoomIn: () => void;
@@ -15,6 +21,23 @@ interface CRDToolbarProps {
   isPanning: boolean;
   onPanToggle: () => void;
 }
+
+type GridType = 'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography';
+
+const gridOptions: Array<{
+  value: GridType | null;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+}> = [
+  { value: null, label: 'None', icon: X, color: 'text-gray-400' },
+  { value: 'standard', label: 'Standard', icon: Grid3x3, color: 'text-blue-400' },
+  { value: 'print', label: 'Print', icon: LayoutGrid, color: 'text-green-400' },
+  { value: 'golden', label: 'Golden', icon: Grid, color: 'text-yellow-400' },
+  { value: 'isometric', label: 'Isometric', icon: Diamond, color: 'text-purple-400' },
+  { value: 'blueprint', label: 'Blueprint', icon: Construction, color: 'text-cyan-400' },
+  { value: 'photography', label: 'Photography', icon: Camera, color: 'text-pink-400' }
+];
 export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   zoom,
   onZoomIn,
@@ -47,18 +70,45 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <span className="text-xs text-crd-lightGray font-medium">View:</span>
-              <CRDButton variant={showGrid ? "primary" : "ghost"} size="sm" onClick={onGridToggle} className="h-8 w-8 p-0" title="Toggle Grid">
-                <Grid3x3 className="w-3 h-3" />
-              </CRDButton>
-              
-              {showGrid && <select value={gridType} onChange={e => onGridTypeChange(e.target.value as typeof gridType)} className="bg-crd-darkest border border-crd-mediumGray/20 rounded px-2 py-1 text-xs text-crd-white h-8">
-                  <option value="standard">Standard</option>
-                  <option value="print">Print</option>
-                  <option value="golden">Golden</option>
-                  <option value="isometric">Isometric</option>
-                  <option value="blueprint">Blueprint</option>
-                  <option value="photography">Photography</option>
-                </select>}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <CRDButton variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Select Grid Type">
+                    {(() => {
+                      const currentOption = gridOptions.find(option => option.value === (showGrid ? gridType : null));
+                      const Icon = currentOption?.icon || X;
+                      return (
+                        <>
+                          <Icon className={`w-3 h-3 mr-1 ${currentOption?.color || 'text-gray-400'}`} />
+                          {currentOption?.label || 'None'}
+                          <ChevronDown className="w-3 h-3 ml-1" />
+                        </>
+                      );
+                    })()}
+                  </CRDButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-crd-darker border-crd-mediumGray/30 min-w-[140px]">
+                  {gridOptions.map((option) => {
+                    const Icon = option.icon;
+                    return (
+                      <DropdownMenuItem
+                        key={option.value || 'none'}
+                        className="text-crd-white hover:bg-crd-mediumGray/20 cursor-pointer"
+                        onClick={() => {
+                          if (option.value === null) {
+                            if (showGrid) onGridToggle();
+                          } else {
+                            if (!showGrid) onGridToggle();
+                            onGridTypeChange(option.value);
+                          }
+                        }}
+                      >
+                        <Icon className={`w-4 h-4 mr-2 ${option.color}`} />
+                        {option.label}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
               
               <CRDButton variant={showRulers ? "primary" : "ghost"} size="sm" onClick={onRulersToggle} className="h-8 w-8 p-0" title="Toggle Rulers">
                 <Ruler className="w-3 h-3" />
