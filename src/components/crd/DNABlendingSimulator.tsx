@@ -90,7 +90,7 @@ export const DNABlendingSimulator: React.FC<DNABlendingSimulatorProps> = ({ sele
     if (compatibilityAnalysis?.bonuses.length) {
       bonusEffects.push(...compatibilityAnalysis.bonuses);
     }
-    if (blendableDNA.some(dna => dna.rarity === 'legendary')) {
+    if (blendableDNA.some(dna => dna.rarity === 'Legendary')) {
       bonusEffects.push('Legendary essence infusion');
     }
     if (blendableDNA.length >= 4) {
@@ -156,9 +156,9 @@ export const DNABlendingSimulator: React.FC<DNABlendingSimulatorProps> = ({ sele
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-crd-bright text-sm">{dna.displayName}</span>
                       <Badge className={`text-xs ${
-                        dna.rarity === 'legendary' ? 'bg-yellow-500/20 text-yellow-300' :
-                        dna.rarity === 'epic' ? 'bg-purple-500/20 text-purple-300' :
-                        dna.rarity === 'rare' ? 'bg-blue-500/20 text-blue-300' :
+                        dna.rarity === 'Legendary' ? 'bg-yellow-500/20 text-yellow-300' :
+                        dna.rarity === 'Epic' ? 'bg-purple-500/20 text-purple-300' :
+                        dna.rarity === 'Rare' ? 'bg-blue-500/20 text-blue-300' :
                         'bg-green-500/20 text-green-300'
                       }`}>
                         {dna.rarity}

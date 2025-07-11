@@ -69,7 +69,7 @@ const COLLECTION_SETS: CollectionSet[] = [
     id: 'rarity_collector',
     name: 'Rarity Collector',
     description: 'Own segments from every rarity tier',
-    requiredGroups: ['legendary', 'epic', 'rare', 'uncommon'],
+    requiredGroups: ['Legendary', 'Epic', 'Rare', 'Uncommon'],
     completionBonus: '+15% Drop Rate Boost',
     powerBonus: 15,
     isComplete: false,
@@ -98,7 +98,7 @@ export const CollectionPreview: React.FC<CollectionPreviewProps> = ({ selectedDN
 
       if (set.id === 'rarity_collector') {
         // Special handling for rarity collection
-        matchedGroups = set.requiredGroups.filter(rarity => rarityTypes.has(rarity)).length;
+        matchedGroups = set.requiredGroups.filter(rarity => rarityTypes.has(rarity as any)).length;
       } else {
         // Group-based collections
         matchedGroups = set.requiredGroups.filter(group => groupCounts[group] > 0).length;
@@ -122,8 +122,8 @@ export const CollectionPreview: React.FC<CollectionPreviewProps> = ({ selectedDN
       // Find missing rarities for this group
       const groupDNA = selectedDNA.filter(dna => dna.group === group);
       const groupRarities = new Set(groupDNA.map(dna => dna.rarity));
-      const allRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
-      const missingRarities = allRarities.filter(rarity => !groupRarities.has(rarity));
+      const allRarities = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
+      const missingRarities = allRarities.filter(rarity => !groupRarities.has(rarity as any));
 
       return {
         group,
