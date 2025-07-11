@@ -271,21 +271,21 @@ const DesignGuide = () => {
                   <div className="mb-8">
                     <h4 className="text-lg font-medium text-white mb-4">Basic & Classic Logos</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center hover:border-primary/30 transition-all duration-300">
+                      <CRDCard variant="flat" padding="default" className="text-center hover:border-crd-blue transition-all duration-300">
                         <CardshowBasicLogo className="mx-auto mb-4 h-12" />
-                        <div className="text-sm font-medium text-white mb-1">Basic Logo</div>
+                        <div className="text-sm font-medium text-crd-white mb-1">Basic Logo</div>
                         <div className="text-xs text-crd-lightGray">Clean, minimal design</div>
-                      </div>
-                      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center hover:border-primary/30 transition-all duration-300">
+                      </CRDCard>
+                      <CRDCard variant="flat" padding="default" className="text-center hover:border-crd-blue transition-all duration-300">
                         <CardshowGreenLogo className="mx-auto mb-4 h-12" />
-                        <div className="text-sm font-medium text-white mb-1">Green Logo</div>
+                        <div className="text-sm font-medium text-crd-white mb-1">Green Logo</div>
                         <div className="text-xs text-crd-lightGray">Nature-inspired variant</div>
-                      </div>
-                      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center hover:border-primary/30 transition-all duration-300">
+                      </CRDCard>
+                      <CRDCard variant="flat" padding="default" className="text-center hover:border-crd-blue transition-all duration-300">
                         <CardshowGreenSparklesLogo className="mx-auto mb-4 h-12" />
-                        <div className="text-sm font-medium text-white mb-1">Green Sparkles</div>
+                        <div className="text-sm font-medium text-crd-white mb-1">Green Sparkles</div>
                         <div className="text-xs text-crd-lightGray">Magical green variant</div>
-                      </div>
+                      </CRDCard>
                     </div>
                   </div>
 
@@ -293,26 +293,26 @@ const DesignGuide = () => {
                   <div className="mb-8">
                     <h4 className="text-lg font-medium text-white mb-4">Modern Collection</h4>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center hover:border-primary/30 transition-all duration-300">
+                      <CRDCard variant="flat" padding="default" className="text-center hover:border-crd-blue transition-all duration-300">
                         <CardshowModernLogo className="mx-auto mb-4 h-12" />
-                        <div className="text-sm font-medium text-white mb-1">Modern</div>
+                        <div className="text-sm font-medium text-crd-white mb-1">Modern</div>
                         <div className="text-xs text-crd-lightGray">Contemporary style</div>
-                      </div>
-                      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center hover:border-primary/30 transition-all duration-300">
+                      </CRDCard>
+                      <CRDCard variant="flat" padding="default" className="text-center hover:border-crd-blue transition-all duration-300">
                         <CardshowBlueLogo className="mx-auto mb-4 h-12" />
-                        <div className="text-sm font-medium text-white mb-1">Blue</div>
+                        <div className="text-sm font-medium text-crd-white mb-1">Blue</div>
                         <div className="text-xs text-crd-lightGray">Professional blue</div>
-                      </div>
-                      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center hover:border-primary/30 transition-all duration-300">
+                      </CRDCard>
+                      <CRDCard variant="flat" padding="default" className="text-center hover:border-crd-blue transition-all duration-300">
                         <CardshowOrangeLogo className="mx-auto mb-4 h-12" />
-                        <div className="text-sm font-medium text-white mb-1">Orange</div>
+                        <div className="text-sm font-medium text-crd-white mb-1">Orange</div>
                         <div className="text-xs text-crd-lightGray">Energetic orange</div>
-                      </div>
-                      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center hover:border-primary/30 transition-all duration-300">
+                      </CRDCard>
+                      <CRDCard variant="flat" padding="default" className="text-center hover:border-crd-blue transition-all duration-300">
                         <CardshowBlockLettersLogo className="mx-auto mb-4 h-12" />
-                        <div className="text-sm font-medium text-white mb-1">Block Letters</div>
+                        <div className="text-sm font-medium text-crd-white mb-1">Block Letters</div>
                         <div className="text-xs text-crd-lightGray">Bold typography</div>
-                      </div>
+                      </CRDCard>
                     </div>
                   </div>
 
@@ -320,21 +320,21 @@ const DesignGuide = () => {
                   <div className="mb-8">
                     <h4 className="text-lg font-medium text-white mb-4">Vintage Collection</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center hover:border-primary/30 transition-all duration-300">
+                      <CRDCard variant="flat" padding="default" className="text-center hover:border-crd-blue transition-all duration-300">
                         <CardshowVintageLogo className="mx-auto mb-4 h-12" />
-                        <div className="text-sm font-medium text-white mb-1">Vintage</div>
+                        <div className="text-sm font-medium text-crd-white mb-1">Vintage</div>
                         <div className="text-xs text-crd-lightGray">Classic nostalgia</div>
-                      </div>
-                      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center hover:border-primary/30 transition-all duration-300">
+                      </CRDCard>
+                      <CRDCard variant="flat" padding="default" className="text-center hover:border-crd-blue transition-all duration-300">
                         <CardshowRetroLogo className="mx-auto mb-4 h-12" />
-                        <div className="text-sm font-medium text-white mb-1">Retro</div>
+                        <div className="text-sm font-medium text-crd-white mb-1">Retro</div>
                         <div className="text-xs text-crd-lightGray">80s/90s aesthetic</div>
-                      </div>
-                      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center hover:border-primary/30 transition-all duration-300">
+                      </CRDCard>
+                      <CRDCard variant="flat" padding="default" className="text-center hover:border-crd-blue transition-all duration-300">
                         <CardshowRedBlueLogo className="mx-auto mb-4 h-12" />
-                        <div className="text-sm font-medium text-white mb-1">Red Blue</div>
+                        <div className="text-sm font-medium text-crd-white mb-1">Red Blue</div>
                         <div className="text-xs text-crd-lightGray">Patriotic colors</div>
-                      </div>
+                      </CRDCard>
                     </div>
                   </div>
                 </section>
