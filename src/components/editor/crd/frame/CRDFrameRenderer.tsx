@@ -75,7 +75,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             {/* Centered CRD Logo */}
             <div className="absolute inset-0 flex items-center justify-center">
               <img 
-                src="/crd-logo-gradient.png" 
+                src="/lovable-uploads/6fbee76d-69a4-4a2e-a8cd-1cb67bb85303.png" 
                 alt="CRD Logo"
                 className="w-32 h-32 object-contain drop-shadow-lg"
               />

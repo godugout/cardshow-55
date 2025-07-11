@@ -227,7 +227,12 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         >
           {selectedFrame ? (
             // Show selected CRD frame
-            <div className="w-full h-full rounded-lg overflow-hidden shadow-2xl">
+            <div 
+              className="w-full h-full rounded-lg overflow-hidden"
+              style={{
+                boxShadow: `0 ${25 * zoom / 100}px ${60 * zoom / 100}px -${12 * zoom / 100}px rgba(0, 0, 0, 0.25)`
+              }}
+            >
               <CRDFrameRenderer 
                 frame={selectedFrame}
                 content={{
@@ -249,7 +254,12 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
             </div>
           ) : playerImage ? (
             // Show uploaded image without frame
-            <div className="w-full h-full rounded-lg overflow-hidden bg-white shadow-2xl">
+            <div 
+              className="w-full h-full rounded-lg overflow-hidden bg-white"
+              style={{
+                boxShadow: `0 ${25 * zoom / 100}px ${60 * zoom / 100}px -${12 * zoom / 100}px rgba(0, 0, 0, 0.25)`
+              }}
+            >
               <img
                 src={playerImage}
                 alt="Player"
