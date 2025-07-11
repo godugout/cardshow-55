@@ -263,9 +263,10 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
       {/* Content with higher z-index */}
       <div className="relative z-10 h-full flex flex-col">
         {/* Header */}
-        <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
-          {/* Left: CRD Logo, Title, and Tags */}
-          <div className="flex items-center gap-4">
+        <div className="flex-shrink-0 h-20 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex flex-col">
+          {/* Top Row: Back Button, Centered Title, Action Buttons */}
+          <div className="flex items-center justify-between h-12">
+            {/* Left: Back Button */}
             <button 
               onClick={() => navigate('/create')}
               className="hover:bg-crd-mediumGray/20 p-1 rounded transition-colors"
@@ -274,52 +275,54 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
               <Layers className="w-6 h-6 text-crd-blue hover:text-crd-lightBlue transition-colors" />
             </button>
             
+            {/* Center: Title */}
             <input 
               type="text"
               value={cardData.title}
               onChange={(e) => updateCardData({ title: e.target.value })}
-              className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all"
+              className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all text-center"
               placeholder="Enter CRD name..."
             />
             
-            <div className="flex items-center gap-2 text-xs text-crd-lightGray">
-              <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-                v{cardData.version}
+            {/* Right: Action Buttons */}
+            <div className="flex items-center gap-3">
+              <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
+                <button onClick={() => setPreviewMode('edit')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'edit' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button onClick={() => setPreviewMode('preview')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'preview' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
+                  Preview
+                </button>
+                <button onClick={() => setPreviewMode('print')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'print' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
+                  Print
+                </button>
               </div>
-              <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-                {cardData.rarity.charAt(0).toUpperCase() + cardData.rarity.slice(1)}
-              </div>
-              <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-                Print Ready
-              </div>
-              <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
-                {cardData.card_dna?.genetic_code?.split('-')[0] || 'CRD'}
-              </div>
+              
+              <CRDButton onClick={handleSave} variant="secondary" size="sm">
+                <Save className="w-4 h-4 mr-2" />
+                Save
+              </CRDButton>
+              <CRDButton onClick={handlePreview} variant="primary" size="sm">
+                <Download className="w-4 h-4 mr-2" />
+                Export
+              </CRDButton>
             </div>
           </div>
           
-          {/* Right: Buttons */}
-          <div className="flex items-center gap-3">
-            <div className="flex bg-crd-mediumGray/20 rounded-lg p-1">
-              <button onClick={() => setPreviewMode('edit')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'edit' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
-                <Eye className="w-4 h-4" />
-              </button>
-              <button onClick={() => setPreviewMode('preview')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'preview' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
-                Preview
-              </button>
-              <button onClick={() => setPreviewMode('print')} className={`px-3 py-1 text-sm rounded transition-colors ${previewMode === 'print' ? 'bg-crd-blue text-white' : 'text-crd-lightGray hover:text-crd-white'}`}>
-                Print
-              </button>
+          {/* Bottom Row: Centered Tags */}
+          <div className="flex items-center justify-center gap-2 h-8 text-xs text-crd-lightGray">
+            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+              v{cardData.version}
             </div>
-            
-            <CRDButton onClick={handleSave} variant="secondary" size="sm">
-              <Save className="w-4 h-4 mr-2" />
-              Save
-            </CRDButton>
-            <CRDButton onClick={handlePreview} variant="primary" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </CRDButton>
+            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+              {cardData.rarity.charAt(0).toUpperCase() + cardData.rarity.slice(1)}
+            </div>
+            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+              Print Ready
+            </div>
+            <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
+              {cardData.card_dna?.genetic_code?.split('-')[0] || 'CRD'}
+            </div>
           </div>
         </div>
 
