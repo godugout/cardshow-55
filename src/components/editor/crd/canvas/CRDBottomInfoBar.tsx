@@ -1,5 +1,4 @@
 import React from 'react';
-import { Monitor, Settings, Palette, Clock } from 'lucide-react';
 
 interface CRDBottomInfoBarProps {
   cardTitle: string;
@@ -56,47 +55,6 @@ export const CRDBottomInfoBar: React.FC<CRDBottomInfoBarProps> = ({
           </div>
         </div>
 
-        {/* Specifications Section */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="text-xs text-crd-lightGray font-medium">SPECIFICATIONS</div>
-            <div className="flex-1 h-px bg-crd-mediumGray/30"></div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="flex items-center gap-2">
-              <Monitor className="w-3 h-3 text-crd-lightGray" />
-              <div className="flex flex-col">
-                <span className="text-crd-lightGray text-[10px]">Dimensions</span>
-                <span className="text-crd-white font-medium">400×560px</span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Settings className="w-3 h-3 text-crd-lightGray" />
-              <div className="flex flex-col">
-                <span className="text-crd-lightGray text-[10px]">Quality</span>
-                <span className="text-crd-white font-medium">300 DPI</span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Palette className="w-3 h-3 text-crd-lightGray" />
-              <div className="flex flex-col">
-                <span className="text-crd-lightGray text-[10px]">Format</span>
-                <span className="text-crd-white font-medium">PNG/JPG</span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Clock className="w-3 h-3 text-crd-lightGray" />
-              <div className="flex flex-col">
-                <span className="text-crd-lightGray text-[10px]">Version</span>
-                <span className="text-crd-white font-medium">v{cardVersion}</span>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Status Section */}
         <div className="flex items-center justify-center gap-2 pt-2 border-t border-crd-mediumGray/20">
