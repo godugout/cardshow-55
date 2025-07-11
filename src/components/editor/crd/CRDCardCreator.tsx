@@ -276,13 +276,15 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             </button>
             
             {/* Center: Title */}
-            <input 
-              type="text"
-              value={cardData.title}
-              onChange={(e) => updateCardData({ title: e.target.value })}
-              className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all text-center"
-              placeholder="Enter CRD name..."
-            />
+            <div className="flex-1 flex justify-center">
+              <input 
+                type="text"
+                value={cardData.title}
+                onChange={(e) => updateCardData({ title: e.target.value })}
+                className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all text-center max-w-md"
+                placeholder="Enter CRD name..."
+              />
+            </div>
             
             {/* Right: Action Buttons */}
             <div className="flex items-center gap-3">
