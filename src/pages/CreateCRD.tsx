@@ -8,15 +8,15 @@ import type { CardData } from '@/hooks/useCardEditor';
 const CreateCRD = () => {
   const navigate = useNavigate();
 
-  console.log('CRDMKR page loaded - Professional card maker');
+  console.log('CRD Collectibles page loaded - Professional card maker');
 
   const handleComplete = (cardData: CardData) => {
-    console.log('CRDMKR card created successfully:', cardData);
+    console.log('CRD Collectible created successfully:', cardData);
     navigate('/gallery');
   };
 
   const handleCancel = () => {
-    console.log('CRDMKR card creation cancelled');
+    console.log('CRD Collectible creation cancelled');
     navigate('/');
   };
 

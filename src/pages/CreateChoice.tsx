@@ -28,7 +28,7 @@ export const CreateChoice: React.FC = () => {
             <Hero3
               caption="CHOOSE YOUR CREATION MODE"
               heading="What type of card do you want to create?"
-              bodyText="Choose between traditional CRD cards optimized for collecting and trading, or interactive story cards with advanced animations and scripting."
+              bodyText="Choose between traditional CRD Collectibles optimized for collecting and trading, or interactive story cards with advanced animations and scripting."
               ctaText="Start Creating"
               ctaLink="/create/crd"
               className="!pt-0 !px-0"
@@ -46,7 +46,7 @@ export const CreateChoice: React.FC = () => {
               </div>
               <div>
                 <Typography variant="h2" className="text-crd-white text-xl font-bold">
-                  CRDMKR Cards
+                  CRD Collectibles
                 </Typography>
                 <Typography variant="body" className="text-crd-lightGray text-sm">
                   Traditional Trading Cards
@@ -69,7 +69,7 @@ export const CreateChoice: React.FC = () => {
               </div>
               <div className="flex items-center gap-2 text-sm text-crd-lightGray">
                 <div className="w-1.5 h-1.5 bg-crd-blue rounded-full"></div>
-                CRDMKR standard compliance built-in
+                CRD standard compliance built-in
               </div>
               <div className="flex items-center gap-2 text-sm text-crd-lightGray">
                 <div className="w-1.5 h-1.5 bg-crd-blue rounded-full"></div>
@@ -82,7 +82,7 @@ export const CreateChoice: React.FC = () => {
                 variant="primary" 
                 className="w-full bg-crd-blue hover:bg-crd-blue/80 text-white group-hover:scale-105 transition-transform"
               >
-                Create CRDMKR Card
+                Create CRD Collectible
                 <ArrowRight className="w-4 h-4 ml-2" />
               </CRDButton>
             </Link>
@@ -142,7 +142,7 @@ export const CreateChoice: React.FC = () => {
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <Typography variant="body" className="text-crd-lightGray text-sm">
-            Not sure which to choose? Start with CRDMKR cards for traditional collecting, or Story cards for interactive experiences.
+            Not sure which to choose? Start with CRD Collectibles for traditional collecting, or Story cards for interactive experiences.
           </Typography>
         </div>
       </div>

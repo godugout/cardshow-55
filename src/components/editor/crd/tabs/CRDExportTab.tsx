@@ -210,7 +210,7 @@ export const CRDExportTab: React.FC<CRDExportTabProps> = ({ onExport }) => {
             </div>
           </div>
           <p className="text-xs text-crd-lightGray/70 mt-3 text-center">
-            Export will generate your professional-quality CRDMKR card ready for printing or sharing.
+            Export will generate your professional-quality CRD Collectible ready for printing or sharing.
           </p>
         </CardContent>
       </Card>

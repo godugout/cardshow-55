@@ -37,7 +37,7 @@ interface ActivityState {
 export const useDustyConversation = (activityState: ActivityState) => {
   const [currentMessage, setCurrentMessage] = useState<DustyMessage>({
     id: 'welcome',
-    text: "Hey there! I'm Dusty, your CRDMKR assistant. Let's create an amazing card together! 🎨",
+    text: "Hey there! I'm Dusty, your CRD Collectibles assistant. Let's create an amazing card together! 🎨",
     type: 'greeting',
     expression: 'friendly'
   });

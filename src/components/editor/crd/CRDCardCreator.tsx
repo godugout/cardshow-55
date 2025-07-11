@@ -30,7 +30,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   const navigate = useNavigate();
   const [cardData, setCardData] = useState<InteractiveCardData>({
     id: initialCard?.id || `crd_${Date.now()}`,
-    title: initialCard?.title || 'Untitled CRDMKR Card',
+    title: initialCard?.title || 'Untitled CRD Collectible',
     description: initialCard?.description || '',
     rarity: initialCard?.rarity || 'common',
     creator_id: initialCard?.creator_id || 'current_user',
@@ -191,7 +191,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
     setPreviewMode('preview');
   }, [cardData, onPreview]);
   const handleExport = useCallback((format: string, options: any) => {
-    console.log('Exporting CRDMKR card:', {
+    console.log('Exporting CRD Collectible:', {
       format,
       options,
       cardData
