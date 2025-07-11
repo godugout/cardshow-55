@@ -362,41 +362,6 @@ export const createPaletteFromTeamColors = (
   secondaryColor: string,
   accentColor: string
 ): TeamPalette => {
-  // Convert hex to HSL for consistency
-  const hexToHsl = (hex: string): string => {
-    const r = parseInt(hex.slice(1, 3), 16) / 255;
-    const g = parseInt(hex.slice(3, 5), 16) / 255;
-    const b = parseInt(hex.slice(5, 7), 16) / 255;
-
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h = 0, s = 0, l = (max + min) / 2;
-
-    if (max !== min) {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
-      }
-      h /= 6;
-    }
-
-    return `${Math.round(h * 360)} ${Math.round(s * 100)} ${Math.round(l * 100)}`;
-  };
-
-  // Smart neutral color generation based on primary
-  const generateNeutral = (primaryHex: string): string => {
-    const r = parseInt(primaryHex.slice(1, 3), 16);
-    const g = parseInt(primaryHex.slice(3, 5), 16);
-    const b = parseInt(primaryHex.slice(5, 7), 16);
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-    
-    // Return light or dark neutral based on primary brightness
-    return brightness > 128 ? '#2A2A2A' : '#F5F5F5';
-  };
-
   const neutral = generateNeutral(primaryColor);
 
   return {
@@ -424,12 +389,79 @@ export const createPaletteFromTeamColors = (
   };
 };
 
-// All available palettes
-export const allPalettes = [...logoPalettes, ...cardshowPalettes];
+import { CRD_DNA_ENTRIES } from './cardshowDNA';
 
-// Get palette by ID
+// Utility function for hex to HSL conversion
+export const hexToHsl = (hex: string): string => {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0, s = 0, l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+
+  return `${Math.round(h * 360)} ${Math.round(s * 100)} ${Math.round(l * 100)}`;
+};
+
+// Generate neutral color based on primary brightness
+export const generateNeutral = (primaryHex: string): string => {
+  const r = parseInt(primaryHex.slice(1, 3), 16);
+  const g = parseInt(primaryHex.slice(3, 5), 16);
+  const b = parseInt(primaryHex.slice(5, 7), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  
+  return brightness > 128 ? '#2A2A2A' : '#F5F5F5';
+};
+
+// Generate palettes from CRD:DNA entries
+export const generateCRDPalettes = (): TeamPalette[] => {
+  return CRD_DNA_ENTRIES.map(entry => ({
+    id: entry.fileName.replace('.png', '').toLowerCase(),
+    name: entry.teamName || entry.styleCode,
+    description: `${entry.group} ${entry.styleTag || 'Standard'} style${entry.decade ? ` - ${entry.decade}` : ''}`,
+    colors: {
+      primary: entry.primaryColor,
+      secondary: entry.secondaryColor,
+      accent: entry.tertiaryColor || entry.secondaryColor,
+      neutral: generateNeutral(entry.primaryColor)
+    },
+    hsl: {
+      primary: hexToHsl(entry.primaryColor),
+      secondary: hexToHsl(entry.secondaryColor),
+      accent: hexToHsl(entry.tertiaryColor || entry.secondaryColor),
+      neutral: hexToHsl(generateNeutral(entry.primaryColor))
+    },
+    usage: {
+      navbar: 'Team primary color',
+      cards: 'Team secondary color', 
+      buttons: 'Accent and highlights',
+      text: 'Text and backgrounds'
+    }
+  }));
+};
+
+export const crdPalettes = generateCRDPalettes();
+export const allPalettes = [...logoPalettes, ...cardshowPalettes, ...crdPalettes];
+
 export const getPaletteById = (id: string): TeamPalette | undefined => {
   return allPalettes.find(palette => palette.id === id);
+};
+
+export const getPaletteByFileName = (fileName: string): TeamPalette | undefined => {
+  const id = fileName.replace('.png', '').toLowerCase();
+  return getPaletteById(id);
 };
 
 // Generate CSS variables for a palette
