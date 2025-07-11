@@ -170,5 +170,93 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
     creator_id: undefined,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
+  },
+  {
+    id: 'full-bleed-back',
+    name: 'CRD Card Back',
+    category: 'default',
+    version: '1.0.0',
+    description: 'Full bleed CRD card back with centered logo and gradient background',
+    frame_config: {
+      dimensions: {
+        width: 400,
+        height: 560
+      },
+      regions: [],
+      elements: [
+        {
+          id: 'background-gradient',
+          type: 'shape',
+          name: 'Background Gradient',
+          properties: {
+            position: { x: 0, y: 0 },
+            size: { width: 400, height: 560 },
+            color: '#1E40AF'
+          },
+          behavior: { responsive: true },
+          variations: []
+        },
+        {
+          id: 'crd-logo',
+          type: 'image',
+          name: 'CRD Logo',
+          properties: {
+            position: { x: 150, y: 200 },
+            size: { width: 100, height: 100 },
+            src: '/crd-logo-gradient.png',
+            alt: 'CRD Logo'
+          },
+          behavior: { responsive: true },
+          variations: []
+        },
+        {
+          id: 'crdmkr-text',
+          type: 'text',
+          name: 'CRDMKR Branding',
+          properties: {
+            position: { x: 150, y: 320 },
+            size: { width: 100, height: 20 },
+            color: '#FFFFFF',
+            content: 'CRDMKR'
+          },
+          behavior: { responsive: true },
+          variations: []
+        },
+        {
+          id: 'catalog-corner',
+          type: 'text',
+          name: 'Catalog Number',
+          properties: {
+            position: { x: 4, y: 4 },
+            size: { width: 100, height: 16 },
+            color: '#FFFFFF'
+          },
+          behavior: { responsive: true },
+          variations: []
+        },
+        {
+          id: 'series-corner',
+          type: 'text',
+          name: 'Series Number',
+          properties: {
+            position: { x: 300, y: 4 },
+            size: { width: 96, height: 16 },
+            color: '#FFFFFF'
+          },
+          behavior: { responsive: true },
+          variations: []
+        }
+      ]
+    },
+    included_elements: ['background-gradient', 'crd-logo', 'crdmkr-text', 'catalog-corner', 'series-corner'],
+    is_public: true,
+    price_cents: 0,
+    rating_average: 5.0,
+    rating_count: 1,
+    download_count: 1,
+    tags: ['default', 'card-back', 'crd-logo', 'full-bleed'],
+    creator_id: undefined,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   }
 ];
