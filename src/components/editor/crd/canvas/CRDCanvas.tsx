@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { CRDCanvasGrid } from './CRDCanvasGrid';
 import { CRDToolbar } from '../toolbar/CRDToolbar';
+import { CRDFrameRenderer } from '../frame/CRDFrameRenderer';
 interface CRDCanvasProps {
   template: string;
   colorPalette: string;
@@ -16,6 +17,9 @@ interface CRDCanvasProps {
   leftSidebarCollapsed?: boolean;
   rightSidebarCollapsed?: boolean;
   isMobile?: boolean;
+  // Frame props
+  selectedFrame?: any;
+  frameContent?: Record<string, any>;
 }
 export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   template,
@@ -30,7 +34,9 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   onImageUpload,
   leftSidebarCollapsed = true,
   rightSidebarCollapsed = true,
-  isMobile = false
+  isMobile = false,
+  selectedFrame,
+  frameContent = {}
 }) => {
   // Canvas state - fixed optimal default zoom
   const [zoom, setZoom] = useState(125); // Single optimal default for engagement
@@ -219,8 +225,30 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
             transform: `translate(${panOffset.x}px, ${panOffset.y}px)`
           }}
         >
-          {playerImage ? (
-            // Show uploaded image
+          {selectedFrame ? (
+            // Show selected CRD frame
+            <div className="w-full h-full rounded-lg overflow-hidden shadow-2xl">
+              <CRDFrameRenderer 
+                frame={selectedFrame}
+                content={{
+                  ...frameContent,
+                  mainImage: playerImage
+                }}
+                colorTheme={{
+                  primary: colorPalette === 'classic' ? 'hsl(220, 100%, 50%)' : 
+                           colorPalette === 'vintage' ? 'hsl(30, 70%, 40%)' :
+                           colorPalette === 'neon' ? 'hsl(280, 100%, 50%)' : 'hsl(200, 100%, 60%)',
+                  secondary: colorPalette === 'classic' ? 'hsl(220, 100%, 70%)' : 
+                             colorPalette === 'vintage' ? 'hsl(30, 50%, 60%)' :
+                             colorPalette === 'neon' ? 'hsl(280, 80%, 70%)' : 'hsl(200, 80%, 80%)',
+                  accent: 'hsl(45, 100%, 60%)',
+                  neutral: 'hsl(220, 10%, 80%)'
+                }}
+                className="w-full h-full"
+              />
+            </div>
+          ) : playerImage ? (
+            // Show uploaded image without frame
             <div className="w-full h-full rounded-lg overflow-hidden bg-white shadow-2xl">
               <img
                 src={playerImage}

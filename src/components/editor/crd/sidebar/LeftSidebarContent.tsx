@@ -32,6 +32,11 @@ interface LeftSidebarContentProps {
   isPSDMode?: boolean;
   psdLayers?: any[];
   onPSDModeChange?: (isActive: boolean, layers?: any[], thumbnail?: string) => void;
+  // Frame props
+  selectedFrame?: any;
+  onFrameSelect?: (frame: any) => void;
+  frameContent?: Record<string, any>;
+  onFrameContentChange?: (content: Record<string, any>) => void;
 }
 
 export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
@@ -54,7 +59,11 @@ export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
   onExport,
   onFrameGenerated,
   onCardGenerated,
-  onPSDModeChange
+  onPSDModeChange,
+  selectedFrame,
+  onFrameSelect,
+  frameContent,
+  onFrameContentChange
 }) => {
   const onApplyToCanvas = (layers: any[], visibleLayers: Set<string>) => {
     console.log('Apply PSD layers to canvas:', { layers, visibleLayers });
@@ -89,6 +98,10 @@ export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
               onTemplateSelect={onTemplateSelect}
               cardData={cardData}
               updateCardData={updateCardData}
+              selectedFrame={selectedFrame}
+              onFrameSelect={onFrameSelect}
+              frameContent={frameContent}
+              onFrameContentChange={onFrameContentChange}
             />
         </TabsContent>
         

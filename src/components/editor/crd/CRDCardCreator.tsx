@@ -123,6 +123,10 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
   const [playerStats, setPlayerStats] = useState<Record<string, string>>({});
   const [showGuides, setShowGuides] = useState(false);
   
+  // Frame selection state
+  const [selectedFrame, setSelectedFrame] = useState<any>(null);
+  const [frameContent, setFrameContent] = useState<Record<string, any>>({});
+  
   // Sidebar collapse states with mobile-first logic
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
@@ -345,11 +349,14 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
                 leftSidebarCollapsed={leftSidebarCollapsed}
                 rightSidebarCollapsed={rightSidebarCollapsed}
                 isMobile={isMobile}
+                selectedFrame={selectedFrame}
+                frameContent={frameContent}
                 onImageUpload={(files) => {
                   if (files.length > 0) {
                     const file = files[0];
                     const imageUrl = URL.createObjectURL(file);
                     setPlayerImage(imageUrl);
+                    setFrameContent(prev => ({ ...prev, mainImage: imageUrl }));
                   }
                 }}
               />
@@ -386,6 +393,10 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
               isPSDMode={isPSDMode}
               psdLayers={psdLayers}
               onPSDModeChange={handlePSDModeChange}
+              selectedFrame={selectedFrame}
+              onFrameSelect={setSelectedFrame}
+              frameContent={frameContent}
+              onFrameContentChange={setFrameContent}
             />
           </CollapsibleSidebar>
 
