@@ -44,7 +44,7 @@ const logoGroups = [
     logos: [
       { name: 'Cardshow Basic', component: CardshowBasicLogo, hoverColor: 'gray', themeId: 'cardshow-basic' },
       { name: 'Cardshow Green', component: CardshowGreenLogo, hoverColor: 'green', themeId: 'cardshow-green' },
-      { name: 'Cardshow Green Sparkles', component: CardshowGreenSparklesLogo, hoverColor: 'emerald', themeId: 'cardshow-green-sparkles' },
+      { name: 'Cardshow Classic', component: CardshowGreenSparklesLogo, hoverColor: 'emerald', themeId: 'cardshow-green-sparkles' },
       { name: 'Cardshow Red/Blue', component: CardshowRedBlueLogo, hoverColor: 'purple', themeId: 'cardshow-red-blue' },
       { name: 'Cardshow Blue', component: CardshowBlueLogo, hoverColor: 'blue', themeId: 'cardshow-blue' },
       { name: 'Cardshow Orange', component: CardshowOrangeLogo, hoverColor: 'orange', themeId: 'cardshow-orange' },
