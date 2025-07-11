@@ -152,7 +152,8 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             borderWidth: '0.3rem',
             borderStyle: 'solid',
             borderColor: frameColors.primary,
-            background: `linear-gradient(145deg, ${frameColors.primary}20, ${frameColors.secondary}10)`
+            background: `linear-gradient(145deg, ${frameColors.primary}20, ${frameColors.secondary}10)`,
+            boxShadow: `inset 0 0 12px ${frameColors.primary}30`
           }}
         >
           {/* Main Image Region */}
@@ -182,7 +183,8 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             height: '1.5rem',
             padding: '0 0.5rem',
             fontSize: '0.6rem',
-            backgroundColor: `${frameColors.primary}E6` 
+            backgroundColor: `${frameColors.primary}E6`,
+            boxShadow: `inset 0 -4px 8px ${frameColors.primary}40`
           }}
         >
           <span className="text-white">{crdData.catalogNumber}</span>
@@ -197,7 +199,8 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             right: '0.25rem',
             padding: '0.25rem 0.5rem',
             fontSize: '0.6rem',
-            backgroundColor: `${frameColors.accent}E6` 
+            backgroundColor: `${frameColors.accent}E6`,
+            boxShadow: `inset -4px 0 8px ${frameColors.accent}40`
           }}
         >
           {crdData.available}
@@ -212,7 +215,8 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             right: '0.25rem', 
             height: '2rem',
             padding: '0 0.5rem',
-            background: `linear-gradient(90deg, ${frameColors.primary}E6, ${frameColors.secondary}E6)`
+            background: `linear-gradient(90deg, ${frameColors.primary}E6, ${frameColors.secondary}E6)`,
+            boxShadow: `inset 0 4px 8px ${frameColors.primary}40`
           }}
         >
           <span className="text-white font-bold truncate" style={{ fontSize: '0.7rem' }}>{crdData.crdName}</span>
@@ -226,7 +230,8 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             left: '0.25rem',
             padding: '0.25rem 0.5rem',
             fontSize: '0.6rem',
-            backgroundColor: `${frameColors.neutral}80` 
+            backgroundColor: `${frameColors.neutral}80`,
+            boxShadow: `inset 4px 0 8px ${frameColors.neutral}30`
           }}
         >
           by {crdData.creator}
@@ -254,7 +259,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             width: '1.5rem',
             height: '1.5rem',
             backgroundColor: frameColors.accent,
-            boxShadow: `0 0 12px ${frameColors.accent}80`
+            boxShadow: `inset -6px 6px 12px ${frameColors.accent}60`
           }}
         />
 
