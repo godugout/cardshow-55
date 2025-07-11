@@ -3,6 +3,7 @@ import { CRDCanvasGrid } from './CRDCanvasGrid';
 import { CRDToolbar } from '../toolbar/CRDToolbar';
 import { CRDFrameRenderer } from '../frame/CRDFrameRenderer';
 import { CRDBottomInfoBar } from './CRDBottomInfoBar';
+import { useGridPreferences } from '@/hooks/useGridPreferences';
 interface CRDCanvasProps {
   template: string;
   colorPalette: string;
@@ -41,9 +42,10 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
 }) => {
   // Canvas state - fixed optimal default zoom
   const [zoom, setZoom] = useState(125); // Single optimal default for engagement
-  const [showGrid, setShowGrid] = useState(false);
-  const [gridType, setGridType] = useState<'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography'>('standard');
   const [showRulers, setShowRulers] = useState(false);
+  
+  // Grid preferences with persistence
+  const { gridType, showGrid, setGridType, setShowGrid, isLoaded } = useGridPreferences();
   const [isPanning, setIsPanning] = useState(false);
   const [panOffset, setPanOffset] = useState({
     x: 0,
@@ -209,7 +211,20 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   };
   return <div className="relative h-full w-full overflow-hidden bg-transparent flex flex-col">
       {/* Toolbar */}
-      <CRDToolbar zoom={zoom} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onZoomReset={handleZoomReset} showGrid={showGrid} onGridToggle={() => setShowGrid(!showGrid)} gridType={gridType} onGridTypeChange={setGridType} showRulers={showRulers} onRulersToggle={() => setShowRulers(!showRulers)} isPanning={isPanning} onPanToggle={() => setIsPanning(!isPanning)} />
+      <CRDToolbar 
+        zoom={zoom} 
+        onZoomIn={handleZoomIn} 
+        onZoomOut={handleZoomOut} 
+        onZoomReset={handleZoomReset} 
+        showGrid={showGrid} 
+        onGridToggle={() => setShowGrid(!showGrid)} 
+        gridType={gridType} 
+        onGridTypeChange={setGridType} 
+        showRulers={showRulers} 
+        onRulersToggle={() => setShowRulers(!showRulers)} 
+        isPanning={isPanning} 
+        onPanToggle={() => setIsPanning(!isPanning)} 
+      />
 
       {/* Grid Background */}
       <CRDCanvasGrid showGrid={showGrid} gridType={gridType} gridSize={20} />
