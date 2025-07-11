@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { Code2, Palette, Type, MousePointer, Layout, Paintbrush } from 'lucide-react';
+import { Code2, Palette, Type, MousePointer, Layout, Paintbrush, Sparkles } from 'lucide-react';
+import { useTeamTheme } from '@/hooks/useTeamTheme';
+import { CRDButton, CRDCard, CRDBadge, TeamThemeShowcase, PalettePreview } from '@/components/ui/design-system';
 
 const DesignGuide = () => {
   const [activeSection, setActiveSection] = useState('overview');
+  const { currentPalette, availablePalettes, setTheme } = useTeamTheme();
 
   const sidebarSections = [
     { id: 'overview', label: 'Overview', icon: Layout },
     { id: 'color-palette', label: 'Color Palette', icon: Palette },
+    { id: 'team-themes', label: 'Team Themes', icon: Sparkles },
     { id: 'typography', label: 'Typography', icon: Type },
     { id: 'buttons', label: 'Buttons', icon: MousePointer },
     { id: 'cards', label: 'Cards', icon: Layout },
@@ -219,29 +223,107 @@ const DesignGuide = () => {
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold text-crd-white">Color Palette</h2>
                 
-                {/* Brand Colors */}
+                {/* Color System Comparison */}
                 <section>
-                  <h3 className="text-xl font-semibold text-crd-white mb-4">Brand Colors</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <div className="w-full h-24 bg-crd-blue rounded-lg mb-3"></div>
-                      <div className="text-sm font-medium text-crd-white">Primary Blue</div>
-                      <div className="text-xs text-crd-lightGray">#3772FF</div>
+                  <h3 className="text-xl font-semibold text-crd-white mb-6">CRD vs Team Colors</h3>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* CRD Brand Colors */}
+                    <div>
+                      <h4 className="text-lg font-medium text-crd-white mb-4">CRD Brand Colors</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="text-center">
+                          <div className="w-full h-20 bg-crd-blue rounded-lg mb-2"></div>
+                          <div className="text-sm font-medium text-crd-white">Primary Blue</div>
+                          <div className="text-xs text-crd-lightGray">#3772FF</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="w-full h-20 bg-crd-orange rounded-lg mb-2"></div>
+                          <div className="text-sm font-medium text-crd-white">Orange</div>
+                          <div className="text-xs text-crd-lightGray">#EA6E48</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="w-full h-20 bg-crd-green rounded-lg mb-2"></div>
+                          <div className="text-sm font-medium text-crd-white">Success Green</div>
+                          <div className="text-xs text-crd-lightGray">#45B26B</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="w-full h-20 bg-crd-purple rounded-lg mb-2"></div>
+                          <div className="text-sm font-medium text-crd-white">Purple</div>
+                          <div className="text-xs text-crd-lightGray">#9757D7</div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <div className="w-full h-24 bg-crd-orange rounded-lg mb-3"></div>
-                      <div className="text-sm font-medium text-crd-white">Orange</div>
-                      <div className="text-xs text-crd-lightGray">#EA6E48</div>
+
+                    {/* Current Team Colors */}
+                    <div>
+                      <h4 className="text-lg font-medium text-crd-white mb-4">
+                        Current Team Colors
+                        {currentPalette && (
+                          <span className="text-sm text-crd-lightGray ml-2">({currentPalette.name})</span>
+                        )}
+                      </h4>
+                      {currentPalette ? (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="text-center">
+                            <div 
+                              className="w-full h-20 rounded-lg mb-2" 
+                              style={{ backgroundColor: currentPalette.colors.primary }}
+                            ></div>
+                            <div className="text-sm font-medium text-themed-primary">Primary</div>
+                            <div className="text-xs text-crd-lightGray">{currentPalette.colors.primary}</div>
+                          </div>
+                          <div className="text-center">
+                            <div 
+                              className="w-full h-20 rounded-lg mb-2" 
+                              style={{ backgroundColor: currentPalette.colors.secondary }}
+                            ></div>
+                            <div className="text-sm font-medium text-themed-primary">Secondary</div>
+                            <div className="text-xs text-crd-lightGray">{currentPalette.colors.secondary}</div>
+                          </div>
+                          <div className="text-center">
+                            <div 
+                              className="w-full h-20 rounded-lg mb-2" 
+                              style={{ backgroundColor: currentPalette.colors.accent }}
+                            ></div>
+                            <div className="text-sm font-medium text-themed-primary">Accent</div>
+                            <div className="text-xs text-crd-lightGray">{currentPalette.colors.accent}</div>
+                          </div>
+                          <div className="text-center">
+                            <div 
+                              className="w-full h-20 rounded-lg mb-2" 
+                              style={{ backgroundColor: currentPalette.colors.neutral }}
+                            ></div>
+                            <div className="text-sm font-medium text-themed-primary">Neutral</div>
+                            <div className="text-xs text-crd-lightGray">{currentPalette.colors.neutral}</div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <div className="text-crd-lightGray">No team theme selected</div>
+                        </div>
+                      )}
                     </div>
-                    <div className="text-center">
-                      <div className="w-full h-24 bg-crd-green rounded-lg mb-3"></div>
-                      <div className="text-sm font-medium text-crd-white">Success Green</div>
-                      <div className="text-xs text-crd-lightGray">#45B26B</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-full h-24 bg-crd-purple rounded-lg mb-3"></div>
-                      <div className="text-sm font-medium text-crd-white">Purple</div>
-                      <div className="text-xs text-crd-lightGray">#9757D7</div>
+                  </div>
+                </section>
+
+                {/* Themed CSS Variables */}
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-4">Themed CSS Variables</h3>
+                  <div className="bg-crd-dark rounded-lg p-6 border border-crd-mediumGray/30">
+                    <p className="text-crd-lightGray mb-4">
+                      Use these CSS classes to apply team colors dynamically:
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-mono">
+                      <div>
+                        <div className="text-themed-primary mb-1">text-themed-primary</div>
+                        <div className="text-themed-secondary mb-1">text-themed-secondary</div>
+                        <div className="accent-themed mb-1">accent-themed</div>
+                      </div>
+                      <div>
+                        <div className="bg-themed-subtle text-crd-white px-2 py-1 rounded mb-1">bg-themed-subtle</div>
+                        <div className="bg-themed-light text-crd-white px-2 py-1 rounded mb-1">bg-themed-light</div>
+                        <div className="border border-themed-strong rounded px-2 py-1 text-crd-white">border-themed-strong</div>
+                      </div>
                     </div>
                   </div>
                 </section>
@@ -251,24 +333,85 @@ const DesignGuide = () => {
                   <h3 className="text-xl font-semibold text-crd-white mb-4">Neutral Colors</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center">
-                      <div className="w-full h-24 bg-crd-darkest border border-crd-mediumGray rounded-lg mb-3"></div>
+                      <div className="w-full h-20 bg-crd-darkest border border-crd-mediumGray rounded-lg mb-2"></div>
                       <div className="text-sm font-medium text-crd-white">Darkest</div>
                       <div className="text-xs text-crd-lightGray">#121212</div>
                     </div>
                     <div className="text-center">
-                      <div className="w-full h-24 bg-crd-dark rounded-lg mb-3"></div>
+                      <div className="w-full h-20 bg-crd-dark rounded-lg mb-2"></div>
                       <div className="text-sm font-medium text-crd-white">Dark</div>
                       <div className="text-xs text-crd-lightGray">#1A1A1A</div>
                     </div>
                     <div className="text-center">
-                      <div className="w-full h-24 bg-crd-darkGray rounded-lg mb-3"></div>
+                      <div className="w-full h-20 bg-crd-darkGray rounded-lg mb-2"></div>
                       <div className="text-sm font-medium text-crd-white">Dark Gray</div>
                       <div className="text-xs text-crd-lightGray">#23262F</div>
                     </div>
                     <div className="text-center">
-                      <div className="w-full h-24 bg-crd-mediumGray rounded-lg mb-3"></div>
+                      <div className="w-full h-20 bg-crd-mediumGray rounded-lg mb-2"></div>
                       <div className="text-sm font-medium text-crd-white">Medium Gray</div>
                       <div className="text-xs text-crd-lightGray">#353945</div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {activeSection === 'team-themes' && (
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold text-crd-white">Team Themes</h2>
+                
+                {/* Team Theme Showcase */}
+                <section>
+                  <TeamThemeShowcase />
+                </section>
+
+                {/* Component Examples with Theme */}
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-6">Themed Component Examples</h3>
+                  
+                  {/* Buttons */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-medium text-crd-white mb-4">Buttons</h4>
+                    <div className="flex gap-4 flex-wrap">
+                      <CRDButton variant="primary">Primary Button</CRDButton>
+                      <CRDButton variant="secondary">Secondary Button</CRDButton>
+                      <CRDButton variant="ghost">Ghost Button</CRDButton>
+                    </div>
+                  </div>
+
+                  {/* Badges */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-medium text-crd-white mb-4">Badges</h4>
+                    <div className="flex gap-3 flex-wrap">
+                      <CRDBadge variant="primary">Primary Badge</CRDBadge>
+                      <CRDBadge variant="secondary">Secondary Badge</CRDBadge>
+                      <CRDBadge variant="success">Success Badge</CRDBadge>
+                    </div>
+                  </div>
+
+                  {/* Cards */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-medium text-crd-white mb-4">Cards</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <CRDCard variant="default" className="p-6">
+                        <h5 className="text-lg font-semibold text-themed-primary mb-2">Themed Card</h5>
+                        <p className="text-themed-secondary">This card uses the current team theme colors automatically.</p>
+                      </CRDCard>
+                      <CRDCard variant="interactive" className="p-6">
+                        <h5 className="text-lg font-semibold text-themed-primary mb-2">Interactive Themed Card</h5>
+                        <p className="text-themed-secondary">Hover effects with team colors.</p>
+                      </CRDCard>
+                    </div>
+                  </div>
+
+                  {/* Text Styles */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-medium text-crd-white mb-4">Text Styles</h4>
+                    <div className="space-y-3">
+                      <div className="text-themed-primary text-xl font-semibold">Primary themed text</div>
+                      <div className="text-themed-secondary">Secondary themed text</div>
+                      <div className="accent-themed font-medium">Accent themed text</div>
                     </div>
                   </div>
                 </section>
