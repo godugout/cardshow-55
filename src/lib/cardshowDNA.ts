@@ -20,6 +20,11 @@ export interface CRDEntry {
   notes?: string;
   imagePath: string;
   
+  // Computed properties for components
+  id?: string;
+  displayName?: string;
+  style?: string;
+  
   // Phase 1: Core Gaming Attributes
   rarity: RarityLevel;
   powerLevel: number; // 1-100
@@ -47,7 +52,10 @@ export const CRD_DNA_ENTRIES: CRDEntry[] = [
     fileName: "CS_MLB_BAL_OBS.png",
     group: "MLB",
     teamCode: "BAL",
-    teamName: "Orioles", 
+    teamName: "Orioles",
+    id: "bal_obs",
+    displayName: "Orioles Classic",
+    style: "Classic",
     teamCity: "Baltimore",
     styleCode: "OBS",
     fontStyle: "Script",
@@ -656,4 +664,45 @@ export const getUnlockMethodDistribution = () => {
   });
   
   return distribution;
+};
+
+// Gaming utility functions for card creation
+export const getCardRarityFromDNA = (dnaSegments: CRDEntry[]): string => {
+  const rarityWeights = { Common: 1, Uncommon: 2, Rare: 3, Epic: 4, Legendary: 5, Mythic: 6 };
+  const avgWeight = dnaSegments.reduce((sum, dna) => sum + rarityWeights[dna.rarity], 0) / dnaSegments.length;
+  
+  if (avgWeight >= 5.5) return 'Mythic';
+  if (avgWeight >= 4.5) return 'Legendary';
+  if (avgWeight >= 3.5) return 'Epic';
+  if (avgWeight >= 2.5) return 'Rare';
+  if (avgWeight >= 1.5) return 'Uncommon';
+  return 'Common';
+};
+
+export const checkBlendCompatibility = (dna1: CRDEntry, dna2: CRDEntry): boolean => {
+  if (!dna1.isBlendable || !dna2.isBlendable) return false;
+  if (dna1.group === dna2.group) return true;
+  return Math.random() > 0.3; // 70% compatibility for demo
+};
+
+export const generateBlendResult = (dnaSegments: CRDEntry[]) => {
+  const primaryDNA = dnaSegments[0];
+  const blendName = `${primaryDNA.group} Fusion`;
+  const rarity = getCardRarityFromDNA(dnaSegments);
+  return { name: blendName, rarity };
+};
+
+export const generateCardMetadata = (dnaSegments: CRDEntry[]) => {
+  const totalPower = dnaSegments.reduce((sum, dna) => sum + dna.powerLevel, 0);
+  const avgCollectibility = dnaSegments.reduce((sum, dna) => sum + dna.collectibility, 0) / dnaSegments.length;
+  const rarity = getCardRarityFromDNA(dnaSegments);
+  
+  return {
+    powerLevel: Math.floor(totalPower / dnaSegments.length),
+    collectibility: Math.floor(avgCollectibility),
+    rarity,
+    appliedDNA: dnaSegments.map(dna => dna.fileName),
+    blendable: dnaSegments.every(dna => dna.isBlendable),
+    remixable: dnaSegments.every(dna => dna.isRemixable)
+  };
 };

@@ -13,6 +13,7 @@ import CreateCRD from '@/pages/CreateCRD';
 import Gallery from '@/pages/Gallery';
 import Studio from '@/pages/Studio';
 import UploadTestPage from '@/pages/UploadTestPage';
+import DNATestPage from '@/pages/DNATestPage';
 
 const App = () => {
   // Main App Error Boundary wrapper
@@ -33,6 +34,7 @@ const App = () => {
                 <Route path="/studio" element={<Studio />} />
                 <Route path="/studio/:cardId" element={<Studio />} />
                 <Route path="/upload-test" element={<UploadTestPage />} />
+                <Route path="/dna-test" element={<DNATestPage />} />
               </Routes>
             </main>
             <Toaster 
