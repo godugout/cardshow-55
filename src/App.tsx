@@ -14,6 +14,7 @@ import Gallery from '@/pages/Gallery';
 import Studio from '@/pages/Studio';
 import UploadTestPage from '@/pages/UploadTestPage';
 import DNATestPage from '@/pages/DNATestPage';
+import DesignGuide from '@/pages/DesignGuide';
 
 const App = () => {
   // Main App Error Boundary wrapper
@@ -35,6 +36,7 @@ const App = () => {
                 <Route path="/studio/:cardId" element={<Studio />} />
                 <Route path="/upload-test" element={<UploadTestPage />} />
                 <Route path="/dna-test" element={<DNATestPage />} />
+                <Route path="/design-guide" element={<DesignGuide />} />
               </Routes>
             </main>
             <Toaster 
