@@ -32,7 +32,7 @@ export const EnhancedHero: React.FC = () => {
   return (
     <Hero3
       caption="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
-      heading={`Create, collect, and trade\ncard art with stunning 3D effects`}
+      heading={`Create, collect, and trade card art\nwith stunning 3D effects`}
       bodyText="Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life."
       ctaText="Create Your First Card"
       ctaLink="/create"
