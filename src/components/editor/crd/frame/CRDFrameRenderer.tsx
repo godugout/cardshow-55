@@ -52,8 +52,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
 
   return (
     <div 
-      className={`relative ${className}`}
-      style={{ width, height }}
+      className={`relative w-full h-full ${className}`}
     >
       {isFullBleedBack ? (
         // Full Bleed CRD Back Layout
@@ -77,27 +76,31 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
               <img 
                 src="/lovable-uploads/6fbee76d-69a4-4a2e-a8cd-1cb67bb85303.png" 
                 alt="CRD Logo"
-                className="w-32 h-32 object-contain drop-shadow-lg"
+                className="w-1/3 h-1/3 object-contain drop-shadow-lg"
               />
             </div>
             
             {/* Subtle corner accents */}
             <div 
-              className="absolute top-0 right-0 w-16 h-16 opacity-30"
+              className="absolute top-0 right-0 opacity-30"
               style={{
+                width: '12%',
+                height: '12%',
                 background: `linear-gradient(225deg, ${colorTheme.accent} 0%, transparent 50%)`
               }}
             />
             <div 
-              className="absolute bottom-0 left-0 w-16 h-16 opacity-30"
+              className="absolute bottom-0 left-0 opacity-30"
               style={{
+                width: '12%',
+                height: '12%',
                 background: `linear-gradient(45deg, ${colorTheme.accent} 0%, transparent 50%)`
               }}
             />
           </div>
           
           {/* Catalog and Series Numbers Below Card */}
-          <div className="absolute top-full mt-2 left-0 right-0 flex justify-between text-xs font-mono text-white/90">
+          <div className="absolute left-0 right-0 flex justify-between font-mono text-white/90" style={{ top: '102%', fontSize: '0.6rem' }}>
             <span>{crdData.catalogNumber}</span>
             <span>{crdData.seriesNumber}</span>
           </div>
@@ -105,14 +108,16 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
       ) : (
         // Standard Frame Layout
         <div 
-          className="absolute inset-0 rounded-lg border-4 shadow-lg"
+          className="absolute inset-0 rounded-lg shadow-lg"
           style={{
+            borderWidth: '0.3rem',
+            borderStyle: 'solid',
             borderColor: colorTheme.primary,
             background: `linear-gradient(145deg, ${colorTheme.primary}20, ${colorTheme.secondary}10)`
           }}
         >
           {/* Main Image Region */}
-          <div className="absolute inset-2 rounded-md overflow-hidden bg-crd-darkest">
+          <div className="absolute rounded-md overflow-hidden bg-crd-darkest" style={{ top: '0.5rem', left: '0.5rem', right: '0.5rem', bottom: '0.5rem' }}>
             {content.mainImage ? (
               <img 
                 src={content.mainImage} 
@@ -130,8 +135,16 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
         
         {/* Top Header - CRD Catalog # and Series # */}
         <div 
-          className="absolute top-1 left-1 right-1 h-6 rounded-sm flex items-center justify-between px-2 text-xs font-bold"
-          style={{ backgroundColor: `${colorTheme.primary}E6` }}
+          className="absolute rounded-sm flex items-center justify-between font-bold"
+          style={{ 
+            top: '0.25rem', 
+            left: '0.25rem', 
+            right: '0.25rem', 
+            height: '1.5rem',
+            padding: '0 0.5rem',
+            fontSize: '0.6rem',
+            backgroundColor: `${colorTheme.primary}E6` 
+          }}
         >
           <span className="text-white">{crdData.catalogNumber}</span>
           <span className="text-white">{crdData.seriesNumber}</span>
@@ -139,41 +152,68 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
 
         {/* Top Right - Available Copies */}
         <div 
-          className="absolute top-8 right-1 px-2 py-1 rounded-sm text-xs font-bold text-white"
-          style={{ backgroundColor: `${colorTheme.accent}E6` }}
+          className="absolute rounded-sm font-bold text-white"
+          style={{ 
+            top: '2rem', 
+            right: '0.25rem',
+            padding: '0.25rem 0.5rem',
+            fontSize: '0.6rem',
+            backgroundColor: `${colorTheme.accent}E6` 
+          }}
         >
           {crdData.available}
         </div>
 
         {/* Bottom Banner - CRD Name */}
         <div 
-          className="absolute bottom-1 left-1 right-1 h-8 rounded-sm flex items-center justify-center px-2"
+          className="absolute rounded-sm flex items-center justify-center"
           style={{ 
+            bottom: '0.25rem', 
+            left: '0.25rem', 
+            right: '0.25rem', 
+            height: '2rem',
+            padding: '0 0.5rem',
             background: `linear-gradient(90deg, ${colorTheme.primary}E6, ${colorTheme.secondary}E6)`
           }}
         >
-          <span className="text-white font-bold text-sm truncate">{crdData.crdName}</span>
+          <span className="text-white font-bold truncate" style={{ fontSize: '0.7rem' }}>{crdData.crdName}</span>
         </div>
 
         {/* Creator Badge - Bottom Left */}
         <div 
-          className="absolute bottom-10 left-1 px-2 py-1 rounded-sm text-xs text-white"
-          style={{ backgroundColor: `${colorTheme.neutral}80` }}
+          className="absolute rounded-sm text-white"
+          style={{ 
+            bottom: '2.5rem', 
+            left: '0.25rem',
+            padding: '0.25rem 0.5rem',
+            fontSize: '0.6rem',
+            backgroundColor: `${colorTheme.neutral}80` 
+          }}
         >
           by {crdData.creator}
         </div>
 
         {/* Logo Placeholder - Top Left Corner */}
         {crdData.logo && (
-          <div className="absolute top-8 left-1 w-8 h-8 rounded-full overflow-hidden border-2 border-white">
+          <div 
+            className="absolute rounded-full overflow-hidden border-2 border-white"
+            style={{ 
+              top: '2rem', 
+              left: '0.25rem',
+              width: '2rem',
+              height: '2rem'
+            }}
+          >
             <img src={crdData.logo} alt="Creator logo" className="w-full h-full object-cover" />
           </div>
         )}
 
         {/* Rarity Indicator - Glowing corner */}
         <div 
-          className="absolute top-0 right-0 w-6 h-6 rounded-bl-lg"
+          className="absolute top-0 right-0 rounded-bl-lg"
           style={{ 
+            width: '1.5rem',
+            height: '1.5rem',
             backgroundColor: colorTheme.accent,
             boxShadow: `0 0 12px ${colorTheme.accent}80`
           }}
@@ -181,12 +221,23 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
 
         {/* Effects/Animation Indicators */}
         {content.effects && content.effects.length > 0 && (
-          <div className="absolute bottom-10 right-1 flex space-x-1">
+          <div 
+            className="absolute flex"
+            style={{ 
+              bottom: '2.5rem', 
+              right: '0.25rem',
+              gap: '0.25rem'
+            }}
+          >
             {content.effects.slice(0, 3).map((effect: string, index: number) => (
               <div 
                 key={index}
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: colorTheme.accent }}
+                className="rounded-full"
+                style={{ 
+                  width: '0.5rem',
+                  height: '0.5rem',
+                  backgroundColor: colorTheme.accent 
+                }}
                 title={effect}
               />
             ))}
