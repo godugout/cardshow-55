@@ -43,7 +43,7 @@ export const Hero3: React.FC<Hero3Props> = ({
   };
 
   return (
-    <div className={`items-center bg-crd-darkest flex w-full flex-col overflow-hidden text-center pt-32 ${isMobile ? 'px-5' : 'px-[352px]'} max-md:max-w-full max-md:pt-[100px] ${className}`}>
+    <div className={`items-center bg-crd-darkest flex w-full flex-col overflow-hidden text-center pt-32 ${isMobile ? 'px-5' : 'px-[200px]'} max-md:max-w-full max-md:pt-[100px] ${className}`}>
       <div className="flex w-full max-w-[900px] flex-col items-center max-md:max-w-full">
         {/* Main Hero Content */}
         <div className="flex w-full flex-col items-center mb-12">
