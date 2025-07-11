@@ -40,20 +40,17 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
     >
       {/* Collapsed Icon Strip */}
       {isCollapsed && (
-        <div className="w-12 h-full bg-gradient-to-b from-crd-darker/90 to-crd-darker/70 backdrop-blur-xl border border-crd-mediumGray/40 shadow-2xl flex flex-col relative">
-          {/* Inner glow effect */}
-          <div className="absolute inset-0 rounded-lg shadow-[inset_0_0_20px_rgba(55,114,255,0.15)] pointer-events-none"></div>
-          
+        <div className="w-12 h-full bg-crd-darker/80 backdrop-blur-md border border-crd-mediumGray/30 shadow-lg flex flex-col">
           {/* Toggle Button */}
           <button
             onClick={onToggle}
-            className="relative w-full h-12 flex items-center justify-center text-crd-lightGray hover:text-crd-white hover:bg-crd-mediumGray/30 transition-all duration-300 border-b border-crd-mediumGray/30 hover:shadow-[inset_0_0_15px_rgba(55,114,255,0.2)]"
+            className="w-full h-12 flex items-center justify-center text-crd-lightGray hover:text-crd-white hover:bg-crd-mediumGray/20 transition-all duration-200 border-b border-crd-mediumGray/20"
           >
             {collapseIcon}
           </button>
           
           {/* Collapsed Content Icons */}
-          <div className="relative flex-1 p-2">
+          <div className="flex-1 p-2">
             {collapsedContent}
           </div>
         </div>
@@ -61,27 +58,24 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
 
       {/* Expanded Panel */}
       {!isCollapsed && (
-        <div className={`w-full h-full bg-gradient-to-b from-crd-darker/80 to-crd-darker/60 backdrop-blur-xl border border-crd-mediumGray/40 shadow-2xl flex flex-col relative ${
-          side === 'left' ? 'border-r-2 border-r-crd-blue/40' : 'border-l-2 border-l-crd-blue/40'
+        <div className={`w-full h-full bg-crd-darker/60 backdrop-blur-md border border-crd-mediumGray/30 shadow-2xl flex flex-col ${
+          side === 'left' ? 'border-r-2 border-r-crd-blue/30' : 'border-l-2 border-l-crd-blue/30'
         }`}>
-          {/* Inner glow effect */}
-          <div className="absolute inset-0 rounded-lg shadow-[inset_0_0_25px_rgba(55,114,255,0.12)] pointer-events-none"></div>
-          
           {/* Toggle Button Header */}
-          <div className="relative flex-shrink-0 h-12 flex items-center justify-between px-4 border-b border-crd-mediumGray/40 bg-gradient-to-r from-transparent via-crd-mediumGray/5 to-transparent">
+          <div className="flex-shrink-0 h-12 flex items-center justify-between px-4 border-b border-crd-mediumGray/30">
             <div className="text-crd-white text-sm font-medium">
               {side === 'left' ? 'Tools' : 'Properties'}
             </div>
             <button
               onClick={onToggle}
-              className="relative p-1 text-crd-lightGray hover:text-crd-white hover:bg-crd-mediumGray/30 rounded transition-all duration-300 hover:shadow-[inset_0_0_10px_rgba(55,114,255,0.2)]"
+              className="p-1 text-crd-lightGray hover:text-crd-white hover:bg-crd-mediumGray/20 rounded transition-all duration-200"
             >
               {collapseIcon}
             </button>
           </div>
           
           {/* Main Content */}
-          <div className="relative flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden">
             {children}
           </div>
         </div>

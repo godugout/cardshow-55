@@ -142,33 +142,30 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                     <Eye className="h-3 w-3 text-white" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-4 bg-gradient-to-b from-crd-darker/95 to-crd-darker/90 backdrop-blur-xl border border-crd-mediumGray/40 shadow-2xl" side="left" align="center">
-                  <div className="absolute inset-0 rounded-lg shadow-[inset_0_0_25px_rgba(55,114,255,0.12)] pointer-events-none"></div>
-                  <div className="relative space-y-3">
-                    <h4 className="font-semibold text-crd-white text-center">{frame.name}</h4>
+                <PopoverContent className="w-80 p-4 bg-crd-darker border-crd-mediumGray/30">
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-crd-white">{frame.name}</h4>
                     <div className="flex justify-center">
-                      <div className="w-60 h-80 flex items-center justify-center bg-crd-darkest/50 rounded-lg border border-crd-mediumGray/20">
-                        <CRDFrameRenderer 
-                          frame={frame}
-                          content={{
-                            catalogNumber: 'PRE-001',
-                            seriesNumber: '#001',
-                            available: '1:1',
-                            crdName: frame.name,
-                            creator: 'Demo',
-                            rarity: 'rare'
-                          }}
-                          colorTheme={{
-                            primary: frame.id === 'mystical-fantasy' ? '#8B5CF6' : 'hsl(220, 100%, 50%)',
-                            secondary: frame.id === 'mystical-fantasy' ? '#A78BFA' : 'hsl(220, 100%, 70%)',
-                            accent: frame.id === 'mystical-fantasy' ? '#DDD6FE' : 'hsl(45, 100%, 60%)',
-                            neutral: 'hsl(220, 10%, 80%)'
-                          }}
-                          className="w-full h-full" 
-                        />
-                      </div>
+                      <CRDFrameRenderer 
+                        frame={frame}
+                        content={{
+                          catalogNumber: 'PRE-001',
+                          seriesNumber: '#001',
+                          available: '1:1',
+                          crdName: frame.name,
+                          creator: 'Demo',
+                          rarity: 'rare'
+                        }}
+                        colorTheme={{
+                          primary: 'hsl(220, 100%, 50%)',
+                          secondary: 'hsl(220, 100%, 70%)',
+                          accent: 'hsl(45, 100%, 60%)',
+                          neutral: 'hsl(220, 10%, 80%)'
+                        }}
+                        className="max-w-[200px]" 
+                      />
                     </div>
-                    <p className="text-sm text-crd-lightGray text-center max-w-60">{frame.description || 'Professional frame template'}</p>
+                    <p className="text-sm text-crd-lightGray">{frame.description || 'Professional frame template'}</p>
                   </div>
                 </PopoverContent>
               </Popover>
@@ -186,17 +183,15 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                     rarity: ['common', 'uncommon', 'rare', 'epic', 'legendary'][Math.floor(Math.random() * 5)]
                   }}
                   colorTheme={{
-                    primary: frame.id === 'mystical-fantasy' ? '#8B5CF6' : 
-                             frame.category === 'sports' ? 'hsl(220, 100%, 50%)' : 
+                    primary: frame.category === 'sports' ? 'hsl(220, 100%, 50%)' : 
                              frame.category === 'vintage' ? 'hsl(30, 70%, 40%)' :
                              frame.category === 'fantasy' ? 'hsl(280, 100%, 50%)' :
                              frame.category === 'modern' ? 'hsl(200, 100%, 60%)' : 'hsl(220, 100%, 50%)',
-                    secondary: frame.id === 'mystical-fantasy' ? '#A78BFA' :
-                               frame.category === 'sports' ? 'hsl(220, 100%, 70%)' : 
+                    secondary: frame.category === 'sports' ? 'hsl(220, 100%, 70%)' : 
                                frame.category === 'vintage' ? 'hsl(30, 50%, 60%)' :
                                frame.category === 'fantasy' ? 'hsl(280, 80%, 70%)' :
                                frame.category === 'modern' ? 'hsl(200, 80%, 80%)' : 'hsl(220, 100%, 70%)',
-                    accent: frame.id === 'mystical-fantasy' ? '#DDD6FE' : 'hsl(45, 100%, 60%)',
+                    accent: 'hsl(45, 100%, 60%)',
                     neutral: 'hsl(220, 10%, 80%)'
                   }}
                   className="w-full h-full scale-75 origin-center" 

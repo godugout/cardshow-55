@@ -91,13 +91,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   }, []);
   const cardWidth = baseCardWidth * zoom / 100;
   const cardHeight = baseCardHeight * zoom / 100;
-  
-  // Debug frame rendering
-  useEffect(() => {
-    console.log('🖼️ CRDCanvas: Rendering with frame:', selectedFrame?.name || 'none');
-    console.log('🖼️ Frame content:', frameContent);
-    console.log('🖼️ Player image:', playerImage ? 'present' : 'none');
-  }, [selectedFrame, frameContent, playerImage]);
   const getBackgroundStyle = () => {
     const paletteColors = {
       classic: '#1E40AF',

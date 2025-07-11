@@ -26,45 +26,6 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
 }) => {
   const { width, height } = frame.frame_config.dimensions;
 
-  // Extract frame colors from frame config elements or fallback to colorTheme
-  const getFrameColors = () => {
-    console.log('🎨 Getting frame colors for:', frame.name, frame.id);
-    
-    // Check if frame has specific color configuration
-    if (frame.frame_config?.elements) {
-      // Look for elements with color properties (regardless of type)
-      const colorElement = frame.frame_config.elements.find(el => el.properties?.color);
-      
-      if (colorElement?.properties?.color) {
-        const frameColors = {
-          primary: colorElement.properties.color || colorTheme.primary,
-          secondary: colorElement.properties.color || colorTheme.secondary,
-          accent: colorTheme.accent,
-          neutral: colorTheme.neutral
-        };
-        console.log('🎨 Using frame-specific colors:', frameColors);
-        return frameColors;
-      }
-    }
-    
-    // For specific frames, use their intended colors
-    if (frame.id === 'mystical-fantasy') {
-      const purpleTheme = {
-        primary: '#8B5CF6', // Purple from frame definition
-        secondary: '#A78BFA',
-        accent: '#DDD6FE',
-        neutral: '#6B7280'
-      };
-      console.log('🎨 Using mystical fantasy purple theme:', purpleTheme);
-      return purpleTheme;
-    }
-    
-    console.log('🎨 Using default color theme:', colorTheme);
-    return colorTheme;
-  };
-
-  const frameColors = getFrameColors();
-
   // Default CRD data
   const crdData = {
     catalogNumber: content.catalogNumber || 'CRD-001',
@@ -99,14 +60,14 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
           <div 
             className="absolute inset-0 rounded-lg shadow-lg overflow-hidden"
             style={{
-              background: `linear-gradient(135deg, ${frameColors.primary}, ${frameColors.secondary}, ${frameColors.accent})`
+              background: `linear-gradient(135deg, ${colorTheme.primary}, ${colorTheme.secondary}, ${colorTheme.accent})`
             }}
           >
             {/* Background Pattern */}
             <div 
               className="absolute inset-0"
               style={{
-                background: `radial-gradient(circle at 50% 50%, ${frameColors.primary}40 0%, transparent 50%)`
+                background: `radial-gradient(circle at 50% 50%, ${colorTheme.primary}40 0%, transparent 50%)`
               }}
             />
             
@@ -125,7 +86,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
               style={{
                 width: '12%',
                 height: '12%',
-                background: `linear-gradient(225deg, ${frameColors.accent} 0%, transparent 50%)`
+                background: `linear-gradient(225deg, ${colorTheme.accent} 0%, transparent 50%)`
               }}
             />
             <div 
@@ -133,7 +94,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
               style={{
                 width: '12%',
                 height: '12%',
-                background: `linear-gradient(45deg, ${frameColors.accent} 0%, transparent 50%)`
+                background: `linear-gradient(45deg, ${colorTheme.accent} 0%, transparent 50%)`
               }}
             />
           </div>
@@ -151,9 +112,8 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
           style={{
             borderWidth: '0.3rem',
             borderStyle: 'solid',
-            borderColor: frameColors.primary,
-            background: `linear-gradient(145deg, ${frameColors.primary}20, ${frameColors.secondary}10)`,
-            boxShadow: `inset 0 0 12px ${frameColors.primary}30`
+            borderColor: colorTheme.primary,
+            background: `linear-gradient(145deg, ${colorTheme.primary}20, ${colorTheme.secondary}10)`
           }}
         >
           {/* Main Image Region */}
@@ -183,8 +143,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             height: '1.5rem',
             padding: '0 0.5rem',
             fontSize: '0.6rem',
-            backgroundColor: `${frameColors.primary}E6`,
-            boxShadow: `inset 0 -4px 8px ${frameColors.primary}40`
+            backgroundColor: `${colorTheme.primary}E6` 
           }}
         >
           <span className="text-white">{crdData.catalogNumber}</span>
@@ -199,8 +158,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             right: '0.25rem',
             padding: '0.25rem 0.5rem',
             fontSize: '0.6rem',
-            backgroundColor: `${frameColors.accent}E6`,
-            boxShadow: `inset -4px 0 8px ${frameColors.accent}40`
+            backgroundColor: `${colorTheme.accent}E6` 
           }}
         >
           {crdData.available}
@@ -215,8 +173,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             right: '0.25rem', 
             height: '2rem',
             padding: '0 0.5rem',
-            background: `linear-gradient(90deg, ${frameColors.primary}E6, ${frameColors.secondary}E6)`,
-            boxShadow: `inset 0 4px 8px ${frameColors.primary}40`
+            background: `linear-gradient(90deg, ${colorTheme.primary}E6, ${colorTheme.secondary}E6)`
           }}
         >
           <span className="text-white font-bold truncate" style={{ fontSize: '0.7rem' }}>{crdData.crdName}</span>
@@ -230,8 +187,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
             left: '0.25rem',
             padding: '0.25rem 0.5rem',
             fontSize: '0.6rem',
-            backgroundColor: `${frameColors.neutral}80`,
-            boxShadow: `inset 4px 0 8px ${frameColors.neutral}30`
+            backgroundColor: `${colorTheme.neutral}80` 
           }}
         >
           by {crdData.creator}
@@ -258,8 +214,8 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
           style={{ 
             width: '1.5rem',
             height: '1.5rem',
-            backgroundColor: frameColors.accent,
-            boxShadow: `inset -6px 6px 12px ${frameColors.accent}60`
+            backgroundColor: colorTheme.accent,
+            boxShadow: `0 0 12px ${colorTheme.accent}80`
           }}
         />
 
@@ -280,7 +236,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
                 style={{ 
                   width: '0.5rem',
                   height: '0.5rem',
-                  backgroundColor: frameColors.accent 
+                  backgroundColor: colorTheme.accent 
                 }}
                 title={effect}
               />
@@ -293,7 +249,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
           <div 
             className="absolute inset-0 rounded-lg pointer-events-none"
             style={{
-              background: `linear-gradient(45deg, transparent 30%, ${frameColors.accent}20 50%, transparent 70%)`,
+              background: `linear-gradient(45deg, transparent 30%, ${colorTheme.accent}20 50%, transparent 70%)`,
               animation: 'shimmer 3s ease-in-out infinite'
             }}
           />

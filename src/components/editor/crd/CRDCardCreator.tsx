@@ -11,7 +11,6 @@ import { CRDContentTab } from './tabs/CRDContentTab';
 import { CRDExportTab } from './tabs/CRDExportTab';
 import { CRDCanvas } from './canvas/CRDCanvas';
 import { CRDSidebar } from './sidebar/CRDSidebar';
-import { SAMPLE_CRD_FRAMES } from '@/data/sampleCRDFrames';
 import { CollapsibleSidebar } from './sidebar/CollapsibleSidebar';
 import { LeftSidebarContent, LeftSidebarCollapsedContent } from './sidebar/LeftSidebarContent';
 import { RightSidebarCollapsedContent } from './sidebar/RightSidebarCollapsed';
@@ -159,43 +158,6 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
-  // Initialize default frame on component mount
-  useEffect(() => {
-    if (!selectedFrame && SAMPLE_CRD_FRAMES.length > 0) {
-      console.log('🎨 CRD Creator: Initializing default frame:', SAMPLE_CRD_FRAMES[0].name);
-      setSelectedFrame(SAMPLE_CRD_FRAMES[0]);
-      setFrameContent({
-        catalogNumber: 'CRD-001',
-        seriesNumber: '#001',
-        available: '1:1',
-        crdName: cardData?.title || 'New Card',
-        creator: 'Creator Name',
-        rarity: cardData?.rarity || 'common'
-      });
-    }
-  }, [selectedFrame, cardData.title, cardData.rarity]);
-  
-  // Frame selection handler with debugging
-  const handleFrameSelect = useCallback((frame: any) => {
-    console.log('🎯 CRD Creator: Frame selected:', frame?.name, frame?.id);
-    console.log('🎯 Frame object:', frame);
-    setSelectedFrame(frame);
-    
-    // Initialize frame content with current card data when frame changes
-    if (frame) {
-      setFrameContent({
-        catalogNumber: 'CRD-001',
-        seriesNumber: '#001',
-        available: '1:1',
-        crdName: cardData?.title || 'New Card',
-        creator: 'Creator Name',
-        rarity: cardData?.rarity || 'common',
-        mainImage: playerImage
-      });
-      console.log('🎨 Frame content initialized for:', frame.name);
-    }
-  }, [cardData.title, cardData.rarity, playerImage]);
   
   // Mobile sidebar logic - only allow one sidebar open at a time
   const handleLeftSidebarToggle = useCallback(() => {
@@ -432,7 +394,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
               psdLayers={psdLayers}
               onPSDModeChange={handlePSDModeChange}
               selectedFrame={selectedFrame}
-              onFrameSelect={handleFrameSelect}
+              onFrameSelect={setSelectedFrame}
               frameContent={frameContent}
               onFrameContentChange={setFrameContent}
             />
