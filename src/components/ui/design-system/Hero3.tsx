@@ -68,32 +68,60 @@ export const Hero3: React.FC<Hero3Props> = ({
           </Typography>
         </div>
 
-        {/* Featured Cards Showcase */}
+        {/* Featured Cards Ticker Carousel */}
         {showFeaturedCards && featuredCards.length > 0 && (
-          <div className="w-full mb-12">
-            <Typography variant="h3" className="text-white mb-6">
+          <div className="w-full mb-12 overflow-hidden">
+            <Typography variant="h3" className="text-white mb-6 text-center">
               Featured Creations
             </Typography>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              {featuredCards.map((card) => (
-                <div 
-                  key={card.id}
-                  className="relative group cursor-pointer transform transition-all duration-300 hover:scale-105"
-                  onClick={() => handleCardClick(card)}
-                >
-                  <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl overflow-hidden relative">
-                    <img
-                      src={card.image_url || card.thumbnail_url || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"}
-                      alt={card.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="text-white text-sm font-semibold mb-1">{card.title}</div>
+            <div className="relative">
+              {/* Gradient Overlays */}
+              <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-crd-darkest to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-crd-darkest to-transparent z-10 pointer-events-none" />
+              
+              {/* Ticker Container */}
+              <div className="flex animate-[scroll_60s_linear_infinite] hover:[animation-play-state:paused]">
+                {/* First set of cards */}
+                {featuredCards.map((card) => (
+                  <div 
+                    key={`first-${card.id}`}
+                    className="flex-shrink-0 w-48 mr-6 group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                    onClick={() => handleCardClick(card)}
+                  >
+                    <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl overflow-hidden relative">
+                      <img
+                        src={card.image_url || card.thumbnail_url || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"}
+                        alt={card.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="text-white text-sm font-semibold mb-1 truncate">{card.title}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+                {/* Duplicate set for seamless loop */}
+                {featuredCards.map((card) => (
+                  <div 
+                    key={`second-${card.id}`}
+                    className="flex-shrink-0 w-48 mr-6 group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                    onClick={() => handleCardClick(card)}
+                  >
+                    <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl overflow-hidden relative">
+                      <img
+                        src={card.image_url || card.thumbnail_url || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"}
+                        alt={card.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="text-white text-sm font-semibold mb-1 truncate">{card.title}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}

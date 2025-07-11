@@ -9,11 +9,19 @@ import type { Tables } from '@/integrations/supabase/types';
 type DbCard = Tables<'cards'>;
 
 export const EnhancedHero: React.FC = () => {
-  const { featuredCards, loading } = useCards();
+  const { cards, featuredCards, loading, fetchAllCardsFromDatabase } = useCards();
   const navigate = useNavigate();
   
-  // Get top 3 featured cards for showcase
-  const showcaseCards = (featuredCards || []).slice(0, 3);
+  // Use all cards if available, otherwise featured cards for ticker carousel
+  const allCards = cards.length > 0 ? cards : featuredCards;
+  const showcaseCards = allCards.length > 0 ? allCards : [];
+
+  // Fetch all cards for the ticker on mount
+  React.useEffect(() => {
+    if (allCards.length === 0) {
+      fetchAllCardsFromDatabase();
+    }
+  }, [fetchAllCardsFromDatabase, allCards.length]);
 
   // Make cards clickable, no immersive preview
   const handleCardStudioOpen = (card: DbCard) => {

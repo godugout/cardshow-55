@@ -237,6 +237,14 @@ export default {
             transform: 'translateX(100%) rotate(45deg)',
             opacity: '0'
           }
+        },
+        'scroll': {
+          '0%': {
+            transform: 'translateX(0%)'
+          },
+          '100%': {
+            transform: 'translateX(-50%)'
+          }
         }
       },
       animation: {
@@ -248,7 +256,8 @@ export default {
         'logo-shimmer': 'logo-shimmer 3s ease-in-out infinite',
         'logo-glow-pulse': 'logo-glow-pulse 4s ease-in-out infinite',
         'gradient-shift': 'gradient-shift 8s ease-in-out infinite',
-        'holographic-flow': 'holographic-flow 2s ease-in-out infinite'
+        'holographic-flow': 'holographic-flow 2s ease-in-out infinite',
+        'scroll': 'scroll 60s linear infinite'
       },
       fontFamily: {
         'orbitron': ['Orbitron', 'sans-serif'],
