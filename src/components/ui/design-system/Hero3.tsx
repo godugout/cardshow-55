@@ -87,7 +87,7 @@ export const Hero3: React.FC<Hero3Props> = ({
             <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-crd-darkest via-crd-darkest/80 to-transparent z-10 pointer-events-none" />
           
             {/* Ticker Container */}
-            <div className="flex animate-[scroll_60s_linear_infinite] hover:[animation-play-state:paused]">
+            <div className="flex animate-[scroll_60s_linear_infinite] hover:[animation-play-state:paused] -translate-x-full">
               {/* First set of cards */}
               {featuredCards.map((card) => (
                 <div 
