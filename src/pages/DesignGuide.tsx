@@ -1,162 +1,393 @@
-import React from 'react';
-import { ThemedPage } from '@/components/ui/design-system/ThemedLayout';
+import React, { useState } from 'react';
+import { Code2, Palette, Type, MousePointer, Layout, Paintbrush } from 'lucide-react';
 
 const DesignGuide = () => {
+  const [activeSection, setActiveSection] = useState('overview');
+
+  const sidebarSections = [
+    { id: 'overview', label: 'Overview', icon: Layout },
+    { id: 'color-palette', label: 'Color Palette', icon: Palette },
+    { id: 'typography', label: 'Typography', icon: Type },
+    { id: 'buttons', label: 'Buttons', icon: MousePointer },
+    { id: 'cards', label: 'Cards', icon: Layout },
+    { id: 'backgrounds', label: 'Backgrounds', icon: Paintbrush },
+  ];
+
   return (
     <div className="min-h-screen bg-crd-darkest pt-16">
-      {/* Top Navigation Header - accounts for fixed navbar */}
-      <header className="bg-crd-dark border-b border-crd-mediumGray sticky top-16 z-40">
-        <div className="max-w-sm mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-crd-white text-center">
-            CRD Design Guide
-          </h1>
-        </div>
-      </header>
+      <div className="flex">
+        {/* Sidebar */}
+        <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-crd-dark border-r border-crd-mediumGray overflow-y-auto">
+          <div className="p-6">
+            <h2 className="text-lg font-semibold text-crd-white mb-6">Design System</h2>
+            <nav className="space-y-2">
+              {sidebarSections.map((section) => {
+                const Icon = section.icon;
+                return (
+                  <button
+                    key={section.id}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                      activeSection === section.id
+                        ? 'bg-crd-blue text-white'
+                        : 'text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white'
+                    }`}
+                  >
+                    <Icon size={16} />
+                    <span className="text-sm">{section.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </aside>
 
-      {/* Mobile-first Layout Wrapper */}
-      <div className="max-w-sm mx-auto px-4 py-8">
-        <div className="space-y-8">
-          {/* Colors Section */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-crd-white">Brand Colors</h2>
-            
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-crd-blue rounded"></div>
-                <span className="text-crd-white text-sm">Primary Blue (#3772FF)</span>
+        {/* Main Content */}
+        <main className="flex-1 ml-64 p-8">
+          <div className="max-w-4xl">
+            {/* Header */}
+            <div className="mb-12 text-center">
+              <div className="text-xs font-semibold text-crd-lightGray uppercase tracking-wide mb-2">
+                DESIGN SYSTEM
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-crd-lightBlue rounded"></div>
-                <span className="text-crd-white text-sm">Light Blue (#2D9CDB)</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-crd-orange rounded"></div>
-                <span className="text-crd-white text-sm">Orange (#F97316)</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-crd-green rounded"></div>
-                <span className="text-crd-white text-sm">Success Green (#45B26B)</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-crd-purple rounded"></div>
-                <span className="text-crd-white text-sm">Purple (#9757D7)</span>
-              </div>
+              <h1 className="text-4xl font-bold text-crd-white mb-4">
+                CRD Design Guide
+              </h1>
+              <p className="text-crd-lightGray max-w-2xl mx-auto">
+                Comprehensive documentation of Cardshow's design system, components, and patterns. Built
+                for consistency, accessibility, and exceptional user experiences.
+              </p>
             </div>
-          </section>
 
-          {/* Background Colors */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-crd-white">Background Colors</h2>
-            
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-crd-darkest border border-crd-mediumGray rounded"></div>
-                <span className="text-crd-white text-sm">Primary (#141416)</span>
+            {activeSection === 'overview' && (
+              <div className="space-y-12">
+                {/* Design System Overview */}
+                <section>
+                  <h2 className="text-2xl font-bold text-crd-white mb-6">Design System Overview</h2>
+                  <p className="text-crd-lightGray mb-8">
+                    The CRD Design System is built on modern web technologies with a focus on dark aesthetics, glass morphism,
+                    and premium user experiences. Every component follows consistent patterns for spacing, typography, and
+                    interaction design.
+                  </p>
+
+                  {/* Feature Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                    {/* Color System */}
+                    <div className="bg-crd-dark rounded-2xl p-6 border border-crd-mediumGray/30">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-10 h-10 bg-crd-blue rounded-lg flex items-center justify-center">
+                          <Palette size={20} className="text-white" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-crd-white">Color System</h3>
+                      </div>
+                      <p className="text-crd-lightGray text-sm mb-4">
+                        Comprehensive color palette with semantic tokens, gradients, and accessibility considerations.
+                      </p>
+                      <div className="flex space-x-2">
+                        <div className="w-6 h-6 bg-crd-blue rounded"></div>
+                        <div className="w-6 h-6 bg-crd-orange rounded"></div>
+                        <div className="w-6 h-6 bg-crd-green rounded"></div>
+                        <div className="w-6 h-6 bg-crd-purple rounded"></div>
+                      </div>
+                    </div>
+
+                    {/* Typography */}
+                    <div className="bg-crd-dark rounded-2xl p-6 border border-crd-mediumGray/30">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-10 h-10 bg-crd-blue rounded-lg flex items-center justify-center">
+                          <Type size={20} className="text-white" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-crd-white">Typography</h3>
+                      </div>
+                      <p className="text-crd-lightGray text-sm mb-4">
+                        Consistent type scale, font weights, and text hierarchy for optimal readability.
+                      </p>
+                      <div className="space-y-1">
+                        <div className="w-12 h-3 bg-crd-lightGray rounded"></div>
+                        <div className="w-16 h-2 bg-crd-lightGray/60 rounded"></div>
+                        <div className="w-20 h-2 bg-crd-lightGray/40 rounded"></div>
+                      </div>
+                    </div>
+
+                    {/* Interactive Elements */}
+                    <div className="bg-crd-dark rounded-2xl p-6 border border-crd-mediumGray/30">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-10 h-10 bg-crd-blue rounded-lg flex items-center justify-center">
+                          <MousePointer size={20} className="text-white" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-crd-white">Interactive Elements</h3>
+                      </div>
+                      <p className="text-crd-lightGray text-sm mb-4">
+                        Buttons, links, and form controls with consistent states and animations.
+                      </p>
+                      <div className="flex space-x-2">
+                        <div className="w-6 h-6 bg-crd-blue rounded"></div>
+                        <div className="w-6 h-6 bg-crd-orange rounded"></div>
+                        <div className="w-6 h-6 bg-crd-green rounded"></div>
+                      </div>
+                    </div>
+
+                    {/* Card Components */}
+                    <div className="bg-crd-dark rounded-2xl p-6 border border-crd-mediumGray/30">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-10 h-10 bg-crd-blue rounded-lg flex items-center justify-center">
+                          <Layout size={20} className="text-white" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-crd-white">Card Components</h3>
+                      </div>
+                      <p className="text-crd-lightGray text-sm mb-4">
+                        Glass morphism cards, creator boxes, and collection displays with depth and elegance.
+                      </p>
+                      <div className="space-y-2">
+                        <div className="h-3 bg-crd-lightGray/20 rounded"></div>
+                        <div className="h-2 bg-crd-lightGray/10 rounded"></div>
+                      </div>
+                    </div>
+
+                    {/* Background Patterns */}
+                    <div className="bg-crd-dark rounded-2xl p-6 border border-crd-mediumGray/30">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-10 h-10 bg-crd-blue rounded-lg flex items-center justify-center">
+                          <Paintbrush size={20} className="text-white" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-crd-white">Background Patterns</h3>
+                      </div>
+                      <p className="text-crd-lightGray text-sm mb-4">
+                        Floating elements, gradients, and animated patterns that create visual depth.
+                      </p>
+                      <div className="grid grid-cols-3 gap-1">
+                        <div className="w-full h-3 bg-gradient-to-r from-crd-blue to-crd-purple rounded"></div>
+                        <div className="w-full h-3 bg-gradient-to-r from-crd-orange to-crd-green rounded"></div>
+                        <div className="w-full h-3 bg-gradient-to-r from-crd-green to-crd-blue rounded"></div>
+                      </div>
+                    </div>
+
+                    {/* Code Examples */}
+                    <div className="bg-crd-dark rounded-2xl p-6 border border-crd-mediumGray/30">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-10 h-10 bg-crd-blue rounded-lg flex items-center justify-center">
+                          <Code2 size={20} className="text-white" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-crd-white">Code Examples</h3>
+                      </div>
+                      <p className="text-crd-lightGray text-sm mb-4">
+                        Ready-to-use code snippets with TypeScript support and best practices.
+                      </p>
+                      <div className="space-y-1">
+                        <div className="flex space-x-1">
+                          <div className="w-6 h-2 bg-crd-blue rounded"></div>
+                          <div className="w-6 h-2 bg-crd-orange rounded"></div>
+                          <div className="w-6 h-2 bg-crd-green rounded"></div>
+                        </div>
+                        <div className="flex space-x-1">
+                          <div className="w-4 h-2 bg-crd-lightGray/40 rounded"></div>
+                          <div className="w-8 h-2 bg-crd-lightGray/40 rounded"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Key Principles */}
+                <section>
+                  <h2 className="text-2xl font-bold text-crd-white mb-8">Key Principles</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold text-crd-blue mb-2">Consistency</h3>
+                      <p className="text-crd-lightGray text-sm">
+                        Uniform patterns across all components and interactions.
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold text-crd-orange mb-2">Accessibility</h3>
+                      <p className="text-crd-lightGray text-sm">
+                        WCAG compliant with proper contrast and keyboard navigation.
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold text-crd-green mb-2">Performance</h3>
+                      <p className="text-crd-lightGray text-sm">
+                        Optimized components with minimal bundle impact.
+                      </p>
+                    </div>
+                  </div>
+                </section>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-crd-dark rounded"></div>
-                <span className="text-crd-white text-sm">Secondary (#1A1D24)</span>
+            )}
+
+            {activeSection === 'color-palette' && (
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold text-crd-white">Color Palette</h2>
+                
+                {/* Brand Colors */}
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-4">Brand Colors</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <div className="w-full h-24 bg-crd-blue rounded-lg mb-3"></div>
+                      <div className="text-sm font-medium text-crd-white">Primary Blue</div>
+                      <div className="text-xs text-crd-lightGray">#3772FF</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-full h-24 bg-crd-orange rounded-lg mb-3"></div>
+                      <div className="text-sm font-medium text-crd-white">Orange</div>
+                      <div className="text-xs text-crd-lightGray">#EA6E48</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-full h-24 bg-crd-green rounded-lg mb-3"></div>
+                      <div className="text-sm font-medium text-crd-white">Success Green</div>
+                      <div className="text-xs text-crd-lightGray">#45B26B</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-full h-24 bg-crd-purple rounded-lg mb-3"></div>
+                      <div className="text-sm font-medium text-crd-white">Purple</div>
+                      <div className="text-xs text-crd-lightGray">#9757D7</div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Neutral Colors */}
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-4">Neutral Colors</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <div className="w-full h-24 bg-crd-darkest border border-crd-mediumGray rounded-lg mb-3"></div>
+                      <div className="text-sm font-medium text-crd-white">Darkest</div>
+                      <div className="text-xs text-crd-lightGray">#121212</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-full h-24 bg-crd-dark rounded-lg mb-3"></div>
+                      <div className="text-sm font-medium text-crd-white">Dark</div>
+                      <div className="text-xs text-crd-lightGray">#1A1A1A</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-full h-24 bg-crd-darkGray rounded-lg mb-3"></div>
+                      <div className="text-sm font-medium text-crd-white">Dark Gray</div>
+                      <div className="text-xs text-crd-lightGray">#23262F</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-full h-24 bg-crd-mediumGray rounded-lg mb-3"></div>
+                      <div className="text-sm font-medium text-crd-white">Medium Gray</div>
+                      <div className="text-xs text-crd-lightGray">#353945</div>
+                    </div>
+                  </div>
+                </section>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-crd-darkGray rounded"></div>
-                <span className="text-crd-white text-sm">Tertiary (#23262F)</span>
+            )}
+
+            {activeSection === 'typography' && (
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold text-crd-white">Typography</h2>
+                
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-4">Type Scale</h3>
+                  <div className="space-y-6">
+                    <div>
+                      <div className="text-4xl font-black text-crd-white mb-2">Hero Heading</div>
+                      <div className="text-sm text-crd-lightGray">4xl / 900 weight</div>
+                    </div>
+                    <div>
+                      <div className="text-3xl font-bold text-crd-white mb-2">Main Heading</div>
+                      <div className="text-sm text-crd-lightGray">3xl / 700 weight</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-semibold text-crd-white mb-2">Section Heading</div>
+                      <div className="text-sm text-crd-lightGray">2xl / 600 weight</div>
+                    </div>
+                    <div>
+                      <div className="text-xl font-medium text-crd-white mb-2">Component Heading</div>
+                      <div className="text-sm text-crd-lightGray">xl / 500 weight</div>
+                    </div>
+                    <div>
+                      <div className="text-base font-normal text-crd-white mb-2">Body Text</div>
+                      <div className="text-sm text-crd-lightGray">base / 400 weight</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-normal text-crd-lightGray mb-2">Small Text</div>
+                      <div className="text-sm text-crd-lightGray">sm / 400 weight</div>
+                    </div>
+                  </div>
+                </section>
               </div>
-            </div>
-          </section>
+            )}
 
-          {/* Typography */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-crd-white">Typography</h2>
-            
-            <div className="space-y-3">
-              <div className="text-3xl font-black text-crd-white">Hero Text (3xl/black)</div>
-              <div className="text-2xl font-bold text-crd-white">Section Heading (2xl/bold)</div>
-              <div className="text-xl font-semibold text-crd-white">Component Heading (xl/semibold)</div>
-              <div className="text-base font-normal text-crd-white">Body Text (base/normal)</div>
-              <div className="text-sm font-medium text-crd-lightGray">Small Text (sm/medium)</div>
-              <div className="text-xs font-normal text-crd-lightGray">Caption (xs/normal)</div>
-            </div>
-          </section>
-
-          {/* Buttons */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-crd-white">Buttons</h2>
-            
-            <div className="space-y-3">
-              <button className="w-full bg-crd-lightBlue hover:bg-crd-lightBlue/90 text-crd-white text-lg font-extrabold px-8 py-4 rounded-full transition-colors duration-200">
-                Primary Button
-              </button>
-              <button className="w-full border border-crd-mediumGray text-crd-white text-lg font-extrabold px-8 py-4 rounded-full hover:bg-crd-mediumGray/50 transition-colors duration-200">
-                Secondary Button
-              </button>
-              <button className="w-full bg-crd-orange hover:bg-crd-orange/90 text-crd-white text-lg font-extrabold px-8 py-4 rounded-full transition-colors duration-200">
-                Orange Button
-              </button>
-            </div>
-          </section>
-
-          {/* Cards */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-crd-white">Cards</h2>
-            
-            <div className="space-y-4">
-              <div className="bg-crd-dark rounded-2xl p-6 hover:bg-crd-darkGray transition-all duration-300 hover:shadow-2xl hover:shadow-crd-blue/5 hover:scale-[1.02]">
-                <h3 className="text-lg font-semibold text-crd-white mb-2">Standard Card</h3>
-                <p className="text-sm text-crd-lightGray">This is a standard card component with hover effects.</p>
+            {activeSection === 'buttons' && (
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold text-crd-white">Buttons</h2>
+                
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-4">Button Variants</h3>
+                  <div className="space-y-4 max-w-md">
+                    <button className="w-full bg-crd-blue hover:bg-crd-blue/90 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+                      Primary Button
+                    </button>
+                    <button className="w-full border border-crd-mediumGray text-crd-white font-semibold px-6 py-3 rounded-lg hover:bg-crd-mediumGray/20 transition-colors">
+                      Secondary Button
+                    </button>
+                    <button className="w-full bg-crd-orange hover:bg-crd-orange/90 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+                      Action Button
+                    </button>
+                    <button className="w-full bg-transparent text-crd-lightGray font-semibold px-6 py-3 rounded-lg hover:bg-crd-mediumGray/20 hover:text-white transition-colors">
+                      Ghost Button
+                    </button>
+                  </div>
+                </section>
               </div>
-              
-              <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-                <h3 className="text-lg font-semibold text-crd-white mb-2">Glass Card</h3>
-                <p className="text-sm text-crd-lightGray">This is a glass morphism card with blur effects.</p>
+            )}
+
+            {activeSection === 'cards' && (
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold text-crd-white">Cards</h2>
+                
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-4">Card Variants</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-crd-dark rounded-2xl p-6 border border-crd-mediumGray/30">
+                      <h4 className="text-lg font-semibold text-crd-white mb-2">Standard Card</h4>
+                      <p className="text-crd-lightGray">Basic card with dark background and subtle border.</p>
+                    </div>
+                    <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6">
+                      <h4 className="text-lg font-semibold text-crd-white mb-2">Glass Card</h4>
+                      <p className="text-crd-lightGray">Glass morphism effect with blur and transparency.</p>
+                    </div>
+                    <div className="bg-crd-dark rounded-2xl p-6 border border-crd-mediumGray/30 hover:border-crd-blue/50 transition-all cursor-pointer">
+                      <h4 className="text-lg font-semibold text-crd-white mb-2">Interactive Card</h4>
+                      <p className="text-crd-lightGray">Hover effects and interactive states.</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-crd-blue/20 to-crd-purple/20 rounded-2xl p-6 border border-crd-blue/30">
+                      <h4 className="text-lg font-semibold text-crd-white mb-2">Gradient Card</h4>
+                      <p className="text-crd-lightGray">Subtle gradient backgrounds for emphasis.</p>
+                    </div>
+                  </div>
+                </section>
               </div>
-            </div>
-          </section>
+            )}
 
-          {/* Badges */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-crd-white">Badges</h2>
-            
-            <div className="flex flex-wrap gap-2">
-              <span className="bg-gradient-to-r from-crd-green to-crd-green text-white text-xs font-bold uppercase px-3 py-2 rounded-lg">
-                Success
-              </span>
-              <span className="bg-crd-orange text-white text-xs font-bold uppercase px-3 py-2 rounded-lg">
-                Warning
-              </span>
-              <span className="bg-crd-blue text-white text-xs font-bold uppercase px-3 py-2 rounded-lg">
-                Info
-              </span>
-              <span className="bg-crd-purple text-white text-xs font-bold uppercase px-3 py-2 rounded-lg">
-                Premium
-              </span>
-            </div>
-          </section>
-
-          {/* Spacing Examples */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-crd-white">Spacing</h2>
-            
-            <div className="space-y-2">
-              <div className="bg-crd-mediumGray/20 p-2 rounded text-xs text-crd-lightGray">2 (8px padding)</div>
-              <div className="bg-crd-mediumGray/20 p-4 rounded text-xs text-crd-lightGray">4 (16px padding)</div>
-              <div className="bg-crd-mediumGray/20 p-6 rounded text-xs text-crd-lightGray">6 (24px padding)</div>
-              <div className="bg-crd-mediumGray/20 p-8 rounded text-xs text-crd-lightGray">8 (32px padding)</div>
-            </div>
-          </section>
-
-          {/* Border Radius */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-crd-white">Border Radius</h2>
-            
-            <div className="space-y-3">
-              <div className="bg-crd-dark p-4 rounded text-sm text-crd-white">Default (4px)</div>
-              <div className="bg-crd-dark p-4 rounded-lg text-sm text-crd-white">Large (8px)</div>
-              <div className="bg-crd-dark p-4 rounded-xl text-sm text-crd-white">XL (12px)</div>
-              <div className="bg-crd-dark p-4 rounded-2xl text-sm text-crd-white">2XL (16px)</div>
-              <div className="bg-crd-dark p-4 rounded-full text-sm text-crd-white text-center">Full (pill)</div>
-            </div>
-          </section>
-        </div>
+            {activeSection === 'backgrounds' && (
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold text-crd-white">Backgrounds</h2>
+                
+                <section>
+                  <h3 className="text-xl font-semibold text-crd-white mb-4">Background Patterns</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="h-32 bg-crd-darkest rounded-lg border border-crd-mediumGray flex items-center justify-center">
+                      <span className="text-crd-lightGray">Solid Dark</span>
+                    </div>
+                    <div className="h-32 bg-gradient-to-br from-crd-dark to-crd-darkGray rounded-lg flex items-center justify-center">
+                      <span className="text-crd-lightGray">Gradient</span>
+                    </div>
+                    <div className="h-32 backdrop-blur-md bg-white/5 border border-white/10 rounded-lg flex items-center justify-center">
+                      <span className="text-crd-lightGray">Glass Effect</span>
+                    </div>
+                    <div className="h-32 bg-gradient-to-br from-crd-blue/10 to-crd-purple/10 rounded-lg border border-crd-blue/20 flex items-center justify-center">
+                      <span className="text-crd-lightGray">Accent Gradient</span>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+          </div>
+        </main>
       </div>
     </div>
   );
