@@ -59,8 +59,12 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
       {/* Expanded Panel */}
       {!isCollapsed && (
         <div className={`w-full h-full bg-crd-darker/60 backdrop-blur-md border border-crd-mediumGray/30 shadow-2xl flex flex-col ${
-          side === 'left' ? 'border-r-2 border-r-crd-blue/30' : 'border-l-2 border-l-crd-blue/30'
-        }`}>
+          side === 'left' ? 'border-r-2' : 'border-l-2'
+        }`}
+        style={{
+          ...style,
+          [side === 'left' ? 'borderRightColor' : 'borderLeftColor']: 'hsl(var(--theme-accent) / 0.3)'
+        }}>
           {/* Toggle Button Header */}
           <div className="flex-shrink-0 h-12 flex items-center justify-between px-4 border-b border-crd-mediumGray/30">
             <div className="text-crd-white text-sm font-medium">
