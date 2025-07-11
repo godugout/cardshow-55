@@ -210,37 +210,24 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
           variations: []
         },
         {
-          id: 'crdmkr-text',
-          type: 'text',
-          name: 'CRDMKR Branding',
-          properties: {
-            position: { x: 150, y: 320 },
-            size: { width: 100, height: 20 },
-            color: '#FFFFFF',
-            content: 'CRDMKR'
-          },
-          behavior: { responsive: true },
-          variations: []
-        },
-        {
-          id: 'catalog-corner',
+          id: 'catalog-bottom',
           type: 'text',
           name: 'Catalog Number',
           properties: {
-            position: { x: 4, y: 4 },
-            size: { width: 100, height: 16 },
+            position: { x: 50, y: 580 },
+            size: { width: 150, height: 16 },
             color: '#FFFFFF'
           },
           behavior: { responsive: true },
           variations: []
         },
         {
-          id: 'series-corner',
+          id: 'series-bottom',
           type: 'text',
           name: 'Series Number',
           properties: {
-            position: { x: 300, y: 4 },
-            size: { width: 96, height: 16 },
+            position: { x: 200, y: 580 },
+            size: { width: 150, height: 16 },
             color: '#FFFFFF'
           },
           behavior: { responsive: true },
@@ -248,7 +235,7 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
         }
       ]
     },
-    included_elements: ['background-gradient', 'crd-logo', 'crdmkr-text', 'catalog-corner', 'series-corner'],
+    included_elements: ['background-gradient', 'crd-logo', 'catalog-bottom', 'series-bottom'],
     is_public: true,
     price_cents: 0,
     rating_average: 5.0,

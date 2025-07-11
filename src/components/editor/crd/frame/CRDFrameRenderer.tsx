@@ -57,56 +57,51 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
     >
       {isFullBleedBack ? (
         // Full Bleed CRD Back Layout
-        <div 
-          className="absolute inset-0 rounded-lg shadow-lg overflow-hidden"
-          style={{
-            background: `linear-gradient(135deg, ${colorTheme.primary}, ${colorTheme.secondary}, ${colorTheme.accent})`
-          }}
-        >
-          {/* Background Pattern */}
+        <>
           <div 
-            className="absolute inset-0"
+            className="absolute inset-0 rounded-lg shadow-lg overflow-hidden"
             style={{
-              background: `radial-gradient(circle at 50% 50%, ${colorTheme.primary}40 0%, transparent 50%)`
+              background: `linear-gradient(135deg, ${colorTheme.primary}, ${colorTheme.secondary}, ${colorTheme.accent})`
             }}
-          />
-          
-          {/* Catalog Number - Top Left */}
-          <div className="absolute top-2 left-2 text-white/90 text-xs font-mono">
-            {crdData.catalogNumber}
-          </div>
-          
-          {/* Series Number - Top Right */}
-          <div className="absolute top-2 right-2 text-white/90 text-xs font-mono">
-            {crdData.seriesNumber}
-          </div>
-          
-          {/* Centered CRD Logo */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <img 
-              src="/crd-logo-gradient.png" 
-              alt="CRD Logo"
-              className="w-24 h-24 object-contain drop-shadow-lg"
+          >
+            {/* Background Pattern */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `radial-gradient(circle at 50% 50%, ${colorTheme.primary}40 0%, transparent 50%)`
+              }}
             />
-            <div className="mt-4 text-white font-bold text-lg tracking-wider drop-shadow-md">
-              CRDMKR
+            
+            {/* Centered CRD Logo */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img 
+                src="/crd-logo-gradient.png" 
+                alt="CRD Logo"
+                className="w-32 h-32 object-contain drop-shadow-lg"
+              />
             </div>
+            
+            {/* Subtle corner accents */}
+            <div 
+              className="absolute top-0 right-0 w-16 h-16 opacity-30"
+              style={{
+                background: `linear-gradient(225deg, ${colorTheme.accent} 0%, transparent 50%)`
+              }}
+            />
+            <div 
+              className="absolute bottom-0 left-0 w-16 h-16 opacity-30"
+              style={{
+                background: `linear-gradient(45deg, ${colorTheme.accent} 0%, transparent 50%)`
+              }}
+            />
           </div>
           
-          {/* Subtle corner accents */}
-          <div 
-            className="absolute top-0 right-0 w-16 h-16 opacity-30"
-            style={{
-              background: `linear-gradient(225deg, ${colorTheme.accent} 0%, transparent 50%)`
-            }}
-          />
-          <div 
-            className="absolute bottom-0 left-0 w-16 h-16 opacity-30"
-            style={{
-              background: `linear-gradient(45deg, ${colorTheme.accent} 0%, transparent 50%)`
-            }}
-          />
-        </div>
+          {/* Catalog and Series Numbers Below Card */}
+          <div className="absolute top-full mt-2 left-0 right-0 flex justify-between text-xs font-mono text-white/90">
+            <span>{crdData.catalogNumber}</span>
+            <span>{crdData.seriesNumber}</span>
+          </div>
+        </>
       ) : (
         // Standard Frame Layout
         <div 
