@@ -318,11 +318,9 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
 
       {/* Bottom Info Bar */}
       <CRDBottomInfoBar
-        cardTitle={cardTitle}
         selectedTemplate={template}
         colorPalette={colorPalette}
         effects={effects}
-        previewMode={previewMode}
       />
     </div>;
 };
