@@ -106,29 +106,29 @@ export const SampleCardGenerator: React.FC<SampleCardGeneratorProps> = ({ select
 
   return (
     <div className="space-y-6">
-      <Card className="bg-crd-base border-crd-border">
+      <Card className="bg-[#1A1D24] border-[#353945] rounded-2xl hover:bg-[#23262F] transition-all duration-300">
         <CardHeader>
-          <CardTitle className="text-crd-bright flex items-center gap-2">
+          <CardTitle className="text-[#FCFCFD] flex items-center gap-2">
             <Wand2 className="h-5 w-5" />
             Sample Card Generator
           </CardTitle>
-          <CardDescription className="text-crd-light">
+          <CardDescription className="text-[#E6E8EC]">
             Generate sample cards using selected DNA segments. Cards inherit properties from applied DNA.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Card Template Selection */}
           <div className="space-y-3">
-            <Label className="text-crd-bright">Card Template</Label>
+            <Label className="text-[#FCFCFD]">Card Template</Label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {SAMPLE_CARD_TEMPLATES.map((template) => (
                 <button
                   key={template.id}
                   onClick={() => setSelectedTemplate(template)}
-                  className={`p-3 rounded-lg border text-left transition-colors ${
+                  className={`p-3 rounded-lg border text-left transition-colors duration-200 ${
                     selectedTemplate.id === template.id
-                      ? 'border-crd-primary bg-crd-primary/10 text-crd-bright'
-                      : 'border-crd-border hover:border-crd-mediumGray text-crd-light'
+                      ? 'border-[#3772FF] bg-[#3772FF]/10 text-[#FCFCFD]'
+                      : 'border-[#353945] hover:border-[#777E90] text-[#E6E8EC] hover:bg-[#23262F]'
                   }`}
                 >
                   <div className="font-medium">{template.name}</div>
@@ -141,23 +141,23 @@ export const SampleCardGenerator: React.FC<SampleCardGeneratorProps> = ({ select
           {/* Card Details Input */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="card-title" className="text-crd-bright">Card Title</Label>
+              <Label htmlFor="card-title" className="text-[#FCFCFD]">Card Title</Label>
               <Input
                 id="card-title"
                 value={cardTitle}
                 onChange={(e) => setCardTitle(e.target.value)}
                 placeholder="Enter card title..."
-                className="bg-crd-darkest border-crd-border text-crd-bright"
+                className="bg-[#141416] border-[#353945] text-[#FCFCFD] placeholder:text-[#777E90] focus:border-[#3772FF]"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="card-description" className="text-crd-bright">Description</Label>
+              <Label htmlFor="card-description" className="text-[#FCFCFD]">Description</Label>
               <Input
                 id="card-description"
                 value={cardDescription}
                 onChange={(e) => setCardDescription(e.target.value)}
                 placeholder="Enter card description..."
-                className="bg-crd-darkest border-crd-border text-crd-bright"
+                className="bg-[#141416] border-[#353945] text-[#FCFCFD] placeholder:text-[#777E90] focus:border-[#3772FF]"
               />
             </div>
           </div>
@@ -165,11 +165,11 @@ export const SampleCardGenerator: React.FC<SampleCardGeneratorProps> = ({ select
           {/* Selected DNA Preview */}
           {selectedDNA.length > 0 && (
             <div className="space-y-3">
-              <Label className="text-crd-bright">Applied DNA Segments ({selectedDNA.length})</Label>
+              <Label className="text-[#FCFCFD]">Applied DNA Segments ({selectedDNA.length})</Label>
               <div className="flex flex-wrap gap-2">
                 {selectedDNA.map((dna) => (
-                  <Badge key={dna.id} variant="secondary" className="text-xs">
-                    {dna.displayName} • {dna.rarity} • ⚡{dna.powerLevel}
+                  <Badge key={dna.fileName} variant="secondary" className="text-xs bg-[#F97316]/20 text-[#F97316] border-[#F97316]/30">
+                    {dna.teamName || dna.styleTag} • {dna.rarity} • ⚡{dna.powerLevel}
                   </Badge>
                 ))}
               </div>
@@ -180,7 +180,7 @@ export const SampleCardGenerator: React.FC<SampleCardGeneratorProps> = ({ select
           <Button
             onClick={generateSampleCard}
             disabled={selectedDNA.length === 0}
-            className="w-full"
+            className="w-full bg-[#2D9CDB] hover:bg-[#2D9CDB]/90 text-[#FCFCFD] text-lg font-extrabold px-8 py-4 rounded-full transition-colors duration-200"
           >
             <Sparkles className="h-4 w-4 mr-2" />
             Generate Sample Card
@@ -190,15 +190,15 @@ export const SampleCardGenerator: React.FC<SampleCardGeneratorProps> = ({ select
 
       {/* Generated Cards Display */}
       {generatedCards.length > 0 && (
-        <Card className="bg-crd-base border-crd-border">
+        <Card className="bg-[#1A1D24] border-[#353945] rounded-2xl hover:bg-[#23262F] transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-crd-bright">Generated Cards ({generatedCards.length})</CardTitle>
-              <CardDescription className="text-crd-light">
+              <CardTitle className="text-[#FCFCFD]">Generated Cards ({generatedCards.length})</CardTitle>
+              <CardDescription className="text-[#E6E8EC]">
                 Cards created using your DNA selections
               </CardDescription>
             </div>
-            <Button variant="outline" size="sm" onClick={clearGeneratedCards}>
+            <Button variant="outline" size="sm" onClick={clearGeneratedCards} className="border-[#353945] text-[#FCFCFD] hover:bg-[#23262F]">
               Clear All
             </Button>
           </CardHeader>
@@ -207,72 +207,72 @@ export const SampleCardGenerator: React.FC<SampleCardGeneratorProps> = ({ select
               {generatedCards.map((card) => (
                 <div
                   key={card.id}
-                  className="bg-crd-darkest border border-crd-border rounded-lg p-4 space-y-4"
+                  className="bg-[#141416] border border-[#353945] rounded-xl p-4 space-y-4 hover:bg-[#1A1D24] hover:border-[#777E90] transition-all duration-300"
                 >
                   {/* Card Header */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-crd-bright truncate">{card.title}</h3>
+                      <h3 className="font-semibold text-[#FCFCFD] truncate">{card.title}</h3>
                       <Badge className={`text-xs ${
-                        card.rarity === 'legendary' ? 'bg-yellow-500/20 text-yellow-300' :
-                        card.rarity === 'epic' ? 'bg-purple-500/20 text-purple-300' :
-                        card.rarity === 'rare' ? 'bg-blue-500/20 text-blue-300' :
-                        card.rarity === 'uncommon' ? 'bg-green-500/20 text-green-300' :
-                        'bg-gray-500/20 text-gray-300'
+                        card.rarity === 'Legendary' ? 'bg-[#F97316]/20 text-[#F97316]' :
+                        card.rarity === 'Epic' ? 'bg-[#9757D7]/20 text-[#9757D7]' :
+                        card.rarity === 'Rare' ? 'bg-[#2D9CDB]/20 text-[#2D9CDB]' :
+                        card.rarity === 'Uncommon' ? 'bg-[#45B26B]/20 text-[#45B26B]' :
+                        'bg-[#777E90]/20 text-[#777E90]'
                       }`}>
                         {card.rarity}
                       </Badge>
                     </div>
-                    <p className="text-sm text-crd-light">{card.description}</p>
+                    <p className="text-sm text-[#E6E8EC]">{card.description}</p>
                   </div>
 
                   {/* Power Level */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-crd-light">Power Level</span>
-                      <span className="text-crd-bright font-medium">{card.powerLevel}/100</span>
+                      <span className="text-[#E6E8EC]">Power Level</span>
+                      <span className="text-[#FCFCFD] font-medium">{card.powerLevel}/100</span>
                     </div>
                     <Progress value={card.powerLevel} className="h-2" />
                   </div>
 
                   {/* Attributes */}
                   <div className="space-y-2">
-                    <div className="text-sm text-crd-light">Attributes</div>
+                    <div className="text-sm text-[#E6E8EC]">Attributes</div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="flex items-center gap-1">
-                        <Zap className="h-3 w-3 text-yellow-400" />
-                        <span className="text-crd-light">Speed:</span>
-                        <span className="text-crd-bright">{card.attributes.speed}</span>
+                        <Zap className="h-3 w-3 text-[#F97316]" />
+                        <span className="text-[#E6E8EC]">Speed:</span>
+                        <span className="text-[#FCFCFD]">{card.attributes.speed}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Trophy className="h-3 w-3 text-red-400" />
-                        <span className="text-crd-light">Power:</span>
-                        <span className="text-crd-bright">{card.attributes.power}</span>
+                        <Trophy className="h-3 w-3 text-[#EF466F]" />
+                        <span className="text-[#E6E8EC]">Power:</span>
+                        <span className="text-[#FCFCFD]">{card.attributes.power}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-blue-400">🛡️</span>
-                        <span className="text-crd-light">Defense:</span>
-                        <span className="text-crd-bright">{card.attributes.defense}</span>
+                        <span className="text-[#2D9CDB]">🛡️</span>
+                        <span className="text-[#E6E8EC]">Defense:</span>
+                        <span className="text-[#FCFCFD]">{card.attributes.defense}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Sparkles className="h-3 w-3 text-purple-400" />
-                        <span className="text-crd-light">Special:</span>
-                        <span className="text-crd-bright">{card.attributes.special}</span>
+                        <Sparkles className="h-3 w-3 text-[#9757D7]" />
+                        <span className="text-[#E6E8EC]">Special:</span>
+                        <span className="text-[#FCFCFD]">{card.attributes.special}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Applied DNA */}
                   <div className="space-y-2">
-                    <div className="text-sm text-crd-light">Applied DNA ({card.appliedDNA.length})</div>
+                    <div className="text-sm text-[#E6E8EC]">Applied DNA ({card.appliedDNA.length})</div>
                     <div className="flex flex-wrap gap-1">
                       {card.appliedDNA.slice(0, 3).map((dna) => (
-                        <Badge key={dna.id} variant="outline" className="text-xs">
+                        <Badge key={dna.fileName} variant="outline" className="text-xs border-[#353945] text-[#777E90]">
                           {dna.group}
                         </Badge>
                       ))}
                       {card.appliedDNA.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs border-[#353945] text-[#777E90]">
                           +{card.appliedDNA.length - 3} more
                         </Badge>
                       )}
@@ -281,8 +281,8 @@ export const SampleCardGenerator: React.FC<SampleCardGeneratorProps> = ({ select
 
                   {/* Collectibility Score */}
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-crd-light">Collectibility</span>
-                    <span className="text-crd-primary font-medium">{card.collectibilityScore}/100</span>
+                    <span className="text-[#E6E8EC]">Collectibility</span>
+                    <span className="text-[#3772FF] font-medium">{card.collectibilityScore}/100</span>
                   </div>
                 </div>
               ))}

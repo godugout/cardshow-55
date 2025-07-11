@@ -27,25 +27,25 @@ const DNATestPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-crd-darkest pt-16">
+    <div className="min-h-screen bg-[#141416] pt-16">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold text-crd-bright mb-4">
+            <h1 className="text-4xl font-bold text-[#FCFCFD] mb-4">
               CRD:DNA Testing Laboratory
             </h1>
-            <p className="text-crd-light text-lg">
+            <p className="text-[#E6E8EC] text-lg">
               Experiment with DNA segments, blending, gaming attributes, and card generation
             </p>
             {selectedDNA.length > 0 && (
               <div className="mt-4 flex items-center justify-center gap-4">
-                <span className="text-crd-bright font-medium">
+                <span className="text-[#FCFCFD] font-medium">
                   Selected DNA: {selectedDNA.length}
                 </span>
                 <button
                   onClick={clearSelection}
-                  className="text-crd-primary hover:text-crd-primaryGlow text-sm underline"
+                  className="text-[#3772FF] hover:text-[#2D9CDB] text-sm underline transition-colors duration-200"
                 >
                   Clear Selection
                 </button>
@@ -64,10 +64,10 @@ const DNATestPage: React.FC = () => {
             </TabsList>
 
             <TabsContent value="browser" className="space-y-6">
-              <Card className="bg-crd-base border-crd-border">
+              <Card className="bg-[#1A1D24] border-[#353945] rounded-2xl hover:bg-[#23262F] transition-all duration-300">
                 <CardHeader>
-                  <CardTitle className="text-crd-bright">DNA Segment Browser</CardTitle>
-                  <CardDescription className="text-crd-light">
+                  <CardTitle className="text-[#FCFCFD]">DNA Segment Browser</CardTitle>
+                  <CardDescription className="text-[#E6E8EC]">
                     Browse and select DNA segments to experiment with. Click entries to add them to your selection.
                   </CardDescription>
                 </CardHeader>
