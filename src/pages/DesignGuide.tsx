@@ -3,9 +3,9 @@ import { ThemedPage } from '@/components/ui/design-system/ThemedLayout';
 
 const DesignGuide = () => {
   return (
-    <div className="min-h-screen bg-crd-darkest">
-      {/* Top Navigation Header */}
-      <header className="bg-crd-dark border-b border-crd-mediumGray">
+    <div className="min-h-screen bg-crd-darkest pt-16">
+      {/* Top Navigation Header - accounts for fixed navbar */}
+      <header className="bg-crd-dark border-b border-crd-mediumGray sticky top-16 z-40">
         <div className="max-w-sm mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-crd-white text-center">
             CRD Design Guide
