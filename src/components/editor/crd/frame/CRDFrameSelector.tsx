@@ -142,30 +142,33 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                     <Eye className="h-3 w-3 text-white" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 p-4 bg-crd-darker border-crd-mediumGray/30">
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-crd-white">{frame.name}</h4>
+                <PopoverContent className="w-auto p-4 bg-gradient-to-b from-crd-darker/95 to-crd-darker/90 backdrop-blur-xl border border-crd-mediumGray/40 shadow-2xl" side="left" align="center">
+                  <div className="absolute inset-0 rounded-lg shadow-[inset_0_0_25px_rgba(55,114,255,0.12)] pointer-events-none"></div>
+                  <div className="relative space-y-3">
+                    <h4 className="font-semibold text-crd-white text-center">{frame.name}</h4>
                     <div className="flex justify-center">
-                      <CRDFrameRenderer 
-                        frame={frame}
-                        content={{
-                          catalogNumber: 'PRE-001',
-                          seriesNumber: '#001',
-                          available: '1:1',
-                          crdName: frame.name,
-                          creator: 'Demo',
-                          rarity: 'rare'
-                        }}
-                        colorTheme={{
-                          primary: 'hsl(220, 100%, 50%)',
-                          secondary: 'hsl(220, 100%, 70%)',
-                          accent: 'hsl(45, 100%, 60%)',
-                          neutral: 'hsl(220, 10%, 80%)'
-                        }}
-                        className="max-w-[200px]" 
-                      />
+                      <div className="w-60 h-80 flex items-center justify-center bg-crd-darkest/50 rounded-lg border border-crd-mediumGray/20">
+                        <CRDFrameRenderer 
+                          frame={frame}
+                          content={{
+                            catalogNumber: 'PRE-001',
+                            seriesNumber: '#001',
+                            available: '1:1',
+                            crdName: frame.name,
+                            creator: 'Demo',
+                            rarity: 'rare'
+                          }}
+                          colorTheme={{
+                            primary: 'hsl(220, 100%, 50%)',
+                            secondary: 'hsl(220, 100%, 70%)',
+                            accent: 'hsl(45, 100%, 60%)',
+                            neutral: 'hsl(220, 10%, 80%)'
+                          }}
+                          className="w-full h-full" 
+                        />
+                      </div>
                     </div>
-                    <p className="text-sm text-crd-lightGray">{frame.description || 'Professional frame template'}</p>
+                    <p className="text-sm text-crd-lightGray text-center max-w-60">{frame.description || 'Professional frame template'}</p>
                   </div>
                 </PopoverContent>
               </Popover>
