@@ -40,10 +40,10 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onPanToggle]);
-  return <div className="border-b border-crd-mediumGray/20 bg-crd-darker/50 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-12">
-          {/* Left: View Controls */}
+  return <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-30 bg-crd-darker/80 backdrop-blur-sm border border-crd-mediumGray/30 rounded-lg shadow-lg">
+      <div className="px-4 py-2">
+        <div className="flex items-center gap-6 h-10">
+          {/* View Controls */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <span className="text-xs text-crd-lightGray font-medium">View:</span>
@@ -89,7 +89,9 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
             </div>
           </div>
 
-          {/* Right: Interaction Controls */}
+          <div className="w-px h-6 bg-crd-mediumGray/30" />
+
+          {/* Interaction Controls */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-crd-lightGray font-medium">Mode:</span>
             <div className="flex bg-crd-mediumGray/10 rounded-lg p-0.5">

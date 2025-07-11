@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { DustyAvatar } from './DustyAvatar';
-import { DustyMessageBubble } from './DustyMessageBubble';
-import { DustyActionButtons } from './DustyActionButtons';
-import { DustyProgressTracker } from './DustyProgressTracker';
-import { useActivityMonitor } from './hooks/useActivityMonitor';
-import { useDustyConversation } from './hooks/useDustyConversation';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { MessageCircle, Settings } from 'lucide-react';
+import { FloatingChatWindow } from './FloatingChatWindow';
 
 interface DustyAssistantProps {
   cardTitle: string;
@@ -24,73 +20,60 @@ export const DustyAssistant: React.FC<DustyAssistantProps> = ({
   effects,
   previewMode
 }) => {
-  const [isMinimized, setIsMinimized] = useState(false);
-  
-  // Monitor user activity and card state
-  const activityState = useActivityMonitor({
-    cardTitle,
-    playerImage,
-    selectedTemplate,
-    colorPalette,
-    effects,
-    previewMode
-  });
-
-  // Generate contextual conversation
-  const { currentMessage, suggestedActions, progress } = useDustyConversation(activityState);
-
-  if (isMinimized) {
-    return (
-      <div className="h-20 bg-crd-darker/50 border-t border-crd-mediumGray/20 flex items-center justify-between px-6">
-        <div className="flex items-center gap-3">
-          <DustyAvatar size="small" expression="neutral" />
-          <span className="text-crd-lightGray text-sm">Dusty is here to help</span>
-        </div>
-        <button
-          onClick={() => setIsMinimized(false)}
-          className="text-xs text-crd-blue hover:text-crd-blue/80 transition-colors"
-        >
-          Expand Assistant
-        </button>
-      </div>
-    );
-  }
+  const [showFloatingChat, setShowFloatingChat] = useState(false);
 
   return (
-    <Card className="bg-crd-darker/60 border-crd-mediumGray/20 backdrop-blur-sm">
-      {/* Compact Header */}
-      <div className="px-4 py-3 border-b border-crd-mediumGray/20 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <DustyAvatar size="small" expression="friendly" />
-          <div>
-            <h3 className="text-crd-white text-sm font-medium">Dusty Assistant</h3>
-            <p className="text-crd-lightGray text-xs">Your CRDMKR Guide</p>
+    <div className="space-y-4">
+      {/* Card Details & Specs */}
+      <div className="space-y-3">
+        <div className="bg-crd-darker/30 rounded-lg p-3">
+          <h4 className="text-crd-white text-sm font-medium mb-2">Card Details</h4>
+          <div className="space-y-1 text-xs text-crd-lightGray">
+            <div>Title: {cardTitle || 'Untitled Card'}</div>
+            <div>Template: {selectedTemplate || 'No template selected'}</div>
+            <div>Colors: {colorPalette || 'Default palette'}</div>
+            <div>Effects: {effects.length > 0 ? effects.join(', ') : 'None'}</div>
+            <div>Mode: {previewMode}</div>
           </div>
         </div>
-        <button
-          onClick={() => setIsMinimized(true)}
-          className="text-xs text-crd-lightGray hover:text-crd-white transition-colors"
+
+        <div className="bg-crd-darker/30 rounded-lg p-3">
+          <h4 className="text-crd-white text-sm font-medium mb-2">Specifications</h4>
+          <div className="space-y-1 text-xs text-crd-lightGray">
+            <div>Dimensions: 400 × 560px</div>
+            <div>DPI: 300 (Print Ready)</div>
+            <div>Format: PNG/JPG Export</div>
+            <div>Quality: Professional</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Controls */}
+      <div className="space-y-2">
+        <Button
+          onClick={() => setShowFloatingChat(true)}
+          className="w-full bg-crd-blue hover:bg-crd-blue/80 text-white text-sm"
         >
-          Minimize
-        </button>
+          <MessageCircle className="w-4 h-4 mr-2" />
+          Chat with Dusty
+        </Button>
+        
+        <Button
+          variant="outline"
+          className="w-full bg-transparent border-crd-mediumGray/30 text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-crd-white text-sm"
+        >
+          <Settings className="w-4 h-4 mr-2" />
+          Assistant Settings
+        </Button>
       </div>
 
-      {/* Compact Content */}
-      <div className="p-4 space-y-3">
-        {/* Progress Tracker */}
-        <DustyProgressTracker progress={progress} />
-
-        {/* Message Area - Horizontal Layout */}
-        <div className="flex items-start gap-3">
-          <DustyAvatar size="medium" expression={currentMessage.expression} />
-          <div className="flex-1 space-y-2">
-            <DustyMessageBubble message={currentMessage} />
-            {suggestedActions.length > 0 && (
-              <DustyActionButtons actions={suggestedActions} />
-            )}
-          </div>
-        </div>
-      </div>
-    </Card>
+      {/* Floating Chat Window */}
+      <FloatingChatWindow
+        isOpen={showFloatingChat}
+        onClose={() => setShowFloatingChat(false)}
+        cardTitle={cardTitle}
+        selectedTemplate={selectedTemplate}
+      />
+    </div>
   );
 };

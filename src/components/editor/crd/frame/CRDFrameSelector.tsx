@@ -83,23 +83,39 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
           <Input placeholder="Search frames..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10 bg-crd-darker border-crd-mediumGray/30 text-crd-white placeholder:text-crd-lightGray focus:border-crd-blue" />
         </div>
         
-        {/* Category filters */}
+        {/* Category filters - Emoji Only */}
         <div className="flex flex-wrap gap-2 justify-center">
-          {categories.map(category => (
-            <Button 
-              key={category} 
-              variant={selectedCategory === category ? "default" : "outline"} 
-              size="sm" 
-              onClick={() => setSelectedCategory(category)} 
-              className={`capitalize ${
-                selectedCategory === category 
-                  ? 'bg-crd-blue hover:bg-crd-blue/80 text-white border-crd-blue' 
-                  : 'bg-transparent border-crd-mediumGray/30 text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-crd-white'
-              }`}
-            >
-              {category}
-            </Button>
-          ))}
+          {categories.map(category => {
+            const getCategoryEmoji = (cat: string) => {
+              switch (cat.toLowerCase()) {
+                case 'all': return '📋';
+                case 'sports': return '⚽🏀⚾';
+                case 'fantasy': return '🐉✨🗡️';
+                case 'vintage': return '📜🕰️🎩';
+                case 'modern': return '🔷💫⚡';
+                case 'nature': return '🌿🌊🏔️';
+                case 'gaming': return '🎮🕹️👾';
+                default: return '🎨';
+              }
+            };
+
+            return (
+              <Button 
+                key={category} 
+                variant={selectedCategory === category ? "default" : "outline"} 
+                size="sm" 
+                onClick={() => setSelectedCategory(category)} 
+                className={`${
+                  selectedCategory === category 
+                    ? 'bg-crd-blue hover:bg-crd-blue/80 text-white border-crd-blue' 
+                    : 'bg-transparent border-crd-mediumGray/30 text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-crd-white'
+                }`}
+                title={category.charAt(0).toUpperCase() + category.slice(1)}
+              >
+                {getCategoryEmoji(category)}
+              </Button>
+            );
+          })}
         </div>
       </div>
 

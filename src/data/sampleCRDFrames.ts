@@ -2,11 +2,11 @@ import type { CRDFrame } from '@/types/crd-frame';
 
 export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
   {
-    id: 'classic-baseball-1',
-    name: 'Classic Baseball Card',
+    id: 'classic-sports-1',
+    name: 'Classic Sports Frame',
     category: 'sports',
     version: '1.0.0',
-    description: 'Traditional baseball card layout with full-surface image',
+    description: 'Professional sports card frame with CRD elements and 4-color theme support',
     frame_config: {
       dimensions: {
         width: 400,
@@ -16,13 +16,13 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
         {
           id: 'main-photo',
           type: 'photo',
-          name: 'Card Image',
-          bounds: { x: 0, y: 0, width: 400, height: 560 },
+          name: 'Main Card Image',
+          bounds: { x: 8, y: 28, width: 384, height: 468 },
           shape: 'rectangle',
           constraints: {
-            aspectRatio: 400/560, // 2.5:3.5 ratio
+            aspectRatio: 384/468,
             position: 'fixed',
-            scalable: false
+            scalable: true
           },
           styling: {
             border: { width: 0, style: 'solid', color: 'transparent' },
@@ -30,94 +30,143 @@ export const SAMPLE_CRD_FRAMES: CRDFrame[] = [
           },
           cropSettings: {
             enabled: true,
-            aspectRatio: 400/560,
+            aspectRatio: 384/468,
             allowRotation: true,
-            allowBackgroundRemoval: false
+            allowBackgroundRemoval: true
           }
         }
       ],
       elements: [
         {
-          id: 'card-border',
+          id: 'primary-frame',
           type: 'shape',
-          name: 'Card Border',
+          name: 'Primary Frame Border',
           properties: {
             position: { x: 0, y: 0 },
             size: { width: 400, height: 560 },
-            color: '#333333'
+            color: '#3B82F6'
+          },
+          behavior: { responsive: true },
+          variations: []
+        },
+        {
+          id: 'catalog-header',
+          type: 'text',
+          name: 'CRD Catalog Header',
+          properties: {
+            position: { x: 4, y: 4 },
+            size: { width: 392, height: 20 },
+            color: '#FFFFFF'
+          },
+          behavior: { responsive: true },
+          variations: []
+        },
+        {
+          id: 'card-footer',
+          type: 'text',
+          name: 'Card Footer Text',
+          properties: {
+            position: { x: 4, y: 536 },
+            size: { width: 392, height: 20 },
+            color: '#FFFFFF'
           },
           behavior: { responsive: true },
           variations: []
         }
       ]
     },
-    included_elements: [],
+    included_elements: ['primary-frame', 'catalog-header', 'card-footer'],
     is_public: true,
     price_cents: 0,
-    rating_average: 4.5,
-    rating_count: 127,
-    download_count: 1543,
-    tags: ['sports', 'baseball', 'classic'],
+    rating_average: 4.7,
+    rating_count: 234,
+    download_count: 2156,
+    tags: ['sports', 'professional', 'crd-compliant'],
     creator_id: undefined,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
   {
-    id: 'modern-soccer-1',
-    name: 'Modern Soccer Card',
-    category: 'sports',
+    id: 'fantasy-mystical-1',
+    name: 'Mystical Fantasy Frame',
+    category: 'fantasy',
     version: '1.0.0',
-    description: 'Dynamic soccer card with full-surface image and modern styling',
+    description: 'Fantasy-themed CRD frame with magical elements and 4-color theme support',
     frame_config: {
       dimensions: {
         width: 400,
-        height: 600
+        height: 560
       },
       regions: [
         {
           id: 'main-photo',
           type: 'photo',
-          name: 'Card Image',
-          bounds: { x: 0, y: 0, width: 400, height: 600 },
+          name: 'Character Portrait',
+          bounds: { x: 12, y: 40, width: 376, height: 440 },
           shape: 'rectangle',
           constraints: {
-            aspectRatio: 400/600, // 2.5:3.75 ratio for modern card
+            aspectRatio: 376/440,
             position: 'fixed',
-            scalable: false
+            scalable: true
           },
           styling: {
-            border: { width: 0, style: 'solid', color: 'transparent' },
-            background: { type: 'color', value: 'transparent' }
+            border: { width: 2, style: 'solid', color: 'primary' },
+            background: { type: 'gradient', value: 'mystical' }
           },
           cropSettings: {
             enabled: true,
-            aspectRatio: 400/600,
+            aspectRatio: 376/440,
             allowRotation: true,
-            allowBackgroundRemoval: false
+            allowBackgroundRemoval: true
           }
         }
       ],
       elements: [
         {
-          id: 'gradient-overlay',
-          type: 'gradient',
-          name: 'Background Gradient',
+          id: 'fantasy-frame',
+          type: 'shape',
+          name: 'Fantasy Frame Border',
           properties: {
-            position: { x: 0, y: 450 },
-            size: { width: 400, height: 150 }
+            position: { x: 0, y: 0 },
+            size: { width: 400, height: 560 },
+            color: '#8B5CF6'
+          },
+          behavior: { responsive: true },
+          variations: []
+        },
+        {
+          id: 'fantasy-header',
+          type: 'text',
+          name: 'Fantasy Header',
+          properties: {
+            position: { x: 8, y: 8 },
+            size: { width: 384, height: 24 },
+            color: '#FFFFFF'
+          },
+          behavior: { responsive: true },
+          variations: []
+        },
+        {
+          id: 'fantasy-footer',
+          type: 'text',
+          name: 'Character Name',
+          properties: {
+            position: { x: 8, y: 528 },
+            size: { width: 384, height: 24 },
+            color: '#FFFFFF'
           },
           behavior: { responsive: true },
           variations: []
         }
       ]
     },
-    included_elements: [],
+    included_elements: ['fantasy-frame', 'fantasy-header', 'fantasy-footer'],
     is_public: true,
-    price_cents: 0,
-    rating_average: 4.8,
-    rating_count: 89,
-    download_count: 756,
-    tags: ['sports', 'soccer', 'modern', 'gradient'],
+    price_cents: 200,
+    rating_average: 4.9,
+    rating_count: 167,
+    download_count: 1893,
+    tags: ['fantasy', 'mystical', 'crd-compliant', 'premium'],
     creator_id: undefined,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
