@@ -27,10 +27,15 @@ export interface UsePSDCacheResult {
   disableAutoSave: () => void;
   isAutoSaveEnabled: boolean;
   lastAutoSave: Date | null;
+  
+  // Auth state
+  user: any;
+  authLoading: boolean;
 }
 
 export const usePSDCache = (): UsePSDCacheResult => {
   const [user, setUser] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [processingStep, setProcessingStep] = useState('');
@@ -41,19 +46,42 @@ export const usePSDCache = (): UsePSDCacheResult => {
   
   const autoSaveCleanupRef = useRef<(() => void) | null>(null);
 
-  // Get current user
+  // Get current user with proper auth loading state
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
+    let mounted = true;
 
+    const initializeAuth = async () => {
+      try {
+        // First check for existing session
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (mounted) {
+          setUser(session?.user ?? null);
+          setAuthLoading(false);
+        }
+      } catch (error) {
+        console.error('Error getting auth session:', error);
+        if (mounted) {
+          setUser(null);
+          setAuthLoading(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
+      if (mounted) {
+        setUser(session?.user ?? null);
+        setAuthLoading(false);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Load cached jobs on mount
@@ -75,8 +103,12 @@ export const usePSDCache = (): UsePSDCacheResult => {
   }, [user?.id]);
 
   const processPSD = useCallback(async (file: File) => {
+    if (authLoading) {
+      throw new Error('Authentication still loading, please wait...');
+    }
+    
     if (!user?.id) {
-      throw new Error('User not authenticated');
+      throw new Error('Please sign in to use PSD processing features');
     }
 
     setIsProcessing(true);
@@ -105,8 +137,12 @@ export const usePSDCache = (): UsePSDCacheResult => {
   }, [user?.id, loadCachedJobs]);
 
   const loadPSDFromCache = useCallback(async (jobId: string): Promise<PSDLayer[]> => {
+    if (authLoading) {
+      throw new Error('Authentication still loading, please wait...');
+    }
+    
     if (!user?.id) {
-      throw new Error('User not authenticated');
+      throw new Error('Please sign in to use PSD processing features');
     }
 
     try {
@@ -212,6 +248,9 @@ export const usePSDCache = (): UsePSDCacheResult => {
     enableAutoSave,
     disableAutoSave,
     isAutoSaveEnabled,
-    lastAutoSave
+    lastAutoSave,
+    // Auth state
+    user,
+    authLoading
   };
 };
