@@ -122,30 +122,6 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
       {/* Frames Grid - Mobile-first 2-column sidebar layout */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto max-h-[calc(100vh-300px)]">
         {filteredFrames.map(frame => {
-          // Get appropriate frame preview image based on category
-          const getFramePreviewImage = (category: string, frameName: string) => {
-            const baseUrl = 'https://images.unsplash.com';
-            switch (category?.toLowerCase()) {
-              case 'sports':
-                if (frameName.toLowerCase().includes('baseball')) {
-                  return `${baseUrl}/photo-1566577739112-5180d4bf9390?w=400&h=600&fit=crop&crop=center`; // Baseball stadium
-                }
-                if (frameName.toLowerCase().includes('soccer')) {
-                  return `${baseUrl}/photo-1431324155629-1a6deb1dec8d?w=400&h=600&fit=crop&crop=center`; // Soccer action
-                }
-                return `${baseUrl}/photo-1461896836934-ffe607ba8211?w=400&h=600&fit=crop&crop=center`; // Generic sports
-              case 'vintage':
-                return `${baseUrl}/photo-1578662996442-48f60103fc96?w=400&h=600&fit=crop&crop=center`; // Vintage aesthetic
-              case 'modern':
-                return `${baseUrl}/photo-1618005182384-a83a8bd57fbe?w=400&h=600&fit=crop&crop=center`; // Modern minimal
-              case 'fantasy':
-                return `${baseUrl}/photo-1518709268805-4e9042af2ac5?w=400&h=600&fit=crop&crop=center`; // Fantasy/mystical
-              default:
-                return `${baseUrl}/photo-1541339907198-e08756dedf3f?w=400&h=600&fit=crop&crop=center`; // Abstract geometric
-            }
-          };
-
-          const previewImage = getFramePreviewImage(frame.category || '', frame.name);
 
           return (
             <div 
@@ -185,19 +161,20 @@ export const CRDFrameSelector: React.FC<CRDFrameSelectorProps> = ({
                 </PopoverContent>
               </Popover>
 
-              {/* Frame Thumbnail with Real Preview */}
+              {/* Frame Thumbnail with CRD Frame Preview */}
               <div className="aspect-[2/3] bg-crd-darkest rounded-lg overflow-hidden mb-2 relative">
-                <img 
-                  src={previewImage}
-                  alt={`${frame.name} preview`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
+                <CRDFrameEngine 
+                  frame={frame} 
+                  content={{}} 
+                  selectedVisualStyle="classic_matte" 
+                  onContentChange={() => {}} 
+                  onCropComplete={() => {}} 
+                  className="w-full h-full scale-75 origin-center" 
                 />
-                {/* Subtle overlay to show it's a frame preview */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                <div className="absolute bottom-2 left-2 right-2">
-                  <div className="text-xs text-white font-medium truncate">{frame.name}</div>
-                  <div className="text-xs text-white/70 capitalize">{frame.category}</div>
+                {/* Frame info overlay */}
+                <div className="absolute bottom-1 left-1 right-1">
+                  <div className="text-xs text-white font-medium truncate drop-shadow-lg">{frame.name}</div>
+                  <div className="text-xs text-white/70 capitalize drop-shadow-lg">{frame.category}</div>
                 </div>
               </div>
 
