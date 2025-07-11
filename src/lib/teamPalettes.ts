@@ -172,24 +172,24 @@ export const cardshowPalettes: TeamPalette[] = [
   {
     id: 'cardshow-green',
     name: 'Cardshow Green',
-    description: 'CRD signature green with professional tones',
+    description: 'Forest green and gold script elegance with natural sophistication',
     colors: {
-      primary: '#45B26B',   // CRD Green
-      secondary: '#1A1A1A',  // Dark Gray
-      accent: '#66CC88',     // Light Green
-      neutral: '#2A2A2A'     // Medium Gray
+      primary: '#003831',   // Forest Green
+      secondary: '#EFB21E',  // Gold
+      accent: '#45B26B',     // CRD Green
+      neutral: '#2C5530'     // Dark Green
     },
     hsl: {
-      primary: '142 42 55',  // CRD Green
-      secondary: '0 0 10',   // Dark Gray
-      accent: '142 52 65',   // Light Green
-      neutral: '0 0 17'      // Medium Gray
+      primary: '163 100 11', // Forest Green
+      secondary: '44 88 53', // Gold
+      accent: '142 42 55',   // CRD Green
+      neutral: '126 30 25'   // Dark Green
     },
     usage: {
-      navbar: 'Dark green background with light green accents',
-      cards: 'Green borders with gray backgrounds',
-      buttons: 'Green primary, dark secondary',
-      text: 'White on dark, green for accents'
+      navbar: 'Forest green background with gold accents',
+      cards: 'Green borders with gold highlights',
+      buttons: 'Gold primary, forest green secondary',
+      text: 'White on green, gold for script elements'
     }
   },
   {
