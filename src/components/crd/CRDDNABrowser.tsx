@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { CRD_DNA_ENTRIES, CRDEntry } from '@/lib/cardshowDNA';
-import { Search, Filter, Palette, Tag } from 'lucide-react';
+import { CRD_DNA_ENTRIES, CRDEntry, RarityLevel } from '@/lib/cardshowDNA';
+import { Search, Filter, Palette, Tag, Star, Zap, Trophy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ export const CRDDNABrowser = ({ onEntrySelect }: CRDDNABrowserProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGroup, setSelectedGroup] = useState<string>('all');
   const [selectedStyle, setSelectedStyle] = useState<string>('all');
+  const [selectedRarity, setSelectedRarity] = useState<string>('all');
 
   const filteredEntries = useMemo(() => {
     return CRD_DNA_ENTRIES.filter(entry => {
@@ -30,13 +31,15 @@ export const CRDDNABrowser = ({ onEntrySelect }: CRDDNABrowserProps) => {
       
       const matchesGroup = selectedGroup === 'all' || entry.group === selectedGroup;
       const matchesStyle = selectedStyle === 'all' || entry.styleTag === selectedStyle;
+      const matchesRarity = selectedRarity === 'all' || entry.rarity === selectedRarity;
       
-      return matchesSearch && matchesGroup && matchesStyle;
+      return matchesSearch && matchesGroup && matchesStyle && matchesRarity;
     });
-  }, [searchTerm, selectedGroup, selectedStyle]);
+  }, [searchTerm, selectedGroup, selectedStyle, selectedRarity]);
 
   const groups = ['all', ...Array.from(new Set(CRD_DNA_ENTRIES.map(e => e.group)))];
   const styles = ['all', ...Array.from(new Set(CRD_DNA_ENTRIES.map(e => e.styleTag).filter(Boolean)))];
+  const rarities = ['all', ...Array.from(new Set(CRD_DNA_ENTRIES.map(e => e.rarity)))];
 
   const getStyleBadgeColor = (entry: CRDEntry) => {
     switch (entry.styleTag) {
@@ -46,6 +49,30 @@ export const CRDDNABrowser = ({ onEntrySelect }: CRDDNABrowserProps) => {
       case '3D': return 'bg-blue-500/20 text-blue-700';
       case 'Jersey': return 'bg-green-500/20 text-green-700';
       default: return 'bg-gray-500/20 text-gray-700';
+    }
+  };
+
+  const getRarityColor = (rarity: RarityLevel) => {
+    switch (rarity) {
+      case 'Common': return 'bg-gray-500/20 text-gray-700';
+      case 'Uncommon': return 'bg-green-500/20 text-green-700';
+      case 'Rare': return 'bg-blue-500/20 text-blue-700';
+      case 'Epic': return 'bg-purple-500/20 text-purple-700';
+      case 'Legendary': return 'bg-orange-500/20 text-orange-700';
+      case 'Mythic': return 'bg-red-500/20 text-red-700';
+      default: return 'bg-gray-500/20 text-gray-700';
+    }
+  };
+
+  const getRarityIcon = (rarity: RarityLevel) => {
+    switch (rarity) {
+      case 'Common': return null;
+      case 'Uncommon': return <Star className="h-3 w-3" />;
+      case 'Rare': return <Star className="h-3 w-3" />;
+      case 'Epic': return <Zap className="h-3 w-3" />;
+      case 'Legendary': return <Trophy className="h-3 w-3" />;
+      case 'Mythic': return <Trophy className="h-3 w-3" />;
+      default: return null;
     }
   };
 
@@ -105,6 +132,22 @@ export const CRDDNABrowser = ({ onEntrySelect }: CRDDNABrowserProps) => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Star className="h-4 w-4 mr-2" />
+                  Rarity: {selectedRarity}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {rarities.map(rarity => (
+                  <DropdownMenuItem key={rarity} onClick={() => setSelectedRarity(rarity)}>
+                    {rarity}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -148,6 +191,10 @@ export const CRDDNABrowser = ({ onEntrySelect }: CRDDNABrowserProps) => {
                 <Badge variant="outline" className="text-xs">
                   {entry.group}
                 </Badge>
+                <Badge className={`text-xs flex items-center gap-1 ${getRarityColor(entry.rarity)}`}>
+                  {getRarityIcon(entry.rarity)}
+                  {entry.rarity}
+                </Badge>
                 {entry.styleTag && (
                   <Badge className={`text-xs ${getStyleBadgeColor(entry)}`}>
                     {entry.styleTag}
@@ -161,6 +208,42 @@ export const CRDDNABrowser = ({ onEntrySelect }: CRDDNABrowserProps) => {
                 <Badge variant="secondary" className="text-xs">
                   {entry.fontStyle}
                 </Badge>
+              </div>
+              
+              {/* Gaming Stats */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Power</span>
+                  <div className="flex items-center gap-1">
+                    <div className="w-12 h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary rounded-full transition-all"
+                        style={{ width: `${entry.powerLevel}%` }}
+                      />
+                    </div>
+                    <span className="font-mono text-foreground">{entry.powerLevel}</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Supply</span>
+                  <span className="font-mono text-foreground">
+                    {entry.totalSupply ? `${entry.currentSupply}/${entry.totalSupply}` : entry.currentSupply}
+                  </span>
+                </div>
+                
+                <div className="flex gap-1 text-xs">
+                  {entry.isBlendable && (
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600">
+                      Blendable
+                    </Badge>
+                  )}
+                  {entry.isRemixable && (
+                    <Badge variant="outline" className="text-xs bg-purple-50 text-purple-600">
+                      Remixable
+                    </Badge>
+                  )}
+                </div>
               </div>
               
               {/* Colors */}
