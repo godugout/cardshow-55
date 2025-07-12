@@ -63,7 +63,7 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
         }`}>
           {/* Toggle Button Header */}
           <div className="flex-shrink-0 h-12 flex items-center justify-between px-4 border-b border-crd-mediumGray/30">
-            <div className="text-crd-white text-sm font-medium">
+            <div className="text-crd-white text-sm font-orbitron font-semibold tracking-wider">
               {side === 'left' ? 'Tools' : 'Properties'}
             </div>
             <button
