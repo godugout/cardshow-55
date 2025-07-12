@@ -3309,6 +3309,148 @@ export type Database = {
         }
         Relationships: []
       }
+      dna_entries_v2: {
+        Row: {
+          architecture: string[] | null
+          city_id: string | null
+          climate: string | null
+          collectibility: number | null
+          color_scheme_id: string | null
+          community_tags: string[] | null
+          created_at: string | null
+          current_supply: number | null
+          dna_code: string
+          drop_rate: number | null
+          emoji: string | null
+          id: string
+          is_blendable: boolean | null
+          is_remixable: boolean | null
+          legacy_group: string | null
+          legacy_team_code: string | null
+          legacy_team_name: string | null
+          migration_date: string | null
+          music: string[] | null
+          pack_exclusive: boolean | null
+          popularity: number | null
+          power_level: number | null
+          rarity: string
+          requires_achievement: string | null
+          requires_purchase: boolean | null
+          search_terms: string[] | null
+          seasonal_only: boolean | null
+          source: string | null
+          style_id: string | null
+          symbols: string[] | null
+          tags: string[] | null
+          total_supply: number | null
+          unlock_method: string | null
+          updated_at: string | null
+          variant: string | null
+          version: string | null
+          vibes: string[] | null
+        }
+        Insert: {
+          architecture?: string[] | null
+          city_id?: string | null
+          climate?: string | null
+          collectibility?: number | null
+          color_scheme_id?: string | null
+          community_tags?: string[] | null
+          created_at?: string | null
+          current_supply?: number | null
+          dna_code: string
+          drop_rate?: number | null
+          emoji?: string | null
+          id?: string
+          is_blendable?: boolean | null
+          is_remixable?: boolean | null
+          legacy_group?: string | null
+          legacy_team_code?: string | null
+          legacy_team_name?: string | null
+          migration_date?: string | null
+          music?: string[] | null
+          pack_exclusive?: boolean | null
+          popularity?: number | null
+          power_level?: number | null
+          rarity?: string
+          requires_achievement?: string | null
+          requires_purchase?: boolean | null
+          search_terms?: string[] | null
+          seasonal_only?: boolean | null
+          source?: string | null
+          style_id?: string | null
+          symbols?: string[] | null
+          tags?: string[] | null
+          total_supply?: number | null
+          unlock_method?: string | null
+          updated_at?: string | null
+          variant?: string | null
+          version?: string | null
+          vibes?: string[] | null
+        }
+        Update: {
+          architecture?: string[] | null
+          city_id?: string | null
+          climate?: string | null
+          collectibility?: number | null
+          color_scheme_id?: string | null
+          community_tags?: string[] | null
+          created_at?: string | null
+          current_supply?: number | null
+          dna_code?: string
+          drop_rate?: number | null
+          emoji?: string | null
+          id?: string
+          is_blendable?: boolean | null
+          is_remixable?: boolean | null
+          legacy_group?: string | null
+          legacy_team_code?: string | null
+          legacy_team_name?: string | null
+          migration_date?: string | null
+          music?: string[] | null
+          pack_exclusive?: boolean | null
+          popularity?: number | null
+          power_level?: number | null
+          rarity?: string
+          requires_achievement?: string | null
+          requires_purchase?: boolean | null
+          search_terms?: string[] | null
+          seasonal_only?: boolean | null
+          source?: string | null
+          style_id?: string | null
+          symbols?: string[] | null
+          tags?: string[] | null
+          total_supply?: number | null
+          unlock_method?: string | null
+          updated_at?: string | null
+          variant?: string | null
+          version?: string | null
+          vibes?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dna_entries_v2_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dna_entries_v2_color_scheme_id_fkey"
+            columns: ["color_scheme_id"]
+            isOneToOne: false
+            referencedRelation: "color_schemes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dna_entries_v2_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "style_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       element_downloads: {
         Row: {
           amount_paid_cents: number | null
