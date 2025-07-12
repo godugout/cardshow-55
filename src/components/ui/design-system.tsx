@@ -90,15 +90,61 @@ export const Hero3: React.FC<Hero3Props> = ({
       )}
       {children}
       {showFeaturedCards && featuredCards && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
           {featuredCards.map((card, index) => (
             <div 
-              key={index}
-              className="bg-crd-darkGray border border-crd-mediumGray rounded-lg p-6 cursor-pointer hover:border-crd-blue transition-colors"
+              key={card?.id || index}
+              className="group relative overflow-hidden rounded-2xl border-2 border-crd-mediumGray bg-crd-darkGray hover:border-crd-blue transition-all duration-300 cursor-pointer hover:scale-105 hover:-translate-y-1"
+              style={{
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+              }}
               onClick={() => onCardClick?.(card)}
             >
-              <h3 className="text-crd-white font-semibold">{card.title}</h3>
-              <p className="text-crd-lightGray text-sm mt-2">{card.description}</p>
+              {/* Card Image */}
+              <div className="aspect-[0.84] w-full overflow-hidden">
+                {card?.image_url ? (
+                  <img
+                    src={card.image_url}
+                    alt={card.title || 'Card'}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg';
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-crd-blue/20 to-crd-purple/20 flex items-center justify-center">
+                    <div className="text-crd-lightGray text-4xl">🎴</div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Card Content */}
+              <div className="p-4">
+                <h3 className="text-crd-white font-semibold text-lg mb-2 truncate">
+                  {card?.title || 'Untitled Card'}
+                </h3>
+                {card?.description && (
+                  <p className="text-crd-lightGray text-sm line-clamp-2 mb-3">
+                    {card.description}
+                  </p>
+                )}
+                
+                {/* Card Meta */}
+                <div className="flex items-center justify-between text-xs text-crd-lightGray">
+                  <span>{card?.rarity || 'Common'}</span>
+                  {card?.view_count && (
+                    <span>{card.view_count} views</span>
+                  )}
+                </div>
+              </div>
+              
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <div className="text-white text-center">
+                  <div className="text-2xl mb-2">👁️</div>
+                  <div className="text-sm font-medium">View Card</div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
