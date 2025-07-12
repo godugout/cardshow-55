@@ -197,30 +197,38 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
             imageUrl={selectedLogo.imageUrl}
             logoName={selectedLogo.name}
             dnaCode={selectedLogo.dnaCode}
-            className="h-12 w-32 object-contain" 
+            className="h-16 w-40 object-contain" 
           />
           <ChevronDown className={`h-4 w-4 text-gray-400 transition-all duration-300 opacity-0 group-hover:opacity-100 ${open ? 'rotate-180 opacity-100' : ''}`} />
         </button>
       </DrawerTrigger>
       
-      <DrawerContent className="bg-gradient-to-b from-[#23262F] to-[#1C1F28] border-[#353945] max-h-[80vh]">
+      <DrawerContent className="bg-gradient-to-br from-background via-background/95 to-muted/20 border-border/30 max-h-[85vh] backdrop-blur-xl">
         <div className="w-full overflow-hidden">
-          <DrawerHeader className="pb-4">
-            <DrawerTitle className="text-gray-100 text-lg font-semibold text-center">
+          <DrawerHeader className="pb-6 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5 rounded-t-3xl"></div>
+            <DrawerTitle className="text-foreground text-xl font-bold text-center relative z-10 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Choose Your Logo
             </DrawerTitle>
-            <DrawerDescription className="text-gray-400 text-center">
-              Select a logo to customize your theme
+            <DrawerDescription className="text-muted-foreground text-center relative z-10 mt-2">
+              Select a logo to customize your theme and unlock new visual experiences
             </DrawerDescription>
           </DrawerHeader>
           
-          <div className="w-full px-6 pb-6 space-y-8 overflow-y-auto max-h-[60vh]">
+          <div className="w-full px-6 pb-8 space-y-10 overflow-y-auto max-h-[65vh]">
             {logoGroups.map((group, groupIndex) => (
-              <div key={group.label} className="w-full">
-                    <h3 className="text-themed-secondary text-sm font-semibold mb-6 px-2 tracking-wide">
-                      {group.label}
-                    </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+              <div key={group.label} className="w-full space-y-6">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 rounded-lg h-8"></div>
+                  <h3 className="text-foreground text-base font-bold mb-1 px-4 py-2 relative z-10 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent tracking-wide">
+                    {group.label}
+                  </h3>
+                  <div className="text-muted-foreground text-xs px-4 relative z-10">
+                    {group.logos.length} logo{group.logos.length !== 1 ? 's' : ''} available
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                   {group.logos.map((logo) => {
                     const isSelected = selectedLogo.themeId === logo.themeId || currentLogoCode === logo.dnaCode;
                     
@@ -228,46 +236,68 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
                       <button
                         key={logo.dnaCode}
                         onClick={() => handleLogoSelect(logo)}
-                        className={`group bg-themed-card rounded-xl p-3 transition-all duration-300 hover:scale-105 border-2 ${
+                        className={`group relative overflow-hidden bg-gradient-to-br from-card/80 via-card to-muted/20 backdrop-blur-sm rounded-2xl p-6 transition-all duration-500 hover:scale-[1.02] border ${
                           isSelected 
-                            ? 'border-themed-strong bg-themed-light' 
-                            : `border-transparent hover:border-themed-light hover:bg-themed-subtle`
-                        } hover:shadow-lg flex items-center justify-center min-h-[100px]`}
+                            ? 'border-primary/60 bg-gradient-to-br from-primary/5 via-card to-accent/5 shadow-lg shadow-primary/20' 
+                            : 'border-border/30 hover:border-primary/30 hover:shadow-md hover:shadow-primary/10'
+                        } flex flex-col items-center gap-4 min-h-[160px] relative`}
                         title={`${logo.name} - ${logo.description}`}
                       >
-                        <div className="flex flex-col items-center gap-2">
+                        {/* Animated background for rarity */}
+                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
+                          logo.rarity === 'legendary' ? 'bg-gradient-to-br from-yellow-500/5 via-orange-500/5 to-red-500/5' :
+                          logo.rarity === 'rare' ? 'bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-blue-600/5' :
+                          logo.rarity === 'uncommon' ? 'bg-gradient-to-br from-green-500/5 via-emerald-500/5 to-green-600/5' :
+                          'bg-gradient-to-br from-muted/5 to-muted/10'
+                        }`}></div>
+
+                        {/* Logo with enhanced sizing */}
+                        <div className="relative z-10 flex-1 flex items-center justify-center">
                           <LogoWithFallback 
                             imageUrl={logo.imageUrl}
                             logoName={logo.name}
                             dnaCode={logo.dnaCode}
-                            className="h-8 w-20 object-contain transition-all duration-300 group-hover:brightness-110" 
+                            className="h-16 w-40 object-contain transition-all duration-500 group-hover:scale-105 group-hover:brightness-110 drop-shadow-lg" 
                           />
-                          {/* Show palette preview using colorPalette from logo */}
-                          <div className="flex gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                            {logo.colorPalette.slice(0, 4).map((color, index) => (
-                              <div 
-                                key={index}
-                                className="w-2 h-2 rounded-full border border-white/20"
-                                style={{ backgroundColor: color }}
-                              />
-                            ))}
-                          </div>
-                          {/* Rarity indicator */}
-                          <div className={`text-xs px-2 py-1 rounded-full ${
-                            logo.rarity === 'legendary' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black' :
-                            logo.rarity === 'rare' ? 'bg-blue-500 text-white' :
-                            logo.rarity === 'uncommon' ? 'bg-green-500 text-white' :
-                            'bg-gray-500 text-white'
-                          }`}>
-                            {logo.rarity}
-                          </div>
                         </div>
+
+                        {/* Enhanced palette preview */}
+                        <div className="relative z-10 flex gap-1.5 opacity-70 group-hover:opacity-100 transition-opacity duration-300">
+                          {logo.colorPalette.slice(0, 4).map((color, index) => (
+                            <div 
+                              key={index}
+                              className="w-3 h-3 rounded-full border border-white/30 shadow-sm transition-transform duration-300 group-hover:scale-110"
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
+                        </div>
+
+                        {/* Enhanced rarity indicator */}
+                        <div className={`relative z-10 text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-300 ${
+                          logo.rarity === 'legendary' 
+                            ? 'bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30 group-hover:shadow-orange-500/50' :
+                          logo.rarity === 'rare' 
+                            ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50' :
+                          logo.rarity === 'uncommon' 
+                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30 group-hover:shadow-green-500/50' :
+                            'bg-gradient-to-r from-muted to-muted-foreground/80 text-muted-foreground shadow-lg group-hover:shadow-muted/50'
+                        }`}>
+                          {logo.rarity}
+                        </div>
+
+                        {/* Selection indicator */}
+                        {isSelected && (
+                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center shadow-lg shadow-primary/30">
+                            <div className="w-3 h-3 bg-white rounded-full"></div>
+                          </div>
+                        )}
                       </button>
                     );
                   })}
                 </div>
+                
                 {groupIndex < logoGroups.length - 1 && (
-                  <div className="border-t border-[#353945] mt-8" />
+                  <div className="border-t border-gradient-to-r from-transparent via-border/50 to-transparent mt-8"></div>
                 )}
               </div>
             ))}
