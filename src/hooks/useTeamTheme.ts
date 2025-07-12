@@ -7,6 +7,7 @@ import {
   createPaletteFromTeamColors,
   type TeamPalette 
 } from '@/lib/teamPalettes';
+import { generateLogoThemes, getThemeByDNA } from '@/lib/logoThemes';
 
 interface ColorTheme {
   id: string;
@@ -24,7 +25,7 @@ export const useTeamTheme = () => {
   const [databaseThemes, setDatabaseThemes] = useState<ColorTheme[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load database color themes
+  // Load database color themes and logo themes
   const loadDatabaseThemes = useCallback(async () => {
     try {
       const { data, error } = await supabase
@@ -36,6 +37,9 @@ export const useTeamTheme = () => {
         console.error('Error loading color themes:', error);
         return;
       }
+
+      // Generate logo-based themes
+      const logoThemes = generateLogoThemes();
 
       if (data) {
         setDatabaseThemes(data);
@@ -50,11 +54,17 @@ export const useTeamTheme = () => {
           )
         );
         
-        // Combine with static palettes
-        setAvailablePalettes([...allPalettes, ...dbPalettes]);
+        // Combine with static palettes and logo themes
+        setAvailablePalettes([...allPalettes, ...dbPalettes, ...logoThemes]);
+      } else {
+        // Just use static and logo themes if no database themes
+        setAvailablePalettes([...allPalettes, ...logoThemes]);
       }
     } catch (error) {
       console.error('Error fetching themes:', error);
+      // Fallback to static and logo themes
+      const logoThemes = generateLogoThemes();
+      setAvailablePalettes([...allPalettes, ...logoThemes]);
     } finally {
       setIsLoading(false);
     }
@@ -136,6 +146,18 @@ export const useTeamTheme = () => {
     }
   }, [availablePalettes, isLoading, setTheme, applyTheme]);
 
+  // Logo-specific theme functions
+  const setLogoTheme = useCallback((dnaCode: string) => {
+    const logoTheme = getThemeByDNA(dnaCode);
+    if (logoTheme) {
+      applyTheme(logoTheme);
+      localStorage.setItem('crd-theme', logoTheme.id);
+      console.log(`Applied logo theme: ${dnaCode} -> ${logoTheme.id}`);
+    } else {
+      console.warn(`Logo theme not found for DNA code: ${dnaCode}`);
+    }
+  }, [applyTheme]);
+
   return {
     // Current state
     currentPalette,
@@ -145,6 +167,7 @@ export const useTeamTheme = () => {
     
     // Actions
     setTheme,
+    setLogoTheme,
     resetToDefault,
     applyTheme,
     
@@ -152,6 +175,9 @@ export const useTeamTheme = () => {
     getThemePreview,
     getThemeCSSVars,
     loadDatabaseThemes,
+    
+    // Logo-specific utilities
+    getThemeByDNA,
     
     // Computed values
     currentThemeId: currentPalette?.id || null,

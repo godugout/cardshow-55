@@ -1,4 +1,6 @@
 // CRD:DNA System - Cardshow Brand & Logo Management
+import { completeLogoThemes } from './completeLogoThemes';
+
 export type RarityLevel = 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary' | 'Mythic';
 export type UnlockMethod = 'starter' | 'achievement' | 'premium' | 'seasonal' | 'special' | 'legacy';
 
@@ -45,6 +47,13 @@ export interface CRDEntry {
   };
 }
 
+export interface LogoTheme {
+  primary: string;    // Main brand/team color (dominant logo color)
+  secondary: string;  // Supporting brand color (complementary logo color)
+  accent: string;     // Action/highlight color (for buttons, CTAs, interactive elements)
+  neutral: string;    // Background/text support color (for readable backgrounds)
+}
+
 export interface CardshowLogoDNA {
   dnaCode: string;
   displayName: string;
@@ -54,6 +63,21 @@ export interface CardshowLogoDNA {
   colorPalette: string[];
   designElements: string[];
   rarity: 'common' | 'uncommon' | 'rare' | 'legendary';
+  
+  // Enhanced theming system
+  logoTheme: LogoTheme;
+  officialTeam?: {
+    league: string;
+    city: string;
+    name: string;
+    founded?: string;
+  };
+  themeUsage: {
+    navbar: string;
+    cards: string;
+    buttons: string;
+    text: string;
+  };
 }
 
 export const cardshowLogoDatabase: CardshowLogoDNA[] = [
@@ -65,7 +89,19 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Modern',
     colorPalette: ['#FF6B35', '#7FB069', '#4ECDC4', '#45B7D1'],
     designElements: ['Gradient', 'Modern', 'Colorful'],
-    rarity: 'legendary'
+    rarity: 'legendary',
+    logoTheme: {
+      primary: '#45B7D1',   // Tech Blue (main CRD color)
+      secondary: '#7FB069',  // Success Green (secondary highlight)
+      accent: '#FF6B35',     // Orange Accent (CTAs and interactions)
+      neutral: '#F8FAFC'     // Clean White-Gray (backgrounds)
+    },
+    themeUsage: {
+      navbar: 'Tech blue gradient background with orange highlights',
+      cards: 'Clean white backgrounds with blue borders and green accents',
+      buttons: 'Orange primary CTAs with blue secondary actions',
+      text: 'Dark blue headings with green success states'
+    }
   },
   {
     dnaCode: 'CS_GREEN_SPARKLE',
@@ -75,7 +111,25 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Fantasy',
     colorPalette: ['#7FB069', '#FFFFFF', '#FFD700'],
     designElements: ['Bold', 'Sparkles', 'Fantasy'],
-    rarity: 'rare'
+    rarity: 'rare',
+    logoTheme: {
+      primary: '#27AE60',   // Forest Green (like Seattle Seahawks)
+      secondary: '#FFFFFF',  // Pure White (clean contrast)
+      accent: '#FFD700',     // Gold (sparkle effects)
+      neutral: '#F0FDF4'     // Light Green Tint (backgrounds)
+    },
+    officialTeam: {
+      league: 'Inspired by Seattle Seahawks',
+      city: 'Seattle',
+      name: 'Seahawks',
+      founded: '1976'
+    },
+    themeUsage: {
+      navbar: 'Deep forest green background with gold sparkle accents',
+      cards: 'Light green backgrounds with white borders and gold highlights',
+      buttons: 'Gold primary CTAs with green secondary actions',
+      text: 'White on green with gold for special effects and highlights'
+    }
   },
   {
     dnaCode: 'CS_ORANGE_SCRIPT',
@@ -85,7 +139,19 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Script',
     colorPalette: ['#FF6B35', '#2C3E50'],
     designElements: ['Script', 'Classic', 'Elegant'],
-    rarity: 'common'
+    rarity: 'common',
+    logoTheme: {
+      primary: '#FF6347',   // Tomato Red (script dominant color)
+      secondary: '#2C3E50',  // Dark Navy (elegant contrast)
+      accent: '#FFB347',     // Light Orange (highlights)
+      neutral: '#FFF8F0'     // Cream White (readable backgrounds)
+    },
+    themeUsage: {
+      navbar: 'Elegant orange script with navy support backgrounds',
+      cards: 'Cream backgrounds with orange script borders and navy text',
+      buttons: 'Orange primary script style with navy outline secondary',
+      text: 'Navy headings with orange script highlights and cream backgrounds'
+    }
   },
   {
     dnaCode: 'CS_REDBLUE_BLOCK',
@@ -95,7 +161,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Bold',
     colorPalette: ['#DC143C', '#0047AB'],
     designElements: ['Block', 'Bold', 'Sports'],
-    rarity: 'uncommon'
+    rarity: 'uncommon',
+    ...completeLogoThemes.CS_REDBLUE_BLOCK
   },
   {
     dnaCode: 'CS_GREEN_SCRIPT_YELLOW',
@@ -105,7 +172,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Script',
     colorPalette: ['#7FB069', '#FFD700'],
     designElements: ['Script', 'Outlined', 'Vibrant'],
-    rarity: 'rare'
+    rarity: 'rare',
+    ...completeLogoThemes.CS_GREEN_SCRIPT_YELLOW
   },
   {
     dnaCode: 'CS_BROWN_ORANGE_RETRO',
@@ -115,7 +183,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Retro',
     colorPalette: ['#8B4513', '#FF6B35'],
     designElements: ['Retro', '70s', 'Groovy'],
-    rarity: 'uncommon'
+    rarity: 'uncommon',
+    ...completeLogoThemes.CS_BROWN_ORANGE_RETRO
   },
   {
     dnaCode: 'CS_BLUE_ORANGE_OUTLINE',
@@ -125,7 +194,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Bold',
     colorPalette: ['#0047AB', '#FF6B35'],
     designElements: ['Outlined', 'Bold', 'Modern'],
-    rarity: 'common'
+    rarity: 'common',
+    ...completeLogoThemes.CS_BLUE_ORANGE_OUTLINE
   },
   {
     dnaCode: 'CS_RED_SCRIPT_BLUE',
@@ -135,7 +205,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Script',
     colorPalette: ['#DC143C', '#0047AB'],
     designElements: ['Script', 'Sports', 'Classic'],
-    rarity: 'common'
+    rarity: 'common',
+    ...completeLogoThemes.CS_RED_SCRIPT_BLUE
   },
   {
     dnaCode: 'CS_BLUE_SCRIPT',
@@ -145,7 +216,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Script',
     colorPalette: ['#0047AB', '#FFFFFF'],
     designElements: ['Script', 'Clean', 'Professional'],
-    rarity: 'common'
+    rarity: 'common',
+    ...completeLogoThemes.CS_BLUE_SCRIPT
   },
   {
     dnaCode: 'CS_BLACK_TEAL_SPARKLE',
@@ -155,7 +227,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Fantasy',
     colorPalette: ['#2C3E50', '#4ECDC4', '#FFD700'],
     designElements: ['Outlined', 'Sparkles', 'Premium'],
-    rarity: 'legendary'
+    rarity: 'legendary',
+    ...completeLogoThemes.CS_BLACK_TEAL_SPARKLE
   },
   // Additional new logos
   {
@@ -166,7 +239,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Script',
     colorPalette: ['#7FB069', '#FFD700'],
     designElements: ['Script', 'Sparkles', 'Elegant'],
-    rarity: 'rare'
+    rarity: 'rare',
+    ...completeLogoThemes.CS_GREEN_SPARKLE_SCRIPT
   },
   {
     dnaCode: 'CS_ORANGE_BLACK_OUTLINE',
@@ -176,7 +250,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Bold',
     colorPalette: ['#FF8C00', '#000000'],
     designElements: ['Outlined', 'Bold', 'Strong'],
-    rarity: 'uncommon'
+    rarity: 'uncommon',
+    ...completeLogoThemes.CS_ORANGE_BLACK_OUTLINE
   },
   {
     dnaCode: 'CS_RED_BLOCK',
@@ -186,7 +261,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Bold',
     colorPalette: ['#DC143C'],
     designElements: ['Block', 'Clean', 'Modern'],
-    rarity: 'common'
+    rarity: 'common',
+    ...completeLogoThemes.CS_RED_BLOCK
   },
   {
     dnaCode: 'CS_RED_SCRIPT_CORAL',
@@ -196,7 +272,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Script',
     colorPalette: ['#FF6347'],
     designElements: ['Script', 'Flowing', 'Elegant'],
-    rarity: 'common'
+    rarity: 'common',
+    ...completeLogoThemes.CS_RED_SCRIPT_CORAL
   },
   {
     dnaCode: 'CS_RED_MODERN',
@@ -206,7 +283,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Modern',
     colorPalette: ['#DC143C'],
     designElements: ['Modern', 'Geometric', 'Clean'],
-    rarity: 'uncommon'
+    rarity: 'uncommon',
+    ...completeLogoThemes.CS_RED_MODERN
   },
   {
     dnaCode: 'CS_RED_SCRIPT_CLASSIC',
@@ -216,7 +294,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Script',
     colorPalette: ['#DC143C'],
     designElements: ['Script', 'Classic', 'Traditional'],
-    rarity: 'common'
+    rarity: 'common',
+    ...completeLogoThemes.CS_RED_SCRIPT_CLASSIC
   },
   {
     dnaCode: 'CS_BLACK_BOLD',
@@ -226,7 +305,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Bold',
     colorPalette: ['#000000'],
     designElements: ['Bold', 'Strong', 'Impactful'],
-    rarity: 'uncommon'
+    rarity: 'uncommon',
+    ...completeLogoThemes.CS_BLACK_BOLD
   },
   {
     dnaCode: 'CS_PURPLE_OUTLINE',
@@ -236,7 +316,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Bold',
     colorPalette: ['#8B008B'],
     designElements: ['Outlined', 'Bold', 'Distinctive'],
-    rarity: 'rare'
+    rarity: 'rare',
+    ...completeLogoThemes.CS_PURPLE_OUTLINE
   },
   {
     dnaCode: 'CS_ORANGE_BLACK_BLOCK',
@@ -246,7 +327,8 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     category: 'Bold',
     colorPalette: ['#FF8C00', '#000000'],
     designElements: ['Block', 'Dual-tone', 'Bold'],
-    rarity: 'legendary'
+    rarity: 'legendary',
+    ...completeLogoThemes.CS_ORANGE_BLACK_BLOCK
   }
 ];
 
