@@ -59,9 +59,9 @@
   --theme-accent: 197 71 73; /* Light Blue */
   --theme-neutral: 200 8 68; /* Silver */
   
-  --theme-navbar-bg: 222 84 13; /* Navy background for red logo contrast */
+  --theme-navbar-bg: 0 0 100; /* White background with red accents */
   --theme-navbar-border: 350 87 43; /* Red border */
-  --theme-text-primary: 0 0 100; /* White text */
+  --theme-text-primary: 222 84 13; /* Navy text */
   --theme-text-secondary: 200 8 68; /* Silver text */
   --theme-text-active: 350 87 43; /* Red active */
   --theme-cta-bg: 350 87 43; /* Red CTA */
