@@ -21,6 +21,18 @@ export const convertColorThemeToScheme = (theme: any): TeamColorScheme => ({
 
 // Legacy static array kept for fallback
 export const PRO_SPORTS_TEAM_COLORS: TeamColorScheme[] = [
+  // New Cardshow brand themes
+  { id: 'cardshow-official', name: 'Cardshow Official', primary: '#45B26B', secondary: '#FFD700', accent: '#FFFFFF', text: '#FFFFFF' },
+  { id: 'cardshow-green-script', name: 'Green Script', primary: '#45B26B', secondary: '#FFD700', accent: '#FFFFFF', text: '#FFFFFF' },
+  { id: 'cardshow-brown-orange', name: 'Brown Orange', primary: '#8B4513', secondary: '#FF8C00', accent: '#FFE4B5', text: '#FFFFFF' },
+  { id: 'cardshow-blue-outline', name: 'Blue Outline', primary: '#3772FF', secondary: '#FFD700', accent: '#FFFFFF', text: '#FFFFFF' },
+  { id: 'cardshow-teal-sparkles', name: 'Teal Sparkles', primary: '#008B8B', secondary: '#FFD700', accent: '#000000', text: '#FFFFFF' },
+  { id: 'cardshow-red-script', name: 'Red Script', primary: '#DC143C', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF' },
+  { id: 'cardshow-black-bold', name: 'Black Bold', primary: '#000000', secondary: '#FFFFFF', accent: '#808080', text: '#FFFFFF' },
+  { id: 'cardshow-purple-outline', name: 'Purple Outline', primary: '#9757D7', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF' },
+  { id: 'cardshow-orange-black-bold', name: 'Orange Black Bold', primary: '#FF8C00', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF' },
+  
+  // Original team themes
   { id: 'navy-silver-white', name: 'NY Yankees', primary: '#132448', secondary: '#C4CED4', accent: '#FFFFFF', text: '#FFFFFF' },
   { id: 'red-navy-white', name: 'BOS Red Sox', primary: '#BD3039', secondary: '#0C2340', accent: '#FFFFFF', text: '#FFFFFF' },
   { id: 'blue-white-red', name: 'LA Dodgers', primary: '#005A9C', secondary: '#FFFFFF', accent: '#EF3E42', text: '#FFFFFF' },

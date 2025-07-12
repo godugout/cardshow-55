@@ -13,6 +13,15 @@ import { CardshowRedBlueLogo } from '@/components/home/navbar/CardshowRedBlueLog
 import { CardshowBlockLettersLogo } from '@/components/home/navbar/CardshowBlockLettersLogo';
 import { CardshowGreenLogo } from '@/components/home/navbar/CardshowGreenLogo';
 import { CardshowGreenSparklesLogo } from '@/components/home/navbar/CardshowGreenSparklesLogo';
+import { CardshowGreenSparklesOfficialLogo } from '@/components/home/navbar/CardshowGreenSparklesOfficialLogo';
+import { CardshowGreenScriptLogo } from '@/components/home/navbar/CardshowGreenScriptLogo';
+import { CardshowBrownOrangeLogo } from '@/components/home/navbar/CardshowBrownOrangeLogo';
+import { CardshowBlueOutlineLogo } from '@/components/home/navbar/CardshowBlueOutlineLogo';
+import { CardshowTealSparklesLogo } from '@/components/home/navbar/CardshowTealSparklesLogo';
+import { CardshowRedScriptLogo } from '@/components/home/navbar/CardshowRedScriptLogo';
+import { CardshowBlackBoldLogo } from '@/components/home/navbar/CardshowBlackBoldLogo';
+import { CardshowPurpleOutlineLogo } from '@/components/home/navbar/CardshowPurpleOutlineLogo';
+import { CardshowOrangeBlackBoldLogo } from '@/components/home/navbar/CardshowOrangeBlackBoldLogo';
 
 const DesignGuide = () => {
   const [activeSection, setActiveSection] = useState('overview');
@@ -27,17 +36,26 @@ const DesignGuide = () => {
   ];
 
   const logoVariants = [
-    { name: 'CRD Gradient', component: <CRDGradientLogo className="h-16" />, usage: 'Primary brand mark for digital applications', context: 'Headers, hero sections, premium features' },
-    { name: 'Cardshow Basic', component: <CardshowBasicLogo className="h-16" />, usage: 'Clean, minimal version for professional contexts', context: 'Documentation, business materials, partnerships' },
-    { name: 'Cardshow Blue', component: <CardshowBlueLogo className="h-16" />, usage: 'Trust and reliability messaging', context: 'Corporate communications, enterprise features' },
-    { name: 'Cardshow Orange', component: <CardshowOrangeLogo className="h-16" />, usage: 'Energy and creativity themes', context: 'Creator tools, community features, calls-to-action' },
-    { name: 'Cardshow Modern', component: <CardshowModernLogo className="h-16" />, usage: 'Contemporary, tech-forward messaging', context: 'Innovation showcases, product launches' },
-    { name: 'Cardshow Retro', component: <CardshowRetroLogo className="h-16" />, usage: 'Nostalgic, vintage card collecting appeal', context: 'Heritage features, collector community' },
-    { name: 'Cardshow Vintage', component: <CardshowVintageLogo className="h-16" />, usage: 'Classic elegance and timeless quality', context: 'Premium offerings, luxury collections' },
-    { name: 'Cardshow Red Blue', component: <CardshowRedBlueLogo className="h-16" />, usage: 'Patriotic themes and American sports', context: 'Sports partnerships, team collaborations' },
-    { name: 'Block Letters', component: <CardshowBlockLettersLogo className="h-16" />, usage: 'Bold, impactful messaging', context: 'Headlines, promotional materials, merchandise' },
-    { name: 'Cardshow Green', component: <CardshowGreenLogo className="h-16" />, usage: 'Growth, success, and environmental themes', context: 'Sustainability messaging, creator economy' },
-    { name: 'Green Sparkles', component: <CardshowGreenSparklesLogo className="h-16" />, usage: 'Magical, premium experiences', context: 'Special events, premium features, celebrations' },
+    { name: 'Cardshow Official', component: <CardshowGreenSparklesOfficialLogo className="h-16" />, usage: 'Primary brand mark with sparkles - Official Cardshow logo', context: 'Main brand applications, hero sections, official materials', theme: { primary: '#45B26B', secondary: '#FFD700', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'CRD Gradient', component: <CRDGradientLogo className="h-16" />, usage: 'Technical brand mark for development tools', context: 'CRD maker, developer tools, technical documentation', theme: { primary: '#3772FF', secondary: '#9757D7', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'Green Script', component: <CardshowGreenScriptLogo className="h-16" />, usage: 'Elegant script version for premium contexts', context: 'Luxury collections, premium features, elegant presentations', theme: { primary: '#45B26B', secondary: '#FFD700', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'Brown Orange', component: <CardshowBrownOrangeLogo className="h-16" />, usage: 'Warm, vintage appeal for retro themes', context: 'Vintage collections, heritage features, classic designs', theme: { primary: '#8B4513', secondary: '#FF8C00', accent: '#FFE4B5', text: '#FFFFFF' } },
+    { name: 'Blue Outline', component: <CardshowBlueOutlineLogo className="h-16" />, usage: 'Clean outline version for professional use', context: 'Corporate communications, business materials, clean layouts', theme: { primary: '#3772FF', secondary: '#FFD700', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'Teal Sparkles', component: <CardshowTealSparklesLogo className="h-16" />, usage: 'Modern premium with magical elements', context: 'Special events, premium features, modern aesthetics', theme: { primary: '#008B8B', secondary: '#FFD700', accent: '#000000', text: '#FFFFFF' } },
+    { name: 'Red Script', component: <CardshowRedScriptLogo className="h-16" />, usage: 'Bold script for high-energy contexts', context: 'Action features, dynamic content, high-energy themes', theme: { primary: '#DC143C', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'Black Bold', component: <CardshowBlackBoldLogo className="h-16" />, usage: 'Strong, minimalist version', context: 'Modern minimalist designs, high contrast needs', theme: { primary: '#000000', secondary: '#FFFFFF', accent: '#808080', text: '#FFFFFF' } },
+    { name: 'Purple Outline', component: <CardshowPurpleOutlineLogo className="h-16" />, usage: 'Premium outline version', context: 'Luxury branding, premium tier features, elegant designs', theme: { primary: '#9757D7', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF' } },
+    { name: 'Orange Black Bold', component: <CardshowOrangeBlackBoldLogo className="h-16" />, usage: 'High-contrast bold version', context: 'Sports themes, high-energy content, bold statements', theme: { primary: '#FF8C00', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'Cardshow Basic', component: <CardshowBasicLogo className="h-16" />, usage: 'Clean, minimal version for professional contexts', context: 'Documentation, business materials, partnerships', theme: { primary: '#3772FF', secondary: '#FFFFFF', accent: '#000000', text: '#FFFFFF' } },
+    { name: 'Cardshow Blue', component: <CardshowBlueLogo className="h-16" />, usage: 'Trust and reliability messaging', context: 'Corporate communications, enterprise features', theme: { primary: '#3772FF', secondary: '#FFFFFF', accent: '#000000', text: '#FFFFFF' } },
+    { name: 'Cardshow Orange', component: <CardshowOrangeLogo className="h-16" />, usage: 'Energy and creativity themes', context: 'Creator tools, community features, calls-to-action', theme: { primary: '#EA6E48', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'Cardshow Modern', component: <CardshowModernLogo className="h-16" />, usage: 'Contemporary, tech-forward messaging', context: 'Innovation showcases, product launches', theme: { primary: '#3772FF', secondary: '#9757D7', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'Cardshow Retro', component: <CardshowRetroLogo className="h-16" />, usage: 'Nostalgic, vintage card collecting appeal', context: 'Heritage features, collector community', theme: { primary: '#8B4513', secondary: '#FFD700', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'Cardshow Vintage', component: <CardshowVintageLogo className="h-16" />, usage: 'Classic elegance and timeless quality', context: 'Premium offerings, luxury collections', theme: { primary: '#8B4513', secondary: '#FFE4B5', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'Cardshow Red Blue', component: <CardshowRedBlueLogo className="h-16" />, usage: 'Patriotic themes and American sports', context: 'Sports partnerships, team collaborations', theme: { primary: '#DC143C', secondary: '#0000FF', accent: '#FFFFFF', text: '#FFFFFF' } },
+    { name: 'Block Letters', component: <CardshowBlockLettersLogo className="h-16" />, usage: 'Bold, impactful messaging', context: 'Headlines, promotional materials, merchandise', theme: { primary: '#000000', secondary: '#FFFFFF', accent: '#808080', text: '#FFFFFF' } },
+    { name: 'Cardshow Green', component: <CardshowGreenLogo className="h-16" />, usage: 'Growth, success, and environmental themes', context: 'Sustainability messaging, creator economy', theme: { primary: '#45B26B', secondary: '#FFFFFF', accent: '#000000', text: '#FFFFFF' } },
+    { name: 'Green Sparkles', component: <CardshowGreenSparklesLogo className="h-16" />, usage: 'Magical, premium experiences', context: 'Special events, premium features, celebrations', theme: { primary: '#45B26B', secondary: '#FFD700', accent: '#FFFFFF', text: '#FFFFFF' } },
   ];
 
   const designPrinciples = [
@@ -193,10 +211,14 @@ const DesignGuide = () => {
                   </div>
                   
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-crd-blue/20 to-crd-purple/20 rounded-2xl blur-xl"></div>
-                    <CRDCard className="relative p-8 text-center space-y-4">
-                      <CRDGradientLogo className="h-20 mx-auto" />
-                      <h3 className="text-xl font-bold text-crd-white">Premium Digital Experience</h3>
+                    <div className="absolute inset-0 bg-gradient-to-r from-crd-green/20 to-crd-blue/20 rounded-2xl blur-xl"></div>
+                    <CRDCard className="relative p-8 text-center space-y-6">
+                      <div className="flex justify-center items-center space-x-4">
+                        <CardshowGreenSparklesOfficialLogo className="h-16" />
+                        <div className="w-px h-12 bg-crd-mediumGray/50"></div>
+                        <CRDGradientLogo className="h-16" />
+                      </div>
+                      <h3 className="text-xl font-bold text-crd-white">Cardshow & CRD Platform</h3>
                       <p className="text-crd-lightGray">Photorealistic rendering • Real-time physics • Emotional storytelling</p>
                     </CRDCard>
                   </div>
@@ -303,6 +325,13 @@ const DesignGuide = () => {
                               Best for: {logo.context}
                             </p>
                           </div>
+                          {logo.theme && (
+                            <div className="flex justify-center space-x-1 mt-2">
+                              <div className="w-4 h-4 rounded-full border border-crd-mediumGray/30" style={{ backgroundColor: logo.theme.primary }}></div>
+                              <div className="w-4 h-4 rounded-full border border-crd-mediumGray/30" style={{ backgroundColor: logo.theme.secondary }}></div>
+                              <div className="w-4 h-4 rounded-full border border-crd-mediumGray/30" style={{ backgroundColor: logo.theme.accent }}></div>
+                            </div>
+                          )}
                         </div>
                       </CRDCard>
                     ))}
