@@ -174,6 +174,22 @@ export const Navbar = () => {
                 <span>DNA</span>
               </Link>
 
+              <Link
+                to="/design-guide"
+                className={`
+                  flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium
+                  transition-all duration-200 group
+                  ${isActive('/design-guide') 
+                    ? 'text-themed-active bg-themed-active/10' 
+                    : 'text-themed-secondary hover-themed'
+                  }
+                  ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
+                `}
+              >
+                <Palette className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110' : ''}`} />
+                <span>Design Guide</span>
+              </Link>
+
               {/* Dev Login Button - Only shows in development */}
               <DevLoginButton 
                 variant="outline" 

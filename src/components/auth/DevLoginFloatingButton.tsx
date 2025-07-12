@@ -19,10 +19,7 @@ export const DevLoginFloatingButton: React.FC = () => {
       } else {
         console.log('🔧 Dev session created successfully');
         toast.success('Dev user logged in successfully!');
-        // Force reload to pick up the new auth state
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
+        // No reload needed - the auth system should pick this up automatically
       }
     } catch (error) {
       console.error('🔧 Dev login error:', error);
