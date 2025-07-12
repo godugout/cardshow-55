@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Code2, Palette, Type, MousePointer, Layout, Paintbrush, Sparkles, Image, Eye, Heart, Zap, Globe, Users, Layers, Target, BookOpen, Share2, Download, Check } from 'lucide-react';
 import { cardshowLogoDatabase } from "@/lib/cardshowDNA";
 import { getImagePath } from "@/lib/imagePathUtil";
@@ -23,7 +24,28 @@ import { NCAABig10Logo } from '@/components/home/navbar/NCAABig10Logo';
 
 const DesignGuide = () => {
   const [activeSection, setActiveSection] = useState('overview');
-  const { currentPalette, availablePalettes, setTheme, setLogoTheme } = useTeamTheme();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { currentPalette, availablePalettes, setTheme, setLogoTheme, currentLogoCode } = useTeamTheme();
+
+  // Handle logo selection with URL synchronization
+  const handleLogoSelect = (logo: any) => {
+    setLogoTheme(logo.dnaCode);
+    
+    // Update URL parameters
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('logo', logo.dnaCode);
+    newParams.set('theme', `logo-${logo.dnaCode.toLowerCase()}`);
+    setSearchParams(newParams);
+  };
+
+  // Load theme from URL parameters on mount
+  useEffect(() => {
+    const logoParam = searchParams.get('logo');
+    if (logoParam && logoParam !== currentLogoCode) {
+      setLogoTheme(logoParam);
+    }
+  }, [searchParams, setLogoTheme, currentLogoCode]);
 
   const sidebarSections = [
     { id: 'overview', label: 'Brand Overview', icon: Layout, description: 'Mission, vision, and design philosophy' },
@@ -286,16 +308,24 @@ const DesignGuide = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {availableLogos.map((logo, index) => (
-                      <div 
-                        key={logo.dnaCode} 
-                        onClick={() => setLogoTheme(logo.dnaCode)}
-                        className="bg-gradient-to-br from-card to-card/50 rounded-xl border-2 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in cursor-pointer group"
-                        style={{ 
-                          animationDelay: `${index * 100}ms`,
-                          borderColor: logo.colorPalette[0] + '40'
-                        }}
-                      >
+                    {availableLogos.map((logo, index) => {
+                      const isActive = currentLogoCode === logo.dnaCode;
+                      return (
+                        <div 
+                          key={logo.dnaCode} 
+                          onClick={() => handleLogoSelect(logo)}
+                          className={`relative bg-gradient-to-br from-card to-card/50 rounded-xl border-2 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in cursor-pointer group ${
+                            isActive ? 'ring-2 ring-crd-blue border-crd-blue/60 bg-crd-blue/5' : ''
+                          }`}
+                          style={{ 
+                            animationDelay: `${index * 100}ms`,
+                            borderColor: isActive ? logo.colorPalette[0] : logo.colorPalette[0] + '40'
+                          }}
+                        >
+                          {/* Active indicator */}
+                          {isActive && (
+                            <div className="absolute top-2 right-2 w-3 h-3 bg-crd-blue rounded-full border-2 border-white shadow-lg"></div>
+                          )}
                         <div className="aspect-square flex items-center justify-center bg-gradient-to-br from-crd-mediumGray/10 to-crd-darkGray/20 rounded-xl p-4">
                           <img 
                             src={logo.imageUrl} 
@@ -326,10 +356,11 @@ const DesignGuide = () => {
                           <div className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                             Click to apply theme
                           </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                         </div>
+                       </div>
+                     );
+                    })}
+                   </div>
                 </section>
 
                 {/* Current Theme Preview */}

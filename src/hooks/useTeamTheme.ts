@@ -24,6 +24,7 @@ export const useTeamTheme = () => {
   const [availablePalettes, setAvailablePalettes] = useState<TeamPalette[]>(allPalettes);
   const [databaseThemes, setDatabaseThemes] = useState<ColorTheme[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentLogoCode, setCurrentLogoCode] = useState<string | null>(null);
 
   // Load database color themes and logo themes
   const loadDatabaseThemes = useCallback(async () => {
@@ -167,11 +168,30 @@ export const useTeamTheme = () => {
     loadDatabaseThemes();
   }, [loadDatabaseThemes]);
 
+  // Logo-specific theme functions
+  const setLogoTheme = useCallback((dnaCode: string) => {
+    const logoTheme = getThemeByDNA(dnaCode);
+    if (logoTheme) {
+      applyTheme(logoTheme);
+      setCurrentLogoCode(dnaCode);
+      localStorage.setItem('crd-theme', logoTheme.id);
+      localStorage.setItem('crd-logo-code', dnaCode);
+      console.log(`Applied logo theme: ${dnaCode} -> ${logoTheme.id}`);
+    } else {
+      console.warn(`Logo theme not found for DNA code: ${dnaCode}`);
+    }
+  }, [applyTheme]);
+
   // Load saved theme after palettes are available
   useEffect(() => {
     if (availablePalettes.length > 0 && !isLoading) {
       const savedTheme = localStorage.getItem('crd-theme');
-      if (savedTheme) {
+      const savedLogoCode = localStorage.getItem('crd-logo-code');
+      
+      if (savedLogoCode) {
+        // Restore logo-based theme
+        setLogoTheme(savedLogoCode);
+      } else if (savedTheme) {
         setTheme(savedTheme);
       } else {
         // Apply default theme
@@ -179,19 +199,24 @@ export const useTeamTheme = () => {
         applyTheme(defaultPalette);
       }
     }
-  }, [availablePalettes, isLoading, setTheme, applyTheme]);
+  }, [availablePalettes, isLoading, setTheme, setLogoTheme, applyTheme]);
 
-  // Logo-specific theme functions
-  const setLogoTheme = useCallback((dnaCode: string) => {
-    const logoTheme = getThemeByDNA(dnaCode);
-    if (logoTheme) {
-      applyTheme(logoTheme);
-      localStorage.setItem('crd-theme', logoTheme.id);
-      console.log(`Applied logo theme: ${dnaCode} -> ${logoTheme.id}`);
-    } else {
-      console.warn(`Logo theme not found for DNA code: ${dnaCode}`);
+  // Get current logo information
+  const getCurrentLogo = useCallback(() => {
+    if (!currentLogoCode) return null;
+    return getThemeByDNA(currentLogoCode);
+  }, [currentLogoCode]);
+
+  // Set theme and clear logo tracking for non-logo themes
+  const setThemeEnhanced = useCallback((themeId: string) => {
+    // Check if this is a logo-based theme
+    const isLogoTheme = themeId.startsWith('logo-');
+    if (!isLogoTheme) {
+      setCurrentLogoCode(null);
+      localStorage.removeItem('crd-logo-code');
     }
-  }, [applyTheme]);
+    setTheme(themeId);
+  }, [setTheme]);
 
   return {
     // Current state
@@ -199,9 +224,10 @@ export const useTeamTheme = () => {
     availablePalettes,
     databaseThemes,
     isLoading,
+    currentLogoCode,
     
     // Actions
-    setTheme,
+    setTheme: setThemeEnhanced,
     setLogoTheme,
     resetToDefault,
     applyTheme,
@@ -210,6 +236,7 @@ export const useTeamTheme = () => {
     getThemePreview,
     getThemeCSSVars,
     loadDatabaseThemes,
+    getCurrentLogo,
     
     // Logo-specific utilities
     getThemeByDNA,

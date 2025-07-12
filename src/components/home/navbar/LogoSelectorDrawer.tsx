@@ -122,7 +122,7 @@ interface LogoSelectorDrawerProps {
 
 export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) => {
   const { settings, saveSettings } = useAppSettings();
-  const { setLogoTheme, currentPalette, availablePalettes, setTheme } = useTeamTheme();
+  const { setLogoTheme, currentPalette, availablePalettes, setTheme, currentLogoCode } = useTeamTheme();
   const [open, setOpen] = useState(false);
 
   // Find logo by theme ID with fallback
@@ -134,19 +134,34 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
     return logoGroups[0].logos[0]; // Fallback to first logo
   };
 
-  // Initialize selected logo from settings or default
+  // Initialize selected logo from current logo code or settings
   const [selectedLogo, setSelectedLogo] = useState(() => {
+    if (currentLogoCode) {
+      // Find logo by DNA code
+      for (const group of logoGroups) {
+        const found = group.logos.find(logo => logo.dnaCode === currentLogoCode);
+        if (found) return found;
+      }
+    }
     const savedTheme = settings?.theme;
     return savedTheme ? findLogoByThemeId(savedTheme) : logoGroups[0].logos[0];
   });
 
-  // Load saved theme on settings change
+  // Update selected logo when current logo code changes
   useEffect(() => {
-    if (settings?.theme && settings.theme !== selectedLogo.themeId) {
+    if (currentLogoCode) {
+      for (const group of logoGroups) {
+        const found = group.logos.find(logo => logo.dnaCode === currentLogoCode);
+        if (found && found.themeId !== selectedLogo.themeId) {
+          setSelectedLogo(found);
+          break;
+        }
+      }
+    } else if (settings?.theme && settings.theme !== selectedLogo.themeId) {
       const savedLogo = findLogoByThemeId(settings.theme);
       setSelectedLogo(savedLogo);
     }
-  }, [settings?.theme]);
+  }, [currentLogoCode, settings?.theme, selectedLogo.themeId]);
 
   // Apply theme to document and notify parent
   useEffect(() => {
@@ -200,7 +215,7 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
                     </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                   {group.logos.map((logo) => {
-                    const isSelected = selectedLogo.themeId === logo.themeId;
+                    const isSelected = selectedLogo.themeId === logo.themeId || currentLogoCode === logo.dnaCode;
                     
                     return (
                       <button
