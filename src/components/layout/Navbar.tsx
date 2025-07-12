@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Plus, Home, ImageIcon, Palette, X } from 'lucide-react';
+import { Plus, Home, ImageIcon, Palette, X, Code2 } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
 import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
 import { useEnhancedNavbar } from '@/hooks/useEnhancedNavbar';
@@ -156,6 +156,22 @@ export const Navbar = () => {
               >
                 <Palette className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110' : ''}`} />
                 <span>Studio</span>
+              </Link>
+
+              <Link
+                to="/dna"
+                className={`
+                  flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium
+                  transition-all duration-200 group
+                  ${isActive('/dna') 
+                    ? 'text-themed-active bg-themed-active/10' 
+                    : 'text-themed-secondary hover-themed'
+                  }
+                  ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
+                `}
+              >
+                <Code2 className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110' : ''}`} />
+                <span>DNA</span>
               </Link>
 
               {/* Dev Login Button - Only shows in development */}
