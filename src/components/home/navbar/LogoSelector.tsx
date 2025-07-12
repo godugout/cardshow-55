@@ -3,8 +3,9 @@ import { LogoSelectorDrawer } from './LogoSelectorDrawer';
 
 interface LogoSelectorProps {
   onThemeChange?: (themeId: string) => void;
+  currentTheme?: string;
 }
 
-export const LogoSelector = ({ onThemeChange }: LogoSelectorProps) => {
-  return <LogoSelectorDrawer onThemeChange={onThemeChange} />;
+export const LogoSelector = ({ onThemeChange, currentTheme }: LogoSelectorProps) => {
+  return <LogoSelectorDrawer onThemeChange={onThemeChange} currentTheme={currentTheme} />;
 };

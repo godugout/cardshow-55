@@ -84,7 +84,7 @@ export const Navbar = () => {
             ${!prefersReducedMotion && isScrolled ? 'drop-shadow-sm' : ''}
           `}>
             <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
-              <LogoSelector onThemeChange={setCurrentTheme} />
+              <LogoSelector onThemeChange={setCurrentTheme} currentTheme={currentTheme} />
             </div>
             {isCRDRoute && (
               <div className="flex items-center animate-fade-in">
