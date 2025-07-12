@@ -9,14 +9,15 @@ const badgeVariants = cva(
     variants: {
       variant: {
         // Team spirit themed variants
-        primary: "badge-themed-primary",
-        secondary: "badge-themed-secondary",
-        success: "badge-themed-primary",
+        primary: "bg-crd-blue text-white border-crd-blue",
+        secondary: "bg-crd-green text-white border-crd-green",
+        success: "bg-crd-green text-white border-crd-green",
+        warning: "bg-crd-orange text-white border-crd-orange",
         
         // Standard variants
         default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
         destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
+        outline: "text-foreground border-crd-mediumGray",
       },
       size: {
         default: "px-2.5 py-0.5 text-xs",

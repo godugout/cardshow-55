@@ -196,7 +196,7 @@ const DesignGuide = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  {currentPalette && <PalettePreview palette={currentPalette} size="sm" />}
+                  {currentPalette && <PalettePreview colors={[currentPalette.colors.primary, currentPalette.colors.secondary, currentPalette.colors.accent, currentPalette.colors.neutral]} title={currentPalette.name} />}
                 </div>
               </div>
               <div className="flex items-center space-x-2">
@@ -437,7 +437,7 @@ const DesignGuide = () => {
                               }`}
                             >
                               <div className="space-y-2">
-                                <PalettePreview palette={team} size="sm" />
+                            <PalettePreview colors={[team.primary, team.secondary, team.accent]} />
                                 <div className="text-xs font-medium text-themed-primary truncate">
                                   {team.name.split(' ').pop()}
                                 </div>
@@ -462,7 +462,7 @@ const DesignGuide = () => {
                               }`}
                             >
                               <div className="space-y-2">
-                                <PalettePreview palette={team} size="sm" />
+                            <PalettePreview colors={[team.primary, team.secondary, team.accent]} />
                                 <div className="text-xs font-medium text-themed-primary truncate">
                                   {team.name.split(' ').pop()}
                                 </div>
@@ -487,7 +487,7 @@ const DesignGuide = () => {
                               }`}
                             >
                               <div className="space-y-2">
-                                <PalettePreview palette={team} size="sm" />
+                            <PalettePreview colors={[team.primary, team.secondary, team.accent]} />
                                 <div className="text-xs font-medium text-themed-primary truncate">
                                   {team.name.split(' ').pop()}
                                 </div>
@@ -512,7 +512,7 @@ const DesignGuide = () => {
                               }`}
                             >
                               <div className="space-y-2">
-                                <PalettePreview palette={team} size="sm" />
+                                <PalettePreview colors={[team.primary, team.secondary, team.accent]} />
                                 <div className="text-xs font-medium text-themed-primary truncate">
                                   {team.name.split(' ').pop()}
                                 </div>
@@ -525,7 +525,7 @@ const DesignGuide = () => {
                 </section>
 
                 {/* Live Component Preview */}
-                <TeamThemeShowcase />
+                  <TeamThemeShowcase theme={{ name: "Sample Theme", primary: "#3772FF", secondary: "#45B26B", accent: "#F97316" }} />
               </div>
             )}
 
@@ -629,7 +629,7 @@ const DesignGuide = () => {
                 {/* Theme Showcase */}
                 <section className="space-y-8">
                   <h2 className="text-2xl font-bold text-crd-white">Interactive Theme Showcase</h2>
-                  <TeamThemeShowcase />
+              <TeamThemeShowcase theme={{ name: "Sample Theme", primary: "#3772FF", secondary: "#45B26B", accent: "#F97316" }} />
                 </section>
               </div>
             )}
@@ -1917,10 +1917,8 @@ export const MarketplaceCard = ({ card }) => {
                   {currentPalette && (
                     <div className="text-center">
                       <PalettePreview 
-                        palette={currentPalette} 
-                        size="lg" 
-                        showLabels={true}
-                        className="mx-auto"
+                        colors={[currentPalette.colors.primary, currentPalette.colors.secondary, currentPalette.colors.accent, currentPalette.colors.neutral]}
+                        title={currentPalette.name}
                       />
                       <p className="text-sm text-muted-foreground mt-4">
                         Current theme: {currentPalette.name}
@@ -1988,7 +1986,7 @@ export const MarketplaceCard = ({ card }) => {
                     </p>
                   </div>
 
-                  <TeamThemeShowcase />
+              <TeamThemeShowcase theme={{ name: "Sample Theme", primary: "#3772FF", secondary: "#45B26B", accent: "#F97316" }} />
 
                   <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
@@ -2712,7 +2710,7 @@ export const MarketplaceCard = ({ card }) => {
                 {/* Current Theme Showcase */}
                 <section className="space-y-8">
                   <h2 className="text-2xl font-bold text-crd-white">Live Theme Demonstration</h2>
-                  <TeamThemeShowcase />
+                  <TeamThemeShowcase theme={{ name: "Sample Theme", primary: "#3772FF", secondary: "#45B26B", accent: "#F97316" }} />
                 </section>
 
                 {/* Theme Application Examples */}
@@ -2774,7 +2772,7 @@ export const MarketplaceCard = ({ card }) => {
                       <CRDCard key={palette.id} className="p-6 group hover:shadow-lg hover:shadow-themed-accent/20 transition-all duration-300 cursor-pointer"
                                onClick={() => setTheme(palette.id)}>
                         <div className="space-y-4">
-                          <PalettePreview palette={palette} size="lg" showLabels />
+                          <PalettePreview colors={[palette.colors.primary, palette.colors.secondary, palette.colors.accent, palette.colors.neutral]} title={palette.name} />
                           <div className="space-y-2">
                             <h3 className="font-semibold text-crd-white group-hover:text-themed-accent transition-colors">
                               {palette.name}
