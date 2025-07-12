@@ -15,7 +15,6 @@ import Studio from '@/pages/Studio';
 import UploadTestPage from '@/pages/UploadTestPage';
 import DNATestPage from '@/pages/DNATestPage';
 import DesignGuide from '@/pages/DesignGuide';
-import { AuthPage } from '@/components/auth/AuthPage';
 
 const App = () => {
   // Main App Error Boundary wrapper
@@ -29,7 +28,6 @@ const App = () => {
             <main className="flex-1 transition-all duration-300 ease-in-out">
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<AuthPage />} />
                 <Route path="/create" element={<CreateChoice />} />
                 <Route path="/create/story" element={<CreateStory />} />
                 <Route path="/create/crd" element={<CreateCRD />} />

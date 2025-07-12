@@ -77,7 +77,7 @@ export const Navbar = () => {
       }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex justify-between items-center h-full">
-          {/* Logo Selector with CRD logo always visible */}
+          {/* Logo Selector with enhanced animation */}
           <div className={`
             flex items-center transition-all duration-300
             ${scrollMetrics.isScrolling ? 'scale-[0.98]' : 'scale-100'}
@@ -86,13 +86,14 @@ export const Navbar = () => {
             <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
               <LogoSelector onThemeChange={setCurrentTheme} currentTheme={currentTheme} />
             </div>
-            {/* Always show CRD logo next to the main logo */}
-            <div className="flex items-center animate-fade-in">
-              <X className="w-4 h-4 text-themed-secondary/60 mx-2 transition-colors duration-200" />
-              <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
-                <CRDGradientLogo />
+            {isCRDRoute && (
+              <div className="flex items-center animate-fade-in">
+                <X className="w-4 h-4 text-themed-secondary/60 mx-1 transition-colors duration-200" />
+                <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
+                  <CRDGradientLogo />
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Navigation Links with staggered animation */}

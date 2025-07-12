@@ -12,8 +12,7 @@ export const CRDGradientLogo: React.FC<CRDGradientLogoProps> = ({ className = ""
         alt="CRD"
         className="h-16 w-auto"
       />
-      {/* Position MKR to overlay where the caret appears, hide on group hover */}
-      <span className="absolute right-0 top-1/2 -translate-y-1/2 text-lg font-medium text-crd-lightGray tracking-wide transition-opacity duration-300 group-hover:opacity-0">
+      <span className="text-lg font-medium text-crd-lightGray tracking-wide relative z-10 -ml-1">
         MKR
       </span>
     </div>
