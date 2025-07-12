@@ -19,6 +19,11 @@ export const KNOWN_IMAGE_PATHS: Record<string, string> = {
   'CS_SK_RB': '/lovable-uploads/a2b3c4d5-e6f7-4a8b-9c1d-4e5f6a7b8c9d.png',
   'CS_SK_RS': '/lovable-uploads/b4c5d6e7-f8a9-4b1c-8d2e-5f6a7b8c9d1e.png',
   'CS_ORIG_WS': '/lovable-uploads/c6d7e8f9-a1b2-4c3d-9e4f-6a7b8c9d1e2f.png',
+  // Remove files that don't exist - these were causing the mismatches
+  // 'CS_MLB_CLE_RBS': placeholder - no actual file exists
+  // 'CS_MLB_LAD_BS': placeholder - no actual file exists  
+  // 'CS_MLB_MIA': placeholder - no actual file exists
+  // 'CS_MLB_OAK': placeholder - no actual file exists
 };
 
 // Get the correct image path for a CRD code

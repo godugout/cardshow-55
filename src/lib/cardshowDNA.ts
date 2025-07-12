@@ -225,7 +225,7 @@ export const CRD_DNA_ENTRIES: CRDEntry[] = [
     tertiaryColor: "#FFFFFF",
     styleTag: "Standard",
     mascot: "Slider",
-    imagePath: "/lovable-uploads/placeholder-cle-rbs.png", // Need actual UUID path
+    imagePath: "/lovable-uploads/placeholder-cle-rbs.png", // This entry doesn't have an actual file - should be removed or replaced
     rarity: "Common",
     powerLevel: 68,
     unlockMethod: "starter",
@@ -247,7 +247,7 @@ export const CRD_DNA_ENTRIES: CRDEntry[] = [
     secondaryColor: "#FFFFFF",
     tertiaryColor: "#EF3E42",
     styleTag: "Standard",
-    imagePath: "/lovable-uploads/placeholder-lad-bs.png", // Need actual UUID path
+    imagePath: "/lovable-uploads/placeholder-lad-bs.png", // This entry doesn't have an actual file - should be removed or replaced
     rarity: "Rare",
     powerLevel: 82,
     unlockMethod: "premium",
@@ -274,7 +274,7 @@ export const CRD_DNA_ENTRIES: CRDEntry[] = [
     tertiaryColor: "#000000",
     styleTag: "Standard",
     mascot: "Billy the Marlin",
-    imagePath: "/lovable-uploads/placeholder-mia.png", // Need actual UUID path
+    imagePath: "/lovable-uploads/placeholder-mia.png", // This entry doesn't have an actual file - should be removed or replaced
     rarity: "Uncommon",
     powerLevel: 70,
     unlockMethod: "achievement",
@@ -297,7 +297,7 @@ export const CRD_DNA_ENTRIES: CRDEntry[] = [
     tertiaryColor: "#FFFFFF",
     styleTag: "Standard",
     mascot: "Stomper",
-    imagePath: "/lovable-uploads/placeholder-oak.png", // Need actual UUID path
+    imagePath: "/lovable-uploads/placeholder-oak.png", // This entry doesn't have an actual file - should be removed or replaced
     rarity: "Common",
     powerLevel: 62,
     unlockMethod: "starter",
