@@ -5,6 +5,7 @@ export interface ColorTheme {
   secondary_color: string;
   accent_color: string;
   text_color: string;
+  quaternary_color?: string; // 4th complementary color
   primary_example_team: string;
   teams?: Team[];
 }
@@ -26,6 +27,7 @@ export interface TeamColorScheme {
   secondary: string;
   accent: string;
   text: string;
+  quaternary?: string; // 4th complementary color
 }
 
 // Configuration interface for the picker
@@ -45,7 +47,7 @@ export interface TeamColorPickerConfig {
 export interface TeamColorPickerEvents {
   onThemeSelect?: (theme: ColorTheme) => void;
   onSchemeSelect?: (scheme: TeamColorScheme) => void;
-  onColorsChange?: (colors: { primary: string; secondary: string; accent: string; text: string }) => void;
+  onColorsChange?: (colors: { primary: string; secondary: string; accent: string; text: string; quaternary?: string }) => void;
   onSportChange?: (sport: string) => void;
 }
 
@@ -56,7 +58,8 @@ export const convertColorThemeToScheme = (theme: ColorTheme): TeamColorScheme =>
   primary: theme.primary_color,
   secondary: theme.secondary_color,
   accent: theme.accent_color,
-  text: theme.text_color
+  text: theme.text_color,
+  quaternary: theme.quaternary_color
 });
 
 // Convert scheme back to theme format
@@ -66,5 +69,6 @@ export const convertSchemeToColorTheme = (scheme: TeamColorScheme): Partial<Colo
   primary_color: scheme.primary,
   secondary_color: scheme.secondary,
   accent_color: scheme.accent,
-  text_color: scheme.text
+  text_color: scheme.text,
+  quaternary_color: scheme.quaternary
 });

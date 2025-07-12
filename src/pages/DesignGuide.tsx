@@ -214,9 +214,9 @@ const DesignGuide = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-crd-green/20 to-crd-blue/20 rounded-2xl blur-xl"></div>
                     <CRDCard className="relative p-8 text-center space-y-6">
                       <div className="flex justify-center items-center space-x-4">
-                        <CardshowGreenSparklesOfficialLogo className="h-16" />
+                        <CardshowGreenSparklesOfficialLogo className="w-16" />
                         <div className="w-px h-12 bg-crd-mediumGray/50"></div>
-                        <CRDGradientLogo className="h-16" />
+                        <CRDGradientLogo className="w-16" />
                       </div>
                       <h3 className="text-xl font-bold text-crd-white">Cardshow & CRD Platform</h3>
                       <p className="text-crd-lightGray">Photorealistic rendering • Real-time physics • Emotional storytelling</p>
