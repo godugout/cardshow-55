@@ -40,19 +40,19 @@ const logoGroups = [
     ]
   },
   {
-    label: 'CRD:DNA Logos',
+    label: 'Cardshow Logos',
     logos: [
-      { name: 'CS_CRD_BSC_WB', component: CardshowBasicLogo, hoverColor: 'gray', themeId: 'cardshow-basic' },
-      { name: 'CS_CRD_GRN_GWS', component: CardshowGreenLogo, hoverColor: 'green', themeId: 'cardshow-green' },
-      { name: 'CS_CRD_CLS_GGS', component: CardshowGreenSparklesLogo, hoverColor: 'emerald', themeId: 'cardshow-green-sparkles' },
-      { name: 'CS_CRD_RDB_RBS', component: CardshowRedBlueLogo, hoverColor: 'purple', themeId: 'cardshow-red-blue' },
-      { name: 'CS_CRD_BLU_BWS', component: CardshowBlueLogo, hoverColor: 'blue', themeId: 'cardshow-blue' },
-      { name: 'CS_CRD_ORG_OWS', component: CardshowOrangeLogo, hoverColor: 'orange', themeId: 'cardshow-orange' },
-      { name: 'CS_CRD_BLK_BWB', component: CardshowBlockLettersLogo, hoverColor: 'slate', themeId: 'cardshow-block' },
-      { name: 'CS_CRD_VNT_BWS', component: CardshowVintageLogo, hoverColor: 'amber', themeId: 'cardshow-vintage' },
-      { name: 'CS_CRD_RTR_CWS', component: CardshowRetroLogo, hoverColor: 'cyan', themeId: 'cardshow-retro' },
-      { name: 'CS_CRD_MDN_PWS', component: CardshowModernLogo, hoverColor: 'indigo', themeId: 'cardshow-modern' },
-      { name: 'CS_CRD_GRD_RGS', component: CRDGradientLogo, hoverColor: 'cyan', themeId: 'crdmkr' },
+      { name: 'Cardshow Basic', component: CardshowBasicLogo, hoverColor: 'gray', themeId: 'cardshow-basic' },
+      { name: 'Cardshow Green', component: CardshowGreenLogo, hoverColor: 'green', themeId: 'cardshow-green' },
+      { name: 'Cardshow Classic', component: CardshowGreenSparklesLogo, hoverColor: 'emerald', themeId: 'cardshow-green-sparkles' },
+      { name: 'Cardshow Red/Blue', component: CardshowRedBlueLogo, hoverColor: 'purple', themeId: 'cardshow-red-blue' },
+      { name: 'Cardshow Blue', component: CardshowBlueLogo, hoverColor: 'blue', themeId: 'cardshow-blue' },
+      { name: 'Cardshow Orange', component: CardshowOrangeLogo, hoverColor: 'orange', themeId: 'cardshow-orange' },
+      { name: 'Cardshow Block', component: CardshowBlockLettersLogo, hoverColor: 'slate', themeId: 'cardshow-block' },
+      { name: 'Cardshow Vintage', component: CardshowVintageLogo, hoverColor: 'amber', themeId: 'cardshow-vintage' },
+      { name: 'Cardshow Retro', component: CardshowRetroLogo, hoverColor: 'cyan', themeId: 'cardshow-retro' },
+      { name: 'Cardshow Modern', component: CardshowModernLogo, hoverColor: 'indigo', themeId: 'cardshow-modern' },
+      { name: 'CRDMKR', component: CRDGradientLogo, hoverColor: 'cyan', themeId: 'crdmkr' },
     ]
   }
 ];
