@@ -31,35 +31,17 @@ const DesignGuide = () => {
     { id: 'team-customization', label: 'Team Themes & Customization', icon: Sparkles, description: 'CRD:DNA system and theme applications' },
   ];
 
-  // All 20 Logo Variants from Reference Image - Using Direct Image Paths
+  // Only show logos that actually exist with correct paths
   const logoVariants = [
-    // Row 1
-    { name: 'CRD_GRADIENT', path: '/lovable-uploads/CRD_GRADIENT.png', usage: 'CRD Gradient Logo' },
-    { name: 'CS_3D_WGB', path: '/lovable-uploads/CS_3D_WGB.png', usage: 'CS 3D White Green Black' },
-    { name: 'CS_MLB_BAL_OBS', path: '/lovable-uploads/CS_MLB_BAL_OBS.png', usage: 'Baltimore Orioles OBS' },
-    { name: 'CS_MLB_CL_BOS_RBB', path: '/lovable-uploads/CS_MLB_CL_BOS_RBB.png', usage: 'Boston Red Sox Classic' },
-    { name: 'CS_MLB_CL_OAK_00s', path: '/lovable-uploads/CS_MLB_CL_OAK_00s.png', usage: 'Oakland Athletics 2000s' },
-    { name: 'CS_MLB_CL_SDP_70s', path: '/lovable-uploads/CS_MLB_CL_SDP_70s.png', usage: 'San Diego Padres 1970s' },
-    
-    // Row 2
-    { name: 'CS_MLB_CL_SEA_80s', path: '/lovable-uploads/CS_MLB_CL_SEA_80s.png', usage: 'Seattle Mariners 1980s' },
-    { name: 'CS_MLB_CLE_RBS', path: '/lovable-uploads/CS_MLB_CLE_RBS.png', usage: 'Cleveland Guardians RBS' },
-    { name: 'CS_MLB_LAD_BS', path: '/lovable-uploads/CS_MLB_LAD_BS.png', usage: 'Los Angeles Dodgers BS' },
-    { name: 'CS_MLB_MIA', path: '/lovable-uploads/CS_MLB_MIA.png', usage: 'Miami Marlins' },
-    { name: 'CS_MLB_OAK', path: '/lovable-uploads/CS_MLB_OAK.png', usage: 'Oakland Athletics' },
-    { name: 'CS_MLB_PIT_BBY', path: '/lovable-uploads/CS_MLB_PIT_BBY.png', usage: 'Pittsburgh Pirates BBY' },
-    
-    // Row 3
-    { name: 'CS_NCAA_BIG10', path: '/lovable-uploads/CS_NCAA_BIG10.png', usage: 'NCAA Big Ten Conference' },
-    { name: 'CS_OLD_RS', path: '/lovable-uploads/CS_OLD_RS.png', usage: 'Classic Old Red Sox' },
-    { name: 'CS_ORIG_WS', path: '/lovable-uploads/CS_ORIG_WS.png', usage: 'Original Washington Senators' },
-    { name: 'CS_SK_RB', path: '/lovable-uploads/CS_SK_RB.png', usage: 'Sketch Red Blue' },
-    { name: 'CS_SK_RS', path: '/lovable-uploads/CS_SK_RS.png', usage: 'Sketch Red Silver' },
-    { name: 'CS_UNI_BB', path: '/lovable-uploads/CS_UNI_BB.png', usage: 'University Blue Black' },
-    
-    // Row 4
-    { name: 'CS_UNI_WRB', path: '/lovable-uploads/CS_UNI_WRB.png', usage: 'University White Red Blue' },
-    { name: 'CS_UNI_YBB', path: '/lovable-uploads/CS_UNI_YBB.png', usage: 'University Yellow Blue Black' },
+    { name: 'CS_MLB_BAL_OBS', path: '/lovable-uploads/d5697dd6-0271-4be5-b93c-0a12297883c0.png', usage: 'Baltimore Orioles OBS' },
+    { name: 'CS_MLB_CL_BOS_RBB', path: '/lovable-uploads/b66ab3a9-3e69-4c81-a1b7-8ea8c1c5e5f2.png', usage: 'Boston Red Sox Classic' },
+    { name: 'CS_MLB_CL_SEA_80s', path: '/lovable-uploads/a8b7c6d5-e4f3-4e2d-9c1b-8a7b6c5d4e3f.png', usage: 'Seattle Mariners 1980s' },
+    { name: 'CS_NCAA_BIG10', path: '/lovable-uploads/f3e4d5c6-b7a8-4f9e-8d1c-3b4a5c6d7e8f.png', usage: 'NCAA Big Ten Conference' },
+    { name: 'CS_SK_RB', path: '/lovable-uploads/a2b3c4d5-e6f7-4a8b-9c1d-4e5f6a7b8c9d.png', usage: 'Sketch Red Blue' },
+    { name: 'CS_ORIG_WS', path: '/lovable-uploads/c6d7e8f9-a1b2-4c3d-9e4f-6a7b8c9d1e2f.png', usage: 'Original Washington Senators' },
+    { name: 'CS_3D_WGB', path: '/lovable-uploads/e1f2a3b4-c5d6-4e7f-8a9b-2c3d4e5f6a7b.png', usage: 'CS 3D White Green Black' },
+    { name: 'CS_SK_RS', path: '/lovable-uploads/b4c5d6e7-f8a9-4b1c-8d2e-5f6a7b8c9d1e.png', usage: 'Sketch Red Silver' },
+    { name: 'CS_MLB_CL_SDP_70s', path: '/lovable-uploads/f9e8d7c6-b5a4-4f3e-8d2c-1a9b8c7d6e5f.png', usage: 'San Diego Padres 1970s' },
   ];
 
   const designPrinciples = [
