@@ -67,46 +67,14 @@ export const SimplifiedCTA: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex gap-6 flex-wrap justify-center">
-          {user ? (
-            <>
-              <Link to="/create">
-                <CRDButton 
-                  variant="primary" 
-                  className="bg-crd-green hover:bg-crd-green/80 text-black px-8 py-4 text-lg"
-                >
-                  Create Cards
-                </CRDButton>
-              </Link>
-              <Link to="/create">
-                <CRDButton 
-                  variant="secondary" 
-                  className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white px-8 py-4 text-lg"
-                >
-                  Browse Templates
-                </CRDButton>
-              </Link>
-              <Link to="/create">
-                <CRDButton 
-                  variant="secondary"
-                  size="lg"
-                  className="px-8 py-4 rounded-[90px]"
-                >
-                  Explore Gallery
-                </CRDButton>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link to="/create">
-                <CRDButton 
-                  variant="primary" 
-                  className="bg-crd-green hover:bg-crd-green/80 text-black px-8 py-4 text-lg"
-                >
-                  Create Cards
-                </CRDButton>
-              </Link>
-            </>
-          )}
+          <Link to="/create">
+            <CRDButton 
+              variant="primary" 
+              className="bg-crd-green hover:bg-crd-green/80 text-black px-8 py-4 text-lg"
+            >
+              Create Cards
+            </CRDButton>
+          </Link>
         </div>
 
         {/* Feature Highlights */}

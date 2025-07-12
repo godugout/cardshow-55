@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+import { Typography } from './design-system/Typography';
 
 export interface CRDCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -89,64 +90,60 @@ export const Hero3: React.FC<Hero3Props> = ({
         </a>
       )}
       {children}
-      {showFeaturedCards && featuredCards && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-          {featuredCards.map((card, index) => (
-            <div 
-              key={card?.id || index}
-              className="group relative overflow-hidden rounded-2xl border-2 border-crd-mediumGray bg-crd-darkGray hover:border-crd-blue transition-all duration-300 cursor-pointer hover:scale-105 hover:-translate-y-1"
-              style={{
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
-              }}
-              onClick={() => onCardClick?.(card)}
-            >
-              {/* Card Image */}
-              <div className="aspect-[0.84] w-full overflow-hidden">
-                {card?.image_url ? (
-                  <img
-                    src={card.image_url}
-                    alt={card.title || 'Card'}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    onError={(e) => {
-                      e.currentTarget.src = '/placeholder.svg';
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-crd-blue/20 to-crd-purple/20 flex items-center justify-center">
-                    <div className="text-crd-lightGray text-4xl">🎴</div>
+      {showFeaturedCards && featuredCards.length > 0 && (
+        <div className="w-full mb-12 overflow-hidden">
+          <Typography variant="h3" className="text-white mb-6 text-center">
+            Featured Creations
+          </Typography>
+          <div className="relative">
+            {/* Gradient Overlays */}
+            <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-crd-darkest to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-crd-darkest to-transparent z-10 pointer-events-none" />
+            
+            {/* Ticker Container */}
+            <div className="flex animate-[scroll_60s_linear_infinite] hover:[animation-play-state:paused]">
+              {/* First set of cards */}
+              {featuredCards.map((card) => (
+                <div 
+                  key={`first-${card.id}`}
+                  className="flex-shrink-0 w-48 mr-6 group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                  onClick={() => onCardClick?.(card)}
+                >
+                  <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl overflow-hidden relative">
+                    <img
+                      src={card.image_url || card.thumbnail_url || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"}
+                      alt={card.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="text-white text-sm font-semibold mb-1 truncate">{card.title}</div>
+                    </div>
                   </div>
-                )}
-              </div>
-              
-              {/* Card Content */}
-              <div className="p-4">
-                <h3 className="text-crd-white font-semibold text-lg mb-2 truncate">
-                  {card?.title || 'Untitled Card'}
-                </h3>
-                {card?.description && (
-                  <p className="text-crd-lightGray text-sm line-clamp-2 mb-3">
-                    {card.description}
-                  </p>
-                )}
-                
-                {/* Card Meta */}
-                <div className="flex items-center justify-between text-xs text-crd-lightGray">
-                  <span>{card?.rarity || 'Common'}</span>
-                  {card?.view_count && (
-                    <span>{card.view_count} views</span>
-                  )}
                 </div>
-              </div>
-              
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <div className="text-white text-center">
-                  <div className="text-2xl mb-2">👁️</div>
-                  <div className="text-sm font-medium">View Card</div>
+              ))}
+              {/* Duplicate set for seamless loop */}
+              {featuredCards.map((card) => (
+                <div 
+                  key={`second-${card.id}`}
+                  className="flex-shrink-0 w-48 mr-6 group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                  onClick={() => onCardClick?.(card)}
+                >
+                  <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl overflow-hidden relative">
+                    <img
+                      src={card.image_url || card.thumbnail_url || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"}
+                      alt={card.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="text-white text-sm font-semibold mb-1 truncate">{card.title}</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       )}
     </div>
