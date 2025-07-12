@@ -19,10 +19,10 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
 
   CS_REDBLUE_BLOCK: {
     logoTheme: {
-      primary: '#DC143C',   // Crimson Red (like Washington Capitals)
-      secondary: '#0047AB',  // Royal Blue (like Team USA)
-      accent: '#FFFFFF',     // Pure White (high contrast)
-      neutral: '#F0F4F8'     // Light Blue-Gray (backgrounds)
+      primary: '#DC143C',   // Crimson Red (logo accent)
+      secondary: '#0047AB',  // Royal Blue (navbar background)
+      accent: '#FFFFFF',     // Pure White (interactions)
+      neutral: '#F0F4F8'     // Light Blue-Gray (cards/text)
     },
     officialTeam: {
       league: 'Inspired by Washington Capitals / USA Hockey',
@@ -31,10 +31,10 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
       founded: '1974'
     },
     themeUsage: {
-      navbar: 'Patriotic red background with blue and white accents',
-      cards: 'Light blue-gray backgrounds with red borders and blue highlights',
-      buttons: 'Red primary blocks with blue secondary actions',
-      text: 'Blue headings on white with red for important calls-to-action'
+      navbar: 'Royal blue background with red logo accents and white highlights',
+      cards: 'Light blue-gray backgrounds with red borders and white highlights',
+      buttons: 'White primary CTAs with red accent secondary actions',
+      text: 'Red headings on light backgrounds with blue support text'
     }
   },
 
@@ -103,10 +103,10 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
 
   CS_RED_SCRIPT_BLUE: {
     logoTheme: {
-      primary: '#C8102E',   // Red (like Boston Red Sox)
-      secondary: '#0C2340',  // Navy Blue (Red Sox away)
-      accent: '#BD3039',     // Darker Red (accent)
-      neutral: '#FFFFFF'     // Pure White (classic)
+      primary: '#C8102E',   // Red (script accent)
+      secondary: '#0C2340',  // Navy Blue (navbar background)
+      accent: '#BD3039',     // Darker Red (interactions)
+      neutral: '#FFFFFF'     // Pure White (cards/text)
     },
     officialTeam: {
       league: 'Inspired by Boston Red Sox',
@@ -115,10 +115,10 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
       founded: '1901'
     },
     themeUsage: {
-      navbar: 'Classic red script on navy blue background',
-      cards: 'White backgrounds with red script borders and navy text',
-      buttons: 'Red script primary with navy blue secondary',
-      text: 'Navy headings with red script highlights on white backgrounds'
+      navbar: 'Navy blue background with red script accents and white highlights',
+      cards: 'White backgrounds with navy borders and red script highlights',
+      buttons: 'Red script primary CTAs with navy blue secondary actions',
+      text: 'Navy headings with red script accents on white backgrounds'
     }
   },
 
@@ -145,10 +145,10 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
 
   CS_BLACK_TEAL_SPARKLE: {
     logoTheme: {
-      primary: '#2C3E50',   // Dark Slate (sophisticated black)
-      secondary: '#17A2B8',  // Teal (like San Jose Sharks)
-      accent: '#FFD700',     // Gold (sparkle effects)
-      neutral: '#F8F9FA'     // Very Light Gray (premium backgrounds)
+      primary: '#2C3E50',   // Dark Slate (logo accent)
+      secondary: '#17A2B8',  // Teal (navbar background)
+      accent: '#FFD700',     // Gold (interactions/sparkle)
+      neutral: '#F8F9FA'     // Very Light Gray (cards/text)
     },
     officialTeam: {
       league: 'Inspired by San Jose Sharks',
@@ -157,10 +157,10 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
       founded: '1991'
     },
     themeUsage: {
-      navbar: 'Sophisticated dark slate with teal sparkle accents',
-      cards: 'Premium light gray backgrounds with dark borders and gold sparkles',
-      buttons: 'Teal primary sparkle with gold secondary luxury effects',
-      text: 'Dark slate headings with teal accents and gold sparkle highlights'
+      navbar: 'Teal background with dark slate logo and gold sparkle accents',
+      cards: 'Light gray backgrounds with teal borders and gold sparkle highlights',
+      buttons: 'Gold primary sparkle CTAs with teal secondary actions',
+      text: 'Dark slate headings with teal support and gold highlights'
     }
   },
 
@@ -232,16 +232,16 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
 
   CS_RED_MODERN: {
     logoTheme: {
-      primary: '#E74C3C',   // Modern Red (contemporary)
-      secondary: '#34495E',  // Wet Asphalt (modern gray)
-      accent: '#FF6B6B',     // Light Red (geometric accent)
-      neutral: '#ECF0F1'     // Clouds (modern light gray)
+      primary: '#E74C3C',   // Modern Red (logo accent)
+      secondary: '#34495E',  // Wet Asphalt (navbar background)
+      accent: '#FF6B6B',     // Light Red (interactions)
+      neutral: '#ECF0F1'     // Clouds (cards/text)
     },
     themeUsage: {
-      navbar: 'Modern red geometric with wet asphalt support',
-      cards: 'Cloud gray backgrounds with red geometric borders and gray highlights',
-      buttons: 'Modern red primary with gray secondary geometric design',
-      text: 'Gray headings with modern red geometric accents and light highlights'
+      navbar: 'Wet asphalt background with modern red accents and light highlights',
+      cards: 'Cloud gray backgrounds with asphalt borders and red highlights',
+      buttons: 'Light red primary CTAs with asphalt secondary actions',
+      text: 'Asphalt headings with modern red accents on light backgrounds'
     }
   },
 

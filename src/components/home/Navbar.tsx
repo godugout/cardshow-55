@@ -5,21 +5,8 @@ import { NavActions } from "./navbar/NavActions";
 import { LogoSelector } from "./navbar/LogoSelector";
 
 const getNavbarColorClasses = (color: string) => {
-  const colorMap = {
-    orange: 'bg-gradient-to-r from-orange-500/5 to-orange-400/5 border-b-orange-500/10',
-    red: 'bg-gradient-to-r from-red-500/5 to-red-400/5 border-b-red-500/10',
-    green: 'bg-gradient-to-r from-green-500/5 to-green-400/5 border-b-green-500/10',
-    yellow: 'bg-gradient-to-r from-yellow-500/5 to-yellow-400/5 border-b-yellow-500/10',
-    blue: 'bg-gradient-to-r from-blue-500/5 to-blue-400/5 border-b-blue-500/10',
-    gray: 'bg-gradient-to-r from-gray-500/5 to-gray-400/5 border-b-gray-500/10',
-    emerald: 'bg-gradient-to-r from-emerald-500/5 to-emerald-400/5 border-b-emerald-500/10',
-    purple: 'bg-gradient-to-r from-purple-500/5 to-purple-400/5 border-b-purple-500/10',
-    slate: 'bg-gradient-to-r from-slate-500/5 to-slate-400/5 border-b-slate-500/10',
-    amber: 'bg-gradient-to-r from-amber-500/5 to-amber-400/5 border-b-amber-500/10',
-    cyan: 'bg-gradient-to-r from-cyan-500/5 to-cyan-400/5 border-b-cyan-500/10',
-    indigo: 'bg-gradient-to-r from-indigo-500/5 to-indigo-400/5 border-b-indigo-500/10',
-  };
-  return colorMap[color] || 'bg-gradient-to-r from-gray-500/5 to-gray-400/5 border-b-gray-500/10';
+  // Enhanced navbar styling - uses secondary color for background per new strategy
+  return 'navbar-themed-bg border-b border-[hsl(var(--theme-navbar-border)/0.2)]';
 };
 
 const getDividerColorClasses = (color: string) => {
@@ -44,7 +31,7 @@ export const Navbar: React.FC = () => {
   const [currentTheme, setCurrentTheme] = useState('sf-orange');
 
   return (
-    <div className="navbar-themed w-full overflow-hidden">
+    <div className={`navbar-themed w-full overflow-hidden ${getNavbarColorClasses(currentTheme)}`}>
       <div className="flex w-full items-center justify-between flex-wrap px-6 py-5 max-md:max-w-full max-md:px-5">
         <div className="flex items-center gap-8 my-auto">
           <LogoSelector onThemeChange={setCurrentTheme} />

@@ -58,7 +58,7 @@ export const getThemeByDNA = (dnaCode: string): TeamPalette | undefined => {
   return logo ? logoThemeToTeamPalette(logo) : undefined;
 };
 
-// Generate CSS variables for logo theme
+// Generate CSS variables for logo theme - Enhanced 4-Color Strategy
 export const generateLogoThemeCSSVars = (logoTheme: LogoTheme): Record<string, string> => {
   return {
     '--theme-primary': hexToHsl(logoTheme.primary),
@@ -66,28 +66,32 @@ export const generateLogoThemeCSSVars = (logoTheme: LogoTheme): Record<string, s
     '--theme-accent': hexToHsl(logoTheme.accent),
     '--theme-neutral': hexToHsl(logoTheme.neutral),
     
-    // Navbar theming
-    '--theme-navbar-bg': hexToHsl(logoTheme.primary),
+    // Enhanced Navbar theming - Use secondary for background, primary for accents
+    '--theme-navbar-bg': hexToHsl(logoTheme.secondary),
     '--theme-navbar-border': hexToHsl(logoTheme.accent),
     '--theme-text-primary': hexToHsl(logoTheme.neutral),
-    '--theme-text-secondary': hexToHsl(logoTheme.secondary),
+    '--theme-text-secondary': hexToHsl(logoTheme.primary),
     '--theme-text-active': hexToHsl(logoTheme.accent),
     
-    // Interactive elements
+    // Enhanced Interactive elements - Accent for CTAs, primary for highlights
     '--theme-cta-bg': hexToHsl(logoTheme.accent),
-    '--theme-cta-text': hexToHsl(logoTheme.primary),
+    '--theme-cta-text': hexToHsl(logoTheme.secondary),
     '--theme-accent-hover': adjustBrightness(hexToHsl(logoTheme.accent), 10),
+    '--theme-primary-hover': adjustBrightness(hexToHsl(logoTheme.primary), -10),
     
-    // Card theming
+    // Enhanced Card theming - Neutral backgrounds, secondary borders, primary accents
     '--theme-card-bg': hexToHsl(logoTheme.neutral),
     '--theme-card-border': hexToHsl(logoTheme.secondary),
-    '--theme-card-hover': hexToHsl(logoTheme.accent),
+    '--theme-card-hover': hexToHsl(logoTheme.primary),
+    '--theme-card-accent': hexToHsl(logoTheme.accent),
     
-    // Component theming
-    '--theme-badge-primary': hexToHsl(logoTheme.accent),
-    '--theme-badge-secondary': hexToHsl(logoTheme.secondary),
-    '--theme-highlight': hexToHsl(logoTheme.accent),
-    '--theme-success-text': hexToHsl(logoTheme.secondary)
+    // Enhanced Component theming - Full 4-color utilization
+    '--theme-badge-primary': hexToHsl(logoTheme.primary),
+    '--theme-badge-secondary': hexToHsl(logoTheme.accent),
+    '--theme-badge-neutral': hexToHsl(logoTheme.neutral),
+    '--theme-highlight': hexToHsl(logoTheme.primary),
+    '--theme-success-text': hexToHsl(logoTheme.secondary),
+    '--theme-logo-contrast': getContrastColor(logoTheme.secondary)
   };
 };
 
@@ -96,6 +100,20 @@ const adjustBrightness = (hsl: string, adjustment: number): string => {
   const [h, s, l] = hsl.split(' ').map(Number);
   const newL = Math.max(0, Math.min(100, l + adjustment));
   return `${h} ${s} ${newL}`;
+};
+
+// Get contrasting color for logo visibility
+const getContrastColor = (backgroundColor: string): string => {
+  // Convert hex to RGB to calculate luminance
+  const r = parseInt(backgroundColor.slice(1, 3), 16) / 255;
+  const g = parseInt(backgroundColor.slice(3, 5), 16) / 255;
+  const b = parseInt(backgroundColor.slice(5, 7), 16) / 255;
+  
+  // Calculate relative luminance
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  
+  // Return white or black based on luminance
+  return luminance > 0.5 ? '0 0 0' : '0 0 100'; // HSL format
 };
 
 // Logo-specific theme recommendations

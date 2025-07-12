@@ -310,6 +310,13 @@
   transition: all 0.5s ease;
 }
 
+.navbar-themed-bg {
+  background: hsl(var(--theme-navbar-bg) / 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.2);
+  transition: all 0.5s ease;
+}
+
 .text-themed-primary { color: hsl(var(--theme-text-primary)); }
 .text-themed-secondary { color: hsl(var(--theme-text-secondary)); }
 .text-themed-active { 
