@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const cardVariants = cva(
-  "card-themed rounded-xl overflow-hidden",
+  "card-themed overflow-hidden",
   {
     variants: {
       variant: {
@@ -17,8 +17,8 @@ const cardVariants = cva(
       padding: {
         none: "p-0",
         sm: "p-4", 
-        default: "p-6",
-        lg: "p-8",
+        default: "p-8", /* 32px as per spec */
+        lg: "p-10", /* larger option */
       }
     },
     defaultVariants: {

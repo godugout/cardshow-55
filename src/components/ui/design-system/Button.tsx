@@ -5,14 +5,14 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-extrabold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        // Team spirit themed variants - transformative experience
+        // Exact specification buttons with proper styling
         primary: "btn-themed-primary team-spirit-glow",
-        secondary: "btn-themed-secondary team-spirit-glow",
-        outline: "btn-themed-secondary",
+        secondary: "btn-themed-secondary team-spirit-glow", 
+        outline: "btn-themed-ghost",
         ghost: "btn-themed-ghost",
         action: "p-3 rounded-full btn-themed-secondary team-spirit-glow",
         // Fallback variants
@@ -21,15 +21,15 @@ const buttonVariants = cva(
         link: "accent-themed underline-offset-4 hover:underline hover:highlight-themed",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8", 
+        default: "text-lg px-6 py-4", /* 18px text, proper padding */
+        sm: "text-sm px-4 py-2",
+        lg: "text-lg px-8 py-4", /* matches spec */
         icon: "h-10 w-10",
         "action-icon": "h-12 w-12",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "primary",
       size: "default",
     },
   }

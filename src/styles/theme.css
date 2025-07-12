@@ -365,6 +365,106 @@
   --theme-highlight: var(--theme-accent);
 }
 
+/* Critical Missing CSS Classes for CRD Components */
+.btn-themed-primary {
+  background: hsl(219 88% 62%); /* #3772FF */
+  color: hsl(0 0% 99%); /* #FCFCFD */
+  font-size: 1.125rem; /* 18px */
+  font-weight: 800; /* extrabold */
+  padding: 1rem 1.5rem; /* 16px 24px */
+  border-radius: 5.625rem; /* 90px - pill */
+  border: 2px solid hsl(219 88% 62%);
+  transition: all 0.3s ease;
+}
+
+.btn-themed-primary:hover {
+  background: hsl(219 88% 56%); /* 90% opacity effect */
+  border-color: hsl(219 88% 56%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px hsl(219 88% 62% / 0.4);
+}
+
+.btn-themed-secondary {
+  background: hsl(142 69% 58%); /* #27AE60 */
+  color: hsl(0 0% 99%); /* #FCFCFD */
+  font-size: 1.125rem; /* 18px */
+  font-weight: 800; /* extrabold */
+  padding: 1rem 1.5rem; /* 16px 24px */
+  border-radius: 5.625rem; /* 90px - pill */
+  border: 2px solid hsl(142 69% 58%);
+  transition: all 0.3s ease;
+}
+
+.btn-themed-secondary:hover {
+  background: hsl(142 69% 52%);
+  border-color: hsl(142 69% 52%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px hsl(142 69% 58% / 0.4);
+}
+
+.btn-themed-ghost {
+  background: transparent;
+  color: hsl(0 0% 99%); /* #FCFCFD */
+  font-size: 1.125rem; /* 18px */
+  font-weight: 800; /* extrabold */
+  padding: 1rem 1.5rem; /* 16px 24px */
+  border-radius: 5.625rem; /* 90px - pill */
+  border: 1px solid hsl(217 19% 27%); /* #353945 */
+  transition: all 0.3s ease;
+}
+
+.btn-themed-ghost:hover {
+  background: hsl(217 19% 27% / 0.2);
+  border-color: hsl(217 19% 27%);
+}
+
+.team-spirit-glow {
+  box-shadow: 0 0 20px hsl(219 88% 62% / 0.3);
+  transition: box-shadow 0.3s ease;
+}
+
+.team-spirit-glow:hover {
+  box-shadow: 0 0 30px hsl(219 88% 62% / 0.5);
+}
+
+.card-themed {
+  background: hsl(217 19% 16%); /* #23262F */
+  border: 1px solid hsl(217 19% 27%); /* #353945 */
+  border-radius: 1.5rem; /* 24px */
+  transition: all 0.3s ease;
+}
+
+.card-themed:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.hover-glow {
+  transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 8px 32px hsl(219 88% 62% / 0.2);
+}
+
+/* Visual Polish Classes */
+.crd-text-gradient {
+  background: linear-gradient(to right, hsl(219 88% 62%), hsl(25 89% 61%));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Extended Component Theming Classes */
 .border-themed { border-color: hsl(var(--theme-accent) / 0.3); }
 .border-themed-light { border-color: hsl(var(--theme-accent) / 0.1); }

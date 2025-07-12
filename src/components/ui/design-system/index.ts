@@ -1,5 +1,5 @@
 
-// Team Spirit Themed Design System - Transformative Experience
+// CRD Design System - Complete Component Library
 export { CRDButton } from './Button';
 export { CRDCard } from './Card';
 export { CRDBadge } from './Badge';
@@ -15,6 +15,18 @@ export { colors } from './colors';
 export type { BrandColor, NeutralColor, ColorKey } from './colors';
 export { PalettePreview } from './PalettePreview';
 export { TeamThemeShowcase } from './TeamThemeShowcase';
+
+// Layout Components
+export { CRDContainer, CRDSection } from '../../layout/CRDContainer';
+
+// Section Components  
+export { HeroSection } from '../../sections/HeroSection';
+
+// Navigation Components
+export { Navigation } from '../../navigation/Navigation';
+
+// Card Components
+export { AuctionCard } from '../../cards/AuctionCard';
 
 // CRD:DNA System exports
 export { CRDDNABrowser } from '../../crd/CRDDNABrowser';
