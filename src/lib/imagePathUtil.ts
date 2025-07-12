@@ -20,6 +20,16 @@ export const KNOWN_IMAGE_PATHS: Record<string, string> = {
   'CS_RED_SCRIPT_BLUE': '/lovable-uploads/a1e97cec-f763-4616-b8f9-563d15a9b060.png',
   'CS_BLUE_SCRIPT': '/lovable-uploads/bd1b2459-1140-408e-99c4-b7153c6fb449.png',
   'CS_BLACK_TEAL_SPARKLE': '/lovable-uploads/5e6b3501-9224-4ae3-8b52-c47251daf54d.png',
+  // Additional new logos
+  'CS_GREEN_SPARKLE_SCRIPT': '/lovable-uploads/91195cfe-6ee0-4beb-b21a-e1fea911102f.png',
+  'CS_ORANGE_BLACK_OUTLINE': '/lovable-uploads/ca4eda9a-cfc7-4a8e-b70c-5371f1d59648.png',
+  'CS_RED_BLOCK': '/lovable-uploads/e5b577eb-03fb-40d2-a604-df055f6f717a.png',
+  'CS_RED_SCRIPT_CORAL': '/lovable-uploads/578604df-0d4b-48dc-b012-1d19acaf3f26.png',
+  'CS_RED_MODERN': '/lovable-uploads/5c36c1ce-0b93-49ca-b3e8-0815e3bdb34f.png',
+  'CS_RED_SCRIPT_CLASSIC': '/lovable-uploads/1a6184b9-f84b-4902-b5c1-fd28d34e2950.png',
+  'CS_BLACK_BOLD': '/lovable-uploads/1d15822c-0384-40d5-ac14-82b55f17726f.png',
+  'CS_PURPLE_OUTLINE': '/lovable-uploads/52db4722-29c2-4ced-9d7e-2c62d2dd79f4.png',
+  'CS_ORANGE_BLACK_BLOCK': '/lovable-uploads/7672b57f-6944-4e56-91af-053016fcb05b.png',
 };
 
 // Get the correct image path for a CRD code

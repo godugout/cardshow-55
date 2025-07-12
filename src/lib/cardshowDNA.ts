@@ -156,6 +156,97 @@ export const cardshowLogoDatabase: CardshowLogoDNA[] = [
     colorPalette: ['#2C3E50', '#4ECDC4', '#FFD700'],
     designElements: ['Outlined', 'Sparkles', 'Premium'],
     rarity: 'legendary'
+  },
+  // Additional new logos
+  {
+    dnaCode: 'CS_GREEN_SPARKLE_SCRIPT',
+    displayName: 'Green Sparkle Script',
+    description: 'Green script with elegant sparkle effects',
+    imageUrl: '/lovable-uploads/91195cfe-6ee0-4beb-b21a-e1fea911102f.png',
+    category: 'Script',
+    colorPalette: ['#7FB069', '#FFD700'],
+    designElements: ['Script', 'Sparkles', 'Elegant'],
+    rarity: 'rare'
+  },
+  {
+    dnaCode: 'CS_ORANGE_BLACK_OUTLINE',
+    displayName: 'Orange Black Outline',
+    description: 'Bold orange with black outline design',
+    imageUrl: '/lovable-uploads/ca4eda9a-cfc7-4a8e-b70c-5371f1d59648.png',
+    category: 'Bold',
+    colorPalette: ['#FF8C00', '#000000'],
+    designElements: ['Outlined', 'Bold', 'Strong'],
+    rarity: 'uncommon'
+  },
+  {
+    dnaCode: 'CS_RED_BLOCK',
+    displayName: 'Red Block',
+    description: 'Clean red block letter design',
+    imageUrl: '/lovable-uploads/e5b577eb-03fb-40d2-a604-df055f6f717a.png',
+    category: 'Bold',
+    colorPalette: ['#DC143C'],
+    designElements: ['Block', 'Clean', 'Modern'],
+    rarity: 'common'
+  },
+  {
+    dnaCode: 'CS_RED_SCRIPT_CORAL',
+    displayName: 'Red Script Coral',
+    description: 'Coral red script with flowing design',
+    imageUrl: '/lovable-uploads/578604df-0d4b-48dc-b012-1d19acaf3f26.png',
+    category: 'Script',
+    colorPalette: ['#FF6347'],
+    designElements: ['Script', 'Flowing', 'Elegant'],
+    rarity: 'common'
+  },
+  {
+    dnaCode: 'CS_RED_MODERN',
+    displayName: 'Red Modern',
+    description: 'Modern red geometric design',
+    imageUrl: '/lovable-uploads/5c36c1ce-0b93-49ca-b3e8-0815e3bdb34f.png',
+    category: 'Modern',
+    colorPalette: ['#DC143C'],
+    designElements: ['Modern', 'Geometric', 'Clean'],
+    rarity: 'uncommon'
+  },
+  {
+    dnaCode: 'CS_RED_SCRIPT_CLASSIC',
+    displayName: 'Red Script Classic',
+    description: 'Classic red script design',
+    imageUrl: '/lovable-uploads/1a6184b9-f84b-4902-b5c1-fd28d34e2950.png',
+    category: 'Script',
+    colorPalette: ['#DC143C'],
+    designElements: ['Script', 'Classic', 'Traditional'],
+    rarity: 'common'
+  },
+  {
+    dnaCode: 'CS_BLACK_BOLD',
+    displayName: 'Black Bold',
+    description: 'Bold black block letters',
+    imageUrl: '/lovable-uploads/1d15822c-0384-40d5-ac14-82b55f17726f.png',
+    category: 'Bold',
+    colorPalette: ['#000000'],
+    designElements: ['Bold', 'Strong', 'Impactful'],
+    rarity: 'uncommon'
+  },
+  {
+    dnaCode: 'CS_PURPLE_OUTLINE',
+    displayName: 'Purple Outline',
+    description: 'Purple outline block design',
+    imageUrl: '/lovable-uploads/52db4722-29c2-4ced-9d7e-2c62d2dd79f4.png',
+    category: 'Bold',
+    colorPalette: ['#8B008B'],
+    designElements: ['Outlined', 'Bold', 'Distinctive'],
+    rarity: 'rare'
+  },
+  {
+    dnaCode: 'CS_ORANGE_BLACK_BLOCK',
+    displayName: 'Orange Black Block',
+    description: 'Orange and black block letter combo',
+    imageUrl: '/lovable-uploads/7672b57f-6944-4e56-91af-053016fcb05b.png',
+    category: 'Bold',
+    colorPalette: ['#FF8C00', '#000000'],
+    designElements: ['Block', 'Dual-tone', 'Bold'],
+    rarity: 'legendary'
   }
 ];
 
