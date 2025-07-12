@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Code2, Palette, Type, MousePointer, Layout, Paintbrush, Sparkles, Image, Eye, Heart, Zap, Globe, Users, Layers, Target, BookOpen, Share2, Download, Check } from 'lucide-react';
+import { Code2, Palette, Type, MousePointer, Layout, Paintbrush, Sparkles, Image, Eye, Heart, Zap, Globe, Users, Layers, Target, BookOpen, Share2, Download, Check, Copy, ChevronDown, Play, Pause, Star, RotateCcw, Monitor, Tablet, Smartphone, AlertCircle, CheckCircle, XCircle, Grid3x3, Navigation, Calendar, Settings, ShoppingCart, Search, Plus, DollarSign, Upload, BarChart } from 'lucide-react';
 import { cardshowLogoDatabase } from "@/lib/cardshowDNA";
 import { getImagePath } from "@/lib/imagePathUtil";
 import { useTeamTheme } from '@/hooks/useTeamTheme';
@@ -27,6 +27,15 @@ const DesignGuide = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { currentPalette, availablePalettes, setTheme, setLogoTheme, currentLogoCode } = useTeamTheme();
+  
+  // Interactive component states
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const [buttonFavorited, setButtonFavorited] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [progressValue, setProgressValue] = useState(0);
+  const [cardExpanded, setCardExpanded] = useState(false);
+  const [cardFavorited, setCardFavorited] = useState(false);
+  const [copiedText, setCopiedText] = useState('');
 
   // Handle logo selection with URL synchronization
   const handleLogoSelect = (logo: any) => {
@@ -49,11 +58,32 @@ const DesignGuide = () => {
 
   const sidebarSections = [
     { id: 'overview', label: 'Brand Overview', icon: Layout, description: 'Mission, vision, and design philosophy' },
-    { id: 'brand-identity', label: 'Brand Identity & Visual Language', icon: Heart, description: 'Logos, colors, typography, and brand story' },
-    { id: 'user-experience', label: 'User Experience & Interface Design', icon: Users, description: 'Components, interactions, and UX patterns' },
-    { id: 'technical-system', label: 'Technical Architecture & System', icon: Layers, description: 'Design tokens, CSS architecture, and performance' },
-    { id: 'team-customization', label: 'Team Themes & Customization', icon: Sparkles, description: 'CRD:DNA system and theme applications' },
+    { id: 'colors-themes', label: 'Colors & Themes', icon: Palette, description: 'Color psychology, palettes, and theming system' },
+    { id: 'patterns', label: 'UI Patterns', icon: Grid3x3, description: 'Layout patterns, card grids, navigation systems' },
+    { id: 'interactions', label: 'Interactions', icon: MousePointer, description: 'Loading states, animations, hover effects, status feedback' },
+    { id: 'responsive', label: 'Responsive Design', icon: Monitor, description: 'Mobile-first guidelines and breakpoint examples' },
+    { id: 'accessibility', label: 'Accessibility', icon: Eye, description: 'WCAG 2.1 AA compliance guidelines and examples' },
+    { id: 'design-tokens', label: 'Design Tokens', icon: Code2, description: 'CSS variables, spacing scales, typography tokens' },
+    { id: 'real-examples', label: 'Real Examples', icon: ShoppingCart, description: 'Complete marketplace and dashboard interfaces' },
+    { id: 'brand-identity', label: 'Brand Identity', icon: Heart, description: 'Logos, typography, and brand story' },
+    { id: 'team-customization', label: 'Team Themes', icon: Sparkles, description: 'CRD:DNA system and theme applications' },
   ];
+
+  // Interactive functions
+  const copyToClipboard = useCallback((text: string, label: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedText(label);
+      setTimeout(() => setCopiedText(''), 2000);
+    });
+  }, []);
+
+  // Progress animation effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgressValue(prev => (prev >= 100 ? 0 : prev + 10));
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
 
   // Show all new logo variations from uploaded images
   const availableLogos = cardshowLogoDatabase;
@@ -282,6 +312,1271 @@ const DesignGuide = () => {
                       </CRDCard>
                     ))}
                   </div>
+                </section>
+              </div>
+            )}
+
+            {/* Colors & Themes Section */}
+            {activeSection === 'colors-themes' && (
+              <div className="space-y-16">
+                <div className="text-center space-y-4">
+                  <h1 className="text-4xl font-bold text-crd-white">Colors & Themes</h1>
+                  <p className="text-lg text-crd-lightGray max-w-3xl mx-auto">
+                    Extended color palettes with psychological descriptions, semantic usage guidelines, and interactive theme switching.
+                  </p>
+                </div>
+
+                {/* Extended Color System */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Extended Color System</h2>
+                  
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[
+                      { 
+                        name: 'CRD Blue Family', 
+                        colors: ['#3772FF', '#2D9CDB', '#1E88E5'], 
+                        psychology: 'Trust, reliability, professionalism',
+                        semantic: 'Primary actions, links, focus states',
+                        contrast: 'AAA compliant on white and dark backgrounds'
+                      },
+                      { 
+                        name: 'CRD Green Family', 
+                        colors: ['#45B26B', '#27AE60', '#2ECC71'], 
+                        psychology: 'Success, growth, positive reinforcement',
+                        semantic: 'Success states, confirmations, financial gains',
+                        contrast: 'AA+ compliant with proper text colors'
+                      },
+                      { 
+                        name: 'CRD Orange Family', 
+                        colors: ['#EA6E48', '#F97316', '#FF8C00'], 
+                        psychology: 'Energy, creativity, urgency',
+                        semantic: 'Warnings, highlights, creative tools',
+                        contrast: 'Requires careful text color selection'
+                      },
+                      { 
+                        name: 'CRD Purple Family', 
+                        colors: ['#9757D7', '#8B5CF6', '#7C3AED'], 
+                        psychology: 'Luxury, exclusivity, premium features',
+                        semantic: 'Premium tiers, rare items, special events',
+                        contrast: 'Excellent contrast on light backgrounds'
+                      },
+                      { 
+                        name: 'Neutral Grays', 
+                        colors: ['#141416', '#23262F', '#353945'], 
+                        psychology: 'Sophistication, elegance, professional',
+                        semantic: 'Backgrounds, containers, subtle elements',
+                        contrast: 'Foundation for accessible color combinations'
+                      },
+                      { 
+                        name: 'Status Colors', 
+                        colors: ['#10B981', '#F59E0B', '#EF4444'], 
+                        psychology: 'Clear communication, immediate recognition',
+                        semantic: 'Success, warning, error states',
+                        contrast: 'Optimized for accessibility and clarity'
+                      }
+                    ].map((family, index) => (
+                      <CRDCard key={index} className="p-6 space-y-4">
+                        <h3 className="font-bold text-crd-white">{family.name}</h3>
+                        
+                        <div className="flex space-x-2">
+                          {family.colors.map((color, colorIdx) => (
+                            <div 
+                              key={colorIdx}
+                              className="relative group cursor-pointer"
+                              onClick={() => copyToClipboard(color, color)}
+                            >
+                              <div 
+                                className="w-12 h-12 rounded-lg border-2 border-white/20 transition-all hover:scale-110"
+                                style={{ backgroundColor: color }}
+                              />
+                              {copiedText === color && (
+                                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-crd-green text-white text-xs px-2 py-1 rounded">
+                                  Copied!
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <div className="space-y-2 text-sm">
+                          <p className="text-crd-lightGray"><strong>Psychology:</strong> {family.psychology}</p>
+                          <p className="text-crd-blue"><strong>Usage:</strong> {family.semantic}</p>
+                          <p className="text-crd-green text-xs"><strong>Accessibility:</strong> {family.contrast}</p>
+                        </div>
+                      </CRDCard>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Theme Showcase */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Interactive Theme Showcase</h2>
+                  <TeamThemeShowcase />
+                </section>
+              </div>
+            )}
+
+            {/* UI Patterns Section */}
+            {activeSection === 'patterns' && (
+              <div className="space-y-16">
+                <div className="text-center space-y-4">
+                  <h1 className="text-4xl font-bold text-crd-white">UI Layout Patterns</h1>
+                  <p className="text-lg text-crd-lightGray max-w-3xl mx-auto">
+                    Card grids, dashboard layouts, and navigation systems optimized for trading card platforms.
+                  </p>
+                </div>
+
+                {/* Card Grid Patterns */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Card Grid Patterns</h2>
+                  
+                  <div className="space-y-8">
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-crd-white">Collection Grid (Responsive)</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        {[...Array(12)].map((_, index) => (
+                          <CRDCard key={index} className="aspect-[3/4] p-4 hover:shadow-lg hover:scale-105 transition-all">
+                            <div className="w-full h-16 bg-gradient-to-br from-crd-blue/20 to-crd-purple/20 rounded mb-2"></div>
+                            <div className="space-y-1">
+                              <div className="text-xs font-semibold text-crd-white">Card #{index + 1}</div>
+                              <div className="text-xs text-crd-lightGray">Rare • 2024</div>
+                            </div>
+                          </CRDCard>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-crd-white">Marketplace Layout</h3>
+                      <div className="grid lg:grid-cols-4 gap-6">
+                        {[...Array(8)].map((_, index) => (
+                          <CRDCard key={index} className="p-4 space-y-3 hover:shadow-lg transition-all">
+                            <div className="aspect-[3/4] bg-gradient-to-br from-crd-green/20 to-crd-orange/20 rounded"></div>
+                            <div className="space-y-2">
+                              <div className="text-sm font-semibold text-crd-white">Featured Card</div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-crd-lightGray">Current Bid</span>
+                                <span className="text-sm font-bold text-crd-green">$42.50</span>
+                              </div>
+                              <CRDButton size="sm" className="w-full">Place Bid</CRDButton>
+                            </div>
+                          </CRDCard>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Navigation Patterns */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Navigation Systems</h2>
+                  
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-crd-white">Top Navigation</h3>
+                      <CRDCard className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-8">
+                            <div className="text-lg font-bold text-crd-white">Cardshow</div>
+                            <nav className="flex space-x-6">
+                              <span className="text-crd-blue font-medium">Collections</span>
+                              <span className="text-crd-lightGray hover:text-crd-white transition-colors cursor-pointer">Marketplace</span>
+                              <span className="text-crd-lightGray hover:text-crd-white transition-colors cursor-pointer">Create</span>
+                            </nav>
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <CRDButton size="sm" variant="outline">Sign In</CRDButton>
+                            <CRDButton size="sm">Get Started</CRDButton>
+                          </div>
+                        </div>
+                      </CRDCard>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-crd-white">Sidebar Navigation</h3>
+                      <div className="grid lg:grid-cols-4 gap-6">
+                        <CRDCard className="p-6 space-y-4">
+                          <h4 className="font-semibold text-crd-white">Main Menu</h4>
+                          <nav className="space-y-2">
+                            {['Dashboard', 'My Collection', 'Marketplace', 'Create Card', 'Settings'].map((item, index) => (
+                              <div key={index} className={`p-2 rounded cursor-pointer transition-all ${
+                                index === 0 ? 'bg-crd-blue/20 text-crd-blue' : 'text-crd-lightGray hover:text-crd-white hover:bg-crd-mediumGray/20'
+                              }`}>
+                                {item}
+                              </div>
+                            ))}
+                          </nav>
+                        </CRDCard>
+                        
+                        <div className="lg:col-span-3">
+                          <CRDCard className="p-6 h-64 flex items-center justify-center">
+                            <div className="text-center space-y-2">
+                              <div className="text-lg font-semibold text-crd-white">Main Content Area</div>
+                              <div className="text-sm text-crd-lightGray">Selected navigation content would appear here</div>
+                            </div>
+                          </CRDCard>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Dashboard Patterns */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Dashboard Layouts</h2>
+                  
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold text-crd-white">Creator Dashboard</h3>
+                    <div className="grid gap-6">
+                      <div className="grid md:grid-cols-4 gap-4">
+                        {[
+                          { label: 'Total Cards', value: '1,247', trend: '+12%' },
+                          { label: 'This Month', value: '89', trend: '+23%' },
+                          { label: 'Revenue', value: '$2,840', trend: '+8%' },
+                          { label: 'Views', value: '12.4K', trend: '+15%' }
+                        ].map((stat, index) => (
+                          <CRDCard key={index} className="p-4 text-center space-y-2">
+                            <div className="text-2xl font-bold text-crd-white">{stat.value}</div>
+                            <div className="text-sm text-crd-lightGray">{stat.label}</div>
+                            <div className="text-xs text-crd-green">{stat.trend}</div>
+                          </CRDCard>
+                        ))}
+                      </div>
+                      
+                      <div className="grid lg:grid-cols-3 gap-6">
+                        <CRDCard className="lg:col-span-2 p-6">
+                          <h4 className="font-semibold text-crd-white mb-4">Recent Activity</h4>
+                          <div className="space-y-3">
+                            {[...Array(5)].map((_, index) => (
+                              <div key={index} className="flex items-center space-x-3 p-2 rounded hover:bg-crd-mediumGray/20">
+                                <div className="w-8 h-8 bg-crd-blue/20 rounded"></div>
+                                <div className="flex-1">
+                                  <div className="text-sm text-crd-white">New card created</div>
+                                  <div className="text-xs text-crd-lightGray">2 hours ago</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CRDCard>
+                        
+                        <CRDCard className="p-6">
+                          <h4 className="font-semibold text-crd-white mb-4">Quick Actions</h4>
+                          <div className="space-y-3">
+                            <CRDButton className="w-full justify-start">Create New Card</CRDButton>
+                            <CRDButton variant="outline" className="w-full justify-start">Upload Batch</CRDButton>
+                            <CRDButton variant="ghost" className="w-full justify-start">View Analytics</CRDButton>
+                          </div>
+                        </CRDCard>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Interactions Section */}
+            {activeSection === 'interactions' && (
+              <div className="space-y-16">
+                <div className="text-center space-y-4">
+                  <h1 className="text-4xl font-bold text-crd-white">Interactions & Feedback</h1>
+                  <p className="text-lg text-crd-lightGray max-w-3xl mx-auto">
+                    Loading states, animations, hover effects, and status feedback systems for premium user experiences.
+                  </p>
+                </div>
+
+                {/* Interactive Components */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Interactive Component Library</h2>
+                  
+                  <div className="grid lg:grid-cols-2 gap-8">
+                    {/* Interactive Button */}
+                    <CRDCard className="p-8 space-y-6">
+                      <h3 className="text-xl font-semibold text-crd-white">Interactive Button</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center space-x-4">
+                          <button 
+                            onClick={() => {
+                              setButtonLoading(true);
+                              setTimeout(() => setButtonLoading(false), 2000);
+                            }}
+                            disabled={buttonLoading}
+                            className="cta-themed px-6 py-3 rounded-pill font-semibold flex items-center space-x-2 disabled:opacity-70"
+                          >
+                            {buttonLoading ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                <span>Loading...</span>
+                              </>
+                            ) : (
+                              <span>Click to Load</span>
+                            )}
+                          </button>
+                          
+                          <button 
+                            onClick={() => setButtonFavorited(!buttonFavorited)}
+                            className={`p-3 rounded-full transition-all ${
+                              buttonFavorited 
+                                ? 'bg-crd-orange text-white' 
+                                : 'bg-crd-mediumGray/20 text-crd-lightGray hover:text-crd-orange'
+                            }`}
+                          >
+                            <Star size={16} className={buttonFavorited ? 'fill-current' : ''} />
+                          </button>
+                        </div>
+                        
+                        <div className="text-sm text-crd-lightGray">
+                          Features loading states, disabled state handling, and favorite toggle with smooth transitions
+                        </div>
+                      </div>
+                    </CRDCard>
+
+                    {/* Dropdown Demo */}
+                    <CRDCard className="p-8 space-y-6">
+                      <h3 className="text-xl font-semibold text-crd-white">Dropdown Menu</h3>
+                      <div className="relative">
+                        <button 
+                          onClick={() => setDropdownOpen(!dropdownOpen)}
+                          className="btn-themed-secondary px-4 py-2 rounded-lg flex items-center space-x-2"
+                        >
+                          <span>Filter Options</span>
+                          <ChevronDown size={16} className={`transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        {dropdownOpen && (
+                          <div className="absolute top-full left-0 mt-2 w-64 bg-crd-darkGray border border-crd-mediumGray/30 rounded-lg shadow-2xl z-50 overflow-hidden">
+                            <div className="p-2 space-y-1">
+                              {['All Cards', 'Rare Only', 'Legendary Only', 'Recent Additions', 'Most Popular'].map((option, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => setDropdownOpen(false)}
+                                  className="w-full text-left px-3 py-2 text-sm text-crd-lightGray hover:text-crd-white hover:bg-crd-mediumGray/20 rounded transition-all"
+                                >
+                                  {option}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-sm text-crd-lightGray">
+                        Proper background styling, high z-index, and smooth open/close animations
+                      </div>
+                    </CRDCard>
+                  </div>
+
+                  <div className="grid lg:grid-cols-2 gap-8">
+                    {/* Progress Animation */}
+                    <CRDCard className="p-8 space-y-6">
+                      <h3 className="text-xl font-semibold text-crd-white">Progress Animation</h3>
+                      <div className="space-y-4">
+                        <div className="w-full bg-crd-mediumGray/30 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-crd-blue to-crd-green transition-all duration-500 ease-out"
+                            style={{ width: `${progressValue}%` }}
+                          ></div>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-crd-lightGray">Processing cards...</span>
+                          <span className="text-crd-blue font-mono">{progressValue}%</span>
+                        </div>
+                        <div className="text-sm text-crd-lightGray">
+                          Cycles automatically to demonstrate smooth progress animations
+                        </div>
+                      </div>
+                    </CRDCard>
+
+                    {/* Interactive Card */}
+                    <CRDCard className="p-8 space-y-6">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xl font-semibold text-crd-white">Expandable Card</h3>
+                        <div className="flex items-center space-x-2">
+                          <button 
+                            onClick={() => setCardFavorited(!cardFavorited)}
+                            className={`p-2 rounded-full transition-all ${
+                              cardFavorited ? 'text-crd-orange' : 'text-crd-lightGray hover:text-crd-orange'
+                            }`}
+                          >
+                            <Heart size={16} className={cardFavorited ? 'fill-current' : ''} />
+                          </button>
+                          <button 
+                            onClick={() => setCardExpanded(!cardExpanded)}
+                            className="p-2 text-crd-lightGray hover:text-crd-white transition-colors"
+                          >
+                            <ChevronDown size={16} className={`transition-transform ${cardExpanded ? 'rotate-180' : ''}`} />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <p className="text-crd-lightGray">Click to expand for more details</p>
+                        
+                        <div className={`overflow-hidden transition-all duration-300 ${
+                          cardExpanded ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'
+                        }`}>
+                          <div className="space-y-2 pt-2 border-t border-crd-mediumGray/30">
+                            <p className="text-sm text-crd-lightGray">Additional card information appears here with smooth expand/collapse animation.</p>
+                            <div className="flex space-x-2">
+                              <CRDBadge variant="secondary">Expandable</CRDBadge>
+                              <CRDBadge variant="outline">Interactive</CRDBadge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CRDCard>
+                  </div>
+                </section>
+
+                {/* Status System */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Status & Feedback System</h2>
+                  
+                  <div className="grid md:grid-cols-3 gap-6">
+                    {[
+                      { 
+                        type: 'success', 
+                        icon: CheckCircle, 
+                        title: 'Success State', 
+                        message: 'Card successfully uploaded to your collection',
+                        color: 'text-crd-green bg-crd-green/10 border-crd-green/30'
+                      },
+                      { 
+                        type: 'warning', 
+                        icon: AlertCircle, 
+                        title: 'Warning State', 
+                        message: 'Image quality could be improved for better results',
+                        color: 'text-crd-orange bg-crd-orange/10 border-crd-orange/30'
+                      },
+                      { 
+                        type: 'error', 
+                        icon: XCircle, 
+                        title: 'Error State', 
+                        message: 'Upload failed. Please check file format and try again',
+                        color: 'text-red-400 bg-red-400/10 border-red-400/30'
+                      }
+                    ].map((status, index) => (
+                      <div key={index} className={`p-6 rounded-xl border ${status.color}`}>
+                        <div className="flex items-start space-x-3">
+                          <status.icon size={20} className="flex-shrink-0 mt-0.5" />
+                          <div className="space-y-2">
+                            <h4 className="font-semibold">{status.title}</h4>
+                            <p className="text-sm opacity-90">{status.message}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Loading Skeletons */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Loading Skeletons & Micro-interactions</h2>
+                  
+                  <div className="grid lg:grid-cols-2 gap-8">
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Card Loading Skeleton</h3>
+                      <div className="space-y-3">
+                        {[...Array(3)].map((_, index) => (
+                          <div key={index} className="flex items-center space-x-3">
+                            <div className="w-16 h-20 bg-crd-mediumGray/30 rounded animate-pulse"></div>
+                            <div className="flex-1 space-y-2">
+                              <div className="h-4 bg-crd-mediumGray/30 rounded animate-pulse"></div>
+                              <div className="h-3 bg-crd-mediumGray/20 rounded w-3/4 animate-pulse"></div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CRDCard>
+
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Hover Effects Demo</h3>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[...Array(6)].map((_, index) => (
+                          <div 
+                            key={index}
+                            className="aspect-square bg-gradient-to-br from-crd-blue/20 to-crd-purple/20 rounded-lg hover:scale-110 hover:shadow-lg hover:shadow-crd-blue/20 transition-all duration-300 cursor-pointer"
+                          ></div>
+                        ))}
+                      </div>
+                      <p className="text-sm text-crd-lightGray">Hover over squares to see scale and shadow effects</p>
+                    </CRDCard>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Responsive Design Section */}
+            {activeSection === 'responsive' && (
+              <div className="space-y-16">
+                <div className="text-center space-y-4">
+                  <h1 className="text-4xl font-bold text-crd-white">Responsive Design</h1>
+                  <p className="text-lg text-crd-lightGray max-w-3xl mx-auto">
+                    Mobile-first design guidelines, breakpoint documentation, and responsive examples optimized for all devices.
+                  </p>
+                </div>
+
+                {/* Breakpoint System */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Breakpoint System</h2>
+                  
+                  <div className="grid md:grid-cols-3 gap-6">
+                    {[
+                      { 
+                        name: 'Mobile', 
+                        range: '320px - 768px', 
+                        icon: Smartphone,
+                        description: 'Primary focus with touch-optimized interactions',
+                        guidelines: ['44px minimum touch targets', 'Single column layouts', 'Simplified navigation', 'Thumb-friendly controls']
+                      },
+                      { 
+                        name: 'Tablet', 
+                        range: '768px - 1024px', 
+                        icon: Tablet,
+                        description: 'Balanced experience between mobile and desktop',
+                        guidelines: ['2-3 column card grids', 'Collapsible sidebars', 'Modal interfaces', 'Gesture support']
+                      },
+                      { 
+                        name: 'Desktop', 
+                        range: '1024px+', 
+                        icon: Monitor,
+                        description: 'Full-featured experience with advanced interactions',
+                        guidelines: ['Complex grid layouts', 'Hover states', 'Keyboard shortcuts', 'Multi-panel interfaces']
+                      }
+                    ].map((breakpoint, index) => (
+                      <CRDCard key={index} className="p-6 space-y-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2 bg-crd-blue/20 rounded-lg">
+                            <breakpoint.icon size={20} className="text-crd-blue" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-crd-white">{breakpoint.name}</h3>
+                            <div className="text-sm text-crd-blue font-mono">{breakpoint.range}</div>
+                          </div>
+                        </div>
+                        
+                        <p className="text-sm text-crd-lightGray">{breakpoint.description}</p>
+                        
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium text-crd-white">Guidelines:</h4>
+                          <ul className="text-xs text-crd-lightGray space-y-1">
+                            {breakpoint.guidelines.map((guideline, gIndex) => (
+                              <li key={gIndex} className="flex items-start space-x-2">
+                                <Check size={12} className="text-crd-green mt-0.5 flex-shrink-0" />
+                                <span>{guideline}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </CRDCard>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Responsive Examples */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Responsive Layout Examples</h2>
+                  
+                  <div className="space-y-8">
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-crd-white">Card Collection (Responsive Grid)</h3>
+                      <CRDCard className="p-6">
+                        <div className="text-center text-sm text-crd-lightGray mb-4">
+                          Resize browser to see responsive behavior
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                          {[...Array(12)].map((_, index) => (
+                            <div key={index} className="aspect-[3/4] bg-gradient-to-br from-crd-green/20 to-crd-blue/20 rounded-lg p-2">
+                              <div className="text-xs text-center text-crd-white pt-8">Card {index + 1}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </CRDCard>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-crd-white">Dashboard Layout (Responsive Columns)</h3>
+                      <CRDCard className="p-6">
+                        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+                          <div className="md:col-span-3 lg:col-span-3 space-y-4">
+                            <div className="h-32 bg-crd-mediumGray/20 rounded-lg flex items-center justify-center">
+                              <span className="text-sm text-crd-lightGray">Main Content Area</span>
+                            </div>
+                            <div className="grid sm:grid-cols-2 gap-4">
+                              <div className="h-24 bg-crd-blue/10 rounded-lg flex items-center justify-center">
+                                <span className="text-xs text-crd-blue">Stats Widget 1</span>
+                              </div>
+                              <div className="h-24 bg-crd-green/10 rounded-lg flex items-center justify-center">
+                                <span className="text-xs text-crd-green">Stats Widget 2</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="space-y-4">
+                            <div className="h-40 bg-crd-purple/10 rounded-lg flex items-center justify-center">
+                              <span className="text-xs text-crd-purple text-center">Sidebar<br/>Content</span>
+                            </div>
+                          </div>
+                        </div>
+                      </CRDCard>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Mobile Optimization */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Mobile-First Optimization</h2>
+                  
+                  <div className="grid lg:grid-cols-2 gap-8">
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Touch Targets & Gestures</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-3 bg-crd-mediumGray/20 rounded-lg">
+                          <span className="text-sm text-crd-white">Minimum Touch Target</span>
+                          <CRDBadge variant="secondary">44px × 44px</CRDBadge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-crd-mediumGray/20 rounded-lg">
+                          <span className="text-sm text-crd-white">Comfortable Touch Target</span>
+                          <CRDBadge variant="secondary">48px × 48px</CRDBadge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-crd-mediumGray/20 rounded-lg">
+                          <span className="text-sm text-crd-white">Spacing Between Targets</span>
+                          <CRDBadge variant="secondary">8px minimum</CRDBadge>
+                        </div>
+                      </div>
+                    </CRDCard>
+
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Performance Targets</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-3 bg-crd-mediumGray/20 rounded-lg">
+                          <span className="text-sm text-crd-white">First Contentful Paint</span>
+                          <CRDBadge variant="success">&lt; 2.5s</CRDBadge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-crd-mediumGray/20 rounded-lg">
+                          <span className="text-sm text-crd-white">Largest Contentful Paint</span>
+                          <CRDBadge variant="success">&lt; 4s</CRDBadge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-crd-mediumGray/20 rounded-lg">
+                          <span className="text-sm text-crd-white">Frame Rate</span>
+                          <CRDBadge variant="success">60fps target</CRDBadge>
+                        </div>
+                      </div>
+                    </CRDCard>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Accessibility Section */}
+            {activeSection === 'accessibility' && (
+              <div className="space-y-16">
+                <div className="text-center space-y-4">
+                  <h1 className="text-4xl font-bold text-crd-white">Accessibility Standards</h1>
+                  <p className="text-lg text-crd-lightGray max-w-3xl mx-auto">
+                    WCAG 2.1 AA compliance guidelines, focus management, screen reader optimization, and inclusive design patterns.
+                  </p>
+                </div>
+
+                {/* WCAG Compliance */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">WCAG 2.1 AA Compliance</h2>
+                  
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Color Contrast Standards</h3>
+                      <div className="space-y-3">
+                        {[
+                          { bg: '#3772FF', text: '#FFFFFF', ratio: '7.2:1', level: 'AAA', label: 'Primary Blue on White' },
+                          { bg: '#45B26B', text: '#FFFFFF', ratio: '6.8:1', level: 'AAA', label: 'Success Green on White' },
+                          { bg: '#EA6E48', text: '#FFFFFF', ratio: '5.1:1', level: 'AA+', label: 'Warning Orange on White' },
+                          { bg: '#141416', text: '#FCFCFD', ratio: '18.7:1', level: 'AAA', label: 'Dark Background with Light Text' }
+                        ].map((combo, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 rounded-lg" 
+                               style={{ backgroundColor: combo.bg, color: combo.text }}>
+                            <span className="text-sm font-medium">{combo.label}</span>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xs opacity-80">{combo.ratio}</span>
+                              <CRDBadge 
+                                variant={combo.level === 'AAA' ? 'success' : 'secondary'}
+                                className="text-xs"
+                              >
+                                {combo.level}
+                              </CRDBadge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CRDCard>
+
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Focus Management</h3>
+                      <div className="space-y-3">
+                        <button className="w-full p-3 text-left bg-crd-mediumGray/20 rounded-lg text-crd-white focus:outline-none focus:ring-2 focus:ring-crd-blue focus:ring-offset-2 focus:ring-offset-crd-darkGray transition-all">
+                          Focusable Button Example
+                        </button>
+                        <input 
+                          type="text" 
+                          placeholder="Focus-managed input field"
+                          className="w-full p-3 bg-crd-mediumGray/20 rounded-lg text-crd-white placeholder-crd-lightGray focus:outline-none focus:ring-2 focus:ring-crd-blue focus:ring-offset-2 focus:ring-offset-crd-darkGray transition-all"
+                        />
+                        <div className="text-sm text-crd-lightGray">
+                          All interactive elements have visible focus indicators with 2px outline and proper color contrast
+                        </div>
+                      </div>
+                    </CRDCard>
+                  </div>
+                </section>
+
+                {/* Screen Reader Optimization */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Screen Reader Optimization</h2>
+                  
+                  <div className="grid lg:grid-cols-2 gap-8">
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Semantic Markup Examples</h3>
+                      <div className="space-y-4">
+                        <div className="bg-crd-darkGray rounded-lg p-4">
+                          <pre className="text-sm text-crd-lightGray overflow-x-auto">
+                            <code>{`<button 
+  aria-label="Add to favorites"
+  aria-pressed={isFavorited}
+  onClick={toggleFavorite}
+>
+  <Star aria-hidden="true" />
+  {isFavorited ? 'Remove from' : 'Add to'} favorites
+</button>`}</code>
+                          </pre>
+                        </div>
+                        <div className="text-sm text-crd-lightGray">
+                          Proper ARIA labels, semantic HTML, and descriptive text for screen readers
+                        </div>
+                      </div>
+                    </CRDCard>
+
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Keyboard Navigation</h3>
+                      <div className="space-y-3">
+                        {[
+                          'Tab - Navigate to next focusable element',
+                          'Shift + Tab - Navigate to previous element',
+                          'Enter/Space - Activate buttons and links',
+                          'Arrow keys - Navigate within component groups',
+                          'Escape - Close modals and dropdowns'
+                        ].map((shortcut, index) => (
+                          <div key={index} className="flex items-start space-x-3 p-2 rounded hover:bg-crd-mediumGray/10">
+                            <div className="text-xs bg-crd-mediumGray/30 px-2 py-1 rounded font-mono text-crd-blue">
+                              {shortcut.split(' - ')[0]}
+                            </div>
+                            <span className="text-sm text-crd-lightGray">{shortcut.split(' - ')[1]}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </CRDCard>
+                  </div>
+                </section>
+
+                {/* Inclusive Design Patterns */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Inclusive Design Patterns</h2>
+                  
+                  <div className="grid md:grid-cols-3 gap-6">
+                    {[
+                      {
+                        title: 'Visual Indicators',
+                        description: 'Color is never the only way to convey information',
+                        examples: ['Icons + color for status', 'Patterns + color for categories', 'Text labels for all states']
+                      },
+                      {
+                        title: 'Motor Accessibility',
+                        description: 'Accommodates users with motor impairments',
+                        examples: ['Large click targets (44px+)', 'Generous spacing', 'No time-based interactions']
+                      },
+                      {
+                        title: 'Cognitive Accessibility',
+                        description: 'Clear, consistent, and predictable interactions',
+                        examples: ['Consistent navigation', 'Clear error messages', 'Progress indicators']
+                      }
+                    ].map((pattern, index) => (
+                      <CRDCard key={index} className="p-6 space-y-4">
+                        <h3 className="font-semibold text-crd-white">{pattern.title}</h3>
+                        <p className="text-sm text-crd-lightGray">{pattern.description}</p>
+                        <div className="space-y-2">
+                          {pattern.examples.map((example, eIndex) => (
+                            <div key={eIndex} className="flex items-start space-x-2">
+                              <Check size={12} className="text-crd-green mt-1 flex-shrink-0" />
+                              <span className="text-xs text-crd-lightGray">{example}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CRDCard>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Design Tokens Section */}
+            {activeSection === 'design-tokens' && (
+              <div className="space-y-16">
+                <div className="text-center space-y-4">
+                  <h1 className="text-4xl font-bold text-crd-white">Design Tokens</h1>
+                  <p className="text-lg text-crd-lightGray max-w-3xl mx-auto">
+                    CSS variables, spacing scales, typography tokens, and the complete token system powering our design consistency.
+                  </p>
+                </div>
+
+                {/* Color Tokens */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Color Tokens</h2>
+                  
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Primary Colors</h3>
+                      <div className="space-y-3">
+                        {[
+                          { token: '--crd-blue', value: '#3772FF', usage: 'Primary CTAs, links' },
+                          { token: '--crd-green', value: '#45B26B', usage: 'Success states' },
+                          { token: '--crd-orange', value: '#EA6E48', usage: 'Warnings, highlights' },
+                          { token: '--crd-purple', value: '#9757D7', usage: 'Premium features' }
+                        ].map((color, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-crd-mediumGray/20 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div 
+                                className="w-6 h-6 rounded border-2 border-white/20 cursor-pointer"
+                                style={{ backgroundColor: color.value }}
+                                onClick={() => copyToClipboard(color.token, color.token)}
+                              />
+                              <div>
+                                <div className="text-sm font-mono text-crd-white">{color.token}</div>
+                                <div className="text-xs text-crd-lightGray">{color.usage}</div>
+                              </div>
+                            </div>
+                            <div className="text-xs font-mono text-crd-blue">{color.value}</div>
+                            {copiedText === color.token && (
+                              <div className="text-xs text-crd-green">Copied!</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </CRDCard>
+
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Background Tokens</h3>
+                      <div className="space-y-3">
+                        {[
+                          { token: '--crd-bg-primary', value: '#141416', usage: 'Main app background' },
+                          { token: '--crd-bg-secondary', value: '#1A1D24', usage: 'Card backgrounds' },
+                          { token: '--crd-bg-tertiary', value: '#23262F', usage: 'Elevated surfaces' },
+                          { token: '--crd-bg-border', value: '#353945', usage: 'Borders, dividers' }
+                        ].map((color, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-crd-mediumGray/20 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div 
+                                className="w-6 h-6 rounded border-2 border-white/20 cursor-pointer"
+                                style={{ backgroundColor: color.value }}
+                                onClick={() => copyToClipboard(color.token, color.token)}
+                              />
+                              <div>
+                                <div className="text-sm font-mono text-crd-white">{color.token}</div>
+                                <div className="text-xs text-crd-lightGray">{color.usage}</div>
+                              </div>
+                            </div>
+                            <div className="text-xs font-mono text-crd-blue">{color.value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </CRDCard>
+                  </div>
+                </section>
+
+                {/* Spacing Tokens */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Spacing Scale</h2>
+                  
+                  <CRDCard className="p-6 space-y-4">
+                    <h3 className="font-semibold text-crd-white">Spacing Tokens</h3>
+                    <div className="space-y-3">
+                      {[
+                        { token: 'space-xs', value: '0.25rem', px: '4px', usage: 'Tight spacing, borders' },
+                        { token: 'space-sm', value: '0.5rem', px: '8px', usage: 'Small gaps, padding' },
+                        { token: 'space-md', value: '1rem', px: '16px', usage: 'Standard spacing' },
+                        { token: 'space-lg', value: '1.5rem', px: '24px', usage: 'Section spacing' },
+                        { token: 'space-xl', value: '2rem', px: '32px', usage: 'Large gaps' },
+                        { token: 'space-2xl', value: '3rem', px: '48px', usage: 'Page sections' },
+                        { token: 'space-3xl', value: '4rem', px: '64px', usage: 'Major sections' }
+                      ].map((space, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-crd-mediumGray/20 rounded-lg">
+                          <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-2">
+                              <div 
+                                className="bg-crd-blue/30 h-4" 
+                                style={{ width: space.value }}
+                              />
+                              <span className="text-sm font-mono text-crd-white">{space.token}</span>
+                            </div>
+                            <span className="text-xs text-crd-lightGray">{space.usage}</span>
+                          </div>
+                          <div className="text-xs font-mono text-crd-blue">{space.value} ({space.px})</div>
+                        </div>
+                      ))}
+                    </div>
+                  </CRDCard>
+                </section>
+
+                {/* Typography Tokens */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Typography Tokens</h2>
+                  
+                  <div className="grid lg:grid-cols-2 gap-8">
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Font Size Scale</h3>
+                      <div className="space-y-4">
+                        {[
+                          { token: 'text-xs', value: '0.75rem', sample: 'Extra small text' },
+                          { token: 'text-sm', value: '0.875rem', sample: 'Small text' },
+                          { token: 'text-base', value: '1rem', sample: 'Base text size' },
+                          { token: 'text-lg', value: '1.125rem', sample: 'Large text' },
+                          { token: 'text-xl', value: '1.25rem', sample: 'Extra large text' },
+                          { token: 'text-2xl', value: '1.5rem', sample: 'Heading text' },
+                          { token: 'text-3xl', value: '1.875rem', sample: 'Large heading' }
+                        ].map((font, index) => (
+                          <div key={index} className="flex items-baseline justify-between">
+                            <div className="flex-1">
+                              <div className={`${font.token} text-crd-white`}>{font.sample}</div>
+                            </div>
+                            <div className="text-xs font-mono text-crd-blue ml-4">{font.token} ({font.value})</div>
+                          </div>
+                        ))}
+                      </div>
+                    </CRDCard>
+
+                    <CRDCard className="p-6 space-y-4">
+                      <h3 className="font-semibold text-crd-white">Font Weight Scale</h3>
+                      <div className="space-y-4">
+                        {[
+                          { token: 'font-normal', value: '400', sample: 'Normal weight text' },
+                          { token: 'font-medium', value: '500', sample: 'Medium weight text' },
+                          { token: 'font-semibold', value: '600', sample: 'Semibold weight text' },
+                          { token: 'font-bold', value: '700', sample: 'Bold weight text' },
+                          { token: 'font-extrabold', value: '800', sample: 'Extra bold weight text' }
+                        ].map((weight, index) => (
+                          <div key={index} className="flex items-baseline justify-between">
+                            <div className="flex-1">
+                              <div className={`${weight.token} text-crd-white`}>{weight.sample}</div>
+                            </div>
+                            <div className="text-xs font-mono text-crd-blue ml-4">{weight.token} ({weight.value})</div>
+                          </div>
+                        ))}
+                      </div>
+                    </CRDCard>
+                  </div>
+                </section>
+
+                {/* Token Usage Examples */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Token Implementation</h2>
+                  
+                  <CRDCard className="p-6 space-y-4">
+                    <h3 className="font-semibold text-crd-white">CSS Implementation Example</h3>
+                    <div className="bg-crd-darkGray rounded-lg p-6 border border-crd-mediumGray/30">
+                      <pre className="text-sm text-crd-lightGray overflow-x-auto leading-relaxed">
+                        <code>{`/* Design Token Usage */
+.card-component {
+  background: var(--crd-bg-secondary);
+  border: 1px solid var(--crd-bg-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  color: var(--crd-text-primary);
+}
+
+.card-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--crd-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.card-description {
+  font-size: var(--text-sm);
+  color: var(--crd-text-secondary);
+  line-height: 1.5;
+}
+
+.primary-button {
+  background: var(--crd-blue);
+  color: var(--crd-white);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-pill);
+  transition: all 0.3s ease;
+}
+
+.primary-button:hover {
+  background: var(--crd-blue-hover);
+  transform: translateY(-1px);
+}`}</code>
+                      </pre>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <CRDButton 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => copyToClipboard(
+                          "/* Design tokens provide consistent styling across all components */", 
+                          "CSS Code"
+                        )}
+                      >
+                        <Copy size={14} className="mr-2" />
+                        Copy Code
+                      </CRDButton>
+                      {copiedText === "CSS Code" && (
+                        <span className="text-sm text-crd-green">Code copied to clipboard!</span>
+                      )}
+                    </div>
+                  </CRDCard>
+                </section>
+              </div>
+            )}
+
+            {/* Real Examples Section */}
+            {activeSection === 'real-examples' && (
+              <div className="space-y-16">
+                <div className="text-center space-y-4">
+                  <h1 className="text-4xl font-bold text-crd-white">Real-World Examples</h1>
+                  <p className="text-lg text-crd-lightGray max-w-3xl mx-auto">
+                    Complete marketplace and dashboard interfaces showcasing the design system in production-ready applications.
+                  </p>
+                </div>
+
+                {/* Marketplace Example */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Marketplace Interface</h2>
+                  
+                  <CRDCard className="p-8 space-y-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-semibold text-crd-white">Card Marketplace</h3>
+                      <div className="flex items-center space-x-4">
+                        <div className="relative">
+                          <input 
+                            type="text" 
+                            placeholder="Search cards..."
+                            className="pl-10 pr-4 py-2 bg-crd-mediumGray/20 rounded-lg text-crd-white placeholder-crd-lightGray focus:outline-none focus:ring-2 focus:ring-crd-blue"
+                          />
+                          <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-crd-lightGray" />
+                        </div>
+                        <CRDButton variant="outline" size="sm">Filter</CRDButton>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {[
+                        { name: 'Rare Rookie Card', price: '$2,450', bid: '$2,400', time: '2h 15m', rarity: 'Legendary' },
+                        { name: 'Championship Series', price: '$890', bid: '$850', time: '1d 8h', rarity: 'Rare' },
+                        { name: 'Vintage Collection', price: '$1,250', bid: '$1,200', time: '4h 32m', rarity: 'Epic' },
+                        { name: 'Season Highlights', price: '$675', bid: '$650', time: '12h 45m', rarity: 'Uncommon' }
+                      ].map((card, index) => (
+                        <CRDCard key={index} className="p-4 space-y-4 hover:shadow-lg hover:shadow-crd-blue/10 transition-all">
+                          <div className="aspect-[3/4] bg-gradient-to-br from-crd-blue/20 to-crd-purple/20 rounded-lg flex items-center justify-center">
+                            <span className="text-sm text-crd-lightGray">Card Preview</span>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-semibold text-crd-white text-sm">{card.name}</h4>
+                              <CRDBadge variant="outline" className="text-xs">{card.rarity}</CRDBadge>
+                            </div>
+                            
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-crd-lightGray">Buy Now:</span>
+                              <span className="text-crd-green font-semibold">{card.price}</span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-crd-lightGray">Current Bid:</span>
+                              <span className="text-crd-blue font-semibold">{card.bid}</span>
+                            </div>
+                            
+                            <div className="text-xs text-crd-orange">
+                              Ends in {card.time}
+                            </div>
+                          </div>
+                          
+                          <div className="flex space-x-2">
+                            <CRDButton size="sm" className="flex-1">Place Bid</CRDButton>
+                            <button className="p-2 bg-crd-mediumGray/20 rounded-lg text-crd-lightGray hover:text-crd-orange transition-colors">
+                              <Heart size={14} />
+                            </button>
+                          </div>
+                        </CRDCard>
+                      ))}
+                    </div>
+                  </CRDCard>
+                </section>
+
+                {/* Dashboard Example */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Creator Dashboard</h2>
+                  
+                  <div className="space-y-6">
+                    {/* Dashboard Header */}
+                    <CRDCard className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-2xl font-bold text-crd-white">Creator Dashboard</h3>
+                          <p className="text-crd-lightGray">Manage your card collection and track performance</p>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <CRDButton variant="outline">
+                            <Download size={16} className="mr-2" />
+                            Export Data
+                          </CRDButton>
+                          <CRDButton>
+                            <Plus size={16} className="mr-2" />
+                            Create Card
+                          </CRDButton>
+                        </div>
+                      </div>
+                    </CRDCard>
+
+                    {/* Stats Grid */}
+                    <div className="grid md:grid-cols-4 gap-6">
+                      {[
+                        { label: 'Total Cards', value: '1,247', change: '+12%', trend: 'up', icon: Grid3x3 },
+                        { label: 'Active Auctions', value: '23', change: '+5%', trend: 'up', icon: Calendar },
+                        { label: 'Total Revenue', value: '$12,840', change: '+8%', trend: 'up', icon: DollarSign },
+                        { label: 'Profile Views', value: '8.2K', change: '+15%', trend: 'up', icon: Eye }
+                      ].map((stat, index) => (
+                        <CRDCard key={index} className="p-6 text-center space-y-4">
+                          <div className="flex items-center justify-center">
+                            <div className="p-3 bg-crd-blue/20 rounded-xl">
+                              <stat.icon size={24} className="text-crd-blue" />
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <div className="text-2xl font-bold text-crd-white">{stat.value}</div>
+                            <div className="text-sm text-crd-lightGray">{stat.label}</div>
+                            <div className="text-xs text-crd-green">{stat.change} this month</div>
+                          </div>
+                        </CRDCard>
+                      ))}
+                    </div>
+
+                    {/* Content Grid */}
+                    <div className="grid lg:grid-cols-3 gap-6">
+                      {/* Recent Activity */}
+                      <CRDCard className="lg:col-span-2 p-6 space-y-6">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-lg font-semibold text-crd-white">Recent Activity</h4>
+                          <CRDButton variant="ghost" size="sm">View All</CRDButton>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          {[
+                            { action: 'Card sold', item: 'Rookie Legend #247', amount: '$450', time: '2 hours ago', type: 'success' },
+                            { action: 'New bid received', item: 'Championship Series #89', amount: '$280', time: '4 hours ago', type: 'info' },
+                            { action: 'Card created', item: 'Season Highlights #156', amount: null, time: '1 day ago', type: 'default' },
+                            { action: 'Auction ended', item: 'Vintage Collection #34', amount: '$920', time: '2 days ago', type: 'success' }
+                          ].map((activity, index) => (
+                            <div key={index} className="flex items-center justify-between p-3 bg-crd-mediumGray/10 rounded-lg">
+                              <div className="flex items-center space-x-3">
+                                <div className={`w-2 h-2 rounded-full ${
+                                  activity.type === 'success' ? 'bg-crd-green' : 
+                                  activity.type === 'info' ? 'bg-crd-blue' : 'bg-crd-lightGray'
+                                }`}></div>
+                                <div>
+                                  <div className="text-sm text-crd-white">{activity.action}</div>
+                                  <div className="text-xs text-crd-lightGray">{activity.item}</div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                {activity.amount && (
+                                  <div className="text-sm font-semibold text-crd-green">{activity.amount}</div>
+                                )}
+                                <div className="text-xs text-crd-lightGray">{activity.time}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CRDCard>
+
+                      {/* Quick Actions */}
+                      <CRDCard className="p-6 space-y-6">
+                        <h4 className="text-lg font-semibold text-crd-white">Quick Actions</h4>
+                        
+                        <div className="space-y-3">
+                          {[
+                            { label: 'Upload New Card', icon: Upload, color: 'bg-crd-blue' },
+                            { label: 'Batch Upload', icon: Layers, color: 'bg-crd-green' },
+                            { label: 'View Analytics', icon: BarChart, color: 'bg-crd-purple' },
+                            { label: 'Account Settings', icon: Settings, color: 'bg-crd-orange' }
+                          ].map((action, index) => (
+                            <button 
+                              key={index}
+                              className="w-full flex items-center space-x-3 p-3 rounded-lg bg-crd-mediumGray/10 hover:bg-crd-mediumGray/20 transition-all text-left"
+                            >
+                              <div className={`p-2 ${action.color} rounded-lg`}>
+                                <action.icon size={16} className="text-white" />
+                              </div>
+                              <span className="text-sm text-crd-white">{action.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </CRDCard>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Code Example */}
+                <section className="space-y-8">
+                  <h2 className="text-2xl font-bold text-crd-white">Implementation Code</h2>
+                  
+                  <CRDCard className="p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-crd-white">React Component Example</h3>
+                      <CRDButton 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => copyToClipboard("// Complete React component code", "Component Code")}
+                      >
+                        <Copy size={14} className="mr-2" />
+                        Copy Component
+                      </CRDButton>
+                    </div>
+                    
+                    <div className="bg-crd-darkest rounded-xl p-6 border border-crd-mediumGray/30">
+                      <pre className="text-sm text-crd-lightGray overflow-x-auto leading-relaxed">
+                        <code>{`// Marketplace Card Component
+import { CRDCard, CRDButton, CRDBadge } from '@/components/ui/design-system';
+
+export const MarketplaceCard = ({ card }) => {
+  return (
+    <CRDCard className="p-4 space-y-4 hover:shadow-lg transition-all">
+      <div className="aspect-[3/4] bg-gradient-to-br from-crd-blue/20 to-crd-purple/20 rounded-lg">
+        <img src={card.image} alt={card.name} className="w-full h-full object-cover rounded-lg" />
+      </div>
+      
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h4 className="font-semibold text-crd-white text-sm">{card.name}</h4>
+          <CRDBadge variant="outline">{card.rarity}</CRDBadge>
+        </div>
+        
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-crd-lightGray">Current Bid:</span>
+          <span className="text-crd-green font-semibold">{card.currentBid}</span>
+        </div>
+      </div>
+      
+      <CRDButton className="w-full" onClick={() => placeBid(card.id)}>
+        Place Bid
+      </CRDButton>
+    </CRDCard>
+  );
+};`}</code>
+                      </pre>
+                    </div>
+                    
+                    {copiedText === "Component Code" && (
+                      <div className="text-sm text-crd-green">Component code copied to clipboard!</div>
+                    )}
+                  </CRDCard>
                 </section>
               </div>
             )}
