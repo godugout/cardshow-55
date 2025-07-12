@@ -31,3 +31,15 @@ export { AuctionCard } from '../../cards/AuctionCard';
 // CRD:DNA System exports
 export { CRDDNABrowser } from '../../crd/CRDDNABrowser';
 export { CRDLogo, MLBLogo, ClassicMLBLogo, UniformLogo, SketchLogo, CRDEntryCard } from '../../crd/CRDLogoComponent';
+
+// CRD:DNA Logo Components
+export { MLBBalOBSLogo } from '../../home/navbar/MLBBalOBSLogo';
+export { MLBBosRBBLogo } from '../../home/navbar/MLBBosRBBLogo';
+export { MLBPadres70sLogo } from '../../home/navbar/MLBPadres70sLogo';
+export { MLBMariners80sLogo } from '../../home/navbar/MLBMariners80sLogo';
+export { MLBAthletics00sLogo } from '../../home/navbar/MLBAthletics00sLogo';
+export { CS3DWGBLogo } from '../../home/navbar/CS3DWGBLogo';
+export { NCAABig10Logo } from '../../home/navbar/NCAABig10Logo';
+export { CSSketchRBLogo } from '../../home/navbar/CSSketchRBLogo';
+export { CSSketchRSLogo } from '../../home/navbar/CSSketchRSLogo';
+export { CSOrigWSLogo } from '../../home/navbar/CSOrigWSLogo';
