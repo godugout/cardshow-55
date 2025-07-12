@@ -104,10 +104,9 @@ const LogoWithFallback = ({ LogoComponent, logoName, className }: {
 
 interface LogoSelectorDrawerProps {
   onThemeChange?: (themeId: string) => void;
-  currentTheme?: string;
 }
 
-export const LogoSelectorDrawer = ({ onThemeChange, currentTheme }: LogoSelectorDrawerProps) => {
+export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) => {
   const { settings, saveSettings } = useAppSettings();
   const { setTheme, currentPalette, availablePalettes } = useTeamTheme();
   const [open, setOpen] = useState(false);
@@ -136,14 +135,6 @@ export const LogoSelectorDrawer = ({ onThemeChange, currentTheme }: LogoSelector
       setSelectedLogo(savedLogo);
     }
   }, [settings?.theme]);
-
-  // Sync with currentTheme prop changes (from navbar state)
-  useEffect(() => {
-    if (currentTheme && currentTheme !== selectedLogo.themeId) {
-      const updatedLogo = findLogoByThemeId(currentTheme);
-      setSelectedLogo(updatedLogo);
-    }
-  }, [currentTheme]);
 
   // Apply theme to document and notify parent
   useEffect(() => {
