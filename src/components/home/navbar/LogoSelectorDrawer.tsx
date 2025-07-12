@@ -2,26 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { PalettePreview } from '@/components/ui/design-system';
-import { MLBBalOBSLogo } from './MLBBalOBSLogo';
-import { MLBBosRBBLogo } from './MLBBosRBBLogo';
-import { MLBPadres70sLogo } from './MLBPadres70sLogo';
-import { MLBMariners80sLogo } from './MLBMariners80sLogo';
-import { MLBAthletics00sLogo } from './MLBAthletics00sLogo';
-import { CS3DWGBLogo } from './CS3DWGBLogo';
-import { NCAABig10Logo } from './NCAABig10Logo';
-import { CSSketchRBLogo } from './CSSketchRBLogo';
-import { CSSketchRSLogo } from './CSSketchRSLogo';
-import { CSOrigWSLogo } from './CSOrigWSLogo';
-import { CardshowBasicLogo } from './CardshowBasicLogo';
-import { CardshowGreenLogo } from './CardshowGreenLogo';
-import { CardshowRedBlueLogo } from './CardshowRedBlueLogo';
-import { CardshowBlueLogo } from './CardshowBlueLogo';
-import { CardshowOrangeLogo } from './CardshowOrangeLogo';
-import { CardshowGreenSparklesLogo } from './CardshowGreenSparklesLogo';
-import { CardshowBlockLettersLogo } from './CardshowBlockLettersLogo';
-import { CardshowRetroLogo } from './CardshowRetroLogo';
-import { CardshowVintageLogo } from './CardshowVintageLogo';
-import { CardshowModernLogo } from './CardshowModernLogo';
+import { cardshowLogoDatabase } from '@/lib/cardshowDNA';
+import { getImagePath } from '@/lib/imagePathUtil';
 import { CRDGradientLogo } from './CRDGradientLogo';
 import { ChevronDown } from 'lucide-react';
 import {
@@ -33,27 +15,35 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 
-const logoGroups = [
-  {
-    label: 'MLB Teams',
-    logos: [
-      { name: 'MLB_BAL_OBS', component: MLBBalOBSLogo, hoverColor: 'orange', themeId: 'mlb_bal_obs' },
-    ]
-  },
-  {
-    label: 'NCAA & Uniforms',
-    logos: [
-      { name: 'NCAA_BIG10', component: NCAABig10Logo, hoverColor: 'indigo', themeId: 'ncaa_big10' },
-    ]
-  },
-  {
-    label: 'Cardshow Originals',
-    logos: [
-      { name: 'CS_3D_WGB', component: CS3DWGBLogo, hoverColor: 'emerald', themeId: 'cs_3d_wgb' },
-      { name: 'CS_SK_RB', component: CSSketchRBLogo, hoverColor: 'purple', themeId: 'cs_sk_rb' },
-    ]
-  }
-];
+// Create logo groups from cardshowLogoDatabase
+const createLogoGroups = () => {
+  const groups = new Map();
+  
+  cardshowLogoDatabase.forEach(logo => {
+    const category = logo.category;
+    if (!groups.has(category)) {
+      groups.set(category, []);
+    }
+    
+    groups.get(category).push({
+      name: logo.displayName,
+      dnaCode: logo.dnaCode,
+      imageUrl: logo.imageUrl,
+      hoverColor: logo.logoTheme.primary,
+      themeId: `logo-${logo.dnaCode.toLowerCase()}`,
+      rarity: logo.rarity,
+      colorPalette: logo.colorPalette,
+      description: logo.description
+    });
+  });
+  
+  return Array.from(groups.entries()).map(([category, logos]) => ({
+    label: category,
+    logos
+  }));
+};
+
+const logoGroups = createLogoGroups();
 
 const getHoverColorClasses = (color: string) => {
   const colorMap = {
@@ -73,18 +63,19 @@ const getHoverColorClasses = (color: string) => {
   return colorMap[color] || 'hover:bg-gray-500/10 hover:border-gray-500/20';
 };
 
-// Enhanced logo component with CRD:DNA integration and robust error handling
-const LogoWithFallback = ({ LogoComponent, logoName, className }: { 
-  LogoComponent: React.ComponentType<{ className?: string }>, 
+// Logo component using imageUrl from cardshowLogoDatabase
+const LogoWithFallback = ({ imageUrl, logoName, className, dnaCode }: { 
+  imageUrl: string, 
   logoName: string, 
-  className?: string 
+  className?: string,
+  dnaCode: string
 }) => {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Quick initialization check
-    const timer = setTimeout(() => setIsLoading(false), 50);
+    const timer = setTimeout(() => setIsLoading(false), 100);
     return () => clearTimeout(timer);
   }, []);
 
@@ -106,28 +97,23 @@ const LogoWithFallback = ({ LogoComponent, logoName, className }: {
     );
   }
 
-  // Attempt to render the logo component with error boundary
-  try {
-    return (
-      <div className="relative group">
-        <LogoComponent className={className} />
-        {/* CRD:DNA code tooltip on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-popover border rounded-md px-2 py-1 text-xs text-popover-foreground shadow-lg whitespace-nowrap z-50">
-            {logoName}
-          </div>
+  return (
+    <div className="relative group">
+      <img 
+        src={imageUrl}
+        alt={logoName}
+        className={className}
+        onError={() => setHasError(true)}
+        onLoad={() => setIsLoading(false)}
+      />
+      {/* CRD:DNA code tooltip on hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-popover border rounded-md px-2 py-1 text-xs text-popover-foreground shadow-lg whitespace-nowrap z-50">
+          {dnaCode}
         </div>
       </div>
-    );
-  } catch (error) {
-    console.warn(`Failed to render CRD:DNA logo: ${logoName}`, error);
-    setHasError(true);
-    return (
-      <div className={`${className} flex items-center justify-center bg-destructive/10 border border-dashed border-destructive/30 rounded-md text-xs text-destructive transition-all duration-200`}>
-        <span className="font-mono">⚠ {logoName}</span>
-      </div>
-    );
-  }
+    </div>
+  );
 };
 
 interface LogoSelectorDrawerProps {
@@ -136,7 +122,7 @@ interface LogoSelectorDrawerProps {
 
 export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) => {
   const { settings, saveSettings } = useAppSettings();
-  const { setTheme, currentPalette, availablePalettes } = useTeamTheme();
+  const { setLogoTheme, currentPalette, availablePalettes, setTheme } = useTeamTheme();
   const [open, setOpen] = useState(false);
 
   // Find logo by theme ID with fallback
@@ -145,7 +131,7 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
       const found = group.logos.find(logo => logo.themeId === themeId);
       if (found) return found;
     }
-    return logoGroups[0].logos[0]; // Fallback to first MLB team
+    return logoGroups[0].logos[0]; // Fallback to first logo
   };
 
   // Initialize selected logo from settings or default
@@ -153,8 +139,6 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
     const savedTheme = settings?.theme;
     return savedTheme ? findLogoByThemeId(savedTheme) : logoGroups[0].logos[0];
   });
-
-  const SelectedLogoComponent = selectedLogo.component;
 
   // Load saved theme on settings change
   useEffect(() => {
@@ -172,8 +156,11 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
 
   const handleLogoSelect = (logo: typeof selectedLogo) => {
     setSelectedLogo(logo);
-    // Apply team theme with 4-color palette
-    setTheme(logo.themeId);
+    
+    // Use setLogoTheme to apply the logo-based theme using the DNA code
+    const dnaCode = logo.dnaCode;
+    setLogoTheme(dnaCode);
+    
     // Save theme to persistent storage
     saveSettings({ theme: logo.themeId });
     onThemeChange?.(logo.themeId);
@@ -185,8 +172,9 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
       <DrawerTrigger asChild>
         <button className="group flex items-center gap-2 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-2 rounded-lg transition-all duration-300">
           <LogoWithFallback 
-            LogoComponent={SelectedLogoComponent} 
+            imageUrl={selectedLogo.imageUrl}
             logoName={selectedLogo.name}
+            dnaCode={selectedLogo.dnaCode}
             className="h-12 w-32 object-contain" 
           />
           <ChevronDown className={`h-4 w-4 text-gray-400 transition-all duration-300 opacity-0 group-hover:opacity-100 ${open ? 'rotate-180 opacity-100' : ''}`} />
@@ -212,35 +200,45 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
                     </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                   {group.logos.map((logo) => {
-                    const LogoComponent = logo.component;
-                    const hoverClasses = getHoverColorClasses(logo.hoverColor);
                     const isSelected = selectedLogo.themeId === logo.themeId;
                     
                     return (
                       <button
-                        key={logo.name}
+                        key={logo.dnaCode}
                         onClick={() => handleLogoSelect(logo)}
                         className={`group bg-themed-card rounded-xl p-3 transition-all duration-300 hover:scale-105 border-2 ${
                           isSelected 
                             ? 'border-themed-strong bg-themed-light' 
                             : `border-transparent hover:border-themed-light hover:bg-themed-subtle`
                         } hover:shadow-lg flex items-center justify-center min-h-[100px]`}
-                        title={logo.name}
+                        title={`${logo.name} - ${logo.description}`}
                       >
                         <div className="flex flex-col items-center gap-2">
                           <LogoWithFallback 
-                            LogoComponent={LogoComponent} 
+                            imageUrl={logo.imageUrl}
                             logoName={logo.name}
+                            dnaCode={logo.dnaCode}
                             className="h-8 w-20 object-contain transition-all duration-300 group-hover:brightness-110" 
                           />
-                          {/* Show palette preview for themed logos */}
-                          {availablePalettes.find(p => p.id === logo.themeId) && (
-                            <PalettePreview 
-                              palette={availablePalettes.find(p => p.id === logo.themeId)!}
-                              size="sm"
-                              className="opacity-60 group-hover:opacity-100 transition-opacity"
-                            />
-                          )}
+                          {/* Show palette preview using colorPalette from logo */}
+                          <div className="flex gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                            {logo.colorPalette.slice(0, 4).map((color, index) => (
+                              <div 
+                                key={index}
+                                className="w-2 h-2 rounded-full border border-white/20"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                          {/* Rarity indicator */}
+                          <div className={`text-xs px-2 py-1 rounded-full ${
+                            logo.rarity === 'legendary' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black' :
+                            logo.rarity === 'rare' ? 'bg-blue-500 text-white' :
+                            logo.rarity === 'uncommon' ? 'bg-green-500 text-white' :
+                            'bg-gray-500 text-white'
+                          }`}>
+                            {logo.rarity}
+                          </div>
                         </div>
                       </button>
                     );
