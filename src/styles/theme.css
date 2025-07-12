@@ -292,6 +292,7 @@
 .bg-crd-orange { background-color: var(--crd-orange); }
 .bg-crd-purple { background-color: var(--crd-purple); }
 
+.text-crd-white { color: var(--crd-white); }
 .text-crd-lightGray { color: var(--crd-lightGray); }
 .text-crd-green { color: var(--crd-green); }
 .text-crd-blue { color: var(--crd-blue); }
@@ -339,9 +340,9 @@
 /* Core Theme Variables - Extended for complete theming */
 :root {
   /* Card theming */
-  --theme-card-bg: var(--theme-navbar-bg);
-  --theme-card-border: var(--theme-accent);
-  --theme-card-hover: var(--theme-accent-hover);
+  --theme-card-bg: 217 19% 16%; /* Dark gray for cards */
+  --theme-card-border: 217 19% 27%; /* Medium gray for borders */
+  --theme-card-hover: 219 88% 62%; /* Blue for hover */
   
   /* Badge and pill theming */
   --theme-badge-primary: var(--theme-accent);
@@ -427,17 +428,7 @@
   box-shadow: 0 0 30px hsl(219 88% 62% / 0.5);
 }
 
-.card-themed {
-  background: hsl(217 19% 16%); /* #23262F */
-  border: 1px solid hsl(217 19% 27%); /* #353945 */
-  border-radius: 1.5rem; /* 24px */
-  transition: all 0.3s ease;
-}
-
-.card-themed:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  transform: translateY(-2px);
-}
+/* Removed duplicate - using themed version below */
 
 .hover-glow {
   transition: all 0.3s ease;
@@ -484,8 +475,9 @@
 
 /* Card theming */
 .card-themed {
-  background: hsl(var(--theme-card-bg));
-  border-color: hsl(var(--theme-card-border) / 0.2);
+  background: hsl(217 19% 16%); /* #23262F */
+  border: 1px solid hsl(217 19% 27%); /* #353945 */
+  color: hsl(0 0% 99%); /* #FCFCFD */
   transition: all 0.3s ease;
 }
 
@@ -533,48 +525,9 @@
   padding: 0.25rem;
 }
 
-/* Button enhancements */
-.btn-themed-primary {
-  background: hsl(var(--theme-button-primary));
-  color: hsl(var(--theme-cta-text));
-  border: 2px solid hsl(var(--theme-button-primary));
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
+/* Removed duplicate button definitions - using static versions above */
 
-.btn-themed-primary:hover {
-  background: hsl(var(--theme-accent-hover));
-  border-color: hsl(var(--theme-accent-hover));
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px hsl(var(--theme-accent) / 0.4);
-}
-
-.btn-themed-secondary {
-  background: transparent;
-  color: hsl(var(--theme-button-secondary));
-  border: 2px solid hsl(var(--theme-button-secondary));
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-themed-secondary:hover {
-  background: hsl(var(--theme-button-secondary) / 0.1);
-  border-color: hsl(var(--theme-accent-hover));
-  color: hsl(var(--theme-accent-hover));
-}
-
-.btn-themed-ghost {
-  background: transparent;
-  color: hsl(var(--theme-button-ghost));
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
-}
-
-.btn-themed-ghost:hover {
-  background: hsl(var(--theme-accent) / 0.1);
-  color: hsl(var(--theme-text-primary));
-  border-color: hsl(var(--theme-accent) / 0.3);
-}
+/* Removed duplicate definitions - using static versions above */
 
 /* Focus and active states */
 .focus-themed:focus {
@@ -587,29 +540,7 @@
 }
 
 /* Interactive hover effects */
-.hover-glow:hover {
-  box-shadow: 0 0 20px hsl(var(--theme-accent) / 0.5);
-}
-
-.team-spirit-glow {
-  position: relative;
-  overflow: hidden;
-}
-
-.team-spirit-glow::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, hsl(var(--theme-accent) / 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.team-spirit-glow:hover::before {
-  left: 100%;
-}
+/* Removed duplicate - keeping first definition */
 
 /* Button variants */
 .btn-crd-primary {

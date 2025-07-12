@@ -5,25 +5,25 @@
   /* Layout Variables */
   --navbar-height: 4rem; /* 64px */
   
-  --background: 0 0% 100%;
-  --foreground: 222.2 47.4% 11.2%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 47.4% 11.2%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 47.4% 11.2%;
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
+  --background: 217 19% 16%; /* #23262F */
+  --foreground: 0 0% 99%; /* #FCFCFD */
+  --card: 217 19% 16%; /* #23262F */
+  --card-foreground: 0 0% 99%; /* #FCFCFD */
+  --popover: 217 19% 16%; /* #23262F */
+  --popover-foreground: 0 0% 99%; /* #FCFCFD */
+  --primary: 219 88% 62%; /* #3772FF */
+  --primary-foreground: 0 0% 99%; /* #FCFCFD */
+  --secondary: 217 19% 27%; /* #353945 */
+  --secondary-foreground: 0 0% 99%; /* #FCFCFD */
+  --muted: 217 19% 27%; /* #353945 */
+  --muted-foreground: 220 17% 56%; /* #777E90 */
+  --accent: 219 88% 62%; /* #3772FF */
+  --accent-foreground: 0 0% 99%; /* #FCFCFD */
   --destructive: 0 100% 50%;
   --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
+  --border: 217 19% 27%; /* #353945 */
+  --input: 217 19% 27%; /* #353945 */
+  --ring: 219 88% 62%; /* #3772FF */
   --radius: 0.5rem;
 
   /* Custom colors for Cardshow */
