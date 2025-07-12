@@ -7,6 +7,7 @@ import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { getThemeByDNA } from '@/lib/logoThemes';
 import { CRDButton, CRDCard, CRDBadge, TeamThemeShowcase, PalettePreview, Typography } from '@/components/ui/design-system';
 import { CRDLogo } from '@/components/crd/CRDLogoComponent';
+import { mlbTeams, nbaTeams, nflTeams, nhlTeams } from '@/lib/professionalSportsThemes';
 
 const DesignGuide = () => {
   const [activeSection, setActiveSection] = useState('overview');
@@ -425,9 +426,7 @@ const DesignGuide = () => {
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-themed-secondary">MLB Teams</h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                        {(() => {
-                          const { mlbTeams } = require('@/lib/professionalSportsThemes');
-                          return mlbTeams.slice(0, 12).map((team: any) => (
+                        {mlbTeams.slice(0, 12).map((team: any) => (
                             <button
                               key={team.id}
                               onClick={() => handleThemeSelect(team.id)}
@@ -444,8 +443,7 @@ const DesignGuide = () => {
                                 </div>
                               </div>
                             </button>
-                          ));
-                        })()}
+                        ))}
                       </div>
                     </div>
 
@@ -453,9 +451,7 @@ const DesignGuide = () => {
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-themed-secondary">NBA Teams</h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                        {(() => {
-                          const { nbaTeams } = require('@/lib/professionalSportsThemes');
-                          return nbaTeams.slice(0, 12).map((team: any) => (
+                        {nbaTeams.slice(0, 12).map((team: any) => (
                             <button
                               key={team.id}
                               onClick={() => handleThemeSelect(team.id)}
@@ -472,8 +468,7 @@ const DesignGuide = () => {
                                 </div>
                               </div>
                             </button>
-                          ));
-                        })()}
+                        ))}
                       </div>
                     </div>
 
@@ -481,9 +476,7 @@ const DesignGuide = () => {
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-themed-secondary">NFL Teams</h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                        {(() => {
-                          const { nflTeams } = require('@/lib/professionalSportsThemes');
-                          return nflTeams.slice(0, 12).map((team: any) => (
+                        {nflTeams.slice(0, 12).map((team: any) => (
                             <button
                               key={team.id}
                               onClick={() => handleThemeSelect(team.id)}
@@ -500,8 +493,7 @@ const DesignGuide = () => {
                                 </div>
                               </div>
                             </button>
-                          ));
-                        })()}
+                        ))}
                       </div>
                     </div>
 
@@ -509,9 +501,7 @@ const DesignGuide = () => {
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-themed-secondary">NHL Teams</h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                        {(() => {
-                          const { nhlTeams } = require('@/lib/professionalSportsThemes');
-                          return nhlTeams.slice(0, 12).map((team: any) => (
+                        {nhlTeams.slice(0, 12).map((team: any) => (
                             <button
                               key={team.id}
                               onClick={() => handleThemeSelect(team.id)}
@@ -528,8 +518,7 @@ const DesignGuide = () => {
                                 </div>
                               </div>
                             </button>
-                          ));
-                        })()}
+                        ))}
                       </div>
                     </div>
                   </div>
