@@ -1,16 +1,34 @@
 
 /* Centralized theme CSS variables for CRD design system */
 :root {
-  /* Brand Colors */
-  --crd-green: #45B26B;
-  --crd-blue: #3772FF;
-  --crd-orange: #EA6E48;
-  --crd-purple: #9757D7;
+  /* CRD Design System Colors */
+  
+  /* Primary Colors */
+  --crd-blue: #3772FF; /* Main CTAs, links, focus states */
+  --crd-light-blue: #2D9CDB; /* Secondary actions */
+  --crd-orange: #F97316; /* Cards, warnings, highlights */
+  --crd-orange-dark: #EA6E48; /* Hover states */
+  --crd-green: #45B26B; /* Collections, success states */
+  --crd-green-dark: #27AE60; /* Success hover */
+  --crd-purple: #9757D7; /* Premium features */
+  --crd-purple-light: #8B5CF6; /* Purple variations */
   --crd-gold: #FFD700;
   
-  /* Neutral Colors */
-  --crd-darkest: #121212;
-  --crd-darker: #1A1A1A;
+  /* Background Colors */
+  --crd-bg-primary: #141416; /* Main app background */
+  --crd-bg-secondary: #1A1D24; /* Card backgrounds */
+  --crd-bg-tertiary: #23262F; /* Elevated cards, modals */
+  --crd-bg-border: #353945; /* Borders, dividers */
+  
+  /* Text Colors */
+  --crd-text-primary: #FCFCFD; /* Headings, main text */
+  --crd-text-secondary: #E6E8EC; /* Body content */
+  --crd-text-muted: #777E90; /* Placeholders, labels */
+  --crd-text-disabled: #4B505C; /* Inactive elements */
+  
+  /* Legacy Support */
+  --crd-darkest: #141416;
+  --crd-darker: #1A1D24;
   --crd-darkGray: #23262F;
   --crd-mediumGray: #353945;
   --crd-lightGray: #777E90;
@@ -18,7 +36,7 @@
   
   /* Status Colors */
   --crd-success: #45B26B;
-  --crd-warning: #EA6E48;
+  --crd-warning: #F97316;
   --crd-error: #ff4444;
   --crd-info: #3772FF;
 

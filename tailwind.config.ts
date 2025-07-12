@@ -154,10 +154,22 @@ export default {
           canvas: 'var(--editor-canvas)',
         },
       },
+      spacing: {
+        'xs': '0.5rem',   // 8px
+        'sm': '0.75rem',  // 12px
+        'md': '1rem',     // 16px
+        'lg': '1.5rem',   // 24px
+        'xl': '2rem',     // 32px
+        '2xl': '3rem',    // 48px
+        '3xl': '4rem',    // 64px
+      },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)'
+        'sm': '0.5rem',   // 8px - buttons, inputs
+        'md': '0.75rem',  // 12px - small cards
+        'lg': '1rem',     // 16px - main cards
+        'xl': '1.5rem',   // 24px - hero sections
+        'pill': '5.625rem', // 90px - full rounded buttons
+        'circle': '50%',  // avatars, icon buttons
       },
       keyframes: {
         'accordion-down': {
@@ -252,7 +264,16 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.3s ease-out',
         'slide-in': 'slide-in 0.3s ease-out',
-        // NEW: Enhanced logo animations
+        // CRD timing functions
+        'fast': 'all 150ms ease-out', // micro-interactions
+        'standard': 'all 200ms ease-out', // hover states
+        'slow': 'all 300ms ease-out', // page transitions
+        'complex': 'all 500ms ease-in-out', // card flips, modals
+        // Enhanced animations
+        'hover-scale': 'transform 200ms ease-out',
+        'button-press': 'transform 150ms ease-out',
+        'fade-blur': 'backdrop-filter 300ms ease-out, opacity 300ms ease-out',
+        // Enhanced logo animations
         'logo-shimmer': 'logo-shimmer 3s ease-in-out infinite',
         'logo-glow-pulse': 'logo-glow-pulse 4s ease-in-out infinite',
         'gradient-shift': 'gradient-shift 8s ease-in-out infinite',
@@ -260,9 +281,26 @@ export default {
         'scroll': 'scroll 60s linear infinite'
       },
       fontFamily: {
+        'dm-sans': ['DM Sans', 'sans-serif'], // Primary font
+        'roboto-mono': ['Roboto Mono', 'monospace'], // Code/monospace
         'orbitron': ['Orbitron', 'sans-serif'],
         'poppins': ['Poppins', 'sans-serif'],
         'raleway': ['Raleway', 'sans-serif'],
+      },
+      fontSize: {
+        'display': ['3rem', { lineHeight: '1.1', fontWeight: '800' }], // 48px
+        'section': ['2.25rem', { lineHeight: '1.2', fontWeight: '800' }], // 36px
+        'page-title': ['1.875rem', { lineHeight: '1.3', fontWeight: '700' }], // 30px
+        'component': ['1.5rem', { lineHeight: '1.4', fontWeight: '700' }], // 24px
+        'card': ['1.25rem', { lineHeight: '1.4', fontWeight: '600' }], // 20px
+        'small-heading': ['1.125rem', { lineHeight: '1.5', fontWeight: '600' }], // 18px
+        'large-body': ['1.125rem', { lineHeight: '1.6', fontWeight: '400' }], // 18px
+        'body': ['1rem', { lineHeight: '1.6', fontWeight: '400' }], // 16px
+        'small-body': ['0.875rem', { lineHeight: '1.5', fontWeight: '400' }], // 14px
+        'caption': ['0.75rem', { lineHeight: '1.4', fontWeight: '400' }], // 12px
+        'button': ['1.125rem', { lineHeight: '1', fontWeight: '800' }], // 18px
+        'link': ['1rem', { lineHeight: '1', fontWeight: '500' }], // 16px
+        'label': ['0.75rem', { lineHeight: '1', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase' }], // 12px
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
