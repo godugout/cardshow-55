@@ -68,10 +68,10 @@ const DesignGuide = () => {
   ];
 
   const brandMetrics = [
-    { label: 'Logo Recognition Rate', value: '94%', trend: '+12%', context: 'Among target demographics' },
-    { label: 'Visual Consistency Score', value: '98.5%', trend: '+5.2%', context: 'Across all touchpoints' },
-    { label: 'Accessibility Compliance', value: 'AAA', trend: '100%', context: 'WCAG 2.1 standards' },
-    { label: 'Performance Score', value: '96/100', trend: '+8pts', context: 'Lighthouse mobile average' }
+    { label: 'Components Available', value: '47', trend: 'Active', context: 'Design system components' },
+    { label: 'Team Themes', value: '570+', trend: 'Growing', context: 'Professional sports coverage' },
+    { label: 'Accessibility Standard', value: 'AAA', trend: 'Target', context: 'WCAG compliance goal' },
+    { label: 'Mobile Performance', value: '60fps', trend: 'Target', context: 'Minimum frame rate goal' }
   ];
 
   return (
@@ -188,7 +188,7 @@ const DesignGuide = () => {
                           <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-crd-blue to-crd-purple border-2 border-crd-darkGray"></div>
                         ))}
                       </div>
-                      <span className="text-sm text-crd-lightGray">Trusted by 10M+ collectors worldwide</span>
+                      <span className="text-sm text-crd-lightGray">Building the future of digital collecting</span>
                     </div>
                   </div>
                   
@@ -239,25 +239,24 @@ const DesignGuide = () => {
 
                 {/* Brand Metrics */}
                 <section className="space-y-8">
-                  <div className="text-center space-y-4">
-                    <h2 className="text-3xl font-bold text-crd-white">Brand Performance</h2>
-                    <p className="text-lg text-crd-lightGray">
-                      Measurable impact of our design system across all touchpoints
-                    </p>
+                   <div className="text-center space-y-4">
+                     <h2 className="text-3xl font-bold text-crd-white">System Overview</h2>
+                     <p className="text-lg text-crd-lightGray">
+                       Current system capabilities and development targets
+                     </p>
                   </div>
 
                   <div className="grid md:grid-cols-4 gap-6">
                     {brandMetrics.map((metric, index) => (
                       <CRDCard key={index} className="p-6 text-center space-y-4 group hover:shadow-lg hover:shadow-crd-green/10 transition-all">
-                        <div className="text-3xl font-bold text-crd-green">{metric.value}</div>
-                        <div className="space-y-1">
-                          <div className="text-sm font-semibold text-crd-white">{metric.label}</div>
-                          <div className="text-xs text-crd-lightGray">{metric.context}</div>
-                        </div>
-                        <div className="flex items-center justify-center space-x-1">
-                          <span className="text-xs text-crd-green">↗</span>
-                          <span className="text-xs text-crd-green font-medium">{metric.trend}</span>
-                        </div>
+                         <div className="text-3xl font-bold text-crd-green">{metric.value}</div>
+                         <div className="space-y-1">
+                           <div className="text-sm font-semibold text-crd-white">{metric.label}</div>
+                           <div className="text-xs text-crd-lightGray">{metric.context}</div>
+                         </div>
+                         <div className="flex items-center justify-center space-x-1">
+                           <span className="text-xs text-crd-blue font-medium">{metric.trend}</span>
+                         </div>
                       </CRDCard>
                     ))}
                   </div>
@@ -844,21 +843,21 @@ const DesignGuide = () => {
                   </div>
 
                   <CRDCard className="p-8">
-                    <h3 className="text-lg font-semibold text-crd-white mb-6">Performance Targets</h3>
+                    <h3 className="text-lg font-semibold text-crd-white mb-6">Design System Standards</h3>
                     <div className="grid md:grid-cols-4 gap-6">
-                      {[
-                        { metric: 'Lighthouse Score', target: '95+', current: '96' },
-                        { metric: 'First Paint', target: '<1.2s', current: '0.8s' },
-                        { metric: 'Animation FPS', target: '60fps', current: '60fps' },
-                        { metric: 'Bundle Size', target: '<500KB', current: '420KB' }
-                      ].map((item, index) => (
+                       {[
+                         { metric: 'Frame Rate Target', target: '60fps', current: '60fps' },
+                         { metric: 'Mobile Touch Target', target: '44px min', current: '44px+' },
+                         { metric: 'Color Contrast', target: 'AA/AAA', current: 'WCAG AA' },
+                         { metric: 'Components', target: 'Scalable', current: '47 Active' }
+                       ].map((item, index) => (
                         <div key={index} className="text-center space-y-2">
                           <div className="text-2xl font-bold text-crd-green">{item.current}</div>
                           <div className="text-sm text-crd-white">{item.metric}</div>
                           <div className="text-xs text-crd-lightGray">Target: {item.target}</div>
                         </div>
-                      ))}
-                    </div>
+                       ))}
+                     </div>
                   </CRDCard>
                 </section>
               </div>
