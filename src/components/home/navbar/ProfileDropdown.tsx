@@ -26,13 +26,16 @@ export const ProfileDropdown = () => {
   
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="outline-none">
-        <Avatar className="h-8 w-8 border-2 border-crd-mediumGray hover:border-crd-blue transition-colors cursor-pointer">
+      <DropdownMenuTrigger className="outline-none flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <Avatar className="h-8 w-8 border-2 border-crd-mediumGray hover:border-crd-blue transition-colors">
           <AvatarImage src={avatarUrl} alt={displayName} />
           <AvatarFallback className="bg-crd-mediumGray text-crd-white text-sm">
             {(displayName?.[0] || '').toUpperCase()}
           </AvatarFallback>
         </Avatar>
+        <span className="text-crd-white text-sm font-medium hidden sm:block">
+          {displayName.split('@')[0]}
+        </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         className="w-56 bg-crd-dark border-crd-mediumGray" 
