@@ -1,31 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Code2, Palette, Type, MousePointer, Layout, Paintbrush, Sparkles, Image, Eye, Heart, Zap, Globe, Users, Layers, Target, BookOpen, Share2, Download, Check, Copy, ChevronDown, Play, Pause, Star, RotateCcw, Monitor, Tablet, Smartphone, AlertCircle, CheckCircle, XCircle, Grid3x3, Navigation, Calendar, Settings, ShoppingCart, Search, Plus, DollarSign, Upload, BarChart } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Code2, Palette, Layout, MousePointer, Grid3x3, Monitor, Eye, BookOpen, Share2, Download, Check, Copy, ChevronDown, Play, Pause, Star, RotateCcw, Tablet, Smartphone, AlertCircle, CheckCircle, XCircle, Calendar, Settings, ShoppingCart, Search, Plus, DollarSign, Upload, BarChart, Heart, Zap, Globe, Sparkles, Users, Layers, Target, Paintbrush, Type, Image, Navigation } from 'lucide-react';
 import { cardshowLogoDatabase } from "@/lib/cardshowDNA";
 import { getImagePath } from "@/lib/imagePathUtil";
 import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { CRDButton, CRDCard, CRDBadge, TeamThemeShowcase, PalettePreview, Typography } from '@/components/ui/design-system';
-import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
-import { CardshowBasicLogo } from '@/components/home/navbar/CardshowBasicLogo';
-import { CardshowBlueLogo } from '@/components/home/navbar/CardshowBlueLogo';
-import { CardshowOrangeLogo } from '@/components/home/navbar/CardshowOrangeLogo';
-import { CardshowModernLogo } from '@/components/home/navbar/CardshowModernLogo';
-import { CardshowRetroLogo } from '@/components/home/navbar/CardshowRetroLogo';
-import { CardshowVintageLogo } from '@/components/home/navbar/CardshowVintageLogo';
-import { CardshowRedBlueLogo } from '@/components/home/navbar/CardshowRedBlueLogo';
-import { CardshowBlockLettersLogo } from '@/components/home/navbar/CardshowBlockLettersLogo';
-import { CardshowGreenLogo } from '@/components/home/navbar/CardshowGreenLogo';
-import { CardshowGreenSparklesLogo } from '@/components/home/navbar/CardshowGreenSparklesLogo';
-import { CardshowGreenSparklesOfficialLogo } from '@/components/home/navbar/CardshowGreenSparklesOfficialLogo';
-import { MLBBalOBSLogo } from '@/components/home/navbar/MLBBalOBSLogo';
-import { CS3DWGBLogo } from '@/components/home/navbar/CS3DWGBLogo';
-import { CSSketchRBLogo } from '@/components/home/navbar/CSSketchRBLogo';
-import { NCAABig10Logo } from '@/components/home/navbar/NCAABig10Logo';
+import { CRDLogo } from '@/components/crd/CRDLogoComponent';
 
 const DesignGuide = () => {
   const [activeSection, setActiveSection] = useState('overview');
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { currentPalette, availablePalettes, setTheme, setLogoTheme, currentLogoCode } = useTeamTheme();
   
   // Interactive component states
@@ -36,37 +20,46 @@ const DesignGuide = () => {
   const [cardExpanded, setCardExpanded] = useState(false);
   const [cardFavorited, setCardFavorited] = useState(false);
   const [copiedText, setCopiedText] = useState('');
+  const [selectedLogo, setSelectedLogo] = useState(null);
 
-  // Handle logo selection with URL synchronization
+  // Handle logo selection with immediate visual feedback
   const handleLogoSelect = (logo: any) => {
+    setSelectedLogo(logo);
     setLogoTheme(logo.dnaCode);
     
-    // Update URL parameters
+    // Update URL parameters for sharing
     const newParams = new URLSearchParams(searchParams);
     newParams.set('logo', logo.dnaCode);
-    newParams.set('theme', `logo-${logo.dnaCode.toLowerCase()}`);
     setSearchParams(newParams);
+  };
+
+  // Handle direct theme switching
+  const handleThemeSelect = (themeId: string) => {
+    setTheme(themeId);
+    setSelectedLogo(null); // Clear logo selection when using direct themes
   };
 
   // Load theme from URL parameters on mount
   useEffect(() => {
     const logoParam = searchParams.get('logo');
     if (logoParam && logoParam !== currentLogoCode) {
-      setLogoTheme(logoParam);
+      const logo = cardshowLogoDatabase.find(l => l.dnaCode === logoParam);
+      if (logo) {
+        setSelectedLogo(logo);
+        setLogoTheme(logoParam);
+      }
     }
   }, [searchParams, setLogoTheme, currentLogoCode]);
 
   const sidebarSections = [
     { id: 'overview', label: 'Brand Overview', icon: Layout, description: 'Mission, vision, and design philosophy' },
-    { id: 'colors-themes', label: 'Colors & Themes', icon: Palette, description: 'Color psychology, palettes, and theming system' },
-    { id: 'patterns', label: 'UI Patterns', icon: Grid3x3, description: 'Layout patterns, card grids, navigation systems' },
-    { id: 'interactions', label: 'Interactions', icon: MousePointer, description: 'Loading states, animations, hover effects, status feedback' },
-    { id: 'responsive', label: 'Responsive Design', icon: Monitor, description: 'Mobile-first guidelines and breakpoint examples' },
-    { id: 'accessibility', label: 'Accessibility', icon: Eye, description: 'WCAG 2.1 AA compliance guidelines and examples' },
-    { id: 'design-tokens', label: 'Design Tokens', icon: Code2, description: 'CSS variables, spacing scales, typography tokens' },
-    { id: 'real-examples', label: 'Real Examples', icon: ShoppingCart, description: 'Complete marketplace and dashboard interfaces' },
-    { id: 'brand-identity', label: 'Brand Identity', icon: Heart, description: 'Logos, typography, and brand story' },
-    { id: 'team-customization', label: 'Team Themes', icon: Sparkles, description: 'CRD:DNA system and theme applications' },
+    { id: 'theme-preview', label: 'Live Theme Preview', icon: Eye, description: 'Interactive theme switching with live preview' },
+    { id: 'colors-themes', label: 'Color System', icon: Palette, description: 'Color psychology, palettes, and theming system' },
+    { id: 'components', label: 'Components', icon: Grid3x3, description: 'UI components with interactive states' },
+    { id: 'patterns', label: 'Design Patterns', icon: Layout, description: 'Layout patterns and design guidelines' },
+    { id: 'responsive', label: 'Responsive Design', icon: Monitor, description: 'Mobile-first guidelines and breakpoints' },
+    { id: 'accessibility', label: 'Accessibility', icon: Heart, description: 'WCAG compliance and inclusive design' },
+    { id: 'tokens', label: 'Design Tokens', icon: Code2, description: 'CSS variables and design specifications' },
   ];
 
   // Interactive functions
@@ -85,8 +78,8 @@ const DesignGuide = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Show all new logo variations from uploaded images
-  const availableLogos = cardshowLogoDatabase;
+  // Logo database
+  const availableLogos = cardshowLogoDatabase.slice(0, 12); // Show first 12 for better UX
 
   const designPrinciples = [
     { 
@@ -183,6 +176,39 @@ const DesignGuide = () => {
 
         {/* Enhanced Main Content */}
         <main className="flex-1 ml-80 transition-all duration-500">
+          {/* Current Theme Preview Header */}
+          <div className="bg-themed-navbar border-b border-themed-light/20 p-4 sticky top-16 z-10 backdrop-blur-md">
+            <div className="max-w-6xl mx-auto flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+{selectedLogo ? (
+                    <img src={selectedLogo.imageUrl} alt={selectedLogo.displayName} className="w-8 h-8 rounded object-contain" />
+                  ) : (
+                    <div className="w-8 h-8 bg-themed-primary rounded-full"></div>
+                  )}
+                  <div>
+                    <div className="text-sm font-medium text-themed-primary">Current Theme</div>
+                    <div className="text-xs text-themed-secondary">
+                      {selectedLogo ? selectedLogo.displayName : currentPalette?.name || 'Default Theme'}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <PalettePreview palette={currentPalette} size="sm" />
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CRDButton 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => copyToClipboard(window.location.href, 'Theme URL')}
+                >
+                  {copiedText === 'Theme URL' ? <Check size={14} /> : <Share2 size={14} />}
+                </CRDButton>
+              </div>
+            </div>
+          </div>
+
           <div className="max-w-6xl mx-auto p-8">
             
             {/* Brand Overview Section */}
@@ -241,15 +267,25 @@ const DesignGuide = () => {
                   </div>
                   
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-crd-green/20 to-crd-blue/20 rounded-2xl blur-xl"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-themed-primary/20 to-themed-accent/20 rounded-2xl blur-xl"></div>
                     <CRDCard className="relative p-8 text-center space-y-6">
                       <div className="flex justify-center items-center space-x-4">
-                        <CardshowGreenSparklesOfficialLogo className="max-w-32 max-h-32 lg:max-w-24 lg:max-h-24 w-auto h-auto object-contain" />
-                        <div className="w-px h-12 bg-crd-mediumGray/50"></div>
-                        <CRDGradientLogo className="max-w-32 max-h-32 lg:max-w-24 lg:max-h-24 w-auto h-auto object-contain" />
+                        {selectedLogo ? (
+                          <img src={selectedLogo.imageUrl} alt={selectedLogo.displayName} className="w-24 h-24 rounded-xl object-contain" />
+                        ) : (
+                          <>
+                            <div className="w-24 h-24 bg-themed-primary rounded-xl flex items-center justify-center">
+                              <Sparkles className="w-12 h-12 text-themed-navbar" />
+                            </div>
+                            <div className="w-px h-12 bg-themed-light/30"></div>
+                            <div className="w-24 h-24 bg-gradient-to-br from-themed-primary to-themed-accent rounded-xl flex items-center justify-center">
+                              <Heart className="w-12 h-12 text-themed-navbar" />
+                            </div>
+                          </>
+                        )}
                       </div>
-                      <h3 className="text-xl font-bold text-crd-white">Cardshow & CRD Platform</h3>
-                      <p className="text-crd-lightGray">Photorealistic rendering • Real-time physics • Emotional storytelling</p>
+                      <h3 className="text-xl font-bold text-themed-primary">Cardshow & CRD Platform</h3>
+                      <p className="text-themed-secondary">Photorealistic rendering • Real-time physics • Emotional storytelling</p>
                     </CRDCard>
                   </div>
                 </section>
@@ -316,19 +352,97 @@ const DesignGuide = () => {
               </div>
             )}
 
+            {/* Live Theme Preview Section */}
+            {activeSection === 'theme-preview' && (
+              <div className="space-y-12">
+                {/* Theme Control Panel */}
+                <section className="space-y-8">
+                  <div className="text-center space-y-4">
+                    <h1 className="text-4xl font-bold text-themed-primary">Live Theme Preview</h1>
+                    <p className="text-lg text-themed-secondary max-w-2xl mx-auto">
+                      Select any logo or theme to see immediate changes across all components
+                    </p>
+                  </div>
+
+                  {/* Logo Selection Grid */}
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-themed-primary">Choose a Logo Theme</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                      {availableLogos.map((logo) => (
+                        <button
+                          key={logo.dnaCode}
+                          onClick={() => handleLogoSelect(logo)}
+                          className={`p-4 rounded-xl border transition-all duration-300 hover:scale-105 ${
+                            selectedLogo?.dnaCode === logo.dnaCode
+                              ? 'border-themed-primary bg-themed-primary/10 shadow-lg shadow-themed-primary/20'
+                              : 'border-themed-light/20 hover:border-themed-primary/50 bg-themed-navbar'
+                          }`}
+                        >
+                          <div className="space-y-3">
+                            <div className="w-full h-16 flex items-center justify-center">
+                              <img src={logo.imageUrl} alt={logo.displayName} className="max-w-full max-h-full object-contain" />
+                            </div>
+                            <div className="text-xs font-medium text-themed-primary truncate">
+                              {logo.displayName}
+                            </div>
+                            <div className="text-xs text-themed-secondary">
+                              {logo.category}
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Direct Theme Selection */}
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-themed-primary">Or Choose a Direct Theme</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {availablePalettes.slice(0, 8).map((palette) => (
+                        <button
+                          key={palette.id}
+                          onClick={() => handleThemeSelect(palette.id)}
+                          className={`p-4 rounded-xl border transition-all duration-300 hover:scale-105 ${
+                            currentPalette?.id === palette.id && !selectedLogo
+                              ? 'border-themed-primary bg-themed-primary/10 shadow-lg'
+                              : 'border-themed-light/20 hover:border-themed-primary/50 bg-themed-navbar'
+                          }`}
+                        >
+                          <div className="space-y-3">
+                            <PalettePreview palette={palette} size="md" />
+                            <div className="text-xs font-medium text-themed-primary">
+                              {palette.name}
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                {/* Live Component Preview */}
+                <TeamThemeShowcase />
+              </div>
+            )}
+
             {/* Colors & Themes Section */}
             {activeSection === 'colors-themes' && (
               <div className="space-y-16">
                 <div className="text-center space-y-4">
-                  <h1 className="text-4xl font-bold text-crd-white">Colors & Themes</h1>
-                  <p className="text-lg text-crd-lightGray max-w-3xl mx-auto">
-                    Extended color palettes with psychological descriptions, semantic usage guidelines, and interactive theme switching.
+                  <h1 className="text-4xl font-bold text-themed-primary">Color System & Psychology</h1>
+                  <p className="text-lg text-themed-secondary max-w-3xl mx-auto">
+                    Extended color palettes with psychological descriptions, semantic usage guidelines, and accessibility standards.
                   </p>
                 </div>
 
-                {/* Extended Color System */}
+                {/* Current Theme Colors */}
                 <section className="space-y-8">
-                  <h2 className="text-2xl font-bold text-crd-white">Extended Color System</h2>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold text-themed-primary">Current Theme Colors</h2>
+                    <div className="text-sm text-themed-secondary">
+                      {selectedLogo ? `Using ${selectedLogo.displayName}` : 'Using direct theme'}
+                    </div>
+                  </div>
                   
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[
