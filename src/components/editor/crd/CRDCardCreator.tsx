@@ -274,7 +274,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
             
             {/* Center: Blue Icon + Title (Absolutely positioned for true centering) */}
             <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
-              <Layers className="w-6 h-6 text-crd-blue" />
+              <Layers className="w-6 h-6 text-crd-green" />
               <input 
                 type="text"
                 value={cardData.title}
@@ -299,11 +299,11 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
               </div>
               
               <CRDButton onClick={handleSave} variant="secondary" size="sm">
-                <Save className="w-4 h-4 mr-2" />
+                <Save className="w-4 h-4 mr-2 text-crd-green" />
                 Save
               </CRDButton>
               <CRDButton onClick={handlePreview} variant="primary" size="sm">
-                <Download className="w-4 h-4 mr-2" />
+                <Download className="w-4 h-4 mr-2 text-crd-orange" />
                 Export
               </CRDButton>
             </div>
