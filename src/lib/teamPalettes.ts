@@ -452,6 +452,38 @@ export const generateCRDPalettes = (): TeamPalette[] => {
   }));
 };
 
+export const createTeamPalette = (
+  id: string,
+  name: string,
+  description: string,
+  primary: string,
+  secondary: string,
+  accent: string,
+  neutral: string
+): TeamPalette => ({
+  id,
+  name,
+  description,
+  colors: {
+    primary,
+    secondary,
+    accent,
+    neutral
+  },
+  hsl: {
+    primary: hexToHsl(primary),
+    secondary: hexToHsl(secondary),
+    accent: hexToHsl(accent),
+    neutral: hexToHsl(neutral)
+  },
+  usage: {
+    navbar: `${name} themed navigation`,
+    cards: `${name} themed cards`,
+    buttons: `${name} themed buttons`,
+    text: `${name} themed text`
+  }
+});
+
 export const crdPalettes = generateCRDPalettes();
 export const allPalettes = [...logoPalettes, ...cardshowPalettes, ...crdPalettes];
 

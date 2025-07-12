@@ -4,6 +4,7 @@ import { Code2, Palette, Layout, MousePointer, Grid3x3, Monitor, Eye, BookOpen, 
 import { cardshowLogoDatabase } from "@/lib/cardshowDNA";
 import { getImagePath } from "@/lib/imagePathUtil";
 import { useTeamTheme } from '@/hooks/useTeamTheme';
+import { getThemeByDNA } from '@/lib/logoThemes';
 import { CRDButton, CRDCard, CRDBadge, TeamThemeShowcase, PalettePreview, Typography } from '@/components/ui/design-system';
 import { CRDLogo } from '@/components/crd/CRDLogoComponent';
 
@@ -382,6 +383,28 @@ const DesignGuide = () => {
                             <div className="w-full h-16 flex items-center justify-center">
                               <img src={logo.imageUrl} alt={logo.displayName} className="max-w-full max-h-full object-contain" />
                             </div>
+                            
+                            {/* 4 Color Dots Under Logo */}
+                            <div className="flex justify-center space-x-1">
+                              {(() => {
+                                const theme = getThemeByDNA(logo.dnaCode);
+                                if (!theme) return null;
+                                return [
+                                  { color: theme.colors.primary, size: 'w-3 h-3' },
+                                  { color: theme.colors.secondary, size: 'w-2.5 h-2.5' },
+                                  { color: theme.colors.accent, size: 'w-2 h-2' },
+                                  { color: theme.colors.neutral, size: 'w-1.5 h-1.5' }
+                                ].map((dot, index) => (
+                                  <div
+                                    key={index}
+                                    className={`${dot.size} rounded-full border border-white/20 shadow-sm`}
+                                    style={{ backgroundColor: dot.color }}
+                                    title={`${['Primary', 'Secondary', 'Accent', 'Neutral'][index]}: ${dot.color}`}
+                                  />
+                                ));
+                              })()}
+                            </div>
+                            
                             <div className="text-xs font-medium text-themed-primary truncate">
                               {logo.displayName}
                             </div>
@@ -394,28 +417,120 @@ const DesignGuide = () => {
                     </div>
                   </div>
 
-                  {/* Direct Theme Selection */}
+                  {/* Professional Sports Teams */}
                   <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-themed-primary">Or Choose a Direct Theme</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {availablePalettes.slice(0, 8).map((palette) => (
-                        <button
-                          key={palette.id}
-                          onClick={() => handleThemeSelect(palette.id)}
-                          className={`p-4 rounded-xl border transition-all duration-300 hover:scale-105 ${
-                            currentPalette?.id === palette.id && !selectedLogo
-                              ? 'border-themed-primary bg-themed-primary/10 shadow-lg'
-                              : 'border-themed-light/20 hover:border-themed-primary/50 bg-themed-navbar'
-                          }`}
-                        >
-                          <div className="space-y-3">
-                            <PalettePreview palette={palette} size="md" />
-                            <div className="text-xs font-medium text-themed-primary">
-                              {palette.name}
-                            </div>
-                          </div>
-                        </button>
-                      ))}
+                    <h2 className="text-2xl font-bold text-themed-primary">Choose Professional Sports Teams</h2>
+                    
+                    {/* MLB Teams */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-themed-secondary">MLB Teams</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                        {(() => {
+                          const { mlbTeams } = require('@/lib/professionalSportsThemes');
+                          return mlbTeams.slice(0, 12).map((team: any) => (
+                            <button
+                              key={team.id}
+                              onClick={() => handleThemeSelect(team.id)}
+                              className={`p-3 rounded-lg border transition-all duration-300 hover:scale-105 ${
+                                currentPalette?.id === team.id && !selectedLogo
+                                  ? 'border-themed-primary bg-themed-primary/10 shadow-lg'
+                                  : 'border-themed-light/20 hover:border-themed-primary/50 bg-themed-navbar'
+                              }`}
+                            >
+                              <div className="space-y-2">
+                                <PalettePreview palette={team} size="sm" />
+                                <div className="text-xs font-medium text-themed-primary truncate">
+                                  {team.name.split(' ').pop()}
+                                </div>
+                              </div>
+                            </button>
+                          ));
+                        })()}
+                      </div>
+                    </div>
+
+                    {/* NBA Teams */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-themed-secondary">NBA Teams</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                        {(() => {
+                          const { nbaTeams } = require('@/lib/professionalSportsThemes');
+                          return nbaTeams.slice(0, 12).map((team: any) => (
+                            <button
+                              key={team.id}
+                              onClick={() => handleThemeSelect(team.id)}
+                              className={`p-3 rounded-lg border transition-all duration-300 hover:scale-105 ${
+                                currentPalette?.id === team.id && !selectedLogo
+                                  ? 'border-themed-primary bg-themed-primary/10 shadow-lg'
+                                  : 'border-themed-light/20 hover:border-themed-primary/50 bg-themed-navbar'
+                              }`}
+                            >
+                              <div className="space-y-2">
+                                <PalettePreview palette={team} size="sm" />
+                                <div className="text-xs font-medium text-themed-primary truncate">
+                                  {team.name.split(' ').pop()}
+                                </div>
+                              </div>
+                            </button>
+                          ));
+                        })()}
+                      </div>
+                    </div>
+
+                    {/* NFL Teams */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-themed-secondary">NFL Teams</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                        {(() => {
+                          const { nflTeams } = require('@/lib/professionalSportsThemes');
+                          return nflTeams.slice(0, 12).map((team: any) => (
+                            <button
+                              key={team.id}
+                              onClick={() => handleThemeSelect(team.id)}
+                              className={`p-3 rounded-lg border transition-all duration-300 hover:scale-105 ${
+                                currentPalette?.id === team.id && !selectedLogo
+                                  ? 'border-themed-primary bg-themed-primary/10 shadow-lg'
+                                  : 'border-themed-light/20 hover:border-themed-primary/50 bg-themed-navbar'
+                              }`}
+                            >
+                              <div className="space-y-2">
+                                <PalettePreview palette={team} size="sm" />
+                                <div className="text-xs font-medium text-themed-primary truncate">
+                                  {team.name.split(' ').pop()}
+                                </div>
+                              </div>
+                            </button>
+                          ));
+                        })()}
+                      </div>
+                    </div>
+
+                    {/* NHL Teams */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-themed-secondary">NHL Teams</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                        {(() => {
+                          const { nhlTeams } = require('@/lib/professionalSportsThemes');
+                          return nhlTeams.slice(0, 12).map((team: any) => (
+                            <button
+                              key={team.id}
+                              onClick={() => handleThemeSelect(team.id)}
+                              className={`p-3 rounded-lg border transition-all duration-300 hover:scale-105 ${
+                                currentPalette?.id === team.id && !selectedLogo
+                                  ? 'border-themed-primary bg-themed-primary/10 shadow-lg'
+                                  : 'border-themed-light/20 hover:border-themed-primary/50 bg-themed-navbar'
+                              }`}
+                            >
+                              <div className="space-y-2">
+                                <PalettePreview palette={team} size="sm" />
+                                <div className="text-xs font-medium text-themed-primary truncate">
+                                  {team.name.split(' ').pop()}
+                                </div>
+                              </div>
+                            </button>
+                          ));
+                        })()}
+                      </div>
                     </div>
                   </div>
                 </section>

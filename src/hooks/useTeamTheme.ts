@@ -7,6 +7,7 @@ import {
   createPaletteFromTeamColors,
   type TeamPalette 
 } from '@/lib/teamPalettes';
+import { allProfessionalSportsTeams } from '@/lib/professionalSportsThemes';
 import { generateLogoThemes, getThemeByDNA } from '@/lib/logoThemes';
 
 interface ColorTheme {
@@ -55,17 +56,17 @@ export const useTeamTheme = () => {
           )
         );
         
-        // Combine with static palettes and logo themes
-        setAvailablePalettes([...allPalettes, ...dbPalettes, ...logoThemes]);
+        // Combine with static palettes, logo themes, and sports teams
+        setAvailablePalettes([...allPalettes, ...dbPalettes, ...logoThemes, ...allProfessionalSportsTeams]);
       } else {
-        // Just use static and logo themes if no database themes
-        setAvailablePalettes([...allPalettes, ...logoThemes]);
+      // Just use static, logo themes, and sports teams if no database themes
+      setAvailablePalettes([...allPalettes, ...logoThemes, ...allProfessionalSportsTeams]);
       }
     } catch (error) {
       console.error('Error fetching themes:', error);
-      // Fallback to static and logo themes
+      // Fallback to static, logo themes, and sports teams
       const logoThemes = generateLogoThemes();
-      setAvailablePalettes([...allPalettes, ...logoThemes]);
+      setAvailablePalettes([...allPalettes, ...logoThemes, ...allProfessionalSportsTeams]);
     } finally {
       setIsLoading(false);
     }
