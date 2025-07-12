@@ -269,7 +269,7 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
           <div className="relative flex items-center justify-between h-12">
             {/* Left: CRDMKR Logo */}
             <div className="flex items-center">
-              <CRDGradientLogo className="h-8" />
+              <CRDGradientLogo className="h-12" />
             </div>
             
             {/* Center: Blue Icon + Title (Absolutely positioned for true centering) */}
