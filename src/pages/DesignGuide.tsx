@@ -31,36 +31,35 @@ const DesignGuide = () => {
     { id: 'team-customization', label: 'Team Themes & Customization', icon: Sparkles, description: 'CRD:DNA system and theme applications' },
   ];
 
+  // All 20 Logo Variants from Reference Image - Using Direct Image Paths
   const logoVariants = [
-    // Actual Logos with Uploaded Files
-    { 
-      name: 'MLB_BAL_OBS', 
-      component: <MLBBalOBSLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, 
-      usage: 'Baltimore Orioles OBS', 
-      context: 'MLB team branding, sports collections', 
-      theme: { primary: '#DF4601', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF' } 
-    },
-    { 
-      name: 'CS_3D_WGB', 
-      component: <CS3DWGBLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, 
-      usage: 'CS 3D White Green Black', 
-      context: 'Modern card layouts, tech-forward designs', 
-      theme: { primary: '#FFFFFF', secondary: '#45B26B', accent: '#000000', text: '#000000' } 
-    },
-    { 
-      name: 'CS_SK_RB', 
-      component: <CSSketchRBLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, 
-      usage: 'CS Sketch Red Blue', 
-      context: 'Artistic collections, hand-drawn aesthetics', 
-      theme: { primary: '#FF0000', secondary: '#0000FF', accent: '#FFFFFF', text: '#FFFFFF' } 
-    },
-    { 
-      name: 'NCAA_BIG10', 
-      component: <NCAABig10Logo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, 
-      usage: 'NCAA Big Ten Conference', 
-      context: 'College sports, conference championships', 
-      theme: { primary: '#000080', secondary: '#FFFFFF', accent: '#000000', text: '#FFFFFF' } 
-    },
+    // Row 1
+    { name: 'CRD_GRADIENT', path: '/lovable-uploads/CRD_GRADIENT.png', usage: 'CRD Gradient Logo' },
+    { name: 'CS_3D_WGB', path: '/lovable-uploads/CS_3D_WGB.png', usage: 'CS 3D White Green Black' },
+    { name: 'CS_MLB_BAL_OBS', path: '/lovable-uploads/CS_MLB_BAL_OBS.png', usage: 'Baltimore Orioles OBS' },
+    { name: 'CS_MLB_CL_BOS_RBB', path: '/lovable-uploads/CS_MLB_CL_BOS_RBB.png', usage: 'Boston Red Sox Classic' },
+    { name: 'CS_MLB_CL_OAK_00s', path: '/lovable-uploads/CS_MLB_CL_OAK_00s.png', usage: 'Oakland Athletics 2000s' },
+    { name: 'CS_MLB_CL_SDP_70s', path: '/lovable-uploads/CS_MLB_CL_SDP_70s.png', usage: 'San Diego Padres 1970s' },
+    
+    // Row 2
+    { name: 'CS_MLB_CL_SEA_80s', path: '/lovable-uploads/CS_MLB_CL_SEA_80s.png', usage: 'Seattle Mariners 1980s' },
+    { name: 'CS_MLB_CLE_RBS', path: '/lovable-uploads/CS_MLB_CLE_RBS.png', usage: 'Cleveland Guardians RBS' },
+    { name: 'CS_MLB_LAD_BS', path: '/lovable-uploads/CS_MLB_LAD_BS.png', usage: 'Los Angeles Dodgers BS' },
+    { name: 'CS_MLB_MIA', path: '/lovable-uploads/CS_MLB_MIA.png', usage: 'Miami Marlins' },
+    { name: 'CS_MLB_OAK', path: '/lovable-uploads/CS_MLB_OAK.png', usage: 'Oakland Athletics' },
+    { name: 'CS_MLB_PIT_BBY', path: '/lovable-uploads/CS_MLB_PIT_BBY.png', usage: 'Pittsburgh Pirates BBY' },
+    
+    // Row 3
+    { name: 'CS_NCAA_BIG10', path: '/lovable-uploads/CS_NCAA_BIG10.png', usage: 'NCAA Big Ten Conference' },
+    { name: 'CS_OLD_RS', path: '/lovable-uploads/CS_OLD_RS.png', usage: 'Classic Old Red Sox' },
+    { name: 'CS_ORIG_WS', path: '/lovable-uploads/CS_ORIG_WS.png', usage: 'Original Washington Senators' },
+    { name: 'CS_SK_RB', path: '/lovable-uploads/CS_SK_RB.png', usage: 'Sketch Red Blue' },
+    { name: 'CS_SK_RS', path: '/lovable-uploads/CS_SK_RS.png', usage: 'Sketch Red Silver' },
+    { name: 'CS_UNI_BB', path: '/lovable-uploads/CS_UNI_BB.png', usage: 'University Blue Black' },
+    
+    // Row 4
+    { name: 'CS_UNI_WRB', path: '/lovable-uploads/CS_UNI_WRB.png', usage: 'University White Red Blue' },
+    { name: 'CS_UNI_YBB', path: '/lovable-uploads/CS_UNI_YBB.png', usage: 'University Yellow Blue Black' },
   ];
 
   const designPrinciples = [
@@ -312,31 +311,27 @@ const DesignGuide = () => {
                     </p>
                   </div>
 
-                  <div className="flex flex-wrap gap-6 justify-center">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {logoVariants.map((logo, index) => (
-                      <CRDCard key={index} className="p-6 group hover:shadow-lg hover:shadow-crd-blue/10 transition-all duration-300 flex-1 min-w-80 max-w-sm text-center">
-                        <div className="flex justify-center mb-6 p-4 bg-gradient-to-br from-crd-darkGray/50 to-crd-mediumGray/30 rounded-xl">
-                          {logo.component}
+                      <CRDCard key={index} className="p-6 text-center space-y-4 group hover:shadow-xl hover:shadow-crd-blue/10 transition-all duration-300">
+                        <div className="aspect-square flex items-center justify-center bg-gradient-to-br from-crd-mediumGray/10 to-crd-darkGray/20 rounded-xl p-4">
+                          <img 
+                            src={logo.path} 
+                            alt={logo.usage}
+                            className="max-w-full max-h-full w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => {
+                              e.currentTarget.src = '/placeholder.svg';
+                              e.currentTarget.alt = `${logo.name} (loading...)`;
+                            }}
+                          />
                         </div>
-                        <div className="space-y-3">
-                          <h3 className="text-lg font-semibold text-crd-white group-hover:text-crd-blue transition-colors">
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-bold text-crd-white group-hover:text-crd-blue transition-colors">
                             {logo.name}
-                          </h3>
-                          <p className="text-sm text-crd-lightGray leading-relaxed">
+                          </h4>
+                          <p className="text-xs text-crd-lightGray leading-relaxed">
                             {logo.usage}
                           </p>
-                          <div className="pt-2 border-t border-crd-mediumGray/30">
-                            <p className="text-xs text-crd-blue font-medium">
-                              Best for: {logo.context}
-                            </p>
-                          </div>
-                          {logo.theme && (
-                            <div className="flex justify-center space-x-1 mt-2">
-                              <div className="w-4 h-4 rounded-full border border-crd-mediumGray/30" style={{ backgroundColor: logo.theme.primary }}></div>
-                              <div className="w-4 h-4 rounded-full border border-crd-mediumGray/30" style={{ backgroundColor: logo.theme.secondary }}></div>
-                              <div className="w-4 h-4 rounded-full border border-crd-mediumGray/30" style={{ backgroundColor: logo.theme.accent }}></div>
-                            </div>
-                          )}
                         </div>
                       </CRDCard>
                     ))}
