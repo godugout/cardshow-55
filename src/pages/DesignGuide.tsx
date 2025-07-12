@@ -136,8 +136,244 @@ import { Typography } from '@/components/ui/design-system';
               </div>
             )}
 
-            {/* Other sections can be added here as needed */}
-            {activeSection !== 'overview' && activeSection !== 'typography' && activeSection !== 'spacing' && (
+            {/* Brand Assets Section */}
+            {activeSection === 'brand-assets' && (
+              <div className="space-y-12">
+                <h2 className="text-display text-crd-white">Brand & Visual Assets</h2>
+                
+                <section>
+                  <h3 className="text-section text-crd-white mb-6">Logo Variants</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[
+                      { name: 'Gradient Logo', component: <CRDGradientLogo className="h-12" /> },
+                      { name: 'Basic Logo', component: <CardshowBasicLogo className="h-12" /> },
+                      { name: 'Blue Logo', component: <CardshowBlueLogo className="h-12" /> },
+                      { name: 'Orange Logo', component: <CardshowOrangeLogo className="h-12" /> },
+                      { name: 'Modern Logo', component: <CardshowModernLogo className="h-12" /> },
+                      { name: 'Retro Logo', component: <CardshowRetroLogo className="h-12" /> },
+                      { name: 'Vintage Logo', component: <CardshowVintageLogo className="h-12" /> },
+                      { name: 'Red Blue Logo', component: <CardshowRedBlueLogo className="h-12" /> },
+                      { name: 'Block Letters', component: <CardshowBlockLettersLogo className="h-12" /> },
+                      { name: 'Green Logo', component: <CardshowGreenLogo className="h-12" /> },
+                      { name: 'Green Sparkles', component: <CardshowGreenSparklesLogo className="h-12" /> },
+                    ].map((logo) => (
+                      <CRDCard key={logo.name} className="p-6 text-center">
+                        <div className="flex justify-center mb-4">{logo.component}</div>
+                        <p className="text-sm text-themed-secondary">{logo.name}</p>
+                      </CRDCard>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Color Palette Section */}
+            {activeSection === 'color-palette' && (
+              <div className="space-y-12">
+                <h2 className="text-display text-crd-white">Color Palette</h2>
+                
+                <section>
+                  <h3 className="text-section text-crd-white mb-6">Team Themes</h3>
+                  <TeamThemeShowcase />
+                </section>
+
+                <section>
+                  <h3 className="text-section text-crd-white mb-6">Available Palettes</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {availablePalettes.map((palette) => (
+                      <CRDCard key={palette.id} className="p-6">
+                        <div className="mb-4">
+                          <PalettePreview palette={palette} size="lg" showLabels />
+                        </div>
+                        <CRDButton 
+                          variant={currentPalette?.id === palette.id ? 'secondary' : 'outline'}
+                          size="sm"
+                          onClick={() => setTheme(palette.id)}
+                          className="w-full"
+                        >
+                          {currentPalette?.id === palette.id ? 'Active' : 'Apply Theme'}
+                        </CRDButton>
+                      </CRDCard>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Glass Effects Section */}
+            {activeSection === 'glass-effects' && (
+              <div className="space-y-12">
+                <h2 className="text-display text-crd-white">Glass Morphism</h2>
+                
+                <section>
+                  <h3 className="text-section text-crd-white mb-6">Glass Effect Variants</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                      { name: 'Light Glass', class: 'glass-light' },
+                      { name: 'Medium Glass', class: 'glass-medium' },
+                      { name: 'Heavy Glass', class: 'glass-heavy' },
+                    ].map((effect) => (
+                      <div key={effect.name} className={`${effect.class} p-8 rounded-xl text-center`}>
+                        <h4 className="text-lg font-semibold text-crd-white mb-2">{effect.name}</h4>
+                        <p className="text-sm text-crd-lightGray">Hover to see effect</p>
+                        <div className="mt-4 text-xs text-crd-lightGray font-mono bg-crd-darkGray/50 p-2 rounded">
+                          .{effect.class}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Animations Section */}
+            {activeSection === 'animations' && (
+              <div className="space-y-12">
+                <h2 className="text-display text-crd-white">Animations & Timing</h2>
+                
+                <section>
+                  <h3 className="text-section text-crd-white mb-6">Animation Examples</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[
+                      { name: 'Fade In', class: 'animate-fade-in' },
+                      { name: 'Scale In', class: 'animate-scale-in' },
+                      { name: 'Hover Scale', class: 'hover-scale' },
+                      { name: 'Hover Lift', class: 'hover-lift' },
+                      { name: 'Pulse', class: 'pulse' },
+                      { name: 'Button Press', class: 'button-press' },
+                    ].map((animation) => (
+                      <CRDCard key={animation.name} className={`p-6 text-center cursor-pointer ${animation.class}`}>
+                        <h4 className="text-lg font-semibold text-crd-white mb-2">{animation.name}</h4>
+                        <div className="text-xs text-crd-lightGray font-mono bg-crd-darkGray/50 p-2 rounded">
+                          .{animation.class}
+                        </div>
+                      </CRDCard>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Mobile Components Section */}
+            {activeSection === 'mobile' && (
+              <div className="space-y-12">
+                <h2 className="text-display text-crd-white">Mobile Components</h2>
+                
+                <section>
+                  <h3 className="text-section text-crd-white mb-6">Mobile Utilities</h3>
+                  <div className="space-y-6">
+                    <CRDCard className="p-6">
+                      <h4 className="text-lg font-semibold text-crd-white mb-4">Touch Targets</h4>
+                      <div className="space-y-3">
+                        <div className="mobile-avatar-sm bg-crd-blue rounded-full"></div>
+                        <div className="mobile-avatar-md bg-crd-green rounded-full"></div>
+                        <div className="mobile-avatar-lg bg-crd-orange rounded-full"></div>
+                      </div>
+                    </CRDCard>
+                    
+                    <CRDCard className="p-6">
+                      <h4 className="text-lg font-semibold text-crd-white mb-4">Mobile Input</h4>
+                      <input className="mobile-input w-full" placeholder="Mobile-optimized input" />
+                    </CRDCard>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Team Themes Section */}
+            {activeSection === 'team-themes' && (
+              <div className="space-y-12">
+                <h2 className="text-display text-crd-white">Team Themes</h2>
+                
+                <section>
+                  <h3 className="text-section text-crd-white mb-6">Current Theme Showcase</h3>
+                  <TeamThemeShowcase />
+                </section>
+              </div>
+            )}
+
+            {/* Buttons Section */}
+            {activeSection === 'buttons' && (
+              <div className="space-y-12">
+                <h2 className="text-display text-crd-white">Buttons</h2>
+                
+                <section>
+                  <h3 className="text-section text-crd-white mb-6">Button Variants</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <CRDCard className="p-6">
+                      <h4 className="text-lg font-semibold text-crd-white mb-4">Sizes</h4>
+                      <div className="space-y-3">
+                        <CRDButton size="sm">Small Button</CRDButton>
+                        <CRDButton size="default">Medium Button</CRDButton>
+                        <CRDButton size="lg">Large Button</CRDButton>
+                      </div>
+                    </CRDCard>
+                    
+                    <CRDCard className="p-6">
+                      <h4 className="text-lg font-semibold text-crd-white mb-4">Variants</h4>
+                      <div className="space-y-3">
+                        <CRDButton variant="primary">Primary</CRDButton>
+                        <CRDButton variant="secondary">Secondary</CRDButton>
+                        <CRDButton variant="outline">Outline</CRDButton>
+                        <CRDButton variant="ghost">Ghost</CRDButton>
+                      </div>
+                    </CRDCard>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Cards Section */}
+            {activeSection === 'cards' && (
+              <div className="space-y-12">
+                <h2 className="text-display text-crd-white">Cards</h2>
+                
+                <section>
+                  <h3 className="text-section text-crd-white mb-6">Card Examples</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <CRDCard className="p-6">
+                      <h4 className="text-lg font-semibold text-crd-white mb-2">Basic Card</h4>
+                      <p className="text-themed-secondary">Standard card with themed background and borders.</p>
+                    </CRDCard>
+                    
+                    <CRDCard className="p-6 team-spirit-glow">
+                      <h4 className="text-lg font-semibold text-crd-white mb-2">Glowing Card</h4>
+                      <p className="text-themed-secondary">Card with team spirit glow effect.</p>
+                    </CRDCard>
+                    
+                    <CRDCard className="p-6 glass-medium">
+                      <h4 className="text-lg font-semibold text-crd-white mb-2">Glass Card</h4>
+                      <p className="text-themed-secondary">Card with glass morphism effect.</p>
+                    </CRDCard>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Backgrounds Section */}
+            {activeSection === 'backgrounds' && (
+              <div className="space-y-12">
+                <h2 className="text-display text-crd-white">Backgrounds</h2>
+                
+                <section>
+                  <h3 className="text-section text-crd-white mb-6">Background Examples</h3>
+                  <div className="space-y-6">
+                    <div className="p-8 rounded-xl bg-gradient-to-r from-crd-darkest to-crd-darkGray">
+                      <h4 className="text-lg font-semibold text-crd-white mb-2">Dark Gradient</h4>
+                      <p className="text-crd-lightGray">Subtle gradient background</p>
+                    </div>
+                    
+                    <div className="p-8 rounded-xl" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--secondary) / 0.1))' }}>
+                      <h4 className="text-lg font-semibold text-crd-white mb-2">Themed Gradient</h4>
+                      <p className="text-crd-lightGray">Background using current theme colors</p>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* Fallback for any missing sections */}
+            {!['overview', 'typography', 'spacing', 'brand-assets', 'color-palette', 'glass-effects', 'animations', 'mobile', 'team-themes', 'buttons', 'cards', 'backgrounds'].includes(activeSection) && (
               <div className="space-y-12">
                 <h2 className="text-display text-crd-white">{sidebarSections.find(s => s.id === activeSection)?.label}</h2>
                 <p className="text-crd-lightGray">This section is under development.</p>
