@@ -194,7 +194,7 @@ const DesignGuide = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <PalettePreview palette={currentPalette} size="sm" />
+                  {currentPalette && <PalettePreview palette={currentPalette} size="sm" />}
                 </div>
               </div>
               <div className="flex items-center space-x-2">

@@ -2,7 +2,7 @@ import React from 'react';
 import { type TeamPalette } from '@/lib/teamPalettes';
 
 interface PalettePreviewProps {
-  palette: TeamPalette;
+  palette: TeamPalette | null;
   size?: 'sm' | 'md' | 'lg';
   showLabels?: boolean;
   className?: string;
@@ -14,6 +14,18 @@ export const PalettePreview = ({
   showLabels = false,
   className = ''
 }: PalettePreviewProps) => {
+  // Early return if palette is null
+  if (!palette) {
+    return (
+      <div className={`flex items-center gap-1 ${className}`}>
+        <div className="w-4 h-4 rounded-full bg-gray-300 animate-pulse" />
+        <div className="w-4 h-4 rounded-full bg-gray-300 animate-pulse" />
+        <div className="w-4 h-4 rounded-full bg-gray-300 animate-pulse" />
+        <div className="w-4 h-4 rounded-full bg-gray-300 animate-pulse" />
+      </div>
+    );
+  }
+
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6', 
