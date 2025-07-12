@@ -103,30 +103,20 @@ export const usePSDCache = (): UsePSDCacheResult => {
   }, [user?.id]);
 
   const processPSD = useCallback(async (file: File) => {
-    if (authLoading) {
-      throw new Error('Authentication still loading, please wait...');
-    }
-    
-    if (!user?.id) {
-      throw new Error('Please sign in to use PSD processing features');
-    }
-
     setIsProcessing(true);
     setProcessingProgress(0);
     setProcessingStep('Starting...');
 
     try {
+      // Use basic PSD processing without user/caching
       const result = await psdCacheService.processPSDWithCaching(
         file,
-        user.id,
+        'anonymous',
         (progress, step) => {
           setProcessingProgress(progress);
           setProcessingStep(step);
         }
       );
-
-      // Refresh cached jobs
-      await loadCachedJobs();
       
       return result;
     } finally {
@@ -134,7 +124,7 @@ export const usePSDCache = (): UsePSDCacheResult => {
       setProcessingProgress(0);
       setProcessingStep('');
     }
-  }, [user?.id, loadCachedJobs]);
+  }, []);
 
   const loadPSDFromCache = useCallback(async (jobId: string): Promise<PSDLayer[]> => {
     if (authLoading) {
