@@ -147,21 +147,28 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
     return savedTheme ? findLogoByThemeId(savedTheme) : logoGroups[0].logos[0];
   });
 
-  // Update selected logo when current logo code changes
+  // Update selected logo when current logo code changes from useTeamTheme
   useEffect(() => {
     if (currentLogoCode) {
       for (const group of logoGroups) {
         const found = group.logos.find(logo => logo.dnaCode === currentLogoCode);
-        if (found && found.themeId !== selectedLogo.themeId) {
+        if (found) {
+          console.log(`🔄 LogoSelectorDrawer: Updating to logo ${currentLogoCode}`, found);
           setSelectedLogo(found);
-          break;
+          return;
         }
       }
-    } else if (settings?.theme && settings.theme !== selectedLogo.themeId) {
+      console.warn(`🔄 LogoSelectorDrawer: Logo not found for DNA code ${currentLogoCode}`);
+    }
+  }, [currentLogoCode]);
+
+  // Also update when settings change (for compatibility)
+  useEffect(() => {
+    if (!currentLogoCode && settings?.theme && settings.theme !== selectedLogo.themeId) {
       const savedLogo = findLogoByThemeId(settings.theme);
       setSelectedLogo(savedLogo);
     }
-  }, [currentLogoCode, settings?.theme, selectedLogo.themeId]);
+  }, [settings?.theme, currentLogoCode, selectedLogo.themeId]);
 
   // Apply theme to document and notify parent
   useEffect(() => {
