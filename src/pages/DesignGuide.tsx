@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Code2, Palette, Type, MousePointer, Layout, Paintbrush, Sparkles, Image, Eye, Heart, Zap, Globe, Users, Layers, Target, BookOpen, Share2, Download, Check } from 'lucide-react';
+import { cardshowLogoDatabase } from "@/lib/cardshowDNA";
+import { getImagePath } from "@/lib/imagePathUtil";
 import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { CRDButton, CRDCard, CRDBadge, TeamThemeShowcase, PalettePreview, Typography } from '@/components/ui/design-system';
 import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
@@ -31,18 +33,8 @@ const DesignGuide = () => {
     { id: 'team-customization', label: 'Team Themes & Customization', icon: Sparkles, description: 'CRD:DNA system and theme applications' },
   ];
 
-  // Only show logos that actually exist with correct paths
-  const logoVariants = [
-    { name: 'CS_MLB_BAL_OBS', path: '/lovable-uploads/d5697dd6-0271-4be5-b93c-0a12297883c0.png', usage: 'Baltimore Orioles OBS' },
-    { name: 'CS_MLB_CL_BOS_RBB', path: '/lovable-uploads/b66ab3a9-3e69-4c81-a1b7-8ea8c1c5e5f2.png', usage: 'Boston Red Sox Classic' },
-    { name: 'CS_MLB_CL_SEA_80s', path: '/lovable-uploads/a8b7c6d5-e4f3-4e2d-9c1b-8a7b6c5d4e3f.png', usage: 'Seattle Mariners 1980s' },
-    { name: 'CS_NCAA_BIG10', path: '/lovable-uploads/f3e4d5c6-b7a8-4f9e-8d1c-3b4a5c6d7e8f.png', usage: 'NCAA Big Ten Conference' },
-    { name: 'CS_SK_RB', path: '/lovable-uploads/a2b3c4d5-e6f7-4a8b-9c1d-4e5f6a7b8c9d.png', usage: 'Sketch Red Blue' },
-    { name: 'CS_ORIG_WS', path: '/lovable-uploads/c6d7e8f9-a1b2-4c3d-9e4f-6a7b8c9d1e2f.png', usage: 'Original Washington Senators' },
-    { name: 'CS_3D_WGB', path: '/lovable-uploads/e1f2a3b4-c5d6-4e7f-8a9b-2c3d4e5f6a7b.png', usage: 'CS 3D White Green Black' },
-    { name: 'CS_SK_RS', path: '/lovable-uploads/b4c5d6e7-f8a9-4b1c-8d2e-5f6a7b8c9d1e.png', usage: 'Sketch Red Silver' },
-    { name: 'CS_MLB_CL_SDP_70s', path: '/lovable-uploads/f9e8d7c6-b5a4-4f3e-8d2c-1a9b8c7d6e5f.png', usage: 'San Diego Padres 1970s' },
-  ];
+  // Show all new logo variations from uploaded images
+  const availableLogos = cardshowLogoDatabase;
 
   const designPrinciples = [
     { 
@@ -293,29 +285,36 @@ const DesignGuide = () => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                    {logoVariants.map((logo, index) => (
-                      <CRDCard key={index} className="p-6 text-center space-y-4 group hover:shadow-xl hover:shadow-crd-blue/10 transition-all duration-300">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {availableLogos.map((logo, index) => (
+                      <div 
+                        key={logo.dnaCode} 
+                        className="bg-gradient-to-br from-card to-card/50 rounded-xl border-2 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in"
+                        style={{ 
+                          animationDelay: `${index * 100}ms`,
+                          borderColor: logo.colorPalette[0] + '40'
+                        }}
+                      >
                         <div className="aspect-square flex items-center justify-center bg-gradient-to-br from-crd-mediumGray/10 to-crd-darkGray/20 rounded-xl p-4">
                           <img 
-                            src={logo.path} 
-                            alt={logo.usage}
+                            src={logo.imageUrl} 
+                            alt={logo.displayName}
                             className="max-w-full max-h-full w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
                               e.currentTarget.src = '/placeholder.svg';
-                              e.currentTarget.alt = `${logo.name} (loading...)`;
+                              e.currentTarget.alt = `${logo.displayName} (loading...)`;
                             }}
                           />
                         </div>
                         <div className="space-y-2">
                           <h4 className="text-sm font-bold text-crd-white group-hover:text-crd-blue transition-colors">
-                            {logo.name}
+                            {logo.displayName}
                           </h4>
                           <p className="text-xs text-crd-lightGray leading-relaxed">
-                            {logo.usage}
+                            {logo.description}
                           </p>
                         </div>
-                      </CRDCard>
+                      </div>
                     ))}
                   </div>
                 </section>

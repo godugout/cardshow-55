@@ -9,16 +9,17 @@ export interface ImagePathMapping {
 
 // Map DNA codes to actual uploaded UUID filenames
 export const KNOWN_IMAGE_PATHS: Record<string, string> = {
-  // Existing uploaded logos with UUID filenames
-  'CS_MLB_BAL_OBS': '/lovable-uploads/d5697dd6-0271-4be5-b93c-0a12297883c0.png',
-  'CS_MLB_CL_BOS_RBB': '/lovable-uploads/b66ab3a9-3e69-4c81-a1b7-8ea8c1c5e5f2.png',
-  'CS_MLB_CL_SEA_80s': '/lovable-uploads/a8b7c6d5-e4f3-4e2d-9c1b-8a7b6c5d4e3f.png',
-  'CS_NCAA_BIG10': '/lovable-uploads/f3e4d5c6-b7a8-4f9e-8d1c-3b4a5c6d7e8f.png',
-  'CS_SK_RB': '/lovable-uploads/a2b3c4d5-e6f7-4a8b-9c1d-4e5f6a7b8c9d.png',
-  'CS_ORIG_WS': '/lovable-uploads/c6d7e8f9-a1b2-4c3d-9e4f-6a7b8c9d1e2f.png',
-  'CS_3D_WGB': '/lovable-uploads/e1f2a3b4-c5d6-4e7f-8a9b-2c3d4e5f6a7b.png',
-  'CS_SK_RS': '/lovable-uploads/b4c5d6e7-f8a9-4b1c-8d2e-5f6a7b8c9d1e.png',
-  'CS_MLB_CL_SDP_70s': '/lovable-uploads/f9e8d7c6-b5a4-4f3e-8d2c-1a9b8c7d6e5f.png',
+  // New Cardshow logo variations
+  'CRD_GRADIENT_MULTI': '/lovable-uploads/880467b1-c3b1-4d5b-833f-43051fe529a0.png',
+  'CS_GREEN_SPARKLE': '/lovable-uploads/806837e5-8a67-487c-82ac-dd63b147b161.png',
+  'CS_ORANGE_SCRIPT': '/lovable-uploads/f582a941-4244-42ae-a443-5a445bcaac81.png',
+  'CS_REDBLUE_BLOCK': '/lovable-uploads/a00092a2-18fc-47c7-b7a9-f7b2ba05a0d4.png',
+  'CS_GREEN_SCRIPT_YELLOW': '/lovable-uploads/9904e7e9-d236-4921-aa91-5c0a1d697b0c.png',
+  'CS_BROWN_ORANGE_RETRO': '/lovable-uploads/2b1197e8-9501-4fe3-b915-3fcedda9a4a5.png',
+  'CS_BLUE_ORANGE_OUTLINE': '/lovable-uploads/c2a045cc-b1d5-4d98-81ac-b53e2475feee.png',
+  'CS_RED_SCRIPT_BLUE': '/lovable-uploads/a1e97cec-f763-4616-b8f9-563d15a9b060.png',
+  'CS_BLUE_SCRIPT': '/lovable-uploads/bd1b2459-1140-408e-99c4-b7153c6fb449.png',
+  'CS_BLACK_TEAL_SPARKLE': '/lovable-uploads/5e6b3501-9224-4ae3-8b52-c47251daf54d.png',
 };
 
 // Get the correct image path for a CRD code

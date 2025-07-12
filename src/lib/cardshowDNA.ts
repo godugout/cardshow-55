@@ -45,6 +45,120 @@ export interface CRDEntry {
   };
 }
 
+export interface CardshowLogoDNA {
+  dnaCode: string;
+  displayName: string;
+  description: string;
+  imageUrl: string;
+  category: string;
+  colorPalette: string[];
+  designElements: string[];
+  rarity: 'common' | 'uncommon' | 'rare' | 'legendary';
+}
+
+export const cardshowLogoDatabase: CardshowLogoDNA[] = [
+  {
+    dnaCode: 'CRD_GRADIENT_MULTI',
+    displayName: 'CRD Gradient Multi',
+    description: 'Colorful gradient CRD logo with modern styling',
+    imageUrl: '/lovable-uploads/880467b1-c3b1-4d5b-833f-43051fe529a0.png',
+    category: 'Modern',
+    colorPalette: ['#FF6B35', '#7FB069', '#4ECDC4', '#45B7D1'],
+    designElements: ['Gradient', 'Modern', 'Colorful'],
+    rarity: 'legendary'
+  },
+  {
+    dnaCode: 'CS_GREEN_SPARKLE',
+    displayName: 'Green Sparkle',
+    description: 'Bold green Cardshow with sparkle effects',
+    imageUrl: '/lovable-uploads/806837e5-8a67-487c-82ac-dd63b147b161.png',
+    category: 'Fantasy',
+    colorPalette: ['#7FB069', '#FFFFFF', '#FFD700'],
+    designElements: ['Bold', 'Sparkles', 'Fantasy'],
+    rarity: 'rare'
+  },
+  {
+    dnaCode: 'CS_ORANGE_SCRIPT',
+    displayName: 'Orange Script',
+    description: 'Classic orange script Cardshow design',
+    imageUrl: '/lovable-uploads/f582a941-4244-42ae-a443-5a445bcaac81.png',
+    category: 'Script',
+    colorPalette: ['#FF6B35', '#2C3E50'],
+    designElements: ['Script', 'Classic', 'Elegant'],
+    rarity: 'common'
+  },
+  {
+    dnaCode: 'CS_REDBLUE_BLOCK',
+    displayName: 'Red Blue Block',
+    description: 'Bold red and blue block letter design',
+    imageUrl: '/lovable-uploads/a00092a2-18fc-47c7-b7a9-f7b2ba05a0d4.png',
+    category: 'Bold',
+    colorPalette: ['#DC143C', '#0047AB'],
+    designElements: ['Block', 'Bold', 'Sports'],
+    rarity: 'uncommon'
+  },
+  {
+    dnaCode: 'CS_GREEN_SCRIPT_YELLOW',
+    displayName: 'Green Script Yellow',
+    description: 'Green script with yellow outline styling',
+    imageUrl: '/lovable-uploads/9904e7e9-d236-4921-aa91-5c0a1d697b0c.png',
+    category: 'Script',
+    colorPalette: ['#7FB069', '#FFD700'],
+    designElements: ['Script', 'Outlined', 'Vibrant'],
+    rarity: 'rare'
+  },
+  {
+    dnaCode: 'CS_BROWN_ORANGE_RETRO',
+    displayName: 'Brown Orange Retro',
+    description: 'Retro brown and orange styling',
+    imageUrl: '/lovable-uploads/2b1197e8-9501-4fe3-b915-3fcedda9a4a5.png',
+    category: 'Retro',
+    colorPalette: ['#8B4513', '#FF6B35'],
+    designElements: ['Retro', '70s', 'Groovy'],
+    rarity: 'uncommon'
+  },
+  {
+    dnaCode: 'CS_BLUE_ORANGE_OUTLINE',
+    displayName: 'Blue Orange Outline',
+    description: 'Blue with orange outline design',
+    imageUrl: '/lovable-uploads/c2a045cc-b1d5-4d98-81ac-b53e2475feee.png',
+    category: 'Bold',
+    colorPalette: ['#0047AB', '#FF6B35'],
+    designElements: ['Outlined', 'Bold', 'Modern'],
+    rarity: 'common'
+  },
+  {
+    dnaCode: 'CS_RED_SCRIPT_BLUE',
+    displayName: 'Red Script Blue',
+    description: 'Red script on blue background',
+    imageUrl: '/lovable-uploads/a1e97cec-f763-4616-b8f9-563d15a9b060.png',
+    category: 'Script',
+    colorPalette: ['#DC143C', '#0047AB'],
+    designElements: ['Script', 'Sports', 'Classic'],
+    rarity: 'common'
+  },
+  {
+    dnaCode: 'CS_BLUE_SCRIPT',
+    displayName: 'Blue Script',
+    description: 'Clean blue script design',
+    imageUrl: '/lovable-uploads/bd1b2459-1140-408e-99c4-b7153c6fb449.png',
+    category: 'Script',
+    colorPalette: ['#0047AB', '#FFFFFF'],
+    designElements: ['Script', 'Clean', 'Professional'],
+    rarity: 'common'
+  },
+  {
+    dnaCode: 'CS_BLACK_TEAL_SPARKLE',
+    displayName: 'Black Teal Sparkle',
+    description: 'Black with teal outline and sparkle effects',
+    imageUrl: '/lovable-uploads/5e6b3501-9224-4ae3-8b52-c47251daf54d.png',
+    category: 'Fantasy',
+    colorPalette: ['#2C3E50', '#4ECDC4', '#FFD700'],
+    designElements: ['Outlined', 'Sparkles', 'Premium'],
+    rarity: 'legendary'
+  }
+];
+
 // Core CRD:DNA Database
 export const CRD_DNA_ENTRIES: CRDEntry[] = [
   // MLB Teams
