@@ -309,7 +309,7 @@ const DesignGuide = () => {
 
                   <div className="flex flex-wrap gap-6 justify-center">
                     {logoVariants.map((logo, index) => (
-                      <CRDCard key={index} className="p-6 group hover:shadow-lg hover:shadow-crd-blue/10 transition-all duration-300 flex-1 min-w-80 max-w-sm">
+                      <CRDCard key={index} className="p-6 group hover:shadow-lg hover:shadow-crd-blue/10 transition-all duration-300 flex-1 min-w-80 max-w-sm text-center">
                         <div className="flex justify-center mb-6 p-4 bg-gradient-to-br from-crd-darkGray/50 to-crd-mediumGray/30 rounded-xl">
                           {logo.component}
                         </div>
@@ -406,7 +406,7 @@ const DesignGuide = () => {
                       { color: 'CRD Orange', hex: '#EA6E48', psychology: 'Energy, creativity, excitement', usage: 'Highlights, warnings, creator tools' },
                       { color: 'CRD Purple', hex: '#9757D7', psychology: 'Luxury, exclusivity, premium features', usage: 'Premium tiers, rare items, special events' }
                     ].map((color, index) => (
-                      <CRDCard key={index} className="p-6 space-y-4">
+                      <CRDCard key={index} className="p-6 space-y-4 text-center">
                         <div className="h-16 rounded-lg" style={{ backgroundColor: color.hex }}></div>
                         <div className="space-y-2">
                           <h3 className="font-bold text-crd-white">{color.color}</h3>
@@ -439,21 +439,21 @@ const DesignGuide = () => {
                       { label: 'Caption', size: 'text-caption', weight: 'font-normal', example: 'Last updated 2 minutes ago', usage: 'Metadata, timestamps, helper text' }
                     ].map((type, index) => (
                       <div key={index} className="p-6 bg-crd-darkGray rounded-xl border border-crd-mediumGray/30">
-                        <div className="grid lg:grid-cols-2 gap-6 items-center">
-                          <div>
-                            <div className={`${type.size} ${type.weight} text-crd-white mb-2`}>
-                              {type.example}
-                            </div>
-                            <div className="flex items-center space-x-4 text-sm text-crd-lightGray">
-                              <span className="font-mono">{type.label}</span>
-                              <span>•</span>
-                              <span>{type.usage}</span>
-                            </div>
-                          </div>
-                          <div className="text-right text-sm text-crd-blue font-mono">
-                            {type.size} {type.weight}
-                          </div>
-                        </div>
+                         <div className="grid lg:grid-cols-2 gap-6 items-center">
+                           <div className="text-center lg:text-left">
+                             <div className={`${type.size} ${type.weight} text-crd-white mb-2`}>
+                               {type.example}
+                             </div>
+                             <div className="flex items-center justify-center lg:justify-start space-x-4 text-sm text-crd-lightGray">
+                               <span className="font-mono">{type.label}</span>
+                               <span>•</span>
+                               <span>{type.usage}</span>
+                             </div>
+                           </div>
+                           <div className="text-center lg:text-right text-sm text-crd-blue font-mono">
+                             {type.size} {type.weight}
+                           </div>
+                         </div>
                       </div>
                     ))}
                   </div>
@@ -478,7 +478,7 @@ const DesignGuide = () => {
                   
                   <div className="grid lg:grid-cols-2 gap-8">
                     {/* Buttons */}
-                    <CRDCard className="p-8 space-y-6">
+                    <CRDCard className="p-8 space-y-6 text-center">
                       <h3 className="text-xl font-semibold text-crd-white">Button System</h3>
                       <div className="space-y-4">
                         <div className="space-y-2">
@@ -508,7 +508,7 @@ const DesignGuide = () => {
                     </CRDCard>
 
                     {/* Cards */}
-                    <CRDCard className="p-8 space-y-6">
+                    <CRDCard className="p-8 space-y-6 text-center">
                       <h3 className="text-xl font-semibold text-crd-white">Card Components</h3>
                       <div className="space-y-4">
                         <CRDCard className="p-4">
