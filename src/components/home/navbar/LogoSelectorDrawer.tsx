@@ -192,13 +192,25 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <button className="group flex items-center gap-2 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-2 rounded-lg transition-all duration-300">
+        <button className="group flex items-center gap-3 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-2 rounded-lg transition-all duration-300">
           <LogoWithFallback 
             imageUrl={selectedLogo.imageUrl}
             logoName={selectedLogo.name}
             dnaCode={selectedLogo.dnaCode}
             className="h-16 w-40 object-contain" 
           />
+          
+          {/* Color dots next to logo */}
+          <div className="flex gap-1.5">
+            {selectedLogo.colorPalette.slice(0, 4).map((color, index) => (
+              <div 
+                key={index}
+                className="w-2.5 h-2.5 rounded-full border border-white/30 shadow-sm transition-transform duration-300 group-hover:scale-110"
+                style={{ backgroundColor: color }}
+              />
+            ))}
+          </div>
+          
           <ChevronDown className={`h-4 w-4 text-gray-400 transition-all duration-300 opacity-0 group-hover:opacity-100 ${open ? 'rotate-180 opacity-100' : ''}`} />
         </button>
       </DrawerTrigger>
