@@ -307,7 +307,7 @@ const DesignGuide = () => {
                     </p>
                   </div>
 
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
                     {logoVariants.map((logo, index) => (
                       <CRDCard key={index} className="p-6 group hover:shadow-lg hover:shadow-crd-blue/10 transition-all duration-300">
                         <div className="flex justify-center mb-6 p-4 bg-gradient-to-br from-crd-darkGray/50 to-crd-mediumGray/30 rounded-xl">
