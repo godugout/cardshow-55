@@ -5,6 +5,7 @@ import { Plus, Home, ImageIcon, Palette, X } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
 import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
 import { useEnhancedNavbar } from '@/hooks/useEnhancedNavbar';
+import { DevLoginButton } from '@/components/auth/DevLoginButton';
 
 const getNavbarColorClasses = (color: string) => {
   const colorMap = {
@@ -156,6 +157,13 @@ export const Navbar = () => {
                 <Palette className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110' : ''}`} />
                 <span>Studio</span>
               </Link>
+
+              {/* Dev Login Button - Only shows in development */}
+              <DevLoginButton 
+                variant="outline" 
+                size="sm" 
+                className="text-xs"
+              />
             </div>
         </div>
       </div>

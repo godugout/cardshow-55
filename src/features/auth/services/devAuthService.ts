@@ -9,16 +9,18 @@ export class DevAuthService {
     const isDevEnv = process.env.NODE_ENV === 'development';
     const hostname = window.location.hostname;
     const isLocalhost = ['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname) || hostname.startsWith('localhost');
+    const isLovablePreview = hostname.includes('.lovableproject.com');
     
     console.log('🔧 Dev mode check:', { 
       nodeEnv: process.env.NODE_ENV, 
       hostname, 
       isDevEnv, 
       isLocalhost,
-      result: isDevEnv && isLocalhost 
+      isLovablePreview,
+      result: isDevEnv && (isLocalhost || isLovablePreview)
     });
     
-    return isDevEnv && isLocalhost;
+    return isDevEnv && (isLocalhost || isLovablePreview);
   }
 
   getDiagnosticInfo(): string {
@@ -35,8 +37,9 @@ export class DevAuthService {
   }
 
   createDevUserSession() {
-    if (!this.isDevMode()) {
-      return { user: null, session: null, error: new Error('Not in dev mode') };
+    // Allow dev session creation in development environment
+    if (process.env.NODE_ENV !== 'development') {
+      return { user: null, session: null, error: new Error('Not in development environment') };
     }
 
     const devUser: User = {
@@ -80,7 +83,8 @@ export class DevAuthService {
   }
 
   getStoredDevSession() {
-    if (!this.isDevMode()) {
+    // Allow retrieving dev session in development environment
+    if (process.env.NODE_ENV !== 'development') {
       return { user: null, session: null };
     }
 

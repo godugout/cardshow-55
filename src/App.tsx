@@ -5,6 +5,7 @@ import { Toaster } from 'sonner';
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { ProductionOptimizer } from '@/components/production/ProductionOptimizer';
+import { DevLoginFloatingButton } from '@/components/auth/DevLoginFloatingButton';
 import { Navbar } from '@/components/layout/Navbar';
 import Index from '@/pages/Index';
 import { CreateChoice } from '@/pages/CreateChoice';
@@ -50,6 +51,7 @@ const App = () => {
                 }
               }}
             />
+            <DevLoginFloatingButton />
           </div>
         </Router>
       </AuthProvider>

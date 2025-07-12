@@ -93,15 +93,22 @@ export const PSDUploadModal: React.FC<PSDUploadModalProps> = ({
 
   const handleDevLogin = () => {
     try {
+      console.log('🔧 Attempting dev login...');
       const result = devAuthService.forceCreateDevSession();
       if (result.error) {
-        toast.error('Failed to create development session');
+        console.error('🔧 Dev session creation failed:', result.error);
+        toast.error('Failed to create development session: ' + result.error.message);
       } else {
-        toast.success('Development user created - please refresh');
-        window.location.reload();
+        console.log('🔧 Dev session created successfully');
+        toast.success('Development user created successfully! Reloading...');
+        // Force a page reload to pick up the new auth state
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     } catch (error) {
-      toast.error('Development login failed');
+      console.error('🔧 Development login error:', error);
+      toast.error('Development login failed: ' + (error as Error).message);
     }
   };
 
@@ -178,10 +185,10 @@ export const PSDUploadModal: React.FC<PSDUploadModalProps> = ({
                 )}
                 <div className="space-y-1">
                   <p className="text-sm text-crd-lightGray">
-                    Running on <strong>localhost</strong>? Development mode should auto-login.
+                    Running in <strong>development</strong>? Use the dev login button above.
                   </p>
                   <p className="text-xs text-crd-lightGray/70">
-                    If auto-login fails, use the button above or refresh the page.
+                    Production users should sign in through the main auth flow.
                   </p>
                 </div>
               </div>
