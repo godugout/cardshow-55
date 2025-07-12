@@ -14,14 +14,10 @@ import { CardshowBlockLettersLogo } from '@/components/home/navbar/CardshowBlock
 import { CardshowGreenLogo } from '@/components/home/navbar/CardshowGreenLogo';
 import { CardshowGreenSparklesLogo } from '@/components/home/navbar/CardshowGreenSparklesLogo';
 import { CardshowGreenSparklesOfficialLogo } from '@/components/home/navbar/CardshowGreenSparklesOfficialLogo';
-import { CardshowGreenScriptLogo } from '@/components/home/navbar/CardshowGreenScriptLogo';
-import { CardshowBrownOrangeLogo } from '@/components/home/navbar/CardshowBrownOrangeLogo';
-import { CardshowBlueOutlineLogo } from '@/components/home/navbar/CardshowBlueOutlineLogo';
-import { CardshowTealSparklesLogo } from '@/components/home/navbar/CardshowTealSparklesLogo';
-import { CardshowRedScriptLogo } from '@/components/home/navbar/CardshowRedScriptLogo';
-import { CardshowBlackBoldLogo } from '@/components/home/navbar/CardshowBlackBoldLogo';
-import { CardshowPurpleOutlineLogo } from '@/components/home/navbar/CardshowPurpleOutlineLogo';
-import { CardshowOrangeBlackBoldLogo } from '@/components/home/navbar/CardshowOrangeBlackBoldLogo';
+import { MLBBalOBSLogo } from '@/components/home/navbar/MLBBalOBSLogo';
+import { CS3DWGBLogo } from '@/components/home/navbar/CS3DWGBLogo';
+import { CSSketchRBLogo } from '@/components/home/navbar/CSSketchRBLogo';
+import { NCAABig10Logo } from '@/components/home/navbar/NCAABig10Logo';
 
 const DesignGuide = () => {
   const [activeSection, setActiveSection] = useState('overview');
@@ -36,31 +32,35 @@ const DesignGuide = () => {
   ];
 
   const logoVariants = [
-    // MLB Teams
-    { name: 'CS_MLB_BAL_OBS', component: <CardshowOrangeLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Baltimore Orioles Orange/Black Script', context: 'MLB team branding, sports collections', theme: { primary: '#DF4601', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF' } },
-    { name: 'CS_MLB_CLE_RBS', component: <CardshowRedBlueLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Cleveland Guardians Red/Blue Script', context: 'MLB team branding, modern team identity', theme: { primary: '#0F223E', secondary: '#E31937', accent: '#FFFFFF', text: '#FFFFFF' } },
-    { name: 'CS_MLB_LAD_BS', component: <CardshowBlueLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'LA Dodgers Blue Script', context: 'Iconic MLB franchise, premium sports content', theme: { primary: '#005A9C', secondary: '#FFFFFF', accent: '#EF3E42', text: '#FFFFFF' } },
-    { name: 'CS_MLB_PIT_BBY', component: <CardshowOrangeLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Pittsburgh Pirates Black/Gold Block', context: 'Classic MLB team, traditional sports branding', theme: { primary: '#FDB827', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF' } },
-    
-    // MLB Classic Era
-    { name: 'CS_MLB_CL_BOS_RBB', component: <CardshowRedBlueLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Boston Red Sox Classic Red/Blue Block', context: 'Historic MLB franchise, heritage collections', theme: { primary: '#BD3039', secondary: '#0C2340', accent: '#FFFFFF', text: '#FFFFFF' } },
-    { name: 'CS_MLB_CL_SDP_70s', component: <CardshowBrownOrangeLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'San Diego Padres 1970s Brown/Gold', context: 'Vintage sports branding, retro collections', theme: { primary: '#2F241D', secondary: '#FFC425', accent: '#FFFFFF', text: '#FFFFFF' } },
-    { name: 'CS_MLB_CL_SEA_80s', component: <CardshowTealSparklesLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Seattle Mariners 1980s Navy/Teal', context: 'Retro sports aesthetic, decade collections', theme: { primary: '#0C2C56', secondary: '#005C5C', accent: '#C4CED4', text: '#FFFFFF' } },
-    { name: 'CS_MLB_CL_OAK_00s', component: <CardshowGreenLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Oakland Athletics 2000s Green/Gold', context: 'Modern era sports, early 2000s nostalgia', theme: { primary: '#003831', secondary: '#EFB21E', accent: '#FFFFFF', text: '#FFFFFF' } },
-    
-    // NCAA & Uniforms
-    { name: 'CS_NCAA_BIG10', component: <CardshowBlockLettersLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Big Ten Conference Branding', context: 'College sports, conference championships', theme: { primary: '#000080', secondary: '#FFFFFF', accent: '#000000', text: '#FFFFFF' } },
-    { name: 'CS_UNI_YBB', component: <CardshowOrangeLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Uniform Style Yellow/Black/Blue', context: 'School team uniforms, amateur sports', theme: { primary: '#FFB100', secondary: '#1F1F1F', accent: '#0000FF', text: '#FFFFFF' } },
-    { name: 'CS_UNI_WRB', component: <CardshowRedBlueLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Uniform Style White/Red/Blue', context: 'Patriotic team colors, American sports', theme: { primary: '#FFFFFF', secondary: '#FF0000', accent: '#0000FF', text: '#000000' } },
-    { name: 'CS_UNI_BB', component: <CardshowBlueLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Uniform Style Blue/Black', context: 'Simple uniform designs, varsity teams', theme: { primary: '#0000FF', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF' } },
-    
-    // Cardshow Originals
-    { name: 'CRD_GRADIENT', component: <CRDGradientLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'CRD Technical Brand Gradient', context: 'CRD maker tools, developer documentation', theme: { primary: '#45B26B', secondary: '#3772FF', accent: '#FFFFFF', text: '#FFFFFF' } },
-    { name: 'CS_3D_WGB', component: <CardshowModernLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: '3D Abstract White/Green/Black', context: 'Modern card layouts, tech-forward designs', theme: { primary: '#FFFFFF', secondary: '#45B26B', accent: '#000000', text: '#000000' } },
-    { name: 'CS_OLD_RS', component: <CardshowRedScriptLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Classic Red Sox Vintage Script', context: 'Heritage collections, vintage authenticity', theme: { primary: '#BD3039', secondary: '#0C2340', accent: '#FFFFFF', text: '#FFFFFF' } },
-    { name: 'CS_ORIG_WS', component: <CardshowBasicLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Original Washington Senators', context: 'Historic teams, classic baseball heritage', theme: { primary: '#FFFFFF', secondary: '#000000', accent: '#FF0000', text: '#000000' } },
-    { name: 'CS_SK_RB', component: <CardshowRedBlueLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Sketch Style Red/Blue', context: 'Artistic collections, hand-drawn aesthetics', theme: { primary: '#FF0000', secondary: '#0000FF', accent: '#FFFFFF', text: '#FFFFFF' } },
-    { name: 'CS_SK_RS', component: <CardshowGreenSparklesLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, usage: 'Sketch Style Red/Sparkle', context: 'Artistic flair, creative card designs', theme: { primary: '#FF0000', secondary: '#FFD700', accent: '#FFFFFF', text: '#FFFFFF' } },
+    // Actual Logos with Uploaded Files
+    { 
+      name: 'MLB_BAL_OBS', 
+      component: <MLBBalOBSLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, 
+      usage: 'Baltimore Orioles OBS', 
+      context: 'MLB team branding, sports collections', 
+      theme: { primary: '#DF4601', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF' } 
+    },
+    { 
+      name: 'CS_3D_WGB', 
+      component: <CS3DWGBLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, 
+      usage: 'CS 3D White Green Black', 
+      context: 'Modern card layouts, tech-forward designs', 
+      theme: { primary: '#FFFFFF', secondary: '#45B26B', accent: '#000000', text: '#000000' } 
+    },
+    { 
+      name: 'CS_SK_RB', 
+      component: <CSSketchRBLogo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, 
+      usage: 'CS Sketch Red Blue', 
+      context: 'Artistic collections, hand-drawn aesthetics', 
+      theme: { primary: '#FF0000', secondary: '#0000FF', accent: '#FFFFFF', text: '#FFFFFF' } 
+    },
+    { 
+      name: 'NCAA_BIG10', 
+      component: <NCAABig10Logo className="max-w-32 max-h-32 lg:max-w-48 lg:max-h-48 w-auto h-auto object-contain" />, 
+      usage: 'NCAA Big Ten Conference', 
+      context: 'College sports, conference championships', 
+      theme: { primary: '#000080', secondary: '#FFFFFF', accent: '#000000', text: '#FFFFFF' } 
+    },
   ];
 
   const designPrinciples = [

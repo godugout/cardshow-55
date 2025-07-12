@@ -212,101 +212,12 @@ export const CRD_DNA_ENTRIES: CRDEntry[] = [
       requiresAchievement: "80s Era Champion"
     }
   },
-  {
-    fileName: "CS_MLB_CLE_RBS.png",
-    group: "MLB",
-    teamCode: "CLE",
-    teamName: "Guardians",
-    teamCity: "Cleveland",
-    styleCode: "RBS",
-    fontStyle: "Script",
-    primaryColor: "#0F223E",
-    secondaryColor: "#E31937",
-    tertiaryColor: "#FFFFFF",
-    styleTag: "Standard",
-    mascot: "Slider",
-    imagePath: "/lovable-uploads/placeholder-cle-rbs.png", // This entry doesn't have an actual file - should be removed or replaced
-    rarity: "Common",
-    powerLevel: 68,
-    unlockMethod: "starter",
-    collectibility: 72,
-    isBlendable: true,
-    isRemixable: true,
-    currentSupply: 1200,
-    dropRate: 0.12
-  },
-  {
-    fileName: "CS_MLB_LAD_BS.png",
-    group: "MLB",
-    teamCode: "LAD",
-    teamName: "Dodgers",
-    teamCity: "Los Angeles",
-    styleCode: "BS",
-    fontStyle: "Script",
-    primaryColor: "#005A9C",
-    secondaryColor: "#FFFFFF",
-    tertiaryColor: "#EF3E42",
-    styleTag: "Standard",
-    imagePath: "/lovable-uploads/placeholder-lad-bs.png", // This entry doesn't have an actual file - should be removed or replaced
-    rarity: "Rare",
-    powerLevel: 82,
-    unlockMethod: "premium",
-    collectibility: 88,
-    isBlendable: true,
-    isRemixable: true,
-    totalSupply: 6000,
-    currentSupply: 4200,
-    dropRate: 0.06,
-    mintingRules: {
-      requiresPurchase: true
-    }
-  },
-  {
-    fileName: "CS_MLB_MIA.png",
-    group: "MLB",
-    teamCode: "MIA",
-    teamName: "Marlins",
-    teamCity: "Miami",
-    styleCode: "MIA",
-    fontStyle: "Unknown",
-    primaryColor: "#00A3E0",
-    secondaryColor: "#EF3340",
-    tertiaryColor: "#000000",
-    styleTag: "Standard",
-    mascot: "Billy the Marlin",
-    imagePath: "/lovable-uploads/placeholder-mia.png", // This entry doesn't have an actual file - should be removed or replaced
-    rarity: "Uncommon",
-    powerLevel: 70,
-    unlockMethod: "achievement",
-    collectibility: 75,
-    isBlendable: true,
-    isRemixable: true,
-    currentSupply: 800,
-    dropRate: 0.09
-  },
-  {
-    fileName: "CS_MLB_OAK.png",
-    group: "MLB",
-    teamCode: "OAK",
-    teamName: "Athletics",
-    teamCity: "Oakland",
-    styleCode: "OAK",
-    fontStyle: "Unknown",
-    primaryColor: "#003831",
-    secondaryColor: "#EFB21E",
-    tertiaryColor: "#FFFFFF",
-    styleTag: "Standard",
-    mascot: "Stomper",
-    imagePath: "/lovable-uploads/placeholder-oak.png", // This entry doesn't have an actual file - should be removed or replaced
-    rarity: "Common",
-    powerLevel: 62,
-    unlockMethod: "starter",
-    collectibility: 68,
-    isBlendable: true,
-    isRemixable: true,
-    currentSupply: 1500,
-    dropRate: 0.14
-  },
+  // Note: Removed placeholder entries that don't have actual uploaded files:
+  // - CS_MLB_CLE_RBS (Cleveland Guardians)
+  // - CS_MLB_LAD_BS (LA Dodgers) 
+  // - CS_MLB_MIA (Miami Marlins)
+  // - CS_MLB_OAK (Oakland Athletics)
+  // These can be re-added when actual logo files are uploaded
   {
     fileName: "CS_MLB_PIT_BBY.png",
     group: "MLB",
