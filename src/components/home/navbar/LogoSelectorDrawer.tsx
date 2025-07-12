@@ -94,28 +94,58 @@ const getHoverColorClasses = (color: string) => {
   return colorMap[color] || 'hover:bg-gray-500/10 hover:border-gray-500/20';
 };
 
-// Error Boundary component for logo loading
+// Enhanced logo component with CRD:DNA integration and robust error handling
 const LogoWithFallback = ({ LogoComponent, logoName, className }: { 
   LogoComponent: React.ComponentType<{ className?: string }>, 
   logoName: string, 
   className?: string 
 }) => {
   const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    // Quick initialization check
+    const timer = setTimeout(() => setIsLoading(false), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Error state with CRD:DNA styling
   if (hasError) {
     return (
-      <div className={`${className} flex items-center justify-center bg-gradient-to-r from-gray-700 to-gray-600 text-gray-300 text-xs rounded border border-gray-500/30`}>
-        {logoName}
+      <div className={`${className} flex items-center justify-center bg-muted/50 border border-dashed border-muted-foreground/30 rounded-md text-xs text-muted-foreground transition-all duration-200 hover:bg-muted/70`}>
+        <span className="font-mono text-center px-1">{logoName}</span>
       </div>
     );
   }
 
-  try {
-    return <LogoComponent className={className} />;
-  } catch (error) {
+  // Loading state
+  if (isLoading) {
     return (
-      <div className={`${className} flex items-center justify-center bg-gray-700 text-gray-300 text-xs rounded`}>
-        {logoName}
+      <div className={`${className} flex items-center justify-center bg-muted/30 rounded-md animate-pulse`}>
+        <div className="w-4 h-4 bg-muted-foreground/20 rounded"></div>
+      </div>
+    );
+  }
+
+  // Attempt to render the logo component with error boundary
+  try {
+    return (
+      <div className="relative group">
+        <LogoComponent className={className} />
+        {/* CRD:DNA code tooltip on hover */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-popover border rounded-md px-2 py-1 text-xs text-popover-foreground shadow-lg whitespace-nowrap z-50">
+            {logoName}
+          </div>
+        </div>
+      </div>
+    );
+  } catch (error) {
+    console.warn(`Failed to render CRD:DNA logo: ${logoName}`, error);
+    setHasError(true);
+    return (
+      <div className={`${className} flex items-center justify-center bg-destructive/10 border border-dashed border-destructive/30 rounded-md text-xs text-destructive transition-all duration-200`}>
+        <span className="font-mono">⚠ {logoName}</span>
       </div>
     );
   }
