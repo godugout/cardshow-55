@@ -266,20 +266,20 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
         {/* Header */}
         <div className="flex-shrink-0 h-20 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex flex-col">
           {/* Top Row: CRDMKR Logo, Centered Title with Icon, Action Buttons */}
-          <div className="flex items-center justify-between h-12">
+          <div className="relative flex items-center justify-between h-12">
             {/* Left: CRDMKR Logo */}
             <div className="flex items-center">
               <CRDGradientLogo className="h-8" />
             </div>
             
-            {/* Center: Blue Icon + Title */}
-            <div className="flex-1 flex justify-center items-center gap-2">
+            {/* Center: Blue Icon + Title (Absolutely positioned for true centering) */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
               <Layers className="w-6 h-6 text-crd-blue" />
               <input 
                 type="text"
                 value={cardData.title}
                 onChange={(e) => updateCardData({ title: e.target.value })}
-                className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-2 focus:py-1 focus:rounded transition-all text-center max-w-md"
+                className="text-2xl font-bold text-crd-white bg-transparent border-none outline-none focus:bg-crd-darker/30 focus:px-1 focus:py-1 focus:rounded transition-all text-center max-w-md px-1"
                 placeholder="Enter CRD name..."
               />
             </div>
