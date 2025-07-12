@@ -924,6 +924,60 @@ export type Database = {
           },
         ]
       }
+      cities: {
+        Row: {
+          area_codes: string[] | null
+          city_code: string
+          city_name: string
+          coordinates: unknown | null
+          country: string
+          created_at: string | null
+          cuisine: string[] | null
+          established_year: number | null
+          id: string
+          landmarks: string[] | null
+          nicknames: string[] | null
+          region: string | null
+          state_code: string | null
+          state_province: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          area_codes?: string[] | null
+          city_code: string
+          city_name: string
+          coordinates?: unknown | null
+          country?: string
+          created_at?: string | null
+          cuisine?: string[] | null
+          established_year?: number | null
+          id?: string
+          landmarks?: string[] | null
+          nicknames?: string[] | null
+          region?: string | null
+          state_code?: string | null
+          state_province?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          area_codes?: string[] | null
+          city_code?: string
+          city_name?: string
+          coordinates?: unknown | null
+          country?: string
+          created_at?: string | null
+          cuisine?: string[] | null
+          established_year?: number | null
+          id?: string
+          landmarks?: string[] | null
+          nicknames?: string[] | null
+          region?: string | null
+          state_code?: string | null
+          state_province?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       collaboration_comments: {
         Row: {
           content: string
@@ -1297,6 +1351,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      color_schemes: {
+        Row: {
+          accent_color: string | null
+          color_code: string
+          color_names: string[]
+          combo_name: string | null
+          contrast: string | null
+          created_at: string | null
+          id: string
+          pattern: string | null
+          primary_color: string
+          secondary_color: string
+          tertiary_color: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          color_code: string
+          color_names: string[]
+          combo_name?: string | null
+          contrast?: string | null
+          created_at?: string | null
+          id?: string
+          pattern?: string | null
+          primary_color: string
+          secondary_color: string
+          tertiary_color?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          color_code?: string
+          color_names?: string[]
+          combo_name?: string | null
+          contrast?: string | null
+          created_at?: string | null
+          id?: string
+          pattern?: string | null
+          primary_color?: string
+          secondary_color?: string
+          tertiary_color?: string | null
+        }
+        Relationships: []
       }
       color_themes: {
         Row: {
@@ -5191,6 +5287,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      style_definitions: {
+        Row: {
+          created_at: string | null
+          era: string | null
+          has_borders: boolean | null
+          has_gradients: boolean | null
+          has_shadows: boolean | null
+          id: string
+          style_code: string
+          style_name: string
+          textures: string[] | null
+          typography_style: string | null
+          typography_transform: string | null
+          typography_weight: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          era?: string | null
+          has_borders?: boolean | null
+          has_gradients?: boolean | null
+          has_shadows?: boolean | null
+          id?: string
+          style_code: string
+          style_name: string
+          textures?: string[] | null
+          typography_style?: string | null
+          typography_transform?: string | null
+          typography_weight?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          era?: string | null
+          has_borders?: boolean | null
+          has_gradients?: boolean | null
+          has_shadows?: boolean | null
+          id?: string
+          style_code?: string
+          style_name?: string
+          textures?: string[] | null
+          typography_style?: string | null
+          typography_transform?: string | null
+          typography_weight?: string | null
+        }
+        Relationships: []
       }
       support_messages: {
         Row: {
