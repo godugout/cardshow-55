@@ -23,7 +23,7 @@ import { NCAABig10Logo } from '@/components/home/navbar/NCAABig10Logo';
 
 const DesignGuide = () => {
   const [activeSection, setActiveSection] = useState('overview');
-  const { currentPalette, availablePalettes, setTheme } = useTeamTheme();
+  const { currentPalette, availablePalettes, setTheme, setLogoTheme } = useTeamTheme();
 
   const sidebarSections = [
     { id: 'overview', label: 'Brand Overview', icon: Layout, description: 'Mission, vision, and design philosophy' },
@@ -289,7 +289,8 @@ const DesignGuide = () => {
                     {availableLogos.map((logo, index) => (
                       <div 
                         key={logo.dnaCode} 
-                        className="bg-gradient-to-br from-card to-card/50 rounded-xl border-2 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in"
+                        onClick={() => setLogoTheme(logo.dnaCode)}
+                        className="bg-gradient-to-br from-card to-card/50 rounded-xl border-2 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in cursor-pointer group"
                         style={{ 
                           animationDelay: `${index * 100}ms`,
                           borderColor: logo.colorPalette[0] + '40'
@@ -307,16 +308,81 @@ const DesignGuide = () => {
                           />
                         </div>
                         <div className="space-y-2">
-                          <h4 className="text-sm font-bold text-crd-white group-hover:text-crd-blue transition-colors">
+                          <h4 className="text-sm font-bold text-crd-white group-hover:text-primary transition-colors">
                             {logo.displayName}
                           </h4>
                           <p className="text-xs text-crd-lightGray leading-relaxed">
                             {logo.description}
                           </p>
+                          <div className="flex items-center space-x-1">
+                            {logo.colorPalette.slice(0, 4).map((color, colorIndex) => (
+                              <div 
+                                key={colorIndex}
+                                className="w-3 h-3 rounded-full border border-crd-mediumGray/30 group-hover:scale-110 transition-transform"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                          <div className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                            Click to apply theme
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
+                </section>
+
+                {/* Current Theme Preview */}
+                <section className="space-y-8">
+                  <div className="space-y-4">
+                    <h2 className="text-2xl font-bold text-crd-white">Current Theme Preview</h2>
+                    <p className="text-crd-lightGray leading-relaxed">
+                      See how the selected theme affects different UI components across the application.
+                    </p>
+                  </div>
+
+                  <div className="grid lg:grid-cols-2 gap-8">
+                    <CRDCard className="p-6 space-y-6">
+                      <h3 className="text-lg font-bold text-foreground">Interactive Elements</h3>
+                      <div className="space-y-4">
+                        <div className="flex flex-wrap gap-3">
+                          <CRDButton variant="primary">Primary Action</CRDButton>
+                          <CRDButton variant="secondary">Secondary</CRDButton>
+                          <CRDButton variant="outline">Outline</CRDButton>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <CRDBadge variant="default">Default</CRDBadge>
+                          <CRDBadge variant="secondary">Secondary</CRDBadge>
+                          <CRDBadge variant="outline">Outline</CRDBadge>
+                        </div>
+                      </div>
+                    </CRDCard>
+
+                    <CRDCard className="p-6 space-y-6">
+                      <h3 className="text-lg font-bold text-foreground">Typography & Colors</h3>
+                      <div className="space-y-3">
+                        <div className="text-primary font-semibold">Primary Text Color</div>
+                        <div className="text-secondary">Secondary Text Color</div>
+                        <div className="text-muted-foreground">Muted Text Color</div>
+                        <div className="p-3 bg-accent rounded border">Accent Background</div>
+                      </div>
+                    </CRDCard>
+                  </div>
+
+                  {/* Show Current Palette */}
+                  {currentPalette && (
+                    <div className="text-center">
+                      <PalettePreview 
+                        palette={currentPalette} 
+                        size="lg" 
+                        showLabels={true}
+                        className="mx-auto"
+                      />
+                      <p className="text-sm text-muted-foreground mt-4">
+                        Current theme: {currentPalette.name}
+                      </p>
+                    </div>
+                  )}
                 </section>
 
                 {/* Logo Usage Guidelines */}
