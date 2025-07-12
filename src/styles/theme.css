@@ -385,7 +385,7 @@
   transition: all 0.3s ease;
 }
 
-/* Glass navbar effects for brightness control */
+/* Enhanced Glass Navbar Effects for Brightness Control */
 .glass-navbar {
   background: hsl(var(--theme-navbar-bg) / 0.85);
   backdrop-filter: blur(12px);
@@ -393,6 +393,7 @@
   border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.2);
   box-shadow: 0 4px 6px -1px hsl(var(--theme-navbar-bg) / 0.1);
   position: relative;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-navbar::before {
@@ -408,21 +409,63 @@
     hsl(var(--theme-accent) / 0.05) 100%);
   pointer-events: none;
   z-index: -1;
+  transition: all 0.5s ease;
+}
+
+/* Brightness Control Options */
+.glass-navbar-ultra-light {
+  background: linear-gradient(135deg,
+    hsl(0 0% 100% / 0.95) 0%,
+    hsl(var(--theme-navbar-bg) / 0.4) 50%,
+    hsl(0 0% 100% / 0.9) 100%);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.1);
+  box-shadow: 
+    0 8px 32px -8px hsl(var(--theme-navbar-bg) / 0.1),
+    0 0 0 1px hsl(0 0% 100% / 0.2);
 }
 
 .glass-navbar-light {
   background: linear-gradient(135deg,
     hsl(0 0% 100% / 0.9) 0%,
-    hsl(var(--theme-navbar-bg) / 0.7) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+    hsl(var(--theme-navbar-bg) / 0.6) 50%,
+    hsl(0 0% 100% / 0.85) 100%);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
   border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.15);
   box-shadow: 
-    0 4px 6px -1px hsl(var(--theme-navbar-bg) / 0.05),
+    0 4px 16px -4px hsl(var(--theme-navbar-bg) / 0.08),
+    0 0 0 1px hsl(0 0% 100% / 0.15);
+}
+
+.glass-navbar-medium {
+  background: linear-gradient(135deg,
+    hsl(var(--theme-navbar-bg) / 0.8) 0%,
+    hsl(0 0% 100% / 0.3) 50%,
+    hsl(var(--theme-navbar-bg) / 0.7) 100%);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.25);
+  box-shadow: 
+    0 4px 12px -2px hsl(var(--theme-navbar-bg) / 0.15),
     0 0 0 1px hsl(0 0% 100% / 0.1);
 }
 
-/* Enhanced glass effects with color rotation capability */
+.glass-navbar-dark {
+  background: linear-gradient(135deg,
+    hsl(var(--theme-navbar-bg) / 0.9) 0%,
+    hsl(0 0% 0% / 0.1) 50%,
+    hsl(var(--theme-navbar-bg) / 0.95) 100%);
+  backdrop-filter: blur(12px) saturate(100%);
+  -webkit-backdrop-filter: blur(12px) saturate(100%);
+  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.3);
+  box-shadow: 
+    0 4px 8px -1px hsl(var(--theme-navbar-bg) / 0.2),
+    0 0 0 1px hsl(0 0% 0% / 0.05);
+}
+
+/* Enhanced Glass Effects with Color Rotation Capability */
 .glass-with-tint {
   position: relative;
   overflow: hidden;
@@ -444,9 +487,66 @@
   pointer-events: none;
 }
 
+/* Color Rotation System */
+.color-rotate-1 {
+  --theme-accent: var(--theme-secondary);
+  --theme-navbar-border: var(--theme-secondary);
+}
+
+.color-rotate-2 {
+  --theme-accent: var(--theme-neutral);
+  --theme-navbar-border: var(--theme-neutral);
+}
+
+.color-rotate-3 {
+  --theme-accent: var(--theme-primary);
+  --theme-navbar-border: var(--theme-primary);
+}
+
+/* Advanced Color Rotation with HSL Shifting */
+.hue-shift-30 {
+  filter: hue-rotate(30deg);
+}
+
+.hue-shift-60 {
+  filter: hue-rotate(60deg);
+}
+
+.hue-shift-90 {
+  filter: hue-rotate(90deg);
+}
+
+.hue-shift-120 {
+  filter: hue-rotate(120deg);
+}
+
+.hue-shift-180 {
+  filter: hue-rotate(180deg);
+}
+
+.hue-shift-240 {
+  filter: hue-rotate(240deg);
+}
+
+.hue-shift-300 {
+  filter: hue-rotate(300deg);
+}
+
 @keyframes shimmer {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
+}
+
+@keyframes color-cycle {
+  0% { filter: hue-rotate(0deg); }
+  25% { filter: hue-rotate(90deg); }
+  50% { filter: hue-rotate(180deg); }
+  75% { filter: hue-rotate(270deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.color-cycle {
+  animation: color-cycle 8s ease-in-out infinite;
 }
 
 /* Dopamine hit visual effects */
