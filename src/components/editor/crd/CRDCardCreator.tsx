@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { Layers, Image, Type, Palette, Settings, Eye, Save, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
 import { InteractiveCardData, CardState } from '@/types/interactiveCard';
 import { CRDLayoutTab } from './tabs/CRDLayoutTab';
 import { CRDDesignTab } from './tabs/CRDDesignTab';
@@ -264,19 +265,16 @@ export const CRDCardCreator: React.FC<CRDCardCreatorProps> = ({
       <div className="relative z-10 h-full flex flex-col">
         {/* Header */}
         <div className="flex-shrink-0 h-20 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex flex-col">
-          {/* Top Row: Back Button, Centered Title, Action Buttons */}
+          {/* Top Row: CRDMKR Logo, Centered Title with Icon, Action Buttons */}
           <div className="flex items-center justify-between h-12">
-            {/* Left: Back Button */}
-            <button 
-              onClick={() => navigate('/create')}
-              className="hover:bg-crd-mediumGray/20 p-1 rounded transition-colors"
-              title="Back to Create"
-            >
-              <Layers className="w-6 h-6 text-crd-blue hover:text-crd-lightBlue transition-colors" />
-            </button>
+            {/* Left: CRDMKR Logo */}
+            <div className="flex items-center">
+              <CRDGradientLogo className="h-8" />
+            </div>
             
-            {/* Center: Title */}
-            <div className="flex-1 flex justify-center">
+            {/* Center: Blue Icon + Title */}
+            <div className="flex-1 flex justify-center items-center gap-2">
+              <Layers className="w-6 h-6 text-crd-blue" />
               <input 
                 type="text"
                 value={cardData.title}

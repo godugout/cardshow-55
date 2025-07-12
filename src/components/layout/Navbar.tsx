@@ -86,14 +86,6 @@ export const Navbar = () => {
             <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
               <LogoSelector onThemeChange={setCurrentTheme} />
             </div>
-            {isCRDRoute && (
-              <div className="flex items-center animate-fade-in">
-                <X className="w-4 h-4 text-themed-secondary/60 mx-1 transition-colors duration-200" />
-                <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
-                  <CRDGradientLogo />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Navigation Links with staggered animation */}
