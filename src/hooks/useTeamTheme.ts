@@ -76,7 +76,7 @@ export const useTeamTheme = () => {
     setCurrentPalette(palette);
   }, []);
 
-  // Set theme by ID
+  // Set theme by ID with enhanced fallback
   const setTheme = useCallback((themeId: string) => {
     const palette = getPaletteById(themeId) || 
                    availablePalettes.find(p => p.id === themeId);
@@ -85,8 +85,16 @@ export const useTeamTheme = () => {
       applyTheme(palette);
       // Save to localStorage for persistence
       localStorage.setItem('crd-theme', themeId);
+      console.log(`Applied theme: ${themeId}`);
     } else {
-      console.warn(`Theme not found: ${themeId}`);
+      console.warn(`Theme not found: ${themeId}. Available themes:`, availablePalettes.map(p => p.id));
+      // Fallback to default theme
+      const fallbackPalette = allPalettes.find(p => p.id === 'cardshow-basic') || allPalettes[0];
+      if (fallbackPalette) {
+        console.log(`Using fallback theme: ${fallbackPalette.id}`);
+        applyTheme(fallbackPalette);
+        localStorage.setItem('crd-theme', fallbackPalette.id);
+      }
     }
   }, [availablePalettes, applyTheme]);
 

@@ -37,41 +37,41 @@ const logoGroups = [
   {
     label: 'MLB Teams',
     logos: [
-      { name: 'CS_MLB_BAL_OBS', component: MLBBalOBSLogo, hoverColor: 'orange', themeId: 'bal-obs' },
-      { name: 'CS_MLB_CLE_RBS', component: CardshowRedBlueLogo, hoverColor: 'red', themeId: 'cle-rbs' },
-      { name: 'CS_MLB_LAD_BS', component: CardshowBlueLogo, hoverColor: 'blue', themeId: 'lad-bs' },
-      { name: 'CS_MLB_PIT_BBY', component: CardshowOrangeLogo, hoverColor: 'yellow', themeId: 'pit-bby' },
-      { name: 'CS_MLB_OAK', component: CardshowGreenLogo, hoverColor: 'green', themeId: 'oak-standard' },
-      { name: 'CS_MLB_MIA', component: CardshowBlueLogo, hoverColor: 'cyan', themeId: 'mia-standard' },
+      { name: 'CS_MLB_BAL_OBS', component: MLBBalOBSLogo, hoverColor: 'orange', themeId: 'cs_mlb_bal_obs' },
+      { name: 'CS_MLB_CLE_RBS', component: CardshowRedBlueLogo, hoverColor: 'red', themeId: 'cs_mlb_cle_rbs' },
+      { name: 'CS_MLB_LAD_BS', component: CardshowBlueLogo, hoverColor: 'blue', themeId: 'cs_mlb_lad_bs' },
+      { name: 'CS_MLB_PIT_BBY', component: CardshowOrangeLogo, hoverColor: 'yellow', themeId: 'cs_mlb_pit_bby' },
+      { name: 'CS_MLB_OAK', component: CardshowGreenLogo, hoverColor: 'green', themeId: 'cs_mlb_oak' },
+      { name: 'CS_MLB_MIA', component: CardshowBlueLogo, hoverColor: 'cyan', themeId: 'cs_mlb_mia' },
     ]
   },
   {
     label: 'MLB Classic Era',
     logos: [
-      { name: 'CS_MLB_CL_BOS_RBB', component: MLBBosRBBLogo, hoverColor: 'red', themeId: 'bos-rbb-classic' },
-      { name: 'CS_MLB_CL_SDP_70s', component: MLBPadres70sLogo, hoverColor: 'amber', themeId: 'sdp-70s-classic' },
-      { name: 'CS_MLB_CL_SEA_80s', component: MLBMariners80sLogo, hoverColor: 'cyan', themeId: 'sea-80s-classic' },
-      { name: 'CS_MLB_CL_OAK_00s', component: MLBAthletics00sLogo, hoverColor: 'green', themeId: 'oak-00s-classic' },
+      { name: 'CS_MLB_CL_BOS_RBB', component: MLBBosRBBLogo, hoverColor: 'red', themeId: 'cs_mlb_cl_bos_rbb' },
+      { name: 'CS_MLB_CL_SDP_70s', component: MLBPadres70sLogo, hoverColor: 'amber', themeId: 'cs_mlb_cl_sdp_70s' },
+      { name: 'CS_MLB_CL_SEA_80s', component: MLBMariners80sLogo, hoverColor: 'cyan', themeId: 'cs_mlb_cl_sea_80s' },
+      { name: 'CS_MLB_CL_OAK_00s', component: MLBAthletics00sLogo, hoverColor: 'green', themeId: 'cs_mlb_cl_oak_00s' },
     ]
   },
   {
     label: 'NCAA & Uniforms',
     logos: [
-      { name: 'CS_NCAA_BIG10', component: NCAABig10Logo, hoverColor: 'indigo', themeId: 'ncaa-big10' },
-      { name: 'CS_UNI_YBB', component: CardshowOrangeLogo, hoverColor: 'yellow', themeId: 'uni-ybb' },
-      { name: 'CS_UNI_WRB', component: CardshowRedBlueLogo, hoverColor: 'purple', themeId: 'uni-wrb' },
-      { name: 'CS_UNI_BB', component: CardshowBlueLogo, hoverColor: 'blue', themeId: 'uni-bb' },
+      { name: 'CS_NCAA_BIG10', component: NCAABig10Logo, hoverColor: 'indigo', themeId: 'cs_ncaa_big10' },
+      { name: 'CS_UNI_YBB', component: CardshowOrangeLogo, hoverColor: 'yellow', themeId: 'cs_uni_ybb' },
+      { name: 'CS_UNI_WRB', component: CardshowRedBlueLogo, hoverColor: 'purple', themeId: 'cs_uni_wrb' },
+      { name: 'CS_UNI_BB', component: CardshowBlueLogo, hoverColor: 'blue', themeId: 'cs_uni_bb' },
     ]
   },
   {
     label: 'Cardshow Originals',
     logos: [
-      { name: 'CRD_GRADIENT', component: CRDGradientLogo, hoverColor: 'cyan', themeId: 'crd-gradient' },
-      { name: 'CS_3D_WGB', component: CS3DWGBLogo, hoverColor: 'emerald', themeId: 'cs-3d-wgb' },
-      { name: 'CS_OLD_RS', component: CardshowVintageLogo, hoverColor: 'red', themeId: 'cs-old-rs' },
-      { name: 'CS_ORIG_WS', component: CSOrigWSLogo, hoverColor: 'gray', themeId: 'cs-orig-ws' },
-      { name: 'CS_SK_RB', component: CSSketchRBLogo, hoverColor: 'purple', themeId: 'cs-sk-rb' },
-      { name: 'CS_SK_RS', component: CSSketchRSLogo, hoverColor: 'emerald', themeId: 'cs-sk-rs' },
+      { name: 'CRD_GRADIENT', component: CRDGradientLogo, hoverColor: 'cyan', themeId: 'crd_gradient' },
+      { name: 'CS_3D_WGB', component: CS3DWGBLogo, hoverColor: 'emerald', themeId: 'cs_3d_wgb' },
+      { name: 'CS_OLD_RS', component: CardshowVintageLogo, hoverColor: 'red', themeId: 'cs_old_rs' },
+      { name: 'CS_ORIG_WS', component: CSOrigWSLogo, hoverColor: 'gray', themeId: 'cs_orig_ws' },
+      { name: 'CS_SK_RB', component: CSSketchRBLogo, hoverColor: 'purple', themeId: 'cs_sk_rb' },
+      { name: 'CS_SK_RS', component: CSSketchRSLogo, hoverColor: 'emerald', themeId: 'cs_sk_rs' },
     ]
   }
 ];
