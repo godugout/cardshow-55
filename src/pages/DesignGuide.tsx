@@ -981,40 +981,218 @@ const DesignGuide = () => {
                   </p>
                 </div>
 
-                {/* CRD:DNA Overview */}
+                {/* CRD:DNA System Overview */}
                 <section className="space-y-8">
                   <div className="space-y-4">
                     <h2 className="text-2xl font-bold text-crd-white">CRD:DNA System Overview</h2>
                     <p className="text-crd-lightGray leading-relaxed">
-                      Our revolutionary theming system allows fans to experience Cardshow in their team's colors, 
+                      Our revolutionary theming system features {cardshowLogoDatabase.length} curated logo themes with professional 4-color palettes, 
                       creating deeper emotional connections and brand loyalty while opening new revenue streams for teams and creators.
                     </p>
                   </div>
 
-                  <div className="grid md:grid-cols-3 gap-8">
-                    <CRDCard className="p-8 text-center space-y-6">
-                      <div className="text-4xl font-bold text-crd-blue">570+</div>
-                      <div className="space-y-2">
-                        <h3 className="text-lg font-semibold text-crd-white">Team Entries</h3>
-                        <p className="text-sm text-crd-lightGray">Professional sports teams, colleges, and esports organizations</p>
+                  {/* Dynamic Statistics */}
+                  <div className="grid md:grid-cols-4 gap-6">
+                    <CRDCard className="p-6 text-center space-y-4">
+                      <div className="text-3xl font-bold text-crd-blue">{cardshowLogoDatabase.length}</div>
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-crd-white">Logo Themes</h3>
+                        <p className="text-xs text-crd-lightGray">Professional curated collection</p>
                       </div>
                     </CRDCard>
 
-                    <CRDCard className="p-8 text-center space-y-6">
-                      <div className="text-4xl font-bold text-crd-green">12</div>
-                      <div className="space-y-2">
-                        <h3 className="text-lg font-semibold text-crd-white">Rarity Tiers</h3>
-                        <p className="text-sm text-crd-lightGray">From common themes to ultra-rare championship editions</p>
+                    <CRDCard className="p-6 text-center space-y-4">
+                      <div className="text-3xl font-bold text-crd-green">
+                        {[...new Set(cardshowLogoDatabase.map(logo => logo.category))].length}
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-crd-white">Categories</h3>
+                        <p className="text-xs text-crd-lightGray">Modern, Script, Bold, Fantasy, Retro</p>
                       </div>
                     </CRDCard>
 
-                    <CRDCard className="p-8 text-center space-y-6">
-                      <div className="text-4xl font-bold text-crd-purple">∞</div>
-                      <div className="space-y-2">
-                        <h3 className="text-lg font-semibold text-crd-white">Customization</h3>
-                        <p className="text-sm text-crd-lightGray">Unlimited possibilities with custom team creation tools</p>
+                    <CRDCard className="p-6 text-center space-y-4">
+                      <div className="text-3xl font-bold text-crd-orange">
+                        {cardshowLogoDatabase.filter(logo => logo.rarity === 'legendary').length}
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-crd-white">Legendary</h3>
+                        <p className="text-xs text-crd-lightGray">Premium rare themes</p>
                       </div>
                     </CRDCard>
+
+                    <CRDCard className="p-6 text-center space-y-4">
+                      <div className="text-3xl font-bold text-crd-purple">4</div>
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-crd-white">Color System</h3>
+                        <p className="text-xs text-crd-lightGray">Primary, Secondary, Accent, Neutral</p>
+                      </div>
+                    </CRDCard>
+                  </div>
+
+                  {/* 4-Color Palette System Visualization */}
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <h3 className="text-lg font-semibold text-crd-white">Professional 4-Color Palette System</h3>
+                      <p className="text-sm text-crd-lightGray">Each theme features carefully crafted color harmony for optimal brand application</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-4 gap-6">
+                      {[
+                        { 
+                          name: 'Primary', 
+                          description: 'Main brand color for logos and dominant elements',
+                          usage: 'Navbar backgrounds, primary buttons, logo colors',
+                          example: currentPalette?.colors.primary || '#45B7D1'
+                        },
+                        { 
+                          name: 'Secondary', 
+                          description: 'Supporting brand color for complementary elements',
+                          usage: 'Secondary buttons, borders, supporting text',
+                          example: currentPalette?.colors.secondary || '#7FB069'
+                        },
+                        { 
+                          name: 'Accent', 
+                          description: 'Action color for CTAs and interactive elements',
+                          usage: 'Call-to-action buttons, highlights, active states',
+                          example: currentPalette?.colors.accent || '#FF6B35'
+                        },
+                        { 
+                          name: 'Neutral', 
+                          description: 'Background and text support for readability',
+                          usage: 'Card backgrounds, readable text areas, overlays',
+                          example: currentPalette?.colors.neutral || '#F8FAFC'
+                        }
+                      ].map((color, index) => (
+                        <CRDCard key={index} className="p-6 space-y-4">
+                          <div className="flex items-center space-x-3">
+                            <div 
+                              className="w-12 h-12 rounded-xl border-2 border-white/20"
+                              style={{ backgroundColor: color.example }}
+                            />
+                            <div>
+                              <h4 className="font-semibold text-crd-white">{color.name}</h4>
+                              <div className="text-xs text-crd-lightGray font-mono">{color.example}</div>
+                            </div>
+                          </div>
+                          <p className="text-sm text-crd-lightGray leading-relaxed">{color.description}</p>
+                          <div className="text-xs text-crd-blue font-medium">{color.usage}</div>
+                        </CRDCard>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Enhanced Logo Showcase */}
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <h3 className="text-lg font-semibold text-crd-white">Interactive Logo Collection</h3>
+                      <p className="text-sm text-crd-lightGray">Click any logo to apply its 4-color theme across the entire interface</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                      {cardshowLogoDatabase.slice(0, 18).map((logo, index) => {
+                        const isActive = currentLogoCode === logo.dnaCode;
+                        const rarityColors = {
+                          common: 'text-crd-lightGray border-crd-mediumGray/30',
+                          uncommon: 'text-crd-green border-crd-green/30',
+                          rare: 'text-crd-blue border-crd-blue/30',
+                          legendary: 'text-crd-orange border-crd-orange/30'
+                        };
+                        
+                        return (
+                          <div 
+                            key={logo.dnaCode} 
+                            onClick={() => handleLogoSelect(logo)}
+                            className={`group cursor-pointer transition-all duration-300 rounded-xl border-2 p-4 space-y-3 ${
+                              isActive 
+                                ? 'bg-gradient-to-br from-crd-blue/20 to-crd-purple/20 border-crd-blue shadow-lg shadow-crd-blue/20' 
+                                : `hover:shadow-lg hover:scale-105 ${rarityColors[logo.rarity]}`
+                            }`}
+                          >
+                            <div className="aspect-square bg-crd-darkGray/50 rounded-lg p-2 overflow-hidden">
+                              <img 
+                                src={logo.imageUrl} 
+                                alt={logo.displayName}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <div className="text-xs font-semibold text-crd-white truncate">{logo.displayName}</div>
+                              
+                              {/* 4-Color Palette Preview */}
+                              <div className="flex space-x-1">
+                                <div 
+                                  className="w-3 h-3 rounded-full border border-white/20"
+                                  style={{ backgroundColor: logo.logoTheme.primary }}
+                                  title={`Primary: ${logo.logoTheme.primary}`}
+                                />
+                                <div 
+                                  className="w-3 h-3 rounded-full border border-white/20"
+                                  style={{ backgroundColor: logo.logoTheme.secondary }}
+                                  title={`Secondary: ${logo.logoTheme.secondary}`}
+                                />
+                                <div 
+                                  className="w-3 h-3 rounded-full border border-white/20"
+                                  style={{ backgroundColor: logo.logoTheme.accent }}
+                                  title={`Accent: ${logo.logoTheme.accent}`}
+                                />
+                                <div 
+                                  className="w-3 h-3 rounded-full border border-white/20"
+                                  style={{ backgroundColor: logo.logoTheme.neutral }}
+                                  title={`Neutral: ${logo.logoTheme.neutral}`}
+                                />
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <CRDBadge 
+                                  variant={logo.rarity === 'legendary' ? 'primary' : 'secondary'}
+                                  className="text-xs px-2 py-0.5"
+                                >
+                                  {logo.rarity}
+                                </CRDBadge>
+
+                                {isActive && (
+                                  <div className="text-xs text-crd-blue font-semibold">Active</div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {cardshowLogoDatabase.length > 18 && (
+                      <div className="text-center">
+                        <CRDButton variant="outline">
+                          View All {cardshowLogoDatabase.length} Logo Themes
+                        </CRDButton>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Rarity Distribution */}
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold text-crd-white text-center">Rarity Distribution</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[
+                        { rarity: 'common', color: 'text-crd-lightGray', bg: 'bg-crd-lightGray/10' },
+                        { rarity: 'uncommon', color: 'text-crd-green', bg: 'bg-crd-green/10' },
+                        { rarity: 'rare', color: 'text-crd-blue', bg: 'bg-crd-blue/10' },
+                        { rarity: 'legendary', color: 'text-crd-orange', bg: 'bg-crd-orange/10' }
+                      ].map((tier) => {
+                        const count = cardshowLogoDatabase.filter(logo => logo.rarity === tier.rarity).length;
+                        const percentage = Math.round((count / cardshowLogoDatabase.length) * 100);
+                        
+                        return (
+                          <div key={tier.rarity} className={`${tier.bg} p-4 rounded-lg text-center space-y-2`}>
+                            <div className={`text-2xl font-bold ${tier.color}`}>{count}</div>
+                            <div className="text-sm text-crd-white capitalize">{tier.rarity}</div>
+                            <div className="text-xs text-crd-lightGray">{percentage}% of collection</div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </section>
 
