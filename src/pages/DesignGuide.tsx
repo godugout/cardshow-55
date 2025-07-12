@@ -33,9 +33,9 @@ const DesignGuide = () => {
     <div className="min-h-screen bg-crd-darkest pt-16 transition-all duration-500">
       <div className="flex">
         {/* Sidebar */}
-        <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 card-themed border-r border-themed-subtle overflow-y-auto transition-all duration-500">
+        <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-crd-darkGray border-r border-crd-mediumGray/30 overflow-y-auto transition-all duration-500">
           <div className="p-6">
-            <h2 className="text-lg font-semibold text-themed-primary mb-6">Design System</h2>
+            <h2 className="text-lg font-semibold text-crd-white mb-6">Design System</h2>
             <nav className="space-y-2">
               {sidebarSections.map((section) => {
                 const Icon = section.icon;
@@ -45,11 +45,11 @@ const DesignGuide = () => {
                     onClick={() => setActiveSection(section.id)}
                     className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-all duration-300 ${
                       activeSection === section.id
-                        ? 'bg-themed-medium text-themed-primary border border-themed-light shadow-lg hover-themed'
-                        : 'text-themed-secondary hover:bg-themed-subtle hover:text-themed-primary hover:shadow-md'
+                        ? 'bg-crd-blue text-crd-white border border-crd-blue/50 shadow-lg'
+                        : 'text-crd-lightGray hover:bg-crd-mediumGray/50 hover:text-crd-white hover:shadow-md'
                     }`}
                   >
-                    <Icon size={16} className={activeSection === section.id ? 'accent-themed' : ''} />
+                    <Icon size={16} className={activeSection === section.id ? 'text-crd-white' : 'text-crd-lightGray'} />
                     <span className="text-sm font-medium">{section.label}</span>
                   </button>
                 );
@@ -63,13 +63,13 @@ const DesignGuide = () => {
           <div className="max-w-4xl">
             {/* Header */}
             <div className="mb-12 text-center">
-              <div className="text-xs font-semibold text-themed-secondary uppercase tracking-wide mb-2 transition-colors duration-300">
+              <div className="text-xs font-semibold text-crd-lightGray uppercase tracking-wide mb-2 transition-colors duration-300">
                 DESIGN SYSTEM
               </div>
               <h1 className="text-4xl font-bold text-crd-white mb-4">
                 CRD Design Guide
               </h1>
-              <p className="text-themed-secondary max-w-2xl mx-auto transition-colors duration-300">
+              <p className="text-crd-lightGray max-w-2xl mx-auto transition-colors duration-300">
                 Comprehensive documentation of Cardshow's design system, components, and patterns. Built
                 for consistency, accessibility, and exceptional user experiences.
               </p>
@@ -79,8 +79,8 @@ const DesignGuide = () => {
               <div className="space-y-12">
                 {/* Design System Overview */}
                 <section>
-                  <h2 className="text-2xl font-bold text-themed-primary mb-6 transition-colors duration-300">Design System Overview</h2>
-                  <p className="text-themed-secondary mb-8 transition-colors duration-300">
+                  <h2 className="text-2xl font-bold text-crd-white mb-6 transition-colors duration-300">Design System Overview</h2>
+                  <p className="text-crd-lightGray mb-8 transition-colors duration-300">
                     The CRD Design System is built on modern web technologies with a focus on dark aesthetics, glass morphism,
                     and premium user experiences. Every component follows consistent patterns for spacing, typography, and
                     interaction design.
@@ -89,14 +89,14 @@ const DesignGuide = () => {
                   {/* Feature Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                     {/* Color System */}
-                    <div className="card-themed rounded-2xl p-6 border border-themed-subtle hover:border-themed-strong transition-all duration-300">
+                    <div className="bg-crd-darkGray rounded-2xl p-6 border border-crd-mediumGray/30 hover:border-crd-blue/50 transition-all duration-300">
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-10 h-10 bg-themed-medium rounded-lg flex items-center justify-center shadow-lg">
-                          <Palette size={20} className="text-themed-primary" />
+                        <div className="w-10 h-10 bg-crd-mediumGray rounded-lg flex items-center justify-center shadow-lg">
+                          <Palette size={20} className="text-crd-blue" />
                         </div>
-                        <h3 className="text-lg font-semibold text-themed-primary">Color System</h3>
+                        <h3 className="text-lg font-semibold text-crd-white">Color System</h3>
                       </div>
-                      <p className="text-themed-secondary text-sm mb-4 leading-relaxed">
+                      <p className="text-crd-lightGray text-sm mb-4 leading-relaxed">
                         Comprehensive color palette with semantic tokens, gradients, and accessibility considerations.
                       </p>
                       <div className="flex space-x-2">
@@ -108,27 +108,27 @@ const DesignGuide = () => {
                     </div>
 
                     {/* Typography */}
-                    <div className="card-themed rounded-2xl p-6 border border-themed-subtle hover:border-themed-strong transition-all duration-300">
+                    <div className="bg-crd-darkGray rounded-2xl p-6 border border-crd-mediumGray/30 hover:border-crd-blue/50 transition-all duration-300">
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-10 h-10 bg-themed-medium rounded-lg flex items-center justify-center shadow-lg">
-                          <Type size={20} className="text-themed-primary" />
+                        <div className="w-10 h-10 bg-crd-mediumGray rounded-lg flex items-center justify-center shadow-lg">
+                          <Type size={20} className="text-crd-orange" />
                         </div>
-                        <h3 className="text-lg font-semibold text-themed-primary">Typography</h3>
+                        <h3 className="text-lg font-semibold text-crd-white">Typography</h3>
                       </div>
-                      <p className="text-themed-secondary text-sm mb-4 leading-relaxed">
+                      <p className="text-crd-lightGray text-sm mb-4 leading-relaxed">
                         Consistent type scale, font weights, and text hierarchy for optimal readability.
                       </p>
                       <div className="space-y-1">
-                        <div className="w-12 h-3 bg-themed-light rounded"></div>
-                        <div className="w-16 h-2 bg-themed-subtle rounded"></div>
-                        <div className="w-20 h-2 bg-themed-subtle rounded"></div>
+                        <div className="w-12 h-3 bg-crd-lightGray/30 rounded"></div>
+                        <div className="w-16 h-2 bg-crd-lightGray/20 rounded"></div>
+                        <div className="w-20 h-2 bg-crd-lightGray/20 rounded"></div>
                       </div>
                     </div>
 
                     {/* Interactive Elements */}
-                    <div className="glass-panel rounded-2xl p-6 border border-white/10 hover:border-primary/30 transition-all duration-300">
+                    <div className="bg-crd-darkGray rounded-2xl p-6 border border-crd-mediumGray/30 hover:border-crd-green/50 transition-all duration-300">
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-accent to-highlight rounded-lg flex items-center justify-center shadow-lg">
+                        <div className="w-10 h-10 bg-gradient-to-br from-crd-green to-crd-blue rounded-lg flex items-center justify-center shadow-lg">
                           <MousePointer size={20} className="text-white" />
                         </div>
                         <h3 className="text-lg font-semibold text-crd-white">Interactive Elements</h3>
@@ -137,16 +137,16 @@ const DesignGuide = () => {
                         Buttons, links, and form controls with consistent states and animations.
                       </p>
                       <div className="flex space-x-2">
-                        <div className="w-6 h-6 bg-primary rounded shadow-sm"></div>
-                        <div className="w-6 h-6 bg-secondary rounded shadow-sm"></div>
-                        <div className="w-6 h-6 bg-accent rounded shadow-sm"></div>
+                        <div className="w-6 h-6 bg-crd-blue rounded shadow-sm"></div>
+                        <div className="w-6 h-6 bg-crd-green rounded shadow-sm"></div>
+                        <div className="w-6 h-6 bg-crd-orange rounded shadow-sm"></div>
                       </div>
                     </div>
 
                     {/* Card Components */}
-                    <div className="glass-panel rounded-2xl p-6 border border-white/10 hover:border-primary/30 transition-all duration-300">
+                    <div className="bg-crd-darkGray rounded-2xl p-6 border border-crd-mediumGray/30 hover:border-crd-purple/50 transition-all duration-300">
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-highlight to-primary rounded-lg flex items-center justify-center shadow-lg">
+                        <div className="w-10 h-10 bg-gradient-to-br from-crd-purple to-crd-blue rounded-lg flex items-center justify-center shadow-lg">
                           <Layout size={20} className="text-white" />
                         </div>
                         <h3 className="text-lg font-semibold text-crd-white">Card Components</h3>
@@ -155,15 +155,15 @@ const DesignGuide = () => {
                         Glass morphism cards, creator boxes, and collection displays with depth and elegance.
                       </p>
                       <div className="space-y-2">
-                        <div className="h-3 bg-white/15 rounded shadow-sm"></div>
-                        <div className="h-2 bg-white/10 rounded shadow-sm"></div>
+                        <div className="h-3 bg-crd-lightGray/20 rounded shadow-sm"></div>
+                        <div className="h-2 bg-crd-lightGray/15 rounded shadow-sm"></div>
                       </div>
                     </div>
 
                     {/* Background Patterns */}
-                    <div className="glass-panel rounded-2xl p-6 border border-white/10 hover:border-primary/30 transition-all duration-300">
+                    <div className="bg-crd-darkGray rounded-2xl p-6 border border-crd-mediumGray/30 hover:border-crd-orange/50 transition-all duration-300">
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-lg">
+                        <div className="w-10 h-10 bg-gradient-to-br from-crd-orange to-crd-purple rounded-lg flex items-center justify-center shadow-lg">
                           <Paintbrush size={20} className="text-white" />
                         </div>
                         <h3 className="text-lg font-semibold text-crd-white">Background Patterns</h3>
@@ -172,16 +172,16 @@ const DesignGuide = () => {
                         Floating elements, gradients, and animated patterns that create visual depth.
                       </p>
                       <div className="grid grid-cols-3 gap-1">
-                        <div className="w-full h-3 bg-gradient-to-r from-primary to-secondary rounded shadow-sm"></div>
-                        <div className="w-full h-3 bg-gradient-to-r from-secondary to-accent rounded shadow-sm"></div>
-                        <div className="w-full h-3 bg-gradient-to-r from-accent to-primary rounded shadow-sm"></div>
+                        <div className="w-full h-3 bg-gradient-to-r from-crd-blue to-crd-green rounded shadow-sm"></div>
+                        <div className="w-full h-3 bg-gradient-to-r from-crd-green to-crd-orange rounded shadow-sm"></div>
+                        <div className="w-full h-3 bg-gradient-to-r from-crd-orange to-crd-purple rounded shadow-sm"></div>
                       </div>
                     </div>
 
                     {/* Code Examples */}
-                    <div className="glass-panel rounded-2xl p-6 border border-white/10 hover:border-primary/30 transition-all duration-300">
+                    <div className="bg-crd-darkGray rounded-2xl p-6 border border-crd-mediumGray/30 hover:border-crd-blue/50 transition-all duration-300">
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-secondary to-highlight rounded-lg flex items-center justify-center shadow-lg">
+                        <div className="w-10 h-10 bg-gradient-to-br from-crd-blue to-crd-purple rounded-lg flex items-center justify-center shadow-lg">
                           <Code2 size={20} className="text-white" />
                         </div>
                         <h3 className="text-lg font-semibold text-crd-white">Code Examples</h3>
@@ -191,13 +191,13 @@ const DesignGuide = () => {
                       </p>
                       <div className="space-y-1">
                         <div className="flex space-x-1">
-                          <div className="w-6 h-2 bg-primary rounded shadow-sm"></div>
-                          <div className="w-6 h-2 bg-secondary rounded shadow-sm"></div>
-                          <div className="w-6 h-2 bg-accent rounded shadow-sm"></div>
+                          <div className="w-6 h-2 bg-crd-blue rounded shadow-sm"></div>
+                          <div className="w-6 h-2 bg-crd-green rounded shadow-sm"></div>
+                          <div className="w-6 h-2 bg-crd-orange rounded shadow-sm"></div>
                         </div>
                         <div className="flex space-x-1">
-                          <div className="w-4 h-2 bg-white/30 rounded shadow-sm"></div>
-                          <div className="w-8 h-2 bg-white/30 rounded shadow-sm"></div>
+                          <div className="w-4 h-2 bg-crd-lightGray/30 rounded shadow-sm"></div>
+                          <div className="w-8 h-2 bg-crd-lightGray/30 rounded shadow-sm"></div>
                         </div>
                       </div>
                     </div>
@@ -206,23 +206,23 @@ const DesignGuide = () => {
 
                 {/* Key Principles */}
                 <section>
-                  <h2 className="text-2xl font-bold text-themed-primary mb-8 transition-colors duration-300">Key Principles</h2>
+                  <h2 className="text-2xl font-bold text-crd-white mb-8 transition-colors duration-300">Key Principles</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="text-center card-themed rounded-xl p-6 border border-themed-subtle hover:border-themed-strong transition-all duration-300">
+                    <div className="text-center bg-crd-darkGray rounded-xl p-6 border border-crd-mediumGray/30 hover:border-crd-blue/50 transition-all duration-300">
                       <h3 className="text-lg font-semibold text-crd-blue mb-3">Consistency</h3>
-                      <p className="text-themed-secondary text-sm leading-relaxed">
+                      <p className="text-crd-lightGray text-sm leading-relaxed">
                         Uniform patterns across all components and interactions.
                       </p>
                     </div>
-                    <div className="text-center card-themed rounded-xl p-6 border border-themed-subtle hover:border-themed-strong transition-all duration-300">
+                    <div className="text-center bg-crd-darkGray rounded-xl p-6 border border-crd-mediumGray/30 hover:border-crd-orange/50 transition-all duration-300">
                       <h3 className="text-lg font-semibold text-crd-orange mb-3">Accessibility</h3>
-                      <p className="text-themed-secondary text-sm leading-relaxed">
+                      <p className="text-crd-lightGray text-sm leading-relaxed">
                         WCAG compliant with proper contrast and keyboard navigation.
                       </p>
                     </div>
-                    <div className="text-center card-themed rounded-xl p-6 border border-themed-subtle hover:border-themed-strong transition-all duration-300">
+                    <div className="text-center bg-crd-darkGray rounded-xl p-6 border border-crd-mediumGray/30 hover:border-crd-green/50 transition-all duration-300">
                       <h3 className="text-lg font-semibold text-crd-green mb-3">Performance</h3>
-                      <p className="text-themed-secondary text-sm leading-relaxed">
+                      <p className="text-crd-lightGray text-sm leading-relaxed">
                         Optimized components with minimal bundle impact.
                       </p>
                     </div>
@@ -238,7 +238,7 @@ const DesignGuide = () => {
                 {/* CRD Brand Identity */}
                 <section>
                   <h3 className="text-xl font-semibold text-crd-white mb-6">CRD Brand Identity</h3>
-                  <div className="glass-panel rounded-2xl p-8 border border-white/10">
+                  <div className="bg-crd-darkGray rounded-2xl p-8 border border-crd-mediumGray/30">
                     <div className="text-center mb-6">
                       <CRDGradientLogo className="mx-auto mb-4" />
                       <h4 className="text-lg font-medium text-crd-white mb-2">Primary CRD Logo</h4>
@@ -247,15 +247,15 @@ const DesignGuide = () => {
                       </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                      <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 text-center border border-white/5">
+                      <div className="bg-crd-dark rounded-lg p-4 text-center border border-crd-mediumGray/20">
                         <div className="text-crd-lightGray mb-1 font-medium">File Path</div>
                         <div className="font-mono text-crd-blue text-xs">/lovable-uploads/7697ffa5...</div>
                       </div>
-                      <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 text-center border border-white/5">
+                      <div className="bg-crd-dark rounded-lg p-4 text-center border border-crd-mediumGray/20">
                         <div className="text-crd-lightGray mb-1 font-medium">Component</div>
                         <div className="font-mono text-crd-green text-xs">CRDGradientLogo</div>
                       </div>
-                      <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 text-center border border-white/5">
+                      <div className="bg-crd-dark rounded-lg p-4 text-center border border-crd-mediumGray/20">
                         <div className="text-crd-lightGray mb-1 font-medium">Usage</div>
                         <div className="text-crd-orange text-xs">Primary branding</div>
                       </div>
@@ -343,7 +343,7 @@ const DesignGuide = () => {
                 <section>
                   <h3 className="text-xl font-semibold text-crd-white mb-6">Usage Guidelines</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="glass-panel rounded-xl p-6 border border-white/10">
+                    <div className="bg-crd-darkGray rounded-xl p-6 border border-crd-mediumGray/30">
                       <h4 className="text-lg font-medium text-crd-white mb-4">When to Use CRD Logo</h4>
                       <ul className="text-crd-lightGray text-sm space-y-2 leading-relaxed">
                         <li>• Platform-wide branding</li>
@@ -353,7 +353,7 @@ const DesignGuide = () => {
                         <li>• System architecture</li>
                       </ul>
                     </div>
-                    <div className="glass-panel rounded-xl p-6 border border-white/10">
+                    <div className="bg-crd-darkGray rounded-xl p-6 border border-crd-mediumGray/30">
                       <h4 className="text-lg font-medium text-crd-white mb-4">When to Use Cardshow Logos</h4>
                       <ul className="text-crd-lightGray text-sm space-y-2 leading-relaxed">
                         <li>• User-facing applications</li>
@@ -369,7 +369,7 @@ const DesignGuide = () => {
                 {/* Technical Specifications */}
                 <section>
                   <h3 className="text-xl font-semibold text-crd-white mb-6">Technical Specifications</h3>
-                  <div className="glass-panel rounded-xl p-6 border border-white/10">
+                  <div className="bg-crd-darkGray rounded-xl p-6 border border-crd-mediumGray/30">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div>
                         <h4 className="text-lg font-medium text-crd-white mb-3">Logo Sizing</h4>
