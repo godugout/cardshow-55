@@ -456,6 +456,11 @@
   display: none;
 }
 
+/* Critical Missing Utility Class */
+.rounded-pill {
+  border-radius: 9999px;
+}
+
 /* Extended Component Theming Classes */
 .border-themed { border-color: hsl(var(--theme-accent) / 0.3); }
 .border-themed-light { border-color: hsl(var(--theme-accent) / 0.1); }

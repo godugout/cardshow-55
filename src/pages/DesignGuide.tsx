@@ -179,7 +179,7 @@ const DesignGuide = () => {
                       <Download size={16} className="mr-2 group-hover:animate-bounce" />
                       Download Assets
                     </CRDButton>
-                    <CRDButton variant="outline">
+                    <CRDButton variant="ghost">
                       <Share2 size={16} className="mr-2" />
                       Share Guide
                     </CRDButton>

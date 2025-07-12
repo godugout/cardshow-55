@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Plus, Home, ImageIcon, Palette, X, Code2 } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
 import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
 import { useEnhancedNavbar } from '@/hooks/useEnhancedNavbar';
+import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { DevLoginButton } from '@/components/auth/DevLoginButton';
 
 const getNavbarColorClasses = (color: string) => {
@@ -27,7 +28,7 @@ const getNavbarColorClasses = (color: string) => {
 
 export const Navbar = () => {
   const location = useLocation();
-  const [currentTheme, setCurrentTheme] = useState('sf-orange');
+  const { currentPalette } = useTeamTheme();
   
   // Get prefersReducedMotion first
   const prefersReducedMotion = typeof window !== 'undefined' && 
@@ -85,7 +86,7 @@ export const Navbar = () => {
             ${!prefersReducedMotion && isScrolled ? 'drop-shadow-sm' : ''}
           `}>
             <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
-              <LogoSelector onThemeChange={setCurrentTheme} />
+              <LogoSelector />
             </div>
           </div>
 

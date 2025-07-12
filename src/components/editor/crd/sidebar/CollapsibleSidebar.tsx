@@ -40,11 +40,11 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
     >
       {/* Collapsed Icon Strip */}
       {isCollapsed && (
-        <div className="w-12 h-full bg-crd-darker/80 backdrop-blur-md border border-crd-mediumGray/30 shadow-lg flex flex-col transition-all duration-300">
+        <div className="w-12 h-full bg-crd-darker backdrop-blur-md border border-crd-mediumGray/50 shadow-lg flex flex-col transition-all duration-300">
           {/* Toggle Button */}
           <button
             onClick={onToggle}
-            className="w-full h-12 flex items-center justify-center text-crd-lightGray hover:text-[hsl(var(--theme-accent))] hover:bg-[hsl(var(--theme-accent)/0.1)] transition-all duration-200 border-b border-[hsl(var(--theme-accent)/0.1)]"
+            className="w-full h-12 flex items-center justify-center text-crd-lightGray hover:text-crd-blue hover:bg-crd-blue/10 transition-all duration-200 border-b border-crd-mediumGray/30"
           >
             {collapseIcon}
           </button>
@@ -58,17 +58,17 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
 
       {/* Expanded Panel */}
       {!isCollapsed && (
-        <div className={`w-full h-full bg-crd-darker/60 backdrop-blur-md border border-crd-mediumGray/30 shadow-2xl flex flex-col transition-all duration-300 ${
-          side === 'left' ? 'border-r-2 border-r-[hsl(var(--theme-accent)/0.3)]' : 'border-l-2 border-l-[hsl(var(--theme-accent)/0.3)]'
+        <div className={`w-full h-full bg-crd-darker backdrop-blur-md border border-crd-mediumGray/50 shadow-2xl flex flex-col transition-all duration-300 ${
+          side === 'left' ? 'border-r-2 border-r-crd-blue/30' : 'border-l-2 border-l-crd-blue/30'
         }`}>
           {/* Toggle Button Header */}
-          <div className="flex-shrink-0 h-12 flex items-center justify-between px-4 border-b border-[hsl(var(--theme-accent)/0.1)]">
+          <div className="flex-shrink-0 h-12 flex items-center justify-between px-4 border-b border-crd-mediumGray/30">
             <div className="text-crd-white text-sm font-medium">
               {side === 'left' ? 'Tools' : 'Properties'}
             </div>
             <button
               onClick={onToggle}
-              className="p-1 text-crd-lightGray hover:text-[hsl(var(--theme-accent))] hover:bg-[hsl(var(--theme-accent)/0.1)] rounded transition-all duration-200"
+              className="p-1 text-crd-lightGray hover:text-crd-blue hover:bg-crd-blue/10 rounded transition-all duration-200"
             >
               {collapseIcon}
             </button>
