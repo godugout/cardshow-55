@@ -54,10 +54,10 @@ const CreateChoiceContent: React.FC = () => {
           {/* Hero Content */}
           <div className="relative z-10">
             <Hero3
-              caption="CHOOSE YOUR CREATION MODE"
-              heading="What type of card do you want to create?"
-              bodyText="Choose between traditional CRD Collectibles optimized for collecting and trading, or interactive story cards with advanced animations and scripting."
-              ctaText="Start Creating"
+              caption="CRAFT YOUR VISION"
+              heading="Transform your artistry into collectible masterpieces"
+              bodyText="Every great card begins with a creator's vision. Choose your medium and bring your art to life with professional tools designed for the modern digital artist and collector."
+              ctaText="Begin Creating"
               ctaLink="/create/crd"
               className="!pt-0 !px-0"
             />
@@ -182,7 +182,7 @@ const CreateChoiceContent: React.FC = () => {
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <Typography variant="body" className="text-crd-lightGray text-sm">
-            Not sure which to choose? Start with CRD Collectibles for traditional collecting, or STRY Capsules for interactive experiences.
+            New to card creation? Start with CRD Collectibles to master the fundamentals, then explore STRY Capsules for advanced interactive experiences.
           </Typography>
         </div>
 
