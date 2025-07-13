@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CRDButton, Typography, Hero3, CRDBadge } from '@/components/ui/design-system';
+import { CRDButton, Typography, CRDBadge } from '@/components/ui/design-system';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { Sparkles, Layers, ArrowRight } from 'lucide-react';
 import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
 import { CRDEditorProvider, useCRDEditor } from '@/contexts/CRDEditorContext';
 import { PreloadedCRDEditor } from '@/components/editor/crd/PreloadedCRDEditor';
+import { CreatePageHero } from '@/components/create/CreatePageHero';
 import type { CardData } from '@/hooks/useCardEditor';
 
 const CreateChoiceContent: React.FC = () => {
@@ -39,30 +40,8 @@ const CreateChoiceContent: React.FC = () => {
   return (
     <NavbarAwareContainer className="h-screen bg-crd-darkest overflow-hidden">
       <div className={`h-full max-w-7xl mx-auto ${isMobile ? 'px-5 py-8' : 'px-12 py-16'} overflow-y-auto`}>
-        {/* Hero Section with Background Illustration */}
-        <div className="relative mb-16">
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0">
-            <img 
-              src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&h=800&fit=crop&crop=center&auto=format"
-              alt="Creative workspace"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/50 via-crd-darkest/30 to-crd-darkest/70"></div>
-          </div>
-          
-          {/* Hero Content */}
-          <div className="relative z-10">
-            <Hero3
-              caption="CRAFT YOUR VISION"
-              heading="Transform your artistry into collectible masterpieces"
-              bodyText="Every great card begins with a creator's vision. Choose your medium and bring your art to life with professional tools designed for the modern digital artist and collector."
-              ctaText="Begin Creating"
-              ctaLink="/create/crd"
-              className="!pt-0 !px-0"
-            />
-          </div>
-        </div>
+        {/* New Hero Section */}
+        <CreatePageHero />
 
         {/* Creation Options */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -117,13 +96,13 @@ const CreateChoiceContent: React.FC = () => {
             </div>
           </div>
 
-          {/* STRY Capsules - Disabled/Coming Soon with Hover Effects */}
-          <div className="relative bg-gradient-to-br from-crd-mediumGray/10 to-crd-mediumGray/5 border border-crd-mediumGray/20 rounded-2xl p-8 cursor-not-allowed transition-all duration-300 hover:from-crd-mediumGray/20 hover:to-crd-mediumGray/10 hover:border-crd-mediumGray/40 group">
-            {/* Coming Soon Badge with Glow Effect */}
+          {/* STRY Capsules - Enhanced hover effects */}
+          <div className="relative bg-gradient-to-br from-crd-mediumGray/10 to-crd-mediumGray/5 border border-crd-mediumGray/20 rounded-2xl p-8 cursor-not-allowed transition-all duration-300 hover:from-crd-mediumGray/25 hover:to-crd-mediumGray/15 hover:border-crd-mediumGray/50 hover:brightness-125 group">
+            {/* Coming Soon Badge with Enhanced Glow Effect */}
             <div className="absolute -top-2 -right-2 z-10">
               <CRDBadge 
                 variant="warning" 
-                className="bg-crd-orange text-white font-semibold transition-all duration-300 group-hover:shadow-lg group-hover:shadow-crd-orange/50 group-hover:scale-105"
+                className="bg-crd-orange text-white font-semibold transition-all duration-300 group-hover:shadow-xl group-hover:shadow-crd-orange/60 group-hover:scale-110 group-hover:brightness-125"
               >
                 Coming Soon
               </CRDBadge>
