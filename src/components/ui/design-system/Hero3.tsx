@@ -58,7 +58,18 @@ export const Hero3: React.FC<Hero3Props> = ({
             variant="h1"
             className="text-[40px] font-black leading-[48px] tracking-[-0.4px] mt-2 max-md:max-w-full text-center mb-4"
           >
-            {heading}
+            {heading.includes('\n') ? (
+              <>
+                {heading.split('\n').map((line, index) => (
+                  <span key={index} className={index === 0 ? "lg:whitespace-nowrap" : ""}>
+                    {line}
+                    {index < heading.split('\n').length - 1 && <br />}
+                  </span>
+                ))}
+              </>
+            ) : (
+              heading
+            )}
           </Typography>
           <Typography 
             variant="body" 
