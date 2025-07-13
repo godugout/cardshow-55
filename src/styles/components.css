@@ -128,7 +128,7 @@
     @apply relative overflow-hidden shadow-lg transition-all duration-300;
     background: linear-gradient(135deg, hsl(142, 70%, 45%), hsl(180, 75%, 50%), hsl(200, 80%, 55%), hsl(219, 70%, 60%), hsl(260, 40%, 65%));
     background-size: 300% 300%;
-    animation: liquid-gradient-green-blue-purple 12s ease-in-out infinite;
+    animation: liquid-gradient-green-blue-purple 18s ease-in-out infinite;
   }
 
   .liquid-gradient-blue-purple:hover {

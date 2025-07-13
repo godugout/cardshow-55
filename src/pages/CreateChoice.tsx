@@ -102,7 +102,17 @@ const CreateChoiceContent: React.FC = () => {
             <div className="absolute -top-2 -right-2 z-10">
               <CRDBadge 
                 variant="warning" 
-                className="bg-crd-orange text-white font-semibold transition-all duration-300 group-hover:shadow-xl group-hover:shadow-crd-orange/60 group-hover:scale-110 group-hover:brightness-125"
+                className="bg-crd-orange text-white font-semibold transition-all duration-300 group-hover:brightness-125 group-hover:scale-110"
+                style={{
+                  filter: 'drop-shadow(0 0 8px transparent)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.filter = 'drop-shadow(0 0 15px rgba(255, 165, 0, 0.6))';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.filter = 'drop-shadow(0 0 8px transparent)';
+                }}
               >
                 Coming Soon
               </CRDBadge>
