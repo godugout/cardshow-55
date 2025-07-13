@@ -135,7 +135,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
       {isOpen && (
         <div 
           ref={dropdownRef}
-          className="absolute top-full left-0 mt-2 w-[600px] max-h-[500px] bg-background/95 backdrop-blur-xl border border-border/30 rounded-xl shadow-xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200"
+          className="absolute top-full left-0 mt-2 w-[800px] max-h-[500px] bg-background/95 backdrop-blur-xl border border-border/30 rounded-xl shadow-xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200"
         >
           {/* Header */}
           <div className="p-4 border-b border-border/20 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5">
@@ -148,8 +148,8 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
           </div>
 
           {/* Logo Grid */}
-          <div className="p-4 overflow-y-auto max-h-[400px]">
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="p-6 overflow-y-auto max-h-[400px]">
+            <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-8 gap-4">
               {availableLogos.map((logo) => {
                 const isSelected = selectedLogo.dnaCode === logo.dnaCode;
                 const theme = getThemeByDNA(logo.dnaCode);
