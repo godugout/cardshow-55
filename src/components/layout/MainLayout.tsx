@@ -7,7 +7,7 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NotificationProvider } from '@/components/common/NotificationCenter';
 
 // Simple fallback component for when things go wrong
-const AppFallback: React.FC<{ error?: Error; resetError?: () => void }> = ({ error, resetError }) => (
+const AppFallback: React.FC<{ error: Error; retry: () => void }> = ({ error, retry }) => (
   <div className="min-h-screen bg-[#141416] flex items-center justify-center p-4">
     <div className="text-center max-w-md">
       <h1 className="text-2xl font-bold text-white mb-4">Loading Issue</h1>
@@ -23,7 +23,7 @@ const AppFallback: React.FC<{ error?: Error; resetError?: () => void }> = ({ err
         </details>
       )}
       <button 
-        onClick={resetError || (() => window.location.reload())} 
+        onClick={retry} 
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         Reload App
@@ -32,13 +32,13 @@ const AppFallback: React.FC<{ error?: Error; resetError?: () => void }> = ({ err
   </div>
 );
 
-const PageFallback: React.FC<{ error?: Error; resetError?: () => void }> = ({ error, resetError }) => (
+const PageFallback: React.FC<{ error: Error; retry: () => void }> = ({ error, retry }) => (
   <div className="min-h-screen bg-[#141416] flex items-center justify-center">
     <div className="text-center text-white">
       <h2 className="text-xl mb-4">Page Loading Error</h2>
       <p className="text-gray-400 mb-4">This page encountered an issue.</p>
       <button 
-        onClick={resetError || (() => window.location.href = '/')}
+        onClick={retry}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         Go Home
@@ -81,7 +81,7 @@ export const MainLayout = () => {
 
   // Show initialization error
   if (initError) {
-    return <AppFallback error={initError} />;
+    return <AppFallback error={initError} retry={() => window.location.reload()} />;
   }
 
   // Show loading state
@@ -98,9 +98,9 @@ export const MainLayout = () => {
 
   return (
     <NotificationProvider>
-      <ErrorBoundary fallback={AppFallback}>
+      <ErrorBoundary fallbackComponent={AppFallback}>
         <Navbar />
-        <ErrorBoundary fallback={PageFallback}>
+        <ErrorBoundary fallbackComponent={PageFallback}>
           <div className="outlet-container">
             <Outlet />
           </div>
