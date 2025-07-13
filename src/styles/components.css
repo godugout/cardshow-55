@@ -123,30 +123,30 @@
     }
   }
 
-  /* Main green-blue-purple liquid gradient with slower animation */
+  /* Main green-blue-purple liquid gradient with slower default animation */
   .liquid-gradient-blue-purple {
     @apply relative overflow-hidden shadow-lg transition-all duration-300;
-    background: linear-gradient(135deg, hsl(142, 70%, 45%), hsl(200, 80%, 55%), hsl(219, 70%, 60%), hsl(260, 40%, 65%));
+    background: linear-gradient(135deg, hsl(142, 70%, 45%), hsl(180, 75%, 50%), hsl(200, 80%, 55%), hsl(219, 70%, 60%), hsl(260, 40%, 65%));
     background-size: 300% 300%;
-    animation: liquid-gradient-green-blue-purple 8s ease-in-out infinite;
+    animation: liquid-gradient-green-blue-purple 12s ease-in-out infinite;
   }
 
   .liquid-gradient-blue-purple:hover {
     @apply shadow-xl;
-    background: linear-gradient(135deg, hsl(142, 75%, 50%), hsl(200, 85%, 60%), hsl(219, 75%, 65%), hsl(260, 45%, 70%));
+    background: linear-gradient(135deg, hsl(142, 75%, 50%), hsl(180, 80%, 55%), hsl(200, 85%, 60%), hsl(219, 75%, 65%), hsl(260, 45%, 70%));
     background-size: 350% 350%;
     animation: liquid-gradient-green-blue-purple 5s ease-in-out infinite;
   }
 
   /* Subtle green-blue-purple gradient for cards */
   .gradient-blue-purple-subtle {
-    background: linear-gradient(135deg, hsl(142, 60%, 45%), hsl(200, 70%, 55%), hsl(219, 60%, 60%));
+    background: linear-gradient(135deg, hsl(142, 60%, 45%), hsl(180, 70%, 50%), hsl(200, 70%, 55%), hsl(219, 60%, 60%));
   }
 
   /* Active state gradient */
   .gradient-blue-purple-active {
     @apply shadow-md;
-    background: linear-gradient(135deg, hsl(142, 70%, 50%), hsl(200, 80%, 60%), hsl(219, 70%, 65%));
+    background: linear-gradient(135deg, hsl(142, 70%, 50%), hsl(180, 75%, 55%), hsl(200, 80%, 60%), hsl(219, 70%, 65%));
     animation: liquid-gradient-green-blue-purple 6s ease-in-out infinite;
   }
 
