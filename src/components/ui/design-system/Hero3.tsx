@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
-import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
+
 import type { Tables } from '@/integrations/supabase/types';
 
 type DbCard = Tables<'cards'>;
@@ -31,7 +31,6 @@ export const Hero3: React.FC<Hero3Props> = ({
   className = '',
   onCardClick
 }) => {
-  const { isMobile } = useResponsiveLayout();
   const navigate = useNavigate();
 
   const handleCardClick = (card: DbCard) => {
@@ -43,8 +42,8 @@ export const Hero3: React.FC<Hero3Props> = ({
   };
 
   return (
-    <div className={`items-center bg-crd-darkest flex w-full flex-col overflow-hidden text-center pt-32 ${isMobile ? 'px-5' : 'px-[120px]'} max-md:max-w-full max-md:pt-[100px] ${className}`}>
-      <div className="flex w-full max-w-[1200px] flex-col items-center max-md:max-w-full">
+    <div className={`items-center bg-crd-darkest flex w-full flex-col overflow-hidden text-center pt-20 md:pt-24 lg:pt-32 ${className}`}>
+      <div className="flex w-full flex-col items-center">
         {/* Main Hero Content */}
         <div className="flex w-full flex-col items-center mb-12">
           <Typography 
@@ -56,7 +55,7 @@ export const Hero3: React.FC<Hero3Props> = ({
           <Typography 
             as="h1" 
             variant="h1"
-            className="text-[36px] lg:text-[40px] font-black leading-[44px] lg:leading-[48px] tracking-[-0.4px] mt-2 text-center mb-4 text-white"
+            className="text-[32px] md:text-[36px] lg:text-[40px] font-black leading-[38px] md:leading-[44px] lg:leading-[48px] tracking-[-0.4px] mt-2 text-center mb-4 text-white"
           >
             <div className="whitespace-nowrap">Create, collect, and trade card art</div>
             <div>with stunning 3D effects</div>
@@ -71,7 +70,7 @@ export const Hero3: React.FC<Hero3Props> = ({
 
         {/* Featured Cards Ticker Carousel */}
         {showFeaturedCards && featuredCards.length > 0 && (
-          <div className="w-screen mb-12 overflow-hidden -mx-[120px] max-md:-mx-5">
+          <div className="w-screen mb-12 overflow-hidden">
             <Typography variant="h3" className="text-white mb-6 text-center">
               Featured Creations
             </Typography>
