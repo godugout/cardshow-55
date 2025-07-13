@@ -71,21 +71,20 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
             <div className="flex items-center gap-2">
               <span className="text-xs text-crd-lightGray font-medium">View:</span>
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <CRDButton variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Select Grid Type">
-                    {(() => {
-                      const currentOption = gridOptions.find(option => option.value === (showGrid ? gridType : null));
-                      const Icon = currentOption?.icon || X;
-                      return (
-                        <>
-                          <Icon className={`w-3 h-3 mr-1 ${currentOption?.color || 'text-gray-400'}`} />
-                          {currentOption?.label || 'None'}
-                          <ChevronDown className="w-3 h-3 ml-1" />
-                        </>
-                      );
-                    })()}
-                  </CRDButton>
-                </DropdownMenuTrigger>
+                 <DropdownMenuTrigger asChild>
+                   <CRDButton variant="outline" size="sm" className="h-8 w-8 p-0 bg-white/5 backdrop-blur-sm border-white/20" title="Select Grid Type">
+                     {(() => {
+                       const currentOption = gridOptions.find(option => option.value === (showGrid ? gridType : null));
+                       const Icon = currentOption?.icon || X;
+                       return (
+                         <>
+                           <Icon className={`w-4 h-4 text-green-400`} />
+                           <ChevronDown className="w-3 h-3 absolute -bottom-0.5 -right-0.5 text-green-400" />
+                         </>
+                       );
+                     })()}
+                   </CRDButton>
+                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-crd-darker border-crd-mediumGray/30 min-w-[140px]">
                   {gridOptions.map((option) => {
                     const Icon = option.icon;
@@ -110,9 +109,9 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              <CRDButton variant={showRulers ? "primary" : "ghost"} size="sm" onClick={onRulersToggle} className="h-8 w-8 p-0" title="Toggle Rulers">
-                <Ruler className="w-3 h-3" />
-              </CRDButton>
+               <CRDButton variant="outline" size="sm" onClick={onRulersToggle} className={`h-8 w-8 p-0 bg-white/5 backdrop-blur-sm border-white/20 ${showRulers ? 'border-green-400/50' : ''}`} title="Toggle Rulers">
+                 <Ruler className={`w-4 h-4 ${showRulers ? 'text-green-400' : 'text-green-400'}`} />
+               </CRDButton>
             </div>
 
             <div className="w-px h-6 bg-crd-mediumGray/30" />
@@ -144,16 +143,14 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
           {/* Interaction Controls */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-crd-lightGray font-medium">Mode:</span>
-            <div className="flex bg-crd-mediumGray/10 rounded-lg p-0.5">
-              <CRDButton variant={!isPanning ? "primary" : "ghost"} size="sm" onClick={() => isPanning && onPanToggle()} className="h-7 px-3 text-xs" title="Edit Mode - Modify card elements with 3D perspective (Space to toggle)">
-                <Edit3 className="w-3 h-3 mr-1" />
-                Edit
-              </CRDButton>
-              <CRDButton variant={isPanning ? "primary" : "ghost"} size="sm" onClick={() => !isPanning && onPanToggle()} className="h-7 px-3 text-xs" title="Pan Mode - Drag to move canvas view (Space to toggle)">
-                <Move className="w-3 h-3 mr-1" />
-                Pan
-              </CRDButton>
-            </div>
+             <div className="flex bg-white/5 rounded-lg p-0.5 backdrop-blur-sm border border-white/20">
+               <CRDButton variant="outline" size="sm" onClick={() => isPanning && onPanToggle()} className={`h-7 w-8 p-0 bg-white/5 backdrop-blur-sm border-white/20 ${!isPanning ? 'border-green-400/50' : ''}`} title="Edit Mode - Modify card elements with 3D perspective (Space to toggle)">
+                 <Edit3 className={`w-4 h-4 ${!isPanning ? 'text-green-400' : 'text-green-400'}`} />
+               </CRDButton>
+               <CRDButton variant="outline" size="sm" onClick={() => !isPanning && onPanToggle()} className={`h-7 w-8 p-0 bg-white/5 backdrop-blur-sm border-white/20 ${isPanning ? 'border-green-400/50' : ''}`} title="Pan Mode - Drag to move canvas view (Space to toggle)">
+                 <Move className={`w-4 h-4 ${isPanning ? 'text-green-400' : 'text-green-400'}`} />
+               </CRDButton>
+             </div>
             
             
           </div>
