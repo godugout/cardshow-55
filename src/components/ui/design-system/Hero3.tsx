@@ -58,9 +58,8 @@ export const Hero3: React.FC<Hero3Props> = ({
             variant="h1"
             className="text-[40px] font-black leading-[48px] tracking-[-0.4px] mt-2 max-md:max-w-full text-center mb-4 text-white"
           >
-            <span className="whitespace-nowrap">Create, collect, and trade card art</span>
-            <br />
-            <span>with stunning 3D effects</span>
+            <div className="whitespace-nowrap">Create, collect, and trade card art</div>
+            <div>with stunning 3D effects</div>
           </Typography>
           <Typography 
             variant="body" 
