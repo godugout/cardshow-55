@@ -166,13 +166,13 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                   >
                     <div className="space-y-3">
                       {/* Logo */}
-                      <div className="w-full h-16 flex items-center justify-center">
-                        <LogoWithFallback 
+                      <div className="w-full h-[73px] flex items-center justify-center">
+                        <LogoWithFallback
                           imageUrl={logo.imageUrl}
                           logoName={logo.displayName}
                           dnaCode={logo.dnaCode}
-                          className={`max-w-full max-h-full object-contain ${
-                            logo.dnaCode === 'CRD_GRADIENT_MULTI' ? 'max-h-12' : ''
+                          className={`max-w-full object-contain ${
+                            logo.dnaCode === 'CRD_GRADIENT_MULTI' ? 'max-h-12' : 'max-h-[67px]'
                           }`}
                         />
                       </div>
