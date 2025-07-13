@@ -68,6 +68,30 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
   // Use first 20 logos from database (matching the design guide)
   const availableLogos = cardshowLogoDatabase.slice(0, 20);
 
+  // Creative names for each logo (avoiding team/city names)
+  const logoNames: Record<string, string> = {
+    'CRD_GRADIENT_MULTI': 'Fusion Force',
+    'CS_GREEN_SPARKLE': 'Emerald Spark',
+    'CS_ORANGE_SCRIPT': 'Flame Script',
+    'CS_REDBLUE_BLOCK': 'Liberty Block',
+    'CS_GREEN_SCRIPT_YELLOW': 'Thunder Strike',
+    'CS_BROWN_ORANGE_RETRO': 'Vintage Vibe',
+    'CS_BLUE_ORANGE_OUTLINE': 'Coastal Storm',
+    'CS_RED_SCRIPT_BLUE': 'Cardinal Script',
+    'CS_BLUE_SCRIPT': 'Azure Elite',
+    'CS_BLACK_TEAL_SPARKLE': 'Neon Rush',
+    'CS_GREEN_SPARKLE_SCRIPT': 'Elite Emerald',
+    'CS_ORANGE_BLACK_OUTLINE': 'Power Strike',
+    'CS_RED_BLOCK': 'Crimson Bold',
+    'CS_RED_SCRIPT_CORAL': 'Coral Wave',
+    'CS_RED_MODERN': 'Modern Fire',
+    'CS_RED_SCRIPT_CLASSIC': 'Classic Rouge',
+    'CS_BLACK_BOLD': 'Shadow Force',
+    'CS_PURPLE_OUTLINE': 'Royal Edge',
+    'CS_ORANGE_BLACK_BLOCK': 'Thunder Block',
+    'CS_BLUE_WHITE_SCRIPT': 'Sky Script'
+  };
+
   // Find logo by DNA code
   const findLogoByDNA = (dnaCode: string) => {
     return availableLogos.find(logo => logo.dnaCode === dnaCode) || availableLogos[0];
@@ -192,6 +216,14 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                             title={`${['Primary', 'Secondary', 'Accent', 'Neutral'][index]}: ${dot.color}`}
                           />
                         ))}
+                      </div>
+
+                      {/* Creative Name */}
+                      <div 
+                        className="text-xs font-medium text-center mt-2"
+                        style={{ color: theme?.colors.primary }}
+                      >
+                        {logoNames[logo.dnaCode] || 'Elite Squad'}
                       </div>
                     </div>
                   </button>
