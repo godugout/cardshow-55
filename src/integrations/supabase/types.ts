@@ -324,6 +324,47 @@ export type Database = {
         }
         Relationships: []
       }
+      brand_usage_stats: {
+        Row: {
+          brand_id: string
+          created_at: string
+          id: string
+          last_used_at: string
+          updated_at: string
+          usage_context: string | null
+          usage_count: number
+          user_id: string | null
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          id?: string
+          last_used_at?: string
+          updated_at?: string
+          usage_context?: string | null
+          usage_count?: number
+          user_id?: string | null
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          id?: string
+          last_used_at?: string
+          updated_at?: string
+          usage_context?: string | null
+          usage_count?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_usage_stats_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "cardshow_brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       branding_settings: {
         Row: {
           category: string | null
@@ -815,6 +856,147 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      cardshow_brands: {
+        Row: {
+          category: string
+          collectibility_score: number
+          color_palette: string[] | null
+          created_at: string
+          created_by: string | null
+          current_supply: number
+          decade: string | null
+          description: string | null
+          design_elements: string[] | null
+          display_name: string
+          dna_code: string
+          drop_rate: number
+          file_name: string
+          file_size: number | null
+          font_style: string
+          founded_year: number | null
+          group_type: string | null
+          id: string
+          image_dimensions: Json | null
+          image_url: string
+          is_active: boolean
+          is_blendable: boolean
+          is_remixable: boolean
+          league: string | null
+          logo_theme: Json | null
+          mascot: string | null
+          notes: string | null
+          power_level: number
+          primary_color: string
+          product_name: string | null
+          quaternary_color: string | null
+          rarity: string
+          secondary_color: string
+          sort_order: number
+          style_tags: string[] | null
+          team_city: string | null
+          team_code: string | null
+          team_name: string | null
+          tertiary_color: string | null
+          theme_usage: Json | null
+          thumbnail_url: string | null
+          total_supply: number | null
+          unlock_method: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          collectibility_score?: number
+          color_palette?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          current_supply?: number
+          decade?: string | null
+          description?: string | null
+          design_elements?: string[] | null
+          display_name: string
+          dna_code: string
+          drop_rate?: number
+          file_name: string
+          file_size?: number | null
+          font_style?: string
+          founded_year?: number | null
+          group_type?: string | null
+          id?: string
+          image_dimensions?: Json | null
+          image_url: string
+          is_active?: boolean
+          is_blendable?: boolean
+          is_remixable?: boolean
+          league?: string | null
+          logo_theme?: Json | null
+          mascot?: string | null
+          notes?: string | null
+          power_level?: number
+          primary_color: string
+          product_name?: string | null
+          quaternary_color?: string | null
+          rarity?: string
+          secondary_color: string
+          sort_order?: number
+          style_tags?: string[] | null
+          team_city?: string | null
+          team_code?: string | null
+          team_name?: string | null
+          tertiary_color?: string | null
+          theme_usage?: Json | null
+          thumbnail_url?: string | null
+          total_supply?: number | null
+          unlock_method?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          collectibility_score?: number
+          color_palette?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          current_supply?: number
+          decade?: string | null
+          description?: string | null
+          design_elements?: string[] | null
+          display_name?: string
+          dna_code?: string
+          drop_rate?: number
+          file_name?: string
+          file_size?: number | null
+          font_style?: string
+          founded_year?: number | null
+          group_type?: string | null
+          id?: string
+          image_dimensions?: Json | null
+          image_url?: string
+          is_active?: boolean
+          is_blendable?: boolean
+          is_remixable?: boolean
+          league?: string | null
+          logo_theme?: Json | null
+          mascot?: string | null
+          notes?: string | null
+          power_level?: number
+          primary_color?: string
+          product_name?: string | null
+          quaternary_color?: string | null
+          rarity?: string
+          secondary_color?: string
+          sort_order?: number
+          style_tags?: string[] | null
+          team_city?: string | null
+          team_code?: string | null
+          team_name?: string | null
+          tertiary_color?: string | null
+          theme_usage?: Json | null
+          thumbnail_url?: string | null
+          total_supply?: number | null
+          unlock_method?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       challenge_participations: {
         Row: {

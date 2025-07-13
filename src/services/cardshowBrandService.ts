@@ -79,17 +79,18 @@ export class CardshowBrandService {
   // Fetch all active brands
   static async getAllBrands(): Promise<CardshowBrandRow[]> {
     try {
-      // Direct query to cardshow_brands table using raw SQL
-      const { data, error } = await supabase.rpc('exec_sql', {
-        query: 'SELECT * FROM cardshow_brands WHERE is_active = true ORDER BY sort_order ASC'
-      } as any);
+      const { data, error } = await supabase
+        .from('cardshow_brands')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
 
       if (error) {
         console.error('Error fetching brands:', error);
         return [];
       }
 
-      return Array.isArray(data) ? data as CardshowBrandRow[] : [];
+      return (data || []) as CardshowBrandRow[];
     } catch (error) {
       console.error('Error in getAllBrands:', error);
       return [];
@@ -99,17 +100,19 @@ export class CardshowBrandService {
   // Fetch brand by DNA code
   static async getBrandByDnaCode(dnaCode: string): Promise<CardshowBrandRow | null> {
     try {
-      const { data, error } = await supabase.rpc('exec_sql', {
-        query: 'SELECT * FROM cardshow_brands WHERE dna_code = $1 AND is_active = true LIMIT 1',
-        params: [dnaCode]
-      } as any);
+      const { data, error } = await supabase
+        .from('cardshow_brands')
+        .select('*')
+        .eq('dna_code', dnaCode)
+        .eq('is_active', true)
+        .single();
 
       if (error) {
         console.error('Error fetching brand by DNA code:', error);
         return null;
       }
 
-      return (Array.isArray(data) && data.length > 0) ? data[0] as CardshowBrandRow : null;
+      return data as CardshowBrandRow;
     } catch (error) {
       console.error('Error in getBrandByDnaCode:', error);
       return null;
@@ -125,53 +128,39 @@ export class CardshowBrandService {
     search_term?: string;
   }): Promise<CardshowBrandRow[]> {
     try {
-      let query = 'SELECT * FROM cardshow_brands WHERE is_active = true';
-      const queryParams: any[] = [];
-      let paramCount = 0;
+      let query = supabase
+        .from('cardshow_brands')
+        .select('*')
+        .eq('is_active', true);
 
       if (params.category) {
-        paramCount++;
-        query += ` AND category = $${paramCount}`;
-        queryParams.push(params.category);
+        query = query.eq('category', params.category);
       }
 
       if (params.group_type) {
-        paramCount++;
-        query += ` AND group_type = $${paramCount}`;
-        queryParams.push(params.group_type);
+        query = query.eq('group_type', params.group_type);
       }
 
       if (params.team_code) {
-        paramCount++;
-        query += ` AND team_code = $${paramCount}`;
-        queryParams.push(params.team_code);
+        query = query.eq('team_code', params.team_code);
       }
 
       if (params.rarity) {
-        paramCount++;
-        query += ` AND rarity = $${paramCount}`;
-        queryParams.push(params.rarity);
+        query = query.eq('rarity', params.rarity);
       }
 
       if (params.search_term) {
-        paramCount++;
-        query += ` AND (display_name ILIKE $${paramCount} OR team_name ILIKE $${paramCount} OR dna_code ILIKE $${paramCount})`;
-        queryParams.push(`%${params.search_term}%`);
+        query = query.or(`display_name.ilike.%${params.search_term}%,team_name.ilike.%${params.search_term}%,dna_code.ilike.%${params.search_term}%`);
       }
 
-      query += ' ORDER BY sort_order ASC';
-
-      const { data, error } = await supabase.rpc('exec_sql', {
-        query,
-        params: queryParams
-      } as any);
+      const { data, error } = await query.order('sort_order', { ascending: true });
 
       if (error) {
         console.error('Error searching brands:', error);
         return [];
       }
 
-      return Array.isArray(data) ? data as CardshowBrandRow[] : [];
+      return (data || []) as CardshowBrandRow[];
     } catch (error) {
       console.error('Error in searchBrands:', error);
       return [];
@@ -197,21 +186,18 @@ export class CardshowBrandService {
         sort_order: 0
       };
 
-      const columns = Object.keys(insertData).join(', ');
-      const values = Object.keys(insertData).map((_, i) => `$${i + 1}`).join(', ');
-      const params = Object.values(insertData);
-
-      const { data, error } = await supabase.rpc('exec_sql', {
-        query: `INSERT INTO cardshow_brands (${columns}) VALUES (${values}) RETURNING *`,
-        params
-      } as any);
+      const { data, error } = await supabase
+        .from('cardshow_brands')
+        .insert(insertData)
+        .select()
+        .single();
 
       if (error) {
         console.error('Error creating brand:', error);
         return null;
       }
 
-      return Array.isArray(data) && data.length > 0 ? data[0] as CardshowBrandRow : null;
+      return data as CardshowBrandRow;
     } catch (error) {
       console.error('Error in createBrand:', error);
       return null;
@@ -221,15 +207,21 @@ export class CardshowBrandService {
   // Update brand usage statistics
   static async trackBrandUsage(brandId: string, userId: string, context: string): Promise<void> {
     try {
-      await supabase.rpc('exec_sql', {
-        query: `
-          INSERT INTO brand_usage_stats (brand_id, user_id, usage_context, usage_count, last_used_at)
-          VALUES ($1, $2, $3, 1, NOW())
-          ON CONFLICT (brand_id, user_id, usage_context)
-          DO UPDATE SET usage_count = brand_usage_stats.usage_count + 1, last_used_at = NOW()
-        `,
-        params: [brandId, userId, context]
-      } as any);
+      const { error } = await supabase
+        .from('brand_usage_stats')
+        .upsert({
+          brand_id: brandId,
+          user_id: userId,
+          usage_context: context,
+          usage_count: 1,
+          last_used_at: new Date().toISOString()
+        }, {
+          onConflict: 'brand_id,user_id,usage_context'
+        });
+
+      if (error) {
+        console.error('Error tracking brand usage:', error);
+      }
     } catch (error) {
       console.error('Error in trackBrandUsage:', error);
       // Don't throw - usage tracking is non-critical
@@ -239,17 +231,17 @@ export class CardshowBrandService {
   // Get brand usage statistics
   static async getBrandUsageStats(brandId: string): Promise<BrandUsageStatsRow[]> {
     try {
-      const { data, error } = await supabase.rpc('exec_sql', {
-        query: 'SELECT * FROM brand_usage_stats WHERE brand_id = $1',
-        params: [brandId]
-      } as any);
+      const { data, error } = await supabase
+        .from('brand_usage_stats')
+        .select('*')
+        .eq('brand_id', brandId);
 
       if (error) {
         console.error('Error fetching brand usage stats:', error);
         return [];
       }
 
-      return Array.isArray(data) ? data as BrandUsageStatsRow[] : [];
+      return (data || []) as BrandUsageStatsRow[];
     } catch (error) {
       console.error('Error in getBrandUsageStats:', error);
       return [];
@@ -259,17 +251,19 @@ export class CardshowBrandService {
   // Get brands by rarity for gaming mechanics
   static async getBrandsByRarity(rarity: string): Promise<CardshowBrandRow[]> {
     try {
-      const { data, error } = await supabase.rpc('exec_sql', {
-        query: 'SELECT * FROM cardshow_brands WHERE rarity = $1 AND is_active = true ORDER BY collectibility_score DESC',
-        params: [rarity]
-      } as any);
+      const { data, error } = await supabase
+        .from('cardshow_brands')
+        .select('*')
+        .eq('rarity', rarity)
+        .eq('is_active', true)
+        .order('collectibility_score', { ascending: false });
 
       if (error) {
         console.error('Error fetching brands by rarity:', error);
         return [];
       }
 
-      return Array.isArray(data) ? data as CardshowBrandRow[] : [];
+      return (data || []) as CardshowBrandRow[];
     } catch (error) {
       console.error('Error in getBrandsByRarity:', error);
       return [];
@@ -279,17 +273,19 @@ export class CardshowBrandService {
   // Get collectible brands (limited supply)
   static async getCollectibleBrands(): Promise<CardshowBrandRow[]> {
     try {
-      const { data, error } = await supabase.rpc('exec_sql', {
-        query: 'SELECT * FROM cardshow_brands WHERE total_supply IS NOT NULL AND is_active = true ORDER BY rarity DESC',
-        params: []
-      } as any);
+      const { data, error } = await supabase
+        .from('cardshow_brands')
+        .select('*')
+        .not('total_supply', 'is', null)
+        .eq('is_active', true)
+        .order('rarity', { ascending: false });
 
       if (error) {
         console.error('Error fetching collectible brands:', error);
         return [];
       }
 
-      return Array.isArray(data) ? data as CardshowBrandRow[] : [];
+      return (data || []) as CardshowBrandRow[];
     } catch (error) {
       console.error('Error in getCollectibleBrands:', error);
       return [];
