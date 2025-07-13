@@ -184,7 +184,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
           ref={dropdownRef}
           onMouseLeave={handleMouseLeave}
           onMouseEnter={handleMouseEnter}
-          className="absolute top-full left-0 mt-2 w-[calc(100vw-8rem)] max-w-7xl bg-background/95 backdrop-blur-xl border border-border/30 rounded-xl shadow-xl z-50 animate-in slide-in-from-top-2 duration-200"
+          className="absolute top-full left-0 mt-2 w-[min(90vw,1200px)] bg-background/95 backdrop-blur-xl border border-border/30 rounded-xl shadow-xl z-50 animate-in slide-in-from-top-2 duration-200"
         >
           {/* Header with Close Button */}
           <div className="relative p-4 border-b border-border/20 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5">
