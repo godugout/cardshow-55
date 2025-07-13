@@ -21,4 +21,20 @@
   .btn-text-gray {
     color: #777E90 !important;
   }
+  
+  /* Logo sparkle color filters to match theme yellow (#FFD700) */
+  .sparkles-yellow-filter {
+    filter: hue-rotate(45deg) saturate(130%) brightness(120%) contrast(110%);
+    transition: filter 0.3s ease;
+  }
+  
+  .sparkles-yellow-filter-green {
+    filter: hue-rotate(60deg) saturate(140%) brightness(115%) contrast(105%);
+    transition: filter 0.3s ease;
+  }
+  
+  .sparkles-yellow-filter-teal {
+    filter: hue-rotate(80deg) saturate(150%) brightness(125%) contrast(110%);
+    transition: filter 0.3s ease;
+  }
 }

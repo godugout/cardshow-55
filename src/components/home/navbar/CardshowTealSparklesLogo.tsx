@@ -5,7 +5,7 @@ export const CardshowTealSparklesLogo = ({ className }: { className?: string }) 
     <img 
       src="/lovable-uploads/769e3599-f57b-47ef-952d-7e072a457304.png" 
       alt="Cardshow Teal Sparkles" 
-      className={className}
+      className={`sparkles-yellow-filter-teal ${className || ''}`}
     />
   );
 };
