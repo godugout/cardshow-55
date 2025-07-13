@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Plus, Home, ImageIcon, Palette, X, Code2 } from 'lucide-react';
@@ -7,6 +6,7 @@ import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
 import { useEnhancedNavbar } from '@/hooks/useEnhancedNavbar';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { DevLoginButton } from '@/components/auth/DevLoginButton';
+import { AdminTrigger } from '@/components/admin/AdminTrigger';
 
 const getNavbarColorClasses = (color: string) => {
   const colorMap = {
@@ -79,12 +79,15 @@ export const Navbar = () => {
       }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex justify-between items-center h-full">
-          {/* Logo Selector with enhanced animation */}
+          {/* Logo Selector with enhanced animation and Admin Trigger */}
           <div className={`
-            flex items-center transition-all duration-300
+            flex items-center gap-2 transition-all duration-300
             ${scrollMetrics.isScrolling ? 'scale-[0.98]' : 'scale-100'}
             ${!prefersReducedMotion && isScrolled ? 'drop-shadow-sm' : ''}
           `}>
+            {/* Admin Trigger - Hidden icon left of logo */}
+            <AdminTrigger />
+            
             <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
               <LogoSelector />
             </div>

@@ -1,144 +1,243 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useMousePosition } from '@/hooks/useMousePosition';
 
-export const Animated3DBackground: React.FC = () => {
-  const { x, y } = useMousePosition();
-  
-  // Convert mouse position to transform values
-  const mouseX = (x / window.innerWidth - 0.5) * 2; // -1 to 1
-  const mouseY = (y / window.innerHeight - 0.5) * 2; // -1 to 1
-  
-  // Create grid of panels (6x4)
-  const panels = Array.from({ length: 24 }, (_, i) => {
-    const row = Math.floor(i / 6);
-    const col = i % 6;
+interface Animated3DBackgroundProps {
+  className?: string;
+  variant?: 'panels' | 'cards' | 'particles' | 'glass' | 'shapes';
+}
+
+export const Animated3DBackground: React.FC<Animated3DBackgroundProps> = ({ 
+  className = "",
+  variant = 'panels'
+}) => {
+  const mousePosition = useMousePosition();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const panels = container.querySelectorAll('.panel-3d');
     
-    // Different gradient variations using CRD colors
-    const gradients = [
-      'linear-gradient(135deg, hsl(142, 70%, 50%), hsl(200, 75%, 60%))',
-      'linear-gradient(135deg, hsl(200, 75%, 60%), hsl(219, 70%, 65%))',
-      'linear-gradient(135deg, hsl(219, 70%, 65%), hsl(260, 40%, 65%))',
-      'linear-gradient(135deg, hsl(260, 40%, 65%), hsl(142, 70%, 50%))',
-      'linear-gradient(135deg, hsl(142, 70%, 50%), hsl(219, 70%, 65%))',
-      'linear-gradient(135deg, hsl(200, 75%, 60%), hsl(260, 40%, 65%))',
-    ];
+    panels.forEach((panel, index) => {
+      const element = panel as HTMLElement;
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const deltaX = (mousePosition.x - centerX) / centerX;
+      const deltaY = (mousePosition.y - centerY) / centerY;
+      
+      const rotateX = deltaY * (5 + index * 0.5);
+      const rotateY = deltaX * (5 + index * 0.5);
+      const translateZ = Math.sin(index * 0.5) * 20;
+      
+      element.style.transform = `
+        perspective(1000px) 
+        rotateX(${rotateX}deg) 
+        rotateY(${rotateY}deg) 
+        translateZ(${translateZ}px)
+      `;
+    });
+  }, [mousePosition]);
+
+  const renderPanels = () => {
+    const panels = [];
+    for (let i = 0; i < 24; i++) {
+      const delay = i * 0.1;
+      const hue = (i * 30) % 360;
+      
+      panels.push(
+        <div
+          key={i}
+          className="panel-3d absolute w-16 h-16 rounded-lg opacity-20 hover:opacity-40 transition-all duration-500"
+          style={{
+            background: `linear-gradient(135deg, 
+              hsl(${hue}, 70%, 60%), 
+              hsl(${(hue + 60) % 360}, 70%, 70%), 
+              hsl(${(hue + 120) % 360}, 70%, 50%))`,
+            left: `${(i % 6) * 16 + Math.sin(i * 0.5) * 10}%`,
+            top: `${Math.floor(i / 6) * 20 + Math.cos(i * 0.3) * 5}%`,
+            animationDelay: `${delay}s`,
+            transform: `translateZ(${Math.sin(i * 0.8) * 30}px)`,
+            boxShadow: `0 4px 20px hsla(${hue}, 70%, 60%, 0.3)`,
+          }}
+        />
+      );
+    }
+    return panels;
+  };
+
+  const renderCards = () => {
+    const cards = [];
+    for (let i = 0; i < 12; i++) {
+      const delay = i * 0.2;
+      const hue = (i * 45) % 360;
+      
+      cards.push(
+        <div
+          key={i}
+          className="panel-3d absolute w-24 h-32 rounded-xl opacity-15 hover:opacity-30 transition-all duration-700"
+          style={{
+            background: `linear-gradient(145deg, 
+              hsla(${hue}, 80%, 65%, 0.8), 
+              hsla(${(hue + 90) % 360}, 80%, 55%, 0.6))`,
+            left: `${(i % 4) * 25 + Math.sin(i * 0.7) * 8}%`,
+            top: `${Math.floor(i / 4) * 30 + Math.cos(i * 0.4) * 10}%`,
+            animationDelay: `${delay}s`,
+            transform: `rotateY(${i * 15}deg) translateZ(${Math.sin(i) * 40}px)`,
+            backdropFilter: 'blur(10px)',
+            border: `1px solid hsla(${hue}, 70%, 70%, 0.3)`,
+          }}
+        />
+      );
+    }
+    return cards;
+  };
+
+  const renderParticles = () => {
+    const particles = [];
+    for (let i = 0; i < 50; i++) {
+      const delay = i * 0.05;
+      const hue = (i * 20) % 360;
+      
+      particles.push(
+        <div
+          key={i}
+          className="panel-3d absolute w-3 h-3 rounded-full opacity-30 animate-pulse"
+          style={{
+            background: `radial-gradient(circle, 
+              hsl(${hue}, 90%, 70%), 
+              hsl(${(hue + 60) % 360}, 90%, 80%))`,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${delay}s`,
+            transform: `translateZ(${Math.random() * 60 - 30}px)`,
+            boxShadow: `0 0 10px hsl(${hue}, 90%, 70%)`,
+          }}
+        />
+      );
+    }
+    return particles;
+  };
+
+  const renderGlass = () => {
+    const planes = [];
+    for (let i = 0; i < 8; i++) {
+      const delay = i * 0.3;
+      const hue = (i * 60) % 360;
+      
+      planes.push(
+        <div
+          key={i}
+          className="panel-3d absolute w-32 h-48 rounded-2xl opacity-10 hover:opacity-20 transition-all duration-1000"
+          style={{
+            background: `linear-gradient(160deg, 
+              hsla(${hue}, 60%, 70%, 0.2), 
+              hsla(${(hue + 120) % 360}, 60%, 80%, 0.1))`,
+            left: `${(i % 3) * 30 + Math.sin(i * 0.6) * 15}%`,
+            top: `${Math.floor(i / 3) * 25 + Math.cos(i * 0.8) * 12}%`,
+            animationDelay: `${delay}s`,
+            transform: `rotateX(${i * 10}deg) rotateY(${i * 20}deg) translateZ(${i * 15}px)`,
+            backdropFilter: 'blur(15px)',
+            border: `1px solid hsla(${hue}, 60%, 80%, 0.2)`,
+          }}
+        />
+      );
+    }
+    return planes;
+  };
+
+  const renderShapes = () => {
+    const shapes = [];
+    const shapeTypes = ['triangle', 'hexagon', 'diamond', 'star'];
     
-    const gradientIndex = (row + col) % gradients.length;
-    
-    return {
-      id: i,
-      row,
-      col,
-      gradient: gradients[gradientIndex],
-      delay: (row + col) * 0.1,
-    };
-  });
+    for (let i = 0; i < 16; i++) {
+      const delay = i * 0.15;
+      const hue = (i * 40) % 360;
+      const shapeType = shapeTypes[i % shapeTypes.length];
+      
+      shapes.push(
+        <div
+          key={i}
+          className={`panel-3d absolute w-12 h-12 opacity-25 hover:opacity-40 transition-all duration-600 ${
+            shapeType === 'triangle' ? 'clip-triangle' :
+            shapeType === 'hexagon' ? 'clip-hexagon' :
+            shapeType === 'diamond' ? 'rotate-45' :
+            'clip-star'
+          }`}
+          style={{
+            background: `conic-gradient(from ${i * 45}deg, 
+              hsl(${hue}, 85%, 65%), 
+              hsl(${(hue + 90) % 360}, 85%, 75%), 
+              hsl(${(hue + 180) % 360}, 85%, 60%))`,
+            left: `${(i % 4) * 20 + Math.sin(i * 0.9) * 12}%`,
+            top: `${Math.floor(i / 4) * 25 + Math.cos(i * 0.6) * 8}%`,
+            animationDelay: `${delay}s`,
+            transform: `rotate(${i * 22.5}deg) translateZ(${Math.sin(i * 1.2) * 25}px)`,
+            filter: `hue-rotate(${i * 20}deg)`,
+          }}
+        />
+      );
+    }
+    return shapes;
+  };
+
+  const renderVariant = () => {
+    switch (variant) {
+      case 'cards': return renderCards();
+      case 'particles': return renderParticles();
+      case 'glass': return renderGlass();
+      case 'shapes': return renderShapes();
+      default: return renderPanels();
+    }
+  };
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes float-3d {
+            0%, 100% { transform: translateY(0px) translateZ(0px); }
+            50% { transform: translateY(-10px) translateZ(15px); }
+          }
+          
+          .panel-3d {
+            animation: float-3d 4s ease-in-out infinite;
+            transform-style: preserve-3d;
+            will-change: transform;
+          }
+          
+          .clip-triangle {
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+          }
+          
+          .clip-hexagon {
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+          }
+          
+          .clip-star {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+          }
+          
+          @media (prefers-reduced-motion: reduce) {
+            .panel-3d {
+              animation: none;
+              transform: none !important;
+            }
+          }
+        `
+      }} />
+      
       <div 
-        className="relative w-full h-full"
-        style={{
+        ref={containerRef}
+        className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+        style={{ 
           perspective: '1000px',
-          perspectiveOrigin: '50% 50%',
+          transformStyle: 'preserve-3d'
         }}
       >
-        <div
-          className="absolute inset-0 transition-transform duration-700 ease-out"
-          style={{
-            transformStyle: 'preserve-3d',
-            transform: `rotateX(${mouseY * 5}deg) rotateY(${mouseX * 5}deg)`,
-          }}
-        >
-          {panels.map((panel) => (
-            <div
-              key={panel.id}
-              className="absolute w-16 h-12 opacity-80"
-              style={{
-                left: `${20 + panel.col * 12}%`,
-                top: `${20 + panel.row * 15}%`,
-                background: panel.gradient,
-                transform: `
-                  translate3d(${mouseX * (panel.col + 1) * 2}px, ${mouseY * (panel.row + 1) * 2}px, ${(panel.row + panel.col) * 10}px)
-                  rotateX(45deg) 
-                  rotateY(-25deg)
-                `,
-                transformStyle: 'preserve-3d',
-                transition: 'transform 0.3s ease-out',
-                borderRadius: '4px',
-                boxShadow: `
-                  0 0 20px rgba(${142 + panel.col * 20}, ${200 + panel.row * 10}, ${255 - panel.col * 30}, 0.3),
-                  0 8px 32px rgba(0, 0, 0, 0.2)
-                `,
-                animation: `float-${panel.id} ${4 + panel.delay}s ease-in-out infinite`,
-                willChange: 'transform',
-              }}
-            >
-              {/* Panel face */}
-              <div
-                className="absolute inset-0 rounded"
-                style={{
-                  background: panel.gradient,
-                  transform: 'translateZ(2px)',
-                }}
-              />
-              {/* Panel side */}
-              <div
-                className="absolute top-0 right-0 w-1 h-full"
-                style={{
-                  background: `linear-gradient(to bottom, 
-                    rgba(255, 255, 255, 0.3), 
-                    rgba(0, 0, 0, 0.2)
-                  )`,
-                  transform: 'rotateY(90deg) translateZ(-2px)',
-                  transformOrigin: 'left center',
-                }}
-              />
-              {/* Panel bottom */}
-              <div
-                className="absolute bottom-0 left-0 w-full h-1"
-                style={{
-                  background: `linear-gradient(to right, 
-                    rgba(0, 0, 0, 0.3), 
-                    rgba(255, 255, 255, 0.1)
-                  )`,
-                  transform: 'rotateX(-90deg) translateZ(-2px)',
-                  transformOrigin: 'center top',
-                }}
-              />
-            </div>
-          ))}
-        </div>
+        {renderVariant()}
       </div>
-      
-      {/* Floating animation keyframes */}
-      <style jsx>{`
-        ${panels.map(panel => `
-          @keyframes float-${panel.id} {
-            0%, 100% { 
-              transform: 
-                translate3d(${mouseX * (panel.col + 1) * 2}px, ${mouseY * (panel.row + 1) * 2}px, ${(panel.row + panel.col) * 10}px)
-                rotateX(45deg) 
-                rotateY(-25deg)
-                translateZ(0px);
-            }
-            50% { 
-              transform: 
-                translate3d(${mouseX * (panel.col + 1) * 2}px, ${mouseY * (panel.row + 1) * 2}px, ${(panel.row + panel.col) * 10}px)
-                rotateX(45deg) 
-                rotateY(-25deg)
-                translateZ(${Math.sin(panel.id) * 5 + 5}px);
-            }
-          }
-        `).join('\n')}
-        
-        @media (prefers-reduced-motion: reduce) {
-          div[style*="animation"] {
-            animation: none !important;
-          }
-        }
-      `}</style>
-    </div>
+    </>
   );
 };

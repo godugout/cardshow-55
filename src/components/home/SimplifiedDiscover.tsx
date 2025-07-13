@@ -1,154 +1,229 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { CRDButton, Typography } from "@/components/ui/design-system";
-import { useCards } from "@/hooks/useCards";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Heart, Eye, Star } from "lucide-react";
 
-export const SimplifiedDiscover: React.FC = () => {
-  const [featuredCategory, setFeaturedCategory] = useState("Trending");
-  const { featuredCards, loading } = useCards();
-  const navigate = useNavigate();
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Star, Eye, Heart, Filter } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-  const handleCardStudioOpen = (cardId: string | undefined) => {
-    if (!cardId) return;
-    navigate(`/studio/${cardId}`);
+interface DiscoverCard {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  creator_id: string;
+  rarity: string;
+  favorite_count: number;
+  view_count: number;
+  created_at: string;
+}
+
+export const SimplifiedDiscover = () => {
+  const [cards, setCards] = useState<DiscoverCard[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState('featured');
+
+  useEffect(() => {
+    fetchCards();
+  }, [activeFilter]);
+
+  const fetchCards = async () => {
+    try {
+      setLoading(true);
+      let query = supabase
+        .from('cards')
+        .select('*')
+        .eq('is_public', true)
+        .limit(12);
+
+      // Apply different sorting based on filter
+      switch (activeFilter) {
+        case 'trending':
+          query = query.order('favorite_count', { ascending: false });
+          break;
+        case 'new':
+          query = query.order('created_at', { ascending: false });
+          break;
+        default:
+          query = query.order('view_count', { ascending: false });
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching cards:', error);
+        return;
+      }
+
+      setCards(data || []);
+    } catch (error) {
+      console.error('Error fetching cards:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const categoryButtons = [
-    "Trending",
-    "Hottest",
-    "Newest",
-    "Top Rated",
-    "Most Viewed",
-  ];
+  const getFilterLabel = (filter: string) => {
+    switch (filter) {
+      case 'trending': return 'Trending';
+      case 'new': return 'New';
+      default: return 'Featured';
+    }
+  };
+
+  const getRarityColor = (rarity: string) => {
+    switch (rarity?.toLowerCase()) {
+      case 'legendary': return 'text-yellow-400';
+      case 'epic': return 'text-purple-400';
+      case 'rare': return 'text-blue-400';
+      case 'uncommon': return 'text-green-400';
+      default: return 'text-gray-400';
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="py-16 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-themed-primary mb-4">
+              Discover <span className="highlight-themed">Amazing Cards</span>
+            </h2>
+            <p className="text-themed-secondary text-lg max-w-2xl mx-auto">
+              Explore the latest cards from creators around the world
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="bg-themed-secondary/10 rounded-xl h-64 animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-crd-darkest to-crd-darker relative overflow-hidden">
-      {/* Animated Background Bubbles */}
-      <div className="absolute inset-0">
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-crd-blue/10 blur-2xl animate-pulse"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 20 + 20}vw`,
-              height: `${Math.random() * 20 + 20}vw`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Content */}
-      <div className="container mx-auto px-6 relative z-10">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <Typography
-            variant="h2"
-            className="text-crd-white font-bold mb-4 drop-shadow-md"
-          >
-            Discover Digital Collectibles
-          </Typography>
-          <Typography
-            variant="body"
-            className="text-crd-lightGray max-w-2xl mx-auto leading-relaxed"
-          >
-            Explore a curated selection of digital art, collectibles, and
-            experiences from top creators around the globe.
-          </Typography>
+    <section className="py-16 px-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl sm:text-4xl font-bold text-themed-primary mb-4">
+            Discover <span className="highlight-themed">Amazing Cards</span>
+          </h2>
+          <p className="text-themed-secondary text-lg max-w-2xl mx-auto">
+            Explore the latest cards from creators around the world
+          </p>
         </div>
 
-        {/* Category Filters */}
-        <div className="flex justify-center space-x-4 mb-8">
-          {categoryButtons.map((category) => (
-            <button
-              key={category}
-              className={`px-4 py-2 rounded-full text-crd-lightGray hover:text-crd-white transition-colors duration-200 ${
-                featuredCategory === category
-                  ? "bg-crd-blue text-crd-white"
-                  : "bg-crd-darkGray"
-              }`}
-              onClick={() => setFeaturedCategory(category)}
-            >
-              {category}
-            </button>
+        {/* Filter Tabs */}
+        <div className="flex justify-center mb-8">
+          <div className="tabs-themed inline-flex rounded-lg p-1">
+            {['featured', 'trending', 'new'].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  activeFilter === filter 
+                    ? 'tab-themed-active' 
+                    : 'tab-themed-inactive'
+                }`}
+              >
+                {getFilterLabel(filter)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+          {cards.map((card) => (
+            <Card key={card.id} className="card-themed group hover:scale-105 transition-all duration-300">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-t-xl">
+                {card.image_url ? (
+                  <img 
+                    src={card.image_url} 
+                    alt={card.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-themed-accent/20 to-themed-accent/5 flex items-center justify-center">
+                    <div className="text-4xl opacity-50">🎨</div>
+                  </div>
+                )}
+                
+                {/* Trending indicator */}
+                {activeFilter === 'trending' && card.rarity === 'legendary' && (
+                  <div className="absolute top-2 right-2 bg-yellow-500/90 text-black text-xs px-2 py-1 rounded-full font-medium">
+                    🔥 Hot
+                  </div>
+                )}
+              </div>
+
+              <CardContent className="p-4">
+                <h3 className="font-bold text-themed-primary text-lg mb-2 line-clamp-1">
+                  {card.title}
+                </h3>
+                
+                {card.description && (
+                  <p className="text-themed-secondary text-sm mb-3 line-clamp-2">
+                    {card.description}
+                  </p>
+                )}
+
+                <div className="flex items-center justify-between text-xs text-themed-secondary mb-3">
+                  <span className={`capitalize font-medium ${getRarityColor(card.rarity)}`}>
+                    {card.rarity || 'Common'}
+                  </span>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      <Heart className="w-3 h-3" />
+                      <span>{card.favorite_count || 0}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1">
+                      <Eye className="w-3 h-3" />
+                      <span>{card.view_count || 0}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3" />
+                      <span>{card.rarity === 'legendary' ? '5.0' : '4.2'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-themed-secondary">
+                    {new Date(card.created_at).toLocaleDateString()}
+                  </span>
+                  
+                  <Button variant="outline" size="sm" className="text-xs">
+                    View Card
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
-        {/* Featured Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {loading ? (
-            <div className="text-center text-crd-lightGray">Loading...</div>
-          ) : featuredCards.length > 0 ? (
-            featuredCards.map((card) => (
-              <Card
-                key={card.id}
-                className="card-themed-modern hover-glow cursor-pointer"
-                onClick={() => handleCardStudioOpen(card.id)}
-              >
-                <CardContent className="p-4">
-                  <div className="relative">
-                    <img
-                      src={card.image_url}
-                      alt={card.name}
-                      className="rounded-md w-full h-48 object-cover mb-3"
-                    />
-                    {card.is_trending && (
-                      <Badge className="absolute top-2 right-2 bg-crd-orange text-crd-darkest font-semibold">
-                        Trending
-                      </Badge>
-                    )}
-                  </div>
-                  <Typography
-                    variant="h4"
-                    className="text-crd-white font-semibold mb-2"
-                  >
-                    {card.name}
-                  </Typography>
-                  <Typography
-                    variant="body"
-                    className="text-crd-lightGray text-sm mb-3"
-                  >
-                    {card.description?.substring(0, 60)}...
-                  </Typography>
-                  <div className="flex justify-between items-center text-crd-lightGray text-xs">
-                    <div className="flex items-center">
-                      <Heart className="mr-1 h-4 w-4" /> {card.likes || 0}
-                    </div>
-                    <div className="flex items-center">
-                      <Eye className="mr-1 h-4 w-4" /> {card.views || 0}
-                    </div>
-                    <div className="flex items-center">
-                      <Star className="mr-1 h-4 w-4" /> {card.rating || 0}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            <div className="text-center text-crd-lightGray">
-              No cards found in this category.
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="container mx-auto px-6 mt-16">
+        {/* CTA Section */}
         <div className="text-center">
-          <Link to="/collections/catalog">
-            <CRDButton 
-              variant="primary" 
-              size="lg"
-              className="px-8 py-4 rounded-[90px]"
-            >
-              Browse CRD Catalog
-            </CRDButton>
-          </Link>
+          <div className="bg-themed-secondary/5 rounded-2xl p-8 mb-8">
+            <h3 className="text-2xl font-bold text-themed-primary mb-4">
+              Ready to explore more?
+            </h3>
+            <p className="text-themed-secondary mb-6 max-w-md mx-auto">
+              Browse our complete catalog of cards and collections from creators worldwide.
+            </p>
+            <Link to="/collections/catalog">
+              <Button className="btn-themed-primary px-8 py-3 text-lg">
+                Browse CRD Catalog
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </section>
