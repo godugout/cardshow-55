@@ -1,9 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { CRDCanvasGrid } from './CRDCanvasGrid';
 import { CRDToolbar } from '../toolbar/CRDToolbar';
+import { ToolbarHotZone } from '../toolbar/ToolbarHotZone';
 import { CRDFrameRenderer } from '../frame/CRDFrameRenderer';
 import { CRDBottomInfoBar } from './CRDBottomInfoBar';
 import { useGridPreferences } from '@/hooks/useGridPreferences';
+import { useAutoHideToolbar } from '@/hooks/useAutoHideToolbar';
 interface CRDCanvasProps {
   template: string;
   colorPalette: string;
@@ -47,6 +49,14 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   // Grid preferences with persistence
   const { gridType, showGrid, setGridType, setShowGrid, isLoaded } = useGridPreferences();
   const [isPanning, setIsPanning] = useState(false);
+  
+  // Auto-hide toolbar
+  const { 
+    getToolbarClasses, 
+    getHotZoneProps, 
+    onMouseEnter: onToolbarMouseEnter, 
+    onMouseLeave: onToolbarMouseLeave 
+  } = useAutoHideToolbar();
   const [panOffset, setPanOffset] = useState({
     x: 0,
     y: 0
@@ -210,6 +220,9 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     return overlayEffects.join(' ');
   };
   return <div className="relative h-full w-full overflow-hidden bg-transparent flex flex-col">
+      {/* Hot Zone for Toolbar Auto-Show */}
+      <ToolbarHotZone {...getHotZoneProps()} />
+      
       {/* Toolbar */}
       <CRDToolbar 
         zoom={zoom} 
@@ -223,7 +236,10 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         showRulers={showRulers} 
         onRulersToggle={() => setShowRulers(!showRulers)} 
         isPanning={isPanning} 
-        onPanToggle={() => setIsPanning(!isPanning)} 
+        onPanToggle={() => setIsPanning(!isPanning)}
+        className={getToolbarClasses()}
+        onMouseEnter={onToolbarMouseEnter}
+        onMouseLeave={onToolbarMouseLeave}
       />
 
       {/* Grid Background */}

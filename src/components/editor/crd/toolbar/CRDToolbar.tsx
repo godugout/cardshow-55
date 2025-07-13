@@ -20,6 +20,10 @@ interface CRDToolbarProps {
   onRulersToggle: () => void;
   isPanning: boolean;
   onPanToggle: () => void;
+  // Auto-hide props
+  className?: string;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 type GridType = 'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography';
@@ -50,7 +54,10 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   showRulers,
   onRulersToggle,
   isPanning,
-  onPanToggle
+  onPanToggle,
+  className,
+  onMouseEnter,
+  onMouseLeave
 }) => {
   // Keyboard shortcuts
   useEffect(() => {
@@ -63,7 +70,11 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onPanToggle]);
-  return <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-30 bg-crd-darker/80 backdrop-blur-sm border border-crd-mediumGray/30 rounded-lg shadow-lg">
+  return <div 
+    className={className || "absolute top-16 left-1/2 transform -translate-x-1/2 z-30 bg-crd-darker/80 backdrop-blur-sm border border-crd-mediumGray/30 rounded-lg shadow-lg"}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+  >
       <div className="px-4 py-2">
         <div className="flex items-center gap-6 h-10">
           {/* View Controls */}
