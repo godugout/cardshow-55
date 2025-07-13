@@ -117,7 +117,7 @@ const CreateChoiceContent: React.FC = () => {
             </div>
           </div>
 
-          {/* Story Cards */}
+          {/* STRY Capsules */}
           <div className="bg-gradient-to-br from-crd-green/20 to-crd-green/10 border border-crd-green/30 rounded-2xl p-8 hover:border-crd-green/50 transition-all group">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-crd-green/20 rounded-xl flex items-center justify-center">
@@ -125,10 +125,10 @@ const CreateChoiceContent: React.FC = () => {
               </div>
               <div>
                 <Typography variant="h2" className="text-crd-white text-xl font-bold">
-                  Story Cards
+                  STRY Capsules
                 </Typography>
                 <Typography variant="body" className="text-crd-lightGray text-sm">
-                  Interactive & Animated
+                  Interactive & Animated Stories
                 </Typography>
               </div>
             </div>
@@ -161,7 +161,7 @@ const CreateChoiceContent: React.FC = () => {
                 variant="secondary" 
                 className="w-full border-crd-green/30 text-crd-green hover:bg-crd-green/10 group-hover:scale-105 transition-transform"
               >
-                Create Story Card
+                Create STRY Capsule
                 <ArrowRight className="w-4 h-4 ml-2" />
               </CRDButton>
             </Link>
@@ -171,7 +171,7 @@ const CreateChoiceContent: React.FC = () => {
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <Typography variant="body" className="text-crd-lightGray text-sm">
-            Not sure which to choose? Start with CRD Collectibles for traditional collecting, or Story cards for interactive experiences.
+            Not sure which to choose? Start with CRD Collectibles for traditional collecting, or STRY Capsules for interactive experiences.
           </Typography>
         </div>
 
