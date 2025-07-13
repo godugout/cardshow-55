@@ -109,4 +109,60 @@
   .liquid-gradient-cta:active {
     @apply transform scale-[0.98];
   }
+
+  /* New Vibrant Blue-Purple Gradient System */
+  @keyframes liquid-gradient-blue-purple {
+    0% { 
+      background-position: 0% 50%; 
+    }
+    50% { 
+      background-position: 100% 50%; 
+    }
+    100% { 
+      background-position: 0% 50%; 
+    }
+  }
+
+  /* Main blue-purple liquid gradient */
+  .liquid-gradient-blue-purple {
+    @apply relative overflow-hidden shadow-lg transition-all duration-300;
+    background: linear-gradient(135deg, hsl(219, 88%, 65%), hsl(260, 70%, 65%), hsl(280, 85%, 70%));
+    background-size: 200% 200%;
+    animation: liquid-gradient-blue-purple 6s ease-in-out infinite;
+  }
+
+  .liquid-gradient-blue-purple:hover {
+    @apply shadow-xl;
+    background: linear-gradient(135deg, hsl(219, 95%, 70%), hsl(260, 80%, 70%), hsl(280, 90%, 75%));
+    background-size: 250% 250%;
+    animation: liquid-gradient-blue-purple 3s ease-in-out infinite;
+  }
+
+  /* Subtle blue-purple gradient for cards */
+  .gradient-blue-purple-subtle {
+    background: linear-gradient(135deg, hsl(219, 88%, 62%), hsl(260, 70%, 65%));
+  }
+
+  /* Active state gradient */
+  .gradient-blue-purple-active {
+    @apply shadow-md;
+    background: linear-gradient(135deg, hsl(219, 95%, 70%), hsl(260, 85%, 75%));
+    animation: liquid-gradient-blue-purple 4s ease-in-out infinite;
+  }
+
+  /* Glow effect for modern cards */
+  .card-glow-blue-purple {
+    box-shadow: 0 0 20px hsla(240, 80%, 70%, 0.3), 0 0 40px hsla(260, 70%, 65%, 0.2);
+  }
+
+  .card-glow-blue-purple:hover {
+    box-shadow: 0 0 30px hsla(240, 90%, 80%, 0.4), 0 0 60px hsla(260, 80%, 70%, 0.3);
+  }
+
+  /* Modern border gradient */
+  .border-gradient-blue-purple {
+    border: 2px solid transparent;
+    background: linear-gradient(var(--tw-gradient-from), var(--tw-gradient-to)) padding-box,
+                linear-gradient(135deg, hsl(219, 88%, 70%), hsl(260, 75%, 70%)) border-box;
+  }
 }

@@ -1,815 +1,120 @@
 
-/* Centralized theme CSS variables for CRD design system */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CRD Theme Variables */
 :root {
-  /* CRD Design System Colors */
+  /* Brand Colors - Enhanced for vibrancy */
+  --crd-blue: hsl(219, 88%, 62%);
+  --crd-blue-light: hsl(219, 88%, 70%);
+  --crd-blue-dark: hsl(219, 88%, 50%);
+  --crd-purple: hsl(260, 70%, 65%);
+  --crd-purple-light: hsl(260, 80%, 75%);
+  --crd-purple-dark: hsl(260, 70%, 55%);
+  --crd-orange: hsl(18, 85%, 60%);
+  --crd-green: hsl(142, 51%, 50%);
   
-  /* Primary Colors */
-  --crd-blue: #3772FF; /* Main CTAs, links, focus states */
-  --crd-light-blue: #2D9CDB; /* Secondary actions */
-  --crd-orange: #F97316; /* Cards, warnings, highlights */
-  --crd-orange-dark: #EA6E48; /* Hover states */
-  --crd-green: #45B26B; /* Collections, success states */
-  --crd-green-dark: #27AE60; /* Success hover */
-  --crd-purple: #9757D7; /* Premium features */
-  --crd-purple-light: #8B5CF6; /* Purple variations */
-  --crd-gold: #FFD700;
+  /* Neutral Colors */
+  --crd-darkest: hsl(220, 13%, 9%);
+  --crd-darker: hsl(220, 13%, 15%);
+  --crd-dark: hsl(220, 13%, 18%);
+  --crd-darkGray: hsl(217, 19%, 16%);
+  --crd-mediumGray: hsl(217, 19%, 27%);
+  --crd-lightGray: hsl(220, 17%, 56%);
+  --crd-white: hsl(0, 0%, 99%);
   
-  /* Background Colors */
-  --crd-bg-primary: #141416; /* Main app background */
-  --crd-bg-secondary: #1A1D24; /* Card backgrounds */
-  --crd-bg-tertiary: #23262F; /* Elevated cards, modals */
-  --crd-bg-border: #353945; /* Borders, dividers */
+  /* Modern Gradient Variables */
+  --gradient-blue-purple: linear-gradient(135deg, var(--crd-blue), var(--crd-purple));
+  --gradient-blue-purple-vibrant: linear-gradient(135deg, var(--crd-blue-light), var(--crd-purple-light));
+  --gradient-hero: linear-gradient(135deg, hsl(219, 95%, 70%), hsl(260, 85%, 75%), hsl(280, 90%, 80%));
+}
+
+/* Theme Classes */
+@layer components {
+  /* Themed backgrounds with new gradients */
+  .bg-themed-gradient {
+    background: var(--gradient-blue-purple);
+  }
   
-  /* Text Colors */
-  --crd-text-primary: #FCFCFD; /* Headings, main text */
-  --crd-text-secondary: #E6E8EC; /* Body content */
-  --crd-text-muted: #777E90; /* Placeholders, labels */
-  --crd-text-disabled: #4B505C; /* Inactive elements */
+  .bg-themed-gradient-vibrant {
+    background: var(--gradient-blue-purple-vibrant);
+  }
   
-  /* Legacy Support */
-  --crd-darkest: #141416;
-  --crd-darker: #1A1D24;
-  --crd-darkGray: #23262F;
-  --crd-mediumGray: #353945;
-  --crd-lightGray: #777E90;
-  --crd-white: #FCFCFD;
+  .bg-themed-hero {
+    background: var(--gradient-hero);
+  }
   
-  /* Status Colors */
-  --crd-success: #45B26B;
-  --crd-warning: #F97316;
-  --crd-error: #ff4444;
-  --crd-info: #3772FF;
-
-/* Dynamic Theme Variables - Updated by logo selection */
-  --theme-navbar-bg: 240 5 95; /* HSL for very light gray background */
-  --theme-navbar-border: 240 5 85; /* HSL for light gray border */
-  --theme-text-primary: 240 6 11; /* HSL for dark text */
-  --theme-text-secondary: 240 4 45; /* HSL for medium gray */
-  --theme-text-active: 142 42 55; /* HSL for green active state */
-  --theme-cta-bg: 142 42 55; /* HSL for green CTA */
-  --theme-cta-text: 0 0 100; /* HSL for white text */
-  --theme-accent: 142 42 55; /* HSL for green accent */
-  --theme-accent-hover: 142 52 65; /* HSL for lighter green hover */
-}
-
-/* Logo-specific theme variations */
-/* SF Orange - Bold orange with classic black and cream accents */
-[data-theme="sf-orange"] {
-  --theme-primary: 17 98 55; /* SF Orange */
-  --theme-secondary: 0 0 0; /* Black */
-  --theme-accent: 33 22 56; /* Cream/Tan */
-  --theme-neutral: 0 0 100; /* White */
+  /* Modern card theming */
+  .card-themed {
+    @apply bg-crd-darkGray border border-crd-mediumGray/30 rounded-lg;
+  }
   
-  --theme-navbar-bg: 0 0 16; /* Dark charcoal background for orange logo contrast */
-  --theme-navbar-border: 17 98 55; /* Orange border */
-  --theme-text-primary: 0 0 100; /* White text */
-  --theme-text-secondary: 33 22 70; /* Light cream */
-  --theme-text-active: 17 98 55; /* Orange active */
-  --theme-cta-bg: 17 98 55; /* Orange CTA */
-  --theme-cta-text: 0 0 0; /* Black text */
-  --theme-accent-hover: 17 85 45; /* Darker orange */
-}
-
-/* Washington - Patriotic red, navy, and white with silver accents */
-[data-theme="washington"] {
-  --theme-primary: 350 87 43; /* Washington Red */
-  --theme-secondary: 222 84 13; /* Navy Blue */
-  --theme-accent: 197 71 73; /* Light Blue */
-  --theme-neutral: 200 8 68; /* Silver */
+  .card-themed-gradient {
+    @apply rounded-lg border border-crd-mediumGray/30;
+    background: linear-gradient(135deg, var(--crd-darkGray), var(--crd-mediumGray));
+  }
   
-  --theme-navbar-bg: 222 84 13; /* Navy background for red logo contrast */
-  --theme-navbar-border: 350 87 43; /* Red border */
-  --theme-text-primary: 0 0 100; /* White text */
-  --theme-text-secondary: 200 8 68; /* Silver text */
-  --theme-text-active: 350 87 43; /* Red active */
-  --theme-cta-bg: 350 87 43; /* Red CTA */
-  --theme-cta-text: 0 0 100; /* White text */
-  --theme-accent-hover: 350 80 35; /* Darker red */
-}
-
-/* Oakland - Forest green and gold with natural earth tones */
-[data-theme="oakland"] {
-  --theme-primary: 163 100 11; /* Forest Green */
-  --theme-secondary: 44 88 53; /* Gold */
-  --theme-accent: 142 42 55; /* Bright Green */
-  --theme-neutral: 126 30 25; /* Dark Green */
+  .card-themed-modern {
+    @apply rounded-lg border-0 card-glow-blue-purple;
+    background: linear-gradient(135deg, hsl(217, 19%, 18%), hsl(219, 88%, 62%, 0.1));
+  }
   
-  --theme-navbar-bg: 45 15 95; /* Light cream background for forest green logo contrast */
-  --theme-navbar-border: 163 100 11; /* Forest green border */
-  --theme-text-primary: 163 100 11; /* Forest green text */
-  --theme-text-secondary: 126 30 25; /* Dark green text */
-  --theme-text-active: 44 88 53; /* Gold active */
-  --theme-cta-bg: 163 100 11; /* Forest green CTA */
-  --theme-cta-text: 0 0 100; /* White text */
-  --theme-accent-hover: 142 50 45; /* Darker green */
-}
-
-/* Pittsburgh - Classic black and gold with gray support tones */
-[data-theme="pittsburgh"] {
-  --theme-primary: 0 0 0; /* Black */
-  --theme-secondary: 44 100 53; /* Gold */
-  --theme-accent: 47 100 58; /* Bright Gold */
-  --theme-neutral: 200 8 57; /* Gray */
+  /* Button theming with new gradients */
+  .btn-themed-primary {
+    @apply liquid-gradient-blue-purple text-white font-bold px-6 py-3 rounded-full;
+  }
   
-  --theme-navbar-bg: 0 0 20; /* Dark gray background for black logo contrast */
-  --theme-navbar-border: 44 100 53; /* Gold border */
-  --theme-text-primary: 44 100 53; /* Gold text */
-  --theme-text-secondary: 200 8 70; /* Light gray */
-  --theme-text-active: 47 100 58; /* Bright gold active */
-  --theme-cta-bg: 44 100 53; /* Gold CTA */
-  --theme-cta-text: 0 0 0; /* Black text */
-  --theme-accent-hover: 44 90 45; /* Darker gold */
-}
-
-/* Toronto - Royal blue with white and light blue accents */
-[data-theme="toronto"] {
-  --theme-primary: 217 100 25; /* Royal Blue */
-  --theme-secondary: 0 0 100; /* White */
-  --theme-accent: 198 72 58; /* Light Blue */
-  --theme-neutral: 210 17 81; /* Light Gray */
+  .btn-themed-secondary {
+    @apply gradient-blue-purple-subtle text-white font-semibold px-4 py-2 rounded-lg border border-crd-blue/30;
+  }
   
-  --theme-navbar-bg: 0 0 100; /* White background for royal blue logo contrast */
-  --theme-navbar-border: 217 100 25; /* Royal blue border */
-  --theme-text-primary: 217 100 25; /* Royal blue text */
-  --theme-text-secondary: 210 17 81; /* Light gray text */
-  --theme-text-active: 198 72 58; /* Light blue active */
-  --theme-cta-bg: 217 100 25; /* Royal blue CTA */
-  --theme-cta-text: 0 0 100; /* White text */
-  --theme-accent-hover: 198 80 50; /* Darker light blue */
-}
-
-/* Cardshow Basic - Clean grayscale theme */
-[data-theme="cardshow-basic"] {
-  --theme-navbar-bg: 240 5 92; /* HSL for light gray background */
-  --theme-navbar-border: 240 5 27; /* HSL for gray */
-  --theme-text-primary: 240 6 11; /* HSL for dark text */
-  --theme-text-secondary: 240 4 45; /* HSL for medium gray */
-  --theme-text-active: 240 6 11; /* HSL for dark */
-  --theme-cta-bg: 240 6 11; /* HSL for dark */
-  --theme-cta-text: 0 0 96; /* HSL for white */
-  --theme-accent: 240 5 27; /* HSL for gray */
-  --theme-accent-hover: 240 5 35; /* HSL for darker gray */
-}
-
-/* Cardshow Green - CRD signature green theme */
-[data-theme="cardshow-green"] {
-  --theme-navbar-bg: 142 30 15; /* HSL for dark green background */
-  --theme-navbar-border: 142 42 55; /* HSL for green */
-  --theme-text-primary: 0 0 99; /* HSL for white */
-  --theme-text-secondary: 225 11 51; /* HSL for gray */
-  --theme-text-active: 142 42 55; /* HSL for green */
-  --theme-cta-bg: 142 42 55; /* HSL for green */
-  --theme-cta-text: 0 0 7; /* HSL for dark */
-  --theme-accent: 142 42 55; /* HSL for green */
-  --theme-accent-hover: 142 52 65; /* HSL for lighter green */
-}
-
-/* Cardshow Green Sparkles - Enhanced green with emerald accents */
-[data-theme="cardshow-green-sparkles"] {
-  --theme-navbar-bg: 162 82 16; /* HSL for dark emerald */
-  --theme-navbar-border: 162 85 59; /* HSL for emerald */
-  --theme-text-primary: 162 85 96; /* HSL for light emerald */
-  --theme-text-secondary: 162 78 80; /* HSL for medium emerald */
-  --theme-text-active: 162 85 70; /* HSL for bright emerald */
-  --theme-cta-bg: 162 85 59; /* HSL for emerald */
-  --theme-cta-text: 162 82 16; /* HSL for dark emerald */
-  --theme-accent: 162 85 70; /* HSL for emerald accent */
-  --theme-accent-hover: 142 71 45; /* HSL for green hover */
-}
-
-/* Cardshow Red/Blue - Patriotic theme */
-[data-theme="cardshow-red-blue"] {
-  --theme-navbar-bg: 243 58 20; /* HSL for dark blue */
-  --theme-navbar-border: 250 70 66; /* HSL for purple */
-  --theme-text-primary: 0 0 100; /* HSL for white */
-  --theme-text-secondary: 250 78 85; /* HSL for light purple */
-  --theme-text-active: 0 84 60; /* HSL for red */
-  --theme-cta-bg: 0 84 60; /* HSL for red */
-  --theme-cta-text: 0 0 100; /* HSL for white */
-  --theme-accent: 250 70 66; /* HSL for purple */
-  --theme-accent-hover: 250 78 58; /* HSL for darker purple */
-}
-
-/* Cardshow Blue - Professional blue theme */
-[data-theme="cardshow-blue"] {
-  --theme-navbar-bg: 225 65 33; /* HSL for dark blue */
-  --theme-navbar-border: 217 91 60; /* HSL for blue */
-  --theme-text-primary: 0 0 100; /* HSL for white */
-  --theme-text-secondary: 217 89 87; /* HSL for light blue */
-  --theme-text-active: 217 92 78; /* HSL for bright blue */
-  --theme-cta-bg: 217 92 78; /* HSL for bright blue */
-  --theme-cta-text: 225 65 33; /* HSL for dark blue */
-  --theme-accent: 217 91 60; /* HSL for blue */
-  --theme-accent-hover: 217 92 54; /* HSL for darker blue */
-}
-
-/* Cardshow Orange - Vibrant orange theme */
-[data-theme="cardshow-orange"] {
-  --theme-navbar-bg: 17 79 34; /* HSL for dark orange */
-  --theme-navbar-border: 25 89 61; /* HSL for orange */
-  --theme-text-primary: 0 0 100; /* HSL for white */
-  --theme-text-secondary: 35 91 83; /* HSL for light orange */
-  --theme-text-active: 44 94 56; /* HSL for golden */
-  --theme-cta-bg: 44 94 56; /* HSL for golden */
-  --theme-cta-text: 17 79 34; /* HSL for dark orange */
-  --theme-accent: 25 89 61; /* HSL for orange */
-  --theme-accent-hover: 33 93 50; /* HSL for darker orange */
-}
-
-/* Cardshow Block - Bold monospace theme */
-[data-theme="cardshow-block"] {
-  --theme-navbar-bg: 214 25 17; /* HSL for dark slate */
-  --theme-navbar-border: 214 14 65; /* HSL for slate */
-  --theme-text-primary: 210 20 98; /* HSL for light */
-  --theme-text-secondary: 214 15 84; /* HSL for light slate */
-  --theme-text-active: 214 14 65; /* HSL for slate */
-  --theme-cta-bg: 214 14 65; /* HSL for slate */
-  --theme-cta-text: 214 25 17; /* HSL for dark slate */
-  --theme-accent: 215 16 47; /* HSL for medium slate */
-  --theme-accent-hover: 215 21 35; /* HSL for darker slate */
-}
-
-/* Cardshow Vintage - Warm vintage theme */
-[data-theme="cardshow-vintage"] {
-  --theme-navbar-bg: 33 78 27; /* HSL for dark amber */
-  --theme-navbar-border: 33 93 50; /* HSL for amber */
-  --theme-text-primary: 48 94 96; /* HSL for cream */
-  --theme-text-secondary: 48 88 77; /* HSL for light amber */
-  --theme-text-active: 33 93 50; /* HSL for amber */
-  --theme-cta-bg: 33 93 50; /* HSL for amber */
-  --theme-cta-text: 33 78 27; /* HSL for dark amber */
-  --theme-accent: 33 94 44; /* HSL for amber accent */
-  --theme-accent-hover: 33 90 37; /* HSL for darker amber */
-}
-
-/* Cardshow Retro - Neon cyan theme */
-[data-theme="cardshow-retro"] {
-  --theme-navbar-bg: 189 68 24; /* HSL for dark cyan */
-  --theme-navbar-border: 186 100 53; /* HSL for cyan */
-  --theme-text-primary: 183 100 96; /* HSL for light cyan */
-  --theme-text-secondary: 186 94 81; /* HSL for medium cyan */
-  --theme-text-active: 186 96 69; /* HSL for bright cyan */
-  --theme-cta-bg: 324 91 60; /* HSL for magenta */
-  --theme-cta-text: 0 0 100; /* HSL for white */
-  --theme-accent: 186 100 53; /* HSL for cyan */
-  --theme-accent-hover: 186 94 43; /* HSL for darker cyan */
-}
-
-/* Cardshow Modern - Contemporary indigo theme */
-[data-theme="cardshow-modern"] {
-  --theme-navbar-bg: 243 75 34; /* HSL for dark indigo */
-  --theme-navbar-border: 236 86 78; /* HSL for indigo */
-  --theme-text-primary: 0 0 100; /* HSL for white */
-  --theme-text-secondary: 236 87 89; /* HSL for light indigo */
-  --theme-text-active: 236 92 82; /* HSL for bright indigo */
-  --theme-cta-bg: 236 92 82; /* HSL for bright indigo */
-  --theme-cta-text: 243 75 34; /* HSL for dark indigo */
-  --theme-accent: 236 86 78; /* HSL for indigo */
-  --theme-accent-hover: 236 87 67; /* HSL for darker indigo */
-}
-
-/* CRDMKR - Professional gradient theme */
-[data-theme="crdmkr"] {
-  --theme-navbar-bg: 162 82 12; /* HSL for dark emerald */
-  --theme-navbar-border: 162 85 45; /* HSL for emerald */
-  --theme-text-primary: 0 0 100; /* HSL for white */
-  --theme-text-secondary: 162 45 75; /* HSL for light emerald */
-  --theme-text-active: 186 100 65; /* HSL for cyan accent */
-  --theme-cta-bg: 186 100 65; /* HSL for cyan */
-  --theme-cta-text: 162 82 12; /* HSL for dark emerald */
-  --theme-accent: 186 94 55; /* HSL for cyan */
-  --theme-accent-hover: 186 85 45; /* HSL for darker cyan */
-}
-
-/* CRD-specific utility classes */
-.bg-crd-darkest { background-color: var(--crd-darkest); }
-.bg-crd-darker { background-color: var(--crd-darker); }
-.bg-crd-darkGray { background-color: var(--crd-darkGray); }
-.bg-crd-mediumGray { background-color: var(--crd-mediumGray); }
-.bg-crd-lightGray { background-color: var(--crd-lightGray); }
-.bg-crd-green { background-color: var(--crd-green); }
-.bg-crd-blue { background-color: var(--crd-blue); }
-.bg-crd-orange { background-color: var(--crd-orange); }
-.bg-crd-purple { background-color: var(--crd-purple); }
-
-.text-crd-white { color: var(--crd-white); }
-.text-crd-lightGray { color: var(--crd-lightGray); }
-.text-crd-green { color: var(--crd-green); }
-.text-crd-blue { color: var(--crd-blue); }
-.text-crd-orange { color: var(--crd-orange); }
-
-.border-crd-mediumGray { border-color: var(--crd-mediumGray); }
-.border-crd-lightGray { border-color: var(--crd-lightGray); }
-.border-crd-green { border-color: var(--crd-green); }
-.border-crd-blue { border-color: var(--crd-blue); }
-
-/* Theme-based utility classes */
-.navbar-themed {
-  background: hsl(var(--theme-navbar-bg));
-  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.2);
-  transition: all 0.5s ease;
-}
-
-.navbar-themed-bg {
-  background: hsl(var(--theme-navbar-bg) / 0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.2);
-  transition: all 0.5s ease;
-}
-
-.text-themed-primary { color: hsl(var(--theme-text-primary)); }
-.text-themed-secondary { color: hsl(var(--theme-text-secondary)); }
-.text-themed-active { 
-  color: hsl(var(--theme-text-active));
-  background: hsl(var(--theme-accent) / 0.1);
-}
-
-.hover-themed:hover {
-  background: hsl(var(--theme-accent) / 0.1);
-  color: hsl(var(--theme-text-primary));
-}
-
-.cta-themed {
-  background: hsl(var(--theme-cta-bg));
-  color: hsl(var(--theme-cta-text));
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.cta-themed:hover {
-  background: hsl(var(--theme-accent-hover));
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px hsl(var(--theme-accent) / 0.3);
-}
-
-/* COMPREHENSIVE THEMING SYSTEM - All UI elements use theme variables */
-
-/* Core Theme Variables - Extended for complete theming */
-:root {
-  /* Card theming */
-  --theme-card-bg: 217 19% 16%; /* Dark gray for cards */
-  --theme-card-border: 217 19% 27%; /* Medium gray for borders */
-  --theme-card-hover: 219 88% 62%; /* Blue for hover */
+  .btn-themed-ghost {
+    @apply bg-transparent text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white border border-crd-mediumGray/30 rounded-lg;
+  }
   
-  /* Badge and pill theming */
-  --theme-badge-primary: var(--theme-accent);
-  --theme-badge-secondary: var(--theme-text-secondary);
-  --theme-badge-success: var(--theme-accent);
+  /* Text theming */
+  .text-themed-primary {
+    @apply text-crd-white;
+  }
   
-  /* Tab theming */
-  --theme-tab-active: var(--theme-accent);
-  --theme-tab-inactive: var(--theme-text-secondary);
-  --theme-tab-bg: var(--theme-navbar-bg);
+  .text-themed-secondary {
+    @apply text-crd-lightGray;
+  }
   
-  /* Button theming */
-  --theme-button-primary: var(--theme-cta-bg);
-  --theme-button-secondary: var(--theme-accent);
-  --theme-button-ghost: var(--theme-text-secondary);
+  .accent-themed {
+    background: var(--gradient-blue-purple);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
   
-  /* Interactive elements */
-  --theme-filter-bg: var(--theme-accent);
-  --theme-price-text: var(--theme-accent);
-  --theme-success-text: var(--theme-accent);
-  --theme-highlight: var(--theme-accent);
+  /* Interactive states */
+  .hover-themed {
+    @apply transition-all duration-300 hover:shadow-lg;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 hover:card-glow-blue-purple;
+  }
+  
+  .focus-themed {
+    @apply focus:outline-none focus:ring-2 focus:ring-crd-blue/50 focus:ring-offset-2 focus:ring-offset-crd-darkest;
+  }
 }
 
-/* Critical Missing CSS Classes for CRD Components */
-.btn-themed-primary {
-  background: hsl(var(--theme-cta-bg));
-  color: hsl(var(--theme-cta-text));
-  font-size: 1.125rem; /* 18px */
-  font-weight: 800; /* extrabold */
-  padding: 1rem 1.5rem; /* 16px 24px */
-  border-radius: 5.625rem; /* 90px - pill */
-  border: 2px solid hsl(var(--theme-accent));
-  transition: all 0.3s ease;
-}
-
-.btn-themed-primary:hover {
-  background: hsl(var(--theme-accent-hover));
-  border-color: hsl(var(--theme-accent-hover));
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px hsl(var(--theme-accent) / 0.3);
-}
-
-.btn-themed-secondary {
-  background: transparent;
-  color: hsl(var(--theme-accent));
-  font-size: 1.125rem; /* 18px */
-  font-weight: 800; /* extrabold */
-  padding: 1rem 1.5rem; /* 16px 24px */
-  border-radius: 5.625rem; /* 90px - pill */
-  border: 2px solid hsl(var(--theme-accent));
-  transition: all 0.3s ease;
-}
-
-.btn-themed-secondary:hover {
-  background: hsl(var(--theme-accent) / 0.1);
-  border-color: hsl(var(--theme-accent-hover));
-  color: hsl(var(--theme-accent-hover));
-}
-
-.btn-themed-ghost {
-  background: transparent;
-  color: hsl(var(--theme-text-secondary));
-  font-size: 1.125rem; /* 18px */
-  font-weight: 800; /* extrabold */
-  padding: 1rem 1.5rem; /* 16px 24px */
-  border-radius: 5.625rem; /* 90px - pill */
-  border: 1px solid hsl(var(--theme-text-secondary) / 0.3);
-  transition: all 0.3s ease;
-}
-
-.btn-themed-ghost:hover {
-  background: hsl(var(--theme-accent) / 0.05);
-  border-color: hsl(var(--theme-accent) / 0.5);
-  color: hsl(var(--theme-accent));
-}
-
-/* Enhanced Glass Navbar Effects for Brightness Control */
-.glass-navbar {
-  background: hsl(var(--theme-navbar-bg) / 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.2);
-  box-shadow: 0 4px 6px -1px hsl(var(--theme-navbar-bg) / 0.1);
-  position: relative;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.glass-navbar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    hsl(var(--theme-accent) / 0.1) 0%, 
-    transparent 50%, 
-    hsl(var(--theme-accent) / 0.05) 100%);
-  pointer-events: none;
-  z-index: -1;
-  transition: all 0.5s ease;
-}
-
-/* Brightness Control Options */
-.glass-navbar-ultra-light {
-  background: linear-gradient(135deg,
-    hsl(0 0% 100% / 0.95) 0%,
-    hsl(var(--theme-navbar-bg) / 0.4) 50%,
-    hsl(0 0% 100% / 0.9) 100%);
-  backdrop-filter: blur(25px) saturate(180%);
-  -webkit-backdrop-filter: blur(25px) saturate(180%);
-  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.1);
-  box-shadow: 
-    0 8px 32px -8px hsl(var(--theme-navbar-bg) / 0.1),
-    0 0 0 1px hsl(0 0% 100% / 0.2);
-}
-
-.glass-navbar-light {
-  background: linear-gradient(135deg,
-    hsl(0 0% 100% / 0.9) 0%,
-    hsl(var(--theme-navbar-bg) / 0.6) 50%,
-    hsl(0 0% 100% / 0.85) 100%);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.15);
-  box-shadow: 
-    0 4px 16px -4px hsl(var(--theme-navbar-bg) / 0.08),
-    0 0 0 1px hsl(0 0% 100% / 0.15);
-}
-
-.glass-navbar-medium {
-  background: linear-gradient(135deg,
-    hsl(var(--theme-navbar-bg) / 0.8) 0%,
-    hsl(0 0% 100% / 0.3) 50%,
-    hsl(var(--theme-navbar-bg) / 0.7) 100%);
-  backdrop-filter: blur(16px) saturate(120%);
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
-  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.25);
-  box-shadow: 
-    0 4px 12px -2px hsl(var(--theme-navbar-bg) / 0.15),
-    0 0 0 1px hsl(0 0% 100% / 0.1);
-}
-
-.glass-navbar-dark {
-  background: linear-gradient(135deg,
-    hsl(var(--theme-navbar-bg) / 0.9) 0%,
-    hsl(0 0% 0% / 0.1) 50%,
-    hsl(var(--theme-navbar-bg) / 0.95) 100%);
-  backdrop-filter: blur(12px) saturate(100%);
-  -webkit-backdrop-filter: blur(12px) saturate(100%);
-  border-bottom: 1px solid hsl(var(--theme-navbar-border) / 0.3);
-  box-shadow: 
-    0 4px 8px -1px hsl(var(--theme-navbar-bg) / 0.2),
-    0 0 0 1px hsl(0 0% 0% / 0.05);
-}
-
-/* Enhanced Glass Effects with Color Rotation Capability */
-.glass-with-tint {
-  position: relative;
-  overflow: hidden;
-}
-
-.glass-with-tint::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg,
-    hsl(var(--theme-accent) / 0.15) 0%,
-    transparent 30%,
-    hsl(var(--theme-accent) / 0.08) 60%,
-    transparent 100%);
-  animation: shimmer 3s ease-in-out infinite;
-  pointer-events: none;
-}
-
-/* Color Rotation System */
-.color-rotate-1 {
-  --theme-accent: var(--theme-secondary);
-  --theme-navbar-border: var(--theme-secondary);
-}
-
-.color-rotate-2 {
-  --theme-accent: var(--theme-neutral);
-  --theme-navbar-border: var(--theme-neutral);
-}
-
-.color-rotate-3 {
-  --theme-accent: var(--theme-primary);
-  --theme-navbar-border: var(--theme-primary);
-}
-
-/* Advanced Color Rotation with HSL Shifting */
-.hue-shift-30 {
-  filter: hue-rotate(30deg);
-}
-
-.hue-shift-60 {
-  filter: hue-rotate(60deg);
-}
-
-.hue-shift-90 {
-  filter: hue-rotate(90deg);
-}
-
-.hue-shift-120 {
-  filter: hue-rotate(120deg);
-}
-
-.hue-shift-180 {
-  filter: hue-rotate(180deg);
-}
-
-.hue-shift-240 {
-  filter: hue-rotate(240deg);
-}
-
-.hue-shift-300 {
-  filter: hue-rotate(300deg);
-}
-
-@keyframes shimmer {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-@keyframes color-cycle {
-  0% { filter: hue-rotate(0deg); }
-  25% { filter: hue-rotate(90deg); }
-  50% { filter: hue-rotate(180deg); }
-  75% { filter: hue-rotate(270deg); }
-  100% { filter: hue-rotate(360deg); }
-}
-
-.color-cycle {
-  animation: color-cycle 8s ease-in-out infinite;
-}
-
-/* Dopamine hit visual effects */
-.visual-dopamine {
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.visual-dopamine:hover {
-  transform: translateY(-1px);
-  box-shadow: 
-    0 10px 25px -3px hsl(var(--theme-accent) / 0.3),
-    0 4px 6px -2px hsl(var(--theme-accent) / 0.1);
-}
-
-.visual-dopamine::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 50% 50%,
-    hsl(var(--theme-accent) / 0.1) 0%,
-    transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.visual-dopamine:hover::before {
-  opacity: 1;
-}
-
-.btn-themed-primary:hover {
-  background: hsl(219 88% 56%); /* 90% opacity effect */
-  border-color: hsl(219 88% 56%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px hsl(219 88% 62% / 0.4);
-}
-
-.btn-themed-secondary {
-  background: hsl(142 69% 58%); /* #27AE60 */
-  color: hsl(0 0% 99%); /* #FCFCFD */
-  font-size: 1.125rem; /* 18px */
-  font-weight: 800; /* extrabold */
-  padding: 1rem 1.5rem; /* 16px 24px */
-  border-radius: 5.625rem; /* 90px - pill */
-  border: 2px solid hsl(142 69% 58%);
-  transition: all 0.3s ease;
-}
-
-.btn-themed-secondary:hover {
-  background: hsl(142 69% 52%);
-  border-color: hsl(142 69% 52%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px hsl(142 69% 58% / 0.4);
-}
-
-.btn-themed-ghost {
-  background: transparent;
-  color: hsl(0 0% 99%); /* #FCFCFD */
-  font-size: 1.125rem; /* 18px */
-  font-weight: 800; /* extrabold */
-  padding: 1rem 1.5rem; /* 16px 24px */
-  border-radius: 5.625rem; /* 90px - pill */
-  border: 1px solid hsl(217 19% 27%); /* #353945 */
-  transition: all 0.3s ease;
-}
-
-.btn-themed-ghost:hover {
-  background: hsl(217 19% 27% / 0.2);
-  border-color: hsl(217 19% 27%);
-}
-
-.team-spirit-glow {
-  box-shadow: 0 0 20px hsl(219 88% 62% / 0.3);
-  transition: box-shadow 0.3s ease;
-}
-
-.team-spirit-glow:hover {
-  box-shadow: 0 0 30px hsl(219 88% 62% / 0.5);
-}
-
-/* Removed duplicate - using themed version below */
-
-.hover-glow {
-  transition: all 0.3s ease;
-}
-
-.hover-glow:hover {
-  box-shadow: 0 8px 32px hsl(219 88% 62% / 0.2);
-}
-
-/* Visual Polish Classes */
-.crd-text-gradient {
-  background: linear-gradient(to right, hsl(219 88% 62%), hsl(25 89% 61%));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* Critical Missing Utility Class */
-.rounded-pill {
-  border-radius: 9999px;
-}
-
-/* Extended Component Theming Classes */
-.border-themed { border-color: hsl(var(--theme-accent) / 0.3); }
-.border-themed-light { border-color: hsl(var(--theme-accent) / 0.1); }
-.border-themed-strong { border-color: hsl(var(--theme-accent)); }
-.border-themed-subtle { border-color: hsl(var(--theme-text-secondary) / 0.2); }
-
-.bg-themed-subtle { background: hsl(var(--theme-accent) / 0.05); }
-.bg-themed-light { background: hsl(var(--theme-accent) / 0.1); }
-.bg-themed-medium { background: hsl(var(--theme-accent) / 0.2); }
-.bg-themed-strong { background: hsl(var(--theme-accent)); }
-.bg-themed-card { background: hsl(var(--theme-card-bg)); }
-
-.accent-themed { color: hsl(var(--theme-accent)); }
-.accent-themed-hover:hover { color: hsl(var(--theme-accent-hover)); }
-.highlight-themed { color: hsl(var(--theme-highlight)); }
-.success-themed { color: hsl(var(--theme-success-text)); }
-
-/* Card theming */
-.card-themed {
-  background: hsl(217 19% 16%); /* #23262F */
-  border: 1px solid hsl(217 19% 27%); /* #353945 */
-  color: hsl(0 0% 99%); /* #FCFCFD */
-  transition: all 0.3s ease;
-}
-
-.card-themed:hover {
-  border-color: hsl(var(--theme-card-hover) / 0.6);
-  box-shadow: 0 8px 32px hsl(var(--theme-accent) / 0.2);
-  transform: translateY(-2px);
-}
-
-/* Badge theming */
-.badge-themed-primary {
-  background: hsl(var(--theme-badge-primary) / 0.2);
-  color: hsl(var(--theme-badge-primary));
-  border: 1px solid hsl(var(--theme-badge-primary) / 0.4);
-}
-
-.badge-themed-secondary {
-  background: hsl(var(--theme-badge-secondary) / 0.1);
-  color: hsl(var(--theme-badge-secondary));
-  border: 1px solid hsl(var(--theme-badge-secondary) / 0.3);
-}
-
-/* Tab theming */
-.tab-themed-active {
-  background: hsl(var(--theme-tab-active));
-  color: hsl(var(--theme-cta-text));
-  font-weight: 600;
-}
-
-.tab-themed-inactive {
-  background: transparent;
-  color: hsl(var(--theme-tab-inactive));
-  transition: all 0.2s ease;
-}
-
-.tab-themed-inactive:hover {
-  background: hsl(var(--theme-accent) / 0.1);
-  color: hsl(var(--theme-text-primary));
-}
-
-.tabs-themed {
-  background: hsl(var(--theme-tab-bg));
-  border: 1px solid hsl(var(--theme-accent) / 0.2);
-  border-radius: 0.5rem;
-  padding: 0.25rem;
-}
-
-/* Removed duplicate button definitions - using static versions above */
-
-/* Removed duplicate definitions - using static versions above */
-
-/* Focus and active states */
-.focus-themed:focus {
-  outline: 2px solid hsl(var(--theme-accent));
-  outline-offset: 2px;
-}
-
-.ring-themed {
-  --tw-ring-color: hsl(var(--theme-accent) / 0.3);
-}
-
-/* Interactive hover effects */
-/* Removed duplicate - keeping first definition */
-
-/* Button variants */
-.btn-crd-primary {
-  background-color: var(--crd-green);
-  color: var(--crd-darkest);
-  font-weight: 600;
-}
-
-.btn-crd-primary:hover {
-  background-color: var(--crd-green);
-  opacity: 0.9;
-}
-
-.btn-crd-secondary {
-  background-color: var(--crd-blue);
-  color: var(--crd-white);
-  font-weight: 600;
-}
-
-.btn-crd-secondary:hover {
-  background-color: var(--crd-blue);
-  opacity: 0.9;
+/* Utility classes for the new gradient system */
+@layer utilities {
+  .gradient-text-blue-purple {
+    background: linear-gradient(135deg, hsl(219, 88%, 70%), hsl(260, 75%, 70%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .border-gradient-modern {
+    border: 1px solid transparent;
+    background: linear-gradient(var(--crd-darkGray), var(--crd-darkGray)) padding-box,
+                linear-gradient(135deg, hsl(219, 88%, 70%), hsl(260, 75%, 70%)) border-box;
+  }
 }
