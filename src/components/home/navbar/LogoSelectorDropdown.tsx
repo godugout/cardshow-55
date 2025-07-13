@@ -45,12 +45,6 @@ const LogoWithFallback = ({ imageUrl, logoName, className, dnaCode }: {
         onError={() => setHasError(true)}
         onLoad={() => setIsLoading(false)}
       />
-      {/* DNA code tooltip */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-popover border rounded-md px-2 py-1 text-xs text-popover-foreground shadow-lg whitespace-nowrap z-50">
-          {dnaCode}
-        </div>
-      </div>
     </div>
   );
 };
