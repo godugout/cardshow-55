@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { Typography } from './design-system/Typography';
+import { CRDButton } from './design-system/Button';
 
 export interface CRDCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -114,13 +115,15 @@ export const Hero3: React.FC<Hero3Props> = ({
             {/* CTA Button */}
             {ctaText && ctaLink && (
               <div className="mb-12">
-                <a 
-                  href={ctaLink} 
-                  className="inline-flex items-center px-8 py-4 text-lg font-semibold rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 relative overflow-hidden group"
+                <CRDButton
+                  variant="primary"
+                  size="lg"
+                  asChild
                 >
-                  <span className="relative z-10">{ctaText}</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                </a>
+                  <a href={ctaLink}>
+                    {ctaText}
+                  </a>
+                </CRDButton>
               </div>
             )}
             
