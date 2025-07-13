@@ -29,8 +29,9 @@ class PSDCacheService {
   private processingQueue = new Map<string, Promise<any>>();
 
   // Upload and cache original PSD file
-  async uploadPSDFile(file: File, userId: string): Promise<string> {
-    const fileName = `${userId}/${Date.now()}_${file.name}`;
+  async uploadPSDFile(file: File, userId: string | null = null): Promise<string> {
+    const userFolder = userId || 'anonymous';
+    const fileName = `${userFolder}/${Date.now()}_${file.name}`;
     
     const { data, error } = await supabase.storage
       .from('psd-originals')
@@ -46,7 +47,7 @@ class PSDCacheService {
   // Process PSD file and cache all layers
   async processPSDWithCaching(
     file: File, 
-    userId: string,
+    userId: string | null = null,
     onProgress?: (progress: number, step: string) => void
   ): Promise<{ layers: PSDLayer[]; jobId: string; thumbnail: string }> {
     const fileKey = `${file.name}_${file.size}_${file.lastModified}`;
@@ -70,7 +71,7 @@ class PSDCacheService {
 
   private async _processPSDInternal(
     file: File, 
-    userId: string,
+    userId: string | null,
     onProgress?: (progress: number, step: string) => void
   ): Promise<{ layers: PSDLayer[]; jobId: string; thumbnail: string }> {
     onProgress?.(5, 'Uploading PSD file...');
@@ -108,6 +109,7 @@ class PSDCacheService {
     const { data: job, error: jobError } = await supabase
       .from('crdmkr_processing_jobs')
       .insert({
+        user_id: userId,
         file_name: file.name,
         file_url: originalFilePath,
         status: 'completed',
@@ -143,7 +145,7 @@ class PSDCacheService {
 
   private async extractLayersWithImages(
     psdLayers: any[], 
-    userId: string,
+    userId: string | null,
     onProgress?: (progress: number, step: string) => void
   ): Promise<PSDLayer[]> {
     const layers: PSDLayer[] = [];
@@ -160,7 +162,7 @@ class PSDCacheService {
     return layers;
   }
 
-  private async convertLayerWithImageCache(layer: any, index: number, userId: string): Promise<PSDLayer> {
+  private async convertLayerWithImageCache(layer: any, index: number, userId: string | null): Promise<PSDLayer> {
     const bounds = {
       x: layer.left || 0,
       y: layer.top || 0,
@@ -181,7 +183,8 @@ class PSDCacheService {
     } else if (layer.canvas) {
       type = 'image';
       // Cache layer image to storage
-      cachedImageUrl = await this.cacheLayerImage(layer.canvas, `${userId}_layer_${index}`, userId);
+      const layerKey = `${userId || 'anonymous'}_layer_${index}`;
+      cachedImageUrl = await this.cacheLayerImage(layer.canvas, layerKey, userId);
       content.imageData = cachedImageUrl;
     } else {
       type = 'shape';
@@ -212,7 +215,7 @@ class PSDCacheService {
     return psdLayer;
   }
 
-  private async cacheLayerImage(canvas: HTMLCanvasElement, layerKey: string, userId: string): Promise<string> {
+  private async cacheLayerImage(canvas: HTMLCanvasElement, layerKey: string, userId: string | null): Promise<string> {
     // Check if already cached
     if (this.layerImageCache.has(layerKey)) {
       return this.layerImageCache.get(layerKey)!;
@@ -228,7 +231,8 @@ class PSDCacheService {
       });
 
       // Upload to storage
-      const fileName = `${userId}/${layerKey}_${Date.now()}.png`;
+      const userFolder = userId || 'anonymous';
+      const fileName = `${userFolder}/${layerKey}_${Date.now()}.png`;
       const { data, error } = await supabase.storage
         .from('psd-layers')
         .upload(fileName, blob);
@@ -413,12 +417,19 @@ class PSDCacheService {
     };
   }
 
-  async getCachedPSDJobs(userId: string): Promise<CachedPSDJob[]> {
-    const { data, error } = await supabase
+  async getCachedPSDJobs(userId: string | null): Promise<CachedPSDJob[]> {
+    let query = supabase
       .from('crdmkr_processing_jobs')
       .select('*')
-      .eq('status', 'completed')
-      .order('created_at', { ascending: false });
+      .eq('status', 'completed');
+    
+    if (userId) {
+      query = query.eq('user_id', userId);
+    } else {
+      query = query.is('user_id', null);
+    }
+    
+    const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) {
       console.error('Failed to get cached PSD jobs:', error);

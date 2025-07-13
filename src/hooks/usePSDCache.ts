@@ -84,23 +84,21 @@ export const usePSDCache = (): UsePSDCacheResult => {
     };
   }, []);
 
-  // Load cached jobs on mount
-  useEffect(() => {
-    if (user?.id) {
-      loadCachedJobs();
-    }
-  }, [user?.id]);
-
   const loadCachedJobs = useCallback(async () => {
-    if (!user?.id) return;
-    
     try {
-      const jobs = await psdCacheService.getCachedPSDJobs(user.id);
+      const jobs = await psdCacheService.getCachedPSDJobs(user?.id || null);
       setCachedJobs(jobs);
     } catch (error) {
       console.error('Failed to load cached PSD jobs:', error);
     }
   }, [user?.id]);
+
+  // Load cached jobs on mount - including anonymous jobs
+  useEffect(() => {
+    if (!authLoading) {
+      loadCachedJobs();
+    }
+  }, [authLoading, loadCachedJobs]);
 
   const processPSD = useCallback(async (file: File) => {
     setIsProcessing(true);
@@ -108,10 +106,10 @@ export const usePSDCache = (): UsePSDCacheResult => {
     setProcessingStep('Starting...');
 
     try {
-      // Use basic PSD processing without user/caching
+      // Use PSD processing with authenticated user or anonymous
       const result = await psdCacheService.processPSDWithCaching(
         file,
-        'anonymous',
+        user?.id || null,
         (progress, step) => {
           setProcessingProgress(progress);
           setProcessingStep(step);
@@ -124,7 +122,7 @@ export const usePSDCache = (): UsePSDCacheResult => {
       setProcessingProgress(0);
       setProcessingStep('');
     }
-  }, []);
+  }, [user?.id]);
 
   const loadPSDFromCache = useCallback(async (jobId: string): Promise<PSDLayer[]> => {
     if (authLoading) {
