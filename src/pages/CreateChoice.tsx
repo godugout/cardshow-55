@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CRDButton, Typography, Hero3 } from '@/components/ui/design-system';
+import { CRDButton, Typography, Hero3, CRDBadge } from '@/components/ui/design-system';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { Sparkles, Layers, ArrowRight } from 'lucide-react';
 import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
@@ -117,54 +117,62 @@ const CreateChoiceContent: React.FC = () => {
             </div>
           </div>
 
-          {/* STRY Capsules */}
-          <div className="bg-gradient-to-br from-crd-green/20 to-crd-green/10 border border-crd-green/30 rounded-2xl p-8 hover:border-crd-green/50 transition-all group">
+          {/* STRY Capsules - Disabled/Coming Soon */}
+          <div className="relative bg-gradient-to-br from-crd-mediumGray/10 to-crd-mediumGray/5 border border-crd-mediumGray/20 rounded-2xl p-8 opacity-50 cursor-not-allowed">
+            {/* Coming Soon Badge */}
+            <div className="absolute -top-2 -right-2 z-10">
+              <CRDBadge variant="warning" className="bg-crd-orange text-white font-semibold">
+                Coming Soon
+              </CRDBadge>
+            </div>
+            
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-crd-green/20 rounded-xl flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-crd-green" />
+              <div className="w-12 h-12 bg-crd-mediumGray/20 rounded-xl flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-crd-mediumGray" />
               </div>
               <div>
-                <Typography variant="h2" className="text-crd-white text-xl font-bold">
+                <Typography variant="h2" className="text-crd-mediumGray text-xl font-bold">
                   STRY Capsules
                 </Typography>
-                <Typography variant="body" className="text-crd-lightGray text-sm">
+                <Typography variant="body" className="text-crd-mediumGray text-sm">
                   Interactive & Animated Stories
                 </Typography>
               </div>
             </div>
             
-            <Typography variant="body" className="text-crd-lightGray mb-6 leading-relaxed">
+            <Typography variant="body" className="text-crd-mediumGray mb-6 leading-relaxed">
               Advanced interactive cards with animations, scripting, and dynamic behaviors. Perfect for storytelling, gaming, and digital art experiences.
             </Typography>
             
             <div className="space-y-3 mb-8">
-              <div className="flex items-center gap-2 text-sm text-crd-lightGray">
-                <div className="w-1.5 h-1.5 bg-crd-green rounded-full"></div>
+              <div className="flex items-center gap-2 text-sm text-crd-mediumGray">
+                <div className="w-1.5 h-1.5 bg-crd-mediumGray rounded-full"></div>
                 Advanced animation & particle systems
               </div>
-              <div className="flex items-center gap-2 text-sm text-crd-lightGray">
-                <div className="w-1.5 h-1.5 bg-crd-green rounded-full"></div>
+              <div className="flex items-center gap-2 text-sm text-crd-mediumGray">
+                <div className="w-1.5 h-1.5 bg-crd-mediumGray rounded-full"></div>
                 Visual programming & scripting
               </div>
-              <div className="flex items-center gap-2 text-sm text-crd-lightGray">
-                <div className="w-1.5 h-1.5 bg-crd-green rounded-full"></div>
+              <div className="flex items-center gap-2 text-sm text-crd-mediumGray">
+                <div className="w-1.5 h-1.5 bg-crd-mediumGray rounded-full"></div>
                 Interactive behaviors & states
               </div>
-              <div className="flex items-center gap-2 text-sm text-crd-lightGray">
-                <div className="w-1.5 h-1.5 bg-crd-green rounded-full"></div>
+              <div className="flex items-center gap-2 text-sm text-crd-mediumGray">
+                <div className="w-1.5 h-1.5 bg-crd-mediumGray rounded-full"></div>
                 Environmental & biometric triggers
               </div>
             </div>
             
-            <Link to="/create/story" className="block">
+            <div className="block">
               <CRDButton 
-                variant="secondary" 
-                className="w-full border-crd-green/30 text-crd-green hover:bg-crd-green/10 group-hover:scale-105 transition-transform"
+                variant="outline" 
+                className="w-full border-crd-mediumGray/30 text-crd-mediumGray bg-transparent cursor-not-allowed"
+                disabled
               >
                 Create STRY Capsule
                 <ArrowRight className="w-4 h-4 ml-2" />
               </CRDButton>
-            </Link>
+            </div>
           </div>
         </div>
 
