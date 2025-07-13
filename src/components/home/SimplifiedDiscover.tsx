@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CRDButton, Typography } from "@/components/ui/design-system";
@@ -126,20 +125,11 @@ export const SimplifiedDiscover: React.FC = () => {
         <div className="text-center">
           <Link to="/crdmkr">
             <CRDButton 
-              variant="secondary" 
-              size="lg"
-              className="px-8 py-4 rounded-[90px] mr-4"
-            >
-              Browse CRD Catalog
-            </CRDButton>
-          </Link>
-          <Link to="/crdmkr">
-            <CRDButton 
               variant="primary" 
               size="lg"
               className="px-8 py-4 rounded-[90px]"
             >
-              Start Creating
+              Browse CRD Catalog
             </CRDButton>
           </Link>
         </div>
