@@ -1,0 +1,86 @@
+import React, { createContext, useContext, useState, ReactNode, useRef } from 'react';
+import { InteractiveCardData } from '@/types/interactiveCard';
+import type { CardData } from '@/hooks/useCardEditor';
+
+interface CRDEditorState {
+  isPreloaded: boolean;
+  currentCard: InteractiveCardData | null;
+  editorInstance: React.RefObject<any> | null;
+  preloadedAssets: Set<string>;
+}
+
+interface CRDEditorContextType {
+  state: CRDEditorState;
+  setPreloaded: (isPreloaded: boolean) => void;
+  setCurrentCard: (card: InteractiveCardData | null) => void;
+  setEditorInstance: (instance: React.RefObject<any>) => void;
+  addPreloadedAsset: (assetUrl: string) => void;
+  isAssetPreloaded: (assetUrl: string) => boolean;
+  showEditor: () => void;
+  hideEditor: () => void;
+}
+
+const CRDEditorContext = createContext<CRDEditorContextType | undefined>(undefined);
+
+export const CRDEditorProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [state, setState] = useState<CRDEditorState>({
+    isPreloaded: false,
+    currentCard: null,
+    editorInstance: null,
+    preloadedAssets: new Set()
+  });
+
+  const setPreloaded = (isPreloaded: boolean) => {
+    setState(prev => ({ ...prev, isPreloaded }));
+  };
+
+  const setCurrentCard = (card: InteractiveCardData | null) => {
+    setState(prev => ({ ...prev, currentCard: card }));
+  };
+
+  const setEditorInstance = (instance: React.RefObject<any>) => {
+    setState(prev => ({ ...prev, editorInstance: instance }));
+  };
+
+  const addPreloadedAsset = (assetUrl: string) => {
+    setState(prev => ({
+      ...prev,
+      preloadedAssets: new Set([...prev.preloadedAssets, assetUrl])
+    }));
+  };
+
+  const isAssetPreloaded = (assetUrl: string) => {
+    return state.preloadedAssets.has(assetUrl);
+  };
+
+  const showEditor = () => {
+    console.log('🚀 Showing pre-loaded CRD editor');
+  };
+
+  const hideEditor = () => {
+    console.log('🔒 Hiding CRD editor');
+  };
+
+  return (
+    <CRDEditorContext.Provider value={{
+      state,
+      setPreloaded,
+      setCurrentCard,
+      setEditorInstance,
+      addPreloadedAsset,
+      isAssetPreloaded,
+      showEditor,
+      hideEditor
+    }}>
+      {children}
+    </CRDEditorContext.Provider>
+  );
+};
+
+export const useCRDEditor = () => {
+  const context = useContext(CRDEditorContext);
+  if (context === undefined) {
+    throw new Error('useCRDEditor must be used within a CRDEditorProvider');
+  }
+  return context;
+};

@@ -1,12 +1,39 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { CRDButton, Typography, Hero3 } from '@/components/ui/design-system';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { Sparkles, Layers, ArrowRight } from 'lucide-react';
 import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
+import { CRDEditorProvider, useCRDEditor } from '@/contexts/CRDEditorContext';
+import { PreloadedCRDEditor } from '@/components/editor/crd/PreloadedCRDEditor';
+import type { CardData } from '@/hooks/useCardEditor';
 
-export const CreateChoice: React.FC = () => {
+const CreateChoiceContent: React.FC = () => {
   const { isMobile } = useResponsiveLayout();
+  const navigate = useNavigate();
+  const { state } = useCRDEditor();
+  const [showPreloadedEditor, setShowPreloadedEditor] = useState(false);
+
+  const handleCRDComplete = (cardData: CardData) => {
+    console.log('CRD Collectible created successfully:', cardData);
+    navigate('/gallery');
+  };
+
+  const handleCRDCancel = () => {
+    console.log('CRD creation cancelled');
+    setShowPreloadedEditor(false);
+  };
+
+  const handleCreateCRD = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (state.isPreloaded) {
+      console.log('🚀 Using pre-loaded CRD editor - instant open!');
+      setShowPreloadedEditor(true);
+    } else {
+      console.log('⏳ CRD editor not pre-loaded, falling back to navigation');
+      navigate('/create/crd');
+    }
+  };
   
   return (
     <NavbarAwareContainer className="h-screen bg-crd-darkest overflow-hidden">
@@ -77,15 +104,16 @@ export const CreateChoice: React.FC = () => {
               </div>
             </div>
             
-            <Link to="/create/crd" className="block">
+            <div className="block">
               <CRDButton 
                 variant="primary" 
                 className="w-full bg-crd-blue hover:bg-crd-blue/80 text-white group-hover:scale-105 transition-transform"
+                onClick={handleCreateCRD}
               >
                 Create CRD Collectible
                 <ArrowRight className="w-4 h-4 ml-2" />
               </CRDButton>
-            </Link>
+            </div>
           </div>
 
           {/* Story Cards */}
@@ -145,7 +173,22 @@ export const CreateChoice: React.FC = () => {
             Not sure which to choose? Start with CRD Collectibles for traditional collecting, or Story cards for interactive experiences.
           </Typography>
         </div>
+
+        {/* Pre-loaded CRD Editor (hidden until needed) */}
+        <PreloadedCRDEditor
+          onComplete={handleCRDComplete}
+          onCancel={handleCRDCancel}
+          isVisible={showPreloadedEditor}
+        />
       </div>
     </NavbarAwareContainer>
+  );
+};
+
+export const CreateChoice: React.FC = () => {
+  return (
+    <CRDEditorProvider>
+      <CreateChoiceContent />
+    </CRDEditorProvider>
   );
 };
