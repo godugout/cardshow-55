@@ -1,4 +1,5 @@
 
+
 // Complete all logo theme definitions based on official team colors and design analysis
 import { LogoTheme } from './cardshowDNA';
 
@@ -233,15 +234,15 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
 
   CS_RED_MODERN: {
     logoTheme: {
-      primary: '#2C3E50',   // Dark Charcoal (sophisticated dark theme)
-      secondary: '#E74C3C',  // Modern Red (accent color)
-      accent: '#34495E',     // Wet Asphalt (dark accent)
+      primary: '#2C3E50',   // Dark Charcoal (sophisticated text)
+      secondary: '#1E3A8A',  // Spider-Man Blue (navbar background)
+      accent: '#E74C3C',     // Modern Red (logo complement/accents)
       neutral: '#ECF0F1'     // Clouds (cards/text)
     },
     themeUsage: {
-      navbar: 'Dark charcoal background with modern red accents',
+      navbar: 'Spider-Man blue background with modern red accents and charcoal highlights',
       cards: 'Cloud gray backgrounds with charcoal borders and red highlights',
-      buttons: 'Red accent primary CTAs with charcoal secondary actions',
+      buttons: 'Red accent primary CTAs with blue secondary actions',
       text: 'Charcoal headings with modern red accents on light backgrounds'
     }
   },
@@ -312,3 +313,4 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
     }
   }
 };
+
