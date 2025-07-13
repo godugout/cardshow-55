@@ -18,12 +18,17 @@ export const PreloadedCRDEditor: React.FC<PreloadedCRDEditorProps> = ({
 }) => {
   const { setPreloaded, setEditorInstance } = useCRDEditor();
   const editorRef = useRef<HTMLDivElement>(null);
-  const { isComplete: assetsLoaded, progress } = useCRDAssetPreloader();
+  
+  // Only enable preloading when component is visible
+  const { isComplete: assetsLoaded, progress } = useCRDAssetPreloader({ 
+    enabled: isVisible 
+  });
+  
   const [hasSetPreloaded, setHasSetPreloaded] = useState(false);
 
   useEffect(() => {
     // Only mark as preloaded once when assets are loaded and we haven't done it yet
-    if (assetsLoaded && !hasSetPreloaded) {
+    if (assetsLoaded && !hasSetPreloaded && isVisible) {
       const timer = setTimeout(() => {
         setPreloaded(true);
         setEditorInstance(editorRef);
@@ -33,14 +38,14 @@ export const PreloadedCRDEditor: React.FC<PreloadedCRDEditorProps> = ({
 
       return () => clearTimeout(timer);
     }
-  }, [setPreloaded, setEditorInstance, assetsLoaded, hasSetPreloaded]);
+  }, [setPreloaded, setEditorInstance, assetsLoaded, hasSetPreloaded, isVisible]);
 
-  // Only log progress changes, not every render
+  // Only log progress changes when visible
   useEffect(() => {
-    if (progress > 0 && progress < 100) {
+    if (isVisible && progress > 0 && progress < 100) {
       console.log(`🔄 CRD Asset preloading: ${progress}%`);
     }
-  }, [progress]);
+  }, [progress, isVisible]);
 
   return (
     <div 
@@ -64,10 +69,12 @@ export const PreloadedCRDEditor: React.FC<PreloadedCRDEditorProps> = ({
         })
       }}
     >
-      <CRDCardCreatorWrapper 
-        onComplete={onComplete}
-        onCancel={onCancel}
-      />
+      {isVisible && (
+        <CRDCardCreatorWrapper 
+          onComplete={onComplete}
+          onCancel={onCancel}
+        />
+      )}
     </div>
   );
 };

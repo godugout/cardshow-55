@@ -1,7 +1,7 @@
 
-import React, { createContext, useContext, useState, ReactNode, useRef } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { InteractiveCardData } from '@/types/interactiveCard';
-import type { CardData } from '@/hooks/useCardEditor';
+import AssetPreloaderManager from '@/utils/AssetPreloaderSingleton';
 
 interface CRDEditorState {
   isPreloaded: boolean;
@@ -19,6 +19,7 @@ interface CRDEditorContextType {
   isAssetPreloaded: (assetUrl: string) => boolean;
   showEditor: () => void;
   hideEditor: () => void;
+  stopAllPreloading: () => void;
 }
 
 const CRDEditorContext = createContext<CRDEditorContextType | undefined>(undefined);
@@ -72,6 +73,12 @@ export const CRDEditorProvider: React.FC<{ children: ReactNode }> = ({ children 
     console.log('🔒 Hiding CRD editor');
   };
 
+  const stopAllPreloading = () => {
+    const manager = AssetPreloaderManager.getInstance();
+    manager.stopAllPreloading();
+    console.log('🛑 All CRD asset preloading stopped');
+  };
+
   return (
     <CRDEditorContext.Provider value={{
       state,
@@ -81,7 +88,8 @@ export const CRDEditorProvider: React.FC<{ children: ReactNode }> = ({ children 
       addPreloadedAsset,
       isAssetPreloaded,
       showEditor,
-      hideEditor
+      hideEditor,
+      stopAllPreloading
     }}>
       {children}
     </CRDEditorContext.Provider>

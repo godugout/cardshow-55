@@ -1,11 +1,28 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CRDDNASystem } from '@/components/dna/CRDDNASystem';
 import { DNAUploader } from '@/components/dna/DNAUploader';
-import { Code2, Upload, Database, Palette } from 'lucide-react';
+import { Code2, Upload, Database, Palette, Square } from 'lucide-react';
+import { useCRDEditor } from '@/contexts/CRDEditorContext';
+import AssetPreloaderManager from '@/utils/AssetPreloaderSingleton';
 
 const DNAManager = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const { stopAllPreloading } = useCRDEditor();
+
+  // Stop all CRD preloading when on DNA page
+  useEffect(() => {
+    const manager = AssetPreloaderManager.getInstance();
+    manager.stopAllPreloading();
+    stopAllPreloading();
+    console.log('🔒 CRD preloading disabled on DNA page');
+    
+    return () => {
+      // Reset when leaving the page
+      manager.reset();
+    };
+  }, [stopAllPreloading]);
 
   return (
     <div className="min-h-screen bg-crd-darkest pt-16">
@@ -26,6 +43,12 @@ const DNAManager = () => {
             Upload, organize, and manage team-based visual identities using the CRD:DNA system. 
             Each logo contains genetic information for building consistent brand experiences across the platform.
           </p>
+
+          {/* Emergency stop notice */}
+          <div className="inline-flex items-center space-x-2 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">
+            <Square size={12} className="text-green-500 fill-current" />
+            <span className="text-xs font-medium text-green-500">CRD Asset Preloading Disabled</span>
+          </div>
         </div>
 
         {/* Tabs */}
