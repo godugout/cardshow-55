@@ -208,7 +208,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
 
           {/* Logo Grid - No scroll, fit all logos */}
           <div className="p-8">
-            <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-6">
+            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-6">
               {availableLogos.map((logo) => {
                 const isSelected = selectedLogo.dnaCode === logo.dnaCode;
                 const theme = getThemeByDNA(logo.dnaCode);
