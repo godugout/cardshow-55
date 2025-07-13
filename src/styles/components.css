@@ -77,4 +77,36 @@
       filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 60px rgba(59, 130, 246, 0.4));
     }
   }
+
+  /* Liquid gradient animation for CTAs */
+  @keyframes liquid-gradient {
+    0% { 
+      background-position: 0% 50%; 
+    }
+    50% { 
+      background-position: 100% 50%; 
+    }
+    100% { 
+      background-position: 0% 50%; 
+    }
+  }
+
+  /* Vibrant liquid gradient button */
+  .liquid-gradient-cta {
+    @apply relative overflow-hidden text-white font-bold shadow-lg transition-all duration-300;
+    background: linear-gradient(135deg, hsl(219, 95%, 68%), hsl(315, 85%, 65%), hsl(25, 95%, 65%));
+    background-size: 200% 200%;
+    animation: liquid-gradient 4s ease-in-out infinite;
+  }
+
+  .liquid-gradient-cta:hover {
+    @apply shadow-xl transform scale-[1.02];
+    background: linear-gradient(135deg, hsl(219, 98%, 72%), hsl(315, 90%, 70%), hsl(25, 98%, 70%));
+    background-size: 250% 250%;
+    animation: liquid-gradient 2s ease-in-out infinite;
+  }
+
+  .liquid-gradient-cta:active {
+    @apply transform scale-[0.98];
+  }
 }

@@ -118,6 +118,7 @@ export const Hero3: React.FC<Hero3Props> = ({
                 <CRDButton
                   variant="primary"
                   size="xl"
+                  className="liquid-gradient-cta"
                   asChild
                 >
                   <a href={ctaLink}>
