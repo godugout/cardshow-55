@@ -35,30 +35,44 @@ export const migrateBrandData = async () => {
       else if (logo.dnaCode.includes('SCIFI')) category = 'SciFi';
       else if (logo.dnaCode.includes('CLASSIC')) category = 'Classic';
 
-      // Create brand request
+      // Create brand request with all required properties
       const brandRequest: CreateBrandRequest = {
         dna_code: logo.dnaCode,
-        file_name: logo.fileName || `${logo.dnaCode}.png`,
+        file_name: `${logo.dnaCode}.png`,
         display_name: logo.displayName,
-        product_name: logo.productName,
+        product_name: logo.displayName,
         image_url: logo.imageUrl,
         category,
+        font_style: 'Unknown',
+        design_elements: [],
+        style_tags: [],
         color_palette: logo.colorPalette || [],
         primary_color: themeData?.logoTheme?.primary || '#000000',
         secondary_color: themeData?.logoTheme?.secondary || '#FFFFFF',
         logo_theme: themeData?.logoTheme || {},
         theme_usage: themeData?.themeUsage || {},
-        team_code: logo.teamCode,
-        team_name: logo.teamName,
-        league: logo.league,
-        rarity: 'common', // Default rarity
-        description: `${logo.displayName} brand theme for ${logo.teamName || 'custom'} applications`
+        team_code: logo.dnaCode.split('_')[1] || undefined,
+        team_name: logo.displayName,
+        league: 'CRD',
+        rarity: 'common',
+        power_level: 50,
+        unlock_method: 'starter',
+        collectibility_score: 50,
+        is_blendable: true,
+        is_remixable: true,
+        drop_rate: 0.5,
+        description: `${logo.displayName} brand theme for custom applications`
       };
 
       // Create brand in database
-      await CardshowBrandService.createBrand(brandRequest);
-      console.log(`Successfully migrated brand: ${logo.dnaCode}`);
-      migrationResults.success++;
+      const result = await CardshowBrandService.createBrand(brandRequest);
+      if (result) {
+        console.log(`Successfully migrated brand: ${logo.dnaCode}`);
+        migrationResults.success++;
+      } else {
+        console.error(`Failed to create brand: ${logo.dnaCode}`);
+        migrationResults.errors++;
+      }
 
     } catch (error) {
       console.error(`Failed to migrate brand ${logo.dnaCode}:`, error);

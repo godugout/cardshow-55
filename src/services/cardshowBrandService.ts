@@ -78,32 +78,22 @@ export type BrandMintingRules = {
 export class CardshowBrandService {
   // Fetch all active brands
   static async getAllBrands(): Promise<CardshowBrandRow[]> {
-    const { data, error } = await supabase
-      .rpc('get_cardshow_brands')
-      .then(async (result) => {
-        // Fallback to direct query if RPC doesn't exist
-        if (result.error) {
-          return await supabase
-            .from('cardshow_brands' as any)
-            .select('*')
-            .eq('is_active', true)
-            .order('sort_order', { ascending: true });
-        }
-        return result;
-      })
-      .catch(async () => {
-        // Final fallback with raw SQL if needed
-        return await supabase.rpc('exec_sql', {
-          query: 'SELECT * FROM cardshow_brands WHERE is_active = true ORDER BY sort_order ASC'
-        }).then(result => ({ data: result.data, error: result.error }));
-      });
+    try {
+      // Direct query to cardshow_brands table using raw SQL
+      const { data, error } = await supabase.rpc('exec_sql', {
+        query: 'SELECT * FROM cardshow_brands WHERE is_active = true ORDER BY sort_order ASC'
+      } as any);
 
-    if (error) {
-      console.error('Error fetching brands:', error);
-      throw error;
+      if (error) {
+        console.error('Error fetching brands:', error);
+        return [];
+      }
+
+      return Array.isArray(data) ? data as CardshowBrandRow[] : [];
+    } catch (error) {
+      console.error('Error in getAllBrands:', error);
+      return [];
     }
-
-    return (data || []) as CardshowBrandRow[];
   }
 
   // Fetch brand by DNA code
@@ -112,14 +102,14 @@ export class CardshowBrandService {
       const { data, error } = await supabase.rpc('exec_sql', {
         query: 'SELECT * FROM cardshow_brands WHERE dna_code = $1 AND is_active = true LIMIT 1',
         params: [dnaCode]
-      });
+      } as any);
 
       if (error) {
         console.error('Error fetching brand by DNA code:', error);
-        throw error;
+        return null;
       }
 
-      return data && data.length > 0 ? data[0] as CardshowBrandRow : null;
+      return (Array.isArray(data) && data.length > 0) ? data[0] as CardshowBrandRow : null;
     } catch (error) {
       console.error('Error in getBrandByDnaCode:', error);
       return null;
@@ -174,14 +164,14 @@ export class CardshowBrandService {
       const { data, error } = await supabase.rpc('exec_sql', {
         query,
         params: queryParams
-      });
+      } as any);
 
       if (error) {
         console.error('Error searching brands:', error);
-        throw error;
+        return [];
       }
 
-      return (data || []) as CardshowBrandRow[];
+      return Array.isArray(data) ? data as CardshowBrandRow[] : [];
     } catch (error) {
       console.error('Error in searchBrands:', error);
       return [];
@@ -189,7 +179,7 @@ export class CardshowBrandService {
   }
 
   // Create a new brand (admin only)
-  static async createBrand(brandData: CreateBrandRequest): Promise<CardshowBrandRow> {
+  static async createBrand(brandData: CreateBrandRequest): Promise<CardshowBrandRow | null> {
     try {
       const insertData = {
         ...brandData,
@@ -214,24 +204,24 @@ export class CardshowBrandService {
       const { data, error } = await supabase.rpc('exec_sql', {
         query: `INSERT INTO cardshow_brands (${columns}) VALUES (${values}) RETURNING *`,
         params
-      });
+      } as any);
 
       if (error) {
         console.error('Error creating brand:', error);
-        throw error;
+        return null;
       }
 
-      return data[0] as CardshowBrandRow;
+      return Array.isArray(data) && data.length > 0 ? data[0] as CardshowBrandRow : null;
     } catch (error) {
       console.error('Error in createBrand:', error);
-      throw error;
+      return null;
     }
   }
 
   // Update brand usage statistics
   static async trackBrandUsage(brandId: string, userId: string, context: string): Promise<void> {
     try {
-      const { error } = await supabase.rpc('exec_sql', {
+      await supabase.rpc('exec_sql', {
         query: `
           INSERT INTO brand_usage_stats (brand_id, user_id, usage_context, usage_count, last_used_at)
           VALUES ($1, $2, $3, 1, NOW())
@@ -239,12 +229,7 @@ export class CardshowBrandService {
           DO UPDATE SET usage_count = brand_usage_stats.usage_count + 1, last_used_at = NOW()
         `,
         params: [brandId, userId, context]
-      });
-
-      if (error) {
-        console.error('Error tracking brand usage:', error);
-        // Don't throw - usage tracking is non-critical
-      }
+      } as any);
     } catch (error) {
       console.error('Error in trackBrandUsage:', error);
       // Don't throw - usage tracking is non-critical
@@ -257,14 +242,14 @@ export class CardshowBrandService {
       const { data, error } = await supabase.rpc('exec_sql', {
         query: 'SELECT * FROM brand_usage_stats WHERE brand_id = $1',
         params: [brandId]
-      });
+      } as any);
 
       if (error) {
         console.error('Error fetching brand usage stats:', error);
-        throw error;
+        return [];
       }
 
-      return (data || []) as BrandUsageStatsRow[];
+      return Array.isArray(data) ? data as BrandUsageStatsRow[] : [];
     } catch (error) {
       console.error('Error in getBrandUsageStats:', error);
       return [];
@@ -277,14 +262,14 @@ export class CardshowBrandService {
       const { data, error } = await supabase.rpc('exec_sql', {
         query: 'SELECT * FROM cardshow_brands WHERE rarity = $1 AND is_active = true ORDER BY collectibility_score DESC',
         params: [rarity]
-      });
+      } as any);
 
       if (error) {
         console.error('Error fetching brands by rarity:', error);
-        throw error;
+        return [];
       }
 
-      return (data || []) as CardshowBrandRow[];
+      return Array.isArray(data) ? data as CardshowBrandRow[] : [];
     } catch (error) {
       console.error('Error in getBrandsByRarity:', error);
       return [];
@@ -297,14 +282,14 @@ export class CardshowBrandService {
       const { data, error } = await supabase.rpc('exec_sql', {
         query: 'SELECT * FROM cardshow_brands WHERE total_supply IS NOT NULL AND is_active = true ORDER BY rarity DESC',
         params: []
-      });
+      } as any);
 
       if (error) {
         console.error('Error fetching collectible brands:', error);
-        throw error;
+        return [];
       }
 
-      return (data || []) as CardshowBrandRow[];
+      return Array.isArray(data) ? data as CardshowBrandRow[] : [];
     } catch (error) {
       console.error('Error in getCollectibleBrands:', error);
       return [];
