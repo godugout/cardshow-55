@@ -21,7 +21,7 @@ export const CreatePageHero: React.FC = () => {
       <div className="relative z-10 text-center py-20">
         <div className={`max-w-4xl mx-auto ${isMobile ? 'px-5' : 'px-12'}`}>
           {/* Caption with gradient text */}
-          <Typography variant="label" className="mb-4 gradient-text-blue-purple font-bold tracking-wider">
+          <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
             UNLEASH YOUR CREATIVITY
           </Typography>
           
@@ -31,7 +31,7 @@ export const CreatePageHero: React.FC = () => {
             variant="display"
             className="mb-6 leading-tight text-crd-white drop-shadow-lg"
           >
-            Every masterpiece starts with a <span className="gradient-text-blue-purple">single vision</span>
+            Every masterpiece starts with a <span className="gradient-text-green-blue-purple">single vision</span>
           </Typography>
           
           {/* Body Text */}
@@ -56,8 +56,8 @@ export const CreatePageHero: React.FC = () => {
       </div>
       
       {/* Decorative elements */}
-      <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-crd-blue/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-crd-purple/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-crd-green/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-crd-blue/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
     </div>
   );
 };

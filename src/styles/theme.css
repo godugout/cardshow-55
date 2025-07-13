@@ -24,21 +24,21 @@
   --crd-lightGray: hsl(220, 17%, 56%);
   --crd-white: hsl(0, 0%, 99%);
   
-  /* Modern Gradient Variables */
-  --gradient-blue-purple: linear-gradient(135deg, var(--crd-blue), var(--crd-purple));
-  --gradient-blue-purple-vibrant: linear-gradient(135deg, var(--crd-blue-light), var(--crd-purple-light));
-  --gradient-hero: linear-gradient(135deg, hsl(219, 95%, 70%), hsl(260, 85%, 75%), hsl(280, 90%, 80%));
+  /* Updated Green-Blue-Purple Gradient Variables */
+  --gradient-green-blue-purple: linear-gradient(135deg, hsl(142, 70%, 45%), hsl(200, 80%, 55%), hsl(219, 70%, 60%), hsl(260, 40%, 65%));
+  --gradient-green-blue-purple-vibrant: linear-gradient(135deg, hsl(142, 75%, 50%), hsl(200, 85%, 60%), hsl(219, 75%, 65%), hsl(260, 45%, 70%));
+  --gradient-hero: linear-gradient(135deg, hsl(142, 80%, 55%), hsl(200, 90%, 65%), hsl(219, 80%, 70%), hsl(260, 50%, 75%));
 }
 
 /* Theme Classes */
 @layer components {
   /* Themed backgrounds with new gradients */
   .bg-themed-gradient {
-    background: var(--gradient-blue-purple);
+    background: var(--gradient-green-blue-purple);
   }
   
   .bg-themed-gradient-vibrant {
-    background: var(--gradient-blue-purple-vibrant);
+    background: var(--gradient-green-blue-purple-vibrant);
   }
   
   .bg-themed-hero {
@@ -57,7 +57,7 @@
   
   .card-themed-modern {
     @apply rounded-lg border-0 card-glow-blue-purple;
-    background: linear-gradient(135deg, hsl(217, 19%, 18%), hsl(219, 88%, 62%, 0.1));
+    background: linear-gradient(135deg, hsl(217, 19%, 18%), hsl(142, 60%, 45%, 0.1));
   }
   
   /* Button theming with new gradients */
@@ -83,7 +83,7 @@
   }
   
   .accent-themed {
-    background: var(--gradient-blue-purple);
+    background: var(--gradient-green-blue-purple);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -105,8 +105,8 @@
 
 /* Utility classes for the new gradient system */
 @layer utilities {
-  .gradient-text-blue-purple {
-    background: linear-gradient(135deg, hsl(219, 88%, 70%), hsl(260, 75%, 70%));
+  .gradient-text-green-blue-purple {
+    background: linear-gradient(135deg, hsl(142, 70%, 50%), hsl(200, 75%, 60%), hsl(219, 70%, 65%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -115,6 +115,6 @@
   .border-gradient-modern {
     border: 1px solid transparent;
     background: linear-gradient(var(--crd-darkGray), var(--crd-darkGray)) padding-box,
-                linear-gradient(135deg, hsl(219, 88%, 70%), hsl(260, 75%, 70%)) border-box;
+                linear-gradient(135deg, hsl(142, 70%, 50%), hsl(200, 75%, 60%), hsl(219, 70%, 65%)) border-box;
   }
 }
