@@ -13,86 +13,61 @@ export const NavLinks = () => {
   };
   
   return (
-    <div className="flex items-center gap-8">
+    <div className="hidden md:flex items-center gap-2 lg:gap-6">
       <Link 
         to="/" 
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
           isActive('/') 
             ? 'text-themed-active' 
             : 'text-themed-secondary hover-themed'
         }`}
       >
-        Home
+        <span className="hidden lg:inline">Home</span>
+        <span className="lg:hidden">H</span>
       </Link>
       <Link 
         to="/studio" 
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
           location.pathname.startsWith('/studio') 
             ? 'text-themed-active' 
             : 'text-themed-secondary hover-themed'
         }`}
       >
-        Studio
+        <span className="hidden lg:inline">Studio</span>
+        <span className="lg:hidden">S</span>
       </Link>
       <Link 
         to="/collections" 
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
           isActive('/collections') 
             ? 'text-themed-active' 
             : 'text-themed-secondary hover-themed'
         }`}
       >
-        Collections
-      </Link>
-      <Link 
-        to="/showcase" 
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-          location.pathname.startsWith('/showcase') 
-            ? 'text-themed-active' 
-            : 'text-themed-secondary hover-themed'
-        }`}
-      >
-        Showcase
-      </Link>
-      <Link 
-        to="/cards" 
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-          location.pathname.startsWith('/cards') 
-            ? 'text-themed-active' 
-            : 'text-themed-secondary hover-themed'
-        }`}
-      >
-        Cards
+        <span className="hidden lg:inline">Collections</span>
+        <span className="lg:hidden">C</span>
       </Link>
       <Link 
         to="/gallery" 
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
           isActive('/gallery') 
             ? 'text-themed-active' 
             : 'text-themed-secondary hover-themed'
         }`}
       >
-        Gallery
+        <span className="hidden lg:inline">Gallery</span>
+        <span className="lg:hidden">G</span>
       </Link>
       <Link 
         to="/creators" 
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
           isActive('/creators') 
             ? 'text-themed-active' 
             : 'text-themed-secondary hover-themed'
         }`}
       >
-        Creators
-      </Link>
-      <Link 
-        to="/cards/bulk-upload" 
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-          isActive('/cards/bulk-upload') 
-            ? 'text-themed-active' 
-            : 'text-themed-secondary hover-themed'
-        }`}
-      >
-        Bulk Upload
+        <span className="hidden xl:inline">Creators</span>
+        <span className="xl:hidden">Cr</span>
       </Link>
     </div>
   );

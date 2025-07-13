@@ -62,26 +62,27 @@ export const CRDOverlayHeader: React.FC<CRDOverlayHeaderProps> = ({
               onClick={handleBack}
               className={`
                 text-crd-lightGray hover:text-crd-white transition-all duration-200 group
+                min-h-[44px] min-w-[44px]
                 ${!prefersReducedMotion ? 'hover:scale-105' : ''}
               `}
             >
               <ArrowLeft className={`w-4 h-4 mr-2 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:-translate-x-1' : ''}`} />
-              Back
+              <span className="hidden sm:inline">Back</span>
             </CRDButton>
           </div>
 
           {/* Right: Action buttons with enhanced animation */}
-          <div className={`flex items-center space-x-2 transition-all duration-200 ${scrollMetrics.isScrolling ? 'scale-[0.98]' : 'scale-100'}`}>
+          <div className={`flex items-center space-x-1 sm:space-x-2 transition-all duration-200 ${scrollMetrics.isScrolling ? 'scale-[0.98]' : 'scale-100'}`}>
             {onSave && (
               <CRDButton
                 variant="ghost"
                 size="sm"
                 onClick={onSave}
                 disabled={isSaving}
-                className={`text-crd-lightGray hover:text-crd-white transition-all duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}
+                className={`text-crd-lightGray hover:text-crd-white transition-all duration-200 min-h-[44px] min-w-[44px] ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}
               >
-                <Save className="w-4 h-4 mr-2" />
-                {isSaving ? 'Saving...' : 'Save'}
+                <Save className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">{isSaving ? 'Saving...' : 'Save'}</span>
               </CRDButton>
             )}
             
@@ -90,10 +91,10 @@ export const CRDOverlayHeader: React.FC<CRDOverlayHeaderProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={onShare}
-                className={`text-crd-lightGray hover:text-crd-white transition-all duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}
+                className={`text-crd-lightGray hover:text-crd-white transition-all duration-200 min-h-[44px] min-w-[44px] ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}
               >
-                <Share className="w-4 h-4 mr-2" />
-                Share
+                <Share className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Share</span>
               </CRDButton>
             )}
             
@@ -102,10 +103,10 @@ export const CRDOverlayHeader: React.FC<CRDOverlayHeaderProps> = ({
                 variant="primary"
                 size="sm"
                 onClick={onExport}
-                className={`bg-crd-blue hover:bg-crd-blue/90 text-white transition-all duration-200 ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-lg' : ''}`}
+                className={`bg-crd-blue hover:bg-crd-blue/90 text-white transition-all duration-200 min-h-[44px] min-w-[44px] ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-lg' : ''}`}
               >
-                <Download className="w-4 h-4 mr-2" />
-                Export
+                <Download className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Export</span>
               </CRDButton>
             )}
           </div>

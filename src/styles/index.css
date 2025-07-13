@@ -7,6 +7,7 @@
 @import './custom.css';
 @import './card-effects.css';
 @import './glass-morphism.css';
+@import './mobile-first.css';
 
 /* Ensure button text color utilities take priority */
 @layer utilities {

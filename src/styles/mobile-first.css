@@ -1,0 +1,86 @@
+/* Mobile-First Navigation and Touch Optimizations */
+
+/* Touch target minimum size enforcement */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Mobile navigation breakpoints */
+@media (max-width: 768px) {
+  /* Hide desktop navigation */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Increase spacing for mobile */
+  .mobile-spacing {
+    padding: 1rem;
+  }
+  
+  /* Mobile-optimized buttons */
+  .mobile-btn {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0.75rem 1rem;
+  }
+  
+  /* Mobile text sizing */
+  .mobile-text {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  /* Mobile overlay for sidebars */
+  .mobile-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+  }
+}
+
+/* Tablet breakpoint optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Tablet navigation adjustments */
+  .tablet-nav {
+    gap: 0.5rem;
+  }
+  
+  .tablet-nav .nav-text {
+    display: none;
+  }
+  
+  .tablet-nav .nav-icon {
+    display: block;
+  }
+}
+
+/* Desktop breakpoint optimizations */
+@media (min-width: 1024px) {
+  /* Full navigation on desktop */
+  .desktop-nav {
+    gap: 1.5rem;
+  }
+  
+  .desktop-nav .nav-text {
+    display: inline;
+  }
+}
+
+/* Progressive enhancement for hover states */
+@media (hover: hover) and (pointer: fine) {
+  .hover-enhance:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
