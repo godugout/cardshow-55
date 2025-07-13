@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Database, Search, Filter, Star, Zap, Palette } from 'lucide-react';
 import { CRDCard, CRDButton } from '@/components/ui/design-system';
 import { CardshowBrandService } from '@/services/cardshowBrandService';
-import type { CardshowBrand } from '@/types/cardshowBrands';
+import type { CardshowBrand } from '@/services/cardshowBrandService';
 import { cn } from '@/lib/utils';
 
 interface BrandDatabaseProps {
@@ -33,6 +33,8 @@ export const BrandDatabase: React.FC<BrandDatabaseProps> = ({ onBrandSelect }) =
       setBrands(brandData);
     } catch (error) {
       console.error('Failed to load brands:', error);
+      // Fallback to empty array if database isn't ready
+      setBrands([]);
     } finally {
       setLoading(false);
     }
@@ -80,6 +82,22 @@ export const BrandDatabase: React.FC<BrandDatabaseProps> = ({ onBrandSelect }) =
       <CRDCard className="p-8 text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-crd-blue mx-auto mb-4"></div>
         <p className="text-crd-lightGray">Loading brand database...</p>
+      </CRDCard>
+    );
+  }
+
+  // Show empty state if no brands loaded (database not ready)
+  if (brands.length === 0) {
+    return (
+      <CRDCard className="p-8 text-center">
+        <Database className="mx-auto mb-4 text-crd-lightGray" size={48} />
+        <h3 className="text-lg font-semibold text-crd-white mb-2">Database Initializing</h3>
+        <p className="text-crd-lightGray">
+          The brand database is being set up. Please check back in a moment.
+        </p>
+        <CRDButton onClick={loadBrands} className="mt-4">
+          Retry Loading
+        </CRDButton>
       </CRDCard>
     );
   }
@@ -212,7 +230,7 @@ export const BrandDatabase: React.FC<BrandDatabaseProps> = ({ onBrandSelect }) =
         ))}
       </div>
 
-      {filteredBrands.length === 0 && !loading && (
+      {filteredBrands.length === 0 && !loading && brands.length > 0 && (
         <CRDCard className="p-8 text-center">
           <Database className="mx-auto mb-4 text-crd-lightGray" size={48} />
           <h3 className="text-lg font-semibold text-crd-white mb-2">No brands found</h3>
