@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
@@ -173,7 +172,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
           imageUrl={selectedLogo.imageUrl}
           logoName={selectedLogo.displayName}
           dnaCode={selectedLogo.dnaCode}
-          className="h-16 w-40 object-contain" 
+          className="h-10 w-24 object-contain" 
         />
         <ChevronDown className={`h-4 w-4 text-gray-400 transition-all duration-300 opacity-0 group-hover:opacity-100 ${isOpen ? 'rotate-180 opacity-100' : ''}`} />
       </button>
