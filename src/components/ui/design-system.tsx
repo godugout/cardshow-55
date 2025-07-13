@@ -117,7 +117,7 @@ export const Hero3: React.FC<Hero3Props> = ({
               <div className="mb-12">
                 <CRDButton
                   variant="primary"
-                  size="lg"
+                  size="xl"
                   asChild
                 >
                   <a href={ctaLink}>

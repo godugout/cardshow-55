@@ -70,7 +70,7 @@ export const SimplifiedCTA: React.FC = () => {
           <Link to="/create">
             <CRDButton 
               variant="primary" 
-              size="lg"
+              size="xl"
               className="bg-gradient-to-r from-[hsl(219,88%,62%)] to-[hsl(25,89%,61%)] hover:from-[hsl(219,88%,52%)] hover:to-[hsl(25,89%,51%)] text-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
               Create a CRD

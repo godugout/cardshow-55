@@ -24,6 +24,7 @@ const buttonVariants = cva(
         default: "text-lg px-6 py-4", /* 18px text, proper padding */
         sm: "text-sm px-4 py-2",
         lg: "text-lg px-8 py-4", /* matches spec */
+        xl: "text-xl px-10 py-5", /* 20px text, extra padding for CTAs */
         icon: "h-10 w-10",
         "action-icon": "h-12 w-12",
       },
