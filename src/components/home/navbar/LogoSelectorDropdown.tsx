@@ -68,7 +68,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
   // Use first 20 logos from database (matching the design guide)
   const availableLogos = cardshowLogoDatabase.slice(0, 20);
 
-  // Creative names for each logo (avoiding team/city names)
+  // Updated creative names for distinct visual themes
   const logoNames: Record<string, string> = {
     'CRD_GRADIENT_MULTI': 'Fusion Force',
     'CS_GREEN_SPARKLE': 'Emerald Spark',
@@ -83,9 +83,9 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     'CS_GREEN_SPARKLE_SCRIPT': 'Elite Emerald',
     'CS_ORANGE_BLACK_OUTLINE': 'Power Strike',
     'CS_RED_BLOCK': 'Crimson Bold',
-    'CS_RED_SCRIPT_CORAL': 'Coral Wave',
-    'CS_RED_MODERN': 'Modern Fire',
-    'CS_RED_SCRIPT_CLASSIC': 'Classic Rouge',
+    'CS_RED_SCRIPT_CORAL': 'Sunset Coral',
+    'CS_RED_MODERN': 'Carbon Elite',
+    'CS_RED_SCRIPT_CLASSIC': 'Vintage Burgundy',
     'CS_BLACK_BOLD': 'Shadow Force',
     'CS_PURPLE_OUTLINE': 'Royal Edge',
     'CS_ORANGE_BLACK_BLOCK': 'Thunder Block',

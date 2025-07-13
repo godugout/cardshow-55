@@ -1,3 +1,4 @@
+
 // Complete all logo theme definitions based on official team colors and design analysis
 import { LogoTheme } from './cardshowDNA';
 
@@ -217,46 +218,46 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
 
   CS_RED_SCRIPT_CORAL: {
     logoTheme: {
-      primary: '#FF6347',   // Tomato (coral red)
+      primary: '#FF7F7F',   // Light Coral (coral-orange theme)
       secondary: '#FFFFFF',  // Pure White (clean)
-      accent: '#FF7F7F',     // Light Coral (flowing accent)
+      accent: '#FF6347',     // Tomato (deeper coral accent)
       neutral: '#FFF0F5'     // Lavender Blush (soft background)
     },
     themeUsage: {
-      navbar: 'Coral red script with white flowing backgrounds',
+      navbar: 'Coral-orange gradient with white flowing backgrounds',
       cards: 'Lavender blush backgrounds with coral borders and white highlights',
-      buttons: 'Coral script primary with white secondary flowing design',
-      text: 'Coral script headings with light coral accents and white text'
+      buttons: 'Coral gradient primary with white secondary flowing design',
+      text: 'Coral headings with tomato accents and white text'
     }
   },
 
   CS_RED_MODERN: {
     logoTheme: {
-      primary: '#E74C3C',   // Modern Red (logo accent)
-      secondary: '#34495E',  // Wet Asphalt (navbar background)
-      accent: '#FF6B6B',     // Light Red (interactions)
+      primary: '#2C3E50',   // Dark Charcoal (sophisticated dark theme)
+      secondary: '#E74C3C',  // Modern Red (accent color)
+      accent: '#34495E',     // Wet Asphalt (dark accent)
       neutral: '#ECF0F1'     // Clouds (cards/text)
     },
     themeUsage: {
-      navbar: 'Wet asphalt background with modern red accents and light highlights',
-      cards: 'Cloud gray backgrounds with asphalt borders and red highlights',
-      buttons: 'Light red primary CTAs with asphalt secondary actions',
-      text: 'Asphalt headings with modern red accents on light backgrounds'
+      navbar: 'Dark charcoal background with modern red accents',
+      cards: 'Cloud gray backgrounds with charcoal borders and red highlights',
+      buttons: 'Red accent primary CTAs with charcoal secondary actions',
+      text: 'Charcoal headings with modern red accents on light backgrounds'
     }
   },
 
   CS_RED_SCRIPT_CLASSIC: {
     logoTheme: {
-      primary: '#B22222',   // Fire Brick (classic red)
-      secondary: '#F5F5DC',  // Beige (traditional)
-      accent: '#CD5C5C',     // Indian Red (classic accent)
+      primary: '#722F37',   // Deep Burgundy (wine-gold classic theme)
+      secondary: '#DAA520',  // Goldenrod (elegant gold)
+      accent: '#B22222',     // Fire Brick (classic red accent)
       neutral: '#FFFAF0'     // Floral White (classic background)
     },
     themeUsage: {
-      navbar: 'Classic fire brick red script with beige traditional support',
-      cards: 'Floral white backgrounds with red script borders and beige highlights',
-      buttons: 'Classic red script primary with beige secondary traditional',
-      text: 'Beige headings with classic red script accents and traditional styling'
+      navbar: 'Deep burgundy with goldenrod elegant accents',
+      cards: 'Floral white backgrounds with burgundy borders and gold highlights',
+      buttons: 'Goldenrod primary with burgundy secondary classic design',
+      text: 'Burgundy headings with gold script accents and traditional styling'
     }
   },
 
