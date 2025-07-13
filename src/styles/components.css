@@ -165,4 +165,65 @@
     background: linear-gradient(var(--tw-gradient-from), var(--tw-gradient-to)) padding-box,
                 linear-gradient(135deg, hsl(142, 70%, 50%), hsl(200, 75%, 60%), hsl(219, 65%, 65%)) border-box;
   }
+
+  /* Mobile-first responsive utilities */
+  .mobile-container {
+    @apply px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto;
+  }
+  
+  .mobile-section {
+    @apply py-8 sm:py-12 lg:py-16;
+  }
+  
+  .mobile-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+  }
+  
+  .mobile-button {
+    @apply min-h-[48px] px-4 sm:px-6 py-3 text-base font-medium rounded-lg transition-all duration-200;
+  }
+  
+  .mobile-touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+  
+  /* Mobile-first typography helpers */
+  .mobile-heading-1 {
+    @apply text-2xl sm:text-3xl lg:text-4xl font-bold;
+  }
+  
+  .mobile-heading-2 {
+    @apply text-xl sm:text-2xl lg:text-3xl font-bold;
+  }
+  
+  .mobile-body {
+    @apply text-base sm:text-lg leading-relaxed;
+  }
+  
+  /* Mobile-first card styles */
+  .mobile-card {
+    @apply bg-themed-card-bg border border-themed-card-border rounded-lg sm:rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] sm:hover:scale-105;
+  }
+  
+  /* Mobile navigation styles */
+  .mobile-nav-link {
+    @apply block w-full py-3 px-4 text-base font-semibold rounded-lg transition-all duration-200 min-h-[44px] flex items-center;
+  }
+  
+  /* Mobile-first spacing utilities */
+  .mobile-spacing-xs {
+    @apply p-2 sm:p-3;
+  }
+  
+  .mobile-spacing-sm {
+    @apply p-3 sm:p-4;
+  }
+  
+  .mobile-spacing-md {
+    @apply p-4 sm:p-6;
+  }
+  
+  .mobile-spacing-lg {
+    @apply p-6 sm:p-8;
+  }
 }

@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star, Eye, Heart, Filter } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 interface DiscoverCard {
   id: string;
@@ -83,18 +84,18 @@ export const SimplifiedDiscover = () => {
 
   if (loading) {
     return (
-      <section className="py-16 px-6">
+      <section className="py-8 px-4 sm:py-12 sm:px-6 lg:py-16">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-themed-primary mb-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-themed-primary mb-3 sm:mb-4">
               Discover <span className="highlight-themed">Amazing Cards</span>
             </h2>
-            <p className="text-themed-secondary text-lg max-w-2xl mx-auto">
+            <p className="text-themed-secondary text-base sm:text-lg max-w-2xl mx-auto">
               Explore the latest cards from creators around the world
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="bg-themed-secondary/10 rounded-xl h-64 animate-pulse" />
             ))}
@@ -105,30 +106,31 @@ export const SimplifiedDiscover = () => {
   }
 
   return (
-    <section className="py-16 px-6">
+    <section className="py-8 px-4 sm:py-12 sm:px-6 lg:py-16">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-themed-primary mb-4">
+        {/* Header - Mobile-first typography */}
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-themed-primary mb-3 sm:mb-4">
             Discover <span className="highlight-themed">Amazing Cards</span>
           </h2>
-          <p className="text-themed-secondary text-lg max-w-2xl mx-auto">
+          <p className="text-themed-secondary text-base sm:text-lg max-w-2xl mx-auto px-2">
             Explore the latest cards from creators around the world
           </p>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex justify-center mb-8">
-          <div className="tabs-themed inline-flex rounded-lg p-1">
+        {/* Filter Tabs - Mobile-optimized with touch targets */}
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <div className="tabs-themed inline-flex rounded-lg p-1 w-full max-w-sm sm:max-w-none sm:w-auto">
             {['featured', 'trending', 'new'].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                className={cn(
+                  "flex-1 sm:flex-none py-3 px-4 sm:px-6 text-sm font-medium rounded-md transition-all duration-200 min-h-[44px] flex items-center justify-center",
                   activeFilter === filter 
-                    ? 'tab-themed-active' 
-                    : 'tab-themed-inactive'
-                }`}
+                    ? "tab-themed-active" 
+                    : "tab-themed-inactive"
+                )}
               >
                 {getFilterLabel(filter)}
               </button>
@@ -136,8 +138,8 @@ export const SimplifiedDiscover = () => {
           </div>
         </div>
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+        {/* Cards Grid - Mobile-first responsive grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
           {cards.map((card) => (
             <Card key={card.id} className="card-themed group hover:scale-105 transition-all duration-300">
               <div className="relative aspect-[3/4] overflow-hidden rounded-t-xl">
@@ -146,6 +148,7 @@ export const SimplifiedDiscover = () => {
                     src={card.image_url} 
                     alt={card.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    loading="lazy"
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-themed-accent/20 to-themed-accent/5 flex items-center justify-center">
@@ -161,8 +164,8 @@ export const SimplifiedDiscover = () => {
                 )}
               </div>
 
-              <CardContent className="p-4">
-                <h3 className="font-bold text-themed-primary text-lg mb-2 line-clamp-1">
+              <CardContent className="p-3 sm:p-4">
+                <h3 className="font-bold text-themed-primary text-base sm:text-lg mb-2 line-clamp-1">
                   {card.title}
                 </h3>
                 
@@ -177,7 +180,7 @@ export const SimplifiedDiscover = () => {
                     {card.rarity || 'Common'}
                   </span>
                   
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <div className="flex items-center gap-1">
                       <Heart className="w-3 h-3" />
                       <span>{card.favorite_count || 0}</span>
@@ -200,7 +203,7 @@ export const SimplifiedDiscover = () => {
                     {new Date(card.created_at).toLocaleDateString()}
                   </span>
                   
-                  <Button variant="outline" size="sm" className="text-xs">
+                  <Button variant="outline" size="sm" className="text-xs min-h-[36px] px-3">
                     View Card
                   </Button>
                 </div>
@@ -209,17 +212,17 @@ export const SimplifiedDiscover = () => {
           ))}
         </div>
 
-        {/* CTA Section */}
+        {/* CTA Section - Mobile-optimized */}
         <div className="text-center">
-          <div className="bg-themed-secondary/5 rounded-2xl p-8 mb-8">
-            <h3 className="text-2xl font-bold text-themed-primary mb-4">
+          <div className="bg-themed-secondary/5 rounded-xl sm:rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8">
+            <h3 className="text-xl sm:text-2xl font-bold text-themed-primary mb-3 sm:mb-4">
               Ready to explore more?
             </h3>
-            <p className="text-themed-secondary mb-6 max-w-md mx-auto">
+            <p className="text-themed-secondary mb-4 sm:mb-6 max-w-md mx-auto text-sm sm:text-base">
               Browse our complete catalog of cards and collections from creators worldwide.
             </p>
             <Link to="/collections/catalog">
-              <Button className="btn-themed-primary px-8 py-3 text-lg">
+              <Button className="btn-themed-primary px-6 sm:px-8 py-3 text-base sm:text-lg min-h-[48px] w-full sm:w-auto">
                 Browse CRD Catalog
               </Button>
             </Link>

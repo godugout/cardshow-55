@@ -9,8 +9,8 @@ export default function Index() {
   console.log('Index page rendering - streamlined version');
   
   return (
-    <div className="bg-[#141416] min-h-screen flex flex-col overflow-hidden items-center">
-      <main className="w-full">
+    <div className="bg-[#141416] min-h-screen flex flex-col overflow-hidden">
+      <main className="w-full flex-1">
         <EnhancedHero />
         <SimplifiedDiscover />
         <SimplifiedCTA />
