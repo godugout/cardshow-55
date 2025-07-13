@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useCollections } from '@/hooks/useCollections';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
@@ -7,7 +8,7 @@ import { EnhancedSearch } from '@/components/common/EnhancedSearch';
 import { CollectionCard } from '@/components/collections/CollectionCard';
 import { CreateCollectionModal } from '@/components/collections/CreateCollectionModal';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Grid, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Collections = () => {
@@ -69,13 +70,24 @@ const Collections = () => {
               <h1 className="text-3xl font-bold text-white">Collections</h1>
               <p className="text-gray-400 mt-2">Organize and manage your card collections</p>
             </div>
-            <Button
-              onClick={() => setShowCreateModal(true)}
-              className="bg-crd-purple hover:bg-crd-purple/90"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Collection
-            </Button>
+            <div className="flex items-center gap-3">
+              <Link to="/collections/catalog">
+                <Button
+                  variant="outline"
+                  className="border-crd-mediumGray text-white hover:bg-crd-mediumGray"
+                >
+                  <Search className="w-4 h-4 mr-2" />
+                  Browse Catalog
+                </Button>
+              </Link>
+              <Button
+                onClick={() => setShowCreateModal(true)}
+                className="bg-crd-purple hover:bg-crd-purple/90"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Collection
+              </Button>
+            </div>
           </div>
 
           {/* Search */}
@@ -95,13 +107,24 @@ const Collections = () => {
                 {searchQuery ? 'Try adjusting your search terms' : 'Create your first collection to get started'}
               </p>
               {!searchQuery && (
-                <Button
-                  onClick={() => setShowCreateModal(true)}
-                  className="bg-crd-purple hover:bg-crd-purple/90"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Collection
-                </Button>
+                <div className="flex items-center justify-center gap-4">
+                  <Button
+                    onClick={() => setShowCreateModal(true)}
+                    className="bg-crd-purple hover:bg-crd-purple/90"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Collection
+                  </Button>
+                  <Link to="/collections/catalog">
+                    <Button
+                      variant="outline"
+                      className="border-crd-mediumGray text-white hover:bg-crd-mediumGray"
+                    >
+                      <Grid className="w-4 h-4 mr-2" />
+                      Browse Catalog
+                    </Button>
+                  </Link>
+                </div>
               )}
             </div>
           ) : (

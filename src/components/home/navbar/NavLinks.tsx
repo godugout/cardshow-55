@@ -5,7 +5,12 @@ import { Link, useLocation } from "react-router-dom";
 export const NavLinks = () => {
   const location = useLocation();
   
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === '/collections') {
+      return location.pathname === path || location.pathname.startsWith('/collections');
+    }
+    return location.pathname === path;
+  };
   
   return (
     <div className="flex items-center gap-8">
@@ -28,6 +33,16 @@ export const NavLinks = () => {
         }`}
       >
         Studio
+      </Link>
+      <Link 
+        to="/collections" 
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+          isActive('/collections') 
+            ? 'text-themed-active' 
+            : 'text-themed-secondary hover-themed'
+        }`}
+      >
+        Collections
       </Link>
       <Link 
         to="/showcase" 

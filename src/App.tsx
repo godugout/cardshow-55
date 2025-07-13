@@ -13,6 +13,8 @@ import CreateStory from '@/pages/CreateStory';
 import CreateCRD from '@/pages/CreateCRD';
 import Gallery from '@/pages/Gallery';
 import Studio from '@/pages/Studio';
+import Collections from '@/pages/Collections';
+import CollectionsCatalog from '@/pages/CollectionsCatalog';
 import UploadTestPage from '@/pages/UploadTestPage';
 import DNATestPage from '@/pages/DNATestPage';
 import DesignGuide from '@/pages/DesignGuide';
@@ -42,6 +44,8 @@ const App = () => {
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/studio" element={<Studio />} />
                 <Route path="/studio/:cardId" element={<Studio />} />
+                <Route path="/collections" element={<Collections />} />
+                <Route path="/collections/catalog" element={<CollectionsCatalog />} />
                 <Route path="/upload-test" element={<UploadTestPage />} />
                 <Route path="/dna-test" element={<DNATestPage />} />
                 <Route path="/design-guide" element={<DesignGuide />} />

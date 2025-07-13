@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 interface NavigationProps {
@@ -7,30 +8,37 @@ interface NavigationProps {
 }
 
 const navigationItems = [
-  { label: 'HOME', href: '/', active: true },
-  { label: 'EXPLORE', href: '/explore' },
-  { label: 'CREATE', href: '/create' },
-  { label: 'MARKETPLACE', href: '/marketplace' },
-  { label: 'COLLECTIONS', href: '/collections' },
+  { label: 'HOME', href: '/', active: false },
+  { label: 'EXPLORE', href: '/explore', active: false },
+  { label: 'CREATE', href: '/create', active: false },
+  { label: 'MARKETPLACE', href: '/marketplace', active: false },
+  { label: 'COLLECTIONS', href: '/collections', active: false },
 ];
 
 export const Navigation: React.FC<NavigationProps> = ({ className }) => {
+  const location = useLocation();
+
   return (
     <nav className={cn("hidden md:flex items-center gap-8", className)}>
-      {navigationItems.map((item) => (
-        <Link
-          key={item.label}
-          to={item.href}
-          className={cn(
-            "text-sm font-semibold uppercase tracking-normal px-4 py-2 transition-colors duration-200",
-            item.active 
-              ? "text-crd-orange" 
-              : "text-zinc-400 hover:text-white"
-          )}
-        >
-          {item.label}
-        </Link>
-      ))}
+      {navigationItems.map((item) => {
+        const isActive = location.pathname === item.href || 
+                        (item.href === '/collections' && location.pathname.startsWith('/collections'));
+        
+        return (
+          <Link
+            key={item.label}
+            to={item.href}
+            className={cn(
+              "text-sm font-semibold uppercase tracking-normal px-4 py-2 transition-colors duration-200",
+              isActive 
+                ? "text-crd-orange" 
+                : "text-zinc-400 hover:text-white"
+            )}
+          >
+            {item.label}
+          </Link>
+        );
+      })}
     </nav>
   );
 };
