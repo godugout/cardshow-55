@@ -4,10 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CRDDNASystem } from '@/components/dna/CRDDNASystem';
 import { DNAUploader } from '@/components/dna/DNAUploader';
 import { Code2, Upload, Database, Palette, Square } from 'lucide-react';
-import { useCRDEditor } from '@/contexts/CRDEditorContext';
+import { CRDEditorProvider, useCRDEditor } from '@/contexts/CRDEditorContext';
 import AssetPreloaderManager from '@/utils/AssetPreloaderSingleton';
 
-const DNAManager = () => {
+const DNAManagerContent = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const { stopAllPreloading } = useCRDEditor();
 
@@ -100,6 +100,14 @@ const DNAManager = () => {
         </Tabs>
       </div>
     </div>
+  );
+};
+
+const DNAManager = () => {
+  return (
+    <CRDEditorProvider>
+      <DNAManagerContent />
+    </CRDEditorProvider>
   );
 };
 
