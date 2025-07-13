@@ -117,48 +117,51 @@ const CreateChoiceContent: React.FC = () => {
             </div>
           </div>
 
-          {/* STRY Capsules - Disabled/Coming Soon */}
-          <div className="relative bg-gradient-to-br from-crd-mediumGray/10 to-crd-mediumGray/5 border border-crd-mediumGray/20 rounded-2xl p-8 opacity-50 cursor-not-allowed">
-            {/* Coming Soon Badge */}
+          {/* STRY Capsules - Disabled/Coming Soon with Hover Effects */}
+          <div className="relative bg-gradient-to-br from-crd-mediumGray/10 to-crd-mediumGray/5 border border-crd-mediumGray/20 rounded-2xl p-8 cursor-not-allowed transition-all duration-300 hover:from-crd-mediumGray/20 hover:to-crd-mediumGray/10 hover:border-crd-mediumGray/40 group">
+            {/* Coming Soon Badge with Glow Effect */}
             <div className="absolute -top-2 -right-2 z-10">
-              <CRDBadge variant="warning" className="bg-crd-orange text-white font-semibold">
+              <CRDBadge 
+                variant="warning" 
+                className="bg-crd-orange text-white font-semibold transition-all duration-300 group-hover:shadow-lg group-hover:shadow-crd-orange/50 group-hover:scale-105"
+              >
                 Coming Soon
               </CRDBadge>
             </div>
             
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-crd-mediumGray/20 rounded-xl flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-crd-mediumGray" />
+              <div className="w-12 h-12 bg-crd-mediumGray/20 rounded-xl flex items-center justify-center group-hover:bg-crd-mediumGray/40 transition-colors">
+                <Sparkles className="w-6 h-6 text-crd-mediumGray group-hover:text-crd-lightGray transition-colors" />
               </div>
               <div>
-                <Typography variant="h2" className="text-crd-mediumGray text-xl font-bold">
+                <Typography variant="h2" className="text-crd-mediumGray group-hover:text-crd-lightGray transition-colors text-xl font-bold">
                   STRY Capsules
                 </Typography>
-                <Typography variant="body" className="text-crd-mediumGray text-sm">
+                <Typography variant="body" className="text-crd-mediumGray group-hover:text-crd-lightGray transition-colors text-sm">
                   Interactive & Animated Stories
                 </Typography>
               </div>
             </div>
             
-            <Typography variant="body" className="text-crd-mediumGray mb-6 leading-relaxed">
+            <Typography variant="body" className="text-crd-mediumGray group-hover:text-crd-lightGray transition-colors mb-6 leading-relaxed">
               Advanced interactive cards with animations, scripting, and dynamic behaviors. Perfect for storytelling, gaming, and digital art experiences.
             </Typography>
             
             <div className="space-y-3 mb-8">
-              <div className="flex items-center gap-2 text-sm text-crd-mediumGray">
-                <div className="w-1.5 h-1.5 bg-crd-mediumGray rounded-full"></div>
+              <div className="flex items-center gap-2 text-sm text-crd-mediumGray group-hover:text-crd-lightGray transition-colors">
+                <div className="w-1.5 h-1.5 bg-crd-mediumGray group-hover:bg-crd-lightGray transition-colors rounded-full"></div>
                 Advanced animation & particle systems
               </div>
-              <div className="flex items-center gap-2 text-sm text-crd-mediumGray">
-                <div className="w-1.5 h-1.5 bg-crd-mediumGray rounded-full"></div>
+              <div className="flex items-center gap-2 text-sm text-crd-mediumGray group-hover:text-crd-lightGray transition-colors">
+                <div className="w-1.5 h-1.5 bg-crd-mediumGray group-hover:bg-crd-lightGray transition-colors rounded-full"></div>
                 Visual programming & scripting
               </div>
-              <div className="flex items-center gap-2 text-sm text-crd-mediumGray">
-                <div className="w-1.5 h-1.5 bg-crd-mediumGray rounded-full"></div>
+              <div className="flex items-center gap-2 text-sm text-crd-mediumGray group-hover:text-crd-lightGray transition-colors">
+                <div className="w-1.5 h-1.5 bg-crd-mediumGray group-hover:bg-crd-lightGray transition-colors rounded-full"></div>
                 Interactive behaviors & states
               </div>
-              <div className="flex items-center gap-2 text-sm text-crd-mediumGray">
-                <div className="w-1.5 h-1.5 bg-crd-mediumGray rounded-full"></div>
+              <div className="flex items-center gap-2 text-sm text-crd-mediumGray group-hover:text-crd-lightGray transition-colors">
+                <div className="w-1.5 h-1.5 bg-crd-mediumGray group-hover:bg-crd-lightGray transition-colors rounded-full"></div>
                 Environmental & biometric triggers
               </div>
             </div>
@@ -166,7 +169,7 @@ const CreateChoiceContent: React.FC = () => {
             <div className="block">
               <CRDButton 
                 variant="outline" 
-                className="w-full border-crd-mediumGray/30 text-crd-mediumGray bg-transparent cursor-not-allowed"
+                className="w-full border-crd-mediumGray/30 text-crd-mediumGray bg-transparent cursor-not-allowed group-hover:border-crd-mediumGray/50 group-hover:text-crd-lightGray transition-colors"
                 disabled
               >
                 Create STRY Capsule
