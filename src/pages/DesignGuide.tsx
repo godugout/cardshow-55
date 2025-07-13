@@ -80,8 +80,8 @@ const DesignGuide = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Logo database
-  const availableLogos = cardshowLogoDatabase.slice(0, 12); // Show first 12 for better UX
+  // Logo database - Show first 20 logos to include all main logos
+  const availableLogos = cardshowLogoDatabase.slice(0, 20);
 
   const designPrinciples = [
     { 
@@ -382,7 +382,13 @@ const DesignGuide = () => {
                         >
                           <div className="space-y-3">
                             <div className="w-full h-16 flex items-center justify-center">
-                              <img src={logo.imageUrl} alt={logo.displayName} className="max-w-full max-h-full object-contain" />
+                              <img 
+                                src={logo.imageUrl} 
+                                alt={logo.displayName} 
+                                className={`max-w-full max-h-full object-contain ${
+                                  logo.dnaCode === 'CRD_GRADIENT_MULTI' ? 'max-h-12' : ''
+                                }`}
+                              />
                             </div>
                             
                             {/* 4 Color Dots Under Logo */}

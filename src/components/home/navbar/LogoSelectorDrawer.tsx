@@ -250,7 +250,9 @@ export const LogoSelectorDrawer = ({ onThemeChange }: LogoSelectorDrawerProps) =
                               imageUrl={logo.imageUrl}
                               logoName={logo.name}
                               dnaCode={logo.dnaCode}
-                              className="max-w-full max-h-full object-contain" 
+                              className={`max-w-full max-h-full object-contain ${
+                                logo.dnaCode === 'CRD_GRADIENT_MULTI' ? 'max-h-12' : ''
+                              }`}
                             />
                           </div>
                           
