@@ -9,13 +9,8 @@ export const CreatePageHero: React.FC = () => {
 
   return (
     <div className="relative mb-16 overflow-hidden">
-      {/* Modern Vibrant Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-themed-hero opacity-90"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-crd-darkest/20 to-crd-darkest/80"></div>
-        {/* Animated gradient overlay */}
-        <div className="absolute inset-0 liquid-gradient-blue-purple opacity-30"></div>
-      </div>
+      {/* Simple Black Background */}
+      <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
       
       {/* Hero Content */}
       <div className="relative z-10 text-center py-20">
