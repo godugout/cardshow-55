@@ -78,10 +78,11 @@ export const SimplifiedDiscover: React.FC = () => {
         <div className="container mx-auto px-5 md:px-12 xl:px-24">
         <div className="text-center mb-12">
           <Typography as="h2" variant="h1" className="mb-4">
-            Discover Amazing Cards
+            Discover Amazing CRDs
           </Typography>
           <Typography variant="body" className="text-crd-lightGray text-lg max-w-2xl mx-auto">
-            Explore stunning card art created by our community of talented artists and creators
+            Explore stunning card art created by our<br />
+            community of talented artists and creators
           </Typography>
         </div>
         
@@ -129,7 +130,7 @@ export const SimplifiedDiscover: React.FC = () => {
               size="lg"
               className="px-8 py-4 rounded-[90px] mr-4"
             >
-              Browse All Cards
+              Browse All CRDs
             </CRDButton>
           </Link>
           <Link to="/crdmkr">
