@@ -43,10 +43,10 @@ export class DevAuthService {
     }
 
     const devUser: User = {
-      id: 'dev-user-123',
+      id: '196b5883-8d80-4f7a-9c5f-5f83f964f9ce',
       aud: 'authenticated',
       role: 'authenticated',
-      email: 'dev@cardshow.com',
+      email: 'admin@cardshow.com',
       email_confirmed_at: new Date().toISOString(),
       phone: '',
       confirmed_at: new Date().toISOString(),

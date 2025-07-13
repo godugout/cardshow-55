@@ -21,6 +21,8 @@ import DNALabLanding from '@/pages/DNALabLanding';
 import DNALabDashboard from '@/pages/DNALabDashboard';
 import DNALabUsers from '@/pages/DNALabUsers';
 import DNALabModeration from '@/pages/DNALabModeration';
+import SignIn from '@/pages/auth/SignIn';
+import SignUp from '@/pages/auth/SignUp';
 
 const App = () => {
   // Main App Error Boundary wrapper
@@ -48,6 +50,8 @@ const App = () => {
                 <Route path="/dna/lab/dashboard" element={<DNALabDashboard />} />
                 <Route path="/dna/lab/users" element={<DNALabUsers />} />
                 <Route path="/dna/lab/moderation" element={<DNALabModeration />} />
+                <Route path="/auth/signin" element={<SignIn />} />
+                <Route path="/auth/signup" element={<SignUp />} />
               </Routes>
             </main>
             <Toaster 
