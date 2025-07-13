@@ -70,9 +70,10 @@ export const SimplifiedCTA: React.FC = () => {
           <Link to="/create">
             <CRDButton 
               variant="primary" 
-              className="bg-gradient-to-r from-[hsl(219,88%,62%)] to-[hsl(25,89%,61%)] hover:from-[hsl(219,88%,52%)] hover:to-[hsl(25,89%,51%)] text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              size="lg"
+              className="bg-gradient-to-r from-[hsl(219,88%,62%)] to-[hsl(25,89%,61%)] hover:from-[hsl(219,88%,52%)] hover:to-[hsl(25,89%,51%)] text-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              Create Cards
+              Create a CRD
             </CRDButton>
           </Link>
         </div>

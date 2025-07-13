@@ -58,18 +58,9 @@ export const Hero3: React.FC<Hero3Props> = ({
             variant="h1"
             className="text-[40px] font-black leading-[48px] tracking-[-0.4px] mt-2 max-md:max-w-full text-center mb-4"
           >
-            {heading.includes('\n') ? (
-              <>
-                {heading.split('\n').map((line, index) => (
-                  <span key={index} className={index === 0 ? "lg:whitespace-nowrap" : ""}>
-                    {line}
-                    {index < heading.split('\n').length - 1 && <br />}
-                  </span>
-                ))}
-              </>
-            ) : (
-              heading
-            )}
+            <span className="whitespace-nowrap">Create, collect, and trade card art</span>
+            <br />
+            <span>with stunning 3D effects</span>
           </Typography>
           <Typography 
             variant="body" 
@@ -81,14 +72,14 @@ export const Hero3: React.FC<Hero3Props> = ({
 
         {/* Featured Cards Ticker Carousel */}
         {showFeaturedCards && featuredCards.length > 0 && (
-          <div className="w-full mb-12 overflow-hidden">
+          <div className="w-screen mb-12 overflow-hidden -mx-[200px] max-md:-mx-5">
             <Typography variant="h3" className="text-white mb-6 text-center">
               Featured Creations
             </Typography>
             <div className="relative">
               {/* Gradient Overlays */}
-              <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-crd-darkest to-transparent z-10 pointer-events-none" />
-              <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-crd-darkest to-transparent z-10 pointer-events-none" />
+              <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-crd-darkest to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-crd-darkest to-transparent z-10 pointer-events-none" />
               
               {/* Ticker Container */}
               <div className="flex animate-[scroll_60s_linear_infinite] hover:[animation-play-state:paused]">

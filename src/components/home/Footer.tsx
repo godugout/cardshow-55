@@ -60,10 +60,9 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col gap-5">
           <div className="text-[#FCFCFD] text-base font-semibold mb-2">Create</div>
           <div className="text-[#777E90] flex flex-col gap-3">
-            <Link to="/studio" className="hover:text-[#FCFCFD] transition-colors">Card Studio</Link>
             <Link to="/create" className="hover:text-[#FCFCFD] transition-colors">Create Cards</Link>
-            <Link to="/gallery" className="hover:text-[#FCFCFD] transition-colors">Templates</Link>
-            <Link to="/collections" className="hover:text-[#FCFCFD] transition-colors">Collections</Link>
+            <Link to="/gallery" className="hover:text-[#FCFCFD] transition-colors">Gallery</Link>
+            <Link to="/design-guide" className="hover:text-[#FCFCFD] transition-colors">Design Guide</Link>
           </div>
         </div>
 
@@ -71,19 +70,15 @@ export const Footer: React.FC = () => {
           <div className="text-[#FCFCFD] text-base font-semibold mb-2">Explore</div>
           <div className="text-[#777E90] flex flex-col gap-3">
             <Link to="/gallery" className="hover:text-[#FCFCFD] transition-colors">Gallery</Link>
-            <Link to="/creators" className="hover:text-[#FCFCFD] transition-colors">Creators</Link>
-            <Link to="/cards" className="hover:text-[#FCFCFD] transition-colors">Browse Cards</Link>
-            <Link to="/memories" className="hover:text-[#FCFCFD] transition-colors">Memories</Link>
+            <Link to="/dna-manager" className="hover:text-[#FCFCFD] transition-colors">DNA Manager</Link>
           </div>
         </div>
 
         <div className="flex flex-col gap-5">
-          <div className="text-[#FCFCFD] text-base font-semibold mb-2">Support</div>
+          <div className="text-[#FCFCFD] text-base font-semibold mb-2">Resources</div>
           <div className="text-[#777E90] flex flex-col gap-3">
-            <Link to="/help" className="hover:text-[#FCFCFD] transition-colors">Help Center</Link>
-            <Link to="/getting-started" className="hover:text-[#FCFCFD] transition-colors">Getting Started</Link>
-            <Link to="/contact" className="hover:text-[#FCFCFD] transition-colors">Contact Us</Link>
-            <Link to="/community" className="hover:text-[#FCFCFD] transition-colors">Community</Link>
+            <Link to="/design-guide" className="hover:text-[#FCFCFD] transition-colors">Documentation</Link>
+            <span className="text-[#555] cursor-not-allowed">Help Center (Coming Soon)</span>
           </div>
         </div>
 
