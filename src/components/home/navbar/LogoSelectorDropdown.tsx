@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { cardshowLogoDatabase } from '@/lib/cardshowDNA';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 
 // Logo component with fallback and tooltip
 const LogoWithFallback = ({ imageUrl, logoName, className, dnaCode }: { 
@@ -64,6 +65,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const mouseLeaveTimerRef = useRef<NodeJS.Timeout>();
   
   // Use first 20 logos from database (matching the design guide)
   const availableLogos = cardshowLogoDatabase.slice(0, 20);
@@ -113,7 +115,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     }
   }, [currentLogoCode]);
 
-  // Close dropdown on outside click
+  // Close dropdown on outside click (but not on logo selection)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
@@ -128,6 +130,29 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     }
   }, [isOpen]);
 
+  // Handle mouse leave with delay
+  const handleMouseLeave = () => {
+    mouseLeaveTimerRef.current = setTimeout(() => {
+      setIsOpen(false);
+    }, 300); // 300ms delay to prevent accidental closing
+  };
+
+  // Handle mouse enter (cancel close timer)
+  const handleMouseEnter = () => {
+    if (mouseLeaveTimerRef.current) {
+      clearTimeout(mouseLeaveTimerRef.current);
+    }
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (mouseLeaveTimerRef.current) {
+        clearTimeout(mouseLeaveTimerRef.current);
+      }
+    };
+  }, []);
+
   const handleLogoSelect = (logo: typeof selectedLogo) => {
     setSelectedLogo(logo);
     setLogoTheme(logo.dnaCode);
@@ -135,6 +160,10 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     // Save theme to persistent storage
     saveSettings({ theme: `logo-${logo.dnaCode.toLowerCase()}` });
     onThemeChange?.(`logo-${logo.dnaCode.toLowerCase()}`);
+    // Removed setIsOpen(false) - dropdown stays open on selection
+  };
+
+  const handleCloseClick = () => {
     setIsOpen(false);
   };
 
@@ -159,20 +188,29 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
       {isOpen && (
         <div 
           ref={dropdownRef}
-          className="absolute top-full left-0 mt-2 w-[calc(100vw-8rem)] max-w-7xl max-h-[500px] bg-background/95 backdrop-blur-xl border border-border/30 rounded-xl shadow-xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200"
+          onMouseLeave={handleMouseLeave}
+          onMouseEnter={handleMouseEnter}
+          className="absolute top-full left-0 mt-2 w-[calc(100vw-8rem)] max-w-7xl max-h-[600px] bg-background/95 backdrop-blur-xl border border-border/30 rounded-xl shadow-xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200"
         >
-          {/* Header */}
-          <div className="p-4 border-b border-border/20 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5">
+          {/* Header with Close Button */}
+          <div className="relative p-4 border-b border-border/20 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5">
             <h3 className="text-lg font-bold text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Choose Your Logo
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
               Select a logo to customize your theme
             </p>
+            {/* Close Button (X) in upper right */}
+            <button
+              onClick={handleCloseClick}
+              className="absolute top-4 right-4 p-1 rounded-md hover:bg-muted/50 transition-colors duration-200 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
 
-          {/* Logo Grid */}
-          <div className="p-6 overflow-y-auto max-h-[400px]">
+          {/* Logo Grid - Increased height for better visibility */}
+          <div className="p-6 overflow-y-auto max-h-[500px]">
             <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-8 gap-4">
               {availableLogos.map((logo) => {
                 const isSelected = selectedLogo.dnaCode === logo.dnaCode;
