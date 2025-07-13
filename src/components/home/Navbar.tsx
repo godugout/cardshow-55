@@ -5,10 +5,33 @@ import { NavActions } from "./navbar/NavActions";
 import { LogoSelector } from "./navbar/LogoSelector";
 import { MobileNav } from "./navbar/MobileNav";
 import { Menu, X } from "lucide-react";
+import { useTeamTheme } from "@/hooks/useTeamTheme";
 
-const getNavbarColorClasses = (color: string) => {
-  // Enhanced navbar styling - uses secondary color for background per new strategy
-  return 'navbar-themed-bg border-b border-[hsl(var(--theme-navbar-border)/0.2)]';
+// Dynamic navbar background based on current theme
+const getNavbarDynamicStyles = (currentPalette: any) => {
+  if (!currentPalette) {
+    return {
+      backgroundColor: 'rgba(20, 20, 22, 0.85)', // fallback
+      borderColor: 'rgba(255, 255, 255, 0.1)'
+    };
+  }
+  
+  // Create subtle background gradient using theme colors
+  const primary = currentPalette.colors.primary;
+  const secondary = currentPalette.colors.secondary;
+  
+  // Convert hex to rgba for transparency
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  
+  return {
+    background: `linear-gradient(135deg, ${hexToRgba(primary, 0.08)} 0%, ${hexToRgba(secondary, 0.05)} 100%)`,
+    borderColor: hexToRgba(primary, 0.15)
+  };
 };
 
 const getDividerColorClasses = (color: string) => {
@@ -30,17 +53,25 @@ const getDividerColorClasses = (color: string) => {
 };
 
 export const Navbar: React.FC = () => {
-  const [currentTheme, setCurrentTheme] = useState('sf-orange');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { currentPalette, setTheme } = useTeamTheme();
+  
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette);
 
   return (
     <>
-      <div className={`navbar-themed w-full overflow-hidden ${getNavbarColorClasses(currentTheme)}`}>
+      <div 
+        className="navbar-themed w-full overflow-hidden border-b backdrop-blur-sm"
+        style={{
+          ...dynamicStyles,
+          borderBottomColor: dynamicStyles.borderColor
+        }}
+      >
         {/* Mobile-first container with proper touch targets */}
         <div className="flex w-full items-center justify-between px-4 py-4 sm:px-6 sm:py-5">
           {/* Logo - Always visible */}
           <div className="flex items-center">
-            <LogoSelector onThemeChange={setCurrentTheme} />
+            <LogoSelector onThemeChange={(themeId) => setTheme(themeId)} />
           </div>
 
           {/* Desktop navigation - Hidden on mobile */}

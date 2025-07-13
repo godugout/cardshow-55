@@ -9,27 +9,42 @@ import { DevLoginButton } from '@/components/auth/DevLoginButton';
 import { AdminTrigger } from '@/components/admin/AdminTrigger';
 import { MobileNav } from '@/components/home/navbar/MobileNav';
 
-const getNavbarColorClasses = (color: string) => {
-  const colorMap = {
-    orange: 'bg-gradient-to-r from-orange-500/5 to-orange-400/5 border-b-orange-500/10',
-    red: 'bg-gradient-to-r from-red-500/5 to-red-400/5 border-b-red-500/10',
-    green: 'bg-gradient-to-r from-green-500/5 to-green-400/5 border-b-green-500/10',
-    yellow: 'bg-gradient-to-r from-yellow-500/5 to-yellow-400/5 border-b-yellow-500/10',
-    blue: 'bg-gradient-to-r from-blue-500/5 to-blue-400/5 border-b-blue-500/10',
-    gray: 'bg-gradient-to-r from-gray-500/5 to-gray-400/5 border-b-gray-500/10',
-    emerald: 'bg-gradient-to-r from-emerald-500/5 to-emerald-400/5 border-b-emerald-500/10',
-    purple: 'bg-gradient-to-r from-purple-500/5 to-purple-400/5 border-b-purple-500/10',
-    slate: 'bg-gradient-to-r from-slate-500/5 to-slate-400/5 border-b-slate-500/10',
-    amber: 'bg-gradient-to-r from-amber-500/5 to-amber-400/5 border-b-amber-500/10',
-    cyan: 'bg-gradient-to-r from-cyan-500/5 to-cyan-400/5 border-b-cyan-500/10',
-    indigo: 'bg-gradient-to-r from-indigo-500/5 to-indigo-400/5 border-b-indigo-500/10',
+// Dynamic navbar background based on current theme
+const getNavbarDynamicStyles = (currentPalette: any, isScrolled: boolean, blurIntensity: number) => {
+  if (!currentPalette) {
+    return {
+      backgroundColor: 'rgba(20, 20, 22, 0.85)', // fallback
+      borderColor: 'rgba(255, 255, 255, 0.1)',
+      backdropFilter: `blur(${blurIntensity}px)`
+    };
+  }
+  
+  // Create subtle background gradient using theme colors
+  const primary = currentPalette.colors.primary;
+  const secondary = currentPalette.colors.secondary;
+  
+  // Convert hex to rgba for transparency
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
-  return colorMap[color] || 'bg-gradient-to-r from-gray-500/5 to-gray-400/5 border-b-gray-500/10';
+  
+  // More opacity when scrolled
+  const bgOpacity = isScrolled ? 0.12 : 0.08;
+  const borderOpacity = isScrolled ? 0.25 : 0.15;
+  
+  return {
+    background: `linear-gradient(135deg, ${hexToRgba(primary, bgOpacity)} 0%, ${hexToRgba(secondary, bgOpacity * 0.6)} 100%)`,
+    borderColor: hexToRgba(primary, borderOpacity),
+    backdropFilter: `blur(${blurIntensity}px)`
+  };
 };
 
 export const Navbar = () => {
   const location = useLocation();
-  const { currentPalette } = useTeamTheme();
+  const { currentPalette, setTheme } = useTeamTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Get prefersReducedMotion first
@@ -56,6 +71,9 @@ export const Navbar = () => {
   const blurIntensity = Math.min(scrollMetrics.velocity * 2 + 8, 20);
   const backgroundOpacity = Math.min(0.8 + scrollMetrics.velocity * 0.1, 0.98);
   
+  // Get dynamic styles based on current theme
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette, isScrolled, blurIntensity);
+  
   const getTransitionClass = () => {
     if (prefersReducedMotion) return 'transition-transform duration-200';
     return scrollMetrics.isScrolling 
@@ -67,18 +85,16 @@ export const Navbar = () => {
     <>
       <nav 
         className={`
-          navbar-themed fixed top-0 left-0 right-0 z-50
+          navbar-themed fixed top-0 left-0 right-0 z-50 border-b
           ${getTransitionClass()}
           ${isVisible ? 'translate-y-0' : '-translate-y-full'}
-          ${isScrolled 
-            ? `backdrop-blur-[${blurIntensity}px] shadow-lg` 
-            : 'backdrop-blur-sm'
-          }
+          ${isScrolled ? 'shadow-lg' : ''}
         `}
         style={{ 
           height: 'var(--navbar-height)',
           transform: `translateY(${isVisible ? '0' : '-100%'})`,
-          backdropFilter: isScrolled ? `blur(${blurIntensity}px)` : 'blur(4px)'
+          ...dynamicStyles,
+          borderBottomColor: dynamicStyles.borderColor
         }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex justify-between items-center h-full">
@@ -91,9 +107,9 @@ export const Navbar = () => {
               {/* Admin Trigger - Hidden icon left of logo */}
               <AdminTrigger />
               
-              <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
-                <LogoSelector />
-              </div>
+            <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
+              <LogoSelector onThemeChange={(themeId) => setTheme(themeId)} />
+            </div>
             </div>
 
             {/* Mobile Menu Button */}
