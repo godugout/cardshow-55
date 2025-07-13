@@ -1,10 +1,10 @@
 import React from 'react';
-import { LogoSelectorDrawer } from './LogoSelectorDrawer';
+import { LogoSelectorDropdown } from './LogoSelectorDropdown';
 
 interface LogoSelectorProps {
   onThemeChange?: (themeId: string) => void;
 }
 
 export const LogoSelector = ({ onThemeChange }: LogoSelectorProps) => {
-  return <LogoSelectorDrawer onThemeChange={onThemeChange} />;
+  return <LogoSelectorDropdown onThemeChange={onThemeChange} />;
 };
