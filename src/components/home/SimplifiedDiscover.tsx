@@ -130,7 +130,7 @@ export const SimplifiedDiscover: React.FC = () => {
               size="lg"
               className="px-8 py-4 rounded-[90px] mr-4"
             >
-              Browse All CRDs
+              Browse CRD Catalog
             </CRDButton>
           </Link>
           <Link to="/crdmkr">
