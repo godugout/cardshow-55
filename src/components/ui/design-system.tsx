@@ -142,47 +142,29 @@ export const Hero3: React.FC<Hero3Props> = ({
             <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-crd-darkest to-transparent z-10 pointer-events-none" />
             
             {/* Ticker Container */}
-            <div className="flex animate-[scroll_60s_linear_infinite] hover:[animation-play-state:paused]">
-              {/* First set of cards */}
-              {featuredCards.map((card) => (
-                <div 
-                  key={`first-${card.id}`}
-                  className="flex-shrink-0 w-48 mr-6 group cursor-pointer transform transition-all duration-300 hover:scale-105"
-                  onClick={() => onCardClick?.(card)}
-                >
-                  <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl overflow-hidden relative">
-                    <img
-                      src={card.image_url || card.thumbnail_url || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"}
-                      alt={card.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="text-white text-sm font-semibold mb-1 truncate">{card.title}</div>
+            <div className="flex animate-[scroll_40s_linear_infinite] hover:[animation-play-state:paused]">
+              {/* Multiple sets for seamless infinite scroll */}
+              {Array.from({ length: 6 }).map((_, setIndex) => 
+                featuredCards.map((card) => (
+                  <div 
+                    key={`set-${setIndex}-${card.id}`}
+                    className="flex-shrink-0 w-48 mr-6 group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                    onClick={() => onCardClick?.(card)}
+                  >
+                    <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl overflow-hidden relative">
+                      <img
+                        src={card.image_url || card.thumbnail_url || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"}
+                        alt={card.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="text-white text-sm font-semibold mb-1 truncate">{card.title}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-              {/* Duplicate set for seamless loop */}
-              {featuredCards.map((card) => (
-                <div 
-                  key={`second-${card.id}`}
-                  className="flex-shrink-0 w-48 mr-6 group cursor-pointer transform transition-all duration-300 hover:scale-105"
-                  onClick={() => onCardClick?.(card)}
-                >
-                  <div className="aspect-[3/4] bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl overflow-hidden relative">
-                    <img
-                      src={card.image_url || card.thumbnail_url || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"}
-                      alt={card.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="text-white text-sm font-semibold mb-1 truncate">{card.title}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>

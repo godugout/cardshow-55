@@ -74,8 +74,8 @@ export const SimplifiedDiscover: React.FC = () => {
 
   return (
     <>
-      <div className="bg-[#141416] flex flex-col overflow-hidden pt-32 pb-16 w-screen -mx-4 md:-mx-12 lg:-mx-[200px] max-md:max-w-full">
-        <div className="px-4 md:px-12 lg:px-[200px]">
+      <div className="bg-[#141416] flex flex-col overflow-hidden pt-32 pb-16">
+        <div className="container mx-auto px-5 md:px-12 xl:px-24">
         <div className="text-center mb-12">
           <Typography as="h2" variant="h1" className="mb-4">
             Discover Amazing Cards
