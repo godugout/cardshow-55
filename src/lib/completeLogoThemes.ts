@@ -1,5 +1,4 @@
 
-
 // Complete all logo theme definitions based on official team colors and design analysis
 import { LogoTheme } from './cardshowDNA';
 
@@ -205,15 +204,15 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
   CS_RED_BLOCK: {
     logoTheme: {
       primary: '#DC143C',   // Crimson Red (clean modern)
-      secondary: '#FFFFFF',  // Pure White (high contrast)
+      secondary: '#2C3E50',  // Dark Slate (navbar background - changed from white to avoid red navbar)
       accent: '#FF6B6B',     // Light Red (soft accent)
       neutral: '#FFF5F5'     // Misty Rose (light red tint)
     },
     themeUsage: {
-      navbar: 'Clean crimson red with white modern block styling',
-      cards: 'Misty rose backgrounds with red block borders and white highlights',
-      buttons: 'Red block primary with white secondary clean design',
-      text: 'Red block headings with light red accents on white backgrounds'
+      navbar: 'Dark slate background with crimson red block accents and light highlights',
+      cards: 'Misty rose backgrounds with red block borders and slate highlights',
+      buttons: 'Red block primary with slate secondary clean design',
+      text: 'Red block headings with light red accents on neutral backgrounds'
     }
   },
 
@@ -234,9 +233,9 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
 
   CS_RED_MODERN: {
     logoTheme: {
-      primary: '#2C3E50',   // Dark Charcoal (sophisticated text)
+      primary: '#E74C3C',   // Modern Red (logo complement/accents)
       secondary: '#1E3A8A',  // Spider-Man Blue (navbar background)
-      accent: '#E74C3C',     // Modern Red (logo complement/accents)
+      accent: '#2C3E50',     // Dark Charcoal (sophisticated text)
       neutral: '#ECF0F1'     // Clouds (cards/text)
     },
     themeUsage: {
@@ -313,4 +312,3 @@ export const completeLogoThemes: Record<string, { logoTheme: LogoTheme; themeUsa
     }
   }
 };
-

@@ -68,7 +68,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
   // Use first 20 logos from database (matching the design guide)
   const availableLogos = cardshowLogoDatabase.slice(0, 20);
 
-  // Updated creative names for distinct visual themes
+  // Updated creative names for distinct visual themes - renamed Carbon Elite to Steel Force
   const logoNames: Record<string, string> = {
     'CRD_GRADIENT_MULTI': 'Fusion Force',
     'CS_GREEN_SPARKLE': 'Emerald Spark',
@@ -84,7 +84,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     'CS_ORANGE_BLACK_OUTLINE': 'Power Strike',
     'CS_RED_BLOCK': 'Crimson Bold',
     'CS_RED_SCRIPT_CORAL': 'Sunset Coral',
-    'CS_RED_MODERN': 'Carbon Elite',
+    'CS_RED_MODERN': 'Steel Force', // Changed from Carbon Elite
     'CS_RED_SCRIPT_CLASSIC': 'Vintage Burgundy',
     'CS_BLACK_BOLD': 'Shadow Force',
     'CS_PURPLE_OUTLINE': 'Royal Edge',
