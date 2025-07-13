@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+
+import React, { useEffect, useRef, useState } from 'react';
 import { CRDCardCreatorWrapper } from './CRDCardCreatorWrapper';
 import { useCRDEditor } from '@/contexts/CRDEditorContext';
 import { useCRDAssetPreloader } from '@/hooks/useCRDAssetPreloader';
@@ -18,23 +19,27 @@ export const PreloadedCRDEditor: React.FC<PreloadedCRDEditorProps> = ({
   const { setPreloaded, setEditorInstance } = useCRDEditor();
   const editorRef = useRef<HTMLDivElement>(null);
   const { isComplete: assetsLoaded, progress } = useCRDAssetPreloader();
+  const [hasSetPreloaded, setHasSetPreloaded] = useState(false);
 
   useEffect(() => {
-    // Mark as preloaded when both component mounts and assets are loaded
-    if (assetsLoaded) {
+    // Only mark as preloaded once when assets are loaded and we haven't done it yet
+    if (assetsLoaded && !hasSetPreloaded) {
       const timer = setTimeout(() => {
         setPreloaded(true);
         setEditorInstance(editorRef);
+        setHasSetPreloaded(true);
         console.log('✅ CRD Editor pre-loaded successfully with all assets');
       }, 100);
 
       return () => clearTimeout(timer);
     }
-  }, [setPreloaded, setEditorInstance, assetsLoaded]);
+  }, [setPreloaded, setEditorInstance, assetsLoaded, hasSetPreloaded]);
 
-  // Log preloading progress
+  // Only log progress changes, not every render
   useEffect(() => {
-    console.log(`🔄 CRD Asset preloading: ${progress}%`);
+    if (progress > 0 && progress < 100) {
+      console.log(`🔄 CRD Asset preloading: ${progress}%`);
+    }
   }, [progress]);
 
   return (

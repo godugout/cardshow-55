@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode, useRef } from 'react';
 import { InteractiveCardData } from '@/types/interactiveCard';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -31,7 +32,12 @@ export const CRDEditorProvider: React.FC<{ children: ReactNode }> = ({ children 
   });
 
   const setPreloaded = (isPreloaded: boolean) => {
-    setState(prev => ({ ...prev, isPreloaded }));
+    setState(prev => {
+      if (prev.isPreloaded === isPreloaded) {
+        return prev; // Prevent unnecessary updates
+      }
+      return { ...prev, isPreloaded };
+    });
   };
 
   const setCurrentCard = (card: InteractiveCardData | null) => {
@@ -43,10 +49,15 @@ export const CRDEditorProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   const addPreloadedAsset = (assetUrl: string) => {
-    setState(prev => ({
-      ...prev,
-      preloadedAssets: new Set([...prev.preloadedAssets, assetUrl])
-    }));
+    setState(prev => {
+      if (prev.preloadedAssets.has(assetUrl)) {
+        return prev; // Asset already added, prevent unnecessary updates
+      }
+      return {
+        ...prev,
+        preloadedAssets: new Set([...prev.preloadedAssets, assetUrl])
+      };
+    });
   };
 
   const isAssetPreloaded = (assetUrl: string) => {
