@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CRDButton, Typography, Hero3 } from '@/components/ui/design-system';
@@ -76,7 +77,7 @@ const CreateChoiceContent: React.FC = () => {
                   CRD Collectibles
                 </Typography>
                 <Typography variant="body" className="text-crd-lightGray text-sm">
-                  Traditional Trading Cards
+                  Digital Trading Cards
                 </Typography>
               </div>
             </div>
