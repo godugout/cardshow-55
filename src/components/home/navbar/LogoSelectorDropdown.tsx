@@ -195,11 +195,8 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
           {/* Header with Close Button */}
           <div className="relative p-4 border-b border-border/20 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5">
             <h3 className="text-lg font-bold text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Choose Your Logo
+              Choose Your Logo <span className="text-sm text-muted-foreground font-normal ml-2">Select a logo to customize your theme</span>
             </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Select a logo to customize your theme
-            </p>
             {/* Close Button (X) in upper right */}
             <button
               onClick={handleCloseClick}
