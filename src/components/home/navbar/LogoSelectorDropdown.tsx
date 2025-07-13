@@ -54,7 +54,7 @@ interface LogoSelectorDropdownProps {
 
 export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProps) => {
   const { settings, saveSettings } = useAppSettings();
-  const { setLogoTheme, currentLogoCode, getThemeByDNA } = useTeamTheme();
+  const { setLogoTheme, currentLogoCode, getThemeByDNA, setCustomHeaderBgColor, customHeaderColor, customHeaderColorType } = useTeamTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -160,6 +160,11 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     setIsOpen(false);
   };
 
+  const handleColorDotClick = (event: React.MouseEvent, color: string, colorType: string) => {
+    event.stopPropagation();
+    setCustomHeaderBgColor(color, colorType);
+  };
+
   return (
     <div className="relative">
       {/* Trigger Button */}
@@ -229,21 +234,29 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                         />
                       </div>
                       
-                      {/* 4 Color Dots - matching design guide exactly */}
+                      {/* 4 Color Dots - clickable for header customization */}
                       <div className="flex justify-center space-x-1">
                         {theme && [
-                          { color: theme.colors.primary, size: 'w-3 h-3' },
-                          { color: theme.colors.secondary, size: 'w-2.5 h-2.5' },
-                          { color: theme.colors.accent, size: 'w-2 h-2' },
-                          { color: theme.colors.neutral, size: 'w-1.5 h-1.5' }
-                        ].map((dot, index) => (
-                          <div
-                            key={index}
-                            className={`${dot.size} rounded-full border border-white/20 shadow-sm`}
-                            style={{ backgroundColor: dot.color }}
-                            title={`${['Primary', 'Secondary', 'Accent', 'Neutral'][index]}: ${dot.color}`}
-                          />
-                        ))}
+                          { color: theme.colors.primary, size: 'w-3 h-3', type: 'primary' },
+                          { color: theme.colors.secondary, size: 'w-2.5 h-2.5', type: 'secondary' },
+                          { color: theme.colors.accent, size: 'w-2 h-2', type: 'accent' },
+                          { color: theme.colors.neutral, size: 'w-1.5 h-1.5', type: 'neutral' }
+                        ].map((dot, index) => {
+                          const isActiveHeaderColor = customHeaderColor === dot.color && customHeaderColorType === dot.type;
+                          return (
+                            <button
+                              key={index}
+                              onClick={(e) => handleColorDotClick(e, dot.color, dot.type)}
+                              className={`${dot.size} rounded-full border shadow-sm transition-all duration-200 cursor-pointer hover:scale-110 ${
+                                isActiveHeaderColor 
+                                  ? 'border-white border-2 ring-2 ring-white/50' 
+                                  : 'border-white/20 hover:border-white/40'
+                              }`}
+                              style={{ backgroundColor: dot.color }}
+                              title={`Click to use ${['Primary', 'Secondary', 'Accent', 'Neutral'][index]} (${dot.color}) for header background`}
+                            />
+                          );
+                        })}
                       </div>
 
                       {/* Creative Name */}

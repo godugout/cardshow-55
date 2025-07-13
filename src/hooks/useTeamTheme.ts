@@ -26,6 +26,8 @@ export const useTeamTheme = () => {
   const [databaseThemes, setDatabaseThemes] = useState<ColorTheme[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentLogoCode, setCurrentLogoCode] = useState<string | null>(null);
+  const [customHeaderColor, setCustomHeaderColor] = useState<string | null>(null);
+  const [customHeaderColorType, setCustomHeaderColorType] = useState<string | null>(null);
 
   // Load database color themes and logo themes
   const loadDatabaseThemes = useCallback(async () => {
@@ -188,6 +190,14 @@ export const useTeamTheme = () => {
     if (availablePalettes.length > 0 && !isLoading) {
       const savedTheme = localStorage.getItem('crd-theme');
       const savedLogoCode = localStorage.getItem('crd-logo-code');
+      const savedHeaderColor = localStorage.getItem('crd-custom-header-color');
+      const savedHeaderColorType = localStorage.getItem('crd-custom-header-color-type');
+      
+      // Restore custom header color if exists
+      if (savedHeaderColor && savedHeaderColorType) {
+        setCustomHeaderColor(savedHeaderColor);
+        setCustomHeaderColorType(savedHeaderColorType);
+      }
       
       if (savedLogoCode) {
         // Restore logo-based theme
@@ -208,6 +218,26 @@ export const useTeamTheme = () => {
     return getThemeByDNA(currentLogoCode);
   }, [currentLogoCode]);
 
+  // Custom header color functions
+  const setCustomHeaderBgColor = useCallback((color: string, colorType: string) => {
+    setCustomHeaderColor(color);
+    setCustomHeaderColorType(colorType);
+    
+    // Save to localStorage
+    localStorage.setItem('crd-custom-header-color', color);
+    localStorage.setItem('crd-custom-header-color-type', colorType);
+    
+    console.log(`Custom header color set: ${colorType} - ${color}`);
+  }, []);
+  
+  const clearCustomHeaderColor = useCallback(() => {
+    setCustomHeaderColor(null);
+    setCustomHeaderColorType(null);
+    localStorage.removeItem('crd-custom-header-color');
+    localStorage.removeItem('crd-custom-header-color-type');
+    console.log('Custom header color cleared');
+  }, []);
+
   // Set theme and clear logo tracking for non-logo themes
   const setThemeEnhanced = useCallback((themeId: string) => {
     // Check if this is a logo-based theme
@@ -215,9 +245,11 @@ export const useTeamTheme = () => {
     if (!isLogoTheme) {
       setCurrentLogoCode(null);
       localStorage.removeItem('crd-logo-code');
+      // Also clear custom header color when switching themes
+      clearCustomHeaderColor();
     }
     setTheme(themeId);
-  }, [setTheme]);
+  }, [setTheme, clearCustomHeaderColor]);
 
   return {
     // Current state
@@ -226,12 +258,16 @@ export const useTeamTheme = () => {
     databaseThemes,
     isLoading,
     currentLogoCode,
+    customHeaderColor,
+    customHeaderColorType,
     
     // Actions
     setTheme: setThemeEnhanced,
     setLogoTheme,
     resetToDefault,
     applyTheme,
+    setCustomHeaderBgColor,
+    clearCustomHeaderColor,
     
     // Utilities
     getThemePreview,

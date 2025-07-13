@@ -8,17 +8,13 @@ import { Menu, X } from "lucide-react";
 import { useTeamTheme } from "@/hooks/useTeamTheme";
 
 // Dynamic navbar background based on current theme
-const getNavbarDynamicStyles = (currentPalette: any) => {
+const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null) => {
   if (!currentPalette) {
     return {
       backgroundColor: 'rgba(20, 20, 22, 0.85)', // fallback
       borderColor: 'rgba(255, 255, 255, 0.1)'
     };
   }
-  
-  // Create subtle background gradient using theme colors
-  const primary = currentPalette.colors.primary;
-  const secondary = currentPalette.colors.secondary;
   
   // Convert hex to rgba for transparency
   const hexToRgba = (hex: string, alpha: number) => {
@@ -27,6 +23,18 @@ const getNavbarDynamicStyles = (currentPalette: any) => {
     const b = parseInt(hex.slice(5, 7), 16);
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
+  
+  // Use custom header color if set, otherwise use theme colors
+  if (customHeaderColor) {
+    return {
+      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.12)} 0%, ${hexToRgba(customHeaderColor, 0.06)} 100%)`,
+      borderColor: hexToRgba(customHeaderColor, 0.18)
+    };
+  }
+  
+  // Create subtle background gradient using theme colors
+  const primary = currentPalette.colors.primary;
+  const secondary = currentPalette.colors.secondary;
   
   return {
     background: `linear-gradient(135deg, ${hexToRgba(primary, 0.08)} 0%, ${hexToRgba(secondary, 0.05)} 100%)`,
@@ -54,9 +62,9 @@ const getDividerColorClasses = (color: string) => {
 
 export const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { currentPalette, setTheme } = useTeamTheme();
+  const { currentPalette, setTheme, customHeaderColor } = useTeamTheme();
   
-  const dynamicStyles = getNavbarDynamicStyles(currentPalette);
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor);
 
   return (
     <>
