@@ -6,28 +6,38 @@ interface LoadingStateProps {
   message?: string;
   size?: 'sm' | 'md' | 'lg';
   fullPage?: boolean;
+  className?: string;
 }
 
-export const LoadingState: React.FC<LoadingStateProps> = ({ 
-  message = 'Loading...', 
-  size = 'md', 
-  fullPage = false 
+export const LoadingState: React.FC<LoadingStateProps> = ({
+  message = 'Loading...',
+  size = 'md',
+  fullPage = false,
+  className = ''
 }) => {
   const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-6 h-6',
-    lg: 'w-8 h-8'
+    sm: 'h-4 w-4',
+    md: 'h-6 w-6',
+    lg: 'h-8 w-8'
+  };
+
+  const textSizeClasses = {
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-lg'
   };
 
   const containerClasses = fullPage 
-    ? 'min-h-screen flex items-center justify-center bg-crd-darkest'
+    ? 'min-h-screen flex items-center justify-center'
     : 'flex items-center justify-center p-8';
 
   return (
-    <div className={containerClasses}>
-      <div className="flex flex-col items-center space-y-4">
-        <Loader2 className={`${sizeClasses[size]} animate-spin text-crd-green`} />
-        <p className="text-crd-lightGray text-center">{message}</p>
+    <div className={`${containerClasses} ${className}`}>
+      <div className="text-center">
+        <Loader2 className={`${sizeClasses[size]} animate-spin text-crd-green mx-auto mb-2`} />
+        <p className={`${textSizeClasses[size]} text-crd-lightGray`}>
+          {message}
+        </p>
       </div>
     </div>
   );

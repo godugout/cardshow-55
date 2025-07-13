@@ -7036,6 +7036,10 @@ export type Database = {
           created_at: string
         }[]
       }
+      get_current_user_admin_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_platform_metrics: {
         Args: { days_back?: number }
         Returns: {
@@ -7149,6 +7153,10 @@ export type Database = {
       update_seo_optimization: {
         Args: { listing_uuid: string }
         Returns: undefined
+      }
+      user_has_admin_permission: {
+        Args: { permission_name: string }
+        Returns: boolean
       }
       user_has_style_unlocked: {
         Args: { user_uuid: string; style_id_param: string }
