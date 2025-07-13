@@ -124,7 +124,7 @@ const DesignGuide = () => {
         <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-80 bg-gradient-to-b from-crd-darkGray to-crd-darkGray/80 border-r border-crd-mediumGray/30 overflow-y-auto transition-all duration-500 backdrop-blur-sm">
           <div className="p-6">
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-crd-white mb-2">Professional Brand Guide</h2>
+              <h2 className="text-xl font-bold text-crd-white mb-2">CRD Design Guide</h2>
               <p className="text-sm text-crd-lightGray">Complete design system documentation for Cardshow & CRD brands</p>
             </div>
             
@@ -220,7 +220,7 @@ const DesignGuide = () => {
                 <div className="text-center space-y-6">
                   <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-crd-blue/10 to-crd-purple/10 px-4 py-2 rounded-full border border-crd-blue/20">
                     <BookOpen size={16} className="text-crd-blue" />
-                    <span className="text-sm font-semibold text-crd-blue uppercase tracking-wide">Professional Brand Guide</span>
+                    <span className="text-sm font-semibold text-crd-blue uppercase tracking-wide">CRD Design Guide</span>
                   </div>
                   
                   <h1 className="text-5xl font-bold bg-gradient-to-r from-crd-white via-crd-blue to-crd-purple bg-clip-text text-transparent leading-tight">
