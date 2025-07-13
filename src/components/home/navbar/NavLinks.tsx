@@ -16,10 +16,10 @@ export const NavLinks = () => {
     <div className="hidden md:flex items-center gap-2 lg:gap-6">
       <Link 
         to="/" 
-        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center nav-hover-enhanced ${
           isActive('/') 
-            ? 'text-themed-active' 
-            : 'text-themed-secondary hover-themed'
+            ? 'text-themed-active bg-crd-mediumGray/20 border-l-3 border-crd-blue pl-3' 
+            : 'text-themed-secondary'
         }`}
       >
         <span className="hidden lg:inline">Home</span>
@@ -27,10 +27,10 @@ export const NavLinks = () => {
       </Link>
       <Link 
         to="/studio" 
-        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center nav-hover-enhanced ${
           location.pathname.startsWith('/studio') 
-            ? 'text-themed-active' 
-            : 'text-themed-secondary hover-themed'
+            ? 'text-themed-active bg-crd-mediumGray/20 border-l-3 border-crd-blue pl-3' 
+            : 'text-themed-secondary'
         }`}
       >
         <span className="hidden lg:inline">Studio</span>
@@ -38,10 +38,10 @@ export const NavLinks = () => {
       </Link>
       <Link 
         to="/collections" 
-        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center nav-hover-enhanced ${
           isActive('/collections') 
-            ? 'text-themed-active' 
-            : 'text-themed-secondary hover-themed'
+            ? 'text-themed-active bg-crd-mediumGray/20 border-l-3 border-crd-blue pl-3' 
+            : 'text-themed-secondary'
         }`}
       >
         <span className="hidden lg:inline">Collections</span>
@@ -49,10 +49,10 @@ export const NavLinks = () => {
       </Link>
       <Link 
         to="/gallery" 
-        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center nav-hover-enhanced ${
           isActive('/gallery') 
-            ? 'text-themed-active' 
-            : 'text-themed-secondary hover-themed'
+            ? 'text-themed-active bg-crd-mediumGray/20 border-l-3 border-crd-blue pl-3' 
+            : 'text-themed-secondary'
         }`}
       >
         <span className="hidden lg:inline">Gallery</span>
@@ -60,10 +60,10 @@ export const NavLinks = () => {
       </Link>
       <Link 
         to="/creators" 
-        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center nav-hover-enhanced ${
           isActive('/creators') 
-            ? 'text-themed-active' 
-            : 'text-themed-secondary hover-themed'
+            ? 'text-themed-active bg-crd-mediumGray/20 border-l-3 border-crd-blue pl-3' 
+            : 'text-themed-secondary'
         }`}
       >
         <span className="hidden xl:inline">Creators</span>

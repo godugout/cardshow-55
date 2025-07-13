@@ -74,6 +74,26 @@
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
+  
+  /* Enhanced navigation link hover effects */
+  .nav-link-hover:hover {
+    background-color: rgba(var(--crd-mediumGray-rgb), 0.2);
+    border-left: 3px solid hsl(var(--crd-blue));
+    padding-left: 0.75rem;
+    transform: translateX(2px);
+  }
+  
+  /* Subtle accent color highlight on navigation hover */
+  .nav-accent-hover:hover {
+    color: hsl(var(--crd-blue-light));
+    background: linear-gradient(90deg, transparent, rgba(var(--crd-blue-rgb), 0.1), transparent);
+  }
+  
+  /* CTA button outline glow effect */
+  .btn-outline-glow:hover {
+    box-shadow: 0 0 0 2px rgba(var(--crd-blue-rgb), 0.3);
+    border-color: hsl(var(--crd-blue-light));
+  }
 }
 
 /* Reduced motion preferences */

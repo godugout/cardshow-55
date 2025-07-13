@@ -9,9 +9,11 @@
   --crd-blue: hsl(219, 88%, 62%);
   --crd-blue-light: hsl(219, 88%, 70%);
   --crd-blue-dark: hsl(219, 88%, 50%);
+  --crd-blue-rgb: 219, 88%, 62%;
   --crd-purple: hsl(260, 70%, 65%);
   --crd-purple-light: hsl(260, 80%, 75%);
   --crd-purple-dark: hsl(260, 70%, 55%);
+  --crd-purple-rgb: 260, 70%, 65%;
   --crd-orange: hsl(18, 85%, 60%);
   --crd-green: hsl(142, 51%, 50%);
   
@@ -21,6 +23,7 @@
   --crd-dark: hsl(220, 13%, 18%);
   --crd-darkGray: hsl(217, 19%, 16%);
   --crd-mediumGray: hsl(217, 19%, 27%);
+  --crd-mediumGray-rgb: 217, 19%, 27%;
   --crd-lightGray: hsl(220, 17%, 56%);
   --crd-white: hsl(0, 0%, 99%);
   
@@ -60,13 +63,27 @@
     background: linear-gradient(135deg, hsl(217, 19%, 18%), hsl(142, 60%, 45%, 0.1));
   }
   
-  /* Button theming with new gradients */
+  /* Button theming with new gradients and enhanced outlines */
   .btn-themed-primary {
     @apply liquid-gradient-blue-purple text-white font-bold px-6 py-3 rounded-full;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    box-shadow: 0 0 0 1px rgba(var(--crd-blue-rgb), 0.2);
+  }
+  
+  .btn-themed-primary:hover {
+    box-shadow: 0 0 0 2px rgba(var(--crd-blue-rgb), 0.4), 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   
   .btn-themed-secondary {
-    @apply gradient-blue-purple-subtle text-white font-semibold px-4 py-2 rounded-lg border border-crd-blue/30;
+    @apply gradient-blue-purple-subtle text-white font-semibold px-4 py-2 rounded-lg;
+    border: 2px solid rgba(var(--crd-blue-rgb), 0.3);
+    box-shadow: 0 0 0 1px rgba(var(--crd-purple-rgb), 0.1);
+  }
+  
+  .btn-themed-secondary:hover {
+    border-color: rgba(var(--crd-blue-rgb), 0.5);
+    box-shadow: 0 0 0 2px rgba(var(--crd-purple-rgb), 0.3);
   }
   
   .btn-themed-ghost {
@@ -96,6 +113,19 @@
   
   .hover-glow {
     @apply transition-all duration-300 hover:card-glow-blue-purple;
+  }
+  
+  /* Enhanced navigation hover effects */
+  .nav-hover-enhanced {
+    @apply transition-all duration-200;
+  }
+  
+  .nav-hover-enhanced:hover {
+    background: linear-gradient(90deg, transparent, rgba(var(--crd-blue-rgb), 0.1), transparent);
+    color: hsl(var(--crd-blue-light));
+    border-left: 3px solid hsl(var(--crd-blue));
+    padding-left: 0.75rem;
+    transform: translateX(2px);
   }
   
   .focus-themed {
