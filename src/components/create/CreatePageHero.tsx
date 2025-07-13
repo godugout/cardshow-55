@@ -9,14 +9,9 @@ export const CreatePageHero: React.FC = () => {
 
   return (
     <div className="relative mb-16">
-      {/* Background Image */}
+      {/* Background Gradient */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&h=800&fit=crop&crop=center&auto=format"
-          alt="Creative workspace"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/50 via-crd-darkest/30 to-crd-darkest/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-crd-darkest/90 via-crd-darkest/95 to-crd-darkest"></div>
       </div>
       
       {/* Hero Content */}
