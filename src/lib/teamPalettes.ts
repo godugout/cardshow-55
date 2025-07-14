@@ -65,6 +65,46 @@ export const teamPalettes: Record<string, TeamPalette> = {
   'shadow-force': createTeamPalette('shadow-force', 'Shadow Force', 'Black & Silver', '#000000', '#C0C0C0', '#FFFFFF', '#F7F7F7')
 };
 
+// Export all palettes as an array
+export const allPalettes = Object.values(teamPalettes);
+
+// Get palette by ID
+export const getPaletteById = (id: string): TeamPalette | null => {
+  return teamPalettes[id] || null;
+};
+
+// Generate CSS variables from palette
+export const generatePaletteCSSVars = (palette: TeamPalette): Record<string, string> => {
+  return {
+    '--team-primary': palette.hsl.primary,
+    '--team-secondary': palette.hsl.secondary,
+    '--team-accent': palette.hsl.accent,
+    '--team-neutral': palette.hsl.neutral,
+    '--team-primary-hex': palette.colors.primary,
+    '--team-secondary-hex': palette.colors.secondary,
+    '--team-accent-hex': palette.colors.accent,
+    '--team-neutral-hex': palette.colors.neutral
+  };
+};
+
+// Create palette from team colors
+export const createPaletteFromTeamColors = (colors: {
+  primary: string;
+  secondary: string;
+  accent?: string;
+  neutral?: string;
+}): TeamPalette => {
+  return createTeamPalette(
+    'custom',
+    'Custom Team',
+    'Custom team colors',
+    colors.primary,
+    colors.secondary,
+    colors.accent,
+    colors.neutral
+  );
+};
+
 export const getPaletteByFileName = (fileName: string): TeamPalette | null => {
   // Extract team code from filename like "CS_MLB_LAD.png"
   const match = fileName.match(/CS_MLB_([A-Z]+)/);
