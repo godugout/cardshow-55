@@ -9,6 +9,43 @@ import { DevLoginButton } from '@/components/auth/DevLoginButton';
 import { AdminTrigger } from '@/components/admin/AdminTrigger';
 import { MobileNav } from '@/components/home/navbar/MobileNav';
 
+// Dynamic navbar background based on current theme
+const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null) => {
+  if (!currentPalette) {
+    return {
+      background: 'linear-gradient(135deg, rgba(20, 20, 22, 0.08) 0%, rgba(20, 20, 22, 0.05) 50%, rgba(20, 20, 22, 0.12) 100%)',
+      borderColor: 'rgba(255, 255, 255, 0.15)'
+    };
+  }
+  
+  // Convert hex to rgba for transparency
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  
+  // Use custom header color if set, otherwise use theme colors
+  if (customHeaderColor) {
+    return {
+      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.08)} 0%, ${hexToRgba(customHeaderColor, 0.05)} 50%, ${hexToRgba(customHeaderColor, 0.12)} 100%)`,
+      borderColor: hexToRgba(customHeaderColor, 0.15),
+      backdropFilter: 'blur(12px) saturate(180%)'
+    };
+  }
+  
+  // Create subtle background gradient using theme colors
+  const primary = currentPalette.colors.primary;
+  const secondary = currentPalette.colors.secondary;
+  
+  return {
+    background: `linear-gradient(135deg, ${hexToRgba(primary, 0.08)} 0%, ${hexToRgba(secondary, 0.05)} 50%, ${hexToRgba(primary, 0.12)} 100%)`,
+    borderColor: hexToRgba(primary, 0.15),
+    backdropFilter: 'blur(12px) saturate(180%)'
+  };
+};
+
 export const Navbar = () => {
   const location = useLocation();
   const { currentPalette, setTheme, customHeaderColor } = useTeamTheme();
@@ -38,18 +75,22 @@ export const Navbar = () => {
       : 'transition-all duration-500 ease-out';
   };
 
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor);
+
   return (
     <>
       <nav 
         className={`
-          navbar-themed fixed top-0 left-0 right-0 z-50 border-b
+          fixed top-0 left-0 right-0 z-50 border-b
           ${getTransitionClass()}
           ${isVisible ? 'translate-y-0' : '-translate-y-full'}
           ${isScrolled ? 'shadow-lg' : ''}
         `}
         style={{ 
           height: 'var(--navbar-height)',
-          transform: `translateY(${isVisible ? '0' : '-100%'})`
+          transform: `translateY(${isVisible ? '0' : '-100%'})`,
+          ...dynamicStyles,
+          borderBottomColor: dynamicStyles.borderColor
         }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex justify-between items-center h-full">
