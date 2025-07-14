@@ -7,6 +7,7 @@ import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { Hero3 } from "@/components/ui/design-system";
+import { NavbarAwareContainer } from "@/components/layout/NavbarAwareContainer";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -128,7 +129,7 @@ export const EnhancedHero: React.FC = () => {
   );
 
   return (
-    <div className="relative">
+    <NavbarAwareContainer className="relative">
       {/* Hero content */}
       <StandardHero
         label="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
@@ -172,6 +173,6 @@ export const EnhancedHero: React.FC = () => {
         onGlowChange={handleGlowChange}
         onReset={handleReset}
       />
-    </div>
+    </NavbarAwareContainer>
   );
 };

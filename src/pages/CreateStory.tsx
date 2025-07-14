@@ -1,8 +1,10 @@
+
 import React from 'react';
 import { RevolutionaryCardCreatorWrapper } from '@/components/editor/revolutionary/RevolutionaryCardCreatorWrapper';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { SubscriptionBanner } from '@/components/monetization/SubscriptionBanner';
+import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
 import type { CardData } from '@/hooks/useCardEditor';
 
 const CreateStory = () => {
@@ -21,7 +23,7 @@ const CreateStory = () => {
   };
 
   return (
-    <div className="min-h-screen bg-crd-darkest">
+    <NavbarAwareContainer className="min-h-screen bg-crd-darkest">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <SubscriptionBanner />
       </div>
@@ -32,7 +34,7 @@ const CreateStory = () => {
           onCancel={handleCancel}
         />
       </ErrorBoundary>
-    </div>
+    </NavbarAwareContainer>
   );
 };
 
