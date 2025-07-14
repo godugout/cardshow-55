@@ -1,6 +1,6 @@
 
 import { useState, useMemo, useEffect } from 'react';
-import * as teamPalettesLib from '@/lib/teamPalettes';
+import { teamPalettes } from '@/lib/teamPalettes';
 
 export type NavbarMode = 'normal' | 'home' | 'away';
 
@@ -32,9 +32,6 @@ export interface ColorPalette {
 const THEME_STORAGE_KEY = 'crd-current-theme';
 const HEADER_COLOR_KEY = 'crd-custom-header-color';
 const NAVBAR_MODE_KEY = 'crd-navbar-mode';
-
-// Get the teamPalettes object from the library
-const teamPalettes = teamPalettesLib.teamPalettes || teamPalettesLib.default || teamPalettesLib;
 
 export const useTeamTheme = () => {
   const [currentTheme, setCurrentThemeState] = useState<string>('lakers');

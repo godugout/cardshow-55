@@ -2,15 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, Home, Plane, Shirt } from "lucide-react";
 import { useTeamTheme } from "@/hooks/useTeamTheme";
-import * as teamPalettesLib from "@/lib/teamPalettes";
+import { teamPalettes } from "@/lib/teamPalettes";
 import { cn } from "@/lib/utils";
 
 interface LogoSelectorDropdownProps {
   onThemeChange?: (themeId: string) => void;
 }
-
-// Get the teamPalettes object from the library
-const teamPalettes = teamPalettesLib.teamPalettes || teamPalettesLib.default || teamPalettesLib;
 
 export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProps) => {
   const { 
@@ -49,8 +46,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
   };
 
   const filteredPalettes = Object.entries(teamPalettes).filter(([id, palette]) => {
-    const paletteObj = palette as any;
-    return paletteObj?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    return palette?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
            id.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -91,10 +87,10 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
         <div 
           className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
           style={{ 
-            background: `linear-gradient(135deg, ${(currentPalette as any)?.colors?.primary || '#333'}, ${(currentPalette as any)?.colors?.secondary || '#666'})` 
+            background: `linear-gradient(135deg, ${currentPalette?.colors?.primary || '#333'}, ${currentPalette?.colors?.secondary || '#666'})` 
           }}
         >
-          {(currentPalette as any)?.name?.slice(0, 2).toUpperCase() || 'CRD'}
+          {currentPalette?.name?.slice(0, 2).toUpperCase() || 'CRD'}
         </div>
 
         {/* Team Name */}
@@ -103,7 +99,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
             "font-semibold text-sm",
             isHomeTeamMode ? "text-slate-800" : isAwayTeamMode ? "text-gray-800" : "text-white"
           )}>
-            {(currentPalette as any)?.name || 'Select Team'}
+            {currentPalette?.name || 'Select Team'}
           </span>
         </div>
 
@@ -153,7 +149,6 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
             {filteredPalettes.length > 0 ? (
               <div className="p-2">
                 {filteredPalettes.map(([themeId, palette]) => {
-                  const paletteObj = palette as any;
                   return (
                     <button
                       key={themeId}
@@ -168,13 +163,13 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                       <div 
                         className="w-6 h-6 rounded-md flex-shrink-0"
                         style={{ 
-                          background: `linear-gradient(135deg, ${paletteObj?.colors?.primary || '#333'}, ${paletteObj?.colors?.secondary || '#666'})` 
+                          background: `linear-gradient(135deg, ${palette?.colors?.primary || '#333'}, ${palette?.colors?.secondary || '#666'})` 
                         }}
                       />
                       
                       {/* Team Info */}
                       <div className="flex-1">
-                        <div className="font-medium text-white">{paletteObj?.name || themeId}</div>
+                        <div className="font-medium text-white">{palette?.name || themeId}</div>
                         <div className="text-xs text-gray-400">{themeId}</div>
                       </div>
 
