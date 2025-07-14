@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Plus, Home, Palette, Menu } from 'lucide-react';
@@ -8,13 +7,16 @@ import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { DevLoginButton } from '@/components/auth/DevLoginButton';
 import { AdminTrigger } from '@/components/admin/AdminTrigger';
 import { MobileNav } from '@/components/home/navbar/MobileNav';
-import { BaseballPatterns } from '@/components/ui/BaseballPatterns';
 
-// Dynamic navbar background based on current theme and mode
-const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null, navbarMode?: string) => {
-  // Special modes override with their own styles
-  if (navbarMode === 'home' || navbarMode === 'away' || navbarMode === 'pinstripes') {
-    return {}; // Let CSS classes handle these modes
+// Dynamic navbar background based on current theme
+const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null, isHomeTeamMode?: boolean) => {
+  // Home team mode overrides everything with light background
+  if (isHomeTeamMode) {
+    return {
+      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.92) 50%, rgba(255, 255, 255, 0.97) 100%)',
+      borderColor: 'rgba(203, 213, 225, 0.4)',
+      backdropFilter: 'blur(16px) saturate(180%)'
+    };
   }
 
   if (!currentPalette) {
@@ -54,14 +56,7 @@ const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string 
 
 export const Navbar = () => {
   const location = useLocation();
-  const { 
-    currentPalette, 
-    setTheme, 
-    customHeaderColor, 
-    navbarMode, 
-    getNavbarModeClass,
-    isSpecialNavbarMode 
-  } = useTeamTheme();
+  const { currentPalette, setTheme, customHeaderColor, isHomeTeamMode } = useTeamTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const prefersReducedMotion = typeof window !== 'undefined' && 
@@ -93,17 +88,13 @@ export const Navbar = () => {
       : 'transition-all duration-500 ease-out';
   };
 
-  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor, navbarMode);
-  const navbarModeClass = getNavbarModeClass();
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor, isHomeTeamMode);
 
   return (
     <>
-      {/* Include SVG patterns */}
-      <BaseballPatterns />
-      
       <nav 
         className={`
-          ${navbarModeClass}
+          ${isHomeTeamMode ? 'navbar-home-team' : ''}
           fixed top-0 left-0 right-0 z-50 border-b
           ${getTransitionClass()}
           ${isVisible ? 'translate-y-0' : '-translate-y-full'}
@@ -135,7 +126,7 @@ export const Navbar = () => {
               className={`
                 md:hidden flex items-center justify-center
                 w-11 h-11 rounded-lg
-                ${isSpecialNavbarMode ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' : 'text-themed-secondary hover-themed'}
+                ${isHomeTeamMode ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' : 'text-themed-secondary hover-themed'}
                 transition-all duration-200
                 ${!prefersReducedMotion ? 'hover:scale-105' : ''}
                 focus:outline-none focus:ring-2 focus:ring-themed-active/20
@@ -157,11 +148,11 @@ export const Navbar = () => {
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
                   ${isActive('/') 
-                    ? (isSpecialNavbarMode 
+                    ? (isHomeTeamMode 
                         ? 'text-slate-800 bg-slate-200/60' 
                         : 'text-themed-active bg-themed-active/10'
                       )
-                    : (isSpecialNavbarMode 
+                    : (isHomeTeamMode 
                         ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
                         : 'text-themed-secondary hover-themed'
                       )
@@ -180,11 +171,11 @@ export const Navbar = () => {
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
                   ${isActive('/create') 
-                    ? (isSpecialNavbarMode 
+                    ? (isHomeTeamMode 
                         ? 'text-slate-800 bg-slate-200/60' 
                         : 'text-themed-active bg-themed-active/10'
                       )
-                    : (isSpecialNavbarMode 
+                    : (isHomeTeamMode 
                         ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
                         : 'text-themed-secondary hover-themed'
                       )
@@ -203,11 +194,11 @@ export const Navbar = () => {
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
                   ${isActive('/collections') 
-                    ? (isSpecialNavbarMode 
+                    ? (isHomeTeamMode 
                         ? 'text-slate-800 bg-slate-200/60' 
                         : 'text-themed-active bg-themed-active/10'
                       )
-                    : (isSpecialNavbarMode 
+                    : (isHomeTeamMode 
                         ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
                         : 'text-themed-secondary hover-themed'
                       )
@@ -225,11 +216,11 @@ export const Navbar = () => {
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
                   ${isActive('/studio') 
-                    ? (isSpecialNavbarMode 
+                    ? (isHomeTeamMode 
                         ? 'text-slate-800 bg-slate-200/60' 
                         : 'text-themed-active bg-themed-active/10'
                       )
-                    : (isSpecialNavbarMode 
+                    : (isHomeTeamMode 
                         ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
                         : 'text-themed-secondary hover-themed'
                       )

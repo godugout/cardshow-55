@@ -1,171 +1,294 @@
-
-import React, { useState } from 'react';
-import { ChevronDown, Home, Shirt, Users } from 'lucide-react';
-import { useTeams } from '@/hooks/use-teams';
+import React, { useState, useEffect, useRef } from 'react';
+import { useAppSettings } from '@/hooks/useAppSettings';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
-import { cn } from '@/lib/utils';
-import type { NavbarMode } from '@/hooks/useNavbarTheme';
+import { cardshowLogoDatabase } from '@/lib/cardshowDNA';
+import { ChevronDown, X, Sun } from 'lucide-react';
+
+// Logo component with improved error handling
+const LogoWithFallback = ({ imageUrl, logoName, className, dnaCode }: { 
+  imageUrl: string, 
+  logoName: string, 
+  className?: string,
+  dnaCode: string
+}) => {
+  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (hasError) {
+    return (
+      <div className={`${className} flex items-center justify-center bg-muted/50 border border-dashed border-muted-foreground/30 rounded-md text-xs text-muted-foreground transition-all duration-200 hover:bg-muted/70`}>
+        <span className="font-mono text-center px-1">{logoName}</span>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className={`${className} flex items-center justify-center bg-muted/30 rounded-md animate-pulse`}>
+        <div className="w-4 h-4 bg-muted-foreground/20 rounded"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative group">
+      <img 
+        src={imageUrl}
+        alt={logoName}
+        className={className}
+        onError={() => setHasError(true)}
+        onLoad={() => setIsLoading(false)}
+      />
+    </div>
+  );
+};
 
 interface LogoSelectorDropdownProps {
   onThemeChange?: (themeId: string) => void;
 }
 
 export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProps) => {
+  const { settings, saveSettings } = useAppSettings();
+  const { setLogoTheme, currentLogoCode, getThemeByDNA, setCustomHeaderBgColor, customHeaderColor, customHeaderColorType, isHomeTeamMode, toggleHomeTeamMode } = useTeamTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const { teams } = useTeams();
-  const { 
-    currentTheme, 
-    setTheme, 
-    navbarMode, 
-    setNavbarMode,
-    currentPalette 
-  } = useTeamTheme();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const mouseLeaveTimerRef = useRef<NodeJS.Timeout>();
+  
+  const availableLogos = cardshowLogoDatabase.slice(0, 20);
 
-  const handleTeamSelect = (teamId: string) => {
-    setTheme(teamId);
-    onThemeChange?.(teamId);
+  const logoNames: Record<string, string> = {
+    'CRD_GRADIENT_MULTI': 'Fusion Force',
+    'CS_GREEN_SPARKLE': 'Emerald Spark',
+    'CS_ORANGE_SCRIPT': 'Flame Script',
+    'CS_REDBLUE_BLOCK': 'Liberty Block',
+    'CS_GREEN_SCRIPT_YELLOW': 'Thunder Strike',
+    'CS_BROWN_ORANGE_RETRO': 'Vintage Vibe',
+    'CS_BLUE_ORANGE_OUTLINE': 'Coastal Storm',
+    'CS_RED_SCRIPT_BLUE': 'Cardinal Script',
+    'CS_BLUE_SCRIPT': 'Azure Elite',
+    'CS_BLACK_TEAL_SPARKLE': 'Neon Rush',
+    'CS_GREEN_SPARKLE_SCRIPT': 'Elite Emerald',
+    'CS_ORANGE_BLACK_OUTLINE': 'Power Strike',
+    'CS_RED_BLOCK': 'Crimson Bold',
+    'CS_RED_SCRIPT_CORAL': 'Sunset Coral',
+    'CS_RED_MODERN': 'Steel Force',
+    'CS_RED_SCRIPT_CLASSIC': 'Vintage Burgundy',
+    'CS_BLACK_BOLD': 'Shadow Force',
+    'CS_PURPLE_OUTLINE': 'Royal Edge',
+    'CS_ORANGE_BLACK_BLOCK': 'Thunder Block',
+    'CS_BLUE_WHITE_SCRIPT': 'Sky Script'
+  };
+
+  const findLogoByDNA = (dnaCode: string) => {
+    return availableLogos.find(logo => logo.dnaCode === dnaCode) || availableLogos[0];
+  };
+
+  const [selectedLogo, setSelectedLogo] = useState(() => {
+    if (currentLogoCode) {
+      return findLogoByDNA(currentLogoCode);
+    }
+    return availableLogos[0];
+  });
+
+  useEffect(() => {
+    if (currentLogoCode) {
+      const found = findLogoByDNA(currentLogoCode);
+      setSelectedLogo(found);
+    }
+  }, [currentLogoCode]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+          triggerRef.current && !triggerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
+
+  const handleMouseLeave = () => {
+    mouseLeaveTimerRef.current = setTimeout(() => {
+      setIsOpen(false);
+    }, 300);
+  };
+
+  const handleMouseEnter = () => {
+    if (mouseLeaveTimerRef.current) {
+      clearTimeout(mouseLeaveTimerRef.current);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (mouseLeaveTimerRef.current) {
+        clearTimeout(mouseLeaveTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleLogoSelect = (logo: typeof selectedLogo) => {
+    setSelectedLogo(logo);
+    setLogoTheme(logo.dnaCode);
+    saveSettings({ theme: `logo-${logo.dnaCode.toLowerCase()}` });
+    onThemeChange?.(`logo-${logo.dnaCode.toLowerCase()}`);
+  };
+
+  const handleCloseClick = () => {
     setIsOpen(false);
   };
 
-  const handleNavbarModeChange = (mode: NavbarMode) => {
-    setNavbarMode(mode);
-    setIsOpen(false);
+  const handleColorDotClick = (event: React.MouseEvent, color: string, colorType: string, logo: any) => {
+    event.stopPropagation();
+    setCustomHeaderBgColor(color, colorType);
+    handleLogoSelect(logo);
   };
-
-  const getCurrentTeam = () => {
-    return teams.find(team => team.id === currentTheme);
-  };
-
-  const currentTeam = getCurrentTeam();
-
-  // Set CSS custom property for pinstripe color
-  React.useEffect(() => {
-    if (currentPalette?.colors?.primary) {
-      document.documentElement.style.setProperty('--pinstripe-color', currentPalette.colors.primary);
-    }
-  }, [currentPalette]);
-
-  const navbarModeOptions = [
-    {
-      id: 'normal' as NavbarMode,
-      label: 'Normal',
-      description: 'Dynamic team colors',
-      icon: <Users className="w-4 h-4" />
-    },
-    {
-      id: 'home' as NavbarMode,
-      label: 'Home',
-      description: 'Light background',
-      icon: <Home className="w-4 h-4" />
-    },
-    {
-      id: 'away' as NavbarMode,
-      label: 'Away',
-      description: 'MLB away gray',
-      icon: <Shirt className="w-4 h-4" />
-    },
-    {
-      id: 'pinstripes' as NavbarMode,
-      label: 'Pinstripes',
-      description: 'Classic pinstripe style',
-      icon: <Shirt className="w-4 h-4" />
-    }
-  ];
 
   return (
     <div className="relative">
-      <button
+      {/* Trigger Button */}
+      <button 
+        ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          "flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200",
-          "hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20",
-          isOpen && "bg-white/10"
-        )}
+        className="group flex items-center gap-2 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-2 rounded-lg transition-all duration-300"
       >
-        {currentTeam?.logoUrl ? (
-          <img 
-            src={currentTeam.logoUrl} 
-            alt={currentTeam.name}
-            className="w-8 h-8 object-contain"
-          />
-        ) : (
-          <div className="w-8 h-8 rounded bg-gradient-to-br from-crd-blue to-crd-purple flex items-center justify-center">
-            <span className="text-white font-bold text-sm">CRD</span>
-          </div>
-        )}
-        <ChevronDown className={cn(
-          "w-4 h-4 text-white/70 transition-transform duration-200",
-          isOpen && "rotate-180"
-        )} />
+        <LogoWithFallback 
+          imageUrl={selectedLogo.imageUrl}
+          logoName={selectedLogo.displayName}
+          dnaCode={selectedLogo.dnaCode}
+          className="h-12 w-28 object-contain" 
+        />
+        <ChevronDown className={`h-4 w-4 text-gray-400 transition-all duration-300 opacity-0 group-hover:opacity-100 ${isOpen ? 'rotate-180 opacity-100' : ''}`} />
       </button>
 
+      {/* Dropdown Panel */}
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 z-40" 
-            onClick={() => setIsOpen(false)}
-          />
-          
-          {/* Dropdown */}
-          <div className="absolute top-full left-0 mt-2 w-80 bg-black/90 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl z-50">
-            {/* Navbar Mode Section */}
-            <div className="p-4 border-b border-white/10">
-              <h3 className="text-sm font-medium text-white/90 mb-3">Navbar Style</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {navbarModeOptions.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => handleNavbarModeChange(option.id)}
-                    className={cn(
-                      "flex flex-col items-center gap-1 p-3 rounded-lg transition-all duration-200 text-center",
-                      navbarMode === option.id
-                        ? "bg-crd-blue/20 text-white border border-crd-blue/30"
-                        : "hover:bg-white/5 text-white/70 hover:text-white/90"
-                    )}
-                  >
-                    {option.icon}
-                    <span className="text-xs font-medium">{option.label}</span>
-                    <span className="text-xs opacity-60">{option.description}</span>
-                  </button>
-                ))}
+        <div 
+          ref={dropdownRef}
+          onMouseLeave={handleMouseLeave}
+          onMouseEnter={handleMouseEnter}
+          className="dropdown-themed absolute top-full left-0 mt-2 w-[min(90vw,1200px)] z-[9999] animate-in slide-in-from-top-2 duration-200"
+        >
+          {/* Header with Close Button and Home Team Toggle */}
+          <div className="relative p-4 border-b border-border/20 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-foreground gradient-text-themed">
+                Pick a logo <span className="text-sm text-muted-foreground font-normal ml-2">Customize your Cardshow theme</span>
+              </h3>
+              <div className="flex items-center gap-3">
+                {/* Home Team Toggle */}
+                <button
+                  onClick={toggleHomeTeamMode}
+                  className={`
+                    flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200
+                    ${isHomeTeamMode 
+                      ? 'bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-200' 
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/30'
+                    }
+                  `}
+                  title="Toggle light mode for navbar (Home Team)"
+                >
+                  <Sun className="w-4 h-4" />
+                  <span className="hidden sm:inline">Home Team</span>
+                </button>
+                
+                <button
+                  onClick={handleCloseClick}
+                  className="p-1 rounded-md hover:bg-muted/50 transition-colors duration-200 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
             </div>
+            
+            {/* Home Team Mode Description */}
+            {isHomeTeamMode && (
+              <div className="mt-2 text-xs text-yellow-700 bg-yellow-50 px-2 py-1 rounded">
+                🏠 Home Team mode: Light navbar background for better logo visibility
+              </div>
+            )}
+          </div>
 
-            {/* Team Selection Section */}
-            <div className="p-4">
-              <h3 className="text-sm font-medium text-white/90 mb-3">Team Theme</h3>
-              <div className="max-h-60 overflow-y-auto">
-                {teams.map((team) => (
+          {/* Logo Grid */}
+          <div className="p-8">
+            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-6">
+              {availableLogos.map((logo) => {
+                const isSelected = selectedLogo.dnaCode === logo.dnaCode;
+                const theme = getThemeByDNA(logo.dnaCode);
+                
+                return (
                   <button
-                    key={team.id}
-                    onClick={() => handleTeamSelect(team.id)}
-                    className={cn(
-                      "w-full flex items-center gap-3 p-2 rounded-lg transition-all duration-200 text-left",
-                      currentTheme === team.id
-                        ? "bg-crd-blue/20 text-white"
-                        : "hover:bg-white/5 text-white/80 hover:text-white"
-                    )}
+                    key={logo.dnaCode}
+                    onClick={() => handleLogoSelect(logo)}
+                    className={`p-4 rounded-xl border transition-all duration-300 hover:scale-105 focus-themed ${
+                      isSelected
+                        ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
+                        : 'border-border/20 hover:border-primary/50 bg-card'
+                    }`}
                   >
-                    {team.logoUrl ? (
-                      <img 
-                        src={team.logoUrl} 
-                        alt={team.name}
-                        className="w-6 h-6 object-contain flex-shrink-0"
-                      />
-                    ) : (
-                      <div className="w-6 h-6 rounded bg-gradient-to-br from-gray-400 to-gray-600 flex-shrink-0" />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium truncate">{team.name}</div>
-                      <div className="text-xs opacity-60 truncate">{team.abbreviation}</div>
+                    <div className="space-y-3">
+                      {/* Logo */}
+                      <div className="w-full h-[73px] flex items-center justify-center">
+                        <LogoWithFallback
+                          imageUrl={logo.imageUrl}
+                          logoName={logo.displayName}
+                          dnaCode={logo.dnaCode}
+                          className={`max-w-full object-contain ${
+                            logo.dnaCode === 'CRD_GRADIENT_MULTI' ? 'max-h-12' : 'max-h-[67px]'
+                          }`}
+                        />
+                      </div>
+                      
+                      {/* Color Dots */}
+                      <div className="flex justify-center items-center space-x-1">
+                        {theme && [
+                          { color: theme.colors.primary, size: 'w-3 h-3', type: 'primary' },
+                          { color: theme.colors.secondary, size: 'w-2.5 h-2.5', type: 'secondary' },
+                          { color: theme.colors.accent, size: 'w-2 h-2', type: 'accent' },
+                          { color: theme.colors.neutral, size: 'w-1.5 h-1.5', type: 'neutral' }
+                        ].map((dot, index) => {
+                          const isActiveHeaderColor = customHeaderColor === dot.color && customHeaderColorType === dot.type;
+                          return (
+                            <div
+                              key={index}
+                              onClick={(e) => handleColorDotClick(e, dot.color, dot.type, logo)}
+                              className={`${dot.size} rounded-full border shadow-sm transition-all duration-200 cursor-pointer hover:scale-105 hover:opacity-80 ${
+                                isActiveHeaderColor 
+                                  ? 'border-white border-2 ring-2 ring-white/50' 
+                                  : 'border-white/20 hover:border-white/40'
+                              }`}
+                              style={{ backgroundColor: dot.color }}
+                              title={`Click to apply ${logoNames[logo.dnaCode] || 'Elite Squad'} theme with ${['Primary', 'Secondary', 'Accent', 'Neutral'][index]} color`}
+                            />
+                          );
+                        })}
+                      </div>
+
+                      {/* Creative Name */}
+                      <div 
+                        className="text-xs font-medium text-center mt-2"
+                        style={{ color: theme?.colors.primary }}
+                      >
+                        {logoNames[logo.dnaCode] || 'Elite Squad'}
+                      </div>
                     </div>
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

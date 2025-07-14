@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { PalettePreview, CRDButton, CRDBadge, CRDCard } from '@/components/ui/design-system';

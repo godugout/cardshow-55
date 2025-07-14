@@ -28,34 +28,8 @@
     backdrop-filter: blur(16px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
   }
-
-  /* Away team mode - MLB away gray with jersey texture */
-  .navbar-away-team {
-    background: url('#away-jersey-pattern'), 
-                linear-gradient(135deg, 
-                  rgba(184, 184, 184, 0.95) 0%, 
-                  rgba(176, 176, 176, 0.92) 50%, 
-                  rgba(192, 192, 192, 0.97) 100%
-                ) !important;
-    border-color: rgba(160, 160, 160, 0.5) !important;
-    backdrop-filter: blur(16px) saturate(150%) !important;
-    -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
-  }
-
-  /* Pinstripes mode - White with team-colored pinstripes */
-  .navbar-pinstripes {
-    background: url('#pinstripes-pattern'), 
-                linear-gradient(135deg, 
-                  rgba(250, 250, 250, 0.96) 0%, 
-                  rgba(248, 249, 250, 0.94) 50%, 
-                  rgba(255, 255, 255, 0.98) 100%
-                ) !important;
-    border-color: rgba(203, 213, 225, 0.3) !important;
-    backdrop-filter: blur(18px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
-  }
   
-  /* Text colors for home team mode */
+  /* Home team mode text colors */
   .navbar-home-team .text-themed-primary {
     color: hsl(220, 14%, 20%) !important;
   }
@@ -68,36 +42,8 @@
     color: hsl(var(--theme-accent)) !important;
   }
   
-  /* Text colors for away team mode */
-  .navbar-away-team .text-themed-primary {
-    color: hsl(220, 14%, 15%) !important;
-  }
-  
-  .navbar-away-team .text-themed-secondary {
-    color: hsl(220, 9%, 35%) !important;
-  }
-  
-  .navbar-away-team .text-themed-active {
-    color: hsl(var(--theme-accent)) !important;
-  }
-
-  /* Text colors for pinstripes mode */
-  .navbar-pinstripes .text-themed-primary {
-    color: hsl(220, 14%, 18%) !important;
-  }
-  
-  .navbar-pinstripes .text-themed-secondary {
-    color: hsl(220, 9%, 42%) !important;
-  }
-  
-  .navbar-pinstripes .text-themed-active {
-    color: hsl(var(--theme-accent)) !important;
-  }
-  
-  /* Hover states for special modes */
-  .navbar-home-team .hover-themed:hover,
-  .navbar-away-team .hover-themed:hover,
-  .navbar-pinstripes .hover-themed:hover {
+  /* Home team mode hover states */
+  .navbar-home-team .hover-themed:hover {
     background-color: rgba(71, 85, 105, 0.1) !important;
     color: hsl(220, 14%, 20%) !important;
   }
