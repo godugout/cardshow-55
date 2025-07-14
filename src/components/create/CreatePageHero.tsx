@@ -25,6 +25,7 @@ export const CreatePageHero: React.FC = () => {
       }}
       showDecorations={true}
       fullWidth={true}
+      heroVariant="hero"
     />
   );
 };
