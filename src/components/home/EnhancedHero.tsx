@@ -135,9 +135,9 @@ export const EnhancedHero: React.FC = () => {
     <div className="relative">
       {/* Hero content */}
       <Hero3
-        caption="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
+        caption="CREATE, COLLECT & CONNECT"
         heading={enhancedHeading}
-        bodyText="Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life."
+        bodyText="Experience the freedom of digital card creation where every design comes to life with immersive 3D viewing, professional lighting, and visual effects that showcase your art like never before."
         ctaText="Create your first CRD"
         ctaLink="/create"
         showFeaturedCards={true}
