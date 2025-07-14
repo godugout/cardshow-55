@@ -10,7 +10,15 @@ import { AdminTrigger } from '@/components/admin/AdminTrigger';
 import { MobileNav } from '@/components/home/navbar/MobileNav';
 
 // Dynamic navbar background based on current theme
-const getNavbarDynamicStyles = (currentPalette: any, isScrolled: boolean, blurIntensity: number) => {
+const getNavbarDynamicStyles = (currentPalette: any, isScrolled: boolean, blurIntensity: number, customHeaderColor?: string | null) => {
+  // Convert hex to rgba for transparency
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   if (!currentPalette) {
     return {
       backgroundColor: 'rgba(20, 20, 22, 0.85)', // fallback
@@ -19,17 +27,18 @@ const getNavbarDynamicStyles = (currentPalette: any, isScrolled: boolean, blurIn
     };
   }
   
+  // Use custom header color if set, otherwise use theme colors
+  if (customHeaderColor) {
+    return {
+      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.25)} 0%, ${hexToRgba(customHeaderColor, 0.15)} 50%, ${hexToRgba(customHeaderColor, 0.08)} 100%)`,
+      borderColor: hexToRgba(customHeaderColor, 0.35),
+      backdropFilter: `blur(${blurIntensity}px) saturate(180%)`
+    };
+  }
+  
   // Create subtle background gradient using theme colors
   const primary = currentPalette.colors.primary;
   const secondary = currentPalette.colors.secondary;
-  
-  // Convert hex to rgba for transparency
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
   
   // More opacity when scrolled
   const bgOpacity = isScrolled ? 0.12 : 0.08;
@@ -44,7 +53,7 @@ const getNavbarDynamicStyles = (currentPalette: any, isScrolled: boolean, blurIn
 
 export const Navbar = () => {
   const location = useLocation();
-  const { currentPalette, setTheme } = useTeamTheme();
+  const { currentPalette, setTheme, customHeaderColor } = useTeamTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Get prefersReducedMotion first
@@ -72,7 +81,7 @@ export const Navbar = () => {
   const backgroundOpacity = Math.min(0.8 + scrollMetrics.velocity * 0.1, 0.98);
   
   // Get dynamic styles based on current theme
-  const dynamicStyles = getNavbarDynamicStyles(currentPalette, isScrolled, blurIntensity);
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette, isScrolled, blurIntensity, customHeaderColor);
   
   const getTransitionClass = () => {
     if (prefersReducedMotion) return 'transition-transform duration-200';
