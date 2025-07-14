@@ -33,10 +33,10 @@ export const Hero3: React.FC<Hero3Props> = ({
     <CRDSection spacing="large" className="relative overflow-hidden">
       <CRDContainer size="narrow" className="text-center">
         <div className="flex flex-col items-center space-y-6">
-          {/* Caption with proper gradient styling */}
+          {/* Caption - small gray uppercase text */}
           <Typography 
             variant="label" 
-            className="crd-text-gradient uppercase tracking-wide font-semibold"
+            className="text-crd-lightGray uppercase tracking-wide font-semibold"
           >
             {caption}
           </Typography>
@@ -54,10 +54,10 @@ export const Hero3: React.FC<Hero3Props> = ({
             heading
           )}
           
-          {/* Body Text with proper styling */}
+          {/* Body Text - gray with proper styling */}
           <Typography 
             variant="large-body" 
-            className="max-w-2xl mx-auto text-center text-crd-white/90"
+            className="max-w-2xl mx-auto text-center text-crd-lightGray"
           >
             {bodyText}
           </Typography>
