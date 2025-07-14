@@ -49,7 +49,7 @@ const Collections: React.FC = () => {
       <section className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Typography variant="heading-2" className="text-crd-white mb-2">
+            <Typography variant="h2" className="text-crd-white mb-2">
               Featured Cards
             </Typography>
             <Typography variant="body" className="text-crd-lightGray">
@@ -68,14 +68,14 @@ const Collections: React.FC = () => {
           {[1, 2, 3, 4, 5, 6, 7, 8].map((card) => (
             <div key={card} className="mobile-card bg-crd-darker p-4">
               <div className="aspect-[3/4] bg-gradient-to-br from-crd-blue/20 to-crd-purple/20 rounded-lg mb-3 flex items-center justify-center">
-                <Typography variant="small" className="text-crd-lightGray">
+                <Typography variant="small-body" className="text-crd-lightGray">
                   Card {card}
                 </Typography>
               </div>
-              <Typography variant="small" className="text-crd-white font-medium">
+              <Typography variant="small-body" className="text-crd-white font-medium">
                 Featured Card {card}
               </Typography>
-              <Typography variant="tiny" className="text-crd-lightGray">
+              <Typography variant="caption" className="text-crd-lightGray">
                 By Creator {card}
               </Typography>
             </div>
@@ -87,7 +87,7 @@ const Collections: React.FC = () => {
       <section className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Typography variant="heading-2" className="text-crd-white mb-2">
+            <Typography variant="h2" className="text-crd-white mb-2">
               Your Collections
             </Typography>
             <Typography variant="body" className="text-crd-lightGray">
@@ -110,17 +110,17 @@ const Collections: React.FC = () => {
                   <Typography variant="body" className="text-crd-white font-medium">
                     My Collection {collection}
                   </Typography>
-                  <Typography variant="small" className="text-crd-lightGray">
+                  <Typography variant="small-body" className="text-crd-lightGray">
                     24 cards
                   </Typography>
                 </div>
               </div>
-              <Typography variant="small" className="text-crd-lightGray mb-4">
+              <Typography variant="small-body" className="text-crd-lightGray mb-4">
                 A curated collection of my favorite cards from various creators.
               </Typography>
               <div className="flex items-center gap-2">
                 <Star className="h-4 w-4 text-crd-orange" />
-                <Typography variant="tiny" className="text-crd-lightGray">
+                <Typography variant="caption" className="text-crd-lightGray">
                   12 followers
                 </Typography>
               </div>
@@ -133,7 +133,7 @@ const Collections: React.FC = () => {
       <section className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Typography variant="heading-2" className="text-crd-white mb-2">
+            <Typography variant="h2" className="text-crd-white mb-2">
               Trending Collections
             </Typography>
             <Typography variant="body" className="text-crd-lightGray">
@@ -156,22 +156,22 @@ const Collections: React.FC = () => {
                   <Typography variant="body" className="text-crd-white font-medium">
                     Trending Collection {collection}
                   </Typography>
-                  <Typography variant="small" className="text-crd-lightGray">
+                  <Typography variant="small-body" className="text-crd-lightGray">
                     By @creator{collection}
                   </Typography>
                 </div>
               </div>
-              <Typography variant="small" className="text-crd-lightGray mb-4">
+              <Typography variant="small-body" className="text-crd-lightGray mb-4">
                 Hot collection featuring the latest cards from emerging artists.
               </Typography>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Star className="h-4 w-4 text-crd-orange" />
-                  <Typography variant="tiny" className="text-crd-lightGray">
+                  <Typography variant="caption" className="text-crd-lightGray">
                     {150 + collection * 23} followers
                   </Typography>
                 </div>
-                <Typography variant="tiny" className="text-crd-green">
+                <Typography variant="caption" className="text-crd-green">
                   +{collection * 12}% this week
                 </Typography>
               </div>
@@ -182,7 +182,7 @@ const Collections: React.FC = () => {
 
       {/* Community Activity Section */}
       <section className="mb-16">
-        <Typography variant="heading-2" className="text-crd-white mb-8">
+        <Typography variant="h2" className="text-crd-white mb-8">
           Community Activity
         </Typography>
 
@@ -194,10 +194,10 @@ const Collections: React.FC = () => {
                   <Clock className="h-5 w-5 text-crd-blue" />
                 </div>
                 <div className="flex-1">
-                  <Typography variant="small" className="text-crd-white">
+                  <Typography variant="small-body" className="text-crd-white">
                     <span className="text-crd-blue">@creator{activity}</span> added 3 new cards to <span className="text-crd-green">"Best of 2024"</span>
                   </Typography>
-                  <Typography variant="tiny" className="text-crd-lightGray">
+                  <Typography variant="caption" className="text-crd-lightGray">
                     {activity} hours ago
                   </Typography>
                 </div>
