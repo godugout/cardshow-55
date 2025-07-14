@@ -6,8 +6,6 @@ import { SimplifiedCTA } from "@/components/home/SimplifiedCTA";
 import { Footer } from "@/components/home/Footer";
 
 export default function Index() {
-  console.log('🏠 Index page rendering - checking for duplicate hero components');
-  
   return (
     <div className="bg-[#141416] min-h-screen flex flex-col overflow-hidden">
       <main className="w-full flex-1">

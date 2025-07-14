@@ -23,11 +23,6 @@ export const EnhancedHero: React.FC = () => {
   const [speed, setSpeed] = useState(1.5);
   const [glowEnabled, setGlowEnabled] = useState(true);
 
-  // Debug logging
-  console.log('🏠 EnhancedHero rendering with updated props');
-  console.log('📝 Caption: "CREATE, COLLECT & CONNECT"');
-  console.log('📝 Body: "Experience the freedom of digital card creation where every design comes to life with immersive 3D viewing, professional lighting, and visual effects that showcase your art like never before."');
-
   // Load preferences from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('crd-secret-text-settings');
@@ -138,8 +133,6 @@ export const EnhancedHero: React.FC = () => {
 
   const captionText = "CREATE, COLLECT & CONNECT";
   const bodyText = "Experience the freedom of digital card creation where every design comes to life with immersive 3D viewing, professional lighting, and visual effects that showcase your art like never before.";
-
-  console.log('🚀 Rendering Hero3 with:', { captionText, bodyText });
 
   return (
     <div className="relative">

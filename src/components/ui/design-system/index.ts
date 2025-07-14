@@ -1,4 +1,3 @@
-
 // CRD Design System - Complete Component Library
 export { CRDButton } from './Button';
 export { CRDCard } from './Card';
@@ -20,6 +19,9 @@ export { CRDContainer, CRDSection } from '../../layout/CRDContainer';
 
 // Section Components  
 export { HeroSection } from '../../sections/HeroSection';
+
+// Hero Components
+export { Hero3 } from './Hero3';
 
 // Navigation Components
 export { Navigation } from '../../navigation/Navigation';
