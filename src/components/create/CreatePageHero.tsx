@@ -1,48 +1,22 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Typography, CRDButton } from '@/components/ui/design-system';
-import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
+import { StandardHero } from '@/components/shared/StandardHero';
 
 export const CreatePageHero: React.FC = () => {
-  const { isMobile } = useResponsiveLayout();
-
   return (
-    <div className="relative mb-16 overflow-hidden">
-      {/* Simple Black Background */}
-      <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
-      
-      {/* Hero Content */}
-      <div className="relative z-10 text-center pt-20 md:pt-24 lg:pt-32">
-        <div className={`max-w-6xl mx-auto ${isMobile ? 'px-4' : 'px-8'}`}>
-          {/* Caption with gradient text */}
-          <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
-            CUT, CRAFT & CREATE DIGITALLY
-          </Typography>
-          
-          {/* Main Heading with enhanced styling */}
-          <Typography 
-            as="h1" 
-            variant="display"
-            className="mb-6 leading-tight text-crd-white drop-shadow-lg text-4xl lg:text-6xl xl:text-7xl"
-          >
-            From paper scraps to digital art<br />craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
-          </Typography>
-          
-          {/* Body Text */}
-          <Typography 
-            variant="large-body" 
-            className="mb-8 text-crd-lightGray max-w-2xl mx-auto leading-relaxed"
-          >
-            Experience the freedom of digital crafting where every cut, layer, and blend creates 
-            immersive cards that viewers can explore from every angle. No glue required.
-        </Typography>
-        </div>
-      </div>
-      
-      {/* Decorative elements */}
-      <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-crd-green/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-crd-blue/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-    </div>
+    <StandardHero
+      label="CUT, CRAFT & CREATE DIGITALLY"
+      title={
+        <>
+          From paper scraps to digital art<br />craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
+        </>
+      }
+      description="Experience the freedom of digital crafting where every cut, layer, and blend creates immersive cards that viewers can explore from every angle. No glue required."
+      primaryCta={{
+        text: "Create your first CRD",
+        link: "/create"
+      }}
+      showDecorations={true}
+    />
   );
 };

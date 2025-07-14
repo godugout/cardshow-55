@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Hero3 } from "@/components/ui/design-system";
+import { StandardHero } from "@/components/shared/StandardHero";
 import { useCards } from "@/hooks/useCards";
 import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
+import { Hero3 } from "@/components/ui/design-system";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -111,36 +112,49 @@ export const EnhancedHero: React.FC = () => {
 
   // Create enhanced heading with proper two-line structure and large font size
   const enhancedHeading = (
-    <div className="leading-tight text-4xl lg:text-6xl xl:text-7xl font-extrabold text-crd-white drop-shadow-lg">
-      <div>Create, collect, and trade card art</div>
-      <div>
-        with{' '}
-        <TextEffects3D
-          style={textStyle}
-          animation={animation}
-          intensity={intensity}
-          speed={speed}
-          glowEnabled={glowEnabled}
-        >
-          unlimited potential
-        </TextEffects3D>
-      </div>
-    </div>
+    <>
+      Create, collect, and trade card art<br />
+      with{' '}
+      <TextEffects3D
+        style={textStyle}
+        animation={animation}
+        intensity={intensity}
+        speed={speed}
+        glowEnabled={glowEnabled}
+      >
+        unlimited potential
+      </TextEffects3D>
+    </>
   );
 
   return (
     <div className="relative">
       {/* Hero content */}
-      <Hero3
-        caption="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
-        heading={enhancedHeading}
-        bodyText="Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life."
-        ctaText="Create your first CRD"
-        ctaLink="/create"
-        showFeaturedCards={true}
-        featuredCards={showcaseCards}
-        onCardClick={handleCardStudioOpen}
-      />
+      <StandardHero
+        label="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
+        title={enhancedHeading}
+        description="Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life."
+        primaryCta={{
+          text: "Create your first CRD",
+          link: "/create"
+        }}
+      >
+        {/* Featured Cards Section - moved outside hero but inside children */}
+        {showcaseCards.length > 0 && (
+          <div className="mt-16">
+            <Hero3
+              caption=""
+              heading=""
+              bodyText=""
+              ctaText=""
+              ctaLink=""
+              showFeaturedCards={true}
+              featuredCards={showcaseCards}
+              onCardClick={handleCardStudioOpen}
+            />
+          </div>
+        )}
+      </StandardHero>
 
       {/* Secret Menu */}
       <SecretMenu3D
