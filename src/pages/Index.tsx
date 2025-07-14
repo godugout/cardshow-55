@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Hero } from '@/components/home/Hero';
 import { FeaturedCards } from '@/components/home/FeaturedCards';
-import { CallToAction } from '@/components/home/CallToAction';
+import { CTASection } from '@/components/home/CTASection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileText, Database, HardDrive } from 'lucide-react';
@@ -52,7 +52,7 @@ const Index = () => {
       </div>
 
       <FeaturedCards />
-      <CallToAction />
+      <CTASection />
     </div>
   );
 };
