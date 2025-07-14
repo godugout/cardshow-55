@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { StandardHero } from "@/components/shared/StandardHero";
@@ -138,8 +137,9 @@ export const EnhancedHero: React.FC = () => {
           text: "Create your first CRD",
           link: "/create"
         }}
+        heroVariant="hero"
       >
-        {/* Featured Cards Section - reduced margin from mt-16 to mt-8 */}
+        {/* Featured Cards Section */}
         {showcaseCards.length > 0 && (
           <div className="mt-8">
             <Hero3

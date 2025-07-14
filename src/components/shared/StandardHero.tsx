@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -21,7 +20,8 @@ interface StandardHeroProps {
   secondaryCta?: CTAConfig;
   showDecorations?: boolean;
   className?: string;
-  children?: React.ReactNode; // For additional content like carousels
+  children?: React.ReactNode;
+  heroVariant?: 'hero' | 'display'; // New prop for typography variant
 }
 
 export const StandardHero: React.FC<StandardHeroProps> = ({
@@ -32,7 +32,8 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
   secondaryCta,
   showDecorations = false,
   className = '',
-  children
+  children,
+  heroVariant = 'display'
 }) => {
   const { isMobile } = useResponsiveLayout();
 
@@ -49,7 +50,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
         </>
       )}
       
-      {/* Hero Content - reduced padding from pb-8 to pb-4 */}
+      {/* Hero Content */}
       <div className="relative z-10 text-center pt-20 md:pt-24 lg:pt-32 pb-4">
         <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-8'}`}>
           {/* Label */}
@@ -59,10 +60,10 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
             </Typography>
           )}
           
-          {/* Main Heading - Let Typography component handle all sizing */}
+          {/* Main Heading - Use configurable variant */}
           <Typography 
             as="h1" 
-            variant="display"
+            variant={heroVariant}
             className="mb-6 leading-tight text-crd-white drop-shadow-lg"
           >
             {title}
@@ -82,7 +83,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
               <CRDButton 
                 size="lg" 
                 variant={primaryCta.variant || 'primary'}
-                className={`liquid-gradient-blue-purple min-w-[200px] ${primaryCta.className || ''}`}
+                className={`liquid-gradient-cta min-w-[200px] ${primaryCta.className || ''}`}
               >
                 {primaryCta.text}
                 <ArrowRight className="ml-2 h-5 w-5" />

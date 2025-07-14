@@ -36,7 +36,6 @@ export const SimplifiedDiscover = () => {
         .eq('is_public', true)
         .limit(12);
 
-      // Apply different sorting based on filter
       switch (activeFilter) {
         case 'trending':
           query = query.order('favorite_count', { ascending: false });
@@ -94,8 +93,8 @@ export const SimplifiedDiscover = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-            {Array.from({ length: 10 }).map((_, i) => (
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4">
+            {Array.from({ length: 14 }).map((_, i) => (
               <div key={i} className="bg-themed-secondary/10 rounded-lg h-48 animate-pulse" />
             ))}
           </div>
@@ -107,7 +106,6 @@ export const SimplifiedDiscover = () => {
   return (
     <section className="py-6 px-4 sm:py-8 sm:px-6 lg:py-12">
       <div className="max-w-7xl mx-auto">
-        {/* Header - Mobile-first typography */}
         <div className="text-center mb-4 sm:mb-6">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-themed-primary mb-3 sm:mb-4">
             Discover <span className="highlight-themed">Amazing Cards</span>
@@ -117,7 +115,6 @@ export const SimplifiedDiscover = () => {
           </p>
         </div>
 
-        {/* Filter Tabs - Mobile-optimized with touch targets */}
         <div className="flex justify-center mb-4 sm:mb-6">
           <div className="tabs-themed inline-flex rounded-lg p-1 w-full max-w-sm sm:max-w-none sm:w-auto">
             {['featured', 'trending', 'new'].map((filter) => (
@@ -137,8 +134,8 @@ export const SimplifiedDiscover = () => {
           </div>
         </div>
 
-        {/* Cards Grid - Smaller, more compact cards with increased columns */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        {/* Cards Grid - More columns for smaller cards */}
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {cards.map((card) => (
             <Card key={card.id} className="card-themed group hover:scale-105 transition-all duration-300 max-w-[200px] mx-auto">
               <div className="relative aspect-[3/4] overflow-hidden rounded-t-lg">
@@ -155,7 +152,6 @@ export const SimplifiedDiscover = () => {
                   </div>
                 )}
                 
-                {/* Trending indicator */}
                 {activeFilter === 'trending' && card.rarity === 'legendary' && (
                   <div className="absolute top-1 right-1 bg-yellow-500/90 text-black text-xs px-1.5 py-0.5 rounded-full font-medium">
                     🔥
@@ -187,7 +183,6 @@ export const SimplifiedDiscover = () => {
           ))}
         </div>
 
-        {/* CTA Section - Mobile-optimized */}
         <div className="text-center">
           <div className="bg-themed-secondary/5 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
             <h3 className="text-lg sm:text-xl font-bold text-themed-primary mb-2 sm:mb-3">
