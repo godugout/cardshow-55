@@ -193,24 +193,33 @@ export const useTeamTheme = () => {
       const savedHeaderColor = localStorage.getItem('crd-custom-header-color');
       const savedHeaderColorType = localStorage.getItem('crd-custom-header-color-type');
       
-      // Restore custom header color if exists
+      // Restore custom header color first (before applying theme)
       if (savedHeaderColor && savedHeaderColorType) {
         setCustomHeaderColor(savedHeaderColor);
         setCustomHeaderColorType(savedHeaderColorType);
       }
       
+      // Apply theme based on priority: logo theme > saved theme > default
       if (savedLogoCode) {
-        // Restore logo-based theme
-        setLogoTheme(savedLogoCode);
+        const logoTheme = getThemeByDNA(savedLogoCode);
+        if (logoTheme) {
+          applyTheme(logoTheme);
+          setCurrentLogoCode(savedLogoCode);
+        }
       } else if (savedTheme) {
-        setTheme(savedTheme);
+        const palette = getPaletteById(savedTheme) || availablePalettes.find(p => p.id === savedTheme);
+        if (palette) {
+          applyTheme(palette);
+        }
       } else {
         // Apply default theme
         const defaultPalette = allPalettes.find(p => p.id === 'cardshow-basic') || allPalettes[0];
-        applyTheme(defaultPalette);
+        if (defaultPalette) {
+          applyTheme(defaultPalette);
+        }
       }
     }
-  }, [availablePalettes, isLoading, setTheme, setLogoTheme, applyTheme]);
+  }, [availablePalettes, isLoading, applyTheme]);
 
   // Get current logo information
   const getCurrentLogo = useCallback(() => {
