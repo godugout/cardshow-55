@@ -113,8 +113,7 @@ export const EnhancedHero: React.FC = () => {
   // Create enhanced heading with proper two-line structure and large font size
   const enhancedHeading = (
     <>
-      Create, collect, and trade card art<br />
-      with{' '}
+      Create, collect, and trade<br />
       <TextEffects3D
         style={textStyle}
         animation={animation}
@@ -122,7 +121,7 @@ export const EnhancedHero: React.FC = () => {
         speed={speed}
         glowEnabled={glowEnabled}
       >
-        unlimited potential
+        card art with unlimited potential
       </TextEffects3D>
     </>
   );
