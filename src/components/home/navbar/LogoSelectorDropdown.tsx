@@ -235,12 +235,12 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                       </div>
                       
                       {/* 4 Color Dots - clickable for header customization */}
-                      <div className="flex justify-center space-x-1">
+                      <div className="flex justify-center items-center space-x-1">
                         {theme && [
                           { color: theme.colors.primary, size: 'w-3 h-3', type: 'primary' },
-                          { color: theme.colors.secondary, size: 'w-2.5 h-2.5', type: 'secondary' },
-                          { color: theme.colors.accent, size: 'w-2 h-2', type: 'accent' },
-                          { color: theme.colors.neutral, size: 'w-1.5 h-1.5', type: 'neutral' }
+                          { color: theme.colors.secondary, size: 'w-2 h-2', type: 'secondary' },
+                          { color: theme.colors.accent, size: 'w-1.5 h-1.5', type: 'accent' },
+                          { color: theme.colors.neutral, size: 'w-1 h-1', type: 'neutral' }
                         ].map((dot, index) => {
                           const isActiveHeaderColor = customHeaderColor === dot.color && customHeaderColorType === dot.type;
                           return (
