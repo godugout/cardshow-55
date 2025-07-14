@@ -4,7 +4,6 @@ import { CRDContainer, CRDSection } from '@/components/layout/CRDContainer';
 import { Typography } from './Typography';
 import { CRDButton } from './Button';
 import { Link } from 'react-router-dom';
-import { CardCarousel } from '@/components/cards/CardCarousel';
 import type { Tables } from '@/integrations/supabase/types';
 
 type DbCard = Tables<'cards'>;
@@ -76,17 +75,13 @@ export const Hero3: React.FC<Hero3Props> = ({
         </div>
       </CRDContainer>
 
-      {/* Featured Cards Section */}
+      {/* Featured Cards Section - temporarily removed until CardCarousel is available */}
       {showFeaturedCards && featuredCards.length > 0 && (
-        <CRDSection spacing="medium" className="mt-16">
-          <CRDContainer size="wide">
-            <CardCarousel 
-              cards={featuredCards}
-              onCardClick={onCardClick}
-              autoplay={true}
-              showDots={true}
-              className="max-w-6xl mx-auto"
-            />
+        <CRDSection spacing="default" className="mt-16">
+          <CRDContainer size="content">
+            <div className="text-center text-crd-lightGray">
+              Featured cards section - CardCarousel component needed
+            </div>
           </CRDContainer>
         </CRDSection>
       )}
