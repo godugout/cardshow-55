@@ -26,7 +26,7 @@ export const CreatePageHero: React.FC = () => {
             variant="display"
             className="mb-6 leading-tight text-crd-white drop-shadow-lg"
           >
-            Craft cards that captivate with <span className="gradient-text-green-blue-purple">unlimited potential</span>
+            Craft cards that captivate<br />with <span className="gradient-text-green-blue-purple">unlimited potential</span>
           </Typography>
           
           {/* Body Text */}
