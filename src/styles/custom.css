@@ -1,4 +1,3 @@
-
 /* Custom utility classes for specialized components */
 
 /* Editor-specific utilities */
@@ -78,4 +77,48 @@
   background: hsl(var(--crd-green));
   cursor: pointer;
   border: 2px solid hsl(var(--crd-green));
+}
+
+/* Interactive Elements */
+.interactive-element-active {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.interactive-element-active::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, hsl(var(--crd-green)), hsl(var(--crd-blue)), hsl(var(--crd-purple)), hsl(var(--crd-green)));
+  background-size: 400% 400%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: gradient-shift 3s ease infinite;
+  opacity: 0.3;
+}
+
+/* Gradient Animation */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Enhanced hover states for interactive elements */
+.interactive-element-active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px hsl(var(--crd-green) / 0.3);
+}
+
+/* Pulse effect for active interactive elements */
+.interactive-element-active.pulse-active {
+  animation: interactive-pulse 2s ease-in-out infinite;
+}
+
+@keyframes interactive-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
 }
