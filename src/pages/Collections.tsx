@@ -15,8 +15,8 @@ const Collections: React.FC = () => {
         title={
           <>
             Your gateway to the world of<br />
-            <span className="xl:whitespace-nowrap">
-              <span className="gradient-text-green-blue-purple">digital cards</span>
+            <span className="gradient-text-green-blue-purple whitespace-nowrap">
+              digital cards
             </span>
           </>
         }
@@ -29,6 +29,7 @@ const Collections: React.FC = () => {
           text: "Create Collection",
           link: "/collections/create"
         }}
+        fullWidth={true}
       />
 
       {/* Gallery Preview Section */}

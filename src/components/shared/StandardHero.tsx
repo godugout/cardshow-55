@@ -41,7 +41,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
   const { isMobile } = useResponsiveLayout();
 
   return (
-    <div className={`relative mb-12 overflow-hidden ${fullWidth ? 'w-full' : ''} ${className}`}>
+    <div className={`relative ${fullWidth ? 'w-screen -mx-[50vw] left-1/2' : 'mb-12'} overflow-hidden ${className}`}>
       {/* Background */}
       <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
       
@@ -55,7 +55,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       
       {/* Hero Content */}
       <div className="relative z-10 text-center pt-16 md:pt-20 lg:pt-24 pb-4">
-        <div className={`${fullWidth ? 'w-full px-4 sm:px-6' : `max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-6'}`}`}>
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           {/* Label */}
           {label && (
             <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
