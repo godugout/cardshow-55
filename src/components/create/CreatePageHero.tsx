@@ -14,7 +14,8 @@ export const CreatePageHero: React.FC = () => {
       description="Experience the freedom of digital crafting where every cut, layer, and blend creates immersive cards that viewers can explore from every angle. No glue required."
       primaryCta={{
         text: "Create your first CRD",
-        link: "/create"
+        link: "/create",
+        className: "liquid-gradient-cta"
       }}
       showDecorations={true}
     />
