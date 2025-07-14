@@ -43,6 +43,13 @@ const CreateChoiceContent: React.FC = () => {
         {/* New Hero Section */}
         <CreatePageHero />
 
+        {/* Section Heading */}
+        <div className="text-center mb-12">
+          <Typography variant="h2" className="text-crd-white text-2xl md:text-3xl font-bold">
+            What do you feel like creating today?
+          </Typography>
+        </div>
+
         {/* Creation Options */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* CRD Cards */}
