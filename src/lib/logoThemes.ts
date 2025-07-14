@@ -25,7 +25,7 @@ export const hexToHsl = (hex: string): string => {
     h /= 6;
   }
 
-  return `${Math.round(h * 360)} ${Math.round(s * 100)} ${Math.round(l * 100)}`;
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
 };
 
 // Convert logo theme to TeamPalette format
