@@ -14,7 +14,7 @@ export const CreatePageHero: React.FC = () => {
       
       {/* Hero Content */}
       <div className="relative z-10 text-center py-20">
-        <div className={`max-w-4xl mx-auto ${isMobile ? 'px-5' : 'px-12'}`}>
+        <div className={`max-w-6xl mx-auto ${isMobile ? 'px-4' : 'px-8'}`}>
           {/* Caption with gradient text */}
           <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
             UNLEASH YOUR CREATIVITY
@@ -24,7 +24,7 @@ export const CreatePageHero: React.FC = () => {
           <Typography 
             as="h1" 
             variant="display"
-            className="mb-6 leading-tight text-crd-white drop-shadow-lg"
+            className="mb-6 leading-tight text-crd-white drop-shadow-lg text-4xl lg:text-6xl xl:text-7xl"
           >
             Craft cards that captivate<br />with <span className="gradient-text-green-blue-purple">unlimited potential</span>
           </Typography>
