@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { NavLinks } from "./navbar/NavLinks";
 import { NavActions } from "./navbar/NavActions";
 import { LogoSelector } from "./navbar/LogoSelector";
@@ -7,35 +7,35 @@ import { MobileNav } from "./navbar/MobileNav";
 import { Menu, X } from "lucide-react";
 import { useTeamTheme } from "@/hooks/useTeamTheme";
 
+// Convert hex to rgba for transparency
+const hexToRgba = (hex: string, alpha: number) => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
+// Apply custom header color using CSS custom properties
+const applyCustomHeaderStyles = (element: HTMLElement, customHeaderColor: string) => {
+  console.log('🎨 Setting CSS custom properties for:', customHeaderColor);
+  
+  element.style.setProperty('--navbar-custom-primary', hexToRgba(customHeaderColor, 0.8));
+  element.style.setProperty('--navbar-custom-secondary', hexToRgba(customHeaderColor, 0.6));
+  element.style.setProperty('--navbar-custom-tertiary', hexToRgba(customHeaderColor, 0.4));
+  element.style.setProperty('--navbar-custom-border', hexToRgba(customHeaderColor, 0.6));
+  element.style.setProperty('--navbar-custom-shadow', hexToRgba(customHeaderColor, 0.3));
+  element.style.setProperty('--navbar-custom-inset', hexToRgba(customHeaderColor, 0.2));
+  
+  console.log('🎨 CSS custom properties set successfully');
+};
+
 // Dynamic navbar background based on current theme
-const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null) => {
+const getNavbarDynamicStyles = (currentPalette: any) => {
   if (!currentPalette) {
     return {
       backgroundColor: 'rgba(20, 20, 22, 0.85)', // fallback
       borderColor: 'rgba(255, 255, 255, 0.1)'
     };
-  }
-  
-  // Convert hex to rgba for transparency
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
-  
-  // Use custom header color if set, otherwise use theme colors
-  if (customHeaderColor) {
-    console.log('🎨 Applying custom header color:', customHeaderColor);
-    const styles = {
-      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.8)} 0%, ${hexToRgba(customHeaderColor, 0.6)} 50%, ${hexToRgba(customHeaderColor, 0.4)} 100%) !important`,
-      borderColor: `${hexToRgba(customHeaderColor, 0.6)} !important`,
-      boxShadow: `0 1px 3px ${hexToRgba(customHeaderColor, 0.3)}, inset 0 1px 0 ${hexToRgba(customHeaderColor, 0.2)}`,
-      transition: 'all 0.3s ease-in-out',
-      backdropFilter: 'blur(8px)'
-    };
-    console.log('🎨 Generated header styles:', styles);
-    return styles;
   }
   
   // Create subtle background gradient using theme colors
@@ -69,20 +69,39 @@ const getDividerColorClasses = (color: string) => {
 export const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { currentPalette, setTheme, customHeaderColor } = useTeamTheme();
+  const navbarRef = useRef<HTMLDivElement>(null);
   
-  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor);
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette);
+
+  // Apply custom header styles when customHeaderColor changes
+  useEffect(() => {
+    if (navbarRef.current) {
+      if (customHeaderColor) {
+        applyCustomHeaderStyles(navbarRef.current, customHeaderColor);
+      } else {
+        // Clear custom properties when no custom color is set
+        const element = navbarRef.current;
+        element.style.removeProperty('--navbar-custom-primary');
+        element.style.removeProperty('--navbar-custom-secondary');
+        element.style.removeProperty('--navbar-custom-tertiary');
+        element.style.removeProperty('--navbar-custom-border');
+        element.style.removeProperty('--navbar-custom-shadow');
+        element.style.removeProperty('--navbar-custom-inset');
+        console.log('🎨 Custom header styles cleared');
+      }
+    }
+  }, [customHeaderColor]);
 
   return (
     <>
       <div 
-        className={`navbar-themed w-full overflow-hidden border-b ${customHeaderColor ? '' : 'backdrop-blur-sm'}`}
-        style={{
+        ref={navbarRef}
+        className={`navbar-themed w-full overflow-hidden border-b ${
+          customHeaderColor ? 'custom-header-color' : 'backdrop-blur-sm'
+        }`}
+        style={customHeaderColor ? {} : {
           ...dynamicStyles,
-          borderBottomColor: dynamicStyles.borderColor,
-          ...(customHeaderColor && {
-            backgroundColor: 'transparent',
-            backgroundImage: `linear-gradient(135deg, ${getNavbarDynamicStyles(currentPalette, customHeaderColor).background})`
-          })
+          borderBottomColor: dynamicStyles.borderColor
         }}
       >
         {/* Mobile-first container with proper touch targets */}
