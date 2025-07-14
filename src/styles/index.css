@@ -43,11 +43,4 @@
   .navbar-themed {
     transition: all 0.3s ease-in-out;
   }
-  
-  .navbar-themed.custom-header-color {
-    /* No background styles - transparent */
-    background: none !important;
-    background-color: transparent !important;
-    background-image: none !important;
-  }
 }

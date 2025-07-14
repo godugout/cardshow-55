@@ -36,21 +36,7 @@ const applyCustomHeaderStyles = (element: HTMLElement, customHeaderColor: string
 
 // Dynamic navbar background based on current theme
 const getNavbarDynamicStyles = (currentPalette: any) => {
-  if (!currentPalette) {
-    return {
-      backgroundColor: 'rgba(20, 20, 22, 0.85)', // fallback
-      borderColor: 'rgba(255, 255, 255, 0.1)'
-    };
-  }
-  
-  // Create subtle background gradient using theme colors
-  const primary = currentPalette.colors.primary;
-  const secondary = currentPalette.colors.secondary;
-  
-  return {
-    background: `linear-gradient(135deg, ${hexToRgba(primary, 0.08)} 0%, ${hexToRgba(secondary, 0.05)} 100%)`,
-    borderColor: hexToRgba(primary, 0.15)
-  };
+  return {};
 };
 
 const getDividerColorClasses = (color: string) => {
@@ -101,9 +87,7 @@ export const Navbar: React.FC = () => {
     <>
       <div 
         ref={navbarRef}
-        className={`navbar-themed w-full overflow-hidden border-b ${
-          customHeaderColor ? 'custom-header-color' : 'backdrop-blur-sm'
-        }`}
+        className="w-full overflow-hidden"
         style={undefined}
       >
         {/* Mobile-first container with proper touch targets */}
@@ -135,9 +119,6 @@ export const Navbar: React.FC = () => {
             </button>
           </div>
         </div>
-        
-        {/* Gradient divider */}
-        <div className="flex min-h-px w-full" style={{ background: `linear-gradient(90deg, hsl(var(--theme-accent) / 0.2), hsl(var(--theme-accent) / 0.1))` }} />
       </div>
 
       {/* Mobile Navigation Drawer */}
