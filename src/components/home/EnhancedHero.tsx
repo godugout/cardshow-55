@@ -7,7 +7,6 @@ import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { Hero3 } from "@/components/ui/design-system";
-import { NavbarAwareContainer } from "@/components/layout/NavbarAwareContainer";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -114,8 +113,8 @@ export const EnhancedHero: React.FC = () => {
   // Create enhanced heading with proper two-line structure and large font size
   const enhancedHeading = (
     <>
-      Create, collect, and trade<br />
-      card art with{' '}
+      Create, collect, and trade card art<br />
+      with{' '}
       <TextEffects3D
         style={textStyle}
         animation={animation}
@@ -129,7 +128,7 @@ export const EnhancedHero: React.FC = () => {
   );
 
   return (
-    <NavbarAwareContainer className="relative">
+    <div className="relative">
       {/* Hero content */}
       <StandardHero
         label="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
@@ -173,6 +172,6 @@ export const EnhancedHero: React.FC = () => {
         onGlowChange={handleGlowChange}
         onReset={handleReset}
       />
-    </NavbarAwareContainer>
+    </div>
   );
 };

@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { CRDCardCreatorWrapper } from '@/components/editor/crd/CRDCardCreatorWrapper';
 import { CRDOverlayHeader } from '@/components/editor/crd/CRDOverlayHeader';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
-import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
 import type { CardData } from '@/hooks/useCardEditor';
 
 const CreateCRD = () => {
@@ -23,7 +21,7 @@ const CreateCRD = () => {
   };
 
   return (
-    <NavbarAwareContainer className="fixed inset-0 bg-crd-darkest overflow-hidden">
+    <div className="fixed inset-0 bg-crd-darkest overflow-hidden">
       {/* Main Content - Full height */}
       <div className="h-full">
         <ErrorBoundary>
@@ -33,7 +31,7 @@ const CreateCRD = () => {
           />
         </ErrorBoundary>
       </div>
-    </NavbarAwareContainer>
+    </div>
   );
 };
 

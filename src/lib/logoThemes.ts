@@ -1,4 +1,3 @@
-
 // Logo-specific theming system for Cardshow
 // Each logo gets a carefully crafted 4-color theme based on official team/brand colors
 
@@ -31,20 +30,20 @@ export const hexToHsl = (hex: string): string => {
 
 // Convert logo theme to TeamPalette format
 export const logoThemeToTeamPalette = (logo: typeof cardshowLogoDatabase[0]): TeamPalette => {
-  const { logoTheme, dnaCode, displayName } = logo;
+  const { logoTheme, dnaCode, displayName, themeUsage } = logo;
   
   return {
     id: `logo-${dnaCode.toLowerCase()}`,
     name: `${displayName} Theme`,
     description: logo.description,
-    teamCode: dnaCode,
     colors: logoTheme,
     hsl: {
       primary: hexToHsl(logoTheme.primary),
       secondary: hexToHsl(logoTheme.secondary),
       accent: hexToHsl(logoTheme.accent),
       neutral: hexToHsl(logoTheme.neutral)
-    }
+    },
+    usage: themeUsage
   };
 };
 
