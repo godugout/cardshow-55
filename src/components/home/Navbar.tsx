@@ -8,25 +8,7 @@ import { Menu, X } from "lucide-react";
 import { useTeamTheme } from "@/hooks/useTeamTheme";
 
 // Dynamic navbar background based on current theme
-const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null, navbarMode?: string) => {
-  // Away team mode - MLB jersey gray
-  if (navbarMode === 'away') {
-    return {
-      background: 'linear-gradient(135deg, rgba(192, 192, 192, 0.95) 0%, rgba(176, 176, 176, 0.92) 50%, rgba(200, 200, 200, 0.97) 100%), repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px)',
-      borderColor: 'rgba(160, 160, 160, 0.4)',
-      backdropFilter: 'blur(16px) saturate(120%)'
-    };
-  }
-
-  // Home team mode - Light background
-  if (navbarMode === 'home') {
-    return {
-      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.92) 50%, rgba(255, 255, 255, 0.97) 100%)',
-      borderColor: 'rgba(203, 213, 225, 0.4)',
-      backdropFilter: 'blur(16px) saturate(180%)'
-    };
-  }
-
+const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null) => {
   if (!currentPalette) {
     return {
       backgroundColor: 'rgba(20, 20, 22, 0.85)', // fallback
@@ -61,28 +43,34 @@ const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string 
   };
 };
 
+const getDividerColorClasses = (color: string) => {
+  const colorMap = {
+    orange: 'bg-orange-500/15 border-t-orange-500/20',
+    red: 'bg-red-500/15 border-t-red-500/20',
+    green: 'bg-green-500/15 border-t-green-500/20',
+    yellow: 'bg-yellow-500/15 border-t-yellow-500/20',
+    blue: 'bg-blue-500/15 border-t-blue-500/20',
+    gray: 'bg-gray-500/15 border-t-gray-500/20',
+    emerald: 'bg-emerald-500/15 border-t-emerald-500/20',
+    purple: 'bg-purple-500/15 border-t-purple-500/20',
+    slate: 'bg-slate-500/15 border-t-slate-500/20',
+    amber: 'bg-amber-500/15 border-t-amber-500/20',
+    cyan: 'bg-cyan-500/15 border-t-cyan-500/20',
+    indigo: 'bg-indigo-500/15 border-t-indigo-500/20',
+  };
+  return colorMap[color] || 'bg-gray-500/15 border-t-gray-500/20';
+};
+
 export const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { currentPalette, setTheme, customHeaderColor, navbarMode } = useTeamTheme();
+  const { currentPalette, setTheme, customHeaderColor } = useTeamTheme();
   
-  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor, navbarMode);
-
-  const getNavbarClassName = () => {
-    let baseClass = "navbar-themed w-full overflow-hidden border-b backdrop-blur-sm";
-    
-    if (navbarMode === 'home') {
-      baseClass += " navbar-home-team";
-    } else if (navbarMode === 'away') {
-      baseClass += " navbar-away-team";
-    }
-    
-    return baseClass;
-  };
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor);
 
   return (
     <>
       <div 
-        className={getNavbarClassName()}
+        className="navbar-themed w-full overflow-hidden border-b backdrop-blur-sm"
         style={{
           ...dynamicStyles,
           borderBottomColor: dynamicStyles.borderColor

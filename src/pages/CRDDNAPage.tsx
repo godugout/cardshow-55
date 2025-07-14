@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CRDDNABrowser } from '@/components/crd/CRDDNABrowser';
 import { CRDEntry } from '@/lib/cardshowDNA';
@@ -7,12 +6,12 @@ import { getPaletteByFileName } from '@/lib/teamPalettes';
 import { toast } from 'sonner';
 
 export const CRDDNAPage = () => {
-  const { setTheme } = useTeamTheme();
+  const { applyTheme } = useTeamTheme();
 
   const handleEntrySelect = (entry: CRDEntry) => {
-    const paletteId = getPaletteByFileName(entry.fileName);
-    if (paletteId) {
-      setTheme(paletteId);
+    const palette = getPaletteByFileName(entry.fileName);
+    if (palette) {
+      applyTheme(palette);
       toast.success(`Applied ${entry.teamName || entry.styleCode} theme`);
     } else {
       toast.error('Theme not found for this entry');

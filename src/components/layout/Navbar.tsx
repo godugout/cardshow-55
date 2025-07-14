@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Plus, Home, Palette, Menu } from 'lucide-react';
@@ -10,18 +9,9 @@ import { AdminTrigger } from '@/components/admin/AdminTrigger';
 import { MobileNav } from '@/components/home/navbar/MobileNav';
 
 // Dynamic navbar background based on current theme
-const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null, navbarMode?: string) => {
-  // Away team mode - MLB jersey gray
-  if (navbarMode === 'away') {
-    return {
-      background: 'linear-gradient(135deg, rgba(192, 192, 192, 0.95) 0%, rgba(176, 176, 176, 0.92) 50%, rgba(200, 200, 200, 0.97) 100%), repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px)',
-      borderColor: 'rgba(160, 160, 160, 0.4)',
-      backdropFilter: 'blur(16px) saturate(120%)'
-    };
-  }
-
-  // Home team mode - Light background
-  if (navbarMode === 'home') {
+const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null, isHomeTeamMode?: boolean) => {
+  // Home team mode overrides everything with light background
+  if (isHomeTeamMode) {
     return {
       background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.92) 50%, rgba(255, 255, 255, 0.97) 100%)',
       borderColor: 'rgba(203, 213, 225, 0.4)',
@@ -66,7 +56,7 @@ const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string 
 
 export const Navbar = () => {
   const location = useLocation();
-  const { currentPalette, setTheme, customHeaderColor, navbarMode, isHomeTeamMode, isAwayTeamMode } = useTeamTheme();
+  const { currentPalette, setTheme, customHeaderColor, isHomeTeamMode } = useTeamTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const prefersReducedMotion = typeof window !== 'undefined' && 
@@ -98,24 +88,18 @@ export const Navbar = () => {
       : 'transition-all duration-500 ease-out';
   };
 
-  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor, navbarMode);
-
-  const getNavbarClassName = () => {
-    let baseClass = `fixed top-0 left-0 right-0 z-50 border-b ${getTransitionClass()} ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${isScrolled ? 'shadow-lg' : ''}`;
-    
-    if (navbarMode === 'home') {
-      baseClass += " navbar-home-team";
-    } else if (navbarMode === 'away') {
-      baseClass += " navbar-away-team";
-    }
-    
-    return baseClass;
-  };
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor, isHomeTeamMode);
 
   return (
     <>
       <nav 
-        className={getNavbarClassName()}
+        className={`
+          ${isHomeTeamMode ? 'navbar-home-team' : ''}
+          fixed top-0 left-0 right-0 z-50 border-b
+          ${getTransitionClass()}
+          ${isVisible ? 'translate-y-0' : '-translate-y-full'}
+          ${isScrolled ? 'shadow-lg' : ''}
+        `}
         style={{ 
           height: 'var(--navbar-height)',
           transform: `translateY(${isVisible ? '0' : '-100%'})`,
@@ -142,9 +126,7 @@ export const Navbar = () => {
               className={`
                 md:hidden flex items-center justify-center
                 w-11 h-11 rounded-lg
-                ${isHomeTeamMode ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' : 
-                  isAwayTeamMode ? 'text-gray-600 hover:text-gray-800 hover:bg-gray-100' : 
-                  'text-themed-secondary hover-themed'}
+                ${isHomeTeamMode ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' : 'text-themed-secondary hover-themed'}
                 transition-all duration-200
                 ${!prefersReducedMotion ? 'hover:scale-105' : ''}
                 focus:outline-none focus:ring-2 focus:ring-themed-active/20
@@ -168,14 +150,10 @@ export const Navbar = () => {
                   ${isActive('/') 
                     ? (isHomeTeamMode 
                         ? 'text-slate-800 bg-slate-200/60' 
-                        : isAwayTeamMode
-                        ? 'text-gray-800 bg-gray-200/60'
                         : 'text-themed-active bg-themed-active/10'
                       )
                     : (isHomeTeamMode 
                         ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
-                        : isAwayTeamMode
-                        ? 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                         : 'text-themed-secondary hover-themed'
                       )
                   }
@@ -195,14 +173,10 @@ export const Navbar = () => {
                   ${isActive('/create') 
                     ? (isHomeTeamMode 
                         ? 'text-slate-800 bg-slate-200/60' 
-                        : isAwayTeamMode
-                        ? 'text-gray-800 bg-gray-200/60'
                         : 'text-themed-active bg-themed-active/10'
                       )
                     : (isHomeTeamMode 
                         ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
-                        : isAwayTeamMode
-                        ? 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                         : 'text-themed-secondary hover-themed'
                       )
                   }
@@ -222,14 +196,10 @@ export const Navbar = () => {
                   ${isActive('/collections') 
                     ? (isHomeTeamMode 
                         ? 'text-slate-800 bg-slate-200/60' 
-                        : isAwayTeamMode
-                        ? 'text-gray-800 bg-gray-200/60'
                         : 'text-themed-active bg-themed-active/10'
                       )
                     : (isHomeTeamMode 
                         ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
-                        : isAwayTeamMode
-                        ? 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                         : 'text-themed-secondary hover-themed'
                       )
                   }
@@ -248,14 +218,10 @@ export const Navbar = () => {
                   ${isActive('/studio') 
                     ? (isHomeTeamMode 
                         ? 'text-slate-800 bg-slate-200/60' 
-                        : isAwayTeamMode
-                        ? 'text-gray-800 bg-gray-200/60'
                         : 'text-themed-active bg-themed-active/10'
                       )
                     : (isHomeTeamMode 
                         ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
-                        : isAwayTeamMode
-                        ? 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                         : 'text-themed-secondary hover-themed'
                       )
                   }
