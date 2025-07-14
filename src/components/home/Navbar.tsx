@@ -28,10 +28,11 @@ const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string 
   if (customHeaderColor) {
     console.log('🎨 Applying custom header color:', customHeaderColor);
     const styles = {
-      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.35)} 0%, ${hexToRgba(customHeaderColor, 0.25)} 50%, ${hexToRgba(customHeaderColor, 0.15)} 100%)`,
-      borderColor: hexToRgba(customHeaderColor, 0.4),
-      boxShadow: `0 1px 3px ${hexToRgba(customHeaderColor, 0.2)}`,
-      transition: 'all 0.3s ease-in-out'
+      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.8)} 0%, ${hexToRgba(customHeaderColor, 0.6)} 50%, ${hexToRgba(customHeaderColor, 0.4)} 100%) !important`,
+      borderColor: `${hexToRgba(customHeaderColor, 0.6)} !important`,
+      boxShadow: `0 1px 3px ${hexToRgba(customHeaderColor, 0.3)}, inset 0 1px 0 ${hexToRgba(customHeaderColor, 0.2)}`,
+      transition: 'all 0.3s ease-in-out',
+      backdropFilter: 'blur(8px)'
     };
     console.log('🎨 Generated header styles:', styles);
     return styles;
@@ -74,10 +75,14 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <div 
-        className="navbar-themed w-full overflow-hidden border-b backdrop-blur-sm"
+        className={`navbar-themed w-full overflow-hidden border-b ${customHeaderColor ? '' : 'backdrop-blur-sm'}`}
         style={{
           ...dynamicStyles,
-          borderBottomColor: dynamicStyles.borderColor
+          borderBottomColor: dynamicStyles.borderColor,
+          ...(customHeaderColor && {
+            backgroundColor: 'transparent',
+            backgroundImage: `linear-gradient(135deg, ${getNavbarDynamicStyles(currentPalette, customHeaderColor).background})`
+          })
         }}
       >
         {/* Mobile-first container with proper touch targets */}
