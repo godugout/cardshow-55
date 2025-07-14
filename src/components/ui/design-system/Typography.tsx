@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -9,7 +8,7 @@ const typographyVariants = cva(
     variants: {
       variant: {
         // Hero & Display Text - smaller hero variant for better sizing
-        hero: "text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-[-1.28px] text-crd-white",
+        hero: "text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-extrabold leading-tight tracking-[-1.28px] text-crd-white",
         display: "text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-tight tracking-[-1.28px] text-crd-white", 
         section: "text-[36px] font-extrabold leading-tight tracking-[-0.64px] text-crd-white", // 36px
         
