@@ -5,6 +5,7 @@ import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
 import { Typography, CRDButton } from '@/components/ui/design-system';
 import { ThemedPage } from '@/components/ui/design-system/ThemedLayout';
 import { StandardHero } from '@/components/shared/StandardHero';
+import { AnimatedPixelText } from '@/components/ui/AnimatedPixelText';
 
 const Collections: React.FC = () => {
   return (
@@ -15,8 +16,12 @@ const Collections: React.FC = () => {
         title={
           <>
             Your gateway to the world of<br />
+            <AnimatedPixelText 
+              text="digital"
+              className="gradient-text-green-blue-purple whitespace-nowrap mr-2"
+            />
             <span className="gradient-text-green-blue-purple whitespace-nowrap">
-              digital cards
+              cards
             </span>
           </>
         }
