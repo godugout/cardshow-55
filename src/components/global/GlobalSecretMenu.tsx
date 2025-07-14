@@ -1,14 +1,9 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Label } from '@/components/ui/label';
+import { X, Palette, Type, Sparkles, Eye, RotateCcw } from 'lucide-react';
 import { useGlobalSecretEffects } from '@/contexts/GlobalSecretEffectsContext';
-import { Wand2, Palette, Type, Eye, RotateCcw, Sparkles } from 'lucide-react';
+import { CRDButton } from '@/components/ui/design-system/Button';
+import { Typography } from '@/components/ui/design-system/Typography';
 import type { TextEffectStyle, TextAnimation } from '@/components/hero/TextEffects3D';
 
 export const GlobalSecretMenu: React.FC = () => {
@@ -17,6 +12,8 @@ export const GlobalSecretMenu: React.FC = () => {
     closeMenu,
     isEnabled,
     toggleEnabled,
+    
+    // Text effects
     textStyle,
     setTextStyle,
     animation,
@@ -28,21 +25,25 @@ export const GlobalSecretMenu: React.FC = () => {
     glowEnabled,
     setGlowEnabled,
     resetTextEffects,
+    
+    // Visual effects
     visualEffects,
     updateVisualEffect,
     resetVisualEffects,
+    
+    // Interactive mode
     interactiveMode,
     setInteractiveMode
   } = useGlobalSecretEffects();
 
+  if (!isMenuOpen) return null;
+
   const textStyles: { value: TextEffectStyle; label: string }[] = [
     { value: 'gradient', label: 'Gradient' },
-    { value: 'neon', label: 'Neon' },
     { value: 'holographic', label: 'Holographic' },
-    { value: 'chrome', label: 'Chrome' },
-    { value: 'fire', label: 'Fire' },
-    { value: 'ice', label: 'Ice' },
-    { value: 'rainbow', label: 'Rainbow' }
+    { value: 'neon', label: 'Neon' },
+    { value: 'metallic', label: 'Metallic' },
+    { value: 'crystalline', label: 'Crystalline' }
   ];
 
   const animations: { value: TextAnimation; label: string }[] = [
@@ -51,268 +52,266 @@ export const GlobalSecretMenu: React.FC = () => {
     { value: 'pulse', label: 'Pulse' },
     { value: 'shimmer', label: 'Shimmer' },
     { value: 'wave', label: 'Wave' },
-    { value: 'bounce', label: 'Bounce' }
+    { value: 'typing', label: 'Typing' }
   ];
 
   const visualEffectsList = [
-    {
-      id: 'chrome',
-      name: 'Chrome Effect',
-      description: 'Metallic chrome finish',
-      enabled: visualEffects.chrome?.enabled || false,
-      intensity: visualEffects.chrome?.intensity || 0.5,
-      speed: visualEffects.chrome?.speed || 1.0
-    },
-    {
-      id: 'holographic',
-      name: 'Holographic',
-      description: 'Rainbow holographic overlay',
-      enabled: visualEffects.holographic?.enabled || false,
-      intensity: visualEffects.holographic?.intensity || 0.6,
-      speed: visualEffects.holographic?.speed || 1.2
-    },
-    {
-      id: 'foil',
-      name: 'Foil Effect',
-      description: 'Premium foil finish',
-      enabled: visualEffects.foil?.enabled || false,
-      intensity: visualEffects.foil?.intensity || 0.4,
-      speed: visualEffects.foil?.speed || 0.8
-    },
-    {
-      id: 'rainbow',
-      name: 'Rainbow',
-      description: 'Dynamic rainbow colors',
-      enabled: visualEffects.rainbow?.enabled || false,
-      intensity: visualEffects.rainbow?.intensity || 0.7,
-      speed: visualEffects.rainbow?.speed || 1.0
-    },
-    {
-      id: 'shimmer',
-      name: 'Shimmer',
-      description: 'Subtle shimmer effect',
-      enabled: visualEffects.shimmer?.enabled || false,
-      intensity: visualEffects.shimmer?.intensity || 0.5,
-      speed: visualEffects.shimmer?.speed || 1.5
-    }
+    { id: 'chrome', label: 'Chrome', description: 'Metallic chrome finish' },
+    { id: 'holographic', label: 'Holographic', description: 'Rainbow holographic effect' },
+    { id: 'foil', label: 'Foil', description: 'Shimmering foil texture' },
+    { id: 'rainbow', label: 'Rainbow', description: 'Multi-color rainbow effect' },
+    { id: 'shimmer', label: 'Shimmer', description: 'Subtle shimmer animation' }
   ];
 
-  if (!isMenuOpen) return null;
-
   return (
-    <Dialog open={isMenuOpen} onOpenChange={closeMenu}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-crd-darker border-crd-border">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-crd-white">
-            <Wand2 className="w-5 h-5 text-crd-green" />
-            Effects Lab - Global Customization
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-6">
-          {/* Master Enable Toggle */}
-          <div className="flex items-center justify-between p-4 bg-crd-darkest rounded-lg border border-crd-border">
-            <div>
-              <h3 className="text-crd-white font-medium">Enable Effects System</h3>
-              <p className="text-sm text-crd-lightGray">Activate global effects across the application</p>
-            </div>
-            <Switch
-              checked={isEnabled}
-              onCheckedChange={toggleEnabled}
-            />
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div className="bg-crd-darkest border border-crd-border rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto mx-4">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-crd-border">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-6 h-6 text-crd-green" />
+            <Typography variant="h2" className="text-crd-white">
+              Effects Customizer
+            </Typography>
           </div>
-
-          {/* Interactive Mode Toggle */}
-          <div className="flex items-center justify-between p-4 bg-crd-darkest rounded-lg border border-crd-border">
-            <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4 text-crd-green" />
-              <div>
-                <h3 className="text-crd-white font-medium">Interactive Mode</h3>
-                <p className="text-sm text-crd-lightGray">Highlight customizable elements on hover</p>
-              </div>
-            </div>
-            <Switch
-              checked={interactiveMode}
-              onCheckedChange={setInteractiveMode}
-              disabled={!isEnabled}
-            />
-          </div>
-
-          {isEnabled && (
-            <Tabs defaultValue="text" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-crd-darkest">
-                <TabsTrigger value="text" className="data-[state=active]:bg-crd-green data-[state=active]:text-black">
-                  <Type className="w-4 h-4 mr-2" />
-                  Text Effects
-                </TabsTrigger>
-                <TabsTrigger value="visual" className="data-[state=active]:bg-crd-green data-[state=active]:text-black">
-                  <Palette className="w-4 h-4 mr-2" />
-                  Visual Effects
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Text Effects Tab */}
-              <TabsContent value="text" className="space-y-6 mt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Text Style Selection */}
-                  <div className="space-y-2">
-                    <Label className="text-crd-white">Text Style</Label>
-                    <Select value={textStyle} onValueChange={setTextStyle}>
-                      <SelectTrigger className="bg-crd-darkest border-crd-border text-crd-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-crd-darkest border-crd-border">
-                        {textStyles.map((style) => (
-                          <SelectItem key={style.value} value={style.value} className="text-crd-white">
-                            {style.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Animation Selection */}
-                  <div className="space-y-2">
-                    <Label className="text-crd-white">Animation</Label>
-                    <Select value={animation} onValueChange={setAnimation}>
-                      <SelectTrigger className="bg-crd-darkest border-crd-border text-crd-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-crd-darkest border-crd-border">
-                        {animations.map((anim) => (
-                          <SelectItem key={anim.value} value={anim.value} className="text-crd-white">
-                            {anim.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Intensity Slider */}
-                <div className="space-y-2">
-                  <Label className="text-crd-white">Intensity: {intensity}</Label>
-                  <Slider
-                    value={[intensity]}
-                    onValueChange={(value) => setIntensity(value[0])}
-                    min={0}
-                    max={2}
-                    step={0.1}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* Speed Slider */}
-                <div className="space-y-2">
-                  <Label className="text-crd-white">Speed: {speed}</Label>
-                  <Slider
-                    value={[speed]}
-                    onValueChange={(value) => setSpeed(value[0])}
-                    min={0.1}
-                    max={3}
-                    step={0.1}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* Glow Toggle */}
-                <div className="flex items-center justify-between p-3 bg-crd-darkest rounded-lg border border-crd-border">
-                  <Label className="text-crd-white">Enable Glow</Label>
-                  <Switch
-                    checked={glowEnabled}
-                    onCheckedChange={setGlowEnabled}
-                  />
-                </div>
-
-                {/* Reset Button */}
-                <Button onClick={resetTextEffects} variant="outline" className="w-full">
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Reset Text Effects
-                </Button>
-              </TabsContent>
-
-              {/* Visual Effects Tab */}
-              <TabsContent value="visual" className="space-y-6 mt-6">
-                <div className="space-y-4">
-                  {visualEffectsList.map((effect) => (
-                    <div key={effect.id} className="p-4 bg-crd-darkest rounded-lg border border-crd-border">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h4 className="text-crd-white font-medium">{effect.name}</h4>
-                          <p className="text-sm text-crd-lightGray">{effect.description}</p>
-                        </div>
-                        <Switch
-                          checked={effect.enabled}
-                          onCheckedChange={(checked) => updateVisualEffect(effect.id, 'enabled', checked)}
-                        />
-                      </div>
-
-                      {effect.enabled && (
-                        <div className="space-y-3">
-                          {/* Intensity Slider */}
-                          <div className="space-y-2">
-                            <Label className="text-crd-white text-sm">
-                              Intensity: {effect.intensity.toFixed(1)}
-                            </Label>
-                            <Slider
-                              value={[effect.intensity]}
-                              onValueChange={(value) => updateVisualEffect(effect.id, 'intensity', value[0])}
-                              min={0}
-                              max={1}
-                              step={0.1}
-                              className="w-full"
-                            />
-                          </div>
-
-                          {/* Speed Slider */}
-                          <div className="space-y-2">
-                            <Label className="text-crd-white text-sm">
-                              Speed: {effect.speed.toFixed(1)}
-                            </Label>
-                            <Slider
-                              value={[effect.speed]}
-                              onValueChange={(value) => updateVisualEffect(effect.id, 'speed', value[0])}
-                              min={0.1}
-                              max={3}
-                              step={0.1}
-                              className="w-full"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Reset Visual Effects */}
-                <Button onClick={resetVisualEffects} variant="outline" className="w-full">
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Reset Visual Effects
-                </Button>
-              </TabsContent>
-            </Tabs>
-          )}
-
-          {/* Instructions */}
-          <div className="p-4 bg-crd-darkest rounded-lg border border-crd-border">
-            <div className="flex items-start gap-2">
-              <Sparkles className="w-4 h-4 text-crd-green mt-0.5" />
-              <div className="text-sm text-crd-lightGray">
-                <p className="mb-2">
-                  <strong className="text-crd-white">Effects Lab Instructions:</strong>
-                </p>
-                <ul className="space-y-1 list-disc list-inside">
-                  <li>Use <kbd className="px-1 py-0.5 bg-crd-darker rounded text-xs">Ctrl+Shift+3+D</kbd> to open this menu</li>
-                  <li>Enable Interactive Mode to highlight customizable elements</li>
-                  <li>Text effects apply to InteractiveElement components</li>
-                  <li>Visual effects enhance buttons, cards, and interactive areas</li>
-                  <li>Settings are saved automatically and persist across sessions</li>
-                </ul>
-              </div>
-            </div>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 text-crd-lightGray">
+              <input
+                type="checkbox"
+                checked={isEnabled}
+                onChange={(e) => toggleEnabled(e.target.checked)}
+                className="rounded"
+              />
+              <span className="text-sm">Enable Effects</span>
+            </label>
+            <CRDButton onClick={closeMenu} variant="ghost" size="sm">
+              <X className="w-4 h-4" />
+            </CRDButton>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        <div className="p-6 space-y-8">
+          {/* Interactive Mode Toggle */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Eye className="w-5 h-5 text-crd-blue" />
+              <Typography variant="h3" className="text-crd-white">
+                Interactive Mode
+              </Typography>
+            </div>
+            <div className="flex items-center gap-3 p-4 bg-crd-darker rounded-lg border border-crd-border">
+              <label className="flex items-center gap-2 text-crd-lightGray">
+                <input
+                  type="checkbox"
+                  checked={interactiveMode}
+                  onChange={(e) => setInteractiveMode(e.target.checked)}
+                  className="rounded"
+                />
+                <span>Enable hover effects on page elements</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Text Effects Section */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Type className="w-5 h-5 text-crd-purple" />
+                <Typography variant="h3" className="text-crd-white">
+                  Text Effects
+                </Typography>
+              </div>
+              <CRDButton onClick={resetTextEffects} variant="ghost" size="sm">
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset
+              </CRDButton>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Text Style */}
+              <div className="space-y-3">
+                <Typography variant="caption" className="text-crd-lightGray font-medium">
+                  Style
+                </Typography>
+                <div className="grid grid-cols-2 gap-2">
+                  {textStyles.map((style) => (
+                    <button
+                      key={style.value}
+                      onClick={() => setTextStyle(style.value)}
+                      className={`p-3 rounded-lg border transition-all ${
+                        textStyle === style.value
+                          ? 'border-crd-green bg-crd-green/10 text-crd-green'
+                          : 'border-crd-border bg-crd-darker text-crd-lightGray hover:border-crd-green/50'
+                      }`}
+                    >
+                      <span className="text-sm font-medium">{style.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Animation */}
+              <div className="space-y-3">
+                <Typography variant="caption" className="text-crd-lightGray font-medium">
+                  Animation
+                </Typography>
+                <div className="grid grid-cols-2 gap-2">
+                  {animations.map((anim) => (
+                    <button
+                      key={anim.value}
+                      onClick={() => setAnimation(anim.value)}
+                      className={`p-3 rounded-lg border transition-all ${
+                        animation === anim.value
+                          ? 'border-crd-green bg-crd-green/10 text-crd-green'
+                          : 'border-crd-border bg-crd-darker text-crd-lightGray hover:border-crd-green/50'
+                      }`}
+                    >
+                      <span className="text-sm font-medium">{anim.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Intensity */}
+              <div className="space-y-3">
+                <Typography variant="caption" className="text-crd-lightGray font-medium">
+                  Intensity: {intensity.toFixed(1)}
+                </Typography>
+                <input
+                  type="range"
+                  min="0.1"
+                  max="2"
+                  step="0.1"
+                  value={intensity}
+                  onChange={(e) => setIntensity(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+
+              {/* Speed */}
+              <div className="space-y-3">
+                <Typography variant="caption" className="text-crd-lightGray font-medium">
+                  Speed: {speed.toFixed(1)}
+                </Typography>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="3"
+                  step="0.1"
+                  value={speed}
+                  onChange={(e) => setSpeed(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+
+              {/* Glow Toggle */}
+              <div className="space-y-3">
+                <Typography variant="caption" className="text-crd-lightGray font-medium">
+                  Glow Effect
+                </Typography>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={glowEnabled}
+                    onChange={(e) => setGlowEnabled(e.target.checked)}
+                    className="rounded"
+                  />
+                  <span className="text-crd-lightGray">Enable text glow</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Visual Effects Section */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Palette className="w-5 h-5 text-crd-blue" />
+                <Typography variant="h3" className="text-crd-white">
+                  Visual Effects
+                </Typography>
+              </div>
+              <CRDButton onClick={resetVisualEffects} variant="ghost" size="sm">
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset
+              </CRDButton>
+            </div>
+
+            <div className="space-y-4">
+              {visualEffectsList.map((effect) => {
+                const effectData = visualEffects[effect.id as keyof typeof visualEffects];
+                if (!effectData) return null;
+
+                return (
+                  <div key={effect.id} className="p-4 bg-crd-darker rounded-lg border border-crd-border">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <Typography variant="body" className="text-crd-white font-medium">
+                          {effect.label}
+                        </Typography>
+                        <Typography variant="caption" className="text-crd-lightGray">
+                          {effect.description}
+                        </Typography>
+                      </div>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(effectData.enabled)}
+                          onChange={(e) => updateVisualEffect(effect.id, 'enabled', e.target.checked)}
+                          className="rounded"
+                        />
+                        <span className="text-crd-lightGray text-sm">Enable</span>
+                      </label>
+                    </div>
+
+                    {effectData.enabled && (
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Typography variant="caption" className="text-crd-lightGray">
+                            Intensity: {typeof effectData.intensity === 'number' ? effectData.intensity.toFixed(1) : '0.5'}
+                          </Typography>
+                          <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.1"
+                            value={typeof effectData.intensity === 'number' ? effectData.intensity : 0.5}
+                            onChange={(e) => updateVisualEffect(effect.id, 'intensity', parseFloat(e.target.value))}
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Typography variant="caption" className="text-crd-lightGray">
+                            Speed: {typeof effectData.speed === 'number' ? effectData.speed.toFixed(1) : '1.0'}
+                          </Typography>
+                          <input
+                            type="range"
+                            min="0.1"
+                            max="3"
+                            step="0.1"
+                            value={typeof effectData.speed === 'number' ? effectData.speed : 1.0}
+                            onChange={(e) => updateVisualEffect(effect.id, 'speed', parseFloat(e.target.value))}
+                            className="w-full"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="p-4 bg-crd-green/10 border border-crd-green/30 rounded-lg">
+            <Typography variant="caption" className="text-crd-green">
+              <strong>Keyboard Shortcut:</strong> Press Ctrl+Shift+3+D to quickly open this menu from any page.
+              <br />
+              <strong>Interactive Mode:</strong> When enabled, hover over elements on the page to see live customization options.
+            </Typography>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
