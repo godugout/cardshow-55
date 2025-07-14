@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Hero3 } from "@/components/ui/design-system";
+import { Typography } from "@/components/ui/design-system/Typography";
 import { useCards } from "@/hooks/useCards";
 import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
@@ -109,9 +109,13 @@ export const EnhancedHero: React.FC = () => {
     navigate(`/studio/${card.id}`);
   };
 
-  // Create enhanced heading with proper two-line structure and large font size
+  // Create enhanced heading using Typography component with proper two-line structure
   const enhancedHeading = (
-    <div className="leading-tight text-4xl lg:text-6xl xl:text-7xl font-extrabold text-crd-white drop-shadow-lg">
+    <Typography 
+      as="h1" 
+      variant="display"
+      className="leading-tight drop-shadow-lg"
+    >
       <div>Create, collect, and trade card art</div>
       <div>
         with{' '}
@@ -125,7 +129,7 @@ export const EnhancedHero: React.FC = () => {
           unlimited potential
         </TextEffects3D>
       </div>
-    </div>
+    </Typography>
   );
 
   return (

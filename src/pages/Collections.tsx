@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
@@ -20,7 +19,7 @@ const Collections: React.FC = () => {
         <Typography 
           as="h1" 
           variant="display"
-          className="mb-6 leading-tight text-crd-white drop-shadow-lg text-4xl lg:text-6xl xl:text-7xl"
+          className="mb-6 leading-tight drop-shadow-lg"
         >
           Your gateway to the world of <span className="gradient-text-green-blue-purple">digital cards</span>
         </Typography>

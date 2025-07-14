@@ -20,11 +20,11 @@ export const CreatePageHero: React.FC = () => {
             CUT, CRAFT & CREATE DIGITALLY
           </Typography>
           
-          {/* Main Heading with enhanced styling */}
+          {/* Main Heading using Typography display variant */}
           <Typography 
             as="h1" 
             variant="display"
-            className="mb-6 leading-tight text-crd-white drop-shadow-lg text-4xl lg:text-6xl xl:text-7xl"
+            className="mb-6 leading-tight drop-shadow-lg"
           >
             From paper scraps to digital art<br />craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
           </Typography>
