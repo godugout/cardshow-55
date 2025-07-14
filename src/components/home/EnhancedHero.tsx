@@ -109,26 +109,25 @@ export const EnhancedHero: React.FC = () => {
     navigate(`/studio/${card.id}`);
   };
 
-  // Create enhanced heading using Typography component with proper two-line structure
+  // Create enhanced heading using Typography component with proper structure
   const enhancedHeading = (
     <Typography 
       as="h1" 
       variant="display"
       className="leading-tight drop-shadow-lg"
     >
-      <div>Create, collect, and trade card art</div>
-      <div>
-        with{' '}
-        <TextEffects3D
-          style={textStyle}
-          animation={animation}
-          intensity={intensity}
-          speed={speed}
-          glowEnabled={glowEnabled}
-        >
-          unlimited potential
-        </TextEffects3D>
-      </div>
+      Create, collect, and trade card art
+      <br />
+      with{' '}
+      <TextEffects3D
+        style={textStyle}
+        animation={animation}
+        intensity={intensity}
+        speed={speed}
+        glowEnabled={glowEnabled}
+      >
+        unlimited potential
+      </TextEffects3D>
     </Typography>
   );
 
