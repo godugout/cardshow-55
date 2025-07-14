@@ -58,7 +58,7 @@ export interface Hero3Props {
   children?: React.ReactNode;
   className?: string;
   caption?: string;
-  heading?: string;
+  heading?: string | React.ReactNode;
   bodyText?: string;
   ctaText?: string;
   ctaLink?: string;
@@ -100,8 +100,14 @@ export const Hero3: React.FC<Hero3Props> = ({
             {/* Main Heading */}
             {heading && (
               <h1 className="text-[32px] md:text-[36px] lg:text-[40px] font-black leading-[38px] md:leading-[44px] lg:leading-[48px] tracking-[-0.4px] mt-2 text-center mb-4 text-white">
-                <div className="whitespace-nowrap">Create, collect, and trade card art</div>
-                <div>with stunning 3D effects</div>
+                {typeof heading === 'string' ? (
+                  <>
+                    <div className="whitespace-nowrap">Create, collect, and trade card art</div>
+                    <div>with stunning 3D effects</div>
+                  </>
+                ) : (
+                  heading
+                )}
               </h1>
             )}
             
