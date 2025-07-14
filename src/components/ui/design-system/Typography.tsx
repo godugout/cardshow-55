@@ -8,8 +8,8 @@ const typographyVariants = cva(
   {
     variants: {
       variant: {
-        // Hero & Display Text - exact spec sizing
-        display: "text-[64px] md:text-[80px] font-extrabold leading-tight tracking-[-1.28px] text-crd-white", // Desktop 64px, mobile 40px  
+        // Hero & Display Text - optimized for two-line hero layout
+        display: "text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-tight tracking-[-1.28px] text-crd-white", 
         section: "text-[36px] font-extrabold leading-tight tracking-[-0.64px] text-crd-white", // 36px
         
         // Page Structure

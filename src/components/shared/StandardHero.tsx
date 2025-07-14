@@ -51,7 +51,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       
       {/* Hero Content */}
       <div className="relative z-10 text-center pt-20 md:pt-24 lg:pt-32 pb-8">
-        <div className={`max-w-6xl mx-auto ${isMobile ? 'px-4' : 'px-8'}`}>
+        <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-8'}`}>
           {/* Label */}
           {label && (
             <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
@@ -59,11 +59,11 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
             </Typography>
           )}
           
-          {/* Main Heading */}
+          {/* Main Heading - Let Typography component handle all sizing */}
           <Typography 
             as="h1" 
             variant="display"
-            className="mb-6 leading-tight text-crd-white drop-shadow-lg text-4xl lg:text-6xl xl:text-7xl"
+            className="mb-6 leading-tight text-crd-white drop-shadow-lg"
           >
             {title}
           </Typography>
