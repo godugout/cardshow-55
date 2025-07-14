@@ -6,9 +6,15 @@ import { LogoSelector } from "./navbar/LogoSelector";
 import { MobileNav } from "./navbar/MobileNav";
 import { Menu, X } from "lucide-react";
 import { useTeamTheme } from "@/hooks/useTeamTheme";
+import { BaseballPatterns } from "@/components/ui/BaseballPatterns";
 
-// Dynamic navbar background based on current theme
-const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null) => {
+// Dynamic navbar background based on current theme and mode
+const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null, navbarMode?: string) => {
+  // Special modes override with their own styles
+  if (navbarMode === 'home' || navbarMode === 'away' || navbarMode === 'pinstripes') {
+    return {}; // Let CSS classes handle these modes
+  }
+
   if (!currentPalette) {
     return {
       backgroundColor: 'rgba(20, 20, 22, 0.85)', // fallback
@@ -43,34 +49,26 @@ const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string 
   };
 };
 
-const getDividerColorClasses = (color: string) => {
-  const colorMap = {
-    orange: 'bg-orange-500/15 border-t-orange-500/20',
-    red: 'bg-red-500/15 border-t-red-500/20',
-    green: 'bg-green-500/15 border-t-green-500/20',
-    yellow: 'bg-yellow-500/15 border-t-yellow-500/20',
-    blue: 'bg-blue-500/15 border-t-blue-500/20',
-    gray: 'bg-gray-500/15 border-t-gray-500/20',
-    emerald: 'bg-emerald-500/15 border-t-emerald-500/20',
-    purple: 'bg-purple-500/15 border-t-purple-500/20',
-    slate: 'bg-slate-500/15 border-t-slate-500/20',
-    amber: 'bg-amber-500/15 border-t-amber-500/20',
-    cyan: 'bg-cyan-500/15 border-t-cyan-500/20',
-    indigo: 'bg-indigo-500/15 border-t-indigo-500/20',
-  };
-  return colorMap[color] || 'bg-gray-500/15 border-t-gray-500/20';
-};
-
 export const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { currentPalette, setTheme, customHeaderColor } = useTeamTheme();
+  const { 
+    currentPalette, 
+    setTheme, 
+    customHeaderColor, 
+    navbarMode, 
+    getNavbarModeClass 
+  } = useTeamTheme();
   
-  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor);
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor, navbarMode);
+  const navbarModeClass = getNavbarModeClass();
 
   return (
     <>
+      {/* Include SVG patterns */}
+      <BaseballPatterns />
+      
       <div 
-        className="navbar-themed w-full overflow-hidden border-b backdrop-blur-sm"
+        className={`${navbarModeClass} navbar-themed w-full overflow-hidden border-b backdrop-blur-sm`}
         style={{
           ...dynamicStyles,
           borderBottomColor: dynamicStyles.borderColor
