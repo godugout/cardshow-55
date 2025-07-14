@@ -19,12 +19,18 @@ const hexToRgba = (hex: string, alpha: number) => {
 const applyCustomHeaderStyles = (element: HTMLElement, customHeaderColor: string) => {
   console.log('🎨 Setting CSS custom properties for:', customHeaderColor);
   
-  element.style.setProperty('--navbar-custom-primary', hexToRgba(customHeaderColor, 0.8));
-  element.style.setProperty('--navbar-custom-secondary', hexToRgba(customHeaderColor, 0.6));
-  element.style.setProperty('--navbar-custom-tertiary', hexToRgba(customHeaderColor, 0.4));
-  element.style.setProperty('--navbar-custom-border', hexToRgba(customHeaderColor, 0.6));
-  element.style.setProperty('--navbar-custom-shadow', hexToRgba(customHeaderColor, 0.3));
-  element.style.setProperty('--navbar-custom-inset', hexToRgba(customHeaderColor, 0.2));
+  // Use higher opacity for more visible tinting
+  element.style.setProperty('--navbar-custom-primary', hexToRgba(customHeaderColor, 0.9));
+  element.style.setProperty('--navbar-custom-secondary', hexToRgba(customHeaderColor, 0.7));
+  element.style.setProperty('--navbar-custom-tertiary', hexToRgba(customHeaderColor, 0.5));
+  element.style.setProperty('--navbar-custom-border', hexToRgba(customHeaderColor, 0.8));
+  element.style.setProperty('--navbar-custom-shadow', hexToRgba(customHeaderColor, 0.4));
+  element.style.setProperty('--navbar-custom-inset', hexToRgba(customHeaderColor, 0.3));
+  
+  // Clear any conflicting inline styles
+  element.style.removeProperty('background');
+  element.style.removeProperty('background-color');
+  element.style.removeProperty('background-image');
   
   console.log('🎨 CSS custom properties set successfully');
 };
@@ -99,10 +105,10 @@ export const Navbar: React.FC = () => {
         className={`navbar-themed w-full overflow-hidden border-b ${
           customHeaderColor ? 'custom-header-color' : 'backdrop-blur-sm'
         }`}
-        style={customHeaderColor ? {} : {
+        style={!customHeaderColor ? {
           ...dynamicStyles,
           borderBottomColor: dynamicStyles.borderColor
-        }}
+        } : undefined}
       >
         {/* Mobile-first container with proper touch targets */}
         <div className="flex w-full items-center justify-between px-4 py-4 sm:px-6 sm:py-5">

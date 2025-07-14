@@ -49,9 +49,12 @@
       var(--navbar-custom-primary) 0%, 
       var(--navbar-custom-secondary) 50%, 
       var(--navbar-custom-tertiary) 100%) !important;
-    border-color: var(--navbar-custom-border) !important;
+    border-bottom-color: var(--navbar-custom-border) !important;
     box-shadow: 0 1px 3px var(--navbar-custom-shadow), 
                 inset 0 1px 0 var(--navbar-custom-inset) !important;
-    backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(12px) !important;
+    /* Ensure this overrides any inline styles */
+    background-color: transparent !important;
+    background-image: none !important;
   }
 }
