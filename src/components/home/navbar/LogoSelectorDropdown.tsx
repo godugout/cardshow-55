@@ -238,13 +238,13 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                       <div className="flex justify-center items-center space-x-1">
                         {theme && [
                           { color: theme.colors.primary, size: 'w-3 h-3', type: 'primary' },
-                          { color: theme.colors.secondary, size: 'w-2 h-2', type: 'secondary' },
-                          { color: theme.colors.accent, size: 'w-1.5 h-1.5', type: 'accent' },
-                          { color: theme.colors.neutral, size: 'w-1 h-1', type: 'neutral' }
+                          { color: theme.colors.secondary, size: 'w-2.5 h-2.5', type: 'secondary' },
+                          { color: theme.colors.accent, size: 'w-2 h-2', type: 'accent' },
+                          { color: theme.colors.neutral, size: 'w-1.5 h-1.5', type: 'neutral' }
                         ].map((dot, index) => {
                           const isActiveHeaderColor = customHeaderColor === dot.color && customHeaderColorType === dot.type;
                           return (
-                            <button
+                            <div
                               key={index}
                               onClick={(e) => handleColorDotClick(e, dot.color, dot.type)}
                               className={`${dot.size} rounded-full border shadow-sm transition-all duration-200 cursor-pointer hover:scale-105 hover:opacity-80 ${
