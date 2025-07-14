@@ -94,7 +94,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                 >
                   <CRDLogo 
                     fileName={`CS_MLB_${team.teamCode}.png`} 
-                    className={getLogoSize(team.id || team.name?.toLowerCase().replace(/\s+/g, '-') || '')}
+                    className={getLogoSize(team.id)}
                   />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-crd-white truncate">
@@ -103,11 +103,11 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                     <div className="flex items-center gap-1 mt-1">
                       <div 
                         className="w-3 h-3 rounded-full border border-crd-darkGray/30" 
-                        style={{ backgroundColor: team.colors?.primary || '#1a1a1a' }}
+                        style={{ backgroundColor: team.colors.primary }}
                       />
                       <div 
                         className="w-3 h-3 rounded-full border border-crd-darkGray/30" 
-                        style={{ backgroundColor: team.colors?.secondary || '#333333' }}
+                        style={{ backgroundColor: team.colors.secondary }}
                       />
                     </div>
                   </div>
