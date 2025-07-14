@@ -11,6 +11,9 @@ import {
 export const useTeamTheme = () => {
   const [currentPalette, setCurrentPalette] = useState<TeamPalette | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [customHeaderColor, setCustomHeaderColor] = useState<string | null>(null);
+  const [isHomeTeamMode, setIsHomeTeamMode] = useState(false);
+  const [currentLogoCode, setCurrentLogoCode] = useState<string | null>(null);
 
   // Apply theme to document
   const applyTheme = useCallback((palette: TeamPalette) => {
@@ -29,6 +32,7 @@ export const useTeamTheme = () => {
 
     // Update state
     setCurrentPalette(palette);
+    setCurrentLogoCode(palette.teamCode);
     
     // Store in localStorage for persistence
     try {
@@ -60,6 +64,11 @@ export const useTeamTheme = () => {
     }
   }, [applyTheme]);
 
+  // Set logo theme (alias for setTheme for backward compatibility)
+  const setLogoTheme = useCallback((paletteOrId: TeamPalette | string) => {
+    setTheme(paletteOrId);
+  }, [setTheme]);
+
   // Reset to default theme
   const resetTheme = useCallback(() => {
     const defaultPalette = getPaletteById('dodgers');
@@ -80,6 +89,16 @@ export const useTeamTheme = () => {
     return customPalette;
   }, [applyTheme]);
 
+  // Toggle home team mode
+  const toggleHomeTeamMode = useCallback(() => {
+    setIsHomeTeamMode(prev => !prev);
+  }, []);
+
+  // Set custom header color
+  const setCustomHeader = useCallback((color: string | null) => {
+    setCustomHeaderColor(color);
+  }, []);
+
   // Load saved theme on mount
   useEffect(() => {
     try {
@@ -87,6 +106,7 @@ export const useTeamTheme = () => {
       if (saved) {
         const palette = JSON.parse(saved) as TeamPalette;
         setCurrentPalette(palette);
+        setCurrentLogoCode(palette.teamCode);
         applyTheme(palette);
       } else {
         // Apply default theme
@@ -102,15 +122,22 @@ export const useTeamTheme = () => {
     // Current state
     currentPalette,
     isTransitioning,
+    customHeaderColor,
+    isHomeTeamMode,
+    currentLogoCode,
     
     // Theme management
     setTheme,
+    setLogoTheme,
     applyTheme,
     resetTheme,
     createCustomTheme,
+    toggleHomeTeamMode,
+    setCustomHeader,
     
     // Available palettes
     allPalettes,
+    availablePalettes: allPalettes,
     getPaletteById,
     
     // Utilities
