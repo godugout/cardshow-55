@@ -26,7 +26,7 @@ export const CreatePageHero: React.FC = () => {
             variant="display"
             className="mb-6 leading-tight text-crd-white drop-shadow-lg"
           >
-            Every masterpiece starts with a <span className="gradient-text-green-blue-purple">single vision</span>
+            Create, remix, and reimagine with <span className="gradient-text-green-blue-purple">limitless possibilities</span>
           </Typography>
           
           {/* Body Text */}
