@@ -22,7 +22,8 @@ interface StandardHeroProps {
   showDecorations?: boolean;
   className?: string;
   children?: React.ReactNode;
-  heroVariant?: 'hero' | 'display'; // New prop for typography variant
+  heroVariant?: 'hero' | 'display';
+  fullWidth?: boolean;
 }
 
 export const StandardHero: React.FC<StandardHeroProps> = ({
@@ -34,12 +35,17 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
   showDecorations = false,
   className = '',
   children,
-  heroVariant = 'display'
+  heroVariant = 'display',
+  fullWidth = false
 }) => {
   const { isMobile } = useResponsiveLayout();
 
+  const heroClasses = fullWidth 
+    ? `relative mb-6 overflow-hidden w-screen -mx-[50vw] left-1/2 ${className}`
+    : `relative mb-6 overflow-hidden ${className}`;
+
   return (
-    <div className={`relative mb-12 overflow-hidden ${className}`}>
+    <div className={heroClasses}>
       {/* Background */}
       <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
       
@@ -52,11 +58,11 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       )}
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center pt-16 md:pt-20 lg:pt-24 pb-4">
+      <div className="relative z-10 text-center pt-8 md:pt-10 lg:pt-12 pb-2">
         <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-6'}`}>
           {/* Label */}
           {label && (
-            <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
+            <Typography variant="label" className="mb-2 gradient-text-green-blue-purple font-bold tracking-wider">
               {label}
             </Typography>
           )}
@@ -65,7 +71,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
           <Typography 
             as="h1" 
             variant={heroVariant}
-            className="mb-4 leading-tight text-crd-white drop-shadow-lg"
+            className="mb-2 leading-tight text-crd-white drop-shadow-lg"
           >
             {title}
           </Typography>
@@ -73,7 +79,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
           {/* Description */}
           <Typography 
             variant="large-body" 
-            className="mb-8 text-crd-lightGray max-w-2xl mx-auto leading-relaxed"
+            className="mb-4 text-crd-lightGray max-w-2xl mx-auto leading-relaxed"
           >
             {description}
           </Typography>
