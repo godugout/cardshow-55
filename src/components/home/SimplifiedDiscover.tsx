@@ -221,13 +221,11 @@ export const SimplifiedDiscover = () => {
             <p className="text-themed-secondary mb-4 sm:mb-6 max-w-md mx-auto text-sm sm:text-base">
               Browse our complete catalog of cards and collections from creators worldwide.
             </p>
-            <div className="flex justify-center">
-              <Link to="/collections/catalog">
-                <Button className="btn-themed-primary px-6 sm:px-8 py-3 text-base sm:text-lg min-h-[48px] w-full sm:w-auto">
-                  Browse CRD Catalog
-                </Button>
-              </Link>
-            </div>
+            <Link to="/collections/catalog">
+              <Button className="btn-themed-primary px-6 sm:px-8 py-3 text-base sm:text-lg min-h-[48px] w-full sm:w-auto">
+                Browse CRD Catalog
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

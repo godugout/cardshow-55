@@ -38,9 +38,4 @@
     filter: hue-rotate(80deg) saturate(150%) brightness(125%) contrast(110%);
     transition: filter 0.3s ease;
   }
-  
-  /* Dynamic navbar theming with CSS custom properties */
-  .navbar-themed {
-    transition: all 0.3s ease-in-out;
-  }
 }

@@ -165,11 +165,6 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     setCustomHeaderBgColor(color, colorType);
   };
 
-  const handleResetHeaderColor = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setCustomHeaderBgColor('', '');
-  };
-
   return (
     <div className="relative">
       {/* Trigger Button */}
@@ -197,34 +192,16 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
         >
           {/* Header with Close Button */}
           <div className="relative p-4 border-b border-border/20 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Pick a logo <span className="text-sm text-muted-foreground font-normal ml-2">Customize your Cardshow theme</span>
-              </h3>
-              <div className="flex items-center gap-2">
-                {/* Reset Header Color Button */}
-                {customHeaderColor && (
-                  <button
-                    onClick={handleResetHeaderColor}
-                    className="px-3 py-1.5 text-xs bg-muted/80 hover:bg-muted text-muted-foreground hover:text-foreground rounded-md transition-all duration-200 border border-border/30"
-                    title="Reset header to default"
-                  >
-                    Reset Header
-                  </button>
-                )}
-                {/* Close Button (X) */}
-                <button
-                  onClick={handleCloseClick}
-                  className="p-1 rounded-md hover:bg-muted/50 transition-colors duration-200 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-            {/* Helper text for color dots */}
-            <p className="text-xs text-muted-foreground mt-2 opacity-80">
-              Click any color dot below to tint your header background
-            </p>
+            <h3 className="text-lg font-bold text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Pick a logo <span className="text-sm text-muted-foreground font-normal ml-2">Customize your Cardshow theme</span>
+            </h3>
+            {/* Close Button (X) in upper right */}
+            <button
+              onClick={handleCloseClick}
+              className="absolute top-4 right-4 p-1 rounded-md hover:bg-muted/50 transition-colors duration-200 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
 
           {/* Logo Grid - No scroll, fit all logos */}
@@ -266,31 +243,18 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                           { color: theme.colors.neutral, size: 'w-1.5 h-1.5', type: 'neutral' }
                         ].map((dot, index) => {
                           const isActiveHeaderColor = customHeaderColor === dot.color && customHeaderColorType === dot.type;
-                          const colorNames = ['Primary', 'Secondary', 'Accent', 'Neutral'];
                           return (
                             <div
                               key={index}
                               onClick={(e) => handleColorDotClick(e, dot.color, dot.type)}
-                              className={`${dot.size} rounded-full border shadow-md transition-all duration-300 cursor-pointer group/dot relative ${
+                              className={`${dot.size} rounded-full border shadow-sm transition-all duration-200 cursor-pointer hover:scale-105 hover:opacity-80 ${
                                 isActiveHeaderColor 
-                                  ? 'border-white border-2 ring-2 ring-white/60 shadow-lg scale-110' 
-                                  : 'border-white/30 hover:border-white/60 hover:scale-125 hover:shadow-lg'
+                                  ? 'border-white border-2 ring-2 ring-white/50' 
+                                  : 'border-white/20 hover:border-white/40'
                               }`}
                               style={{ backgroundColor: dot.color }}
-                              title={`Apply ${colorNames[index]} color tint to header`}
-                            >
-                              {/* Subtle glow effect on hover */}
-                              <div 
-                                className={`absolute inset-0 rounded-full opacity-0 group-hover/dot:opacity-30 transition-opacity duration-300 ${
-                                  isActiveHeaderColor ? 'opacity-20' : ''
-                                }`}
-                                style={{ boxShadow: `0 0 8px ${dot.color}` }}
-                              />
-                              {/* Active indicator */}
-                              {isActiveHeaderColor && (
-                                <div className="absolute -top-1 -right-1 w-2 h-2 bg-white rounded-full border border-gray-300 shadow-sm animate-pulse" />
-                              )}
-                            </div>
+                              title={`Click to use ${['Primary', 'Secondary', 'Accent', 'Neutral'][index]} (${dot.color}) for header background`}
+                            />
                           );
                         })}
                       </div>
