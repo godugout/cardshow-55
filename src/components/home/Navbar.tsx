@@ -17,43 +17,21 @@ const hexToRgba = (hex: string, alpha: number) => {
 
 // Apply custom header color using CSS custom properties
 const applyCustomHeaderStyles = (element: HTMLElement, customHeaderColor: string) => {
-  console.log('🎨 Setting CSS custom properties for:', customHeaderColor);
-  
-  // Use maximum opacity for dramatic visibility
-  const solidColor = hexToRgba(customHeaderColor, 0.95);
-  const mediumColor = hexToRgba(customHeaderColor, 0.85);
-  const lightColor = hexToRgba(customHeaderColor, 0.75);
-  
-  element.style.setProperty('--navbar-custom-primary', solidColor);
-  element.style.setProperty('--navbar-custom-secondary', mediumColor);
-  element.style.setProperty('--navbar-custom-tertiary', lightColor);
-  element.style.setProperty('--navbar-custom-border', mediumColor);
-  element.style.setProperty('--navbar-custom-shadow', hexToRgba(customHeaderColor, 0.5));
-  element.style.setProperty('--navbar-custom-inset', hexToRgba(customHeaderColor, 0.4));
-  
-  // Clear ALL conflicting styles aggressively
+  // Clear all background styles
   element.style.removeProperty('background');
   element.style.removeProperty('background-color');
   element.style.removeProperty('background-image');
   element.style.removeProperty('border-color');
   element.style.removeProperty('box-shadow');
+  element.style.removeProperty('border-top');
   
-  // Add debugging border to confirm targeting
-  element.style.setProperty('border-top', `3px solid ${customHeaderColor}`);
-  
-  console.log('🎨 CSS custom properties set with values:', {
-    primary: solidColor,
-    secondary: mediumColor,
-    tertiary: lightColor
-  });
-  
-  // Log computed styles for debugging
-  setTimeout(() => {
-    const computedStyle = window.getComputedStyle(element);
-    console.log('🔍 Computed background:', computedStyle.background);
-    console.log('🔍 Computed backgroundColor:', computedStyle.backgroundColor);
-    console.log('🔍 Computed backgroundImage:', computedStyle.backgroundImage);
-  }, 100);
+  // Remove any CSS custom properties
+  element.style.removeProperty('--navbar-custom-primary');
+  element.style.removeProperty('--navbar-custom-secondary');
+  element.style.removeProperty('--navbar-custom-tertiary');
+  element.style.removeProperty('--navbar-custom-border');
+  element.style.removeProperty('--navbar-custom-shadow');
+  element.style.removeProperty('--navbar-custom-inset');
 };
 
 // Dynamic navbar background based on current theme
@@ -126,10 +104,7 @@ export const Navbar: React.FC = () => {
         className={`navbar-themed w-full overflow-hidden border-b ${
           customHeaderColor ? 'custom-header-color' : 'backdrop-blur-sm'
         }`}
-        style={!customHeaderColor ? {
-          ...dynamicStyles,
-          borderBottomColor: dynamicStyles.borderColor
-        } : undefined}
+        style={undefined}
       >
         {/* Mobile-first container with proper touch targets */}
         <div className="flex w-full items-center justify-between px-4 py-4 sm:px-6 sm:py-5">

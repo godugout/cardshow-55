@@ -45,32 +45,9 @@
   }
   
   .navbar-themed.custom-header-color {
-    /* Use solid color for maximum visibility */
-    background: var(--navbar-custom-primary) !important;
-    border-bottom-color: var(--navbar-custom-border) !important;
-    box-shadow: 0 2px 8px var(--navbar-custom-shadow), 
-                inset 0 1px 0 var(--navbar-custom-inset) !important;
-    /* Reduce backdrop blur for better color visibility */
-    backdrop-filter: blur(8px) saturate(1.2) !important;
-    /* Force override any competing styles */
-    background-color: var(--navbar-custom-primary) !important;
+    /* No background styles - transparent */
+    background: none !important;
+    background-color: transparent !important;
     background-image: none !important;
-    /* Add subtle glass effect */
-    position: relative;
-  }
-  
-  .navbar-themed.custom-header-color::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, 
-      var(--navbar-custom-secondary) 0%, 
-      var(--navbar-custom-tertiary) 100%);
-    opacity: 0.3;
-    pointer-events: none;
-    z-index: -1;
   }
 }
