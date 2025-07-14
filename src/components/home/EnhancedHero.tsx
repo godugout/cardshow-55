@@ -6,6 +6,7 @@ import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { Hero3 } from "@/components/ui/design-system";
+import { NavbarAwareContainer } from "@/components/layout/NavbarAwareContainer";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -129,51 +130,53 @@ export const EnhancedHero: React.FC = () => {
   );
 
   return (
-    <div className="relative">
-      {/* Hero content */}
-      <StandardHero
-        label="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
-        title={enhancedHeading}
-        description="Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life."
-        primaryCta={{
-          text: "Create your first CRD",
-          link: "/create"
-        }}
-        heroVariant="hero"
-      >
-        {/* Featured Cards Section */}
-        {showcaseCards.length > 0 && (
-          <div className="mt-8">
-            <Hero3
-              caption=""
-              heading=""
-              bodyText=""
-              ctaText=""
-              ctaLink=""
-              showFeaturedCards={true}
-              featuredCards={showcaseCards}
-              onCardClick={handleCardStudioOpen}
-            />
-          </div>
-        )}
-      </StandardHero>
+    <NavbarAwareContainer>
+      <div className="relative">
+        {/* Hero content */}
+        <StandardHero
+          label="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
+          title={enhancedHeading}
+          description="Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life."
+          primaryCta={{
+            text: "Create your first CRD",
+            link: "/create"
+          }}
+          heroVariant="hero"
+        >
+          {/* Featured Cards Section */}
+          {showcaseCards.length > 0 && (
+            <div className="mt-8">
+              <Hero3
+                caption=""
+                heading=""
+                bodyText=""
+                ctaText=""
+                ctaLink=""
+                showFeaturedCards={true}
+                featuredCards={showcaseCards}
+                onCardClick={handleCardStudioOpen}
+              />
+            </div>
+          )}
+        </StandardHero>
 
-      {/* Secret Menu */}
-      <SecretMenu3D
-        isOpen={secretMenuOpen}
-        onClose={() => setSecretMenuOpen(false)}
-        textStyle={textStyle}
-        onTextStyleChange={handleTextStyleChange}
-        animation={animation}
-        onAnimationChange={handleAnimationChange}
-        intensity={intensity}
-        onIntensityChange={handleIntensityChange}
-        speed={speed}
-        onSpeedChange={handleSpeedChange}
-        glowEnabled={glowEnabled}
-        onGlowChange={handleGlowChange}
-        onReset={handleReset}
-      />
-    </div>
+        {/* Secret Menu */}
+        <SecretMenu3D
+          isOpen={secretMenuOpen}
+          onClose={() => setSecretMenuOpen(false)}
+          textStyle={textStyle}
+          onTextStyleChange={handleTextStyleChange}
+          animation={animation}
+          onAnimationChange={handleAnimationChange}
+          intensity={intensity}
+          onIntensityChange={handleIntensityChange}
+          speed={speed}
+          onSpeedChange={handleSpeedChange}
+          glowEnabled={glowEnabled}
+          onGlowChange={handleGlowChange}
+          onReset={handleReset}
+        />
+      </div>
+    </NavbarAwareContainer>
   );
 };
