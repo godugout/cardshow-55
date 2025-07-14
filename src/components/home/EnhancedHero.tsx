@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { StandardHero } from "@/components/shared/StandardHero";
@@ -7,7 +6,6 @@ import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { Hero3 } from "@/components/ui/design-system";
-import { NavbarAwareContainer } from "@/components/layout/NavbarAwareContainer";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -111,25 +109,27 @@ export const EnhancedHero: React.FC = () => {
     navigate(`/studio/${card.id}`);
   };
 
-  // Create enhanced heading with proper two-line structure and large font size
+  // Create enhanced heading with responsive text wrapping control
   const enhancedHeading = (
     <>
-      Create, collect, and trade card art<br />
-      with{' '}
-      <TextEffects3D
-        style={textStyle}
-        animation={animation}
-        intensity={intensity}
-        speed={speed}
-        glowEnabled={glowEnabled}
-      >
-        unlimited potential
-      </TextEffects3D>
+      Create, collect, and trade<br />
+      <span className="xl:whitespace-nowrap">
+        card art with{' '}
+        <TextEffects3D
+          style={textStyle}
+          animation={animation}
+          intensity={intensity}
+          speed={speed}
+          glowEnabled={glowEnabled}
+        >
+          unlimited potential
+        </TextEffects3D>
+      </span>
     </>
   );
 
   return (
-    <NavbarAwareContainer className="relative">
+    <div className="relative">
       {/* Hero content */}
       <StandardHero
         label="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
@@ -139,10 +139,11 @@ export const EnhancedHero: React.FC = () => {
           text: "Create your first CRD",
           link: "/create"
         }}
+        heroVariant="hero"
       >
-        {/* Featured Cards Section - moved outside hero but inside children */}
+        {/* Featured Cards Section */}
         {showcaseCards.length > 0 && (
-          <div className="mt-16">
+          <div className="mt-8">
             <Hero3
               caption=""
               heading=""
@@ -173,6 +174,6 @@ export const EnhancedHero: React.FC = () => {
         onGlowChange={handleGlowChange}
         onReset={handleReset}
       />
-    </NavbarAwareContainer>
+    </div>
   );
 };
