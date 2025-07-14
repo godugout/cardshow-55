@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useUnifiedCardCatalog } from '@/hooks/useUnifiedCardCatalog';
 import { UnifiedCardGrid } from './UnifiedCardGrid';
 import { UnifiedCardTable } from './UnifiedCardTable';
@@ -14,7 +15,8 @@ import {
   RefreshCw, 
   Filter,
   Search,
-  AlertCircle
+  AlertCircle,
+  TestTube
 } from 'lucide-react';
 
 type ViewMode = 'grid' | 'row' | 'table';
@@ -43,6 +45,28 @@ export const UnifiedCardCatalog: React.FC = () => {
     pageSize: 100
   });
 
+  // Debug logging for testing
+  useEffect(() => {
+    console.log('🧪 Catalog Test - Card State:', {
+      totalCards: cards.length,
+      loading,
+      error,
+      sources,
+      selectedSources,
+      hasFilters,
+      isEmpty
+    });
+    
+    if (cards.length > 0) {
+      console.log('🃏 Sample cards:', cards.slice(0, 3).map(card => ({
+        id: card.id,
+        title: card.title,
+        source: card.source,
+        sync_status: card.sync_status
+      })));
+    }
+  }, [cards, loading, error, sources, selectedSources, hasFilters, isEmpty]);
+
   const handleSourceToggle = (source: string) => {
     const currentSources = [...selectedSources];
     const sourceIndex = currentSources.indexOf(source as any);
@@ -53,6 +77,7 @@ export const UnifiedCardCatalog: React.FC = () => {
       currentSources.push(source as any);
     }
     
+    console.log('🔄 Source toggle:', { source, newSources: currentSources });
     updateSources(currentSources);
   };
 
@@ -75,6 +100,24 @@ export const UnifiedCardCatalog: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Test Status Header */}
+      <Card className="bg-crd-mediumGray/30 border-crd-lightGray">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <TestTube className="h-5 w-5 text-yellow-400" />
+            <div>
+              <h3 className="text-sm font-semibold text-white">Catalog Test Status</h3>
+              <p className="text-xs text-gray-400">
+                Sources: {selectedSources.join(', ')} | 
+                Total: {total} cards | 
+                Loading: {loading ? 'Yes' : 'No'} |
+                Filters: {hasFilters ? 'Active' : 'None'}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Header with stats and controls */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -210,6 +253,9 @@ export const UnifiedCardCatalog: React.FC = () => {
                 Clear Filters
               </Button>
             )}
+            <div className="mt-4 text-xs text-gray-500">
+              Debug: Sources={selectedSources.join(',')}, Total={total}, Loading={loading.toString()}
+            </div>
           </CardContent>
         </Card>
       )}
