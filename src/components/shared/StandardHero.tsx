@@ -59,7 +59,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       
       {/* Hero Content */}
       <div className="relative z-10 text-center pt-4 md:pt-5 lg:pt-6 pb-1">
-        <div className="max-w-7xl mx-auto px-0">
+        <div className="w-full mx-auto px-0">
           {/* Label */}
           {label && (
             <Typography variant="label" className="mb-2 gradient-text-green-blue-purple font-bold tracking-wider">
@@ -71,7 +71,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
           <Typography 
             as="h1" 
             variant={heroVariant}
-            className="mb-2 leading-tight text-crd-white drop-shadow-lg px-0"
+            className="mb-2 leading-tight text-crd-white drop-shadow-lg px-0 w-full whitespace-nowrap"
           >
             {title}
           </Typography>
