@@ -109,9 +109,9 @@ export const EnhancedHero: React.FC = () => {
     navigate(`/studio/${card.id}`);
   };
 
-  // Create enhanced heading with proper two-line structure
+  // Create enhanced heading with proper two-line structure and large font size
   const enhancedHeading = (
-    <div className="leading-tight">
+    <div className="leading-tight text-4xl lg:text-6xl xl:text-7xl font-extrabold text-crd-white drop-shadow-lg">
       <div>Create, collect, and trade card art</div>
       <div>
         with{' '}
@@ -122,7 +122,7 @@ export const EnhancedHero: React.FC = () => {
           speed={speed}
           glowEnabled={glowEnabled}
         >
-          stunning 3D effects
+          unlimited potential
         </TextEffects3D>
       </div>
     </div>
