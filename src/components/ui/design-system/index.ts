@@ -1,6 +1,7 @@
 
 // CRD Design System - Complete Component Library
 export { CRDButton } from './Button';
+export { CRDCard } from './Card';
 export { CRDBadge } from './Badge';
 export { ThemedLayout, ThemedPage, ThemedSection } from './ThemedLayout';
 export { CRDInput } from './Input';
@@ -41,6 +42,3 @@ export { NCAABig10Logo } from '../../home/navbar/NCAABig10Logo';
 export { CSSketchRBLogo } from '../../home/navbar/CSSketchRBLogo';
 export { CSSketchRSLogo } from '../../home/navbar/CSSketchRSLogo';
 export { CSOrigWSLogo } from '../../home/navbar/CSOrigWSLogo';
-
-// Hero Components
-export { Hero3 } from './Hero3';

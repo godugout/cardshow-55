@@ -1,38 +1,35 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
 import { Typography, CRDButton } from '@/components/ui/design-system';
-import { ThemedPage } from '@/components/ui/design-system/ThemedLayout';
 import { StandardHero } from '@/components/shared/StandardHero';
 import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
 
 const Collections: React.FC = () => {
   return (
-    <ThemedPage>
-      <NavbarAwareContainer>
-        {/* Hero Section */}
-        <StandardHero
-          label="DISCOVER, COLLECT & CONNECT"
-          title={
-            <>
-              Your gateway to the world of<br />
-              <span className="gradient-text-green-blue-purple whitespace-nowrap">
-                digital cards
-              </span>
-            </>
-          }
-          description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."
-          primaryCta={{
-            text: "Explore Gallery",
-            link: "/collections/gallery"
-          }}
-          secondaryCta={{
-            text: "Create Collection",
-            link: "/collections/create"
-          }}
-          fullWidth={true}
-        />
+    <NavbarAwareContainer className="min-h-screen bg-crd-darkest">
+      {/* Hero Section */}
+      <StandardHero
+        label="DISCOVER, COLLECT & CONNECT"
+        title={
+          <>
+            Your gateway to the world of <span className="gradient-text-green-blue-purple">digital cards</span>
+          </>
+        }
+        description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."
+        primaryCta={{
+          text: "Explore Gallery",
+          link: "/collections/gallery"
+        }}
+        secondaryCta={{
+          text: "Create Collection",
+          link: "/collections/create"
+        }}
+      />
 
+      {/* Content Container */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Gallery Preview Section */}
         <section className="mb-16">
           <div className="flex items-center justify-between mb-8">
@@ -194,8 +191,8 @@ const Collections: React.FC = () => {
             ))}
           </div>
         </section>
-      </NavbarAwareContainer>
-    </ThemedPage>
+      </div>
+    </NavbarAwareContainer>
   );
 };
 

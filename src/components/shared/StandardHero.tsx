@@ -21,9 +21,7 @@ interface StandardHeroProps {
   secondaryCta?: CTAConfig;
   showDecorations?: boolean;
   className?: string;
-  children?: React.ReactNode;
-  heroVariant?: 'hero' | 'display';
-  fullWidth?: boolean;
+  children?: React.ReactNode; // For additional content like carousels
 }
 
 export const StandardHero: React.FC<StandardHeroProps> = ({
@@ -34,14 +32,12 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
   secondaryCta,
   showDecorations = false,
   className = '',
-  children,
-  heroVariant = 'display',
-  fullWidth = false
+  children
 }) => {
   const { isMobile } = useResponsiveLayout();
 
   return (
-    <div className={`relative ${fullWidth ? 'w-screen -mx-[50vw] left-1/2' : 'mb-12'} overflow-hidden ${className}`}>
+    <div className={`relative mb-16 overflow-hidden ${className}`}>
       {/* Background */}
       <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
       
@@ -54,8 +50,8 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       )}
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center pt-16 md:pt-20 lg:pt-24 pb-4">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 text-center pt-20 md:pt-24 lg:pt-32 pb-8">
+        <div className={`max-w-6xl mx-auto ${isMobile ? 'px-4' : 'px-8'}`}>
           {/* Label */}
           {label && (
             <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
@@ -63,11 +59,11 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
             </Typography>
           )}
           
-          {/* Main Heading - Use configurable variant */}
+          {/* Main Heading */}
           <Typography 
             as="h1" 
-            variant={heroVariant}
-            className="mb-4 leading-tight text-crd-white drop-shadow-lg"
+            variant="display"
+            className="mb-6 leading-tight text-crd-white drop-shadow-lg text-4xl lg:text-6xl xl:text-7xl"
           >
             {title}
           </Typography>
@@ -86,7 +82,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
               <CRDButton 
                 size="lg" 
                 variant={primaryCta.variant || 'primary'}
-                className={`liquid-gradient-cta min-w-[200px] ${primaryCta.className || ''}`}
+                className={`liquid-gradient-blue-purple min-w-[200px] ${primaryCta.className || ''}`}
               >
                 {primaryCta.text}
                 <ArrowRight className="ml-2 h-5 w-5" />

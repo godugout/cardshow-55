@@ -8,23 +8,15 @@ export const CreatePageHero: React.FC = () => {
       label="CUT, CRAFT & CREATE DIGITALLY"
       title={
         <>
-          <span className="whitespace-nowrap">From paper scraps to digital art</span><br />
-          <span className="xl:whitespace-nowrap">
-            craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
-          </span>
+          From paper scraps to digital art<br />craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
         </>
       }
       description="Experience the freedom of digital crafting where every cut, layer, and blend creates immersive cards that viewers can explore from every angle. No glue required."
       primaryCta={{
-        text: "Start Creating",
-        link: "/create/new"
-      }}
-      secondaryCta={{
-        text: "Browse Templates",
-        link: "/templates"
+        text: "Create your first CRD",
+        link: "/create"
       }}
       showDecorations={true}
-      fullWidth={true}
     />
   );
 };
