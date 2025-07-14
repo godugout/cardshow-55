@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { cardshowLogoDatabase } from '@/lib/cardshowDNA';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, X, Sun } from 'lucide-react';
 
 // Logo component with improved error handling
 const LogoWithFallback = ({ imageUrl, logoName, className, dnaCode }: { 
@@ -55,7 +54,7 @@ interface LogoSelectorDropdownProps {
 
 export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProps) => {
   const { settings, saveSettings } = useAppSettings();
-  const { setLogoTheme, currentLogoCode, getThemeByDNA, setCustomHeaderBgColor, customHeaderColor, customHeaderColorType } = useTeamTheme();
+  const { setLogoTheme, currentLogoCode, getThemeByDNA, setCustomHeaderBgColor, customHeaderColor, customHeaderColorType, isHomeTeamMode, toggleHomeTeamMode } = useTeamTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -181,17 +180,44 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
           onMouseEnter={handleMouseEnter}
           className="dropdown-themed absolute top-full left-0 mt-2 w-[min(90vw,1200px)] z-[9999] animate-in slide-in-from-top-2 duration-200"
         >
-          {/* Header with Close Button */}
+          {/* Header with Close Button and Home Team Toggle */}
           <div className="relative p-4 border-b border-border/20 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5">
-            <h3 className="text-lg font-bold text-foreground gradient-text-themed">
-              Pick a logo <span className="text-sm text-muted-foreground font-normal ml-2">Customize your Cardshow theme</span>
-            </h3>
-            <button
-              onClick={handleCloseClick}
-              className="absolute top-4 right-4 p-1 rounded-md hover:bg-muted/50 transition-colors duration-200 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-foreground gradient-text-themed">
+                Pick a logo <span className="text-sm text-muted-foreground font-normal ml-2">Customize your Cardshow theme</span>
+              </h3>
+              <div className="flex items-center gap-3">
+                {/* Home Team Toggle */}
+                <button
+                  onClick={toggleHomeTeamMode}
+                  className={`
+                    flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200
+                    ${isHomeTeamMode 
+                      ? 'bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-200' 
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/30'
+                    }
+                  `}
+                  title="Toggle light mode for navbar (Home Team)"
+                >
+                  <Sun className="w-4 h-4" />
+                  <span className="hidden sm:inline">Home Team</span>
+                </button>
+                
+                <button
+                  onClick={handleCloseClick}
+                  className="p-1 rounded-md hover:bg-muted/50 transition-colors duration-200 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            
+            {/* Home Team Mode Description */}
+            {isHomeTeamMode && (
+              <div className="mt-2 text-xs text-yellow-700 bg-yellow-50 px-2 py-1 rounded">
+                🏠 Home Team mode: Light navbar background for better logo visibility
+              </div>
+            )}
           </div>
 
           {/* Logo Grid */}

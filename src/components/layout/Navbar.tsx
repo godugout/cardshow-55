@@ -10,7 +10,16 @@ import { AdminTrigger } from '@/components/admin/AdminTrigger';
 import { MobileNav } from '@/components/home/navbar/MobileNav';
 
 // Dynamic navbar background based on current theme
-const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null) => {
+const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null, isHomeTeamMode?: boolean) => {
+  // Home team mode overrides everything with light background
+  if (isHomeTeamMode) {
+    return {
+      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.92) 50%, rgba(255, 255, 255, 0.97) 100%)',
+      borderColor: 'rgba(203, 213, 225, 0.4)',
+      backdropFilter: 'blur(16px) saturate(180%)'
+    };
+  }
+
   if (!currentPalette) {
     return {
       background: 'linear-gradient(135deg, rgba(20, 20, 22, 0.08) 0%, rgba(20, 20, 22, 0.05) 50%, rgba(20, 20, 22, 0.12) 100%)',
@@ -48,7 +57,7 @@ const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string 
 
 export const Navbar = () => {
   const location = useLocation();
-  const { currentPalette, setTheme, customHeaderColor } = useTeamTheme();
+  const { currentPalette, setTheme, customHeaderColor, isHomeTeamMode } = useTeamTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const prefersReducedMotion = typeof window !== 'undefined' && 
@@ -75,12 +84,13 @@ export const Navbar = () => {
       : 'transition-all duration-500 ease-out';
   };
 
-  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor);
+  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor, isHomeTeamMode);
 
   return (
     <>
       <nav 
         className={`
+          ${isHomeTeamMode ? 'navbar-home-team' : ''}
           fixed top-0 left-0 right-0 z-50 border-b
           ${getTransitionClass()}
           ${isVisible ? 'translate-y-0' : '-translate-y-full'}
@@ -112,7 +122,7 @@ export const Navbar = () => {
               className={`
                 md:hidden flex items-center justify-center
                 w-11 h-11 rounded-lg
-                text-themed-secondary hover-themed
+                ${isHomeTeamMode ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' : 'text-themed-secondary hover-themed'}
                 transition-all duration-200
                 ${!prefersReducedMotion ? 'hover:scale-105' : ''}
                 focus:outline-none focus:ring-2 focus:ring-themed-active/20
@@ -134,8 +144,14 @@ export const Navbar = () => {
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
                   ${isActive('/') 
-                    ? 'text-themed-active bg-themed-active/10' 
-                    : 'text-themed-secondary hover-themed'
+                    ? (isHomeTeamMode 
+                        ? 'text-slate-800 bg-slate-200/60' 
+                        : 'text-themed-active bg-themed-active/10'
+                      )
+                    : (isHomeTeamMode 
+                        ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
+                        : 'text-themed-secondary hover-themed'
+                      )
                   }
                   ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
                 `}
@@ -151,8 +167,14 @@ export const Navbar = () => {
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
                   ${isActive('/create') 
-                    ? 'text-themed-active bg-themed-active/10' 
-                    : 'text-themed-secondary hover-themed'
+                    ? (isHomeTeamMode 
+                        ? 'text-slate-800 bg-slate-200/60' 
+                        : 'text-themed-active bg-themed-active/10'
+                      )
+                    : (isHomeTeamMode 
+                        ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
+                        : 'text-themed-secondary hover-themed'
+                      )
                   }
                   ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
                 `}
@@ -168,8 +190,14 @@ export const Navbar = () => {
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
                   ${isActive('/gallery') 
-                    ? 'text-themed-active bg-themed-active/10' 
-                    : 'text-themed-secondary hover-themed'
+                    ? (isHomeTeamMode 
+                        ? 'text-slate-800 bg-slate-200/60' 
+                        : 'text-themed-active bg-themed-active/10'
+                      )
+                    : (isHomeTeamMode 
+                        ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
+                        : 'text-themed-secondary hover-themed'
+                      )
                   }
                   ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
                 `}
@@ -185,8 +213,14 @@ export const Navbar = () => {
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
                   ${isActive('/studio') 
-                    ? 'text-themed-active bg-themed-active/10' 
-                    : 'text-themed-secondary hover-themed'
+                    ? (isHomeTeamMode 
+                        ? 'text-slate-800 bg-slate-200/60' 
+                        : 'text-themed-active bg-themed-active/10'
+                      )
+                    : (isHomeTeamMode 
+                        ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
+                        : 'text-themed-secondary hover-themed'
+                      )
                   }
                   ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
                 `}

@@ -28,6 +28,7 @@ export const useTeamTheme = () => {
   const [currentLogoCode, setCurrentLogoCode] = useState<string | null>(null);
   const [customHeaderColor, setCustomHeaderColor] = useState<string | null>(null);
   const [customHeaderColorType, setCustomHeaderColorType] = useState<string | null>(null);
+  const [isHomeTeamMode, setIsHomeTeamMode] = useState<boolean>(false);
 
   // Load database color themes and logo themes
   const loadDatabaseThemes = useCallback(async () => {
@@ -192,12 +193,16 @@ export const useTeamTheme = () => {
       const savedLogoCode = localStorage.getItem('crd-logo-code');
       const savedHeaderColor = localStorage.getItem('crd-custom-header-color');
       const savedHeaderColorType = localStorage.getItem('crd-custom-header-color-type');
+      const savedHomeTeamMode = localStorage.getItem('crd-home-team-mode') === 'true';
       
       // Restore custom header color first (before applying theme)
       if (savedHeaderColor && savedHeaderColorType) {
         setCustomHeaderColor(savedHeaderColor);
         setCustomHeaderColorType(savedHeaderColorType);
       }
+      
+      // Restore home team mode
+      setIsHomeTeamMode(savedHomeTeamMode);
       
       // Apply theme based on priority: logo theme > saved theme > default
       if (savedLogoCode) {
@@ -281,6 +286,14 @@ export const useTeamTheme = () => {
     console.log('Custom header color cleared');
   }, []);
 
+  // Home team mode functions
+  const toggleHomeTeamMode = useCallback(() => {
+    const newMode = !isHomeTeamMode;
+    setIsHomeTeamMode(newMode);
+    localStorage.setItem('crd-home-team-mode', newMode.toString());
+    console.log(`Home team mode ${newMode ? 'enabled' : 'disabled'}`);
+  }, [isHomeTeamMode]);
+
   // Set theme and clear logo tracking for non-logo themes
   const setThemeEnhanced = useCallback((themeId: string) => {
     // Check if this is a logo-based theme
@@ -303,6 +316,7 @@ export const useTeamTheme = () => {
     currentLogoCode,
     customHeaderColor,
     customHeaderColorType,
+    isHomeTeamMode,
     
     // Actions
     setTheme: setThemeEnhanced,
@@ -311,6 +325,7 @@ export const useTeamTheme = () => {
     applyTheme,
     setCustomHeaderBgColor,
     clearCustomHeaderColor,
+    toggleHomeTeamMode,
     
     // Utilities
     getThemePreview,
