@@ -41,8 +41,8 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
   const { isMobile } = useResponsiveLayout();
 
   const heroClasses = fullWidth 
-    ? `relative mb-6 overflow-hidden w-screen -mx-[50vw] left-1/2 ${className}`
-    : `relative mb-6 overflow-hidden ${className}`;
+    ? `relative mb-3 overflow-hidden w-screen -mx-[50vw] left-1/2 ${className}`
+    : `relative mb-3 overflow-hidden ${className}`;
 
   return (
     <div className={heroClasses}>
@@ -58,8 +58,8 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       )}
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center pt-8 md:pt-10 lg:pt-12 pb-2">
-        <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-6'}`}>
+      <div className="relative z-10 text-center pt-4 md:pt-5 lg:pt-6 pb-1">
+        <div className="max-w-7xl mx-auto">
           {/* Label */}
           {label && (
             <Typography variant="label" className="mb-2 gradient-text-green-blue-purple font-bold tracking-wider">
@@ -79,13 +79,13 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
           {/* Description */}
           <Typography 
             variant="large-body" 
-            className="mb-4 text-crd-lightGray max-w-2xl mx-auto leading-relaxed"
+            className="mb-4 text-crd-lightGray max-w-2xl mx-auto leading-relaxed px-4"
           >
             {description}
           </Typography>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
             <Link to={primaryCta.link}>
               <CRDButton 
                 size="lg" 
