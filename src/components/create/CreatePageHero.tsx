@@ -8,8 +8,7 @@ export const CreatePageHero: React.FC = () => {
       label="CUT, CRAFT & CREATE DIGITALLY"
       title={
         <>
-          <span className="block sm:inline">From paper scraps to</span><br className="hidden sm:block" />
-          <span className="block sm:inline">digital art</span><br />
+          From paper scraps to digital art<br />
           <span className="xl:whitespace-nowrap">
             craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
           </span>
@@ -25,7 +24,6 @@ export const CreatePageHero: React.FC = () => {
         link: "/templates"
       }}
       showDecorations={true}
-      fullWidth={true}
     />
   );
 };

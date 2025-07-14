@@ -14,9 +14,9 @@ const Collections: React.FC = () => {
         label="DISCOVER, COLLECT & CONNECT"
         title={
           <>
-            Your gateway to<br />
-            <span className="gradient-text-green-blue-purple whitespace-nowrap">
-              the world of digital cards
+            Your gateway to the world of<br />
+            <span className="xl:whitespace-nowrap">
+              <span className="gradient-text-green-blue-purple">digital cards</span>
             </span>
           </>
         }
@@ -29,7 +29,6 @@ const Collections: React.FC = () => {
           text: "Create Collection",
           link: "/collections/create"
         }}
-        fullWidth={true}
       />
 
       {/* Gallery Preview Section */}

@@ -1,17 +1,20 @@
-
 import React from 'react';
+import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
 import { CreatePageHero } from '@/components/create/CreatePageHero';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 
 const CreateChoice: React.FC = () => {
+  const { isMobile } = useResponsiveLayout();
+
   return (
-    <div className="min-h-screen bg-crd-darkest overflow-hidden">
-      <div className="h-full w-full overflow-y-auto">
-        {/* Full Width Hero Section */}
+    <NavbarAwareContainer className="h-screen bg-crd-darkest overflow-hidden">
+      <div className={`h-full max-w-7xl mx-auto ${isMobile ? 'px-5 pb-8' : 'px-12 pb-16'} overflow-y-auto`}>
+        {/* New Hero Section */}
         <CreatePageHero />
         
         {/* Rest of the create page content would go here */}
       </div>
-    </div>
+    </NavbarAwareContainer>
   );
 };
 
