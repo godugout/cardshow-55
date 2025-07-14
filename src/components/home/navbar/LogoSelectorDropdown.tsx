@@ -247,9 +247,9 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                             <button
                               key={index}
                               onClick={(e) => handleColorDotClick(e, dot.color, dot.type)}
-                              className={`${dot.size} rounded-full border shadow-sm transition-all duration-200 cursor-pointer hover:scale-110 ${
+                              className={`${dot.size} rounded-full border shadow-sm transition-all duration-200 cursor-pointer hover:scale-105 hover:opacity-80 ${
                                 isActiveHeaderColor 
-                                  ? 'border-white border-2 ring-2 ring-white/50' 
+                                  ? 'border-white border-1 ring-1 ring-white/30' 
                                   : 'border-white/20 hover:border-white/40'
                               }`}
                               style={{ backgroundColor: dot.color }}
