@@ -2,11 +2,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { TextEffectStyle, TextAnimation } from '@/components/hero/TextEffects3D';
 import type { EffectValues } from '@/components/viewer/hooks/useEnhancedCardEffects';
-import { useSecretMenuDetection } from '@/hooks/useSecretMenuDetection';
 
 interface GlobalSecretEffectsState {
-  // Menu state
-  isMenuOpen: boolean;
+  // Menu state - always accessible now
   isEnabled: boolean;
   
   // Text effects
@@ -25,9 +23,7 @@ interface GlobalSecretEffectsState {
 }
 
 interface GlobalSecretEffectsContextType extends GlobalSecretEffectsState {
-  // Menu controls
-  openMenu: () => void;
-  closeMenu: () => void;
+  // Controls
   toggleEnabled: (enabled: boolean) => void;
   
   // Text effect controls
@@ -75,7 +71,6 @@ const DEFAULT_VISUAL_EFFECTS: EffectValues = {
 
 export const GlobalSecretEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<GlobalSecretEffectsState>({
-    isMenuOpen: false,
     isEnabled: false,
     ...DEFAULT_TEXT_EFFECTS,
     visualEffects: DEFAULT_VISUAL_EFFECTS,
@@ -111,12 +106,6 @@ export const GlobalSecretEffectsProvider: React.FC<{ children: React.ReactNode }
     localStorage.setItem('crd-global-secret-effects', JSON.stringify(settingsToSave));
   };
 
-  // Secret menu detection
-  useSecretMenuDetection({
-    onActivate: () => setState(prev => ({ ...prev, isMenuOpen: true })),
-    isActive: state.isMenuOpen
-  });
-
   const updateState = (updates: Partial<GlobalSecretEffectsState>) => {
     setState(prev => {
       const newState = { ...prev, ...updates };
@@ -128,9 +117,7 @@ export const GlobalSecretEffectsProvider: React.FC<{ children: React.ReactNode }
   const contextValue: GlobalSecretEffectsContextType = {
     ...state,
     
-    // Menu controls
-    openMenu: () => updateState({ isMenuOpen: true }),
-    closeMenu: () => updateState({ isMenuOpen: false }),
+    // Controls
     toggleEnabled: (enabled: boolean) => updateState({ isEnabled: enabled }),
     
     // Text effect controls
