@@ -8,7 +8,7 @@ import { ProductionOptimizer } from '@/components/production/ProductionOptimizer
 import { DevLoginFloatingButton } from '@/components/auth/DevLoginFloatingButton';
 import { Navbar } from '@/components/layout/Navbar';
 import Index from '@/pages/Index';
-import CreateChoice from '@/pages/CreateChoice';
+import { CreateChoice } from '@/pages/CreateChoice';
 import CreateStory from '@/pages/CreateStory';
 import CreateCRD from '@/pages/CreateCRD';
 import Gallery from '@/pages/Gallery';
