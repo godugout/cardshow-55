@@ -40,12 +40,8 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
 }) => {
   const { isMobile } = useResponsiveLayout();
 
-  const heroClasses = fullWidth 
-    ? `relative mb-3 overflow-hidden w-screen -mx-[50vw] left-1/2 ${className}`
-    : `relative mb-3 overflow-hidden ${className}`;
-
   return (
-    <div className={heroClasses}>
+    <div className={`relative ${fullWidth ? 'w-screen -mx-[50vw] left-1/2' : 'mb-12'} overflow-hidden ${className}`}>
       {/* Background */}
       <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
       
@@ -58,11 +54,11 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       )}
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center pt-4 md:pt-5 lg:pt-6 pb-1">
-        <div className="w-full mx-auto px-0">
+      <div className="relative z-10 text-center pt-16 md:pt-20 lg:pt-24 pb-4">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           {/* Label */}
           {label && (
-            <Typography variant="label" className="mb-2 gradient-text-green-blue-purple font-bold tracking-wider">
+            <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
               {label}
             </Typography>
           )}
@@ -71,7 +67,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
           <Typography 
             as="h1" 
             variant={heroVariant}
-            className="mb-2 leading-tight text-crd-white drop-shadow-lg px-0 w-full whitespace-nowrap"
+            className="mb-4 leading-tight text-crd-white drop-shadow-lg"
           >
             {title}
           </Typography>
@@ -79,13 +75,13 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
           {/* Description */}
           <Typography 
             variant="large-body" 
-            className="mb-4 text-crd-lightGray max-w-2xl mx-auto leading-relaxed px-4"
+            className="mb-8 text-crd-lightGray max-w-2xl mx-auto leading-relaxed"
           >
             {description}
           </Typography>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to={primaryCta.link}>
               <CRDButton 
                 size="lg" 
