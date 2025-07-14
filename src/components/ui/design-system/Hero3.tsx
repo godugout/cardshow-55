@@ -33,15 +33,15 @@ export const Hero3: React.FC<Hero3Props> = ({
     <CRDSection spacing="large" className="relative overflow-hidden">
       <CRDContainer size="narrow" className="text-center">
         <div className="flex flex-col items-center space-y-6">
-          {/* Caption with gradient styling */}
+          {/* Caption with proper gradient styling */}
           <Typography 
             variant="label" 
-            className="crd-text-gradient uppercase tracking-wide"
+            className="crd-text-gradient uppercase tracking-wide font-semibold"
           >
             {caption}
           </Typography>
           
-          {/* Main Heading - render prop content directly without wrapping */}
+          {/* Main Heading - render content directly */}
           {typeof heading === 'string' ? (
             <Typography 
               as="h1" 
@@ -54,10 +54,10 @@ export const Hero3: React.FC<Hero3Props> = ({
             heading
           )}
           
-          {/* Body Text */}
+          {/* Body Text with proper styling */}
           <Typography 
             variant="large-body" 
-            className="max-w-2xl mx-auto text-center"
+            className="max-w-2xl mx-auto text-center text-crd-white/90"
           >
             {bodyText}
           </Typography>
@@ -67,7 +67,7 @@ export const Hero3: React.FC<Hero3Props> = ({
             <CRDButton 
               variant="primary"
               size="lg"
-              className="gap-3"
+              className="gap-3 mt-4"
             >
               {ctaText}
             </CRDButton>
