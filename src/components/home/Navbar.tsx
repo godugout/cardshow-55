@@ -26,11 +26,15 @@ const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string 
   
   // Use custom header color if set, otherwise use theme colors
   if (customHeaderColor) {
-    return {
-      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.20)} 0%, ${hexToRgba(customHeaderColor, 0.12)} 50%, ${hexToRgba(customHeaderColor, 0.08)} 100%)`,
-      borderColor: hexToRgba(customHeaderColor, 0.25),
+    console.log('🎨 Applying custom header color:', customHeaderColor);
+    const styles = {
+      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.35)} 0%, ${hexToRgba(customHeaderColor, 0.25)} 50%, ${hexToRgba(customHeaderColor, 0.15)} 100%)`,
+      borderColor: hexToRgba(customHeaderColor, 0.4),
+      boxShadow: `0 1px 3px ${hexToRgba(customHeaderColor, 0.2)}`,
       transition: 'all 0.3s ease-in-out'
     };
+    console.log('🎨 Generated header styles:', styles);
+    return styles;
   }
   
   // Create subtle background gradient using theme colors
