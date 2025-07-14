@@ -28,6 +28,18 @@
     backdrop-filter: blur(16px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
   }
+
+  /* Away game mode - Gray background */
+  .navbar-away-game {
+    background: linear-gradient(135deg, 
+      rgba(75, 85, 99, 0.95) 0%, 
+      rgba(55, 65, 81, 0.92) 50%, 
+      rgba(75, 85, 99, 0.97) 100%
+    ) !important;
+    border-color: rgba(156, 163, 175, 0.4) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  }
   
   /* Home team mode text colors */
   .navbar-home-team .text-themed-primary {
@@ -46,6 +58,25 @@
   .navbar-home-team .hover-themed:hover {
     background-color: rgba(71, 85, 105, 0.1) !important;
     color: hsl(220, 14%, 20%) !important;
+  }
+
+  /* Away game mode text colors */
+  .navbar-away-game .text-themed-primary {
+    color: rgb(229, 231, 235) !important;
+  }
+  
+  .navbar-away-game .text-themed-secondary {
+    color: rgb(209, 213, 219) !important;
+  }
+  
+  .navbar-away-game .text-themed-active {
+    color: rgb(255, 255, 255) !important;
+  }
+  
+  /* Away game mode hover states */
+  .navbar-away-game .hover-themed:hover {
+    background-color: rgba(229, 231, 235, 0.1) !important;
+    color: rgb(255, 255, 255) !important;
   }
   
   /* Text theming */

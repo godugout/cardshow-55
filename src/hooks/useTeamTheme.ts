@@ -13,6 +13,7 @@ export const useTeamTheme = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [customHeaderColor, setCustomHeaderColor] = useState<string | null>(null);
   const [isHomeTeamMode, setIsHomeTeamMode] = useState(false);
+  const [isAwayGameMode, setIsAwayGameMode] = useState(false);
   const [currentLogoCode, setCurrentLogoCode] = useState<string | null>(null);
 
   // Apply theme to document
@@ -91,7 +92,24 @@ export const useTeamTheme = () => {
 
   // Toggle home team mode
   const toggleHomeTeamMode = useCallback(() => {
-    setIsHomeTeamMode(prev => !prev);
+    setIsHomeTeamMode(prev => {
+      const newHomeMode = !prev;
+      if (newHomeMode) {
+        setIsAwayGameMode(false); // Disable away mode when enabling home mode
+      }
+      return newHomeMode;
+    });
+  }, []);
+
+  // Toggle away game mode
+  const toggleAwayGameMode = useCallback(() => {
+    setIsAwayGameMode(prev => {
+      const newAwayMode = !prev;
+      if (newAwayMode) {
+        setIsHomeTeamMode(false); // Disable home mode when enabling away mode
+      }
+      return newAwayMode;
+    });
   }, []);
 
   // Set custom header color
@@ -124,6 +142,7 @@ export const useTeamTheme = () => {
     isTransitioning,
     customHeaderColor,
     isHomeTeamMode,
+    isAwayGameMode,
     currentLogoCode,
     
     // Theme management
@@ -133,6 +152,7 @@ export const useTeamTheme = () => {
     resetTheme,
     createCustomTheme,
     toggleHomeTeamMode,
+    toggleAwayGameMode,
     setCustomHeader,
     
     // Available palettes
