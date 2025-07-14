@@ -5,6 +5,7 @@
   /* Layout Variables */
   --navbar-height: 4rem; /* 64px */
   
+  /* Shadcn UI Variables - All HSL format */
   --background: 217 19% 16%; /* #23262F */
   --foreground: 0 0% 99%; /* #FCFCFD */
   --card: 217 19% 16%; /* #23262F */
@@ -26,43 +27,58 @@
   --ring: 219 88% 62%; /* #3772FF */
   --radius: 0.5rem;
 
-  /* Custom colors for Cardshow */
-  --cardshow-green: #45B26B;
-  --cardshow-orange: #EA6E48;
-  --cardshow-purple: #9757D7;
-  --cardshow-blue: #3772FF;
-  --cardshow-white: #FCFCFD;
-  --cardshow-lightGray: #777E90;
-  --cardshow-mediumGray: #353945;
-  --cardshow-darkGray: #23262F;
-  --cardshow-darkest: #121212;
-  --editor-dark: #1a1a1a;
-  --editor-darker: #121212;
-  --editor-tool: #2a2a2a;
-  --editor-border: #333333;
-  --editor-canvas: #2c2c2c;
+  /* CRD Theme Variables - All HSL format */
+  --crd-blue: 219 88% 62%;
+  --crd-blue-light: 219 88% 70%;
+  --crd-blue-dark: 219 88% 50%;
+  --crd-purple: 260 70% 65%;
+  --crd-purple-light: 260 80% 75%;
+  --crd-purple-dark: 260 70% 55%;
+  --crd-orange: 18 85% 60%;
+  --crd-green: 142 51% 50%;
+  
+  /* Neutral Colors - All HSL format */
+  --crd-darkest: 220 13% 9%;
+  --crd-darker: 220 13% 15%;
+  --crd-dark: 220 13% 18%;
+  --crd-darkGray: 217 19% 16%;
+  --crd-mediumGray: 217 19% 27%;
+  --crd-lightGray: 220 17% 56%;
+  --crd-white: 0 0% 99%;
+  
+  /* Editor Colors - All HSL format */
+  --editor-dark: 0 0% 10%;
+  --editor-darker: 0 0% 7%;
+  --editor-tool: 0 0% 16%;
+  --editor-border: 0 0% 20%;
+  --editor-canvas: 0 0% 17%;
+
+  /* Theme System Variables */
+  --theme-navbar-bg: var(--crd-darkGray);
+  --theme-navbar-border: var(--crd-mediumGray);
+  --theme-accent: var(--crd-blue);
 }
 
 .dark {
-  --background: 222.2 47.4% 11.2%;
+  --background: 222 47% 11%;
   --foreground: 210 40% 98%;
-  --card: 222.2 47.4% 11.2%;
+  --card: 222 47% 11%;
   --card-foreground: 210 40% 98%;
-  --popover: 222.2 47.4% 11.2%;
+  --popover: 222 47% 11%;
   --popover-foreground: 210 40% 98%;
   --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 217 33% 18%;
   --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
+  --muted: 217 33% 18%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 217 33% 18%;
   --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
+  --destructive: 0 63% 31%;
   --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 224.3 76.3% 48%;
+  --border: 217 33% 18%;
+  --input: 217 33% 18%;
+  --ring: 224 76% 48%;
 }
 
 @layer base {
@@ -72,10 +88,8 @@
   
   body {
     @apply bg-crd-darkest text-crd-white;
-    /* Mobile-first font size optimization */
     font-size: 16px;
     line-height: 1.6;
-    /* Improve text rendering on mobile devices */
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -94,7 +108,7 @@
     @apply text-lg sm:text-xl lg:text-2xl font-bold mb-2;
   }
   
-  /* Mobile-first touch targets - minimum 44x44px for accessibility */
+  /* Mobile-first touch targets */
   button {
     @apply min-h-[44px] min-w-[44px];
   }
@@ -116,7 +130,7 @@
     @apply px-4 sm:px-6 lg:px-8;
   }
   
-  /* Improved focus styles for keyboard navigation */
+  /* Improved focus styles */
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-blue-500;
   }

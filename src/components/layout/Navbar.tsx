@@ -1,70 +1,26 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Plus, Home, ImageIcon, Palette, X, Code2, Menu } from 'lucide-react';
+import { Plus, Home, ImageIcon, Palette, Menu } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
-import { CRDGradientLogo } from '@/components/home/navbar/CRDGradientLogo';
 import { useEnhancedNavbar } from '@/hooks/useEnhancedNavbar';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { DevLoginButton } from '@/components/auth/DevLoginButton';
 import { AdminTrigger } from '@/components/admin/AdminTrigger';
 import { MobileNav } from '@/components/home/navbar/MobileNav';
 
-// Dynamic navbar background based on current theme
-const getNavbarDynamicStyles = (currentPalette: any, isScrolled: boolean, blurIntensity: number, customHeaderColor?: string | null) => {
-  // Convert hex to rgba for transparency
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
-
-  if (!currentPalette) {
-    return {
-      backgroundColor: 'rgba(20, 20, 22, 0.85)', // fallback
-      borderColor: 'rgba(255, 255, 255, 0.1)',
-      backdropFilter: `blur(${blurIntensity}px)`
-    };
-  }
-  
-  // Use custom header color if set, otherwise use theme colors
-  if (customHeaderColor) {
-    return {
-      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.25)} 0%, ${hexToRgba(customHeaderColor, 0.15)} 50%, ${hexToRgba(customHeaderColor, 0.08)} 100%)`,
-      borderColor: hexToRgba(customHeaderColor, 0.35),
-      backdropFilter: `blur(${blurIntensity}px) saturate(180%)`
-    };
-  }
-  
-  // Create subtle background gradient using theme colors
-  const primary = currentPalette.colors.primary;
-  const secondary = currentPalette.colors.secondary;
-  
-  // More opacity when scrolled
-  const bgOpacity = isScrolled ? 0.12 : 0.08;
-  const borderOpacity = isScrolled ? 0.25 : 0.15;
-  
-  return {
-    background: `linear-gradient(135deg, ${hexToRgba(primary, bgOpacity)} 0%, ${hexToRgba(secondary, bgOpacity * 0.6)} 100%)`,
-    borderColor: hexToRgba(primary, borderOpacity),
-    backdropFilter: `blur(${blurIntensity}px)`
-  };
-};
-
 export const Navbar = () => {
   const location = useLocation();
   const { currentPalette, setTheme, customHeaderColor } = useTeamTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  // Get prefersReducedMotion first
   const prefersReducedMotion = typeof window !== 'undefined' && 
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const { 
     isVisible, 
     isScrolled, 
-    scrollMetrics, 
-    isSpecialRoute 
+    scrollMetrics 
   } = useEnhancedNavbar({
     threshold: 20,
     hideOffset: 100,
@@ -74,14 +30,6 @@ export const Navbar = () => {
   });
 
   const isActive = (path: string) => location.pathname === path;
-  const isCRDRoute = location.pathname.startsWith('/create/');
-
-  // Calculate dynamic blur and opacity based on scroll velocity
-  const blurIntensity = Math.min(scrollMetrics.velocity * 2 + 8, 20);
-  const backgroundOpacity = Math.min(0.8 + scrollMetrics.velocity * 0.1, 0.98);
-  
-  // Get dynamic styles based on current theme
-  const dynamicStyles = getNavbarDynamicStyles(currentPalette, isScrolled, blurIntensity, customHeaderColor);
   
   const getTransitionClass = () => {
     if (prefersReducedMotion) return 'transition-transform duration-200';
@@ -101,24 +49,20 @@ export const Navbar = () => {
         `}
         style={{ 
           height: 'var(--navbar-height)',
-          transform: `translateY(${isVisible ? '0' : '-100%'})`,
-          ...dynamicStyles,
-          borderBottomColor: dynamicStyles.borderColor
+          transform: `translateY(${isVisible ? '0' : '-100%'})`
         }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex justify-between items-center h-full">
-            {/* Logo Selector with enhanced animation and Admin Trigger */}
+            {/* Logo Section with Admin Trigger */}
             <div className={`
               flex items-center gap-2 transition-all duration-300
               ${scrollMetrics.isScrolling ? 'scale-[0.98]' : 'scale-100'}
               ${!prefersReducedMotion && isScrolled ? 'drop-shadow-sm' : ''}
             `}>
-              {/* Admin Trigger - Hidden icon left of logo */}
               <AdminTrigger />
-              
-            <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
-              <LogoSelector onThemeChange={(themeId) => setTheme(themeId)} />
-            </div>
+              <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
+                <LogoSelector onThemeChange={(themeId) => setTheme(themeId)} />
+              </div>
             </div>
 
             {/* Mobile Menu Button */}
@@ -210,7 +154,7 @@ export const Navbar = () => {
                 <span className="hidden lg:inline">Studio</span>
               </Link>
 
-              {/* Dev Login Button - Only shows in development on larger screens */}
+              {/* Dev Login Button */}
               <div className="hidden xl:block">
                 <DevLoginButton 
                   variant="outline" 

@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
 import { cardshowLogoDatabase } from '@/lib/cardshowDNA';
 import { ChevronDown, X } from 'lucide-react';
 
-// Logo component with fallback and tooltip
+// Logo component with improved error handling
 const LogoWithFallback = ({ imageUrl, logoName, className, dnaCode }: { 
   imageUrl: string, 
   logoName: string, 
@@ -60,10 +61,8 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
   const triggerRef = useRef<HTMLButtonElement>(null);
   const mouseLeaveTimerRef = useRef<NodeJS.Timeout>();
   
-  // Use first 20 logos from database (matching the design guide)
   const availableLogos = cardshowLogoDatabase.slice(0, 20);
 
-  // Updated creative names for distinct visual themes - renamed Carbon Elite to Steel Force
   const logoNames: Record<string, string> = {
     'CRD_GRADIENT_MULTI': 'Fusion Force',
     'CS_GREEN_SPARKLE': 'Emerald Spark',
@@ -79,7 +78,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     'CS_ORANGE_BLACK_OUTLINE': 'Power Strike',
     'CS_RED_BLOCK': 'Crimson Bold',
     'CS_RED_SCRIPT_CORAL': 'Sunset Coral',
-    'CS_RED_MODERN': 'Steel Force', // Changed from Carbon Elite
+    'CS_RED_MODERN': 'Steel Force',
     'CS_RED_SCRIPT_CLASSIC': 'Vintage Burgundy',
     'CS_BLACK_BOLD': 'Shadow Force',
     'CS_PURPLE_OUTLINE': 'Royal Edge',
@@ -87,12 +86,10 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     'CS_BLUE_WHITE_SCRIPT': 'Sky Script'
   };
 
-  // Find logo by DNA code
   const findLogoByDNA = (dnaCode: string) => {
     return availableLogos.find(logo => logo.dnaCode === dnaCode) || availableLogos[0];
   };
 
-  // Initialize selected logo
   const [selectedLogo, setSelectedLogo] = useState(() => {
     if (currentLogoCode) {
       return findLogoByDNA(currentLogoCode);
@@ -100,7 +97,6 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     return availableLogos[0];
   });
 
-  // Update selected logo when current logo code changes
   useEffect(() => {
     if (currentLogoCode) {
       const found = findLogoByDNA(currentLogoCode);
@@ -108,7 +104,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     }
   }, [currentLogoCode]);
 
-  // Close dropdown on outside click (but not on logo selection)
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
@@ -123,21 +119,18 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     }
   }, [isOpen]);
 
-  // Handle mouse leave with delay
   const handleMouseLeave = () => {
     mouseLeaveTimerRef.current = setTimeout(() => {
       setIsOpen(false);
-    }, 300); // 300ms delay to prevent accidental closing
+    }, 300);
   };
 
-  // Handle mouse enter (cancel close timer)
   const handleMouseEnter = () => {
     if (mouseLeaveTimerRef.current) {
       clearTimeout(mouseLeaveTimerRef.current);
     }
   };
 
-  // Cleanup timer on unmount
   useEffect(() => {
     return () => {
       if (mouseLeaveTimerRef.current) {
@@ -149,11 +142,8 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
   const handleLogoSelect = (logo: typeof selectedLogo) => {
     setSelectedLogo(logo);
     setLogoTheme(logo.dnaCode);
-    
-    // Save theme to persistent storage
     saveSettings({ theme: `logo-${logo.dnaCode.toLowerCase()}` });
     onThemeChange?.(`logo-${logo.dnaCode.toLowerCase()}`);
-    // Removed setIsOpen(false) - dropdown stays open on selection
   };
 
   const handleCloseClick = () => {
@@ -162,8 +152,6 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
 
   const handleColorDotClick = (event: React.MouseEvent, color: string, colorType: string, logo: any) => {
     event.stopPropagation();
-    
-    // Set both the header background color AND change the logo
     setCustomHeaderBgColor(color, colorType);
     handleLogoSelect(logo);
   };
@@ -191,14 +179,13 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
           ref={dropdownRef}
           onMouseLeave={handleMouseLeave}
           onMouseEnter={handleMouseEnter}
-          className="absolute top-full left-0 mt-2 w-[min(90vw,1200px)] bg-background/95 backdrop-blur-xl border border-border/30 rounded-xl shadow-xl z-50 animate-in slide-in-from-top-2 duration-200"
+          className="dropdown-themed absolute top-full left-0 mt-2 w-[min(90vw,1200px)] z-[9999] animate-in slide-in-from-top-2 duration-200"
         >
           {/* Header with Close Button */}
           <div className="relative p-4 border-b border-border/20 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5">
-            <h3 className="text-lg font-bold text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h3 className="text-lg font-bold text-foreground gradient-text-themed">
               Pick a logo <span className="text-sm text-muted-foreground font-normal ml-2">Customize your Cardshow theme</span>
             </h3>
-            {/* Close Button (X) in upper right */}
             <button
               onClick={handleCloseClick}
               className="absolute top-4 right-4 p-1 rounded-md hover:bg-muted/50 transition-colors duration-200 text-muted-foreground hover:text-foreground"
@@ -207,7 +194,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
             </button>
           </div>
 
-          {/* Logo Grid - No scroll, fit all logos */}
+          {/* Logo Grid */}
           <div className="p-8">
             <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-6">
               {availableLogos.map((logo) => {
@@ -218,7 +205,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                   <button
                     key={logo.dnaCode}
                     onClick={() => handleLogoSelect(logo)}
-                    className={`p-4 rounded-xl border transition-all duration-300 hover:scale-105 ${
+                    className={`p-4 rounded-xl border transition-all duration-300 hover:scale-105 focus-themed ${
                       isSelected
                         ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
                         : 'border-border/20 hover:border-primary/50 bg-card'
@@ -237,7 +224,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                         />
                       </div>
                       
-                      {/* 4 Color Dots - clickable for header customization */}
+                      {/* Color Dots */}
                       <div className="flex justify-center items-center space-x-1">
                         {theme && [
                           { color: theme.colors.primary, size: 'w-3 h-3', type: 'primary' },

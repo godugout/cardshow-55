@@ -9,21 +9,66 @@
 @import './glass-morphism.css';
 @import './mobile-first.css';
 
-/* Ensure button text color utilities take priority */
+/* Critical utilities for proper theming */
 @layer utilities {
+  /* Button text color utilities */
   .btn-text-dark {
-    color: #121212 !important;
+    color: hsl(220 13% 9%) !important;
   }
   
   .btn-text-light {
-    color: #FCFCFD !important;
+    color: hsl(0 0% 99%) !important;
   }
   
   .btn-text-gray {
-    color: #777E90 !important;
+    color: hsl(220 17% 56%) !important;
   }
   
-  /* Logo sparkle color filters to match theme yellow (#FFD700) */
+  /* CRD Color Utilities - All HSL */
+  .bg-crd-darkest { background-color: hsl(var(--crd-darkest)); }
+  .bg-crd-darker { background-color: hsl(var(--crd-darker)); }
+  .bg-crd-dark { background-color: hsl(var(--crd-dark)); }
+  .bg-crd-darkGray { background-color: hsl(var(--crd-darkGray)); }
+  .bg-crd-mediumGray { background-color: hsl(var(--crd-mediumGray)); }
+  .bg-crd-lightGray { background-color: hsl(var(--crd-lightGray)); }
+  .bg-crd-white { background-color: hsl(var(--crd-white)); }
+  .bg-crd-blue { background-color: hsl(var(--crd-blue)); }
+  .bg-crd-purple { background-color: hsl(var(--crd-purple)); }
+  .bg-crd-orange { background-color: hsl(var(--crd-orange)); }
+  .bg-crd-green { background-color: hsl(var(--crd-green)); }
+
+  .text-crd-darkest { color: hsl(var(--crd-darkest)); }
+  .text-crd-darker { color: hsl(var(--crd-darker)); }
+  .text-crd-dark { color: hsl(var(--crd-dark)); }
+  .text-crd-darkGray { color: hsl(var(--crd-darkGray)); }
+  .text-crd-mediumGray { color: hsl(var(--crd-mediumGray)); }
+  .text-crd-lightGray { color: hsl(var(--crd-lightGray)); }
+  .text-crd-white { color: hsl(var(--crd-white)); }
+  .text-crd-blue { color: hsl(var(--crd-blue)); }
+  .text-crd-purple { color: hsl(var(--crd-purple)); }
+  .text-crd-orange { color: hsl(var(--crd-orange)); }
+  .text-crd-green { color: hsl(var(--crd-green)); }
+
+  .border-crd-darkest { border-color: hsl(var(--crd-darkest)); }
+  .border-crd-darker { border-color: hsl(var(--crd-darker)); }
+  .border-crd-dark { border-color: hsl(var(--crd-dark)); }
+  .border-crd-darkGray { border-color: hsl(var(--crd-darkGray)); }
+  .border-crd-mediumGray { border-color: hsl(var(--crd-mediumGray)); }
+  .border-crd-lightGray { border-color: hsl(var(--crd-lightGray)); }
+  .border-crd-white { border-color: hsl(var(--crd-white)); }
+  .border-crd-blue { border-color: hsl(var(--crd-blue)); }
+  .border-crd-purple { border-color: hsl(var(--crd-purple)); }
+  .border-crd-orange { border-color: hsl(var(--crd-orange)); }
+  .border-crd-green { border-color: hsl(var(--crd-green)); }
+
+  /* Editor Color Utilities */
+  .bg-editor-dark { background-color: hsl(var(--editor-dark)); }
+  .bg-editor-darker { background-color: hsl(var(--editor-darker)); }
+  .bg-editor-tool { background-color: hsl(var(--editor-tool)); }
+  .bg-editor-canvas { background-color: hsl(var(--editor-canvas)); }
+  .border-editor-border { border-color: hsl(var(--editor-border)); }
+  
+  /* Logo sparkle filters */
   .sparkles-yellow-filter {
     filter: hue-rotate(45deg) saturate(130%) brightness(120%) contrast(110%);
     transition: filter 0.3s ease;

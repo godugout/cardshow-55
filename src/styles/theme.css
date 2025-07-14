@@ -3,148 +3,75 @@
 @tailwind components;
 @tailwind utilities;
 
-/* CRD Theme Variables */
-:root {
-  /* Brand Colors - Enhanced for vibrancy */
-  --crd-blue: hsl(219, 88%, 62%);
-  --crd-blue-light: hsl(219, 88%, 70%);
-  --crd-blue-dark: hsl(219, 88%, 50%);
-  --crd-blue-rgb: 219, 88%, 62%;
-  --crd-purple: hsl(260, 70%, 65%);
-  --crd-purple-light: hsl(260, 80%, 75%);
-  --crd-purple-dark: hsl(260, 70%, 55%);
-  --crd-purple-rgb: 260, 70%, 65%;
-  --crd-orange: hsl(18, 85%, 60%);
-  --crd-green: hsl(142, 51%, 50%);
-  
-  /* Neutral Colors */
-  --crd-darkest: hsl(220, 13%, 9%);
-  --crd-darker: hsl(220, 13%, 15%);
-  --crd-dark: hsl(220, 13%, 18%);
-  --crd-darkGray: hsl(217, 19%, 16%);
-  --crd-mediumGray: hsl(217, 19%, 27%);
-  --crd-mediumGray-rgb: 217, 19%, 27%;
-  --crd-lightGray: hsl(220, 17%, 56%);
-  --crd-white: hsl(0, 0%, 99%);
-  
-  /* Updated Green-Blue-Purple Gradient Variables */
-  --gradient-green-blue-purple: linear-gradient(135deg, hsl(142, 70%, 45%), hsl(200, 80%, 55%), hsl(219, 70%, 60%), hsl(260, 40%, 65%));
-  --gradient-green-blue-purple-vibrant: linear-gradient(135deg, hsl(142, 75%, 50%), hsl(200, 85%, 60%), hsl(219, 75%, 65%), hsl(260, 45%, 70%));
-  --gradient-hero: linear-gradient(135deg, hsl(142, 80%, 55%), hsl(200, 90%, 65%), hsl(219, 80%, 70%), hsl(260, 50%, 75%));
-}
-
-/* Theme Classes */
+/* CRD Theme System */
 @layer components {
-  /* Themed backgrounds with new gradients */
-  .bg-themed-gradient {
-    background: var(--gradient-green-blue-purple);
+  /* Navigation theming */
+  .navbar-themed {
+    background: hsl(var(--theme-navbar-bg) / 0.85);
+    border-color: hsl(var(--theme-navbar-border) / 0.3);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
   }
   
-  .bg-themed-gradient-vibrant {
-    background: var(--gradient-green-blue-purple-vibrant);
+  /* Text theming */
+  .text-themed-primary {
+    color: hsl(var(--crd-white));
   }
   
-  .bg-themed-hero {
-    background: var(--gradient-hero);
+  .text-themed-secondary {
+    color: hsl(var(--crd-lightGray));
   }
   
-  /* Modern card theming */
-  .card-themed {
-    @apply bg-crd-darkGray border border-crd-mediumGray/30 rounded-lg;
+  .text-themed-active {
+    color: hsl(var(--theme-accent));
   }
   
-  .card-themed-gradient {
-    @apply rounded-lg border border-crd-mediumGray/30;
-    background: linear-gradient(135deg, var(--crd-darkGray), var(--crd-mediumGray));
+  /* Interactive theming */
+  .hover-themed {
+    @apply transition-all duration-200 hover:bg-crd-mediumGray/20 hover:text-white;
   }
   
-  .card-themed-modern {
-    @apply rounded-lg border-0 card-glow-blue-purple;
-    background: linear-gradient(135deg, hsl(217, 19%, 18%), hsl(142, 60%, 45%, 0.1));
-  }
-  
-  /* Button theming with new gradients and enhanced outlines */
+  /* Button theming */
   .btn-themed-primary {
-    @apply liquid-gradient-blue-purple text-white font-bold px-6 py-3 rounded-full;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    box-shadow: 0 0 0 1px rgba(var(--crd-blue-rgb), 0.2);
+    background: linear-gradient(135deg, hsl(var(--crd-blue)), hsl(var(--crd-purple)));
+    @apply text-white font-bold px-6 py-3 rounded-full border-2 border-transparent;
+    box-shadow: 0 0 0 1px hsl(var(--crd-blue) / 0.2);
   }
   
   .btn-themed-primary:hover {
-    box-shadow: 0 0 0 2px rgba(var(--crd-blue-rgb), 0.4), 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  .btn-themed-secondary {
-    @apply gradient-blue-purple-subtle text-white font-semibold px-4 py-2 rounded-lg;
-    border: 2px solid rgba(var(--crd-blue-rgb), 0.3);
-    box-shadow: 0 0 0 1px rgba(var(--crd-purple-rgb), 0.1);
-  }
-  
-  .btn-themed-secondary:hover {
-    border-color: rgba(var(--crd-blue-rgb), 0.5);
-    box-shadow: 0 0 0 2px rgba(var(--crd-purple-rgb), 0.3);
+    box-shadow: 0 0 0 2px hsl(var(--crd-blue) / 0.4), 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   
   .btn-themed-ghost {
     @apply bg-transparent text-crd-lightGray hover:bg-crd-mediumGray/20 hover:text-white border border-crd-mediumGray/30 rounded-lg;
   }
   
-  /* Text theming */
-  .text-themed-primary {
-    @apply text-crd-white;
+  /* Card theming */
+  .card-themed {
+    @apply bg-crd-darkGray border border-crd-mediumGray/30 rounded-lg;
   }
   
-  .text-themed-secondary {
-    @apply text-crd-lightGray;
-  }
-  
-  .accent-themed {
-    background: var(--gradient-green-blue-purple);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  /* Interactive states */
-  .hover-themed {
-    @apply transition-all duration-300 hover:shadow-lg;
-  }
-  
-  .hover-glow {
-    @apply transition-all duration-300 hover:card-glow-blue-purple;
-  }
-  
-  /* Enhanced navigation hover effects */
-  .nav-hover-enhanced {
-    @apply transition-all duration-200;
-  }
-  
-  .nav-hover-enhanced:hover {
-    background: linear-gradient(90deg, transparent, rgba(var(--crd-blue-rgb), 0.1), transparent);
-    color: hsl(var(--crd-blue-light));
-    border-left: 3px solid hsl(var(--crd-blue));
-    padding-left: 0.75rem;
-    transform: translateX(2px);
-  }
-  
+  /* Focus theming */
   .focus-themed {
     @apply focus:outline-none focus:ring-2 focus:ring-crd-blue/50 focus:ring-offset-2 focus:ring-offset-crd-darkest;
   }
 }
 
-/* Utility classes for the new gradient system */
+/* Utility classes */
 @layer utilities {
-  .gradient-text-green-blue-purple {
-    background: linear-gradient(135deg, hsl(142, 70%, 50%), hsl(200, 75%, 60%), hsl(219, 70%, 65%));
+  .gradient-text-themed {
+    background: linear-gradient(135deg, hsl(var(--crd-blue)), hsl(var(--crd-purple)));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
-  .border-gradient-modern {
-    border: 1px solid transparent;
-    background: linear-gradient(var(--crd-darkGray), var(--crd-darkGray)) padding-box,
-                linear-gradient(135deg, hsl(142, 70%, 50%), hsl(200, 75%, 60%), hsl(219, 70%, 65%)) border-box;
+  /* Dropdown specific styles */
+  .dropdown-themed {
+    background: hsl(var(--background) / 0.95);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid hsl(var(--border) / 0.3);
+    @apply shadow-xl rounded-xl;
   }
 }
