@@ -22,7 +22,8 @@ interface StandardHeroProps {
   showDecorations?: boolean;
   className?: string;
   children?: React.ReactNode;
-  heroVariant?: 'hero' | 'display'; // New prop for typography variant
+  heroVariant?: 'hero' | 'display';
+  fullWidth?: boolean;
 }
 
 export const StandardHero: React.FC<StandardHeroProps> = ({
@@ -34,12 +35,13 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
   showDecorations = false,
   className = '',
   children,
-  heroVariant = 'display'
+  heroVariant = 'display',
+  fullWidth = false
 }) => {
   const { isMobile } = useResponsiveLayout();
 
   return (
-    <div className={`relative mb-12 overflow-hidden ${className}`}>
+    <div className={`relative mb-12 overflow-hidden ${fullWidth ? 'w-full' : ''} ${className}`}>
       {/* Background */}
       <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
       
@@ -53,7 +55,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       
       {/* Hero Content */}
       <div className="relative z-10 text-center pt-16 md:pt-20 lg:pt-24 pb-4">
-        <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-6'}`}>
+        <div className={`${fullWidth ? 'w-full px-4 sm:px-6' : `max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-6'}`}`}>
           {/* Label */}
           {label && (
             <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">

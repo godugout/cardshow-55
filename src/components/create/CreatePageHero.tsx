@@ -24,6 +24,8 @@ export const CreatePageHero: React.FC = () => {
         link: "/templates"
       }}
       showDecorations={true}
+      className="w-full"
+      fullWidth={true}
     />
   );
 };
