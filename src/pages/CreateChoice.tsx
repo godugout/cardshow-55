@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
 import { CreatePageHero } from '@/components/create/CreatePageHero';
@@ -8,7 +9,7 @@ const CreateChoice: React.FC = () => {
 
   return (
     <NavbarAwareContainer className="h-screen bg-crd-darkest overflow-hidden">
-      <div className={`h-full max-w-7xl mx-auto ${isMobile ? 'px-5 pb-8' : 'px-12 pb-16'} overflow-y-auto`}>
+      <div className={`h-full max-w-7xl mx-auto ${isMobile ? 'pb-8' : 'pb-16'} overflow-y-auto`}>
         {/* New Hero Section */}
         <CreatePageHero />
         
