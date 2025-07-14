@@ -36,17 +36,7 @@ export const CreatePageHero: React.FC = () => {
           >
             Whether you're crafting timeless collectibles or pioneering interactive art experiences, 
             your creativity deserves tools as limitless as your imagination.
-          </Typography>
-          
-          {/* CTA Button with new gradient */}
-          <Link to="/create/crd">
-            <CRDButton 
-              variant="primary" 
-              className="btn-themed-primary hover:scale-105 transition-transform duration-300 text-lg px-10 py-4 shadow-2xl"
-            >
-              Start Creating
-            </CRDButton>
-          </Link>
+        </Typography>
         </div>
       </div>
       
