@@ -8,7 +8,9 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { useCardConversion } from './Gallery/hooks/useCardConversion';
 import { SubscriptionBanner } from '@/components/monetization/SubscriptionBanner';
 import { CRDButton } from '@/components/ui/design-system/Button';
+import { Button } from '@/components/ui/button';
 import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('featured');
@@ -34,7 +36,6 @@ const Gallery = () => {
       rawFeaturedCount: featuredCards.length
     });
 
-    // Filter out cards with blob URLs or invalid images
     const filterValidCards = (cardList: any[]) => {
       return cardList.filter(card => {
         const hasValidImage = card.image_url && 
@@ -45,20 +46,18 @@ const Gallery = () => {
           console.log('🎨 Filtering out card with invalid image:', card.title, card.image_url);
         }
         
-        return hasValidImage || !card.image_url; // Allow cards without images
+        return hasValidImage || !card.image_url;
       });
     };
     
     switch (activeTab) {
       case 'featured':
-        // Show featured cards first, fallback to first 8 all cards
         const validFeatured = filterValidCards(featuredCardsConverted);
         const result = validFeatured.length > 0 ? validFeatured : filterValidCards(allCardsConverted).slice(0, 8);
         console.log('🎨 Featured cards result:', result.length);
         return result;
         
       case 'trending':
-        // Show cards with any views first, then recent cards if no views found
         const validAll = filterValidCards(allCardsConverted);
         const cardsWithViews = validAll.filter(card => (card.view_count || 0) > 0);
         const trendingResult = cardsWithViews.length > 0 
@@ -72,7 +71,6 @@ const Gallery = () => {
         return trendingResult;
         
       case 'new':
-        // Sort by created_at with fallback for undefined created_at
         const validNew = filterValidCards(allCardsConverted);
         const newResult = validNew.sort((a, b) => {
           const aDate = new Date(a.created_at || 0).getTime();
@@ -92,7 +90,6 @@ const Gallery = () => {
   const displayCards = getDisplayCards();
   console.log('🎨 Gallery: Displaying', displayCards.length, 'cards for tab:', activeTab);
 
-  // Convert CardData to the format expected by CardGrid
   const gridCards = displayCards.map(card => ({
     id: card.id,
     title: card.title,
@@ -104,13 +101,22 @@ const Gallery = () => {
 
   return (
     <div className="fixed inset-0 bg-crd-darkest overflow-hidden">
-      {/* Main Content - Full height with CRD theme */}
       <div className="h-full pt-16">
         <div className="h-full flex flex-col">
-          {/* Header matching CRD style */}
+          {/* Breadcrumb and Header */}
           <div className="flex-shrink-0 h-16 px-6 border-b border-crd-mediumGray/20 bg-crd-darker/50 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="text-2xl font-bold text-crd-white">Gallery</div>
+              {/* Breadcrumb */}
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <Link to="/collections" className="hover:text-white transition-colors">
+                  Collections
+                </Link>
+                <ChevronRight className="w-4 h-4" />
+                <span className="text-white">Gallery</span>
+              </div>
+              
+              <div className="h-6 w-px bg-crd-mediumGray/40"></div>
+              
               <div className="flex items-center gap-2 text-xs text-crd-lightGray">
                 <div className="bg-crd-mediumGray/20 px-2 py-1 rounded">
                   {displayCards.length} Cards
@@ -127,6 +133,12 @@ const Gallery = () => {
             </div>
             
             <div className="flex items-center gap-3">
+              <Link to="/collections">
+                <Button variant="outline" size="sm" className="border-crd-mediumGray text-white hover:bg-crd-mediumGray">
+                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  Back to Collections
+                </Button>
+              </Link>
               <CRDButton asChild variant="primary" size="sm">
                 <Link to="/create/crd">
                   Create CRD
@@ -166,13 +178,20 @@ const Gallery = () => {
                           : "No cards match the current filter. Try switching tabs or check other categories."
                         }
                       </p>
-                      {cards.length === 0 && (
-                        <CRDButton asChild variant="primary">
-                          <Link to="/create/crd">
-                            Create Your First Card
+                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        {cards.length === 0 && (
+                          <CRDButton asChild variant="primary">
+                            <Link to="/create/crd">
+                              Create Your First Card
+                            </Link>
+                          </CRDButton>
+                        )}
+                        <Button asChild variant="outline" className="border-crd-mediumGray text-white hover:bg-crd-mediumGray">
+                          <Link to="/collections">
+                            Browse Collections
                           </Link>
-                        </CRDButton>
-                      )}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 )}

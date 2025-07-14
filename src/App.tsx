@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
@@ -43,11 +44,11 @@ const App = () => {
                   <Route path="/create" element={<CreateChoice />} />
                   <Route path="/create/story" element={<CreateStory />} />
                   <Route path="/create/crd" element={<CreateCRD />} />
-                  <Route path="/gallery" element={<Gallery />} />
+                  <Route path="/collections" element={<Collections />} />
+                  <Route path="/collections/gallery" element={<Gallery />} />
+                  <Route path="/collections/catalog" element={<CollectionsCatalog />} />
                   <Route path="/studio" element={<Studio />} />
                   <Route path="/studio/:cardId" element={<Studio />} />
-                  <Route path="/collections" element={<Collections />} />
-                  <Route path="/collections/catalog" element={<CollectionsCatalog />} />
                   <Route path="/upload-test" element={<UploadTestPage />} />
                   <Route path="/dna-test" element={<DNATestPage />} />
                   <Route path="/design-guide" element={<DesignGuide />} />

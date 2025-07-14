@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Plus, Home, ImageIcon, Palette, Menu } from 'lucide-react';
+import { Plus, Home, Palette, Menu } from 'lucide-react';
 import { LogoSelector } from '@/components/home/navbar/LogoSelector';
 import { useEnhancedNavbar } from '@/hooks/useEnhancedNavbar';
 import { useTeamTheme } from '@/hooks/useTeamTheme';
@@ -75,7 +74,12 @@ export const Navbar = () => {
     hideDelay: prefersReducedMotion ? 0 : 300
   });
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === '/collections') {
+      return location.pathname === path || location.pathname.startsWith('/collections');
+    }
+    return location.pathname === path;
+  };
   
   const getTransitionClass = () => {
     if (prefersReducedMotion) return 'transition-transform duration-200';
@@ -184,12 +188,12 @@ export const Navbar = () => {
               </Link>
 
               <Link
-                to="/gallery"
+                to="/collections"
                 className={`
                   flex items-center space-x-1 lg:space-x-2 px-2 lg:px-3 py-2 rounded-md text-sm font-medium
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
-                  ${isActive('/gallery') 
+                  ${isActive('/collections') 
                     ? (isHomeTeamMode 
                         ? 'text-slate-800 bg-slate-200/60' 
                         : 'text-themed-active bg-themed-active/10'
@@ -202,8 +206,7 @@ export const Navbar = () => {
                   ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
                 `}
               >
-                <ImageIcon className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110' : ''}`} />
-                <span className="hidden lg:inline">Gallery</span>
+                <span className="hidden lg:inline">Collections</span>
               </Link>
 
               <Link
