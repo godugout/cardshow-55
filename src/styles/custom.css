@@ -19,3 +19,30 @@
   background-color: var(--editor-tool);
   border-radius: 4px;
 }
+
+/* Secret menu animations */
+@keyframes flash {
+  0% { background-color: transparent; }
+  50% { background-color: hsl(var(--crd-green) / 0.1); }
+  100% { background-color: transparent; }
+}
+
+/* Custom slider styling for secret menu */
+.slider-thumb::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: hsl(var(--crd-green));
+  cursor: pointer;
+  border: 2px solid hsl(var(--crd-green));
+}
+
+.slider-thumb::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: hsl(var(--crd-green));
+  cursor: pointer;
+  border: 2px solid hsl(var(--crd-green));
+}
