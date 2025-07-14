@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
@@ -13,7 +14,10 @@ const Collections: React.FC = () => {
         label="DISCOVER, COLLECT & CONNECT"
         title={
           <>
-            Your gateway to the world of <span className="gradient-text-green-blue-purple">digital cards</span>
+            Your gateway to the world of<br />
+            <span className="xl:whitespace-nowrap">
+              <span className="gradient-text-green-blue-purple">digital cards</span>
+            </span>
           </>
         }
         description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."
