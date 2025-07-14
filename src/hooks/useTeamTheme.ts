@@ -1,32 +1,10 @@
-
 import { useState, useMemo, useEffect } from 'react';
-import { teamPalettes } from '@/lib/teamPalettes';
+import { teamPalettes, TeamPalette } from '@/lib/teamPalettes';
 
 export type NavbarMode = 'normal' | 'home' | 'away';
 
-export interface ColorPalette {
+export interface ColorPalette extends TeamPalette {
   id: string;
-  name: string;
-  colors: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    text: string;
-    neutral: string;
-  };
-  hsl: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    neutral: string;
-  };
-  description: string;
-  usage: {
-    navbar: string;
-    cards: string;
-    buttons: string;
-    text: string;
-  };
 }
 
 const THEME_STORAGE_KEY = 'crd-current-theme';
@@ -78,20 +56,8 @@ export const useTeamTheme = () => {
     if (!palette) return null;
     
     return {
+      ...palette,
       id: currentTheme,
-      name: palette.name,
-      colors: {
-        ...palette.colors,
-        neutral: palette.colors.neutral || palette.colors.text
-      },
-      hsl: palette.hsl || palette.colors,
-      description: palette.description || '',
-      usage: {
-        navbar: 'Primary branding and navigation',
-        cards: 'Card backgrounds and accents',
-        buttons: 'Interactive elements',
-        text: 'Text and typography'
-      }
     } as ColorPalette;
   }, [currentTheme]);
 

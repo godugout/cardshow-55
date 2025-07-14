@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { ChevronDown, Home, Plane, Shirt } from "lucide-react";
 import { useTeamTheme } from "@/hooks/useTeamTheme";
-import { teamPalettes } from "@/lib/teamPalettes";
+import { teamPalettes, TeamPalette } from "@/lib/teamPalettes";
 import { cn } from "@/lib/utils";
 
 interface LogoSelectorDropdownProps {
@@ -45,8 +44,8 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     setSearchQuery("");
   };
 
-  const filteredPalettes = Object.entries(teamPalettes).filter(([id, palette]) => {
-    return palette?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredPalettes = Object.entries(teamPalettes).filter(([id, palette]: [string, TeamPalette]) => {
+    return palette.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
            id.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -148,7 +147,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
           <div className="max-h-96 overflow-y-auto">
             {filteredPalettes.length > 0 ? (
               <div className="p-2">
-                {filteredPalettes.map(([themeId, palette]) => {
+                {filteredPalettes.map(([themeId, palette]: [string, TeamPalette]) => {
                   return (
                     <button
                       key={themeId}
@@ -163,13 +162,13 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                       <div 
                         className="w-6 h-6 rounded-md flex-shrink-0"
                         style={{ 
-                          background: `linear-gradient(135deg, ${palette?.colors?.primary || '#333'}, ${palette?.colors?.secondary || '#666'})` 
+                          background: `linear-gradient(135deg, ${palette.colors.primary}, ${palette.colors.secondary})` 
                         }}
                       />
                       
                       {/* Team Info */}
                       <div className="flex-1">
-                        <div className="font-medium text-white">{palette?.name || themeId}</div>
+                        <div className="font-medium text-white">{palette.name}</div>
                         <div className="text-xs text-gray-400">{themeId}</div>
                       </div>
 
