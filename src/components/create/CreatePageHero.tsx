@@ -8,7 +8,7 @@ export const CreatePageHero: React.FC = () => {
       label="CUT, CRAFT & CREATE DIGITALLY"
       title={
         <>
-          From paper scraps to digital art<br />
+          <span className="whitespace-nowrap">From paper scraps to digital art</span><br />
           <span className="xl:whitespace-nowrap">
             craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
           </span>
