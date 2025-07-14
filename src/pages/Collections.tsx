@@ -1,48 +1,35 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
 import { Typography, CRDButton } from '@/components/ui/design-system';
 import { ThemedPage } from '@/components/ui/design-system/ThemedLayout';
+import { StandardHero } from '@/components/shared/StandardHero';
 
 const Collections: React.FC = () => {
   return (
-    <ThemedPage className="pt-20 md:pt-24 lg:pt-32 pb-8">
+    <ThemedPage>
       {/* Hero Section */}
-      <div className="text-center mb-16">
-        <Typography 
-          variant="label" 
-          className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider"
-        >
-          DISCOVER, COLLECT & CONNECT
-        </Typography>
-        
-        <Typography 
-          as="h1" 
-          variant="display"
-          className="mb-6 leading-tight drop-shadow-lg"
-        >
-          Your gateway to the world of <span className="gradient-text-green-blue-purple">digital cards</span>
-        </Typography>
-        
-        <Typography 
-          variant="large-body" 
-          className="mb-8 text-crd-lightGray max-w-2xl mx-auto leading-relaxed"
-        >
-          Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide.
-        </Typography>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/collections/gallery">
-            <CRDButton size="lg" className="liquid-gradient-blue-purple min-w-[200px]">
-              Explore Gallery
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </CRDButton>
-          </Link>
-          <CRDButton variant="outline" size="lg" className="min-w-[200px]">
-            Create Collection
-          </CRDButton>
-        </div>
-      </div>
+      <StandardHero
+        label="DISCOVER, COLLECT & CONNECT"
+        title={
+          <>
+            Your gateway to the world of<br />
+            <span className="xl:whitespace-nowrap">
+              <span className="gradient-text-green-blue-purple">digital cards</span>
+            </span>
+          </>
+        }
+        description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."
+        primaryCta={{
+          text: "Explore Gallery",
+          link: "/collections/gallery"
+        }}
+        secondaryCta={{
+          text: "Create Collection",
+          link: "/collections/create"
+        }}
+      />
 
       {/* Gallery Preview Section */}
       <section className="mb-16">

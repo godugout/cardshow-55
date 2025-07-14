@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Hero3 } from "@/components/ui/design-system";
-import { Typography } from "@/components/ui/design-system/Typography";
+import { StandardHero } from "@/components/shared/StandardHero";
 import { useCards } from "@/hooks/useCards";
 import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
+import { Hero3 } from "@/components/ui/design-system";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -109,44 +109,54 @@ export const EnhancedHero: React.FC = () => {
     navigate(`/studio/${card.id}`);
   };
 
-  // Create enhanced heading using Typography component with proper structure
+  // Create enhanced heading with responsive text wrapping control
   const enhancedHeading = (
-    <Typography 
-      as="h1" 
-      variant="display"
-      className="leading-tight drop-shadow-lg"
-    >
-      Create, collect, and trade card art
-      <br />
-      with{' '}
-      <TextEffects3D
-        style={textStyle}
-        animation={animation}
-        intensity={intensity}
-        speed={speed}
-        glowEnabled={glowEnabled}
-      >
-        unlimited potential
-      </TextEffects3D>
-    </Typography>
+    <>
+      Create, collect, and trade<br />
+      <span className="xl:whitespace-nowrap">
+        card art with{' '}
+        <TextEffects3D
+          style={textStyle}
+          animation={animation}
+          intensity={intensity}
+          speed={speed}
+          glowEnabled={glowEnabled}
+        >
+          unlimited potential
+        </TextEffects3D>
+      </span>
+    </>
   );
-
-  const captionText = "CREATE, COLLECT & CONNECT";
-  const bodyText = "Experience the freedom of digital card creation where every design comes to life with immersive 3D viewing, professional lighting, and visual effects that showcase your art like never before.";
 
   return (
     <div className="relative">
       {/* Hero content */}
-      <Hero3
-        caption={captionText}
-        heading={enhancedHeading}
-        bodyText={bodyText}
-        ctaText="Create your first CRD"
-        ctaLink="/create"
-        showFeaturedCards={true}
-        featuredCards={showcaseCards}
-        onCardClick={handleCardStudioOpen}
-      />
+      <StandardHero
+        label="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
+        title={enhancedHeading}
+        description="Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life."
+        primaryCta={{
+          text: "Create your first CRD",
+          link: "/create"
+        }}
+        heroVariant="hero"
+      >
+        {/* Featured Cards Section */}
+        {showcaseCards.length > 0 && (
+          <div className="mt-8">
+            <Hero3
+              caption=""
+              heading=""
+              bodyText=""
+              ctaText=""
+              ctaLink=""
+              showFeaturedCards={true}
+              featuredCards={showcaseCards}
+              onCardClick={handleCardStudioOpen}
+            />
+          </div>
+        )}
+      </StandardHero>
 
       {/* Secret Menu */}
       <SecretMenu3D

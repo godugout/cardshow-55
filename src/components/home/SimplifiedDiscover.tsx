@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -37,7 +36,6 @@ export const SimplifiedDiscover = () => {
         .eq('is_public', true)
         .limit(12);
 
-      // Apply different sorting based on filter
       switch (activeFilter) {
         case 'trending':
           query = query.order('favorite_count', { ascending: false });
@@ -84,9 +82,9 @@ export const SimplifiedDiscover = () => {
 
   if (loading) {
     return (
-      <section className="py-8 px-4 sm:py-12 sm:px-6 lg:py-16">
+      <section className="py-6 px-4 sm:py-8 sm:px-6 lg:py-12">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8 sm:mb-12">
+          <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-themed-primary mb-3 sm:mb-4">
               Discover <span className="highlight-themed">Amazing Cards</span>
             </h2>
@@ -95,9 +93,9 @@ export const SimplifiedDiscover = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="bg-themed-secondary/10 rounded-xl h-64 animate-pulse" />
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4">
+            {Array.from({ length: 14 }).map((_, i) => (
+              <div key={i} className="bg-themed-secondary/10 rounded-lg h-48 animate-pulse" />
             ))}
           </div>
         </div>
@@ -106,10 +104,9 @@ export const SimplifiedDiscover = () => {
   }
 
   return (
-    <section className="py-8 px-4 sm:py-12 sm:px-6 lg:py-16">
+    <section className="py-6 px-4 sm:py-8 sm:px-6 lg:py-12">
       <div className="max-w-7xl mx-auto">
-        {/* Header - Mobile-first typography */}
-        <div className="text-center mb-6 sm:mb-8">
+        <div className="text-center mb-4 sm:mb-6">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-themed-primary mb-3 sm:mb-4">
             Discover <span className="highlight-themed">Amazing Cards</span>
           </h2>
@@ -118,8 +115,7 @@ export const SimplifiedDiscover = () => {
           </p>
         </div>
 
-        {/* Filter Tabs - Mobile-optimized with touch targets */}
-        <div className="flex justify-center mb-6 sm:mb-8">
+        <div className="flex justify-center mb-4 sm:mb-6">
           <div className="tabs-themed inline-flex rounded-lg p-1 w-full max-w-sm sm:max-w-none sm:w-auto">
             {['featured', 'trending', 'new'].map((filter) => (
               <button
@@ -138,11 +134,11 @@ export const SimplifiedDiscover = () => {
           </div>
         </div>
 
-        {/* Cards Grid - Mobile-first responsive grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+        {/* Cards Grid - More columns for smaller cards */}
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {cards.map((card) => (
-            <Card key={card.id} className="card-themed group hover:scale-105 transition-all duration-300">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-t-xl">
+            <Card key={card.id} className="card-themed group hover:scale-105 transition-all duration-300 max-w-[200px] mx-auto">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-t-lg">
                 {card.image_url ? (
                   <img 
                     src={card.image_url} 
@@ -152,78 +148,52 @@ export const SimplifiedDiscover = () => {
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-themed-accent/20 to-themed-accent/5 flex items-center justify-center">
-                    <div className="text-4xl opacity-50">🎨</div>
+                    <div className="text-2xl opacity-50">🎨</div>
                   </div>
                 )}
                 
-                {/* Trending indicator */}
                 {activeFilter === 'trending' && card.rarity === 'legendary' && (
-                  <div className="absolute top-2 right-2 bg-yellow-500/90 text-black text-xs px-2 py-1 rounded-full font-medium">
-                    🔥 Hot
+                  <div className="absolute top-1 right-1 bg-yellow-500/90 text-black text-xs px-1.5 py-0.5 rounded-full font-medium">
+                    🔥
                   </div>
                 )}
               </div>
 
-              <CardContent className="p-3 sm:p-4">
-                <h3 className="font-bold text-themed-primary text-base sm:text-lg mb-2 line-clamp-1">
+              <CardContent className="p-2 sm:p-3">
+                <h3 className="font-bold text-themed-primary text-sm mb-1 line-clamp-1">
                   {card.title}
                 </h3>
                 
-                {card.description && (
-                  <p className="text-themed-secondary text-sm mb-3 line-clamp-2">
-                    {card.description}
-                  </p>
-                )}
-
-                <div className="flex items-center justify-between text-xs text-themed-secondary mb-3">
+                <div className="flex items-center justify-between text-xs text-themed-secondary mb-2">
                   <span className={`capitalize font-medium ${getRarityColor(card.rarity)}`}>
                     {card.rarity || 'Common'}
                   </span>
                   
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1">
-                      <Heart className="w-3 h-3" />
-                      <span>{card.favorite_count || 0}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-1">
-                      <Eye className="w-3 h-3" />
-                      <span>{card.view_count || 0}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3" />
-                      <span>{card.rarity === 'legendary' ? '5.0' : '4.2'}</span>
-                    </div>
+                  <div className="flex items-center gap-1">
+                    <Heart className="w-3 h-3" />
+                    <span>{card.favorite_count || 0}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-themed-secondary">
-                    {new Date(card.created_at).toLocaleDateString()}
-                  </span>
-                  
-                  <Button variant="outline" size="sm" className="text-xs min-h-[36px] px-3">
-                    View Card
-                  </Button>
-                </div>
+                <Button variant="outline" size="sm" className="text-xs w-full h-7">
+                  View
+                </Button>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* CTA Section - Mobile-optimized */}
         <div className="text-center">
-          <div className="bg-themed-secondary/5 rounded-xl sm:rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8">
-            <h3 className="text-xl sm:text-2xl font-bold text-themed-primary mb-3 sm:mb-4">
+          <div className="bg-themed-secondary/5 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+            <h3 className="text-lg sm:text-xl font-bold text-themed-primary mb-2 sm:mb-3">
               Ready to explore more?
             </h3>
-            <p className="text-themed-secondary mb-4 sm:mb-6 max-w-md mx-auto text-sm sm:text-base">
+            <p className="text-themed-secondary mb-3 sm:mb-4 max-w-md mx-auto text-sm">
               Browse our complete catalog of cards and collections from creators worldwide.
             </p>
             <div className="flex justify-center">
               <Link to="/collections/catalog">
-                <Button className="btn-themed-primary px-6 sm:px-8 py-3 text-base sm:text-lg min-h-[48px] w-full sm:w-auto">
+                <Button className="btn-themed-primary px-4 sm:px-6 py-2 text-sm sm:text-base min-h-[40px] w-full sm:w-auto">
                   Browse CRD Catalog
                 </Button>
               </Link>

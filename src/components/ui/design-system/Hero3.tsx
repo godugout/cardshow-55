@@ -1,90 +1,67 @@
 
 import React from 'react';
-import { CRDContainer, CRDSection } from '@/components/layout/CRDContainer';
-import { Typography } from './Typography';
-import { CRDButton } from './Button';
-import { Link } from 'react-router-dom';
-import type { Tables } from '@/integrations/supabase/types';
-
-type DbCard = Tables<'cards'>;
 
 interface Hero3Props {
-  caption: string;
-  heading: string | React.ReactNode;
-  bodyText: string;
-  ctaText: string;
-  ctaLink: string;
+  caption?: string;
+  heading?: string;
+  bodyText?: string;
+  ctaText?: string;
+  ctaLink?: string;
   showFeaturedCards?: boolean;
-  featuredCards?: DbCard[];
-  onCardClick?: (card: DbCard) => void;
+  featuredCards?: any[];
+  onCardClick?: (card: any) => void;
 }
 
-export const Hero3: React.FC<Hero3Props> = ({
-  caption,
-  heading,
-  bodyText,
-  ctaText,
-  ctaLink,
-  showFeaturedCards = false,
-  featuredCards = [],
-  onCardClick
+export const Hero3: React.FC<Hero3Props> = ({ 
+  caption, 
+  heading, 
+  bodyText, 
+  ctaText, 
+  ctaLink, 
+  showFeaturedCards = false, 
+  featuredCards = [], 
+  onCardClick = () => {} 
 }) => {
-  return (
-    <CRDSection spacing="large" className="relative overflow-hidden">
-      <CRDContainer size="narrow" className="text-center">
-        <div className="flex flex-col items-center space-y-6">
-          {/* Caption - small gray uppercase text */}
-          <Typography 
-            variant="label" 
-            className="text-crd-lightGray uppercase tracking-wide font-semibold"
-          >
-            {caption}
-          </Typography>
-          
-          {/* Main Heading - render content directly */}
-          {typeof heading === 'string' ? (
-            <Typography 
-              as="h1" 
-              variant="display"
-              className="leading-tight drop-shadow-lg"
-            >
-              {heading}
-            </Typography>
-          ) : (
-            heading
-          )}
-          
-          {/* Body Text - gray with proper styling */}
-          <Typography 
-            variant="large-body" 
-            className="max-w-2xl mx-auto text-center text-crd-lightGray"
-          >
-            {bodyText}
-          </Typography>
-          
-          {/* CTA Button */}
-          <Link to={ctaLink} className="inline-block">
-            <CRDButton 
-              variant="primary"
-              size="lg"
-              className="gap-3 mt-4"
-            >
-              {ctaText}
-            </CRDButton>
-          </Link>
-        </div>
-      </CRDContainer>
+  if (!showFeaturedCards || featuredCards.length === 0) {
+    return null;
+  }
 
-      {/* Featured Cards Section - temporarily removed until CardCarousel is available */}
-      {showFeaturedCards && featuredCards.length > 0 && (
-        <CRDSection spacing="default" className="mt-16">
-          <CRDContainer size="content">
-            <div className="text-center text-crd-lightGray">
-              Featured cards section - CardCarousel component needed
+  return (
+    <div className="w-full overflow-hidden">
+      {/* Horizontal scrolling carousel with larger cards */}
+      <div className="flex gap-6 animate-scroll-right">
+        {/* Duplicate the cards array to create seamless loop */}
+        {[...featuredCards, ...featuredCards].map((card, index) => (
+          <div 
+            key={`${card.id}-${index}`}
+            className="flex-shrink-0 w-72 cursor-pointer hover:scale-105 transition-transform duration-300"
+            onClick={() => onCardClick(card)}
+          >
+            <div className="bg-crd-dark rounded-xl overflow-hidden shadow-lg border border-crd-mediumGray/20">
+              <div className="aspect-[3/4] relative">
+                {card.image_url || card.thumbnail_url ? (
+                  <img 
+                    src={card.image_url || card.thumbnail_url} 
+                    alt={card.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-crd-mediumGray/20 to-crd-darkGray flex items-center justify-center">
+                    <div className="text-4xl opacity-50">🎨</div>
+                  </div>
+                )}
+              </div>
+              <div className="p-4">
+                <h3 className="text-crd-white font-semibold truncate">{card.title}</h3>
+                <p className="text-crd-lightGray text-sm mt-1">
+                  {card.rarity ? `${card.rarity.charAt(0).toUpperCase() + card.rarity.slice(1)} Card` : 'Digital Card'}
+                </p>
+              </div>
             </div>
-          </CRDContainer>
-        </CRDSection>
-      )}
-    </CRDSection>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
