@@ -7,7 +7,7 @@ import { useGlobalSecretEffects } from '@/contexts/GlobalSecretEffectsContext';
 import { Settings, Sparkles, Palette, Wand2 } from 'lucide-react';
 
 const DesignGuide: React.FC = () => {
-  const { isEnabled, toggleEnabled, openMenu, interactiveMode } = useGlobalSecretEffects();
+  const { isEnabled, toggleEnabled, interactiveMode } = useGlobalSecretEffects();
 
   return (
     <div className="min-h-screen bg-crd-darkest">
@@ -53,14 +53,6 @@ const DesignGuide: React.FC = () => {
                 </div>
               </label>
             </div>
-
-            {/* Open Effects Menu Button */}
-            {isEnabled && (
-              <CRDButton onClick={openMenu} variant="outline" size="sm">
-                <Wand2 className="w-4 h-4 mr-2" />
-                Open Effects Lab
-              </CRDButton>
-            )}
           </div>
         </div>
 
@@ -198,7 +190,7 @@ const DesignGuide: React.FC = () => {
                     Open the Effects Menu
                   </Typography>
                   <Typography variant="caption" className="text-crd-lightGray">
-                    Use Ctrl+Shift+3+D or click "Open Effects Lab" to access customization options
+                    Look for the floating panel on the left side of your screen to access customization options
                   </Typography>
                 </div>
               </div>
