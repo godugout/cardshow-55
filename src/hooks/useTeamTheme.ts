@@ -1,6 +1,6 @@
 
 import { useState, useMemo, useEffect } from 'react';
-import { teamPalettes } from '@/data/teamPalettes';
+import { teamPalettes } from '@/lib/teamPalettes';
 
 export type NavbarMode = 'normal' | 'home' | 'away';
 
@@ -21,7 +21,12 @@ export interface ColorPalette {
     neutral: string;
   };
   description: string;
-  usage: string;
+  usage: {
+    navbar: string;
+    cards: string;
+    buttons: string;
+    text: string;
+  };
 }
 
 const THEME_STORAGE_KEY = 'crd-current-theme';
@@ -75,10 +80,18 @@ export const useTeamTheme = () => {
     return {
       id: currentTheme,
       name: palette.name,
-      colors: palette.colors,
+      colors: {
+        ...palette.colors,
+        neutral: palette.colors.neutral || palette.colors.text
+      },
       hsl: palette.hsl || palette.colors,
       description: palette.description || '',
-      usage: palette.usage || ''
+      usage: {
+        navbar: 'Primary branding and navigation',
+        cards: 'Card backgrounds and accents',
+        buttons: 'Interactive elements',
+        text: 'Text and typography'
+      }
     } as ColorPalette;
   }, [currentTheme]);
 

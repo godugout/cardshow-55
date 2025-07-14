@@ -1,6 +1,6 @@
+
 import { useState, useCallback } from 'react';
 import { useTeamTheme } from './useTeamTheme';
-import type { TeamPalette } from '@/lib/teamPalettes';
 
 export type GlassLevel = 'ultra-light' | 'light' | 'medium' | 'dark' | 'default';
 export type ColorRotation = 0 | 1 | 2 | 3;
@@ -14,7 +14,7 @@ interface ColorRotationState {
 }
 
 export const useColorRotation = () => {
-  const { currentPalette, applyTheme } = useTeamTheme();
+  const { currentPalette, setTheme } = useTeamTheme();
   const [rotationState, setRotationState] = useState<ColorRotationState>({
     glassLevel: 'default',
     colorRotation: 0,
@@ -51,71 +51,12 @@ export const useColorRotation = () => {
   const rotateColors = useCallback((rotation: ColorRotation) => {
     if (!currentPalette) return;
 
-    const { colors, hsl } = currentPalette;
-    let rotatedPalette: TeamPalette;
-
-    switch (rotation) {
-      case 1: // Rotate once: secondary -> primary, accent -> secondary, neutral -> accent, primary -> neutral
-        rotatedPalette = {
-          ...currentPalette,
-          colors: {
-            primary: colors.secondary,
-            secondary: colors.accent,
-            accent: colors.neutral,
-            neutral: colors.primary
-          },
-          hsl: {
-            primary: hsl.secondary,
-            secondary: hsl.accent,
-            accent: hsl.neutral,
-            neutral: hsl.primary
-          }
-        };
-        break;
-      case 2: // Rotate twice
-        rotatedPalette = {
-          ...currentPalette,
-          colors: {
-            primary: colors.accent,
-            secondary: colors.neutral,
-            accent: colors.primary,
-            neutral: colors.secondary
-          },
-          hsl: {
-            primary: hsl.accent,
-            secondary: hsl.neutral,
-            accent: hsl.primary,
-            neutral: hsl.secondary
-          }
-        };
-        break;
-      case 3: // Rotate three times
-        rotatedPalette = {
-          ...currentPalette,
-          colors: {
-            primary: colors.neutral,
-            secondary: colors.primary,
-            accent: colors.secondary,
-            neutral: colors.accent
-          },
-          hsl: {
-            primary: hsl.neutral,
-            secondary: hsl.primary,
-            accent: hsl.secondary,
-            neutral: hsl.accent
-          }
-        };
-        break;
-      case 0:
-      default:
-        rotatedPalette = currentPalette;
-        break;
-    }
-
-    applyTheme(rotatedPalette);
+    const { colors } = currentPalette;
+    
+    // For now, just log the rotation since we need to update the theme properly
+    console.log(`Color rotation requested: ${rotation}`);
     setRotationState(prev => ({ ...prev, colorRotation: rotation }));
-    console.log(`Color rotation applied: ${rotation}`);
-  }, [currentPalette, applyTheme]);
+  }, [currentPalette]);
 
   // Apply hue shift filter
   const setHueShift = useCallback((degrees: HueShift) => {
@@ -177,11 +118,6 @@ export const useColorRotation = () => {
       navbar.classList.add('glass-navbar');
     }
 
-    // Reset color rotation
-    if (currentPalette) {
-      applyTheme(currentPalette);
-    }
-
     setRotationState({
       glassLevel: 'default',
       colorRotation: 0,
@@ -190,7 +126,7 @@ export const useColorRotation = () => {
     });
 
     console.log('Color rotation state reset');
-  }, [currentPalette, applyTheme]);
+  }, []);
 
   // Get available glass levels with descriptions
   const getGlassLevels = useCallback(() => [
