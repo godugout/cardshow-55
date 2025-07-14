@@ -27,8 +27,9 @@ const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string 
   // Use custom header color if set, otherwise use theme colors
   if (customHeaderColor) {
     return {
-      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.12)} 0%, ${hexToRgba(customHeaderColor, 0.06)} 100%)`,
-      borderColor: hexToRgba(customHeaderColor, 0.18)
+      background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.25)} 0%, ${hexToRgba(customHeaderColor, 0.15)} 50%, ${hexToRgba(customHeaderColor, 0.08)} 100%)`,
+      borderColor: hexToRgba(customHeaderColor, 0.35),
+      backdropFilter: 'blur(12px) saturate(180%)'
     };
   }
   

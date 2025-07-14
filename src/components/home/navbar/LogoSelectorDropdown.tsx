@@ -160,9 +160,12 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     setIsOpen(false);
   };
 
-  const handleColorDotClick = (event: React.MouseEvent, color: string, colorType: string) => {
+  const handleColorDotClick = (event: React.MouseEvent, color: string, colorType: string, logo: any) => {
     event.stopPropagation();
+    
+    // Set both the header background color AND change the logo
     setCustomHeaderBgColor(color, colorType);
+    handleLogoSelect(logo);
   };
 
   return (
@@ -246,14 +249,14 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
                           return (
                             <div
                               key={index}
-                              onClick={(e) => handleColorDotClick(e, dot.color, dot.type)}
+                              onClick={(e) => handleColorDotClick(e, dot.color, dot.type, logo)}
                               className={`${dot.size} rounded-full border shadow-sm transition-all duration-200 cursor-pointer hover:scale-105 hover:opacity-80 ${
                                 isActiveHeaderColor 
                                   ? 'border-white border-2 ring-2 ring-white/50' 
                                   : 'border-white/20 hover:border-white/40'
                               }`}
                               style={{ backgroundColor: dot.color }}
-                              title={`Click to use ${['Primary', 'Secondary', 'Accent', 'Neutral'][index]} (${dot.color}) for header background`}
+                              title={`Click to apply ${logoNames[logo.dnaCode] || 'Elite Squad'} theme with ${['Primary', 'Secondary', 'Accent', 'Neutral'][index]} color`}
                             />
                           );
                         })}
