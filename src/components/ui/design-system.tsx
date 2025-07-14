@@ -141,7 +141,7 @@ export const Hero3: React.FC<Hero3Props> = ({
 
       {/* Featured Cards Carousel */}
       {showFeaturedCards && featuredCards && featuredCards.length > 0 && (
-        <div className="w-screen mb-12 overflow-hidden">
+        <div className="w-screen mb-12 mt-12 overflow-hidden">
           <div className="relative">
             {/* Gradient Overlays */}
             <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-crd-darkest to-transparent z-10 pointer-events-none" />
