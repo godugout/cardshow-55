@@ -109,20 +109,22 @@ export const EnhancedHero: React.FC = () => {
     navigate(`/studio/${card.id}`);
   };
 
-  // Create enhanced heading with proper two-line structure - line 1: "Create, collect, and trade", line 2: "card art with unlimited potential"
+  // Create enhanced heading with responsive text wrapping control
   const enhancedHeading = (
     <>
       Create, collect, and trade<br />
-      card art with{' '}
-      <TextEffects3D
-        style={textStyle}
-        animation={animation}
-        intensity={intensity}
-        speed={speed}
-        glowEnabled={glowEnabled}
-      >
-        unlimited potential
-      </TextEffects3D>
+      <span className="xl:whitespace-nowrap">
+        card art with{' '}
+        <TextEffects3D
+          style={textStyle}
+          animation={animation}
+          intensity={intensity}
+          speed={speed}
+          glowEnabled={glowEnabled}
+        >
+          unlimited potential
+        </TextEffects3D>
+      </span>
     </>
   );
 

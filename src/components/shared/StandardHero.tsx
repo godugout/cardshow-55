@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -51,8 +52,8 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       )}
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center pt-20 md:pt-24 lg:pt-32 pb-4">
-        <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-8'}`}>
+      <div className="relative z-10 text-center pt-16 md:pt-20 lg:pt-24 pb-4">
+        <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-6'}`}>
           {/* Label */}
           {label && (
             <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
@@ -64,7 +65,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
           <Typography 
             as="h1" 
             variant={heroVariant}
-            className="mb-6 leading-tight text-crd-white drop-shadow-lg"
+            className="mb-4 leading-tight text-crd-white drop-shadow-lg"
           >
             {title}
           </Typography>
