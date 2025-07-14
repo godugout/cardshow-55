@@ -1,13 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CRDButton, Typography, CRDBadge } from '@/components/ui/design-system';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
-import { Sparkles, Layers, ArrowRight } from 'lucide-react';
+import { Sparkles, Layers, ArrowRight, MessageCircle } from 'lucide-react';
 import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
 import { CRDEditorProvider, useCRDEditor } from '@/contexts/CRDEditorContext';
 import { PreloadedCRDEditor } from '@/components/editor/crd/PreloadedCRDEditor';
 import { CreatePageHero } from '@/components/create/CreatePageHero';
+import { STRYFeedbackSurvey } from '@/components/create/STRYFeedbackSurvey';
 import type { CardData } from '@/hooks/useCardEditor';
 
 const CreateChoiceContent: React.FC = () => {
@@ -15,6 +16,10 @@ const CreateChoiceContent: React.FC = () => {
   const navigate = useNavigate();
   const { state } = useCRDEditor();
   const [showPreloadedEditor, setShowPreloadedEditor] = useState(false);
+  const [showSurvey, setShowSurvey] = useState(false);
+  const [showCTA, setShowCTA] = useState(false);
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const ctaTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleCRDComplete = (cardData: CardData) => {
     console.log('CRD Collectible created successfully:', cardData);
@@ -36,6 +41,52 @@ const CreateChoiceContent: React.FC = () => {
       navigate('/create/crd');
     }
   };
+
+  const handleSTRYHover = () => {
+    // Clear any existing timer
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+    }
+    
+    // Start countdown to show CTA
+    hoverTimerRef.current = setTimeout(() => {
+      setShowCTA(true);
+      
+      // Auto-hide CTA after 5 seconds
+      ctaTimerRef.current = setTimeout(() => {
+        setShowCTA(false);
+      }, 5000);
+    }, 2000); // Show after 2 seconds of hover
+  };
+
+  const handleSTRYLeave = () => {
+    // Clear hover timer if user stops hovering before CTA appears
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+  };
+
+  const handleCTAClick = () => {
+    setShowCTA(false);
+    setShowSurvey(true);
+  };
+
+  const handleCloseSurvey = () => {
+    setShowSurvey(false);
+  };
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+      if (ctaTimerRef.current) {
+        clearTimeout(ctaTimerRef.current);
+      }
+    };
+  }, []);
   
   return (
     <NavbarAwareContainer className="h-screen bg-crd-darkest overflow-hidden">
@@ -103,8 +154,12 @@ const CreateChoiceContent: React.FC = () => {
             </div>
           </div>
 
-          {/* STRY Capsules - Enhanced hover effects */}
-          <div className="relative bg-gradient-to-br from-crd-mediumGray/10 to-crd-mediumGray/5 border border-crd-mediumGray/20 rounded-2xl p-8 cursor-not-allowed transition-all duration-300 hover:from-crd-mediumGray/25 hover:to-crd-mediumGray/15 hover:border-crd-mediumGray/50 hover:brightness-125 group">
+          {/* STRY Capsules - Enhanced hover effects with feedback CTA */}
+          <div 
+            className="relative bg-gradient-to-br from-crd-mediumGray/10 to-crd-mediumGray/5 border border-crd-mediumGray/20 rounded-2xl p-8 cursor-not-allowed transition-all duration-300 hover:from-crd-mediumGray/25 hover:to-crd-mediumGray/15 hover:border-crd-mediumGray/50 hover:brightness-125 group"
+            onMouseEnter={handleSTRYHover}
+            onMouseLeave={handleSTRYLeave}
+          >
             {/* Coming Soon Badge with Enhanced Glow Effect */}
             <div className="absolute -top-2 -right-2 z-10">
               <CRDBadge 
@@ -172,6 +227,20 @@ const CreateChoiceContent: React.FC = () => {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </CRDButton>
             </div>
+
+            {/* Feedback CTA that appears on hover */}
+            <div className={`absolute bottom-4 left-4 right-4 transition-all duration-300 ${
+              showCTA ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
+            }`}>
+              <CRDButton
+                variant="primary"
+                onClick={handleCTAClick}
+                className="w-full bg-crd-orange hover:bg-crd-orange/80 text-white font-semibold shadow-lg"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                What's your story?
+              </CRDButton>
+            </div>
           </div>
         </div>
 
@@ -187,6 +256,12 @@ const CreateChoiceContent: React.FC = () => {
           onComplete={handleCRDComplete}
           onCancel={handleCRDCancel}
           isVisible={showPreloadedEditor}
+        />
+
+        {/* STRY Feedback Survey */}
+        <STRYFeedbackSurvey
+          isOpen={showSurvey}
+          onClose={handleCloseSurvey}
         />
       </div>
     </NavbarAwareContainer>
