@@ -139,9 +139,9 @@ export const EnhancedHero: React.FC = () => {
           link: "/create"
         }}
       >
-        {/* Featured Cards Section - moved outside hero but inside children */}
+        {/* Featured Cards Section - reduced margin from mt-16 to mt-8 */}
         {showcaseCards.length > 0 && (
-          <div className="mt-16">
+          <div className="mt-8">
             <Hero3
               caption=""
               heading=""

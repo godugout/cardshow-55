@@ -37,7 +37,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
   const { isMobile } = useResponsiveLayout();
 
   return (
-    <div className={`relative mb-16 overflow-hidden ${className}`}>
+    <div className={`relative mb-12 overflow-hidden ${className}`}>
       {/* Background */}
       <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
       
@@ -49,8 +49,8 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
         </>
       )}
       
-      {/* Hero Content */}
-      <div className="relative z-10 text-center pt-20 md:pt-24 lg:pt-32 pb-8">
+      {/* Hero Content - reduced padding from pb-8 to pb-4 */}
+      <div className="relative z-10 text-center pt-20 md:pt-24 lg:pt-32 pb-4">
         <div className={`max-w-7xl mx-auto ${isMobile ? 'px-4' : 'px-8'}`}>
           {/* Label */}
           {label && (
