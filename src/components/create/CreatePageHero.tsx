@@ -13,11 +13,11 @@ export const CreatePageHero: React.FC = () => {
       <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center py-20">
+      <div className="relative z-10 text-center pt-20 md:pt-24 lg:pt-32">
         <div className={`max-w-6xl mx-auto ${isMobile ? 'px-4' : 'px-8'}`}>
           {/* Caption with gradient text */}
           <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
-            UNLEASH YOUR CREATIVITY
+            CUT, CRAFT & CREATE DIGITALLY
           </Typography>
           
           {/* Main Heading with enhanced styling */}
@@ -26,7 +26,7 @@ export const CreatePageHero: React.FC = () => {
             variant="display"
             className="mb-6 leading-tight text-crd-white drop-shadow-lg text-4xl lg:text-6xl xl:text-7xl"
           >
-            Craft cards that captivate<br />with <span className="gradient-text-green-blue-purple">unlimited potential</span>
+            From paper scraps to digital art<br />craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
           </Typography>
           
           {/* Body Text */}
@@ -34,8 +34,8 @@ export const CreatePageHero: React.FC = () => {
             variant="large-body" 
             className="mb-8 text-crd-lightGray max-w-2xl mx-auto leading-relaxed"
           >
-            Whether you're crafting timeless collectibles or pioneering interactive art experiences, 
-            your creativity deserves tools as limitless as your imagination.
+            Experience the freedom of digital crafting where every cut, layer, and blend creates 
+            immersive cards that viewers can explore from every angle. No glue required.
         </Typography>
         </div>
       </div>
