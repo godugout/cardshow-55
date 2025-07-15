@@ -239,117 +239,84 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return backgrounds[Math.floor(Math.random() * backgrounds.length)];
   };
 
-  // Generate clip-path based on letter index for complete letter visibility
-  const generateClipPath = (letterIndex: number, char: string): string => {
-    // Distribution: 6 four-sided (75%), 1 five-sided (12.5%), 1 six-sided (12.5%)
-    // CARDSHOW: C,A,R,D,S,H = 4-sided, O = 5-sided, W = 6-sided
-    const letterMap: { [key: string]: number } = {
-      'C': 4, 'A': 4, 'R': 4, 'D': 4, 'S': 4, 'H': 4, 'O': 5, 'W': 6
-    };
+  // Generate clip-path with word-based analysis for round/oval distribution
+  const generateClipPath = (letterIndex: number, char: string, wordIndex: number, hasRoundInWord: boolean): string => {
+    // Check if this should be round/oval (max 1 per word, very rare)
+    const shouldBeRound = !hasRoundInWord && Math.random() < 0.08; // 8% chance
     
-    const sides = letterMap[char.toUpperCase()] || 4;
+    if (shouldBeRound) {
+      return generateRoundOval();
+    }
     
-    const generateFourSided = () => {
-      // Create varied shapes: squares, rectangles, diamonds, parallelograms
-      const shapeTypes = ['square', 'tall-rect', 'wide-rect', 'diamond', 'parallelogram'];
-      const shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-      
-      const centerX = 50;
-      const centerY = 50;
-      
-      switch (shapeType) {
-        case 'square':
-          const size = 80 + Math.random() * 10; // Increased to 80-90% for full letter visibility
-          const rotation = [-10, -5, 0, 5, 10][Math.floor(Math.random() * 5)]; // Reduced rotation for better fit
-          const rad = (rotation * Math.PI) / 180;
-          const cos = Math.cos(rad);
-          const sin = Math.sin(rad);
-          
-          // Rotate square corners around center
-          const corners = [
-            [-size/2, -size/2], [size/2, -size/2], [size/2, size/2], [-size/2, size/2]
-          ].map(([x, y]) => [
-            centerX + (x * cos - y * sin),
-            centerY + (x * sin + y * cos)
-          ]);
-          
-          return `polygon(${corners.map(([x, y]) => `${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`).join(', ')})`;
-          
-        case 'tall-rect':
-          const tallWidth = 70 + Math.random() * 15; // Increased to 70-85% width
-          const tallHeight = 85 + Math.random() * 10; // Increased to 85-95% height
-          return `polygon(${centerX - tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY + tallHeight/2}%, ${centerX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
-          
-        case 'wide-rect':
-          const wideWidth = 85 + Math.random() * 10; // Increased to 85-95% width
-          const wideHeight = 70 + Math.random() * 15; // Increased to 70-85% height
-          return `polygon(${centerX - wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY + wideHeight/2}%, ${centerX - wideWidth/2}% ${centerY + wideHeight/2}%)`;
-          
-        case 'diamond':
-          const diamondSize = 80 + Math.random() * 10; // Increased to 80-90%
-          return `polygon(${centerX}% ${centerY - diamondSize/2}%, ${centerX + diamondSize/2}% ${centerY}%, ${centerX}% ${centerY + diamondSize/2}%, ${centerX - diamondSize/2}% ${centerY}%)`;
-          
-        case 'parallelogram':
-          const paraWidth = 80 + Math.random() * 10; // Increased to 80-90%
-          const paraHeight = 75 + Math.random() * 15; // Increased to 75-90%
-          const skew = 3 + Math.random() * 5; // Reduced skew for better letter fit
-          return `polygon(${centerX - paraWidth/2 + skew}% ${centerY - paraHeight/2}%, ${centerX + paraWidth/2 + skew}% ${centerY - paraHeight/2}%, ${centerX + paraWidth/2 - skew}% ${centerY + paraHeight/2}%, ${centerX - paraWidth/2 - skew}% ${centerY + paraHeight/2}%)`;
-          
-        default:
-          return `polygon(${centerX - 45}% ${centerY - 45}%, ${centerX + 45}% ${centerY - 45}%, ${centerX + 45}% ${centerY + 45}%, ${centerX - 45}% ${centerY + 45}%)`;
-      }
-    };
+    return generateFourSided();
+  };
 
-    const generateFiveSided = () => {
-      // Pentagon shape with larger area for letter visibility
-      const centerX = 50;
-      const centerY = 50;
-      const radiusX = 70; // Increased to 70 for full letter visibility
-      const radiusY = 75; // Increased to 75 for full letter visibility
-      
-      const points = [];
-      for (let i = 0; i < 5; i++) {
-        const angle = (i / 5) * 2 * Math.PI - Math.PI / 2; // Start from top
-        const x = centerX + radiusX * Math.cos(angle);
-        const y = centerY + radiusY * Math.sin(angle);
-        points.push(`${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`);
-      }
-      
-      return `polygon(${points.join(', ')})`;
-    };
+  const generateRoundOval = (): string => {
+    const isCircle = Math.random() < 0.6; // 60% circles, 40% ovals
+    const centerX = 50;
+    const centerY = 50;
+    
+    if (isCircle) {
+      const radius = 40 + Math.random() * 5; // 40-45% radius for full letter visibility
+      return `circle(${radius}% at ${centerX}% ${centerY}%)`;
+    } else {
+      // Oval
+      const radiusX = 40 + Math.random() * 8; // 40-48%
+      const radiusY = 35 + Math.random() * 10; // 35-45%
+      return `ellipse(${radiusX}% ${radiusY} at ${centerX}% ${centerY}%)`;
+    }
+  };
 
-    const generateSixSided = () => {
-      // Hexagon shape with larger area for letter visibility  
-      const centerX = 50;
-      const centerY = 50;
-      const radiusX = 72; // Increased to 72 for full letter visibility
-      const radiusY = 75; // Increased to 75 for full letter visibility
-      
-      const points = [];
-      for (let i = 0; i < 6; i++) {
-        const angle = (i / 6) * 2 * Math.PI;
-        const x = centerX + radiusX * Math.cos(angle);
-        const y = centerY + radiusY * Math.sin(angle);
-        points.push(`${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`);
-      }
-      
-      return `polygon(${points.join(', ')})`;
-    };
-
-    switch (sides) {
-      case 4:
-        return generateFourSided();
-      case 5:
-        return generateFiveSided();
-      case 6:
-        return generateSixSided();
+  const generateFourSided = (): string => {
+    // Create varied shapes: squares, rectangles, balanced diamonds (no narrow verticals)
+    const shapeTypes = ['square', 'tall-rect', 'wide-rect', 'diamond'];
+    const shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+    
+    const centerX = 50;
+    const centerY = 50;
+    
+    switch (shapeType) {
+      case 'square':
+        const size = 80 + Math.random() * 10; // 80-90% for full letter visibility
+        const rotation = [-5, -3, 0, 3, 5][Math.floor(Math.random() * 5)]; // Reduced tilt degrees
+        const rad = (rotation * Math.PI) / 180;
+        const cos = Math.cos(rad);
+        const sin = Math.sin(rad);
+        
+        // Rotate square corners around center
+        const corners = [
+          [-size/2, -size/2], [size/2, -size/2], [size/2, size/2], [-size/2, size/2]
+        ].map(([x, y]) => [
+          centerX + (x * cos - y * sin),
+          centerY + (x * sin + y * cos)
+        ]);
+        
+        return `polygon(${corners.map(([x, y]) => `${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`).join(', ')})`;
+        
+      case 'tall-rect':
+        const tallWidth = 70 + Math.random() * 15; // 70-85% width
+        const tallHeight = 85 + Math.random() * 10; // 85-95% height
+        return `polygon(${centerX - tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY + tallHeight/2}%, ${centerX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
+        
+      case 'wide-rect':
+        const wideWidth = 85 + Math.random() * 10; // 85-95% width
+        const wideHeight = 70 + Math.random() * 15; // 70-85% height
+        return `polygon(${centerX - wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY + wideHeight/2}%, ${centerX - wideWidth/2}% ${centerY + wideHeight/2}%)`;
+        
+      case 'diamond':
+        // Balanced diamond (no narrow vertical diamonds)
+        const diamondWidth = 75 + Math.random() * 15; // 75-90% width
+        const diamondHeight = 75 + Math.random() * 15; // 75-90% height (balanced proportions)
+        return `polygon(${centerX}% ${centerY - diamondHeight/2}%, ${centerX + diamondWidth/2}% ${centerY}%, ${centerX}% ${centerY + diamondHeight/2}%, ${centerX - diamondWidth/2}% ${centerY}%)`;
+        
       default:
-        return generateFourSided();
+        return `polygon(${centerX - 40}% ${centerY - 40}%, ${centerX + 40}% ${centerY - 40}%, ${centerX + 40}% ${centerY + 40}%, ${centerX - 40}% ${centerY + 40}%)`;
     }
   };
 
   // Generate overlay texture based on material source
-  const generateOverlayTexture = (materialSource: string): string => {
+  const generateOverlayTexture = (materialSource?: string): string => {
+    if (!materialSource) return 'none';
     switch (materialSource) {
       case 'magazine-headline':
         return 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.05) 100%)'; // Glossy finish
@@ -607,8 +574,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         const materialSource = generateMaterialSource();
         const { style, materialType } = generateLetterStyle(letterType, materialSource);
         
-        // Generate authentic cutout properties
-        const clipPath = generateClipPath(index, char);
+        // Generate authentic cutout properties  
+        const clipPath = generateClipPath(index, char, 0, false); // Simplified for initial generation
         const overlayTexture = generateOverlayTexture(materialSource);
         
         // Enhanced overlapping logic
@@ -700,7 +667,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             style,
             materialType,
             borderRadius: generateMaterialBorderRadius(materialType),
-            clipPath: generateClipPath(index, letter.char),
+            clipPath: generateClipPath(index, letter.char, 0, false),
             // Regenerate cut-out properties for variety with less aggressive positioning
             padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
             margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
@@ -708,7 +675,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             leftOffset: (Math.random() - 0.5) * 2, // Reduced from 4 to 2
             zIndex: Math.floor(Math.random() * 3) + 1, // Limited to 3 levels
             scale: 0.9 + Math.random() * 0.4,
-            perspective: Math.random() * 20 - 10
+            perspective: Math.random() * 12 - 6 // Reduced perspective rotation for more upright letters
           };
         }));
       } else {
@@ -749,7 +716,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
               style,
               materialType,
               borderRadius: generateMaterialBorderRadius(materialType),
-              clipPath: generateClipPath(index, letter.char),
+              clipPath: generateClipPath(index, letter.char, 0, false),
               // Less aggressive positioning for better visibility
               padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
               margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
