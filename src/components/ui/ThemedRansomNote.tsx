@@ -543,13 +543,13 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     
     const isVisible = !isSpellingOut || index < spellIndex;
     
-    // Get size-based scaling
+    // Get size-based scaling - constrained to prevent overgrowth
     const getSizeScale = (size: string): number => {
       switch (size) {
         case 'small': return 0.8;
         case 'medium': return 1.0;
-        case 'large': return 1.3;
-        case 'extra-large': return 1.6;
+        case 'large': return 1.2; // Reduced from 1.3
+        case 'extra-large': return 1.3; // Reduced from 1.6
         default: return 1.0;
       }
     };
@@ -676,14 +676,15 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   };
 
   return (
-    <div className={`inline-block mt-4 ${className}`} style={{ 
+    <div className={`inline-block mt-4 mb-8 ${className}`} style={{ 
       letterSpacing: '-0.05em', 
       transform: 'scale(0.95)',
       lineHeight: '1.4',
       contain: 'layout',
       height: '2.5em', // Fixed height container
       overflow: 'visible',
-      position: 'relative'
+      position: 'relative',
+      paddingBottom: '1.5em' // Extra padding below animation
     }}>
       {letters.map((letter, index) => (
         <span
