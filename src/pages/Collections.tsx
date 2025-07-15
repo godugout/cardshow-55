@@ -14,7 +14,7 @@ const Collections: React.FC = () => {
         label="DISCOVER, COLLECT & CONNECT"
         title={
           <>
-            Your gateway to the world of<br />
+            <span className="text-4xl md:text-5xl lg:text-6xl">Your gateway to the world of</span><br />
             <span className="gradient-text-green-blue-purple whitespace-nowrap">
               digital cards
             </span>
