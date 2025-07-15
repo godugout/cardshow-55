@@ -369,70 +369,37 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     };
   };
 
-  // Generate transition overlay effects
-  const getTransitionOverlay = () => {
-    if (!isTransitioning) return null;
+  // Generate transition effects as background (masked to text)
+  const getTransitionBackground = () => {
+    if (!isTransitioning) return '';
     
     switch (transitionType) {
       case 'plasma':
-        return (
-          <div 
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: `radial-gradient(circle at ${50 + Math.sin(animPhase * 0.1) * 30}% ${50 + Math.cos(animPhase * 0.1) * 30}%, 
-                rgba(255, 0, 255, 0.6) 0%, 
-                rgba(0, 255, 255, 0.4) 50%, 
-                transparent 100%)`,
-              filter: 'blur(2px)',
-              opacity: Math.sin(animPhase * 0.2) * 0.5 + 0.5,
-              mixBlendMode: 'screen',
-            }}
-          />
-        );
+        return `radial-gradient(circle at ${50 + Math.sin(animPhase * 0.1) * 30}% ${50 + Math.cos(animPhase * 0.1) * 30}%, 
+          rgba(255, 0, 255, 1) 0%, 
+          rgba(0, 255, 255, 1) 50%, 
+          rgba(255, 255, 0, 1) 100%)`;
       case 'pixel':
-        return (
-          <div 
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: `repeating-conic-gradient(from 0deg at 50% 50%, 
-                #ff00ff 0deg, 
-                #00ffff 90deg, 
-                #ffff00 180deg, 
-                #ff00ff 270deg)`,
-              backgroundSize: '8px 8px',
-              opacity: Math.sin(animPhase * 0.3) * 0.7 + 0.3,
-              filter: 'pixelate(4px)',
-              mixBlendMode: 'difference',
-            }}
-          />
-        );
+        return `repeating-conic-gradient(from ${animPhase * 3}deg at 50% 50%, 
+          #ff00ff 0deg, 
+          #00ffff 30deg,
+          #ffff00 60deg, 
+          #ff0000 90deg,
+          #00ff00 120deg,
+          #0000ff 150deg,
+          #ffffff 180deg)`;
       case 'crt':
-        return (
-          <div 
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: `repeating-linear-gradient(0deg, 
-                transparent 0px, 
-                rgba(0, 255, 0, 0.3) 1px, 
-                transparent 2px, 
-                rgba(0, 255, 0, 0.1) 3px)`,
-              filter: `brightness(${1.5 + Math.sin(animPhase * 0.4) * 0.5})`,
-              opacity: 0.8,
-              mixBlendMode: 'overlay',
-            }}
-          >
-            <div 
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: `radial-gradient(ellipse at center, transparent 30%, rgba(0, 255, 0, 0.1) 100%)`,
-                filter: 'blur(1px)',
-              }}
-            />
-          </div>
-        );
+        return `repeating-linear-gradient(0deg, 
+          #ff00ff 0px, 
+          #00ff00 3px, 
+          #00ffff 6px,
+          #ffffff 9px),
+          linear-gradient(90deg, 
+            #00ff00 0%, 
+            #ff00ff 50%, 
+            #00ffff 100%)`;
       default:
-        return null;
+        return '';
     }
   };
 
@@ -448,14 +415,27 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
         verticalAlign: 'middle',
+        // Apply transition background to entire container when transitioning
+        ...(isTransitioning && {
+          background: getTransitionBackground(),
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          backgroundSize: transitionType === 'pixel' ? '10px 10px' : '100% 100%',
+        })
       }}
     >
-      {getTransitionOverlay()}
       {letters.map((letter, index) => (
         <span
           key={`${index}-${animationKey}`}
           className="inline-block transition-all duration-1000 ease-in-out"
-          style={getLetterStyle(letter, index)}
+          style={{
+            ...getLetterStyle(letter, index),
+            // During transition, make individual letters transparent so container background shows through
+            ...(isTransitioning && {
+              color: 'transparent',
+              background: 'transparent',
+            })
+          }}
         >
           {letter.char}
         </span>

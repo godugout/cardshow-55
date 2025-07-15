@@ -128,81 +128,66 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
   const variations = [matrixStyle, cyberpunkStyle, holographicStyle, vhsStyle];
   const currentStyle = variations[currentVariation]();
 
-  // Generate transition overlay effects
-  const getTransitionOverlay = () => {
-    if (!isTransitioning) return null;
+  // Generate transition effects as background (masked to text)
+  const getTransitionStyle = () => {
+    if (!isTransitioning) return {};
+    
+    let transitionBackground = '';
     
     switch (transitionType) {
       case 'plasma':
-        return (
-          <div 
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: `radial-gradient(circle at ${50 + Math.sin(animPhase * 0.08) * 40}% ${50 + Math.cos(animPhase * 0.08) * 40}%, 
-                rgba(0, 255, 0, 0.8) 0%, 
-                rgba(255, 255, 255, 0.6) 50%, 
-                transparent 100%)`,
-              filter: 'blur(1px)',
-              opacity: Math.sin(animPhase * 0.15) * 0.6 + 0.4,
-              mixBlendMode: 'screen',
-            }}
-          />
-        );
+        transitionBackground = `radial-gradient(circle at ${50 + Math.sin(animPhase * 0.08) * 40}% ${50 + Math.cos(animPhase * 0.08) * 40}%, 
+          rgba(0, 255, 0, 1) 0%, 
+          rgba(255, 255, 255, 1) 50%, 
+          rgba(0, 255, 255, 1) 100%)`;
+        break;
       case 'pixel':
-        return (
-          <div 
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: `repeating-conic-gradient(from ${animPhase * 2}deg at 50% 50%, 
-                #00ff00 0deg, 
-                #ffffff 45deg, 
-                #00ff00 90deg, 
-                #ffffff 135deg)`,
-              backgroundSize: '6px 6px',
-              opacity: Math.sin(animPhase * 0.2) * 0.8 + 0.2,
-              filter: 'contrast(2)',
-              mixBlendMode: 'difference',
-            }}
-          />
-        );
+        transitionBackground = `repeating-conic-gradient(from ${animPhase * 2}deg at 50% 50%, 
+          #00ff00 0deg, 
+          #ffffff 22.5deg,
+          #ff00ff 45deg, 
+          #00ffff 67.5deg,
+          #ffff00 90deg,
+          #ff0000 112.5deg,
+          #0000ff 135deg,
+          #ffffff 157.5deg)`;
+        break;
       case 'crt':
-        return (
-          <div 
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: `repeating-linear-gradient(0deg, 
-                transparent 0px, 
-                rgba(0, 255, 255, 0.4) 1px, 
-                transparent 2px)`,
-              filter: `brightness(${2 + Math.sin(animPhase * 0.3) * 0.8})`,
-              opacity: 0.6,
-              mixBlendMode: 'overlay',
-            }}
-          >
-            <div 
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: `linear-gradient(90deg, 
-                  transparent 0%, 
-                  rgba(0, 255, 255, 0.2) 50%, 
-                  transparent 100%)`,
-                transform: `translateX(${Math.sin(animPhase * 0.1) * 20}px)`,
-              }}
-            />
-          </div>
-        );
+        transitionBackground = `repeating-linear-gradient(0deg, 
+          #00ff00 0px, 
+          #00ffff 2px, 
+          #ffffff 4px,
+          #00ff00 6px),
+          linear-gradient(90deg, 
+            #00ff00 0%, 
+            #ffffff 50%, 
+            #00ffff 100%)`;
+        break;
       default:
-        return null;
+        return {};
     }
+    
+    return {
+      background: transitionBackground,
+      backgroundClip: 'text',
+      WebkitBackgroundClip: 'text',
+      color: 'transparent',
+      filter: `brightness(${1.5 + Math.sin(animPhase * 0.2) * 0.5}) contrast(1.2)`,
+      backgroundSize: transitionType === 'pixel' ? '8px 8px' : '100% 100%',
+      animation: transitionType === 'pixel' ? 'none' : undefined,
+    };
   };
+
+  const finalStyle = isTransitioning 
+    ? { ...currentStyle, ...getTransitionStyle() }
+    : currentStyle;
 
   return (
     <span 
       className={`relative inline-block tracking-wider font-bold transition-all duration-300 ${className}`}
       style={{
-        ...currentStyle,
-        transitionProperty: 'color, text-shadow, filter, transform',
+        ...finalStyle,
+        transitionProperty: 'color, text-shadow, filter, transform, background',
         transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
         minWidth: '140px', // Prevent layout shift
         minHeight: '1.5em', // Stable height
@@ -213,7 +198,6 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
         verticalAlign: 'middle',
       }}
     >
-      {getTransitionOverlay()}
       {children}
     </span>
   );
