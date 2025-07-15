@@ -21,6 +21,7 @@ interface LetterState {
   isThemeWord: boolean;
   isTransparent: boolean;
   letterType: 'card' | 'transparent' | 'jersey';
+  verticalAlign: 'top' | 'middle' | 'bottom' | 'baseline';
 }
 
 interface LetterStyle {
@@ -199,6 +200,16 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return 'card';
   };
 
+  // Generate vertical alignment with weighted distribution
+  const generateVerticalAlignment = (): 'top' | 'middle' | 'bottom' | 'baseline' => {
+    const random = Math.random();
+    // Distribution: 30% baseline, 25% middle, 25% top, 20% bottom
+    if (random < 0.3) return 'baseline';
+    if (random < 0.55) return 'middle';
+    if (random < 0.8) return 'top';
+    return 'bottom';
+  };
+
   // Generate letter size with mixed distribution
   const generateLetterSize = (index: number, totalLetters: number): 'small' | 'medium' | 'large' | 'extra-large' => {
     // Limit extra-large letters to 1-2 per word
@@ -371,7 +382,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           size: generateLetterSize(index, totalLetters),
           isThemeWord,
           isTransparent,
-          letterType
+          letterType,
+          verticalAlign: char === ' ' ? 'baseline' : generateVerticalAlignment()
         };
       });
       setLetters(newLetters);
@@ -389,7 +401,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         
         setLetters(prev => prev.map(letter => ({
           ...letter,
-          style: generateLetterStyle(letter.letterType)
+          style: generateLetterStyle(letter.letterType),
+          verticalAlign: letter.char === ' ' ? 'baseline' : (Math.random() < 0.3 ? generateVerticalAlignment() : letter.verticalAlign)
         })));
       } else {
         setAnimationKey(prev => prev + 1);
@@ -398,7 +411,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         
         setLetters(prev => prev.map(letter => ({
           ...letter,
-          style: generateLetterStyle(letter.letterType)
+          style: generateLetterStyle(letter.letterType),
+          verticalAlign: letter.char === ' ' ? 'baseline' : (Math.random() < 0.3 ? generateVerticalAlignment() : letter.verticalAlign)
         })));
       }
     }, 8000);
@@ -462,7 +476,11 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           setTimeout(() => {
             setLetters(prev => prev.map((letter, index) => 
               newFlipping.includes(index) 
-                ? { ...letter, style: generateLetterStyle(letter.letterType) }
+                ? { 
+                    ...letter, 
+                    style: generateLetterStyle(letter.letterType),
+                    verticalAlign: letter.char === ' ' ? 'baseline' : (Math.random() < 0.4 ? generateVerticalAlignment() : letter.verticalAlign)
+                  }
                 : letter
             ));
           }, 800);
@@ -571,10 +589,21 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         : letter.style.textShadow
     } : {};
     
+    // Get vertical alignment offset
+    const getVerticalOffset = (alignment: string): number => {
+      switch (alignment) {
+        case 'top': return -0.3;
+        case 'middle': return -0.15;
+        case 'bottom': return 0.3;
+        case 'baseline':
+        default: return 0;
+      }
+    };
+
     // Pre-calculated stable values to prevent layout shifts
     const stableOffsets = {
       rotation: letter.rotation,
-      float: -letter.float,
+      float: -letter.float + getVerticalOffset(letter.verticalAlign),
       lean: letter.lean,
       padding: letter.char === ' ' ? '0' : '5px 6px',
       margin: letter.char === ' ' ? '0 0.3em' : '0 2px'
@@ -638,7 +667,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             position: 'relative',
             minWidth: letter.char === ' ' ? '0.4em' : '1.2em',
             minHeight: '1.4em',
-            verticalAlign: 'baseline',
+            verticalAlign: letter.verticalAlign,
             contain: 'layout style',
             ...getLetterStyle(letter, index)
           }}
