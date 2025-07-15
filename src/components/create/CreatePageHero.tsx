@@ -14,7 +14,14 @@ export const CreatePageHero: React.FC = () => {
           </span>
         </div>
       }
-      description="Experience the freedom of digital crafting where every cut, layer, and blend creates immersive cards that viewers can explore from every angle. No glue required."
+      children={
+        <div className="mt-6 mb-8">
+          <p className="text-lg md:text-xl italic text-center font-medium gradient-text-green-blue-purple animate-fade-in">
+            "No glue required."
+          </p>
+        </div>
+      }
+      description="Experience the freedom of digital crafting where every cut, layer, and blend creates immersive cards that viewers can explore from every angle."
       primaryCta={{
         text: "Start Creating",
         link: "/create/new"
