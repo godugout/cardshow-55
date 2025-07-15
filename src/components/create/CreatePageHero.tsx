@@ -12,9 +12,8 @@ export const CreatePageHero: React.FC = () => {
       title={
         <>
           <span className="font-light">From paper scraps to <GlitchyArt>digital art</GlitchyArt></span><br />
-          <span className="xl:whitespace-nowrap">
-            <RansomNote>craft</RansomNote> <span className="static-text">cards</span> <span className="static-text gradient-text-green-blue-purple xl:whitespace-nowrap">that come alive</span>
-          </span>
+          <span><RansomNote>craft</RansomNote> <span className="static-text">cards</span></span><br />
+          <span className="static-text gradient-text-green-blue-purple">that come alive</span>
         </>
       }
       tagline="No glue required."
