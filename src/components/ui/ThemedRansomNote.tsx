@@ -642,29 +642,70 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     };
   };
 
+  // Calculate letter positioning
+  const calculateLetterPositions = () => {
+    let cumulativeWidth = 0;
+    return letters.map((letter, index) => {
+      const currentPos = cumulativeWidth;
+      const baseWidth = letter.char === ' ' ? 0.4 : 1.2;
+      const sizeMultiplier = letter.size === 'extra-large' ? 1.6 : 
+                            letter.size === 'large' ? 1.3 : 
+                            letter.size === 'medium' ? 1.0 : 0.8;
+      const letterWidth = baseWidth * sizeMultiplier + 0.1;
+      cumulativeWidth += letterWidth;
+      return { left: currentPos, width: letterWidth };
+    });
+  };
+
+  const letterPositions = calculateLetterPositions();
+
   return (
-    <div className={`inline-block mt-4 ${className}`} style={{ 
-      letterSpacing: '0.05em', 
-      transform: 'scale(0.95)',
-      lineHeight: '1.5',
-      contain: 'layout'
-    }}>
-      {letters.map((letter, index) => (
-        <span
-          key={`${index}-${animationKey}-${theme}`}
-          className="inline-block"
-          style={{
-            position: 'relative',
-            minWidth: letter.char === ' ' ? '0.4em' : '1.2em',
-            minHeight: '1.4em',
-            verticalAlign: 'middle',
-            contain: 'layout style',
-            ...getLetterStyle(letter, index)
-          }}
-        >
-          {letter.char}
-        </span>
-      ))}
+    <div 
+      className={`relative mt-4 ${className}`} 
+      style={{ 
+        height: '4em', // Fixed height container
+        width: '100%',
+        contain: 'layout size',
+        overflow: 'visible',
+        transform: 'scale(0.95)',
+        transformOrigin: 'center top'
+      }}
+    >
+      <div
+        className="absolute"
+        style={{
+          top: '50%',
+          left: '0',
+          transform: 'translateY(-50%)',
+          whiteSpace: 'nowrap',
+          height: '100%',
+          width: '100%'
+        }}
+      >
+        {letters.map((letter, index) => {
+          const position = letterPositions[index];
+          
+          return (
+            <span
+              key={`${index}-${animationKey}-${theme}`}
+              className="absolute"
+              style={{
+                left: `${position.left}em`,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                minWidth: letter.char === ' ' ? '0.4em' : '1.2em',
+                minHeight: '1.4em',
+                verticalAlign: 'middle',
+                contain: 'layout style',
+                willChange: 'transform',
+                ...getLetterStyle(letter, index)
+              }}
+            >
+              {letter.char}
+            </span>
+          );
+        })}
+      </div>
     </div>
   );
 };
