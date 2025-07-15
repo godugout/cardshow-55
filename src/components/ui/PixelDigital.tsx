@@ -39,23 +39,26 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
     const animate = () => {
       ctx.clearRect(0, 0, rect.width, rect.height);
       
-      // Create animated pixel patterns
+      // Create animated pixel patterns with Casio Indiglo style
       for (let x = 0; x < cols; x++) {
         for (let y = 0; y < rows; y++) {
-          const wave1 = Math.sin((x * 0.1) + (time * 0.02)) * 0.5 + 0.5;
-          const wave2 = Math.cos((y * 0.1) + (time * 0.015)) * 0.5 + 0.5;
-          const wave3 = Math.sin(((x + y) * 0.05) + (time * 0.01)) * 0.5 + 0.5;
+          const wave1 = Math.sin((x * 0.08) + (time * 0.01)) * 0.5 + 0.5;
+          const wave2 = Math.cos((y * 0.12) + (time * 0.012)) * 0.5 + 0.5;
+          const wave3 = Math.sin(((x + y) * 0.06) + (time * 0.008)) * 0.5 + 0.5;
           
-          // Combine waves for interesting patterns
-          const intensity = (wave1 * wave2 * wave3) * 0.8;
+          // Combine waves for pixel artifacts
+          const intensity = (wave1 * wave2 * wave3) * 0.6;
           
-          // Color variations (blue to green digital palette)
-          const hue = 180 + (wave3 * 60); // Blue to cyan range
-          const saturation = 70 + (intensity * 30);
-          const lightness = 20 + (intensity * 60);
+          // Casio Indiglo color palette (distinctive blue-green)
+          const hue = 185 + (wave3 * 25); // Blue-green range like Indiglo
+          const saturation = 85 + (intensity * 15);
+          const lightness = 15 + (intensity * 45); // Less bright for visible pixels
           
-          ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-          ctx.fillRect(x * gridSize, y * gridSize, gridSize - 0.5, gridSize - 0.5);
+          // Make individual pixels more visible
+          if (intensity > 0.3) {
+            ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+            ctx.fillRect(x * gridSize, y * gridSize, gridSize - 1, gridSize - 1);
+          }
         }
       }
       
@@ -96,56 +99,36 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
         }}
       />
       
-      {/* Text with digital effect */}
+      {/* Text with Casio Indiglo effect */}
       <span 
         className="relative z-10 font-mono tracking-wider"
         style={{
           textShadow: `
-            0 0 10px #00ffff,
-            0 0 20px #00ffff,
-            0 0 30px #00ffff,
-            2px 2px 0px #004444,
-            -2px -2px 0px #004444
+            0 0 8px #00e6ff,
+            0 0 16px #00b8e6,
+            0 0 24px #00a3d9,
+            1px 1px 0px #003d4d,
+            -1px -1px 0px #003d4d
           `,
-          background: 'linear-gradient(45deg, #00ffff, #0088ff, #00ffaa)',
+          background: 'linear-gradient(45deg, #00e6ff, #00b8e6, #00a3d9, #008fb3)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
-          filter: 'contrast(1.2) brightness(1.1)',
+          filter: 'contrast(1.1) brightness(0.85)', // Less bright
         }}
       >
         {children}
       </span>
       
-      {/* Glitch lines overlay */}
-      <div 
-        className="absolute inset-0 opacity-20 pointer-events-none"
-        style={{
-          background: `
-            repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 2px,
-              #00ffff 2px,
-              #00ffff 3px
-            )
-          `,
-          animation: 'pixelGlitch 2s infinite ease-in-out',
-        }}
-      />
+      {/* Removed glitch lines overlay as requested */}
       
       <style>{`
         @keyframes pixelGlitch {
-          0%, 100% { transform: translateY(0px); opacity: 0.1; }
-          10% { transform: translateY(-1px); opacity: 0.3; }
-          20% { transform: translateY(1px); opacity: 0.2; }
-          30% { transform: translateY(-0.5px); opacity: 0.4; }
-          40% { transform: translateY(0.5px); opacity: 0.1; }
-          50% { transform: translateY(-1px); opacity: 0.3; }
-          60% { transform: translateY(1px); opacity: 0.2; }
-          70% { transform: translateY(-0.5px); opacity: 0.1; }
-          80% { transform: translateY(0.5px); opacity: 0.4; }
-          90% { transform: translateY(-1px); opacity: 0.2; }
+          0%, 100% { transform: translateY(0px); opacity: 0.05; }
+          20% { transform: translateY(-0.5px); opacity: 0.15; }
+          40% { transform: translateY(0.5px); opacity: 0.08; }
+          60% { transform: translateY(-0.3px); opacity: 0.12; }
+          80% { transform: translateY(0.3px); opacity: 0.06; }
         }
       `}</style>
     </span>
