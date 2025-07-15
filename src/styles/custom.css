@@ -43,6 +43,37 @@
   to { width: 100%; }
 }
 
+@keyframes gradient-flow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes sparkle-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-10px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
 .animate-shimmer {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
   background-size: 200% 100%;
@@ -58,6 +89,46 @@
   white-space: nowrap;
   animation: typing 3s steps(20, end) infinite;
 }
+
+.animate-gradient-flow {
+  background: linear-gradient(45deg, hsl(var(--crd-green)), hsl(var(--crd-blue)), hsl(var(--crd-purple)), hsl(var(--crd-orange)));
+  background-size: 300% 300%;
+  animation: gradient-flow 4s ease infinite;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.sparkle-container {
+  position: relative;
+  display: inline-block;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, hsl(var(--crd-green)), hsl(var(--crd-blue)));
+  border-radius: 50%;
+  animation: sparkle-float 3s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.sparkle-large {
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, hsl(var(--crd-purple)), hsl(var(--crd-orange)));
+  animation: twinkle 2s infinite ease-in-out;
+}
+
+.sparkle:nth-child(1) { top: 10%; left: 15%; animation-delay: 0s; }
+.sparkle:nth-child(2) { top: 25%; left: 85%; animation-delay: 0.5s; }
+.sparkle:nth-child(3) { top: 60%; left: 10%; animation-delay: 1s; }
+.sparkle:nth-child(4) { top: 80%; left: 90%; animation-delay: 1.5s; }
+.sparkle:nth-child(5) { top: 40%; left: 95%; animation-delay: 2s; }
+.sparkle:nth-child(6) { top: 15%; left: 75%; animation-delay: 2.5s; }
+.sparkle:nth-child(7) { top: 70%; left: 25%; animation-delay: 3s; }
+.sparkle:nth-child(8) { top: 90%; left: 60%; animation-delay: 0.3s; }
 
 /* Custom slider styling for secret menu */
 .slider-thumb::-webkit-slider-thumb {

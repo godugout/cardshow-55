@@ -4,6 +4,7 @@ import { StandardHero } from "@/components/shared/StandardHero";
 import { useCards } from "@/hooks/useCards";
 import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
+import { SparkleText } from "@/components/hero/SparkleText";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { Hero3 } from "@/components/ui/design-system";
 import type { Tables } from '@/integrations/supabase/types';
@@ -115,15 +116,9 @@ export const EnhancedHero: React.FC = () => {
       Craft cards that come alive<br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         with{' '}
-        <TextEffects3D
-          style={textStyle}
-          animation={animation}
-          intensity={intensity}
-          speed={speed}
-          glowEnabled={glowEnabled}
-        >
+        <SparkleText>
           unlimited potential
-        </TextEffects3D>
+        </SparkleText>
       </span>
     </div>
   );
