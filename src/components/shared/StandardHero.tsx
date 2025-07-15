@@ -58,7 +58,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       )}
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center pb-4">
+      <div className="relative z-10 text-center pb-4 pt-12 sm:pt-16">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           {/* Label */}
           {label && (
