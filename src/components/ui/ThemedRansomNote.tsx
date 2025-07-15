@@ -177,7 +177,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return {
       color: textColor,
       fontFamily: themeConfig.fonts[Math.floor(Math.random() * themeConfig.fonts.length)],
-      fontSize: `${0.9 + Math.random() * 0.4}em`, // Reduced from 1.2-2.2em to 0.9-1.3em
+      fontSize: `${1.0 + Math.random() * 0.5}em`, // Increased from 0.9-1.3em to 1.0-1.5em
       backgroundColor: bgStyle.background,
       textShadow: decorations[Math.floor(Math.random() * decorations.length)]
     };
@@ -400,7 +400,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   };
 
   return (
-    <span className={`inline-block mt-4 ${className}`} style={{ letterSpacing: '0.1em', transform: 'scale(0.9)' }}>
+    <span className={`inline-block mt-4 ${className}`} style={{ letterSpacing: '0.1em', transform: 'scale(1.05)' }}>
       {letters.map((letter, index) => (
         <span
           key={`${index}-${animationKey}-${theme}`}
