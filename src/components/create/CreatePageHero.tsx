@@ -7,12 +7,12 @@ export const CreatePageHero: React.FC = () => {
     <StandardHero
       label="CUT, CRAFT & CREATE DIGITALLY"
       title={
-        <>
+        <div className="text-5xl md:text-6xl lg:text-7xl">
           <span className="whitespace-nowrap">From paper scraps to digital art</span><br />
           <span className="xl:whitespace-nowrap">
             craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
           </span>
-        </>
+        </div>
       }
       description="Experience the freedom of digital crafting where every cut, layer, and blend creates immersive cards that viewers can explore from every angle. No glue required."
       primaryCta={{
