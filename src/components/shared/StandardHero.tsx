@@ -83,7 +83,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
           {/* Tagline - styled consistently */}
           {tagline && (
             <div className="mt-6 mb-8">
-              <p className="text-lg md:text-xl italic text-center font-medium gradient-text-green-blue-purple animate-fade-in">
+              <p className="text-lg md:text-xl italic text-center font-fredoka text-crd-orange animate-fade-in">
                 "{tagline}"
               </p>
             </div>

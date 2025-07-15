@@ -286,6 +286,7 @@ export default {
         'orbitron': ['Orbitron', 'sans-serif'],
         'poppins': ['Poppins', 'sans-serif'],
         'raleway': ['Raleway', 'sans-serif'],
+        'fredoka': ['Fredoka One', 'cursive'], // Fun craft font
       },
       fontSize: {
         'display': ['3rem', { lineHeight: '1.1', fontWeight: '800' }], // 48px
