@@ -37,16 +37,20 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
 
-  // Text colors with good contrast
+  // Enhanced text colors with vibrant and grayscale options
   const textColors = [
-    '#ffffff', '#000000', '#1a1a1a', '#f5f5f5', '#2d2d2d', '#e8e8e8'
+    '#ffffff', '#000000', '#1a1a1a', '#f5f5f5', '#2d2d2d', '#e8e8e8',
+    '#ff1744', '#00e676', '#2196f3', '#ffeb3b', '#e91e63', '#9c27b0',
+    '#ff5722', '#00bcd4', '#ffd700', '#c0392b', '#34495e', '#8e44ad',
+    '#666666', '#999999', '#cccccc', '#333333'
   ];
 
-  // Diverse font families for variety
+  // Enhanced font families prioritizing square/blocky typography
   const fontFamilies = [
-    'Arial Black', 'Impact', 'Georgia', 'Times New Roman', 'Courier New',
-    'Helvetica Neue', 'Verdana', 'Trebuchet MS', 'Comic Sans MS', 'Palatino',
-    'Futura', 'Monaco', 'Garamond', 'Rockwell', 'Franklin Gothic Medium'
+    'Arial Black', 'Impact', 'Helvetica Bold', 'Futura Bold', 'Franklin Gothic Heavy',
+    'Trebuchet MS', 'Verdana Bold', 'Century Gothic', 'Bebas Neue', 'Roboto Condensed',
+    'Oswald', 'Anton', 'Squada One', 'Orbitron', 'Exo 2',
+    'Rajdhani', 'Russo One', 'Play', 'Quantico', 'Michroma'
   ];
 
   // Enhanced background patterns and textures inspired by classic ransom notes
@@ -56,14 +60,33 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     { background: 'hsl(var(--crd-blue))', pattern: 'solid' },
     { background: 'hsl(var(--crd-purple))', pattern: 'solid' },
     { background: 'hsl(var(--crd-orange))', pattern: 'solid' },
-    { background: '#ff1744', pattern: 'solid' }, // Bright red
-    { background: '#00e676', pattern: 'solid' }, // Electric green
-    { background: '#2196f3', pattern: 'solid' }, // Bright blue
-    { background: '#ffeb3b', pattern: 'solid' }, // Electric yellow
+    
+    // Ultra-vibrant electric colors
+    { background: '#ff1744', pattern: 'solid' }, // Electric red
+    { background: '#00e676', pattern: 'solid' }, // Neon green
+    { background: '#2196f3', pattern: 'solid' }, // Electric blue
+    { background: '#ffeb3b', pattern: 'solid' }, // Neon yellow
     { background: '#e91e63', pattern: 'solid' }, // Hot pink
     { background: '#9c27b0', pattern: 'solid' }, // Vivid purple
-    { background: '#ff5722', pattern: 'solid' }, // Deep orange
+    { background: '#ff5722', pattern: 'solid' }, // Electric orange
     { background: '#00bcd4', pattern: 'solid' }, // Cyan
+    { background: '#ff0080', pattern: 'solid' }, // Fluorescent pink
+    { background: '#00ff80', pattern: 'solid' }, // Fluorescent green
+    { background: '#8000ff', pattern: 'solid' }, // Electric violet
+    { background: '#ff4000', pattern: 'solid' }, // Atomic red
+    { background: '#0080ff', pattern: 'solid' }, // Electric sky blue
+    { background: '#ffff00', pattern: 'solid' }, // Pure yellow
+    
+    // Grayscale newspaper style
+    { background: '#000000', pattern: 'black' },
+    { background: '#1a1a1a', pattern: 'dark-gray' },
+    { background: '#333333', pattern: 'gray' },
+    { background: '#666666', pattern: 'medium-gray' },
+    { background: '#999999', pattern: 'light-gray' },
+    { background: '#cccccc', pattern: 'very-light-gray' },
+    { background: '#e8e8e8', pattern: 'newspaper-gray' },
+    { background: '#f5f5f5', pattern: 'off-white' },
+    { background: '#ffffff', pattern: 'white' },
     
     // Metallic and glossy effects
     { background: 'linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%)', pattern: 'metallic-gold' },
@@ -136,7 +159,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     return {
       color: textColor,
       fontFamily: fontFamilies[Math.floor(Math.random() * fontFamilies.length)],
-      fontSize: `${0.7 + Math.random() * 0.6}em`, // 0.7em to 1.3em for more height variation
+      fontSize: `${1.2 + Math.random() * 1.0}em`, // 1.2em to 2.2em for dramatic size variation
       backgroundColor: bgStyle.background,
       textShadow: decorations[Math.floor(Math.random() * decorations.length)]
     };
@@ -150,9 +173,9 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
         isAnimating: false,
         animationType: 'float' as const,
         animationProgress: 0,
-        rotation: Math.random() * 10 - 5,
-        float: Math.random() * 2,
-        lean: Math.random() * 5 - 2.5,
+        rotation: Math.random() * 40 - 20, // Increased from ±5 to ±20 degrees
+        float: Math.random() * 4,
+        lean: Math.random() * 20 - 10, // Increased lean for more dramatic angles
         glowIntensity: 0.5 + Math.random() * 0.5,
         style: generateLetterStyle()
       }));
@@ -225,14 +248,14 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     const letterInterval = setInterval(() => {
       setLetters(prev => prev.map((letter, index) => ({
         ...letter,
-        rotation: letter.rotation + (Math.sin(animPhase * 0.01 + index) * 0.15), // Slower, smaller rotation
-        float: 1 + Math.sin(animPhase * 0.015 + index * 0.5) * 2, // More pronounced floating
-        lean: Math.sin(animPhase * 0.012 + index * 0.3) * 2, // Smaller lean movement
-        glowIntensity: 0.5 + Math.sin(animPhase * 0.02 + index * 0.7) * 0.3
+        rotation: letter.rotation + (Math.sin(animPhase * 0.02 + index) * 0.5), // More dramatic rotation changes
+        float: 2 + Math.sin(animPhase * 0.025 + index * 0.5) * 4, // Much more pronounced floating
+        lean: Math.sin(animPhase * 0.018 + index * 0.3) * 8, // Dramatically increased lean movement
+        glowIntensity: 0.5 + Math.sin(animPhase * 0.03 + index * 0.7) * 0.5
       })));
 
-      // Card flip animations - 1-3 letters flip and change style every loop
-      if (Math.random() < 0.2) {
+      // Card flip animations - More frequent with 1-3 letters flip and change style every loop
+      if (Math.random() < 0.4) { // Increased from 0.2 to 0.4 for more frequent changes
         const availableLetters = letters.map((_, i) => i).filter(i => 
           !activeAnimations.includes(i) && 
           !flippingLetters.includes(i) && 
@@ -355,7 +378,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   };
 
   return (
-    <span className={`inline-block mt-8 ${className}`} style={{ letterSpacing: '0.1em' }}>
+    <span className={`inline-block mt-8 scale-125 ${className}`} style={{ letterSpacing: '0.15em', transform: 'scale(1.3)' }}>
       {letters.map((letter, index) => (
         <span
           key={`${index}-${animationKey}`}
