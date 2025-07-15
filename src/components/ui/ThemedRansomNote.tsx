@@ -603,7 +603,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           materialType,
           // Enhanced paper cut-out styling with material-specific shapes
           borderRadius: generateMaterialBorderRadius(materialType),
-          padding: `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`, // Bigger padding range
+          padding: index % 3 === 0 ? `${Math.random() * 20 + 8}px ${Math.random() * 25 + 10}px` : `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`, // Every 3rd letter gets extra padding
           margin: `${Math.random() * 6 + 1}px ${Math.random() * 8 + 1}px`, // Enhanced margin for overlapping
           topOffset: Math.random() * 16 - 8, // Increased from ±2px to ±8px
           leftOffset: Math.random() * 10 - 5, // Increased from ±1px to ±5px
@@ -668,7 +668,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             materialType,
             borderRadius: generateMaterialBorderRadius(materialType),
             // Regenerate cut-out properties for variety
-            padding: `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`,
+            padding: index % 3 === 0 ? `${Math.random() * 20 + 8}px ${Math.random() * 25 + 10}px` : `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`,
             margin: `${Math.random() * 6 + 1}px ${Math.random() * 8 + 1}px`,
             topOffset: Math.random() * 16 - 8,
             leftOffset: Math.random() * 10 - 5,
@@ -681,7 +681,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         setActiveAnimations([]);
         setIsSpellingOut(false);
         
-        setLetters(prev => prev.map(letter => {
+        setLetters(prev => prev.map((letter, index) => {
           const { style, materialType } = generateLetterStyle(letter.letterType, letter.materialSource);
           return {
             ...letter,
@@ -689,7 +689,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             materialType,
             borderRadius: generateMaterialBorderRadius(materialType),
             // Regenerate cut-out properties for variety
-            padding: `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`,
+            padding: index % 3 === 0 ? `${Math.random() * 20 + 8}px ${Math.random() * 25 + 10}px` : `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`,
             margin: `${Math.random() * 6 + 1}px ${Math.random() * 8 + 1}px`,
             topOffset: Math.random() * 16 - 8,
             leftOffset: Math.random() * 10 - 5,
