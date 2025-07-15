@@ -35,6 +35,7 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
     const glow = Math.sin(animPhase * 0.03) * 2 + 6; // Gentle glow
     return {
       color: '#00ff00',
+      fontFamily: "'Share Tech Mono', monospace",
       textShadow: `
         0 0 ${glow}px #00ff00,
         0 0 ${glow * 1.5}px #00dd00,
@@ -52,6 +53,7 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
     const saturation = 85 + Math.sin(animPhase * 0.06) * 8; // Gentle saturation
     return {
       color: `hsl(${hue}, ${saturation}%, 70%)`,
+      fontFamily: "'Exo 2', sans-serif",
       textShadow: `
         0 0 ${4 + breathe * 3}px hsl(${hue}, 100%, 50%),
         0 0 ${8 + breathe * 4}px hsl(${(hue + 30) % 360}, 80%, 60%),
@@ -68,6 +70,7 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
     const shift = Math.sin(animPhase * 0.02) * 0.5; // Subtle shift
     return {
       color: '#ffffff',
+      fontFamily: "'Audiowide', cursive",
       textShadow: `
         ${shift}px 0 0 rgba(255, 0, 0, ${0.6 + shimmer * 0.2}),
         ${shift * 1.2}px 0 0 rgba(255, 119, 0, ${0.5 + shimmer * 0.15}),
@@ -89,6 +92,7 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
     const chromatic = Math.sin(animPhase * 0.07) * 0.5; // Subtle chromatic aberration
     return {
       color: '#ffffff',
+      fontFamily: "'VT323', monospace",
       textShadow: `
         ${chromatic}px 0 0 rgba(255, 0, 64, ${0.5 + glitch * 0.15}),
         ${-chromatic * 0.5}px 0 0 rgba(0, 255, 255, ${0.4 + glitch * 0.15}),
@@ -111,7 +115,7 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
 
   return (
     <span 
-      className={`relative inline-block font-mono tracking-wider font-bold transition-all duration-300 ${className}`}
+      className={`relative inline-block tracking-wider font-bold transition-all duration-300 ${className}`}
       style={{
         ...currentStyle,
         transitionProperty: 'color, text-shadow, filter, transform',

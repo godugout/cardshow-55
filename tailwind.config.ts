@@ -287,6 +287,11 @@ export default {
         'poppins': ['Poppins', 'sans-serif'],
         'raleway': ['Raleway', 'sans-serif'],
         'fredoka': ['Fredoka One', 'cursive'], // Fun craft font
+        // Digital art themed fonts
+        'share-tech': ['Share Tech Mono', 'monospace'], // Matrix/terminal
+        'exo': ['Exo 2', 'sans-serif'], // Cyberpunk/futuristic
+        'audiowide': ['Audiowide', 'cursive'], // Holographic/sci-fi
+        'vt323': ['VT323', 'monospace'], // VHS/retro
       },
       fontSize: {
         'display': ['3rem', { lineHeight: '1.1', fontWeight: '800' }], // 48px
