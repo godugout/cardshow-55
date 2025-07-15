@@ -12,7 +12,7 @@ export const CreatePageHero: React.FC = () => {
         <>
           <span className="font-light">From paper scraps to <MatrixDigital>digital</MatrixDigital> art</span><br />
           <span className="xl:whitespace-nowrap">
-            <RansomNote>craft cards</RansomNote> that <span className="gradient-text-green-blue-purple">come alive</span>
+            <RansomNote>craft</RansomNote> cards that <span className="gradient-text-green-blue-purple">come alive</span>
           </span>
         </>
       }
