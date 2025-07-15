@@ -111,10 +111,10 @@ export const EnhancedHero: React.FC = () => {
 
   // Create enhanced heading with responsive text wrapping control
   const enhancedHeading = (
-    <>
-      Create, collect, and trade<br />
+    <div className="text-5xl md:text-6xl lg:text-7xl">
+      Craft cards that come alive<br />
       <span className="xl:whitespace-nowrap">
-        card art with{' '}
+        with{' '}
         <TextEffects3D
           style={textStyle}
           animation={animation}
@@ -125,7 +125,7 @@ export const EnhancedHero: React.FC = () => {
           unlimited potential
         </TextEffects3D>
       </span>
-    </>
+    </div>
   );
 
   return (
