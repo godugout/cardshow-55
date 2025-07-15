@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -21,9 +22,10 @@ export const AnimatedCardPixelsText: React.FC<AnimatedCardPixelsTextProps> = ({
   text, 
   className 
 }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hiddenTextRef = useRef<HTMLDivElement>(null);
   const [pixels, setPixels] = useState<CardPixel[]>([]);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [dimensions, setDimensions] = useState({ width: 800, height: 120 }); // Better default dimensions
   const animationRef = useRef<number>();
 
   // Card rarity colors
@@ -38,7 +40,7 @@ export const AnimatedCardPixelsText: React.FC<AnimatedCardPixelsTextProps> = ({
 
   // Generate random pixels within text bounds
   const generatePixels = (textWidth: number, textHeight: number) => {
-    const pixelCount = Math.floor((textWidth * textHeight) / 800); // Adjust density
+    const pixelCount = Math.floor((textWidth * textHeight) / 600); // Adjusted density
     const newPixels: CardPixel[] = [];
 
     for (let i = 0; i < pixelCount; i++) {
@@ -118,7 +120,7 @@ export const AnimatedCardPixelsText: React.FC<AnimatedCardPixelsTextProps> = ({
       animationRef.current = requestAnimationFrame(animate);
     };
 
-    if (dimensions.width > 0 && dimensions.height > 0) {
+    if (pixels.length > 0) {
       animationRef.current = requestAnimationFrame(animate);
     }
 
@@ -127,77 +129,103 @@ export const AnimatedCardPixelsText: React.FC<AnimatedCardPixelsTextProps> = ({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [dimensions]);
+  }, [dimensions, pixels.length > 0]);
 
   // Measure text dimensions and generate pixels
   useEffect(() => {
-    if (svgRef.current) {
-      const textElement = svgRef.current.querySelector('text');
-      if (textElement) {
-        const bbox = textElement.getBBox();
-        const newDimensions = { width: bbox.width, height: bbox.height };
-        setDimensions(newDimensions);
-        generatePixels(newDimensions.width, newDimensions.height);
+    const measureText = () => {
+      if (hiddenTextRef.current) {
+        const rect = hiddenTextRef.current.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          const newDimensions = { 
+            width: Math.max(rect.width, 400), 
+            height: Math.max(rect.height, 80) 
+          };
+          setDimensions(newDimensions);
+          generatePixels(newDimensions.width, newDimensions.height);
+        }
       }
-    }
+    };
+
+    // Measure immediately and after a short delay for font loading
+    measureText();
+    const timeoutId = setTimeout(measureText, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [text]);
 
   return (
     <div className={cn("relative inline-block", className)}>
-      <svg
-        ref={svgRef}
-        className="w-full h-full"
-        viewBox={`0 0 ${dimensions.width || 400} ${dimensions.height || 100}`}
-        style={{ overflow: 'visible' }}
+      {/* Hidden text for measurement - using proper hero sizing */}
+      <div 
+        ref={hiddenTextRef}
+        className="absolute top-0 left-0 opacity-0 pointer-events-none text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-extrabold whitespace-nowrap"
+        style={{ fontFamily: 'DM Sans, sans-serif' }}
+        aria-hidden="true"
       >
-        <defs>
-          <mask id="textMask">
-            <rect width="100%" height="100%" fill="black" />
-            <text
-              x="0"
-              y="80%"
-              fill="white"
-              className="text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-extrabold"
-              style={{ fontFamily: 'DM Sans, sans-serif' }}
-            >
-              {text}
-            </text>
-          </mask>
-        </defs>
+        {text}
+      </div>
 
-        {/* Animated card pixels */}
-        <g mask="url(#textMask)">
-          {pixels.map(pixel => (
-            <rect
-              key={pixel.id}
-              x={pixel.x}
-              y={pixel.y}
-              width="2.5"
-              height="3.5"
-              rx="0.3"
-              ry="0.3"
-              fill={pixel.color}
-              opacity={pixel.opacity}
-              style={{
-                transform: `translate(${pixel.x}px, ${pixel.y}px)`,
-                transition: pixel.animationType === 'teleport' ? 'none' : 'transform 0.1s ease-out',
-                filter: 'drop-shadow(0 0.5px 0.5px rgba(0,0,0,0.3))',
-              }}
-            />
-          ))}
-        </g>
+      {/* SVG with animated pixels */}
+      <div className="relative">
+        <svg
+          className="block"
+          width={dimensions.width}
+          height={dimensions.height}
+          viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+          style={{ maxWidth: '100%', height: 'auto' }}
+        >
+          <defs>
+            <mask id={`textMask-${text.replace(/\s+/g, '-')}`}>
+              <rect width="100%" height="100%" fill="black" />
+              <text
+                x="0"
+                y="75%"
+                fill="white"
+                className="text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-extrabold"
+                style={{ 
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: `${Math.min(dimensions.height * 0.7, 60)}px`
+                }}
+              >
+                {text}
+              </text>
+            </mask>
+          </defs>
 
-        {/* Hidden text for measurement */}
-        <text
-          x="0"
-          y="80%"
-          fill="transparent"
-          className="text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-extrabold"
-          style={{ fontFamily: 'DM Sans, sans-serif' }}
+          {/* Animated card pixels */}
+          <g mask={`url(#textMask-${text.replace(/\s+/g, '-')})`}>
+            {pixels.map(pixel => (
+              <rect
+                key={pixel.id}
+                x={pixel.x}
+                y={pixel.y}
+                width="3"
+                height="4"
+                rx="0.5"
+                ry="0.5"
+                fill={pixel.color}
+                opacity={pixel.opacity}
+                style={{
+                  filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.3))',
+                }}
+              />
+            ))}
+          </g>
+        </svg>
+
+        {/* Fallback text that's visible during loading */}
+        <div 
+          className="absolute top-0 left-0 text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-crd-blue to-crd-purple"
+          style={{ 
+            fontFamily: 'DM Sans, sans-serif',
+            opacity: pixels.length === 0 ? 1 : 0,
+            transition: 'opacity 0.3s ease'
+          }}
         >
           {text}
-        </text>
-      </svg>
+        </div>
+      </div>
     </div>
   );
 };
