@@ -609,10 +609,24 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         : letter.style.textShadow
     } : {};
     
+    // Equatorial gravity system - invisible horizontal center line
+    const equatorCenter = 0; // Center line at 0em
+    const maxDrift = 0.4; // Maximum distance from equator (±0.4em)
+    const currentFloat = -letter.float + letter.backgroundOffset;
+    
+    // Apply equatorial gravity - pull letters back to center if they drift too far
+    let constrainedFloat = currentFloat;
+    if (Math.abs(currentFloat) > maxDrift) {
+      const gravityStrength = 0.7; // How strong the pull back is
+      const distanceFromEquator = Math.abs(currentFloat) - maxDrift;
+      const pullDirection = currentFloat > 0 ? -1 : 1;
+      constrainedFloat = currentFloat + (pullDirection * distanceFromEquator * gravityStrength);
+    }
+    
     // Pre-calculated stable values to prevent layout shifts
     const stableOffsets = {
       rotation: letter.rotation,
-      float: Math.max(-0.5, Math.min(0.5, -letter.float + letter.backgroundOffset)), // Constrained to baseline
+      float: Math.max(-maxDrift, Math.min(maxDrift, constrainedFloat)), // Constrained to equatorial range
       lean: letter.lean,
       padding: letter.char === ' ' ? '0' : '5px 6px',
       margin: letter.char === ' ' ? '0 0.3em' : '0 2px'
