@@ -435,7 +435,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
         })));
       }
-    }, 8000);
+    }, 12000);
 
     const phaseInterval = setInterval(() => {
       setAnimPhase(prev => prev + 1);
@@ -634,7 +634,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         translateX(0px) translateY(${stableOffsets.float}px)
         rotateZ(${stableOffsets.rotation}deg)
         rotateX(${stableOffsets.lean}deg)
-        ${isFlipping ? `rotateY(${Math.sin(animPhase * 0.05) * 180}deg)` : ''}
+        ${isFlipping ? `rotateY(${Math.sin(animPhase * 0.2) * 180}deg) rotateZ(${Math.sin(animPhase * 0.3) * 5}deg)` : ''}
         ${isActive ? `rotateY(${Math.sin(animPhase * 0.05 + index) * 45}deg)` : ''}
         ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
         ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
@@ -663,9 +663,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
   return (
     <div className={`inline-block mt-4 ${className}`} style={{ 
-      letterSpacing: '0.05em', 
+      letterSpacing: '0.01em', 
       transform: 'scale(0.95)',
-      lineHeight: '1.5',
+      lineHeight: '1.4',
       contain: 'layout'
     }}>
       {letters.map((letter, index) => (
@@ -674,8 +674,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           className="inline-block"
           style={{
             position: 'relative',
-            minWidth: letter.char === ' ' ? '0.4em' : '1.2em',
-            minHeight: '1.4em',
+            minWidth: letter.char === ' ' ? '0.3em' : '1.1em',
+            minHeight: '1.3em',
             verticalAlign: 'middle',
             contain: 'layout style',
             ...getLetterStyle(letter, index)
