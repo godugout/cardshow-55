@@ -66,6 +66,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const [isSpellingOut, setIsSpellingOut] = useState(false);
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
+  const [lastAnimationTime, setLastAnimationTime] = useState<number[]>([]);
 
   // Theme-specific configurations with materials
   const getThemeConfig = (theme: 'craft' | 'collect' | 'connect') => {
@@ -249,24 +250,54 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     const sides = letterMap[char.toUpperCase()] || 4;
     
     const generateFourSided = () => {
-      // Larger area to preserve 95% of letter content
-      const isSquare = Math.random() < 0.4;
-      const height = isSquare ? 85 : 75 + Math.random() * 15; // Increased minimum height for visibility
-      const width = isSquare ? height : 80 + Math.random() * 20; // Increased minimum width
+      // Create varied shapes: squares, rectangles, diamonds, parallelograms
+      const shapeTypes = ['square', 'tall-rect', 'wide-rect', 'diamond', 'parallelogram'];
+      const shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
       
-      // Center the shape with safety margins
       const centerX = 50;
       const centerY = 50;
-      const halfWidth = Math.min(width / 2, 45); // Max 45% from center = 90% total width
-      const halfHeight = Math.min(height / 2, 40); // Max 40% from center = 80% total height
       
-      // Minimal irregularities to maintain readability
-      const tl = Math.random() * 1.5; // Reduced variation
-      const tr = Math.random() * 1.5;
-      const bl = Math.random() * 1.5;
-      const br = Math.random() * 1.5;
-      
-      return `polygon(${centerX - halfWidth + tl}% ${centerY - halfHeight + tl}%, ${centerX + halfWidth - tr}% ${centerY - halfHeight + tr}%, ${centerX + halfWidth - br}% ${centerY + halfHeight - br}%, ${centerX - halfWidth + bl}% ${centerY + halfHeight - bl}%)`;
+      switch (shapeType) {
+        case 'square':
+          const size = 35 + Math.random() * 15; // 35-50% size
+          const rotation = [-15, -30, 0, 15, 30, 45][Math.floor(Math.random() * 6)];
+          const rad = (rotation * Math.PI) / 180;
+          const cos = Math.cos(rad);
+          const sin = Math.sin(rad);
+          
+          // Rotate square corners around center
+          const corners = [
+            [-size/2, -size/2], [size/2, -size/2], [size/2, size/2], [-size/2, size/2]
+          ].map(([x, y]) => [
+            centerX + (x * cos - y * sin),
+            centerY + (x * sin + y * cos)
+          ]);
+          
+          return `polygon(${corners.map(([x, y]) => `${Math.max(5, Math.min(95, x))}% ${Math.max(5, Math.min(95, y))}%`).join(', ')})`;
+          
+        case 'tall-rect':
+          const tallWidth = 25 + Math.random() * 15; // 25-40% width
+          const tallHeight = 40 + Math.random() * 15; // 40-55% height
+          return `polygon(${centerX - tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY + tallHeight/2}%, ${centerX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
+          
+        case 'wide-rect':
+          const wideWidth = 40 + Math.random() * 15; // 40-55% width
+          const wideHeight = 25 + Math.random() * 15; // 25-40% height
+          return `polygon(${centerX - wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY + wideHeight/2}%, ${centerX - wideWidth/2}% ${centerY + wideHeight/2}%)`;
+          
+        case 'diamond':
+          const diamondSize = 35 + Math.random() * 15;
+          return `polygon(${centerX}% ${centerY - diamondSize/2}%, ${centerX + diamondSize/2}% ${centerY}%, ${centerX}% ${centerY + diamondSize/2}%, ${centerX - diamondSize/2}% ${centerY}%)`;
+          
+        case 'parallelogram':
+          const paraWidth = 35 + Math.random() * 15;
+          const paraHeight = 30 + Math.random() * 15;
+          const skew = 5 + Math.random() * 10; // Skew amount
+          return `polygon(${centerX - paraWidth/2 + skew}% ${centerY - paraHeight/2}%, ${centerX + paraWidth/2 + skew}% ${centerY - paraHeight/2}%, ${centerX + paraWidth/2 - skew}% ${centerY + paraHeight/2}%, ${centerX - paraWidth/2 - skew}% ${centerY + paraHeight/2}%)`;
+          
+        default:
+          return `polygon(${centerX - 35}% ${centerY - 35}%, ${centerX + 35}% ${centerY - 35}%, ${centerX + 35}% ${centerY + 35}%, ${centerX - 35}% ${centerY + 35}%)`;
+      }
     };
 
     const generateFiveSided = () => {
@@ -626,6 +657,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         };
       });
       setLetters(newLetters);
+      setLastAnimationTime(new Array(newLetters.length).fill(0));
     };
 
     initializeLetters();
@@ -647,14 +679,15 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   }, [isSpellingOut, spellIndex, letters.length]);
 
   useEffect(() => {
-    // Slower, more pleasant animations (25s main cycle, 600ms phase)
+    // Much slower, less distracting animations (50s main cycle, 700ms phase)
     const variationInterval = setInterval(() => {
-      // 30% chance to pause animation for better readability
-      if (Math.random() < 0.3) {
+      // 70% chance to skip animation completely for realistic feel
+      if (Math.random() < 0.7) {
         return;
       }
       
-      if (Math.random() < 0.3) {
+      // Only spell-out animation occasionally
+      if (Math.random() < 0.2) {
         setIsSpellingOut(true);
         setSpellIndex(0);
         setActiveAnimations([]);
@@ -667,48 +700,90 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             style,
             materialType,
             borderRadius: generateMaterialBorderRadius(materialType),
-            // Regenerate cut-out properties for variety
+            clipPath: generateClipPath(index, letter.char),
+            // Regenerate cut-out properties for variety with less aggressive positioning
             padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
             margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
-            topOffset: Math.random() * 6 - 3,
-            leftOffset: Math.random() * 4 - 2,
+            topOffset: (Math.random() - 0.5) * 3, // Reduced from 6 to 3
+            leftOffset: (Math.random() - 0.5) * 2, // Reduced from 4 to 2
+            zIndex: Math.floor(Math.random() * 3) + 1, // Limited to 3 levels
             scale: 0.9 + Math.random() * 0.4,
             perspective: Math.random() * 20 - 10
           };
         }));
       } else {
-        setAnimationKey(prev => prev + 1);
-        setActiveAnimations([]);
-        setIsSpellingOut(false);
-        
-        setLetters(prev => prev.map((letter, index) => {
-          const { style, materialType } = generateLetterStyle(letter.letterType, letter.materialSource);
-          return {
-            ...letter,
-            style,
-            materialType,
-            borderRadius: generateMaterialBorderRadius(materialType),
-            // Regenerate cut-out properties for variety
-            padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
-            margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
-            topOffset: Math.random() * 6 - 3,
-            leftOffset: Math.random() * 4 - 2,
-            scale: 0.9 + Math.random() * 0.4,
-            perspective: Math.random() * 20 - 10
-          };
-        }));
+        // Animate only 1-2 random letters instead of all
+        setLetters(prevLetters => {
+          if (prevLetters.length === 0) return prevLetters;
+          
+          const newLetters = [...prevLetters];
+          const currentTime = Date.now();
+          
+          // Select only 1-2 letters to animate, avoiding recently animated ones
+          const availableIndices = prevLetters
+            .map((_, index) => index)
+            .filter(index => 
+              !lastAnimationTime[index] || 
+              (currentTime - lastAnimationTime[index]) > 60000 // 60 second cooldown
+            );
+          
+          if (availableIndices.length === 0) return prevLetters;
+          
+          // Randomly select 1-2 letters from available ones
+          const numToAnimate = Math.random() < 0.7 ? 1 : 2;
+          const selectedIndices = [];
+          
+          for (let i = 0; i < numToAnimate && availableIndices.length > 0; i++) {
+            const randomIndex = Math.floor(Math.random() * availableIndices.length);
+            const selectedIndex = availableIndices.splice(randomIndex, 1)[0];
+            selectedIndices.push(selectedIndex);
+          }
+          
+          // Animate selected letters only
+          selectedIndices.forEach(index => {
+            const letter = prevLetters[index];
+            const { style, materialType } = generateLetterStyle(letter.letterType, letter.materialSource);
+            
+            newLetters[index] = {
+              ...letter,
+              style,
+              materialType,
+              borderRadius: generateMaterialBorderRadius(materialType),
+              clipPath: generateClipPath(index, letter.char),
+              // Less aggressive positioning for better visibility
+              padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
+              margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
+              topOffset: (Math.random() - 0.5) * 3, // Reduced from 6 to 3
+              leftOffset: (Math.random() - 0.5) * 2, // Reduced from 4 to 2
+              zIndex: Math.floor(Math.random() * 3) + 1, // Limited to 3 levels
+              scale: 0.9 + Math.random() * 0.4,
+              perspective: Math.random() * 20 - 10
+            };
+          });
+          
+          // Update animation times
+          setLastAnimationTime(prev => {
+            const newTimes = [...prev];
+            selectedIndices.forEach(index => {
+              newTimes[index] = currentTime;
+            });
+            return newTimes;
+          });
+          
+          return newLetters;
+        });
       }
-    }, 25000); // Slowed down from 8s to 25s
+    }, 50000); // Increased from 25s to 50s
 
     const phaseInterval = setInterval(() => {
       setAnimPhase(prev => prev + 1);
-    }, 600); // Slowed down from 200ms to 600ms
+    }, 700); // Increased from 600ms to 700ms
 
     return () => {
       clearInterval(variationInterval);
       clearInterval(phaseInterval);
     };
-  }, [theme]);
+  }, [theme, lastAnimationTime]);
 
   // Helper functions for styling
   const getSizeStyles = (size: string) => {
