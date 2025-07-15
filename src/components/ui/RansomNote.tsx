@@ -415,13 +415,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
         verticalAlign: 'middle',
-        // Apply transition background to entire container when transitioning
-        ...(isTransitioning && {
-          background: getTransitionBackground(),
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          backgroundSize: transitionType === 'pixel' ? '10px 10px' : '100% 100%',
-        })
+        backgroundColor: 'transparent', // Ensure no background bleeds
       }}
     >
       {letters.map((letter, index) => (
@@ -430,10 +424,13 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
           className="inline-block transition-all duration-1000 ease-in-out"
           style={{
             ...getLetterStyle(letter, index),
-            // During transition, make individual letters transparent so container background shows through
+            // Apply transition background directly to text when transitioning
             ...(isTransitioning && {
+              background: getTransitionBackground(),
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
               color: 'transparent',
-              background: 'transparent',
+              backgroundSize: transitionType === 'pixel' ? '10px 10px' : '100% 100%',
             })
           }}
         >

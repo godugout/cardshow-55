@@ -128,7 +128,7 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
   const variations = [matrixStyle, cyberpunkStyle, holographicStyle, vhsStyle];
   const currentStyle = variations[currentVariation]();
 
-  // Generate transition effects as background (masked to text)
+  // Generate transition effects as text background only
   const getTransitionStyle = () => {
     if (!isTransitioning) return {};
     
@@ -137,9 +137,9 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
     switch (transitionType) {
       case 'plasma':
         transitionBackground = `radial-gradient(circle at ${50 + Math.sin(animPhase * 0.08) * 40}% ${50 + Math.cos(animPhase * 0.08) * 40}%, 
-          rgba(0, 255, 0, 1) 0%, 
-          rgba(255, 255, 255, 1) 50%, 
-          rgba(0, 255, 255, 1) 100%)`;
+          #00ff00 0%, 
+          #ffffff 50%, 
+          #00ffff 100%)`;
         break;
       case 'pixel':
         transitionBackground = `repeating-conic-gradient(from ${animPhase * 2}deg at 50% 50%, 
@@ -174,12 +174,16 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
       color: 'transparent',
       filter: `brightness(${1.5 + Math.sin(animPhase * 0.2) * 0.5}) contrast(1.2)`,
       backgroundSize: transitionType === 'pixel' ? '8px 8px' : '100% 100%',
-      animation: transitionType === 'pixel' ? 'none' : undefined,
     };
   };
 
   const finalStyle = isTransitioning 
-    ? { ...currentStyle, ...getTransitionStyle() }
+    ? { 
+        ...currentStyle, 
+        ...getTransitionStyle(),
+        // Ensure no background bleeds outside text
+        backgroundColor: 'transparent',
+      }
     : currentStyle;
 
   return (
