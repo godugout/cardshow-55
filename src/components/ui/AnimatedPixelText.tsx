@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -56,10 +55,10 @@ export const AnimatedPixelText: React.FC<AnimatedPixelTextProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [pixels] = useState(() => {
-    // Generate a larger grid of pixels for the 3x larger text
+    // Generate a grid of pixels for the text
     const pixelArray = [];
-    const rows = 36; // Increased from 12 to 36 (3x)
-    const cols = text.length * 24; // Increased from 8 to 24 (3x)
+    const rows = 24; // Adjusted for 3x scale
+    const cols = text.length * 16; // Adjusted for 3x scale
     
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
@@ -75,13 +74,14 @@ export const AnimatedPixelText: React.FC<AnimatedPixelTextProps> = ({
   return (
     <span
       className={cn(
-        "inline-block relative cursor-pointer",
-        // Make the text 3x larger than the display variant
-        "text-[15rem] md:text-[18rem] lg:text-[21rem] xl:text-[24rem] font-extrabold leading-tight tracking-[-1.28px] text-transparent",
+        "inline-block relative cursor-pointer align-baseline",
+        // Make it 3x larger than normal display text but keep inline
+        "text-[15rem] md:text-[18rem] lg:text-[21rem] xl:text-[24rem] font-extrabold leading-[0.8] tracking-[-1.28px]",
         className
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      style={{ verticalAlign: 'baseline' }}
     >
       {/* Invisible text for layout */}
       <span className="text-transparent relative z-10">
@@ -93,8 +93,8 @@ export const AnimatedPixelText: React.FC<AnimatedPixelTextProps> = ({
         className="absolute inset-0 overflow-hidden"
         style={{
           WebkitMask: `url("data:image/svg+xml,${encodeURIComponent(`
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${text.length * 150} 180'>
-              <text x='0' y='135' font-family='DM Sans, system-ui, -apple-system, sans-serif' font-weight='800' font-size='144' fill='black'>${text}</text>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${text.length * 120} 160'>
+              <text x='0' y='120' font-family='DM Sans, system-ui, -apple-system, sans-serif' font-weight='800' font-size='120' fill='black'>${text}</text>
             </svg>
           `)}")`,
           maskSize: '100% 100%',
@@ -105,8 +105,8 @@ export const AnimatedPixelText: React.FC<AnimatedPixelTextProps> = ({
         <div 
           className="grid gap-[1px] w-full h-full"
           style={{
-            gridTemplateColumns: `repeat(${text.length * 24}, minmax(0, 1fr))`,
-            gridTemplateRows: 'repeat(36, minmax(0, 1fr))',
+            gridTemplateColumns: `repeat(${text.length * 16}, minmax(0, 1fr))`,
+            gridTemplateRows: 'repeat(24, minmax(0, 1fr))',
           }}
         >
           {pixels.map((pixel, index) => (

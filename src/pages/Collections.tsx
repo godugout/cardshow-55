@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
@@ -14,25 +13,21 @@ const Collections: React.FC = () => {
       <StandardHero
         label="DISCOVER, COLLECT & CONNECT"
         title={
-          <>
-            Your gateway to the world of<br />
+          <span className="inline-flex items-baseline flex-wrap">
+            Your gateway to the world of{' '}
+            <AnimatedPixelText 
+              text="digital"
+              className="mx-2"
+            />
+            {' '}
             <Typography 
               variant="display" 
               as="span" 
-              className="whitespace-nowrap mr-2"
-            >
-              <AnimatedPixelText 
-                text="digital"
-              />
-            </Typography>
-            <Typography 
-              variant="display" 
-              as="span" 
-              className="whitespace-nowrap"
+              className="inline"
             >
               cards
             </Typography>
-          </>
+          </span>
         }
         description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."
         primaryCta={{
