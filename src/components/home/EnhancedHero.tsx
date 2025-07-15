@@ -5,6 +5,7 @@ import { useCards } from "@/hooks/useCards";
 import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
 import { SparkleText } from "@/components/hero/SparkleText";
+import { RansomNote } from "@/components/ui/RansomNote";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { Hero3 } from "@/components/ui/design-system";
 import type { Tables } from '@/integrations/supabase/types';
@@ -113,7 +114,7 @@ export const EnhancedHero: React.FC = () => {
   // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
     <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-      Craft cards that come alive<br />
+      <RansomNote>Craft</RansomNote> cards that come alive<br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         with{' '}
         <SparkleText>
