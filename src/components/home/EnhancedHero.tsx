@@ -189,7 +189,7 @@ export const EnhancedHero: React.FC = () => {
   // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
     <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-      <ThemedRansomNote theme={currentConfig.theme}>{currentConfig.word}</ThemedRansomNote><br />
+      <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused}>{currentConfig.word}</ThemedRansomNote><br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         {currentConfig.tagline.split(' ').slice(0, -1).join(' ')}{' '}
         <span className="gradient-text-green-blue-purple">{currentConfig.tagline.split(' ').slice(-1)[0]}</span>

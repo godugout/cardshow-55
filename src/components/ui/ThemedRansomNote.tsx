@@ -4,6 +4,7 @@ interface ThemedRansomNoteProps {
   children: string;
   theme: 'craft' | 'collect' | 'connect';
   className?: string;
+  isPaused?: boolean;
 }
 
 interface LetterState {
@@ -35,7 +36,8 @@ interface LetterStyle {
 export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({ 
   children, 
   theme,
-  className = "" 
+  className = "",
+  isPaused = false
 }) => {
   const [letters, setLetters] = useState<LetterState[]>([]);
   const [animPhase, setAnimPhase] = useState(0);
@@ -458,6 +460,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   }, [children, theme]);
 
   useEffect(() => {
+    if (isPaused) return; // Pause main variation loop
+    
     const variationInterval = setInterval(() => {
       if (Math.random() < 0.3) {
         setIsSpellingOut(true);
@@ -490,7 +494,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       clearInterval(variationInterval);
       clearInterval(phaseInterval);
     };
-  }, [theme]);
+  }, [theme, isPaused]); // Added isPaused dependency
 
   useEffect(() => {
     if (isSpellingOut) {
@@ -510,6 +514,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   }, [isSpellingOut, children.length]);
 
   useEffect(() => {
+    if (isPaused) return; // Pause letter animations when paused
+    
     const letterInterval = setInterval(() => {
       setLetters(prev => prev.map((letter, index) => ({
         ...letter,
@@ -579,7 +585,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     }, 300);
 
     return () => clearInterval(letterInterval);
-  }, [animPhase, activeAnimations, letters, flippingLetters, theme]);
+  }, [animPhase, activeAnimations, letters, flippingLetters, theme, isPaused]); // Added isPaused dependency
 
   const getLetterStyle = (letter: LetterState, index: number) => {
     const isActive = activeAnimations.includes(index);
