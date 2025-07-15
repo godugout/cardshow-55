@@ -35,6 +35,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   const [animationKey, setAnimationKey] = useState(0);
   const [isSpellingOut, setIsSpellingOut] = useState(false);
   const [spellIndex, setSpellIndex] = useState(0);
+  const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
 
   // Text colors with good contrast
   const textColors = [
@@ -48,39 +49,58 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     'Futura', 'Monaco', 'Garamond', 'Rockwell', 'Franklin Gothic Medium'
   ];
 
-  // Background patterns and textures
+  // Enhanced background patterns and textures inspired by classic ransom notes
   const backgroundStyles = [
-    // Solid colors
+    // Classic solid colors with pop art vibes
     { background: 'hsl(var(--crd-green))', pattern: 'solid' },
     { background: 'hsl(var(--crd-blue))', pattern: 'solid' },
     { background: 'hsl(var(--crd-purple))', pattern: 'solid' },
     { background: 'hsl(var(--crd-orange))', pattern: 'solid' },
-    { background: '#ff6b6b', pattern: 'solid' },
-    { background: '#4ecdc4', pattern: 'solid' },
-    { background: '#45b7d1', pattern: 'solid' },
-    { background: '#f9ca24', pattern: 'solid' },
-    { background: '#f0932b', pattern: 'solid' },
-    { background: '#eb4d4b', pattern: 'solid' },
-    { background: '#6c5ce7', pattern: 'solid' },
+    { background: '#ff1744', pattern: 'solid' }, // Bright red
+    { background: '#00e676', pattern: 'solid' }, // Electric green
+    { background: '#2196f3', pattern: 'solid' }, // Bright blue
+    { background: '#ffeb3b', pattern: 'solid' }, // Electric yellow
+    { background: '#e91e63', pattern: 'solid' }, // Hot pink
+    { background: '#9c27b0', pattern: 'solid' }, // Vivid purple
+    { background: '#ff5722', pattern: 'solid' }, // Deep orange
+    { background: '#00bcd4', pattern: 'solid' }, // Cyan
     
-    // Striped patterns
-    { background: 'repeating-linear-gradient(45deg, #ff6b6b, #ff6b6b 10px, #ffffff 10px, #ffffff 20px)', pattern: 'stripes' },
-    { background: 'repeating-linear-gradient(0deg, #4ecdc4, #4ecdc4 8px, #ffffff 8px, #ffffff 16px)', pattern: 'stripes' },
-    { background: 'repeating-linear-gradient(90deg, #45b7d1, #45b7d1 12px, #f8f9fa 12px, #f8f9fa 24px)', pattern: 'stripes' },
+    // Metallic and glossy effects
+    { background: 'linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%)', pattern: 'metallic-gold' },
+    { background: 'linear-gradient(135deg, #c0392b 0%, #e74c3c 50%, #c0392b 100%)', pattern: 'metallic-red' },
+    { background: 'linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%)', pattern: 'metallic-dark' },
+    { background: 'linear-gradient(135deg, #8e44ad 0%, #9b59b6 50%, #8e44ad 100%)', pattern: 'metallic-purple' },
+    { background: 'linear-gradient(135deg, #27ae60 0%, #2ecc71 50%, #27ae60 100%)', pattern: 'metallic-green' },
     
-    // Dotted patterns
-    { background: 'radial-gradient(circle at 20% 50%, #f9ca24 20%, transparent 50%), radial-gradient(circle at 70% 50%, #f9ca24 20%, transparent 50%), #ffffff', pattern: 'dots' },
-    { background: 'radial-gradient(circle at 25% 25%, #6c5ce7 25%, transparent 50%), #f8f9fa', pattern: 'dots' },
+    // Paper and magazine textures
+    { background: 'linear-gradient(45deg, #f5f5dc 0%, #f0f0f0 25%, #f5f5dc 50%, #e8e8e8 75%, #f5f5dc 100%)', pattern: 'newspaper' },
+    { background: 'linear-gradient(90deg, #fff8dc 0%, #faebd7 50%, #fff8dc 100%)', pattern: 'vintage-paper' },
+    { background: 'linear-gradient(180deg, #fffacd 0%, #f0e68c 100%)', pattern: 'aged-paper' },
     
-    // Gradients
-    { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', pattern: 'gradient' },
-    { background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', pattern: 'gradient' },
-    { background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', pattern: 'gradient' },
+    // Fabric and textured patterns
+    { background: 'radial-gradient(circle at 25% 25%, #ff6b6b 0%, #ff8e53 100%)', pattern: 'fabric-1' },
+    { background: 'conic-gradient(from 0deg, #667eea, #764ba2, #667eea)', pattern: 'fabric-2' },
+    { background: 'linear-gradient(45deg, #fa709a 0%, #fee140 100%)', pattern: 'fabric-3' },
     
-    // Newspaper/magazine textures
-    { background: '#f5f5dc', pattern: 'newspaper' },
-    { background: '#faf0e6', pattern: 'magazine' },
-    { background: '#fff8dc', pattern: 'vintage' }
+    // Bold pop art patterns
+    { background: 'repeating-linear-gradient(45deg, #ff1744, #ff1744 8px, #ffffff 8px, #ffffff 16px)', pattern: 'pop-stripes-1' },
+    { background: 'repeating-linear-gradient(90deg, #00e676, #00e676 12px, #000000 12px, #000000 24px)', pattern: 'pop-stripes-2' },
+    { background: 'repeating-linear-gradient(0deg, #2196f3, #2196f3 10px, #ffeb3b 10px, #ffeb3b 20px)', pattern: 'pop-stripes-3' },
+    
+    // Halftone and comic book effects
+    { background: 'radial-gradient(circle at 20% 50%, #e91e63 20%, transparent 50%), radial-gradient(circle at 70% 50%, #e91e63 20%, transparent 50%), #ffffff', pattern: 'halftone-1' },
+    { background: 'radial-gradient(circle at 30% 30%, #9c27b0 25%, transparent 50%), radial-gradient(circle at 80% 80%, #9c27b0 25%, transparent 50%), #f0f0f0', pattern: 'halftone-2' },
+    { background: 'radial-gradient(circle at 40% 20%, #ff5722 15%, transparent 40%), radial-gradient(circle at 60% 80%, #ff5722 15%, transparent 40%), #fffde7', pattern: 'halftone-3' },
+    
+    // Chrome and holographic effects
+    { background: 'linear-gradient(45deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%)', pattern: 'holographic' },
+    { background: 'linear-gradient(90deg, #a8edea 0%, #fed6e3 100%)', pattern: 'pastel-dream' },
+    { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', pattern: 'electric-blue' },
+    
+    // High contrast pop art
+    { background: '#000000', pattern: 'black' },
+    { background: '#ffffff', pattern: 'white' },
+    { background: 'linear-gradient(45deg, #000000 25%, transparent 25%), linear-gradient(-45deg, #000000 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #000000 75%), linear-gradient(-45deg, transparent 75%, #000000 75%)', pattern: 'checkerboard' },
   ];
 
   // Enhanced contrast checking function
@@ -200,7 +220,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     }
   }, [isSpellingOut, children.length]);
 
-  // Manage individual letter animations
+  // Manage individual letter animations and card flips
   useEffect(() => {
     const letterInterval = setInterval(() => {
       setLetters(prev => prev.map((letter, index) => ({
@@ -211,9 +231,48 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
         glowIntensity: 0.5 + Math.sin(animPhase * 0.02 + index * 0.7) * 0.3
       })));
 
-      // Less frequent special animations (lower probability)
-      if (Math.random() < 0.15) {
-        const availableLetters = letters.map((_, i) => i).filter(i => !activeAnimations.includes(i));
+      // Card flip animations - 1-3 letters flip and change style every loop
+      if (Math.random() < 0.2) {
+        const availableLetters = letters.map((_, i) => i).filter(i => 
+          !activeAnimations.includes(i) && 
+          !flippingLetters.includes(i) && 
+          letters[i]?.char !== ' '
+        );
+        
+        if (availableLetters.length > 0) {
+          const numToFlip = Math.min(1 + Math.floor(Math.random() * 3), availableLetters.length); // 1-3 letters
+          const newFlipping = [];
+          
+          for (let i = 0; i < numToFlip; i++) {
+            const randomIndex = availableLetters[Math.floor(Math.random() * availableLetters.length)];
+            newFlipping.push(randomIndex);
+            availableLetters.splice(availableLetters.indexOf(randomIndex), 1);
+          }
+          
+          setFlippingLetters(newFlipping);
+          
+          // After 800ms (mid-flip), change the letter style
+          setTimeout(() => {
+            setLetters(prev => prev.map((letter, index) => 
+              newFlipping.includes(index) 
+                ? { ...letter, style: generateLetterStyle() }
+                : letter
+            ));
+          }, 800);
+          
+          // Clear flipping state after full animation
+          setTimeout(() => {
+            setFlippingLetters(prev => prev.filter(i => !newFlipping.includes(i)));
+          }, 1600);
+        }
+      }
+
+      // Regular special effects (separate from flips)
+      if (Math.random() < 0.1) {
+        const availableLetters = letters.map((_, i) => i).filter(i => 
+          !activeAnimations.includes(i) && 
+          !flippingLetters.includes(i)
+        );
         if (availableLetters.length > 0) {
           const numToAnimate = Math.min(1 + Math.floor(Math.random() * 2), availableLetters.length); // 1-2 letters max
           const newActive = [];
@@ -233,10 +292,11 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     }, 300); // Slower update interval
 
     return () => clearInterval(letterInterval);
-  }, [animPhase, activeAnimations, letters]);
+  }, [animPhase, activeAnimations, letters, flippingLetters]);
 
   const getLetterStyle = (letter: LetterState, index: number) => {
     const isActive = activeAnimations.includes(index);
+    const isFlipping = flippingLetters.includes(index);
     const specialEffectMultiplier = isActive ? letter.glowIntensity * 2 : 1;
     
     // Handle spell-out visibility
@@ -267,6 +327,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
         rotateZ(${letter.rotation}deg)
         rotateX(${letter.lean}deg)
         translateY(${-letter.float}px)
+        ${isFlipping ? `rotateY(${Math.sin(animPhase * 0.05) * 180}deg)` : ''}
         ${isActive ? `rotateY(${Math.sin(animPhase * 0.05 + index) * 45}deg)` : ''}
         ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
         ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
