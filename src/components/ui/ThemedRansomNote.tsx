@@ -19,6 +19,8 @@ interface LetterState {
   shape: 'square' | 'wide' | 'tall' | 'skew';
   size: 'small' | 'medium' | 'large' | 'extra-large';
   isThemeWord: boolean;
+  isTransparent: boolean;
+  letterType: 'card' | 'transparent' | 'jersey';
 }
 
 interface LetterStyle {
@@ -126,6 +128,20 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             // Minimal gradients for variety
             { background: 'linear-gradient(90deg, #000000 0%, #404040 100%)', pattern: 'subtle-fade' }
           ],
+          jerseyPatterns: [
+            // Basketball textures
+            { background: 'radial-gradient(circle at 30% 30%, #ff6600 2px, transparent 2px), radial-gradient(circle at 70% 70%, #ff6600 2px, transparent 2px)', pattern: 'basketball-dimples', color: '#ff6600' },
+            // Football leather texture
+            { background: 'repeating-linear-gradient(45deg, #8b4513 0px, #8b4513 2px, #a0522d 2px, #a0522d 4px)', pattern: 'football-leather', color: '#8b4513' },
+            // Soccer ball hexagon pattern
+            { background: 'repeating-conic-gradient(from 0deg, #000000 0deg 60deg, #ffffff 60deg 120deg)', pattern: 'soccer-hexagon', color: '#000000' },
+            // Jersey mesh texture
+            { background: 'repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)', pattern: 'jersey-mesh', color: '#00ffff' },
+            // Team stripes
+            { background: 'repeating-linear-gradient(90deg, #0099ff 0px, #0099ff 10px, #ffffff 10px, #ffffff 20px)', pattern: 'team-stripes', color: '#0099ff' },
+            // Athletic fabric
+            { background: 'linear-gradient(45deg, #39ff14 25%, transparent 25%), linear-gradient(-45deg, #39ff14 25%, transparent 25%)', pattern: 'athletic-fabric', color: '#39ff14' }
+          ],
           fonts: [
             'Courier New', 'Monaco', 'Consolas', 'Lucida Console', 'Menlo',
             'Orbitron', 'Rajdhani', 'Russo One', 'Quantico', 'Michroma',
@@ -141,6 +157,46 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const generateLetterShape = (): 'square' | 'wide' | 'tall' | 'skew' => {
     const shapes = ['square', 'wide', 'tall', 'skew'] as const;
     return shapes[Math.floor(Math.random() * shapes.length)];
+  };
+
+  // Generate transparency pattern - 2-3 letters per word
+  const generateTransparencyPattern = (text: string): boolean[] => {
+    const words = text.split(' ');
+    const pattern: boolean[] = [];
+    
+    words.forEach(word => {
+      const wordLength = word.length;
+      const transparentCount = Math.min(3, Math.max(2, Math.floor(wordLength * 0.3)));
+      const transparentIndices = new Set<number>();
+      
+      // Select random positions for transparent letters
+      while (transparentIndices.size < transparentCount && transparentIndices.size < wordLength) {
+        transparentIndices.add(Math.floor(Math.random() * wordLength));
+      }
+      
+      for (let i = 0; i < wordLength; i++) {
+        pattern.push(transparentIndices.has(i));
+      }
+      
+      // Add space
+      if (word !== words[words.length - 1]) {
+        pattern.push(false);
+      }
+    });
+    
+    return pattern;
+  };
+
+  // Generate letter type (card, transparent, jersey)
+  const generateLetterType = (index: number, isTransparent: boolean): 'card' | 'transparent' | 'jersey' => {
+    if (isTransparent) return 'transparent';
+    
+    // For connect theme, add jersey materials
+    if (theme === 'connect' && Math.random() < 0.25) {
+      return 'jersey';
+    }
+    
+    return 'card';
   };
 
   // Generate letter size with mixed distribution
@@ -221,29 +277,54 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return Math.random() > 0.5 ? '#ffffff' : '#000000';
   };
 
-  const generateLetterStyle = (): LetterStyle => {
-    const bgStyle = themeConfig.backgrounds[Math.floor(Math.random() * themeConfig.backgrounds.length)];
-    const textColor = getContrastingColor(bgStyle.background);
+  const generateLetterStyle = (letterType: 'card' | 'transparent' | 'jersey' = 'card'): LetterStyle => {
+    let bgStyle, textColor;
     
-    // Enhanced 3D shadow effects
-    const decorations = [
-      'none',
-      '2px 2px 4px rgba(0,0,0,0.3)',
-      '1px 1px 2px rgba(255,255,255,0.8)',
-      '0 0 3px rgba(0,0,0,0.5)',
-      'inset 0 1px 0 rgba(255,255,255,0.2)',
-      // 3D shadow effects
-      '3px 3px 0px rgba(0,0,0,0.4), 6px 6px 8px rgba(0,0,0,0.2)',
-      '2px 2px 0px rgba(255,255,255,0.3), 4px 4px 6px rgba(0,0,0,0.3)',
-      '1px 1px 0px rgba(0,0,0,0.5), 2px 2px 0px rgba(0,0,0,0.3), 3px 3px 0px rgba(0,0,0,0.2)',
-    ];
+    if (letterType === 'transparent') {
+      // Transparent letters have no background
+      bgStyle = { background: 'transparent', pattern: 'transparent' };
+      textColor = getRandomColor();
+    } else if (letterType === 'jersey' && theme === 'connect' && themeConfig.jerseyPatterns) {
+      // Jersey patterns for connect theme
+      bgStyle = themeConfig.jerseyPatterns[Math.floor(Math.random() * themeConfig.jerseyPatterns.length)];
+      textColor = getContrastingColor(bgStyle.background);
+    } else {
+      // Regular card backgrounds
+      bgStyle = themeConfig.backgrounds[Math.floor(Math.random() * themeConfig.backgrounds.length)];
+      textColor = getContrastingColor(bgStyle.background);
+    }
+    
+    // Enhanced shadow effects with depth layering
+    const getTextShadowForType = (type: 'card' | 'transparent' | 'jersey') => {
+      if (type === 'transparent') {
+        // Layered shadows for transparent letters to create depth
+        return [
+          '2px 2px 4px rgba(0,0,0,0.8), 4px 4px 8px rgba(0,0,0,0.6), 6px 6px 12px rgba(0,0,0,0.4)',
+          '1px 1px 3px rgba(0,0,0,0.9), 3px 3px 6px rgba(0,0,0,0.7), 5px 5px 10px rgba(0,0,0,0.5)',
+          '3px 3px 0px rgba(0,0,0,0.8), 6px 6px 8px rgba(0,0,0,0.6), 9px 9px 15px rgba(0,0,0,0.4)'
+        ];
+      }
+      
+      return [
+        'none',
+        '2px 2px 4px rgba(0,0,0,0.3)',
+        '1px 1px 2px rgba(255,255,255,0.8)',
+        '0 0 3px rgba(0,0,0,0.5)',
+        'inset 0 1px 0 rgba(255,255,255,0.2)',
+        '3px 3px 0px rgba(0,0,0,0.4), 6px 6px 8px rgba(0,0,0,0.2)',
+        '2px 2px 0px rgba(255,255,255,0.3), 4px 4px 6px rgba(0,0,0,0.3)',
+        '1px 1px 0px rgba(0,0,0,0.5), 2px 2px 0px rgba(0,0,0,0.3), 3px 3px 0px rgba(0,0,0,0.2)',
+      ];
+    };
+
+    const shadowOptions = getTextShadowForType(letterType);
 
     return {
       color: textColor,
       fontFamily: themeConfig.fonts[Math.floor(Math.random() * themeConfig.fonts.length)],
-      fontSize: `${1.0 + Math.random() * 0.5}em`, // Increased from 0.9-1.3em to 1.0-1.5em
+      fontSize: `${1.0 + Math.random() * 0.5}em`,
       backgroundColor: bgStyle.background,
-      textShadow: decorations[Math.floor(Math.random() * decorations.length)]
+      textShadow: shadowOptions[Math.floor(Math.random() * shadowOptions.length)]
     };
   };
 
@@ -254,6 +335,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         if (char === ' ') return char;
         return Math.random() > 0.5 ? char.toUpperCase() : char.toLowerCase();
       }).join('');
+      
+      // Generate transparency pattern
+      const transparencyPattern = generateTransparencyPattern(children);
       
       // Only allow 1-2 letters to have sharp angles (>10 degrees)
       const totalLetters = processedText.length;
@@ -270,6 +354,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       const newLetters = processedText.split('').map((char, index) => {
         const hasSharpAngle = sharpAngleIndices.has(index);
         const isThemeWord = detectThemeWord(children, index);
+        const isTransparent = transparencyPattern[index] || false;
+        const letterType = generateLetterType(index, isTransparent);
+        
         return {
           char,
           isAnimating: false,
@@ -279,10 +366,12 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           float: Math.random() * 2,
           lean: hasSharpAngle ? (Math.random() * 12 - 6) : (Math.random() * 4 - 2), // Controlled lean
           glowIntensity: 0.5 + Math.random() * 0.5,
-          style: generateLetterStyle(),
+          style: generateLetterStyle(letterType),
           shape: generateLetterShape(),
           size: generateLetterSize(index, totalLetters),
-          isThemeWord
+          isThemeWord,
+          isTransparent,
+          letterType
         };
       });
       setLetters(newLetters);
@@ -300,7 +389,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         
         setLetters(prev => prev.map(letter => ({
           ...letter,
-          style: generateLetterStyle()
+          style: generateLetterStyle(letter.letterType)
         })));
       } else {
         setAnimationKey(prev => prev + 1);
@@ -309,7 +398,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         
         setLetters(prev => prev.map(letter => ({
           ...letter,
-          style: generateLetterStyle()
+          style: generateLetterStyle(letter.letterType)
         })));
       }
     }, 8000);
@@ -373,7 +462,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           setTimeout(() => {
             setLetters(prev => prev.map((letter, index) => 
               newFlipping.includes(index) 
-                ? { ...letter, style: generateLetterStyle() }
+                ? { ...letter, style: generateLetterStyle(letter.letterType) }
                 : letter
             ));
           }, 800);
@@ -466,10 +555,21 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     const shapeStyles = getShapeStyles(letter.shape);
     const sizeScale = getSizeScale(letter.size);
     
-    // Theme word highlighting
+    // Theme word highlighting and transparent letter handling
     const isThemeWord = letter.isThemeWord;
+    const isTransparent = letter.isTransparent;
     const themeColor = isThemeWord ? getThemeHighlightColor() : letter.style.color;
     const themeWeight = isThemeWord ? 'bold' : (Math.random() > 0.4 ? 'bold' : Math.random() > 0.7 ? '900' : 'normal');
+    
+    // Enhanced styles for transparent letters
+    const transparentStyles = isTransparent ? {
+      background: 'transparent',
+      fontSize: `${parseFloat(letter.style.fontSize) * sizeScale * 1.1}em`, // Slightly larger
+      zIndex: 10,
+      textShadow: isThemeWord 
+        ? `0 0 8px ${themeColor}, 0 0 16px ${themeColor}, ${letter.style.textShadow}`
+        : letter.style.textShadow
+    } : {};
     
     // Pre-calculated stable values to prevent layout shifts
     const stableOffsets = {
@@ -483,13 +583,14 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return {
       color: themeColor,
       fontFamily: letter.style.fontFamily,
-      fontSize: `${parseFloat(letter.style.fontSize) * sizeScale}em`,
-      background: letter.style.backgroundColor,
+      fontSize: transparentStyles.fontSize || `${parseFloat(letter.style.fontSize) * sizeScale}em`,
+      background: transparentStyles.background || letter.style.backgroundColor,
       textShadow: isActive ? `
         ${letter.style.textShadow},
         0 0 ${15 * specialEffectMultiplier}px currentColor,
         0 0 ${25 * specialEffectMultiplier}px currentColor
-      ` : letter.style.textShadow,
+      ` : (transparentStyles.textShadow || letter.style.textShadow),
+      zIndex: transparentStyles.zIndex || 'auto',
       // Use transforms only - no layout-affecting properties
       transform: `
         translateX(0px) translateY(${stableOffsets.float}px)
