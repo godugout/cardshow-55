@@ -38,7 +38,7 @@ export const CRDCard = React.forwardRef<HTMLDivElement, CRDCardProps>(
     return (
       <ShadcnCard
         ref={ref}
-        className={cn(cardVariants({ variant, className }))}
+        className={cn(cardVariants({ variant, padding }), className)}
         {...props}
       >
         {header && (
