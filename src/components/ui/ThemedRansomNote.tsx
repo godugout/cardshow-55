@@ -182,33 +182,34 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
   const themeConfig = getThemeConfig(theme);
 
-  // Generate material-specific border radius for authentic shapes
+  // Generate material-specific styling for authentic magazine cutouts
   const generateMaterialBorderRadius = (material: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood'): string => {
+    // For ransom notes, we want minimal border radius to look like sharp cutouts
     switch (material) {
       case 'paper':
-        // Extremely irregular torn edges
-        return `${Math.random() * 25 + 5}px ${Math.random() * 30 + 8}px ${Math.random() * 20 + 3}px ${Math.random() * 35 + 2}px`;
+        // Sharp magazine/newspaper cuts with slight irregularity
+        return `${Math.random() * 3 + 1}px ${Math.random() * 4 + 1}px ${Math.random() * 2 + 1}px ${Math.random() * 3 + 1}px`;
       case 'cardboard':
-        // Very chunky, rough rectangular with big corners
-        return `${Math.random() * 15 + 3}px ${Math.random() * 25 + 5}px`;
+        // Very minimal rounding for thick paper cuts
+        return `${Math.random() * 2 + 1}px`;
       case 'jersey':
-        // Very fabric-like rounded with huge variation
-        return `${Math.random() * 20 + 10}px ${Math.random() * 15 + 8}px ${Math.random() * 25 + 5}px`;
+        // Fabric cuts - slightly softer
+        return `${Math.random() * 4 + 2}px`;
       case 'gold':
       case 'chrome':
-        // Sharp metallic but with some variation
-        return `${Math.random() * 8 + 2}px ${Math.random() * 12 + 1}px`;
+        // Metallic materials - very sharp cuts
+        return `${Math.random() * 2}px`;
       case 'leather':
-        // Very soft, huge curved edges
-        return `${Math.random() * 30 + 15}px ${Math.random() * 25 + 10}px ${Math.random() * 20 + 8}px`;
+        // Leather - minimal soft edges
+        return `${Math.random() * 3 + 1}px`;
       case 'glass':
-        // Clean but with some geometric variation  
-        return `${Math.random() * 10 + 2}px ${Math.random() * 15 + 3}px`;
+        // Glass - sharp geometric cuts
+        return `${Math.random() * 1}px`;
       case 'wood':
-        // Very natural, huge organic shapes
-        return `${Math.random() * 35 + 8}px ${Math.random() * 28 + 5}px ${Math.random() * 22 + 3}px ${Math.random() * 40 + 10}px`;
+        // Wood - slightly irregular natural cuts
+        return `${Math.random() * 3 + 1}px ${Math.random() * 2 + 1}px`;
       default:
-        return `${Math.random() * 20 + 5}px ${Math.random() * 25 + 8}px`;
+        return `${Math.random() * 2 + 1}px`;
     }
   };
 
