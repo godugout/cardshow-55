@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { CreatePageHero } from '@/components/create/CreatePageHero';
+import { CreateChoiceSection } from '@/components/create/CreateChoiceSection';
 import { NavbarAwareContainer } from '@/components/layout/NavbarAwareContainer';
 
 const CreateChoice: React.FC = () => {
@@ -10,7 +11,8 @@ const CreateChoice: React.FC = () => {
         {/* Full Width Hero Section */}
         <CreatePageHero />
         
-        {/* Rest of the create page content would go here */}
+        {/* Choice Section */}
+        <CreateChoiceSection />
       </div>
     </NavbarAwareContainer>
   );
