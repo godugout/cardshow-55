@@ -294,8 +294,26 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           return `polygon(${corners.map(([x, y]) => `${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`).join(', ')})`;
           
         case 'tall-rect':
-          const tallWidth = 75 + Math.random() * 10; // 75-85% width (reduced aspect ratio)
-          const tallHeight = 85 + Math.random() * 5; // 85-90% height (reduced)
+          let tallWidth = 75 + Math.random() * 10; // 75-85% width (reduced aspect ratio)
+          let tallHeight = 85 + Math.random() * 5; // 85-90% height (reduced)
+          
+          // Check if shape is close to full height (>85%) and reduce width accordingly
+          if (tallHeight > 85) {
+            // Reduce width by 25% on the side with more space (randomly choose left or right)
+            const reduceLeft = Math.random() > 0.5;
+            tallWidth = tallWidth * 0.75; // Reduce width by 25%
+            
+            if (reduceLeft) {
+              // Shift shape to the right by reducing left side
+              const adjustedCenterX = centerX + (tallWidth * 0.125); // Shift center slightly right
+              return `polygon(${adjustedCenterX - tallWidth/2}% ${centerY - tallHeight/2}%, ${adjustedCenterX + tallWidth/2}% ${centerY - tallHeight/2}%, ${adjustedCenterX + tallWidth/2}% ${centerY + tallHeight/2}%, ${adjustedCenterX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
+            } else {
+              // Shift shape to the left by reducing right side
+              const adjustedCenterX = centerX - (tallWidth * 0.125); // Shift center slightly left
+              return `polygon(${adjustedCenterX - tallWidth/2}% ${centerY - tallHeight/2}%, ${adjustedCenterX + tallWidth/2}% ${centerY - tallHeight/2}%, ${adjustedCenterX + tallWidth/2}% ${centerY + tallHeight/2}%, ${adjustedCenterX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
+            }
+          }
+          
           return `polygon(${centerX - tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY + tallHeight/2}%, ${centerX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
           
         case 'wide-rect':
@@ -450,45 +468,38 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return themeConfig.colors[Math.floor(Math.random() * themeConfig.colors.length)];
   };
 
-  const getContrastingColor = (bgColor: string): string => {
-    // Improved contrast detection for better readability
-    const isLightBackground = (color: string): boolean => {
-      if (color.includes('ffffff') || color.includes('#fff') || 
-          color.includes('#f5f5dc') || color.includes('#faebd7') || 
-          color.includes('#fff8dc') || color.includes('#ffeb3b') ||
-          color.includes('#ffffff') || color.includes('#f0f0f0') ||
-          color.includes('#ffff99') || color.includes('#ffd700')) {
-        return true;
-      }
-      return false;
-    };
+  const getContrastingColor = (bgColor: string, material: string = ''): string => {
+    // Force white text on any dark backgrounds - comprehensive dark pattern detection
+    const darkPatterns = [
+      '#000', '#111', '#222', '#333', '#1a1a1a', '#2f2f2f', '#404040', 
+      '#2a2a2a', '#0f3460', 'rgb(0', 'rgb(1', 'rgb(2', 'rgb(3', 'black',
+      'dark-leather', 'dark-vintage', 'old-black', 'digital-black',
+      'dark-block', 'grey-block', 'navy-block', 'blue-block'
+    ];
     
-    const isDarkBackground = (color: string): boolean => {
-      if (color.includes('#000000') || color.includes('#1a1a1a') || 
-          color.includes('#333333') || color.includes('#404040') ||
-          color.includes('#2a2a2a') || color.includes('#0f3460')) {
-        return true;
-      }
-      return false;
-    };
+    const darkMaterials = ['leather', 'wood', 'metal', 'chrome', 'dark', 'black'];
     
-    // 30% chance for colored text, 70% for high contrast
-    if (Math.random() < 0.3) {
-      return getRandomColor();
+    // Check for any dark pattern in background
+    if (darkPatterns.some(pattern => bgColor.toLowerCase().includes(pattern))) {
+      return 'rgba(255, 255, 255, 0.95)'; // Force white on dark
     }
     
-    // Ensure high contrast for readability
-    if (isLightBackground(bgColor)) {
-      return '#000000'; // Black on light backgrounds
-    } else if (isDarkBackground(bgColor)) {
-      return '#ffffff'; // White on dark backgrounds
-    } else {
-      // For medium colors, choose based on theme
-      if (theme === 'connect') {
-        return '#ffffff'; // White for connect theme visibility
-      }
-      return Math.random() > 0.5 ? '#ffffff' : '#000000';
+    // Check for dark materials
+    if (darkMaterials.some(mat => material.toLowerCase().includes(mat))) {
+      return 'rgba(255, 255, 255, 0.95)'; // Force white on dark materials
     }
+    
+    // Check for dark gradients
+    if (bgColor.includes('gradient') && (
+        bgColor.includes('2F1B14') || bgColor.includes('5D4037') || 
+        bgColor.includes('654321') || bgColor.includes('8B4513') ||
+        bgColor.includes('722F37') || bgColor.includes('A0522D')
+    )) {
+      return 'rgba(255, 255, 255, 0.95)'; // Force white on dark gradients
+    }
+    
+    // Force white text for safety on questionable backgrounds
+    return 'rgba(255, 255, 255, 0.95)';
   };
 
   // Generate font based on material source
