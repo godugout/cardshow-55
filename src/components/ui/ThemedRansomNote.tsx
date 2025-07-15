@@ -612,7 +612,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     // Pre-calculated stable values to prevent layout shifts
     const stableOffsets = {
       rotation: letter.rotation,
-      float: -letter.float + letter.backgroundOffset,
+      float: Math.max(-0.5, Math.min(0.5, -letter.float + letter.backgroundOffset)), // Constrained to baseline
       lean: letter.lean,
       padding: letter.char === ' ' ? '0' : '5px 6px',
       margin: letter.char === ' ' ? '0 0.3em' : '0 2px'
@@ -666,7 +666,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       letterSpacing: '-0.05em', 
       transform: 'scale(0.95)',
       lineHeight: '1.4',
-      contain: 'layout'
+      contain: 'layout',
+      height: '2.5em', // Fixed height container
+      overflow: 'visible',
+      position: 'relative'
     }}>
       {letters.map((letter, index) => (
         <span
@@ -676,7 +679,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             position: 'relative',
             minWidth: letter.char === ' ' ? '0.25em' : '0.8em',
             minHeight: '1.3em',
-            verticalAlign: 'middle',
+            maxHeight: '2.5em', // Baseline constraint
+            verticalAlign: 'top',
             contain: 'layout style',
             textAlign: 'center',
             ...getLetterStyle(letter, index)
