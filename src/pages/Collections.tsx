@@ -15,9 +15,11 @@ const Collections: React.FC = () => {
         title={
           <>
             <span className="text-4xl md:text-5xl lg:text-6xl">Your gateway to the world of</span>
-            <span className="gradient-text-green-blue-purple whitespace-nowrap">
-              digital cards
-            </span>
+            <div className="text-center">
+              <span className="gradient-text-green-blue-purple whitespace-nowrap">
+                digital cards
+              </span>
+            </div>
           </>
         }
         description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."
