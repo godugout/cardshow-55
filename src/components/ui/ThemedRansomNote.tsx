@@ -22,28 +22,6 @@ interface LetterState {
   isTransparent: boolean;
   letterType: 'card' | 'transparent' | 'jersey';
   backgroundOffset: number;
-  // Enhanced paper cut-out styling with material properties
-  borderRadius: string;
-  padding: string;
-  margin: string;
-  topOffset: number;
-  leftOffset: number;
-  zIndex: number;
-  borderStyle: string;
-  paperShadow: string;
-  fontWeight: string;
-  fontStyle: string;
-  textDecoration: string;
-  opacity: number;
-  materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood';
-  scale: number;
-  perspective: number;
-  // Authentic ransom note properties
-  materialSource: 'magazine-headline' | 'newspaper' | 'magazine-body' | 'advertisement' | 'book-page' | 'label';
-  clipPath: string;
-  overlayTexture: string;
-  isOverlapping: boolean;
-  shadowDepth: number;
 }
 
 interface LetterStyle {
@@ -66,9 +44,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const [isSpellingOut, setIsSpellingOut] = useState(false);
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
-  const [lastAnimationTime, setLastAnimationTime] = useState<number[]>([]);
 
-  // Theme-specific configurations with materials
+  // Theme-specific configurations
   const getThemeConfig = (theme: 'craft' | 'collect' | 'connect') => {
     switch (theme) {
       case 'craft':
@@ -81,32 +58,18 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             '#2ed573', '#ff4757', '#3742fa', '#2f3542', '#57606f', '#ffffff'
           ],
           backgrounds: [
-            { background: '#ff1744', pattern: 'electric-red', material: 'paper' },
-            { background: '#00e676', pattern: 'neon-green', material: 'paper' },
-            { background: '#2196f3', pattern: 'electric-blue', material: 'cardboard' },
-            { background: '#ffeb3b', pattern: 'neon-yellow', material: 'paper' },
-            { background: '#e91e63', pattern: 'hot-pink', material: 'paper' },
-            { background: '#ffd700', pattern: 'gold', material: 'gold' },
-            { background: '#ff6b35', pattern: 'orange', material: 'paper' },
-            { background: '#4ecdc4', pattern: 'turquoise', material: 'paper' },
-            { background: '#ffffff', pattern: 'white', material: 'paper' },
-            { background: 'linear-gradient(45deg, #ff6b6b 0%, #ff8e53 100%)', pattern: 'vibrant-1', material: 'paper' },
-            { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', pattern: 'electric-purple', material: 'paper' },
-            { background: 'linear-gradient(45deg, #fa709a 0%, #fee140 100%)', pattern: 'sunset', material: 'paper' },
-            // Chrome materials
-            { background: 'linear-gradient(135deg, #c0c0c0 0%, #ffffff 50%, #c0c0c0 100%)', pattern: 'chrome', material: 'chrome' },
-            { background: 'linear-gradient(90deg, #e8e8e8 0%, #ffffff 30%, #c0c0c0 70%, #e8e8e8 100%)', pattern: 'chrome-shine', material: 'chrome' },
-            // Glass materials
-            { background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)', pattern: 'glass', material: 'glass' },
-            { background: 'linear-gradient(45deg, rgba(200,230,255,0.3) 0%, rgba(255,255,255,0.1) 100%)', pattern: 'glass-tint', material: 'glass' },
-            // Wood materials
-            { background: 'linear-gradient(90deg, #8B4513 0%, #A0522D 25%, #CD853F 50%, #DEB887 75%, #F4A460 100%)', pattern: 'oak-wood', material: 'wood' },
-            { background: 'linear-gradient(45deg, #654321 0%, #8B4513 30%, #A0522D 70%, #CD853F 100%)', pattern: 'walnut-wood', material: 'wood' },
-            { background: 'linear-gradient(180deg, #F4A460 0%, #DEB887 25%, #D2B48C 50%, #BC9A6A 75%, #8B7D6B 100%)', pattern: 'pine-wood', material: 'wood' },
-            { background: 'linear-gradient(135deg, #722F37 0%, #A0522D 25%, #CD853F 50%, #D2691E 75%, #FF7F50 100%)', pattern: 'cherry-wood', material: 'wood' },
-            // Leather materials
-            { background: 'linear-gradient(45deg, #654321 0%, #8B4513 50%, #A0522D 100%)', pattern: 'brown-leather', material: 'leather' },
-            { background: 'linear-gradient(135deg, #2F1B14 0%, #5D4037 50%, #8D6E63 100%)', pattern: 'dark-leather', material: 'leather' }
+            { background: '#ff1744', pattern: 'electric-red' },
+            { background: '#00e676', pattern: 'neon-green' },
+            { background: '#2196f3', pattern: 'electric-blue' },
+            { background: '#ffeb3b', pattern: 'neon-yellow' },
+            { background: '#e91e63', pattern: 'hot-pink' },
+            { background: '#ffd700', pattern: 'gold' },
+            { background: '#ff6b35', pattern: 'orange' },
+            { background: '#4ecdc4', pattern: 'turquoise' },
+            { background: '#ffffff', pattern: 'white' },
+            { background: 'linear-gradient(45deg, #ff6b6b 0%, #ff8e53 100%)', pattern: 'vibrant-1' },
+            { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', pattern: 'electric-purple' },
+            { background: 'linear-gradient(45deg, #fa709a 0%, #fee140 100%)', pattern: 'sunset' }
           ],
           fonts: [
             'Impact', 'Arial Black', 'Helvetica Bold', 'Bebas Neue', 'Anton',
@@ -122,24 +85,16 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             '#f5f5dc', '#faebd7', '#fff8dc'
           ],
           backgrounds: [
-            { background: '#f5f5dc', pattern: 'vintage-paper', material: 'paper' },
-            { background: '#faebd7', pattern: 'antique-white', material: 'paper' },
-            { background: '#daa520', pattern: 'golden', material: 'gold' },
-            { background: '#cd853f', pattern: 'peru', material: 'cardboard' },
-            { background: '#8b4513', pattern: 'saddle-brown', material: 'cardboard' },
-            { background: 'linear-gradient(45deg, #f5f5dc 0%, #f0f0f0 25%, #f5f5dc 50%, #e8e8e8 75%, #f5f5dc 100%)', pattern: 'newspaper', material: 'paper' },
-            { background: 'linear-gradient(90deg, #fff8dc 0%, #faebd7 50%, #fff8dc 100%)', pattern: 'vintage-paper', material: 'paper' },
-            { background: 'linear-gradient(180deg, #fffacd 0%, #f0e68c 100%)', pattern: 'aged-paper', material: 'paper' },
-            { background: '#2f2f2f', pattern: 'dark-vintage', material: 'cardboard' },
-            { background: '#1a1a1a', pattern: 'old-black', material: 'cardboard' },
-            // Wood materials for collect theme
-            { background: 'linear-gradient(90deg, #8B4513 0%, #A0522D 25%, #CD853F 50%, #DEB887 75%, #F4A460 100%)', pattern: 'oak-wood', material: 'wood' },
-            { background: 'linear-gradient(45deg, #654321 0%, #8B4513 30%, #A0522D 70%, #CD853F 100%)', pattern: 'walnut-wood', material: 'wood' },
-            { background: 'linear-gradient(180deg, #F4A460 0%, #DEB887 25%, #D2B48C 50%, #BC9A6A 75%, #8B7D6B 100%)', pattern: 'pine-wood', material: 'wood' },
-            { background: 'linear-gradient(135deg, #722F37 0%, #A0522D 25%, #CD853F 50%, #D2691E 75%, #FF7F50 100%)', pattern: 'cherry-wood', material: 'wood' },
-            // Leather materials
-            { background: 'linear-gradient(45deg, #654321 0%, #8B4513 50%, #A0522D 100%)', pattern: 'brown-leather', material: 'leather' },
-            { background: 'linear-gradient(135deg, #2F1B14 0%, #5D4037 50%, #8D6E63 100%)', pattern: 'dark-leather', material: 'leather' }
+            { background: '#f5f5dc', pattern: 'vintage-paper' },
+            { background: '#faebd7', pattern: 'antique-white' },
+            { background: '#daa520', pattern: 'golden' },
+            { background: '#cd853f', pattern: 'peru' },
+            { background: '#8b4513', pattern: 'saddle-brown' },
+            { background: 'linear-gradient(45deg, #f5f5dc 0%, #f0f0f0 25%, #f5f5dc 50%, #e8e8e8 75%, #f5f5dc 100%)', pattern: 'newspaper' },
+            { background: 'linear-gradient(90deg, #fff8dc 0%, #faebd7 50%, #fff8dc 100%)', pattern: 'vintage-paper' },
+            { background: 'linear-gradient(180deg, #fffacd 0%, #f0e68c 100%)', pattern: 'aged-paper' },
+            { background: '#2f2f2f', pattern: 'dark-vintage' },
+            { background: '#1a1a1a', pattern: 'old-black' }
           ],
           fonts: [
             'Georgia', 'Times New Roman', 'Garamond', 'Palatino', 'Book Antiqua',
@@ -156,27 +111,37 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             '#ff6600', '#33cc33', '#0099ff', '#cc0099', '#ffff00'
           ],
           backgrounds: [
-            { background: '#00ffff', pattern: 'cyber-cyan', material: 'glass' },
-            { background: '#ff00ff', pattern: 'digital-magenta', material: 'glass' },
-            { background: '#39ff14', pattern: 'neon-green', material: 'chrome' },
-            { background: '#000000', pattern: 'digital-black', material: 'cardboard' },
-            { background: '#ffffff', pattern: 'pixel-white', material: 'paper' },
-            { background: 'repeating-conic-gradient(from 0deg at 50% 50%, #00ffff 0deg 90deg, #000000 90deg 180deg)', pattern: 'pixel-blocks', material: 'cardboard' },
-            { background: 'repeating-linear-gradient(90deg, #ff00ff 0px, #ff00ff 8px, #000000 8px, #000000 16px)', pattern: 'pixel-stripes', material: 'cardboard' },
-            { background: 'repeating-linear-gradient(45deg, #39ff14 0px, #39ff14 4px, #000000 4px, #000000 8px)', pattern: 'diagonal-pixels', material: 'cardboard' },
-            { background: '#2a2a2a', pattern: 'dark-block', material: 'cardboard' },
-            { background: '#404040', pattern: 'grey-block', material: 'cardboard' },
-            { background: '#1a1a2e', pattern: 'navy-block', material: 'cardboard' },
-            { background: '#0f3460', pattern: 'blue-block', material: 'cardboard' },
-            { background: 'linear-gradient(90deg, #000000 0%, #404040 100%)', pattern: 'subtle-fade', material: 'cardboard' }
+            // Pixel/block aesthetics mixed with cyber
+            { background: '#00ffff', pattern: 'cyber-cyan' },
+            { background: '#ff00ff', pattern: 'digital-magenta' },
+            { background: '#39ff14', pattern: 'neon-green' },
+            { background: '#000000', pattern: 'digital-black' },
+            { background: '#ffffff', pattern: 'pixel-white' },
+            // Block patterns using CSS
+            { background: 'repeating-conic-gradient(from 0deg at 50% 50%, #00ffff 0deg 90deg, #000000 90deg 180deg)', pattern: 'pixel-blocks' },
+            { background: 'repeating-linear-gradient(90deg, #ff00ff 0px, #ff00ff 8px, #000000 8px, #000000 16px)', pattern: 'pixel-stripes' },
+            { background: 'repeating-linear-gradient(45deg, #39ff14 0px, #39ff14 4px, #000000 4px, #000000 8px)', pattern: 'diagonal-pixels' },
+            // Solid blocks
+            { background: '#2a2a2a', pattern: 'dark-block' },
+            { background: '#404040', pattern: 'grey-block' },
+            { background: '#1a1a2e', pattern: 'navy-block' },
+            { background: '#0f3460', pattern: 'blue-block' },
+            // Minimal gradients for variety
+            { background: 'linear-gradient(90deg, #000000 0%, #404040 100%)', pattern: 'subtle-fade' }
           ],
           jerseyPatterns: [
-            { background: 'radial-gradient(circle at 30% 30%, #ff6600 2px, transparent 2px), radial-gradient(circle at 70% 70%, #ff6600 2px, transparent 2px)', pattern: 'basketball-dimples', color: '#ff6600', material: 'jersey' },
-            { background: 'repeating-linear-gradient(45deg, #8b4513 0px, #8b4513 2px, #a0522d 2px, #a0522d 4px)', pattern: 'football-leather', color: '#8b4513', material: 'jersey' },
-            { background: 'repeating-conic-gradient(from 0deg, #000000 0deg 60deg, #ffffff 60deg 120deg)', pattern: 'soccer-hexagon', color: '#000000', material: 'jersey' },
-            { background: 'repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)', pattern: 'jersey-mesh', color: '#00ffff', material: 'jersey' },
-            { background: 'repeating-linear-gradient(90deg, #0099ff 0px, #0099ff 10px, #ffffff 10px, #ffffff 20px)', pattern: 'team-stripes', color: '#0099ff', material: 'jersey' },
-            { background: 'linear-gradient(45deg, #39ff14 25%, transparent 25%), linear-gradient(-45deg, #39ff14 25%, transparent 25%)', pattern: 'athletic-fabric', color: '#39ff14', material: 'jersey' }
+            // Basketball textures
+            { background: 'radial-gradient(circle at 30% 30%, #ff6600 2px, transparent 2px), radial-gradient(circle at 70% 70%, #ff6600 2px, transparent 2px)', pattern: 'basketball-dimples', color: '#ff6600' },
+            // Football leather texture
+            { background: 'repeating-linear-gradient(45deg, #8b4513 0px, #8b4513 2px, #a0522d 2px, #a0522d 4px)', pattern: 'football-leather', color: '#8b4513' },
+            // Soccer ball hexagon pattern
+            { background: 'repeating-conic-gradient(from 0deg, #000000 0deg 60deg, #ffffff 60deg 120deg)', pattern: 'soccer-hexagon', color: '#000000' },
+            // Jersey mesh texture
+            { background: 'repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)', pattern: 'jersey-mesh', color: '#00ffff' },
+            // Team stripes
+            { background: 'repeating-linear-gradient(90deg, #0099ff 0px, #0099ff 10px, #ffffff 10px, #ffffff 20px)', pattern: 'team-stripes', color: '#0099ff' },
+            // Athletic fabric
+            { background: 'linear-gradient(45deg, #39ff14 25%, transparent 25%), linear-gradient(-45deg, #39ff14 25%, transparent 25%)', pattern: 'athletic-fabric', color: '#39ff14' }
           ],
           fonts: [
             'Courier New', 'Monaco', 'Consolas', 'Lucida Console', 'Menlo',
@@ -188,177 +153,6 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   };
 
   const themeConfig = getThemeConfig(theme);
-
-  // Generate authentic material source types
-  const generateMaterialSource = (): 'magazine-headline' | 'newspaper' | 'magazine-body' | 'advertisement' | 'book-page' | 'label' => {
-    const sources = ['magazine-headline', 'newspaper', 'magazine-body', 'advertisement', 'book-page', 'label'] as const;
-    return sources[Math.floor(Math.random() * sources.length)];
-  };
-
-  // Generate authentic material backgrounds based on source type
-  const generateMaterialBackground = (source: string) => {
-    const sourceBackgrounds = {
-      'magazine-headline': [
-        { background: '#ff1744', pattern: 'magazine-headline-red', material: 'paper' },
-        { background: '#2196f3', pattern: 'magazine-headline-blue', material: 'paper' },
-        { background: '#ffeb3b', pattern: 'magazine-headline-yellow', material: 'paper' },
-        { background: '#000000', pattern: 'magazine-headline-black', material: 'paper' },
-        { background: 'linear-gradient(45deg, #ff6b6b 0%, #ff8e53 100%)', pattern: 'magazine-gradient', material: 'paper' }
-      ],
-      'newspaper': [
-        { background: '#f5f5dc', pattern: 'newspaper-cream', material: 'paper' },
-        { background: '#ffffff', pattern: 'newspaper-white', material: 'paper' },
-        { background: '#faebd7', pattern: 'newspaper-antique', material: 'paper' },
-        { background: 'linear-gradient(180deg, #fffacd 0%, #f0e68c 100%)', pattern: 'aged-paper', material: 'paper' }
-      ],
-      'magazine-body': [
-        { background: '#ffffff', pattern: 'magazine-white', material: 'paper' },
-        { background: '#f8f8f8', pattern: 'magazine-light-gray', material: 'paper' },
-        { background: '#e3f2fd', pattern: 'magazine-light-blue', material: 'paper' },
-        { background: '#fff3e0', pattern: 'magazine-cream', material: 'paper' }
-      ],
-      'advertisement': [
-        { background: '#ff0080', pattern: 'ad-hot-pink', material: 'paper' },
-        { background: '#00ff80', pattern: 'ad-bright-green', material: 'paper' },
-        { background: '#8000ff', pattern: 'ad-purple', material: 'paper' },
-        { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', pattern: 'ad-gradient', material: 'paper' }
-      ],
-      'book-page': [
-        { background: '#fffacd', pattern: 'book-cream', material: 'paper' },
-        { background: '#f0e68c', pattern: 'book-aged', material: 'paper' },
-        { background: '#fdf5e6', pattern: 'book-old-lace', material: 'paper' }
-      ],
-      'label': [
-        { background: '#ffffff', pattern: 'label-white', material: 'paper' },
-        { background: '#f0f0f0', pattern: 'label-gray', material: 'paper' },
-        { background: '#ffff99', pattern: 'label-yellow', material: 'paper' }
-      ]
-    };
-    
-    const backgrounds = sourceBackgrounds[source as keyof typeof sourceBackgrounds] || sourceBackgrounds['magazine-headline'];
-    return backgrounds[Math.floor(Math.random() * backgrounds.length)];
-  };
-
-  // Generate clip-path with word-based analysis for round/oval distribution
-  const generateClipPath = (letterIndex: number, char: string, wordIndex: number, hasRoundInWord: boolean): string => {
-    // Check if this should be round/oval (max 1 per word, very rare)
-    const shouldBeRound = !hasRoundInWord && Math.random() < 0.08; // 8% chance
-    
-    if (shouldBeRound) {
-      return generateRoundOval();
-    }
-    
-    return generateFourSided(char);
-  };
-
-  const generateRoundOval = (): string => {
-    const isCircle = Math.random() < 0.6; // 60% circles, 40% ovals
-    const centerX = 50;
-    const centerY = 50;
-    
-    if (isCircle) {
-      const radius = 40 + Math.random() * 5; // 40-45% radius for full letter visibility
-      return `circle(${radius}% at ${centerX}% ${centerY}%)`;
-    } else {
-      // Oval
-      const radiusX = 40 + Math.random() * 8; // 40-48%
-      const radiusY = 35 + Math.random() * 10; // 35-45%
-      return `ellipse(${radiusX}% ${radiusY} at ${centerX}% ${centerY}%)`;
-    }
-  };
-
-  const generateFourSided = (char?: string): string => {
-    // Create varied shapes: squares, rectangles, balanced diamonds (no narrow verticals)
-    const shapeTypes = ['square', 'tall-rect', 'wide-rect', 'diamond'];
-    const shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-    
-    const centerX = 50;
-    const centerY = 50;
-    
-    switch (shapeType) {
-        case 'square':
-          const size = 80 + Math.random() * 10; // 80-90% for full letter visibility
-          const rotation = [-2, -1, 0, 1, 2][Math.floor(Math.random() * 5)]; // Minimal tilt
-          const rad = (rotation * Math.PI) / 180;
-          const cos = Math.cos(rad);
-          const sin = Math.sin(rad);
-          
-          // Rotate square corners around center
-          const corners = [
-            [-size/2, -size/2], [size/2, -size/2], [size/2, size/2], [-size/2, size/2]
-          ].map(([x, y]) => [
-            centerX + (x * cos - y * sin),
-            centerY + (x * sin + y * cos)
-          ]);
-          
-          return `polygon(${corners.map(([x, y]) => `${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`).join(', ')})`;
-          
-        case 'tall-rect':
-          let tallWidth = 75 + Math.random() * 10; // 75-85% width (reduced aspect ratio)
-          let tallHeight = 85 + Math.random() * 5; // 85-90% height (reduced)
-          
-          // Check if shape is close to full height (>85%) and reduce width accordingly
-          if (tallHeight > 85) {
-            // Reduce width by 25% on the side with more space (randomly choose left or right)
-            const reduceLeft = Math.random() > 0.5;
-            tallWidth = tallWidth * 0.75; // Reduce width by 25%
-            
-            if (reduceLeft) {
-              // Shift shape to the right by reducing left side
-              const adjustedCenterX = centerX + (tallWidth * 0.125); // Shift center slightly right
-              return `polygon(${adjustedCenterX - tallWidth/2}% ${centerY - tallHeight/2}%, ${adjustedCenterX + tallWidth/2}% ${centerY - tallHeight/2}%, ${adjustedCenterX + tallWidth/2}% ${centerY + tallHeight/2}%, ${adjustedCenterX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
-            } else {
-              // Shift shape to the left by reducing right side
-              const adjustedCenterX = centerX - (tallWidth * 0.125); // Shift center slightly left
-              return `polygon(${adjustedCenterX - tallWidth/2}% ${centerY - tallHeight/2}%, ${adjustedCenterX + tallWidth/2}% ${centerY - tallHeight/2}%, ${adjustedCenterX + tallWidth/2}% ${centerY + tallHeight/2}%, ${adjustedCenterX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
-            }
-          }
-          
-          return `polygon(${centerX - tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY + tallHeight/2}%, ${centerX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
-          
-        case 'wide-rect':
-          const wideWidth = 85 + Math.random() * 5; // 85-90% width (reduced)
-          const wideHeight = 75 + Math.random() * 10; // 75-85% height
-          return `polygon(${centerX - wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY + wideHeight/2}%, ${centerX - wideWidth/2}% ${centerY + wideHeight/2}%)`;
-          
-        case 'diamond':
-          // Skip diamond for tall letters to avoid cutoff
-          const tallLetters = ['I', 'l', 'j', 'f', 't', 'i', '!', '|'];
-          if (tallLetters.includes(char)) {
-            // Use square instead for tall letters
-            const squareSize = 80 + Math.random() * 10;
-            return `polygon(${centerX - squareSize/2}% ${centerY - squareSize/2}%, ${centerX + squareSize/2}% ${centerY - squareSize/2}%, ${centerX + squareSize/2}% ${centerY + squareSize/2}%, ${centerX - squareSize/2}% ${centerY + squareSize/2}%)`;
-          }
-          // Balanced diamond (limited height to 70% max)
-          const diamondWidth = 75 + Math.random() * 10; // 75-85% width
-          const diamondHeight = 60 + Math.random() * 10; // 60-70% height (limited to prevent cutoff)
-          return `polygon(${centerX}% ${centerY - diamondHeight/2}%, ${centerX + diamondWidth/2}% ${centerY}%, ${centerX}% ${centerY + diamondHeight/2}%, ${centerX - diamondWidth/2}% ${centerY}%)`;
-          
-        default:
-          return `polygon(${centerX - 40}% ${centerY - 40}%, ${centerX + 40}% ${centerY - 40}%, ${centerX + 40}% ${centerY + 40}%, ${centerX - 40}% ${centerY + 40}%)`;
-    }
-  };
-
-  // Generate overlay texture based on material source
-  const generateOverlayTexture = (materialSource?: string): string => {
-    if (!materialSource) return 'none';
-    switch (materialSource) {
-      case 'magazine-headline':
-        return 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.05) 100%)'; // Glossy finish
-      case 'newspaper':
-        return 'radial-gradient(circle at 20% 30%, rgba(0,0,0,0.05) 1px, transparent 1px), radial-gradient(circle at 80% 70%, rgba(0,0,0,0.03) 1px, transparent 1px)'; // Print dots
-      case 'magazine-body':
-        return 'linear-gradient(90deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(0,0,0,0.03) 100%)'; // Subtle paper texture
-      case 'advertisement':
-        return 'linear-gradient(45deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.05) 100%)'; // Shiny ad paper
-      case 'book-page':
-        return 'repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(0,0,0,0.02) 15px, rgba(0,0,0,0.02) 16px)'; // Book lines
-      case 'label':
-        return 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)'; // Label gloss
-      default:
-        return 'none';
-    }
-  };
 
   // Generate letter shape
   const generateLetterShape = (): 'square' | 'wide' | 'tall' | 'skew' => {
@@ -406,6 +200,17 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return 'card';
   };
 
+  // Generate background vertical offset for card positioning
+  const generateBackgroundOffset = (): number => {
+    const random = Math.random();
+    // Random vertical offset for card backgrounds: -0.3em to 0.3em
+    if (random < 0.2) return -0.3; // top
+    if (random < 0.4) return -0.15; // slightly above
+    if (random < 0.6) return 0; // middle
+    if (random < 0.8) return 0.15; // slightly below
+    return 0.3; // bottom
+  };
+
   // Generate letter size with mixed distribution
   const generateLetterSize = (index: number, totalLetters: number): 'small' | 'medium' | 'large' | 'extra-large' => {
     // Limit extra-large letters to 1-2 per word
@@ -440,26 +245,15 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return false;
   };
 
-  // Generate material border radius based on material type
-  const generateMaterialBorderRadius = (materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood'): string => {
-    switch (materialType) {
-      case 'paper':
-        return `${Math.random() * 3 + 1}px`; // 1-4px for paper
-      case 'cardboard':
-        return `${Math.random() * 2 + 2}px`; // 2-4px for cardboard
-      case 'jersey':
-        return `${Math.random() * 4 + 2}px`; // 2-6px for jersey
-      case 'gold':
-      case 'chrome':
-        return `${Math.random() * 2 + 3}px`; // 3-5px for metals
-      case 'leather':
-        return `${Math.random() * 3 + 2}px`; // 2-5px for leather
-      case 'glass':
-        return `${Math.random() * 4 + 1}px`; // 1-5px for glass
-      case 'wood':
-        return `${Math.random() * 2 + 1}px`; // 1-3px for wood
-      default:
-        return `${Math.random() * 3 + 2}px`;
+  // Get theme-specific highlight color for special words
+  const getThemeHighlightColor = (): string => {
+    switch (theme) {
+      case 'craft':
+        return ['#ff1744', '#00e676', '#2196f3'][Math.floor(Math.random() * 3)];
+      case 'collect':
+        return ['#daa520', '#8b4513', '#cd853f'][Math.floor(Math.random() * 3)];
+      case 'connect':
+        return ['#00ffff', '#ff00ff', '#39ff14'][Math.floor(Math.random() * 3)];
     }
   };
 
@@ -468,107 +262,81 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return themeConfig.colors[Math.floor(Math.random() * themeConfig.colors.length)];
   };
 
-  const getContrastingColor = (bgColor: string, material: string = ''): string => {
-    // Force white text on any dark backgrounds - comprehensive dark pattern detection
-    const darkPatterns = [
-      '#000', '#111', '#222', '#333', '#1a1a1a', '#2f2f2f', '#404040', 
-      '#2a2a2a', '#0f3460', 'rgb(0', 'rgb(1', 'rgb(2', 'rgb(3', 'black',
-      'dark-leather', 'dark-vintage', 'old-black', 'digital-black',
-      'dark-block', 'grey-block', 'navy-block', 'blue-block'
-    ];
-    
-    const darkMaterials = ['leather', 'wood', 'metal', 'chrome', 'dark', 'black'];
-    
-    // Check for any dark pattern in background
-    if (darkPatterns.some(pattern => bgColor.toLowerCase().includes(pattern))) {
-      return 'rgba(255, 255, 255, 0.95)'; // Force white on dark
+  const getContrastingColor = (bgColor: string): string => {
+    // 60% chance to use colored letters, 40% chance for contrast
+    if (Math.random() < 0.6) {
+      return getRandomColor();
     }
     
-    // Check for dark materials
-    if (darkMaterials.some(mat => material.toLowerCase().includes(mat))) {
-      return 'rgba(255, 255, 255, 0.95)'; // Force white on dark materials
+    if (bgColor.includes('gradient') || bgColor.includes('repeating')) {
+      return Math.random() > 0.5 ? '#ffffff' : '#000000';
     }
     
-    // Check for dark gradients
-    if (bgColor.includes('gradient') && (
-        bgColor.includes('2F1B14') || bgColor.includes('5D4037') || 
-        bgColor.includes('654321') || bgColor.includes('8B4513') ||
-        bgColor.includes('722F37') || bgColor.includes('A0522D')
-    )) {
-      return 'rgba(255, 255, 255, 0.95)'; // Force white on dark gradients
+    // Theme-specific contrast logic
+    if (theme === 'collect') {
+      const lightBgs = ['#f5f5dc', '#faebd7', '#fff8dc', '#fffacd', '#f0e68c'];
+      const isDark = !lightBgs.some(color => bgColor.includes(color));
+      return isDark ? '#ffffff' : '#000000';
     }
     
-    // Force white text for safety on questionable backgrounds
-    return 'rgba(255, 255, 255, 0.95)';
+    if (theme === 'connect') {
+      const darkBgs = ['#000000', '#1a1a1a', '#404040'];
+      const isDark = darkBgs.some(color => bgColor.includes(color));
+      return isDark ? '#00ffff' : '#000000';
+    }
+    
+    // Default craft theme
+    return Math.random() > 0.5 ? '#ffffff' : '#000000';
   };
 
-  // Generate font based on material source
-  const getFontForSource = (source: string): string => {
-    const sourceFonts = {
-      'magazine-headline': ['Impact', 'Arial Black', 'Bebas Neue', 'Anton', 'Oswald'],
-      'newspaper': ['Times New Roman', 'Georgia', 'serif'],
-      'magazine-body': ['Arial', 'Helvetica', 'Verdana', 'sans-serif'],
-      'advertisement': ['Impact', 'Arial Black', 'Futura', 'Helvetica Bold'],
-      'book-page': ['Times New Roman', 'Garamond', 'Palatino', 'Book Antiqua'],
-      'label': ['Arial', 'Helvetica', 'Verdana', 'Calibri']
-    };
-    
-    const fonts = sourceFonts[source as keyof typeof sourceFonts] || themeConfig.fonts;
-    return fonts[Math.floor(Math.random() * fonts.length)];
-  };
-
-  const generateLetterStyle = (letterType: 'card' | 'transparent' | 'jersey' = 'card', materialSource?: string): { style: LetterStyle; materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood' } => {
-    let bgStyle: any, textColor: string, materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood';
+  const generateLetterStyle = (letterType: 'card' | 'transparent' | 'jersey' = 'card'): LetterStyle => {
+    let bgStyle, textColor;
     
     if (letterType === 'transparent') {
       // Transparent letters have no background
-      bgStyle = { background: 'transparent', pattern: 'transparent', material: 'paper' };
+      bgStyle = { background: 'transparent', pattern: 'transparent' };
       textColor = getRandomColor();
-      materialType = 'paper';
     } else if (letterType === 'jersey' && theme === 'connect' && themeConfig.jerseyPatterns) {
       // Jersey patterns for connect theme
       bgStyle = themeConfig.jerseyPatterns[Math.floor(Math.random() * themeConfig.jerseyPatterns.length)];
       textColor = getContrastingColor(bgStyle.background);
-      materialType = (bgStyle as any).material || 'jersey';
     } else {
-      // Generate authentic material backgrounds based on source
-      bgStyle = generateMaterialBackground(materialSource || 'magazine-headline');
+      // Regular card backgrounds
+      bgStyle = themeConfig.backgrounds[Math.floor(Math.random() * themeConfig.backgrounds.length)];
       textColor = getContrastingColor(bgStyle.background);
-      materialType = (bgStyle as any).material || 'paper';
     }
-
-    // Subtle shadow effects for better readability
+    
+    // Enhanced shadow effects with depth layering
     const getTextShadowForType = (type: 'card' | 'transparent' | 'jersey') => {
       if (type === 'transparent') {
-        // Moderate shadows for transparent letters
+        // Layered shadows for transparent letters to create depth
         return [
-          '1px 1px 2px rgba(0,0,0,0.7), 2px 2px 4px rgba(0,0,0,0.5)',
-          '1px 1px 3px rgba(0,0,0,0.6), 2px 2px 5px rgba(0,0,0,0.4)',
-          '2px 2px 0px rgba(0,0,0,0.5), 3px 3px 6px rgba(0,0,0,0.3)'
+          '2px 2px 4px rgba(0,0,0,0.8), 4px 4px 8px rgba(0,0,0,0.6), 6px 6px 12px rgba(0,0,0,0.4)',
+          '1px 1px 3px rgba(0,0,0,0.9), 3px 3px 6px rgba(0,0,0,0.7), 5px 5px 10px rgba(0,0,0,0.5)',
+          '3px 3px 0px rgba(0,0,0,0.8), 6px 6px 8px rgba(0,0,0,0.6), 9px 9px 15px rgba(0,0,0,0.4)'
         ];
       }
       
       return [
         'none',
-        '1px 1px 2px rgba(0,0,0,0.4)', // Subtle shadows
-        '1px 1px 1px rgba(255,255,255,0.6)', // Light outline
-        '0 0 2px rgba(0,0,0,0.3)', // Soft glow
-        '1px 1px 0px rgba(0,0,0,0.3), 2px 2px 4px rgba(0,0,0,0.2)' // Minimal layered
+        '2px 2px 4px rgba(0,0,0,0.3)',
+        '1px 1px 2px rgba(255,255,255,0.8)',
+        '0 0 3px rgba(0,0,0,0.5)',
+        'inset 0 1px 0 rgba(255,255,255,0.2)',
+        '3px 3px 0px rgba(0,0,0,0.4), 6px 6px 8px rgba(0,0,0,0.2)',
+        '2px 2px 0px rgba(255,255,255,0.3), 4px 4px 6px rgba(0,0,0,0.3)',
+        '1px 1px 0px rgba(0,0,0,0.5), 2px 2px 0px rgba(0,0,0,0.3), 3px 3px 0px rgba(0,0,0,0.2)',
       ];
     };
 
     const shadowOptions = getTextShadowForType(letterType);
-    const fontFamily = getFontForSource(materialSource || 'magazine-headline');
 
     return {
-      style: {
-        color: textColor,
-        fontFamily: fontFamily,
-        fontSize: `${1.0 + Math.random() * 0.5}em`,
-        backgroundColor: bgStyle.background,
-        textShadow: shadowOptions[Math.floor(Math.random() * shadowOptions.length)]
-      },
-      materialType
+      color: textColor,
+      fontFamily: themeConfig.fonts[Math.floor(Math.random() * themeConfig.fonts.length)],
+      fontSize: `${1.0 + Math.random() * 0.5}em`,
+      backgroundColor: bgStyle.background,
+      textShadow: shadowOptions[Math.floor(Math.random() * shadowOptions.length)]
     };
   };
 
@@ -583,10 +351,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       // Generate transparency pattern
       const transparencyPattern = generateTransparencyPattern(children);
       
-      // Allow more letters to have sharp angles (enhanced for fun physics)
+      // Only allow 1-2 letters to have sharp angles (>10 degrees)
       const totalLetters = processedText.length;
       const sharpAngleIndices = new Set<number>();
-      const numSharpAngles = Math.min(4, Math.max(2, Math.floor(totalLetters * 0.3))); // 2-4 letters
+      const numSharpAngles = Math.min(2, Math.max(1, Math.floor(totalLetters * 0.2))); // 1-2 letters
       
       while (sharpAngleIndices.size < numSharpAngles) {
         const randomIndex = Math.floor(Math.random() * totalLetters);
@@ -600,324 +368,303 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         const isThemeWord = detectThemeWord(children, index);
         const isTransparent = transparencyPattern[index] || false;
         const letterType = generateLetterType(index, isTransparent);
-        const materialSource = generateMaterialSource();
-        const { style, materialType } = generateLetterStyle(letterType, materialSource);
-        
-        // Generate authentic cutout properties  
-        const clipPath = generateClipPath(index, char, 0, false); // Simplified for initial generation
-        const overlayTexture = generateOverlayTexture(materialSource);
-        
-        // Enhanced overlapping logic
-        const isOverlapping = index > 0 && Math.random() < 0.3; // 30% chance to overlap with previous letter
-        const shadowDepth = Math.random() * 3 + 1; // 1-4 depth levels
         
         return {
           char,
           isAnimating: false,
           animationType: 'float' as const,
           animationProgress: 0,
-          rotation: hasSharpAngle ? (Math.random() * 8 - 4) : (Math.random() * 6 - 3), // Sharp: ±4°, Normal: ±3° (much reduced)
+          rotation: hasSharpAngle ? (Math.random() * 30 - 15) : (Math.random() * 6 - 3), // Sharp: ±15°, Normal: ±3°
           float: Math.random() * 2,
-          lean: hasSharpAngle ? (Math.random() * 6 - 3) : (Math.random() * 4 - 2), // Minimal lean
+          lean: hasSharpAngle ? (Math.random() * 12 - 6) : (Math.random() * 4 - 2), // Controlled lean
           glowIntensity: 0.5 + Math.random() * 0.5,
-          style,
+          style: generateLetterStyle(letterType),
           shape: generateLetterShape(),
           size: generateLetterSize(index, totalLetters),
           isThemeWord,
           isTransparent,
           letterType,
-          backgroundOffset: char === ' ' ? 0 : 0,
-          materialType,
-          // Enhanced paper cut-out styling with material-specific shapes
-          borderRadius: generateMaterialBorderRadius(materialType),
-          padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`, // Smart padding for visibility
-          margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`, // Reduced margin to prevent excessive gaps
-          topOffset: 0, // Fixed to 0 for consistent baseline alignment
-          leftOffset: Math.random() * 4 - 2, // Reduced from ±5px to ±2px for better readability
-          zIndex: Math.floor(Math.random() * 3) + 1, // Reduced layers from 5 to 3 for less chaos
-          borderStyle: Math.random() > 0.6 ? `${Math.random() > 0.3 ? '2' : '1'}px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.${Math.floor(Math.random() * 4) + 1})` : 'none',
-          paperShadow: Math.random() > 0.4 ? 
-            `${Math.random() * 4 + 2}px ${Math.random() * 4 + 2}px ${Math.random() * 8 + 3}px rgba(0,0,0,0.${Math.floor(Math.random() * 4) + 2})` : 
-            'none',
-          fontWeight: Math.random() > 0.6 ? 'bold' : 'normal',
-          fontStyle: Math.random() > 0.85 ? 'italic' : 'normal',
-          textDecoration: Math.random() > 0.92 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
-          opacity: Math.random() > 0.9 ? 0.7 + Math.random() * 0.3 : 1,
-          scale: 0.9 + Math.random() * 0.4, // Scale breathing effect
-          perspective: Math.random() * 6 - 3, // Minimal 3D perspective rotation
-          materialSource,
-          clipPath,
-          overlayTexture,
-          isOverlapping,
-          shadowDepth
+          backgroundOffset: char === ' ' ? 0 : generateBackgroundOffset()
         };
       });
       setLetters(newLetters);
-      setLastAnimationTime(new Array(newLetters.length).fill(0));
     };
 
     initializeLetters();
   }, [children, theme]);
 
   useEffect(() => {
-    if (isSpellingOut && spellIndex < letters.length) {
-      const timer = setTimeout(() => {
-        // Skip spaces but include them in the count for proper ordering
-        if (letters[spellIndex].char !== ' ') {
-          setActiveAnimations(prev => [...prev, spellIndex]);
-        }
-        setSpellIndex(prev => prev + 1);
-      }, letters[spellIndex]?.char === ' ' ? 50 : 100); // Faster for spaces
-      return () => clearTimeout(timer);
-    } else if (isSpellingOut && spellIndex >= letters.length) {
-      setTimeout(() => setIsSpellingOut(false), 1000);
-    }
-  }, [isSpellingOut, spellIndex, letters.length]);
-
-  useEffect(() => {
-    // Much slower, less distracting animations (50s main cycle, 700ms phase)
     const variationInterval = setInterval(() => {
-      // 70% chance to skip animation completely for realistic feel
-      if (Math.random() < 0.7) {
-        return;
-      }
-      
-      // Only spell-out animation occasionally
-      if (Math.random() < 0.2) {
+      if (Math.random() < 0.3) {
         setIsSpellingOut(true);
         setSpellIndex(0);
         setActiveAnimations([]);
         
-        // Sequential animation timing for spelling out
-        setLetters(prev => prev.map((letter, index) => {
-          const { style, materialType } = generateLetterStyle(letter.letterType, letter.materialSource);
-          return {
-            ...letter,
-            style,
-            materialType,
-            borderRadius: generateMaterialBorderRadius(materialType),
-            clipPath: generateClipPath(index, letter.char, 0, false),
-            // Regenerate cut-out properties for variety with less aggressive positioning
-            padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
-            margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
-            topOffset: 0, // Fixed to 0 for consistent baseline alignment
-            leftOffset: (Math.random() - 0.5) * 2, // Reduced from 4 to 2
-            zIndex: Math.floor(Math.random() * 3) + 1, // Limited to 3 levels
-            scale: 0.9 + Math.random() * 0.4,
-            perspective: Math.random() * 6 - 3 // Minimal perspective rotation for upright letters
-          };
-        }));
+        setLetters(prev => prev.map(letter => ({
+          ...letter,
+          style: generateLetterStyle(letter.letterType),
+          backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+        })));
       } else {
-        // Animate only 1-2 random letters instead of all
-        setLetters(prevLetters => {
-          if (prevLetters.length === 0) return prevLetters;
-          
-          const newLetters = [...prevLetters];
-          const currentTime = Date.now();
-          
-          // Select only 1-2 letters to animate, avoiding recently animated ones
-          const availableIndices = prevLetters
-            .map((_, index) => index)
-            .filter(index => 
-              !lastAnimationTime[index] || 
-              (currentTime - lastAnimationTime[index]) > 60000 // 60 second cooldown
-            );
-          
-          if (availableIndices.length === 0) return prevLetters;
-          
-          // Randomly select 1-2 letters from available ones
-          const numToAnimate = Math.random() < 0.7 ? 1 : 2;
-          const selectedIndices = [];
-          
-          for (let i = 0; i < numToAnimate && availableIndices.length > 0; i++) {
-            const randomIndex = Math.floor(Math.random() * availableIndices.length);
-            const selectedIndex = availableIndices.splice(randomIndex, 1)[0];
-            selectedIndices.push(selectedIndex);
-          }
-          
-          // Animate selected letters only
-          selectedIndices.forEach(index => {
-            const letter = prevLetters[index];
-            const { style, materialType } = generateLetterStyle(letter.letterType, letter.materialSource);
-            
-            newLetters[index] = {
-              ...letter,
-              style,
-              materialType,
-              borderRadius: generateMaterialBorderRadius(materialType),
-              clipPath: generateClipPath(index, letter.char, 0, false),
-              // Less aggressive positioning for better visibility
-              padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
-              margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
-              topOffset: 0, // Fixed to 0 for consistent baseline alignment
-              leftOffset: (Math.random() - 0.5) * 2, // Reduced from 4 to 2
-              zIndex: Math.floor(Math.random() * 3) + 1, // Limited to 3 levels
-              scale: 0.9 + Math.random() * 0.4,
-              perspective: Math.random() * 6 - 3 // Consistent minimal perspective
-            };
-          });
-          
-          // Update animation times
-          setLastAnimationTime(prev => {
-            const newTimes = [...prev];
-            selectedIndices.forEach(index => {
-              newTimes[index] = currentTime;
-            });
-            return newTimes;
-          });
-          
-          return newLetters;
-        });
+        setAnimationKey(prev => prev + 1);
+        setActiveAnimations([]);
+        setIsSpellingOut(false);
+        
+        setLetters(prev => prev.map(letter => ({
+          ...letter,
+          style: generateLetterStyle(letter.letterType),
+          backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+        })));
       }
-    }, 50000); // Increased from 25s to 50s
+    }, 8000);
 
     const phaseInterval = setInterval(() => {
       setAnimPhase(prev => prev + 1);
-    }, 700); // Increased from 600ms to 700ms
+    }, 200);
 
     return () => {
       clearInterval(variationInterval);
       clearInterval(phaseInterval);
     };
-  }, [theme, lastAnimationTime]);
+  }, [theme]);
 
-  // Helper functions for styling
-  const getSizeStyles = (size: string) => {
-    switch (size) {
-      case 'small':
-        return { fontSize: '0.8em', shadow: '0 2px 4px rgba(0,0,0,0.1)' };
-      case 'medium':
-        return { fontSize: '1.0em', shadow: '0 3px 6px rgba(0,0,0,0.15)' };
-      case 'large':
-        return { fontSize: '1.3em', shadow: '0 4px 8px rgba(0,0,0,0.2)' };
-      case 'extra-large':
-        return { fontSize: '1.6em', shadow: '0 6px 12px rgba(0,0,0,0.25)' };
-      default:
-        return { fontSize: '1.0em', shadow: '0 3px 6px rgba(0,0,0,0.15)' };
+  useEffect(() => {
+    if (isSpellingOut) {
+      const spellInterval = setInterval(() => {
+        setSpellIndex(prev => {
+          const nextIndex = prev + 1;
+          if (nextIndex >= children.length) {
+            setIsSpellingOut(false);
+            return 0;
+          }
+          return nextIndex;
+        });
+      }, 400);
+
+      return () => clearInterval(spellInterval);
     }
-  };
+  }, [isSpellingOut, children.length]);
 
-  const getShapeStyles = (shape: string) => {
-    switch (shape) {
-      case 'square':
-        return { borderRadius: '6px', transform: 'none' };
-      case 'wide':
-        return { borderRadius: '4px', transform: 'scaleX(1.2)' };
-      case 'tall':
-        return { borderRadius: '8px', transform: 'scaleY(1.2)' };
-      case 'skew':
-        return { borderRadius: '4px', transform: 'skewX(-8deg)' };
-      default:
-        return { borderRadius: '4px', transform: 'none' };
-    }
-  };
+  useEffect(() => {
+    const letterInterval = setInterval(() => {
+      setLetters(prev => prev.map((letter, index) => ({
+        ...letter,
+        rotation: letter.rotation + (Math.sin(animPhase * 0.015 + index) * 0.2), // Gentler rotation changes
+        float: 0.5 + Math.sin(animPhase * 0.02 + index * 0.5) * 1.5, // Smaller float range
+        lean: Math.sin(animPhase * 0.018 + index * 0.3) * 2, // Much smaller lean movement
+        glowIntensity: 0.5 + Math.sin(animPhase * 0.03 + index * 0.7) * 0.5
+      })));
 
-  // Subtle floating movement for gentle letter motion
-  const getLetterFloat = (index: number) => {
-    return Math.sin(animPhase * 0.003 + index * 0.3) * 2; // Reduced to 2px for subtle movement
+      if (Math.random() < 0.4) {
+        const availableLetters = letters.map((_, i) => i).filter(i => 
+          !activeAnimations.includes(i) && 
+          !flippingLetters.includes(i) && 
+          letters[i]?.char !== ' '
+        );
+        
+        if (availableLetters.length > 0) {
+          const numToFlip = Math.min(1 + Math.floor(Math.random() * 3), availableLetters.length);
+          const newFlipping = [];
+          
+          for (let i = 0; i < numToFlip; i++) {
+            const randomIndex = availableLetters[Math.floor(Math.random() * availableLetters.length)];
+            newFlipping.push(randomIndex);
+            availableLetters.splice(availableLetters.indexOf(randomIndex), 1);
+          }
+          
+          setFlippingLetters(newFlipping);
+          
+          setTimeout(() => {
+            setLetters(prev => prev.map((letter, index) => 
+              newFlipping.includes(index) 
+                ? { 
+                    ...letter, 
+                    style: generateLetterStyle(letter.letterType),
+                    backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.4 ? generateBackgroundOffset() : letter.backgroundOffset)
+                  }
+                : letter
+            ));
+          }, 800);
+          
+          setTimeout(() => {
+            setFlippingLetters(prev => prev.filter(i => !newFlipping.includes(i)));
+          }, 1600);
+        }
+      }
+
+      if (Math.random() < 0.1) {
+        const availableLetters = letters.map((_, i) => i).filter(i => 
+          !activeAnimations.includes(i) && 
+          !flippingLetters.includes(i)
+        );
+        if (availableLetters.length > 0) {
+          const numToAnimate = Math.min(1 + Math.floor(Math.random() * 2), availableLetters.length);
+          const newActive = [];
+          for (let i = 0; i < numToAnimate; i++) {
+            const randomIndex = availableLetters[Math.floor(Math.random() * availableLetters.length)];
+            newActive.push(randomIndex);
+            availableLetters.splice(availableLetters.indexOf(randomIndex), 1);
+          }
+          setActiveAnimations(newActive);
+          
+          setTimeout(() => {
+            setActiveAnimations(prev => prev.filter(i => !newActive.includes(i)));
+          }, 4000 + Math.random() * 2000);
+        }
+      }
+    }, 300);
+
+    return () => clearInterval(letterInterval);
+  }, [animPhase, activeAnimations, letters, flippingLetters, theme]);
+
+  const getLetterStyle = (letter: LetterState, index: number) => {
+    const isActive = activeAnimations.includes(index);
+    const isFlipping = flippingLetters.includes(index);
+    const specialEffectMultiplier = isActive ? letter.glowIntensity * 2 : 1;
+    
+    const isVisible = !isSpellingOut || index < spellIndex;
+    
+    // Get size-based scaling
+    const getSizeScale = (size: string): number => {
+      switch (size) {
+        case 'small': return 0.8;
+        case 'medium': return 1.0;
+        case 'large': return 1.3;
+        case 'extra-large': return 1.6;
+        default: return 1.0;
+      }
+    };
+    
+    // Get shape-specific styles
+    const getShapeStyles = (shape: string) => {
+      switch (shape) {
+        case 'square':
+          return {
+            aspectRatio: '1',
+            borderRadius: '6px',
+            clipPath: 'none'
+          };
+        case 'wide':
+          return {
+            width: '1.4em',
+            height: '1em',
+            borderRadius: '4px',
+            clipPath: 'none'
+          };
+        case 'tall':
+          return {
+            width: '0.8em',
+            height: '1.3em',
+            borderRadius: '8px',
+            clipPath: 'none'
+          };
+        case 'skew':
+          return {
+            borderRadius: '4px',
+            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)'
+          };
+        default:
+          return {
+            borderRadius: '4px',
+            clipPath: 'none'
+          };
+      }
+    };
+    
+    const shapeStyles = getShapeStyles(letter.shape);
+    const sizeScale = getSizeScale(letter.size);
+    
+    // Theme word highlighting and transparent letter handling
+    const isThemeWord = letter.isThemeWord;
+    const isTransparent = letter.isTransparent;
+    const themeColor = isThemeWord ? getThemeHighlightColor() : letter.style.color;
+    const themeWeight = isThemeWord ? 'bold' : (Math.random() > 0.4 ? 'bold' : Math.random() > 0.7 ? '900' : 'normal');
+    
+    // Enhanced styles for transparent letters
+    const transparentStyles = isTransparent ? {
+      background: 'transparent',
+      fontSize: `${parseFloat(letter.style.fontSize) * sizeScale * 1.1}em`, // Slightly larger
+      zIndex: 10,
+      textShadow: isThemeWord 
+        ? `0 0 8px ${themeColor}, 0 0 16px ${themeColor}, ${letter.style.textShadow}`
+        : letter.style.textShadow
+    } : {};
+    
+    // Pre-calculated stable values to prevent layout shifts
+    const stableOffsets = {
+      rotation: letter.rotation,
+      float: -letter.float + letter.backgroundOffset,
+      lean: letter.lean,
+      padding: letter.char === ' ' ? '0' : '5px 6px',
+      margin: letter.char === ' ' ? '0 0.3em' : '0 2px'
+    };
+    
+    return {
+      color: themeColor,
+      fontFamily: letter.style.fontFamily,
+      fontSize: transparentStyles.fontSize || `${parseFloat(letter.style.fontSize) * sizeScale}em`,
+      background: transparentStyles.background || letter.style.backgroundColor,
+      textShadow: isActive ? `
+        ${letter.style.textShadow},
+        0 0 ${15 * specialEffectMultiplier}px currentColor,
+        0 0 ${25 * specialEffectMultiplier}px currentColor
+      ` : (transparentStyles.textShadow || letter.style.textShadow),
+      zIndex: transparentStyles.zIndex || 'auto',
+      // Use transforms only - no layout-affecting properties
+      transform: `
+        translateX(0px) translateY(${stableOffsets.float}px)
+        rotateZ(${stableOffsets.rotation}deg)
+        rotateX(${stableOffsets.lean}deg)
+        ${isFlipping ? `rotateY(${Math.sin(animPhase * 0.05) * 180}deg)` : ''}
+        ${isActive ? `rotateY(${Math.sin(animPhase * 0.05 + index) * 45}deg)` : ''}
+        ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
+        ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
+        ${isSpellingOut && index === spellIndex - 1 ? 'scale(1.2)' : ''}
+      `,
+      filter: `brightness(${1 + (isActive ? 0.5 : 0) * Math.sin(animPhase * 0.06 + index)})`,
+      padding: stableOffsets.padding,
+      margin: stableOffsets.margin,
+      border: 'none',
+      boxShadow: 'none',
+      opacity: isVisible ? (letter.char === ' ' ? 1 : 0.9) : 0,
+      display: letter.char === ' ' ? 'inline' : 'inline-block',
+      fontWeight: themeWeight,
+      fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
+      textDecoration: Math.random() > 0.85 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
+      letterSpacing: Math.random() > 0.7 ? '0.1em' : 'normal',
+      // Apply shape styles
+      ...shapeStyles,
+      // Layout containment to prevent shifts
+      contain: 'layout style',
+      willChange: 'transform',
+      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+      transformOrigin: 'center center',
+    };
   };
 
   return (
-    <div 
-      className={`relative inline-block ${className}`}
-      style={{ 
-        height: '3.5em',
-        lineHeight: '1.4',
-        fontWeight: 'bold',
-        perspective: '1000px',
-        transformStyle: 'preserve-3d'
-      }}
-    >
-      {/* Letters container */}
-      <div
-        className="absolute"
-        style={{
-          top: '50%',
-          left: '50%',
-          transform: 'translateX(-50%) translateY(-50%)',
-          whiteSpace: 'nowrap',
-          display: 'inline-flex',
-          alignItems: 'middle',
-          letterSpacing: '0.1em',
-          wordSpacing: '0.3em'
-        }}
-      >
-        {letters.map((letter, index) => {
-          if (letter.char === ' ') {
-            return <span key={`${animationKey}-${index}`} style={{ marginRight: '0.5em' }}>\u00A0</span>;
-          }
-
-          const animationDelay = isSpellingOut ? index * 0.1 : Math.random() * 2;
-          const isActive = activeAnimations.includes(index);
-          const isFlipping = flippingLetters.includes(index);
-          
-          return (
-            <span
-              key={`${animationKey}-${index}`}
-              className={`inline-block font-bold ${
-                letter.isAnimating ? 'animate-bounce' : ''
-              } ${
-                letter.isThemeWord ? 'animate-pulse' : ''
-              }`}
-              style={{
-                position: 'relative',
-                display: 'inline-block',
-                verticalAlign: 'middle',
-                zIndex: letter.zIndex,
-                fontSize: getSizeStyles(letter.size).fontSize,
-                color: letter.style.color,
-                fontFamily: letter.style.fontFamily,
-                fontWeight: letter.fontWeight,
-                fontStyle: letter.fontStyle,
-                textDecoration: letter.textDecoration,
-                textShadow: letter.style.textShadow,
-                transform: `
-                  rotate(${letter.rotation}deg) 
-                  rotateX(${letter.perspective}deg)
-                  scale(${letter.scale})
-                  translateY(${getLetterFloat(index)}px)
-                  translateX(${letter.leftOffset}px)
-                  ${isFlipping ? 'rotateY(180deg)' : ''}
-                `,
-                transformOrigin: 'center center',
-                transition: `all ${0.5 + Math.random() * 0.8}s cubic-bezier(0.68, -0.55, 0.265, 1.55)`, // Spring physics
-                animationDelay: `${animationDelay}s`,
-                willChange: 'transform', // GPU acceleration
-                
-                filter: `
-                  brightness(${0.95 + Math.random() * 0.1}) 
-                  contrast(${0.98 + Math.random() * 0.04})
-                  ${letter.glowIntensity > 0.9 ? `drop-shadow(0 0 ${letter.glowIntensity * 1}px ${letter.style.color}20)` : ''}
-                `,
-                padding: letter.letterType !== 'transparent' ? letter.padding : '0',
-                margin: letter.letterType !== 'transparent' ? letter.margin : '0.05em',
-                background: letter.letterType !== 'transparent' ? letter.style.backgroundColor : 'transparent',
-                borderRadius: letter.letterType !== 'transparent' ? letter.borderRadius : '0',
-                border: letter.letterType !== 'transparent' ? letter.borderStyle : 'none',
-                boxShadow: letter.letterType !== 'transparent' ? (letter.paperShadow !== 'none' ? letter.paperShadow : getSizeStyles(letter.size).shadow) : 'none',
-                opacity: letter.opacity,
-                clipPath: letter.clipPath
-              }}
+    <div className={`inline-block mt-4 ${className}`} style={{ 
+      letterSpacing: '0.05em', 
+      transform: 'scale(0.95)',
+      lineHeight: '1.5',
+      contain: 'layout'
+    }}>
+      {letters.map((letter, index) => (
+        <span
+          key={`${index}-${animationKey}-${theme}`}
+          className="inline-block"
+          style={{
+            position: 'relative',
+            minWidth: letter.char === ' ' ? '0.4em' : '1.2em',
+            minHeight: '1.4em',
+            verticalAlign: 'middle',
+            contain: 'layout style',
+            ...getLetterStyle(letter, index)
+          }}
         >
           {letter.char}
-          {/* Overlay texture for material authenticity */}
-          <div 
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: letter.overlayTexture,
-              pointerEvents: 'none',
-              borderRadius: letter.borderRadius,
-              clipPath: letter.clipPath
-            }}
-          />
         </span>
-          );
-        })}
-      </div>
+      ))}
     </div>
   );
 };
