@@ -22,6 +22,19 @@ interface LetterState {
   isTransparent: boolean;
   letterType: 'card' | 'transparent' | 'jersey';
   backgroundOffset: number;
+  // Paper cut-out styling
+  borderRadius: string;
+  padding: string;
+  margin: string;
+  topOffset: number;
+  leftOffset: number;
+  zIndex: number;
+  borderStyle: string;
+  paperShadow: string;
+  fontWeight: string;
+  fontStyle: string;
+  textDecoration: string;
+  opacity: number;
 }
 
 interface LetterStyle {
@@ -363,7 +376,22 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           isThemeWord,
           isTransparent,
           letterType,
-          backgroundOffset: char === ' ' ? 0 : 0
+          backgroundOffset: char === ' ' ? 0 : 0,
+          // Paper cut-out styling - generated once and stored
+          borderRadius: `${Math.random() * 6 + 2}px`,
+          padding: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
+          margin: `${Math.random() * 2}px ${Math.random() * 3 + 1}px`,
+          topOffset: Math.random() * 4 - 2,
+          leftOffset: Math.random() * 2 - 1,
+          zIndex: Math.floor(Math.random() * 3) + 1,
+          borderStyle: Math.random() > 0.7 ? `1px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.2)` : 'none',
+          paperShadow: Math.random() > 0.5 ? 
+            `${Math.random() * 2 + 1}px ${Math.random() * 2 + 1}px ${Math.random() * 3 + 2}px rgba(0,0,0,0.${Math.floor(Math.random() * 3) + 1})` : 
+            'none',
+          fontWeight: Math.random() > 0.7 ? 'bold' : 'normal',
+          fontStyle: Math.random() > 0.9 ? 'italic' : 'normal',
+          textDecoration: Math.random() > 0.95 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
+          opacity: Math.random() > 0.95 ? 0.8 : 1
         };
       });
       setLetters(newLetters);
@@ -490,22 +518,6 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           const isActive = activeAnimations.includes(index);
           const isFlipping = flippingLetters.includes(index);
           
-          // Random paper cut-out variations for authentic ransom note look
-          const borderRadius = `${Math.random() * 6 + 2}px`; // 2-8px random
-          const padding = `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`; // Random padding
-          const margin = `${Math.random() * 2}px ${Math.random() * 3 + 1}px`; // Random margin
-          const topOffset = Math.random() * 4 - 2; // ±2px vertical offset
-          const leftOffset = Math.random() * 2 - 1; // ±1px horizontal offset
-          const zIndex = Math.floor(Math.random() * 3) + 1;
-          
-          // Random border for paper cut-out effect
-          const borderStyle = Math.random() > 0.7 ? `1px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.2)` : 'none';
-          
-          // Random shadow for paper depth
-          const paperShadow = Math.random() > 0.5 ? 
-            `${Math.random() * 2 + 1}px ${Math.random() * 2 + 1}px ${Math.random() * 3 + 2}px rgba(0,0,0,0.${Math.floor(Math.random() * 3) + 1})` : 
-            getSizeStyles(letter.size).shadow;
-
           return (
             <span
               key={`${animationKey}-${index}`}
@@ -518,18 +530,18 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
                 position: 'relative',
                 display: 'inline-block',
                 verticalAlign: 'middle',
-                zIndex,
+                zIndex: letter.zIndex,
                 fontSize: getSizeStyles(letter.size).fontSize,
                 color: letter.style.color,
                 fontFamily: letter.style.fontFamily,
-                fontWeight: Math.random() > 0.7 ? 'bold' : 'normal',
-                fontStyle: Math.random() > 0.9 ? 'italic' : 'normal',
-                textDecoration: Math.random() > 0.95 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
+                fontWeight: letter.fontWeight,
+                fontStyle: letter.fontStyle,
+                textDecoration: letter.textDecoration,
                 textShadow: letter.style.textShadow,
                 transform: `
                   rotate(${letter.rotation}deg) 
-                  translateY(${getLetterFloat(index) + topOffset}px)
-                  translateX(${leftOffset}px)
+                  translateY(${getLetterFloat(index) + letter.topOffset}px)
+                  translateX(${letter.leftOffset}px)
                   ${isFlipping ? 'rotateY(180deg)' : ''}
                 `,
                 transformOrigin: 'center center',
@@ -541,13 +553,13 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
                   contrast(${0.95 + Math.random() * 0.1})
                   ${letter.glowIntensity > 0.8 ? `drop-shadow(0 0 ${letter.glowIntensity * 3}px ${letter.style.color}40)` : ''}
                 `,
-                padding: letter.letterType !== 'transparent' ? padding : '0',
-                margin: letter.letterType !== 'transparent' ? margin : '0.05em',
+                padding: letter.letterType !== 'transparent' ? letter.padding : '0',
+                margin: letter.letterType !== 'transparent' ? letter.margin : '0.05em',
                 background: letter.letterType !== 'transparent' ? letter.style.backgroundColor : 'transparent',
-                borderRadius: letter.letterType !== 'transparent' ? borderRadius : '0',
-                border: letter.letterType !== 'transparent' ? borderStyle : 'none',
-                boxShadow: letter.letterType !== 'transparent' ? paperShadow : 'none',
-                opacity: Math.random() > 0.95 ? 0.8 : 1 // Occasional worn paper effect
+                borderRadius: letter.letterType !== 'transparent' ? letter.borderRadius : '0',
+                border: letter.letterType !== 'transparent' ? letter.borderStyle : 'none',
+                boxShadow: letter.letterType !== 'transparent' ? (letter.paperShadow !== 'none' ? letter.paperShadow : getSizeStyles(letter.size).shadow) : 'none',
+                opacity: letter.opacity
               }}
             >
               {letter.char}
