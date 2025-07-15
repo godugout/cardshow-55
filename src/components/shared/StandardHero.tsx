@@ -54,6 +54,16 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
         <>
           <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-crd-green/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-crd-blue/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          
+          {/* Sparkly Stars */}
+          <div className="absolute top-20 left-10 w-1 h-1 bg-yellow-400 rounded-full shadow-[0_0_6px_#fbbf24,0_0_12px_#fbbf24] animate-pulse"></div>
+          <div className="absolute top-32 right-20 w-2 h-2 bg-white rounded-full shadow-[0_0_8px_#ffffff,0_0_16px_#ffffff] animate-pulse delay-500"></div>
+          <div className="absolute top-60 left-1/3 w-1.5 h-1.5 bg-yellow-300 rounded-full shadow-[0_0_10px_#fde047,0_0_20px_#fde047] animate-pulse delay-1000"></div>
+          <div className="absolute bottom-40 right-10 w-1 h-1 bg-white rounded-full shadow-[0_0_6px_#ffffff,0_0_12px_#ffffff] animate-pulse delay-300"></div>
+          <div className="absolute bottom-20 left-1/5 w-2.5 h-2.5 bg-yellow-400 rounded-full shadow-[0_0_12px_#fbbf24,0_0_24px_#fbbf24] animate-pulse delay-700"></div>
+          <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-yellow-200 rounded-full shadow-[0_0_8px_#fefce8,0_0_16px_#fefce8] animate-pulse delay-200"></div>
+          <div className="absolute bottom-60 left-20 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_10px_#ffffff,0_0_20px_#ffffff] animate-pulse delay-900"></div>
+          <div className="absolute top-40 right-1/3 w-2 h-2 bg-yellow-300 rounded-full shadow-[0_0_8px_#fde047,0_0_16px_#fde047] animate-pulse delay-1200"></div>
         </>
       )}
       
