@@ -11,7 +11,7 @@ export const CreatePageHero: React.FC = () => {
       label="CUT, CRAFT & CREATE DIGITALLY"
       title={
         <>
-          <span className="font-light">From paper scraps to <GlitchyArt>digital art</GlitchyArt></span><br />
+          <span className="font-light">From paper scraps<br />to <GlitchyArt>digital art</GlitchyArt></span><br />
           <span className="whitespace-nowrap">
             <RansomNote>craft</RansomNote> cards that <span className="gradient-text-green-blue-purple">come alive</span>
           </span>
