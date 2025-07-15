@@ -676,7 +676,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   };
 
   return (
-    <div className={`inline-block mt-4 mb-8 ${className}`} style={{ 
+    <div className={`inline-block mt-8 mb-2 ${className}`} style={{ 
       letterSpacing: '-0.05em', 
       transform: 'scale(0.95)',
       lineHeight: '1.4',
@@ -684,7 +684,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       height: '2.5em', // Fixed height container
       overflow: 'visible',
       position: 'relative',
-      paddingBottom: '1.5em' // Extra padding below animation
+      paddingTop: '1.5em' // Extra padding above animation
     }}>
       {letters.map((letter, index) => (
         <span
