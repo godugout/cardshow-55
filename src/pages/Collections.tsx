@@ -16,14 +16,35 @@ const Collections: React.FC = () => {
         title={
           <>
             <span className="text-4xl md:text-5xl lg:text-6xl">Your gateway to the world of</span><br />
-            <div className="inline-block w-80 h-20 relative">
-              <LetterGlitch
-                glitchSpeed={50}
-                centerVignette={false}
-                outerVignette={false}
-                smooth={true}
-                glitchColors={["#61dca3", "#61b3dc", "#9333ea"]}
-              />
+            <div className="relative inline-block">
+              <span className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text" 
+                    style={{
+                      background: 'transparent',
+                      WebkitTextFillColor: 'transparent',
+                      WebkitBackgroundClip: 'text'
+                    }}>
+                digital cards
+              </span>
+              <div 
+                className="absolute inset-0 text-4xl md:text-5xl lg:text-6xl font-black pointer-events-none"
+                style={{
+                  WebkitMask: 'linear-gradient(white, white)',
+                  WebkitMaskComposite: 'source-in',
+                  mask: 'linear-gradient(white, white)',
+                  maskComposite: 'intersect'
+                }}
+              >
+                <div className="absolute inset-0 overflow-hidden">
+                  <LetterGlitch
+                    glitchSpeed={50}
+                    centerVignette={false}
+                    outerVignette={false}
+                    smooth={true}
+                    glitchColors={["#61dca3", "#61b3dc", "#9333ea"]}
+                  />
+                </div>
+                <span className="relative z-10 invisible">digital cards</span>
+              </div>
             </div>
           </>
         }
