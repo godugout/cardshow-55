@@ -5,6 +5,7 @@ import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
 import { Typography, CRDButton } from '@/components/ui/design-system';
 import { ThemedPage } from '@/components/ui/design-system/ThemedLayout';
 import { StandardHero } from '@/components/shared/StandardHero';
+import { PixelDigital } from '@/components/ui/PixelDigital';
 
 const Collections: React.FC = () => {
   return (
@@ -16,7 +17,7 @@ const Collections: React.FC = () => {
           <>
             <span className="font-light">Your gateway to the</span><br />
             <span className="gradient-text-green-blue-purple whitespace-nowrap">
-              world of digital cards
+              world of <PixelDigital>digital</PixelDigital> cards
             </span>
           </>
         }
