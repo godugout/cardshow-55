@@ -5,12 +5,22 @@ interface RansomNoteProps {
   className?: string;
 }
 
+interface LetterState {
+  char: string;
+  isAnimating: boolean;
+  animationType: 'spell' | 'spin' | 'float' | 'glow';
+  animationProgress: number;
+  rotation: number;
+  float: number;
+  lean: number;
+  glowIntensity: number;
+  style: LetterStyle;
+}
+
 interface LetterStyle {
   color: string;
   fontFamily: string;
   fontSize: string;
-  rotation: number;
-  skew: number;
   backgroundColor: string;
   textShadow: string;
 }
@@ -19,7 +29,9 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   children, 
   className = "" 
 }) => {
-  const [letterStyles, setLetterStyles] = useState<LetterStyle[]>([]);
+  const [letters, setLetters] = useState<LetterState[]>([]);
+  const [animPhase, setAnimPhase] = useState(0);
+  const [activeAnimations, setActiveAnimations] = useState<number[]>([]);
   const [animationKey, setAnimationKey] = useState(0);
 
   // Text colors with good contrast
@@ -98,91 +110,158 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
       '0 0 3px rgba(0,0,0,0.5)',
       'inset 0 1px 0 rgba(255,255,255,0.2)',
     ];
-    
-    const borderStyles = [
-      'none',
-      '1px solid rgba(0,0,0,0.2)',
-      '2px solid rgba(255,255,255,0.3)',
-      '1px dashed rgba(0,0,0,0.3)',
-      '2px dotted rgba(255,255,255,0.4)',
-    ];
 
     return {
       color: textColor,
       fontFamily: fontFamilies[Math.floor(Math.random() * fontFamilies.length)],
       fontSize: `${0.7 + Math.random() * 0.6}em`, // 0.7em to 1.3em for more height variation
-      rotation: (Math.random() - 0.5) * 30, // -15 to 15 degrees
-      skew: (Math.random() - 0.5) * 15, // more skew variation
       backgroundColor: bgStyle.background,
       textShadow: decorations[Math.floor(Math.random() * decorations.length)]
     };
   };
 
   useEffect(() => {
-    const updateStyles = () => {
-      const newStyles = children.split('').map(() => generateLetterStyle());
-      setLetterStyles(newStyles);
-      setAnimationKey(prev => prev + 1);
+    // Initialize letters with animation states
+    const initializeLetters = () => {
+      const newLetters = children.split('').map(char => ({
+        char,
+        isAnimating: false,
+        animationType: 'float' as const,
+        animationProgress: 0,
+        rotation: Math.random() * 10 - 5,
+        float: Math.random() * 2,
+        lean: Math.random() * 5 - 2.5,
+        glowIntensity: 0.5 + Math.random() * 0.5,
+        style: generateLetterStyle()
+      }));
+      setLetters(newLetters);
     };
 
-    // Initial styles
-    updateStyles();
-
-    // Update every 3 seconds for continuous animation
-    const interval = setInterval(updateStyles, 3000);
-
-    return () => clearInterval(interval);
+    initializeLetters();
   }, [children]);
+
+  useEffect(() => {
+    // Switch variations every 5 seconds
+    const variationInterval = setInterval(() => {
+      setAnimationKey(prev => prev + 1);
+      // Reset letter animations for new variation
+      setActiveAnimations([]);
+      // Regenerate all letter styles
+      setLetters(prev => prev.map(letter => ({
+        ...letter,
+        style: generateLetterStyle()
+      })));
+    }, 5000);
+
+    // Fast animation phases for effects
+    const phaseInterval = setInterval(() => {
+      setAnimPhase(prev => prev + 1);
+    }, 100);
+
+    return () => {
+      clearInterval(variationInterval);
+      clearInterval(phaseInterval);
+    };
+  }, []);
+
+  // Manage individual letter animations
+  useEffect(() => {
+    const letterInterval = setInterval(() => {
+      setLetters(prev => prev.map((letter, index) => ({
+        ...letter,
+        rotation: letter.rotation + (Math.sin(animPhase * 0.02 + index) * 0.3),
+        float: 2 + Math.sin(animPhase * 0.03 + index * 0.5) * 1.5,
+        lean: Math.sin(animPhase * 0.025 + index * 0.3) * 3,
+        glowIntensity: 0.5 + Math.sin(animPhase * 0.04 + index * 0.7) * 0.4
+      })));
+
+      // Randomly activate 2-3 letters for special animations
+      if (Math.random() < 0.3) {
+        const availableLetters = letters.map((_, i) => i).filter(i => !activeAnimations.includes(i));
+        if (availableLetters.length > 0) {
+          const numToAnimate = Math.min(2 + Math.floor(Math.random() * 2), availableLetters.length);
+          const newActive = [];
+          for (let i = 0; i < numToAnimate; i++) {
+            const randomIndex = availableLetters[Math.floor(Math.random() * availableLetters.length)];
+            newActive.push(randomIndex);
+            availableLetters.splice(availableLetters.indexOf(randomIndex), 1);
+          }
+          setActiveAnimations(newActive);
+          
+          // Clear animations after 2-3 seconds
+          setTimeout(() => {
+            setActiveAnimations(prev => prev.filter(i => !newActive.includes(i)));
+          }, 2000 + Math.random() * 1000);
+        }
+      }
+    }, 150);
+
+    return () => clearInterval(letterInterval);
+  }, [animPhase, activeAnimations, letters]);
+
+  const getLetterStyle = (letter: LetterState, index: number) => {
+    const isActive = activeAnimations.includes(index);
+    const specialEffectMultiplier = isActive ? letter.glowIntensity * 2 : 1;
+    
+    // Enhanced styling for each letter
+    const randomBorder = Math.random() > 0.7 ? 
+      `${Math.floor(Math.random() * 2) + 1}px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.3)` : 
+      'none';
+    const randomRadius = Math.random() > 0.6 ? 
+      `${Math.floor(Math.random() * 8) + 2}px` : 
+      `${Math.floor(Math.random() * 3)}px`;
+    const randomShadow = Math.random() > 0.7 ? 
+      `${Math.floor(Math.random() * 3) + 1}px ${Math.floor(Math.random() * 3) + 1}px ${Math.floor(Math.random() * 5) + 2}px rgba(0,0,0,0.4)` : 
+      'none';
+    
+    return {
+      color: letter.style.color,
+      fontFamily: letter.style.fontFamily,
+      fontSize: letter.style.fontSize,
+      background: letter.style.backgroundColor,
+      textShadow: isActive ? `
+        ${letter.style.textShadow},
+        0 0 ${15 * specialEffectMultiplier}px currentColor,
+        0 0 ${25 * specialEffectMultiplier}px currentColor
+      ` : letter.style.textShadow,
+      transform: `
+        rotateZ(${letter.rotation}deg)
+        rotateX(${letter.lean}deg)
+        translateY(${-letter.float}px)
+        ${isActive ? `rotateY(${Math.sin(animPhase * 0.1 + index) * 20}deg)` : ''}
+        ${isActive ? `scale(${1 + Math.sin(animPhase * 0.08 + index) * 0.1})` : ''}
+      `,
+      filter: `brightness(${1 + (isActive ? 0.5 : 0) * Math.sin(animPhase * 0.06 + index)})`,
+      padding: letter.char === ' ' ? '0' : `${4 + Math.floor(Math.random() * 4)}px ${6 + Math.floor(Math.random() * 4)}px`,
+      margin: letter.char === ' ' ? '0 0.4em' : `0 ${2 + Math.floor(Math.random() * 3)}px`,
+      borderRadius: randomRadius,
+      border: randomBorder,
+      boxShadow: randomShadow,
+      opacity: letter.char === ' ' ? 1 : 0.9,
+      display: letter.char === ' ' ? 'inline' : 'inline-block',
+      fontWeight: Math.random() > 0.4 ? 'bold' : Math.random() > 0.7 ? '900' : 'normal',
+      fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
+      textDecoration: Math.random() > 0.85 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
+      position: 'relative' as const,
+      top: `${(Math.random() - 0.5) * 6}px`,
+      left: `${(Math.random() - 0.5) * 2}px`,
+      zIndex: Math.floor(Math.random() * 3) + 1,
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      transformOrigin: 'center center',
+    };
+  };
 
   return (
     <span className={`inline-block mt-8 ${className}`} style={{ letterSpacing: '0.1em' }}>
-      {children.split('').map((char, index) => {
-        const style = letterStyles[index];
-        if (!style) return char;
-
-        // Enhanced styling for each letter
-        const randomBorder = Math.random() > 0.7 ? 
-          `${Math.floor(Math.random() * 2) + 1}px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.3)` : 
-          'none';
-        const randomRadius = Math.random() > 0.6 ? 
-          `${Math.floor(Math.random() * 8) + 2}px` : 
-          `${Math.floor(Math.random() * 3)}px`;
-        const randomShadow = Math.random() > 0.7 ? 
-          `${Math.floor(Math.random() * 3) + 1}px ${Math.floor(Math.random() * 3) + 1}px ${Math.floor(Math.random() * 5) + 2}px rgba(0,0,0,0.4)` : 
-          'none';
-
-        return (
-          <span
-            key={`${index}-${animationKey}`}
-            className="inline-block transition-all duration-1000 ease-in-out"
-            style={{
-              color: style.color,
-              fontFamily: style.fontFamily,
-              fontSize: style.fontSize,
-              transform: `rotate(${style.rotation}deg) skew(${style.skew}deg)`,
-              background: style.backgroundColor,
-              textShadow: style.textShadow,
-              padding: char === ' ' ? '0' : `${4 + Math.floor(Math.random() * 4)}px ${6 + Math.floor(Math.random() * 4)}px`,
-              margin: char === ' ' ? '0 0.4em' : `0 ${2 + Math.floor(Math.random() * 3)}px`,
-              borderRadius: randomRadius,
-              border: randomBorder,
-              boxShadow: randomShadow,
-              opacity: char === ' ' ? 1 : 0.9,
-              display: char === ' ' ? 'inline' : 'inline-block',
-              fontWeight: Math.random() > 0.4 ? 'bold' : Math.random() > 0.7 ? '900' : 'normal',
-              fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
-              textDecoration: Math.random() > 0.85 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
-              position: 'relative',
-              top: `${(Math.random() - 0.5) * 6}px`,
-              left: `${(Math.random() - 0.5) * 2}px`,
-              zIndex: Math.floor(Math.random() * 3) + 1,
-              filter: Math.random() > 0.9 ? `hue-rotate(${Math.floor(Math.random() * 30)}deg)` : 'none',
-            }}
-          >
-            {char}
-          </span>
-        );
-      })}
+      {letters.map((letter, index) => (
+        <span
+          key={`${index}-${animationKey}`}
+          className="inline-block transition-all duration-1000 ease-in-out"
+          style={getLetterStyle(letter, index)}
+        >
+          {letter.char}
+        </span>
+      ))}
     </span>
   );
 };
