@@ -45,10 +45,10 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   ];
 
   const generateLetterStyle = (): LetterStyle => ({
-    color: Math.random() > 0.5 ? 'transparent' : '#000000',
+    color: Math.random() > 0.4 ? '#ffffff' : '#000000',
     fontFamily: fontFamilies[Math.floor(Math.random() * fontFamilies.length)],
-    fontSize: `${0.8 + Math.random() * 0.4}em`, // 0.8em to 1.2em
-    rotation: (Math.random() - 0.5) * 20, // -10 to 10 degrees
+    fontSize: `${0.7 + Math.random() * 0.6}em`, // 0.7em to 1.3em for more height variation
+    rotation: (Math.random() - 0.5) * 25, // -12.5 to 12.5 degrees
     skew: (Math.random() - 0.5) * 10, // slight skew
     backgroundColor: colors[Math.floor(Math.random() * colors.length)],
     textShadow: 'none'
@@ -71,7 +71,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   }, [children]);
 
   return (
-    <span className={`inline-block ${className}`}>
+    <span className={`inline-block mt-8 ${className}`} style={{ letterSpacing: '0.1em' }}>
       {children.split('').map((char, index) => {
         const style = letterStyles[index];
         if (!style) return char;
@@ -87,10 +87,10 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
               transform: `rotate(${style.rotation}deg) skew(${style.skew}deg)`,
               backgroundColor: style.backgroundColor,
               textShadow: style.textShadow,
-              padding: char === ' ' ? '0' : '4px 6px',
-              margin: char === ' ' ? '0 0.2em' : '0 2px',
+              padding: char === ' ' ? '0' : '6px 8px',
+              margin: char === ' ' ? '0 0.3em' : '0 3px',
               borderRadius: '4px',
-              opacity: char === ' ' ? 1 : 0.9,
+              opacity: char === ' ' ? 1 : 0.85,
               display: char === ' ' ? 'inline' : 'inline-block',
               fontWeight: Math.random() > 0.5 ? 'bold' : 'normal',
               fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
