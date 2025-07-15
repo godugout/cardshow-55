@@ -65,7 +65,7 @@ export const ThemedPage: React.FC<ThemedPageProps> = ({
 }) => {
   return (
     <ThemedLayout variant="page" className={className}>
-      <div className={cn('mx-auto px-4 sm:px-6 lg:px-8 py-8', maxWidthVariants[maxWidth])}>
+      <div className={cn('mx-auto px-4 sm:px-6 lg:px-8 pb-8', maxWidthVariants[maxWidth])}>
         {(title || subtitle) && (
           <div className="text-center mb-10">
             {title && (
