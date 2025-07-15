@@ -5,7 +5,6 @@ import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
 import { Typography, CRDButton } from '@/components/ui/design-system';
 import { ThemedPage } from '@/components/ui/design-system/ThemedLayout';
 import { StandardHero } from '@/components/shared/StandardHero';
-import { Component as LetterGlitch } from '@/components/ui/letter-glitch';
 
 const Collections: React.FC = () => {
   return (
@@ -16,36 +15,9 @@ const Collections: React.FC = () => {
         title={
           <>
             <span className="text-4xl md:text-5xl lg:text-6xl">Your gateway to the world of</span><br />
-            <div className="relative inline-block">
-              <span className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text" 
-                    style={{
-                      background: 'transparent',
-                      WebkitTextFillColor: 'transparent',
-                      WebkitBackgroundClip: 'text'
-                    }}>
-                digital cards
-              </span>
-              <div 
-                className="absolute inset-0 text-4xl md:text-5xl lg:text-6xl font-black pointer-events-none"
-                style={{
-                  WebkitMask: 'linear-gradient(white, white)',
-                  WebkitMaskComposite: 'source-in',
-                  mask: 'linear-gradient(white, white)',
-                  maskComposite: 'intersect'
-                }}
-              >
-                <div className="absolute inset-0 overflow-hidden">
-                  <LetterGlitch
-                    glitchSpeed={50}
-                    centerVignette={false}
-                    outerVignette={false}
-                    smooth={true}
-                    glitchColors={["#61dca3", "#61b3dc", "#9333ea"]}
-                  />
-                </div>
-                <span className="relative z-10 invisible">digital cards</span>
-              </div>
-            </div>
+            <span className="gradient-text-green-blue-purple whitespace-nowrap">
+              digital cards
+            </span>
           </>
         }
         description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."

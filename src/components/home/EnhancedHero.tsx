@@ -113,7 +113,7 @@ export const EnhancedHero: React.FC = () => {
   const enhancedHeading = (
     <>
       Create, collect, and trade<br />
-      <span className="xl:whitespace-nowrap text-[36px] md:text-[42px] lg:text-[48px]">
+      <span className="xl:whitespace-nowrap">
         card art with{' '}
         <TextEffects3D
           style={textStyle}

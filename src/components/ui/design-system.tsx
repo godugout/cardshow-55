@@ -4,7 +4,6 @@ import React from 'react';
 export { CRDButton } from './design-system/Button';
 export { CRDBadge } from './design-system/Badge';
 export { Typography, Heading, AccentText } from './design-system/Typography';
-export { CRDCard } from './design-system/Card';
 
 // Additional components and placeholders
 import { Card } from '@/components/ui/card';
@@ -15,7 +14,25 @@ import { cn } from '@/lib/utils';
 import { Typography } from './design-system/Typography';
 import { CRDButton } from './design-system/Button';
 
-// CRDCard is now exported from design-system/Card.tsx
+export interface CRDCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+export const CRDCard = React.forwardRef<HTMLDivElement, CRDCardProps>(
+  ({ className, children, ...props }, ref) => {
+    return (
+      <Card 
+        ref={ref}
+        className={cn("bg-crd-darkGray border-crd-mediumGray", className)}
+        {...props}
+      >
+        {children}
+      </Card>
+    );
+  }
+);
+
+CRDCard.displayName = "CRDCard";
 
 // CRD Input Component
 export interface CRDInputProps extends React.InputHTMLAttributes<HTMLInputElement> {

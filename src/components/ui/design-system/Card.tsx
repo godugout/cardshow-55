@@ -28,19 +28,17 @@ const cardVariants = cva(
   }
 );
 
-export interface CRDCardProps 
-  extends React.HTMLAttributes<HTMLDivElement>,
-          VariantProps<typeof cardVariants> {
+export interface CRDCardProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {
   header?: React.ReactNode;
   footer?: React.ReactNode;
 }
 
 export const CRDCard = React.forwardRef<HTMLDivElement, CRDCardProps>(
-  ({ className, variant = "default", padding = "default", header, footer, children, ...props }, ref) => {
+  ({ className, variant, padding, header, footer, children, ...props }, ref) => {
     return (
       <ShadcnCard
         ref={ref}
-        className={cn(cardVariants({ variant, padding }), className)}
+        className={cn(cardVariants({ variant, className }))}
         {...props}
       >
         {header && (
