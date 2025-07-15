@@ -238,7 +238,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return backgrounds[Math.floor(Math.random() * backgrounds.length)];
   };
 
-  // Generate clip-path based on letter index for specific side distribution
+  // Generate clip-path based on letter index for specific side distribution with 95% letter visibility
   const generateClipPath = (letterIndex: number, char: string): string => {
     // Distribution: 6 four-sided (75%), 1 five-sided (12.5%), 1 six-sided (12.5%)
     // CARDSHOW: C,A,R,D,S,H = 4-sided, O = 5-sided, W = 6-sided
@@ -249,57 +249,57 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     const sides = letterMap[char.toUpperCase()] || 4;
     
     const generateFourSided = () => {
-      // Shorter rectangles and squares
+      // Larger area to preserve 95% of letter content
       const isSquare = Math.random() < 0.4;
-      const height = isSquare ? 70 : 45 + Math.random() * 20; // Much shorter height
-      const width = isSquare ? height : 60 + Math.random() * 25;
+      const height = isSquare ? 85 : 75 + Math.random() * 15; // Increased minimum height for visibility
+      const width = isSquare ? height : 80 + Math.random() * 20; // Increased minimum width
       
-      // Center the shape
+      // Center the shape with safety margins
       const centerX = 50;
       const centerY = 50;
-      const halfWidth = width / 2;
-      const halfHeight = height / 2;
+      const halfWidth = Math.min(width / 2, 45); // Max 45% from center = 90% total width
+      const halfHeight = Math.min(height / 2, 40); // Max 40% from center = 80% total height
       
-      // Add slight irregularities
-      const tl = Math.random() * 3; // top-left variation
-      const tr = Math.random() * 3; // top-right variation
-      const bl = Math.random() * 3; // bottom-left variation
-      const br = Math.random() * 3; // bottom-right variation
+      // Minimal irregularities to maintain readability
+      const tl = Math.random() * 1.5; // Reduced variation
+      const tr = Math.random() * 1.5;
+      const bl = Math.random() * 1.5;
+      const br = Math.random() * 1.5;
       
       return `polygon(${centerX - halfWidth + tl}% ${centerY - halfHeight + tl}%, ${centerX + halfWidth - tr}% ${centerY - halfHeight + tr}%, ${centerX + halfWidth - br}% ${centerY + halfHeight - br}%, ${centerX - halfWidth + bl}% ${centerY + halfHeight - bl}%)`;
     };
 
     const generateFiveSided = () => {
-      // Pentagon shape, shorter height
+      // Pentagon shape with larger area for letter visibility
       const centerX = 50;
       const centerY = 50;
-      const radiusX = 35;
-      const radiusY = 25; // Shorter height
+      const radiusX = 40; // Increased for better visibility
+      const radiusY = 35; // Increased height
       
       const points = [];
       for (let i = 0; i < 5; i++) {
         const angle = (i / 5) * 2 * Math.PI - Math.PI / 2; // Start from top
         const x = centerX + radiusX * Math.cos(angle);
         const y = centerY + radiusY * Math.sin(angle);
-        points.push(`${x}% ${y}%`);
+        points.push(`${Math.max(5, Math.min(95, x))}% ${Math.max(5, Math.min(95, y))}%`);
       }
       
       return `polygon(${points.join(', ')})`;
     };
 
     const generateSixSided = () => {
-      // Hexagon shape, shorter height
+      // Hexagon shape with larger area for letter visibility  
       const centerX = 50;
       const centerY = 50;
-      const radiusX = 38;
-      const radiusY = 28; // Shorter height
+      const radiusX = 42; // Increased for better visibility
+      const radiusY = 38; // Increased height
       
       const points = [];
       for (let i = 0; i < 6; i++) {
         const angle = (i / 6) * 2 * Math.PI;
         const x = centerX + radiusX * Math.cos(angle);
         const y = centerY + radiusY * Math.sin(angle);
-        points.push(`${x}% ${y}%`);
+        points.push(`${Math.max(5, Math.min(95, x))}% ${Math.max(5, Math.min(95, y))}%`);
       }
       
       return `polygon(${points.join(', ')})`;
@@ -603,11 +603,11 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           materialType,
           // Enhanced paper cut-out styling with material-specific shapes
           borderRadius: generateMaterialBorderRadius(materialType),
-          padding: index % 3 === 0 ? `${Math.random() * 20 + 8}px ${Math.random() * 25 + 10}px` : `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`, // Every 3rd letter gets extra padding
-          margin: `${Math.random() * 6 + 1}px ${Math.random() * 8 + 1}px`, // Enhanced margin for overlapping
-          topOffset: Math.random() * 16 - 8, // Increased from ±2px to ±8px
-          leftOffset: Math.random() * 10 - 5, // Increased from ±1px to ±5px
-          zIndex: Math.floor(Math.random() * 5) + 1, // More z-index levels for overlapping
+          padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`, // Smart padding for visibility
+          margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`, // Reduced margin to prevent excessive gaps
+          topOffset: Math.random() * 6 - 3, // Reduced from ±8px to ±3px for less overlap
+          leftOffset: Math.random() * 4 - 2, // Reduced from ±5px to ±2px for better readability
+          zIndex: Math.floor(Math.random() * 3) + 1, // Reduced layers from 5 to 3 for less chaos
           borderStyle: Math.random() > 0.6 ? `${Math.random() > 0.3 ? '2' : '1'}px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.${Math.floor(Math.random() * 4) + 1})` : 'none',
           paperShadow: Math.random() > 0.4 ? 
             `${Math.random() * 4 + 2}px ${Math.random() * 4 + 2}px ${Math.random() * 8 + 3}px rgba(0,0,0,0.${Math.floor(Math.random() * 4) + 2})` : 
@@ -668,10 +668,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             materialType,
             borderRadius: generateMaterialBorderRadius(materialType),
             // Regenerate cut-out properties for variety
-            padding: index % 3 === 0 ? `${Math.random() * 20 + 8}px ${Math.random() * 25 + 10}px` : `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`,
-            margin: `${Math.random() * 6 + 1}px ${Math.random() * 8 + 1}px`,
-            topOffset: Math.random() * 16 - 8,
-            leftOffset: Math.random() * 10 - 5,
+            padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
+            margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
+            topOffset: Math.random() * 6 - 3,
+            leftOffset: Math.random() * 4 - 2,
             scale: 0.9 + Math.random() * 0.4,
             perspective: Math.random() * 20 - 10
           };
@@ -689,10 +689,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             materialType,
             borderRadius: generateMaterialBorderRadius(materialType),
             // Regenerate cut-out properties for variety
-            padding: index % 3 === 0 ? `${Math.random() * 20 + 8}px ${Math.random() * 25 + 10}px` : `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`,
-            margin: `${Math.random() * 6 + 1}px ${Math.random() * 8 + 1}px`,
-            topOffset: Math.random() * 16 - 8,
-            leftOffset: Math.random() * 10 - 5,
+            padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
+            margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
+            topOffset: Math.random() * 6 - 3,
+            leftOffset: Math.random() * 4 - 2,
             scale: 0.9 + Math.random() * 0.4,
             perspective: Math.random() * 20 - 10
           };
