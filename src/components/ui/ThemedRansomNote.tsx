@@ -420,7 +420,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
     const phaseInterval = setInterval(() => {
       setAnimPhase(prev => prev + 1);
-    }, 200);
+    }, 2500);
 
     return () => {
       clearInterval(variationInterval);
@@ -637,7 +637,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       // Layout containment to prevent shifts
       contain: 'layout style',
       willChange: 'transform',
-      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'all 2.5s cubic-bezier(0.4, 0, 0.2, 1)',
       transformOrigin: 'center center',
     };
   };
