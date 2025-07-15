@@ -19,64 +19,6 @@
   --y: calc(random() * -70px - 20px);
 }
 
-/* Pixel animation keyframes */
-@keyframes pixel-shimmer {
-  0%, 100% { 
-    background-color: hsl(var(--crd-green));
-    opacity: 0.8;
-  }
-  25% { 
-    background-color: hsl(var(--crd-blue));
-    opacity: 0.9;
-  }
-  50% { 
-    background-color: hsl(var(--crd-purple));
-    opacity: 1;
-  }
-  75% { 
-    background-color: hsl(var(--crd-orange));
-    opacity: 0.9;
-  }
-}
-
-@keyframes pixel-pulse {
-  0%, 100% { 
-    background-color: hsl(var(--crd-orange));
-    transform: scale(1);
-    opacity: 1;
-  }
-  33% { 
-    background-color: hsl(var(--crd-green));
-    transform: scale(1.2);
-    opacity: 0.8;
-  }
-  66% { 
-    background-color: hsl(var(--crd-blue));
-    transform: scale(0.8);
-    opacity: 1;
-  }
-}
-
-@keyframes pixel-float {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-20px) scale(0.5);
-    opacity: 0;
-  }
-}
-
-@keyframes rainbow-cycle {
-  0% { background-color: hsl(var(--crd-orange)); }
-  20% { background-color: hsl(var(--crd-green)); }
-  40% { background-color: hsl(var(--crd-blue)); }
-  60% { background-color: hsl(var(--crd-purple)); }
-  80% { background-color: hsl(var(--crd-orange)); }
-  100% { background-color: hsl(var(--crd-green)); }
-}
-
 /* Button text color utilities to ensure proper contrast */
 @layer utilities {
   .btn-text-dark {
@@ -89,14 +31,6 @@
   
   .btn-text-gray {
     color: #777E90 !important;
-  }
-  
-  /* Missing gradient class */
-  .gradient-text-green-blue-purple {
-    background: linear-gradient(135deg, hsl(var(--crd-green)), hsl(var(--crd-blue)), hsl(var(--crd-purple)));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
   
   /* Dynamic color utilities for secondary parameter labels */
@@ -130,23 +64,6 @@
   
   .text-amber-400\/70 {
     color: rgba(251, 191, 36, 0.7) !important;
-  }
-
-  /* Pixel animation utilities */
-  .animate-pixel-shimmer {
-    animation: pixel-shimmer 3s ease-in-out infinite;
-  }
-  
-  .animate-pixel-pulse {
-    animation: pixel-pulse 1.5s ease-in-out infinite;
-  }
-  
-  .animate-pixel-float {
-    animation: pixel-float 2s ease-out forwards;
-  }
-  
-  .animate-rainbow-cycle {
-    animation: rainbow-cycle 4s linear infinite;
   }
 }
 

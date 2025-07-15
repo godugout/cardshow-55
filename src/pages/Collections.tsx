@@ -1,10 +1,10 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
 import { Typography, CRDButton } from '@/components/ui/design-system';
 import { ThemedPage } from '@/components/ui/design-system/ThemedLayout';
 import { StandardHero } from '@/components/shared/StandardHero';
-import { AnimatedPixelText } from '@/components/ui/AnimatedPixelText';
 
 const Collections: React.FC = () => {
   return (
@@ -13,21 +13,12 @@ const Collections: React.FC = () => {
       <StandardHero
         label="DISCOVER, COLLECT & CONNECT"
         title={
-          <span className="inline-flex items-baseline flex-wrap">
-            Your gateway to the world of{' '}
-            <AnimatedPixelText 
-              text="digital"
-              className="mx-2"
-            />
-            {' '}
-            <Typography 
-              variant="display" 
-              as="span" 
-              className="inline"
-            >
-              cards
-            </Typography>
-          </span>
+          <>
+            Your gateway to the world of<br />
+            <span className="gradient-text-green-blue-purple whitespace-nowrap">
+              digital cards
+            </span>
+          </>
         }
         description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."
         primaryCta={{
