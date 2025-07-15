@@ -85,7 +85,7 @@ export default {
           
           // Brand colors
           orange: '#EA6E48',
-          blue: '#3772FF',
+          blue: '#45B7D1',
           green: '#45B26B',
           purple: '#9757D7',
           gold: '#FFD700',
