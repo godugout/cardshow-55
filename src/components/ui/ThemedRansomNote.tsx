@@ -127,7 +127,11 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             { background: 'linear-gradient(90deg, #fff8dc 0%, #faebd7 50%, #fff8dc 100%)', pattern: 'vintage-paper' },
             { background: 'linear-gradient(180deg, #fffacd 0%, #f0e68c 100%)', pattern: 'aged-paper' },
             { background: '#2f2f2f', pattern: 'dark-vintage' },
-            { background: '#1a1a1a', pattern: 'old-black' }
+            { background: '#1a1a1a', pattern: 'old-black' },
+            // Mail stamp patterns
+            { background: 'repeating-linear-gradient(0deg, #dc143c 0px, #dc143c 2px, #ffffff 2px, #ffffff 8px, #dc143c 8px, #dc143c 10px, #ffffff 10px, #ffffff 16px), repeating-linear-gradient(90deg, #dc143c 0px, #dc143c 2px, #ffffff 2px, #ffffff 8px)', pattern: 'postage-stamp-red' },
+            { background: 'repeating-linear-gradient(0deg, #1e90ff 0px, #1e90ff 2px, #ffffff 2px, #ffffff 8px, #1e90ff 8px, #1e90ff 10px, #ffffff 10px, #ffffff 16px), repeating-linear-gradient(90deg, #1e90ff 0px, #1e90ff 2px, #ffffff 2px, #ffffff 8px)', pattern: 'postage-stamp-blue' },
+            { background: 'radial-gradient(circle at 50% 50%, #8b4513 0%, #a0522d 30%, #daa520 60%, #f4a460 100%), repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg 15deg, rgba(255,255,255,0.2) 15deg 30deg)', pattern: 'vintage-stamp' }
           ],
           fonts: [
             'Georgia', 'Times New Roman', 'Garamond', 'Palatino', 'Book Antiqua',
@@ -582,11 +586,11 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           })));
         }
       }
-    }, 12000);
+    }, 18000); // Increased from 12000 to 18000 (slower pace)
 
     const phaseInterval = setInterval(() => {
       setAnimPhase(prev => prev + 1);
-    }, 2500);
+    }, 4000); // Increased from 2500 to 4000 (longer individual transitions)
 
     return () => {
       clearInterval(variationInterval);
