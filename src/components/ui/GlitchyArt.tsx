@@ -93,7 +93,7 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
     return {
       color: '#00ff00',
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: '1.1em', // Increase pixel font size for better visibility
+      fontSize: '0.75em', // Much smaller pixel font to match others
       textShadow: `
         ${chromatic}px 0 0 rgba(255, 0, 64, 0.4),
         ${-chromatic * 0.5}px 0 0 rgba(0, 255, 255, 0.3),
