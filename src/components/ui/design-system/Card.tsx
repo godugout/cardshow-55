@@ -29,9 +29,8 @@ const cardVariants = cva(
 );
 
 export interface CRDCardProps 
-  extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "interactive" | "elevated" | "flat";
-  padding?: "none" | "sm" | "default" | "lg";
+  extends React.HTMLAttributes<HTMLDivElement>,
+          VariantProps<typeof cardVariants> {
   header?: React.ReactNode;
   footer?: React.ReactNode;
 }
