@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
@@ -18,11 +17,15 @@ const Collections: React.FC = () => {
             Your gateway to the world of<br />
             <AnimatedPixelText 
               text="digital"
-              className="gradient-text-green-blue-purple whitespace-nowrap mr-2"
+              className="whitespace-nowrap mr-2"
             />
-            <span className="gradient-text-green-blue-purple whitespace-nowrap">
+            <Typography 
+              variant="display" 
+              as="span" 
+              className="whitespace-nowrap"
+            >
               cards
-            </span>
+            </Typography>
           </>
         }
         description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."
