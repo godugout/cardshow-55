@@ -46,6 +46,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const [isSpellingOut, setIsSpellingOut] = useState(false);
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
+  const [goldLetterIndex, setGoldLetterIndex] = useState<number>(-1); // Track which letter has gold background
 
   // Theme-specific configurations
   const getThemeConfig = (theme: 'craft' | 'collect' | 'connect') => {
@@ -355,7 +356,14 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return Math.random() > 0.5 ? '#ffffff' : '#000000';
   };
 
-  const generateLetterStyle = (letterType: 'card' | 'transparent' | 'jersey' = 'card'): LetterStyle => {
+  // Helper function to check if a background is gold-related for collect theme
+  const isGoldBackground = (bgStyle: { background: string; pattern: string }): boolean => {
+    if (theme !== 'collect') return false;
+    const goldPatterns = ['golden', 'brushed-gold', 'polished-gold', 'antique-gold'];
+    return goldPatterns.includes(bgStyle.pattern);
+  };
+
+  const generateLetterStyle = (letterType: 'card' | 'transparent' | 'jersey' = 'card', forceGold: boolean = false, avoidGold: boolean = false): LetterStyle => {
     let bgStyle, textColor;
     
     if (letterType === 'transparent') {
@@ -367,8 +375,24 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       bgStyle = themeConfig.jerseyPatterns[Math.floor(Math.random() * themeConfig.jerseyPatterns.length)];
       textColor = getContrastingColor(bgStyle.background);
     } else {
-      // Regular card backgrounds
-      bgStyle = themeConfig.backgrounds[Math.floor(Math.random() * themeConfig.backgrounds.length)];
+      // Regular card backgrounds with gold constraint for collect theme
+      if (theme === 'collect') {
+        if (forceGold) {
+          // Select only gold backgrounds
+          const goldBackgrounds = themeConfig.backgrounds.filter(bg => isGoldBackground(bg));
+          bgStyle = goldBackgrounds[Math.floor(Math.random() * goldBackgrounds.length)];
+        } else if (avoidGold) {
+          // Select only non-gold backgrounds
+          const nonGoldBackgrounds = themeConfig.backgrounds.filter(bg => !isGoldBackground(bg));
+          bgStyle = nonGoldBackgrounds[Math.floor(Math.random() * nonGoldBackgrounds.length)];
+        } else {
+          // Default random selection (fallback)
+          bgStyle = themeConfig.backgrounds[Math.floor(Math.random() * themeConfig.backgrounds.length)];
+        }
+      } else {
+        // Other themes use regular random selection
+        bgStyle = themeConfig.backgrounds[Math.floor(Math.random() * themeConfig.backgrounds.length)];
+      }
       textColor = getContrastingColor(bgStyle.background);
     }
     
@@ -429,11 +453,29 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         }
       }
       
+      // For collect theme, pick one letter to have gold background
+      let selectedGoldIndex = -1;
+      if (theme === 'collect') {
+        const validIndices = processedText.split('').map((char, i) => char !== ' ' ? i : -1).filter(i => i !== -1);
+        if (validIndices.length > 0) {
+          selectedGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+          setGoldLetterIndex(selectedGoldIndex);
+        }
+      }
+      
       const newLetters = processedText.split('').map((char, index) => {
         const hasSharpAngle = sharpAngleIndices.has(index);
         const isThemeWord = detectThemeWord(children, index);
         const isTransparent = transparencyPattern[index] || false;
         const letterType = generateLetterType(index, isTransparent);
+        
+        // For collect theme, enforce gold constraint
+        let forceGold = false;
+        let avoidGold = false;
+        if (theme === 'collect' && !isTransparent && letterType === 'card') {
+          forceGold = index === selectedGoldIndex;
+          avoidGold = index !== selectedGoldIndex;
+        }
         
         return {
           char,
@@ -444,7 +486,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           float: Math.random() * 2,
           lean: hasSharpAngle ? (Math.random() * 12 - 6) : (Math.random() * 4 - 2), // Controlled lean
           glowIntensity: 0.5 + Math.random() * 0.5,
-          style: generateLetterStyle(letterType),
+          style: generateLetterStyle(letterType, forceGold, avoidGold),
           shape: generateLetterShape(),
           size: generateLetterSize(index, totalLetters),
           isThemeWord,
@@ -468,21 +510,77 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         setSpellIndex(0);
         setActiveAnimations([]);
         
-        setLetters(prev => prev.map(letter => ({
-          ...letter,
-          style: generateLetterStyle(letter.letterType),
-          backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
-        })));
+        // Pick new gold letter for collect theme
+        let newGoldIndex = goldLetterIndex;
+        if (theme === 'collect') {
+          setLetters(currentLetters => {
+            const validIndices = currentLetters.map((letter, i) => letter.char !== ' ' && !letter.isTransparent && letter.letterType === 'card' ? i : -1).filter(i => i !== -1);
+            if (validIndices.length > 0) {
+              newGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+              setGoldLetterIndex(newGoldIndex);
+            }
+            
+            return currentLetters.map((letter, index) => {
+              // For collect theme, enforce gold constraint
+              let forceGold = false;
+              let avoidGold = false;
+              if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
+                forceGold = index === newGoldIndex;
+                avoidGold = index !== newGoldIndex;
+              }
+              
+              return {
+                ...letter,
+                style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
+                backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+              };
+            });
+          });
+        } else {
+          setLetters(prev => prev.map(letter => ({
+            ...letter,
+            style: generateLetterStyle(letter.letterType),
+            backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+          })));
+        }
       } else {
         setAnimationKey(prev => prev + 1);
         setActiveAnimations([]);
         setIsSpellingOut(false);
         
-        setLetters(prev => prev.map(letter => ({
-          ...letter,
-          style: generateLetterStyle(letter.letterType),
-          backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
-        })));
+        // Pick new gold letter for collect theme
+        let newGoldIndex = goldLetterIndex;
+        if (theme === 'collect') {
+          setLetters(currentLetters => {
+            const validIndices = currentLetters.map((letter, i) => letter.char !== ' ' && !letter.isTransparent && letter.letterType === 'card' ? i : -1).filter(i => i !== -1);
+            if (validIndices.length > 0) {
+              newGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+              setGoldLetterIndex(newGoldIndex);
+            }
+            
+            return currentLetters.map((letter, index) => {
+              // For collect theme, enforce gold constraint
+              let forceGold = false;
+              let avoidGold = false;
+              if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
+                forceGold = index === newGoldIndex;
+                avoidGold = index !== newGoldIndex;
+              }
+              
+              return {
+                ...letter,
+                style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
+                backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+              };
+            });
+          });
+        } else {
+          setLetters(prev => prev.map(letter => ({
+            ...letter,
+            style: generateLetterStyle(letter.letterType),
+            backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+          })));
+        }
       }
     }, 12000);
 
@@ -545,15 +643,25 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           setFlippingLetters(newFlipping);
           
           setTimeout(() => {
-            setLetters(prev => prev.map((letter, index) => 
-              newFlipping.includes(index) 
-                ? { 
-                    ...letter, 
-                    style: generateLetterStyle(letter.letterType),
-                    backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.4 ? generateBackgroundOffset() : letter.backgroundOffset)
-                  }
-                : letter
-            ));
+            setLetters(prev => prev.map((letter, index) => {
+              if (newFlipping.includes(index)) {
+                // For collect theme, maintain gold constraint
+                let forceGold = false;
+                let avoidGold = false;
+                if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
+                  forceGold = index === goldLetterIndex;
+                  avoidGold = index !== goldLetterIndex;
+                }
+                
+                return { 
+                  ...letter, 
+                  style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
+                  backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.4 ? generateBackgroundOffset() : letter.backgroundOffset)
+                };
+              } else {
+                return letter;
+              }
+            }));
           }, 800);
           
           setTimeout(() => {
