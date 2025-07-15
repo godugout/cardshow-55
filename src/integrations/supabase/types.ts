@@ -5135,6 +5135,111 @@ export type Database = {
           },
         ]
       }
+      ransom_letter_elements: {
+        Row: {
+          background_color: string | null
+          background_css: string | null
+          background_pattern: string | null
+          border_radius: string | null
+          border_style: string | null
+          box_shadow: string | null
+          character: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          display_name: string
+          font_family: string
+          font_size_em: number
+          font_style: string
+          font_weight: string
+          id: string
+          image_url: string | null
+          margin: string | null
+          padding: string | null
+          rarity: string
+          rotation_deg: number | null
+          scale_factor: number | null
+          skew_deg: number | null
+          source_type: string
+          style_category: string
+          tags: string[] | null
+          text_color: string
+          text_decoration: string | null
+          text_shadow: string | null
+          thumbnail_url: string | null
+          updated_at: string
+          usage_count: number | null
+        }
+        Insert: {
+          background_color?: string | null
+          background_css?: string | null
+          background_pattern?: string | null
+          border_radius?: string | null
+          border_style?: string | null
+          box_shadow?: string | null
+          character: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_name: string
+          font_family: string
+          font_size_em?: number
+          font_style?: string
+          font_weight?: string
+          id?: string
+          image_url?: string | null
+          margin?: string | null
+          padding?: string | null
+          rarity?: string
+          rotation_deg?: number | null
+          scale_factor?: number | null
+          skew_deg?: number | null
+          source_type?: string
+          style_category?: string
+          tags?: string[] | null
+          text_color: string
+          text_decoration?: string | null
+          text_shadow?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          usage_count?: number | null
+        }
+        Update: {
+          background_color?: string | null
+          background_css?: string | null
+          background_pattern?: string | null
+          border_radius?: string | null
+          border_style?: string | null
+          box_shadow?: string | null
+          character?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_name?: string
+          font_family?: string
+          font_size_em?: number
+          font_style?: string
+          font_weight?: string
+          id?: string
+          image_url?: string | null
+          margin?: string | null
+          padding?: string | null
+          rarity?: string
+          rotation_deg?: number | null
+          scale_factor?: number | null
+          skew_deg?: number | null
+          source_type?: string
+          style_category?: string
+          tags?: string[] | null
+          text_color?: string
+          text_decoration?: string | null
+          text_shadow?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
       reactions: {
         Row: {
           card_id: string | null
