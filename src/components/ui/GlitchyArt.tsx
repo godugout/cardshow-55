@@ -34,7 +34,7 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
     const glow = Math.sin(animPhase * 0.03) * 1 + 4; // Reduced glow
     return {
       color: '#00ff00',
-      fontFamily: "'JetBrains Mono', monospace",
+      fontFamily: "'Fira Code', 'Source Code Pro', monospace",
       fontSize: '1.05em', // Slight increase for monospace
       textShadow: `
         0 0 ${glow}px #00ff00,
