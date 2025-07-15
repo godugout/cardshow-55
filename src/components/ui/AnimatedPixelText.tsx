@@ -55,28 +55,22 @@ export const AnimatedPixelText: React.FC<AnimatedPixelTextProps> = ({
   className 
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [pixels, setPixels] = useState<{ delay: number; color: string }[]>([]);
-
-  useEffect(() => {
-    // Generate pixels for each letter
-    const letterPixels: { delay: number; color: string }[] = [];
+  const [pixels] = useState(() => {
+    // Generate a grid of pixels to fill the text area
+    const pixelArray = [];
+    const rows = 8; // Height of text in pixels
+    const cols = text.length * 6; // Width based on character count
     
-    text.split('').forEach((letter, letterIndex) => {
-      if (letter !== ' ') {
-        // Create a 5x7 grid for each letter
-        for (let row = 0; row < 7; row++) {
-          for (let col = 0; col < 5; col++) {
-            letterPixels.push({
-              delay: (letterIndex * 0.1) + (row * 0.05) + (col * 0.02),
-              color: getRandomColor(),
-            });
-          }
-        }
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        pixelArray.push({
+          delay: (row * 0.05) + (col * 0.02),
+          color: getRandomColor(),
+        });
       }
-    });
-    
-    setPixels(letterPixels);
-  }, [text]);
+    }
+    return pixelArray;
+  });
 
   return (
     <span
@@ -84,12 +78,40 @@ export const AnimatedPixelText: React.FC<AnimatedPixelTextProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Original text (invisible but maintains space) */}
-      <span className="invisible font-extrabold">{text}</span>
+      {/* Original text for masking */}
+      <span 
+        className="font-extrabold text-transparent bg-clip-text relative z-10"
+        style={{
+          WebkitTextStroke: '1px transparent',
+          backgroundImage: 'linear-gradient(135deg, transparent, transparent)',
+        }}
+      >
+        {text}
+      </span>
       
-      {/* Pixel overlay */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(4px,1fr))] gap-[1px] w-full h-full">
+      {/* Pixel overlay with text mask */}
+      <div 
+        className="absolute inset-0 overflow-hidden"
+        style={{
+          WebkitMask: `linear-gradient(black, black)`,
+          WebkitMaskComposite: 'source-in',
+          mask: `url("data:image/svg+xml,${encodeURIComponent(`
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40'>
+              <text x='0' y='30' font-family='system-ui, -apple-system, sans-serif' font-weight='800' font-size='24' fill='black'>${text}</text>
+            </svg>
+          `)}")`,
+          maskSize: '100% 100%',
+          maskRepeat: 'no-repeat',
+          maskPosition: 'center',
+        }}
+      >
+        <div 
+          className="grid gap-[1px] w-full h-full"
+          style={{
+            gridTemplateColumns: `repeat(${text.length * 6}, minmax(0, 1fr))`,
+            gridTemplateRows: 'repeat(8, minmax(0, 1fr))',
+          }}
+        >
           {pixels.map((pixel, index) => (
             <Pixel
               key={index}
