@@ -727,16 +727,13 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   };
 
   return (
-    <div className={`inline-block mt-8 mb-1 ${className}`} style={{ 
+    <div className={`inline-block mt-4 mb-4 ${className}`} style={{ 
       letterSpacing: '-0.05em', 
-      transform: 'scale(1.1)', // Increased from 0.95 to 1.1
+      transform: 'scale(1.0)',
       lineHeight: '1.4',
       contain: 'layout',
-      height: '2.8em', // Slightly taller to accommodate larger letters
       overflow: 'visible',
-      position: 'relative',
-      paddingTop: '1.2em', // Reduced padding to move animation up
-      marginTop: '-0.3em' // Pull animation up further
+      position: 'relative'
     }}>
       {letters.map((letter, index) => (
         <span
