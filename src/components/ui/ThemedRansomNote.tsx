@@ -658,6 +658,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   };
 
   const letterPositions = calculateLetterPositions();
+  const totalWidth = letterPositions[letterPositions.length - 1]?.left + letterPositions[letterPositions.length - 1]?.width || 0;
 
   return (
     <div 
@@ -675,11 +676,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         className="absolute"
         style={{
           top: '50%',
-          left: '0',
-          transform: 'translateY(-50%)',
+          left: '50%',
+          transform: `translateX(-50%) translateY(-50%)`,
           whiteSpace: 'nowrap',
-          height: '100%',
-          width: '100%'
+          width: `${totalWidth}em`
         }}
       >
         {letters.map((letter, index) => {
