@@ -416,6 +416,9 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
         justifyContent: 'center',
         verticalAlign: 'middle',
         backgroundColor: 'transparent', // Ensure no background bleeds
+        fontSize: '0.9em', // Match height with surrounding text
+        lineHeight: '1', // Tight line height
+        top: '-0.05em', // Slight vertical offset for better alignment
       }}
     >
       {letters.map((letter, index) => (
