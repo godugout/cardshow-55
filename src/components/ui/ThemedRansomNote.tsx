@@ -22,7 +22,7 @@ interface LetterState {
   isTransparent: boolean;
   letterType: 'card' | 'transparent' | 'jersey';
   backgroundOffset: number;
-  // Paper cut-out styling
+  // Enhanced paper cut-out styling with material properties
   borderRadius: string;
   padding: string;
   margin: string;
@@ -35,6 +35,9 @@ interface LetterState {
   fontStyle: string;
   textDecoration: string;
   opacity: number;
+  materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood';
+  scale: number;
+  perspective: number;
 }
 
 interface LetterStyle {
@@ -58,7 +61,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
 
-  // Theme-specific configurations
+  // Theme-specific configurations with materials
   const getThemeConfig = (theme: 'craft' | 'collect' | 'connect') => {
     switch (theme) {
       case 'craft':
@@ -71,18 +74,32 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             '#2ed573', '#ff4757', '#3742fa', '#2f3542', '#57606f', '#ffffff'
           ],
           backgrounds: [
-            { background: '#ff1744', pattern: 'electric-red' },
-            { background: '#00e676', pattern: 'neon-green' },
-            { background: '#2196f3', pattern: 'electric-blue' },
-            { background: '#ffeb3b', pattern: 'neon-yellow' },
-            { background: '#e91e63', pattern: 'hot-pink' },
-            { background: '#ffd700', pattern: 'gold' },
-            { background: '#ff6b35', pattern: 'orange' },
-            { background: '#4ecdc4', pattern: 'turquoise' },
-            { background: '#ffffff', pattern: 'white' },
-            { background: 'linear-gradient(45deg, #ff6b6b 0%, #ff8e53 100%)', pattern: 'vibrant-1' },
-            { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', pattern: 'electric-purple' },
-            { background: 'linear-gradient(45deg, #fa709a 0%, #fee140 100%)', pattern: 'sunset' }
+            { background: '#ff1744', pattern: 'electric-red', material: 'paper' },
+            { background: '#00e676', pattern: 'neon-green', material: 'paper' },
+            { background: '#2196f3', pattern: 'electric-blue', material: 'cardboard' },
+            { background: '#ffeb3b', pattern: 'neon-yellow', material: 'paper' },
+            { background: '#e91e63', pattern: 'hot-pink', material: 'paper' },
+            { background: '#ffd700', pattern: 'gold', material: 'gold' },
+            { background: '#ff6b35', pattern: 'orange', material: 'paper' },
+            { background: '#4ecdc4', pattern: 'turquoise', material: 'paper' },
+            { background: '#ffffff', pattern: 'white', material: 'paper' },
+            { background: 'linear-gradient(45deg, #ff6b6b 0%, #ff8e53 100%)', pattern: 'vibrant-1', material: 'paper' },
+            { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', pattern: 'electric-purple', material: 'paper' },
+            { background: 'linear-gradient(45deg, #fa709a 0%, #fee140 100%)', pattern: 'sunset', material: 'paper' },
+            // Chrome materials
+            { background: 'linear-gradient(135deg, #c0c0c0 0%, #ffffff 50%, #c0c0c0 100%)', pattern: 'chrome', material: 'chrome' },
+            { background: 'linear-gradient(90deg, #e8e8e8 0%, #ffffff 30%, #c0c0c0 70%, #e8e8e8 100%)', pattern: 'chrome-shine', material: 'chrome' },
+            // Glass materials
+            { background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)', pattern: 'glass', material: 'glass' },
+            { background: 'linear-gradient(45deg, rgba(200,230,255,0.3) 0%, rgba(255,255,255,0.1) 100%)', pattern: 'glass-tint', material: 'glass' },
+            // Wood materials
+            { background: 'linear-gradient(90deg, #8B4513 0%, #A0522D 25%, #CD853F 50%, #DEB887 75%, #F4A460 100%)', pattern: 'oak-wood', material: 'wood' },
+            { background: 'linear-gradient(45deg, #654321 0%, #8B4513 30%, #A0522D 70%, #CD853F 100%)', pattern: 'walnut-wood', material: 'wood' },
+            { background: 'linear-gradient(180deg, #F4A460 0%, #DEB887 25%, #D2B48C 50%, #BC9A6A 75%, #8B7D6B 100%)', pattern: 'pine-wood', material: 'wood' },
+            { background: 'linear-gradient(135deg, #722F37 0%, #A0522D 25%, #CD853F 50%, #D2691E 75%, #FF7F50 100%)', pattern: 'cherry-wood', material: 'wood' },
+            // Leather materials
+            { background: 'linear-gradient(45deg, #654321 0%, #8B4513 50%, #A0522D 100%)', pattern: 'brown-leather', material: 'leather' },
+            { background: 'linear-gradient(135deg, #2F1B14 0%, #5D4037 50%, #8D6E63 100%)', pattern: 'dark-leather', material: 'leather' }
           ],
           fonts: [
             'Impact', 'Arial Black', 'Helvetica Bold', 'Bebas Neue', 'Anton',
@@ -98,16 +115,24 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             '#f5f5dc', '#faebd7', '#fff8dc'
           ],
           backgrounds: [
-            { background: '#f5f5dc', pattern: 'vintage-paper' },
-            { background: '#faebd7', pattern: 'antique-white' },
-            { background: '#daa520', pattern: 'golden' },
-            { background: '#cd853f', pattern: 'peru' },
-            { background: '#8b4513', pattern: 'saddle-brown' },
-            { background: 'linear-gradient(45deg, #f5f5dc 0%, #f0f0f0 25%, #f5f5dc 50%, #e8e8e8 75%, #f5f5dc 100%)', pattern: 'newspaper' },
-            { background: 'linear-gradient(90deg, #fff8dc 0%, #faebd7 50%, #fff8dc 100%)', pattern: 'vintage-paper' },
-            { background: 'linear-gradient(180deg, #fffacd 0%, #f0e68c 100%)', pattern: 'aged-paper' },
-            { background: '#2f2f2f', pattern: 'dark-vintage' },
-            { background: '#1a1a1a', pattern: 'old-black' }
+            { background: '#f5f5dc', pattern: 'vintage-paper', material: 'paper' },
+            { background: '#faebd7', pattern: 'antique-white', material: 'paper' },
+            { background: '#daa520', pattern: 'golden', material: 'gold' },
+            { background: '#cd853f', pattern: 'peru', material: 'cardboard' },
+            { background: '#8b4513', pattern: 'saddle-brown', material: 'cardboard' },
+            { background: 'linear-gradient(45deg, #f5f5dc 0%, #f0f0f0 25%, #f5f5dc 50%, #e8e8e8 75%, #f5f5dc 100%)', pattern: 'newspaper', material: 'paper' },
+            { background: 'linear-gradient(90deg, #fff8dc 0%, #faebd7 50%, #fff8dc 100%)', pattern: 'vintage-paper', material: 'paper' },
+            { background: 'linear-gradient(180deg, #fffacd 0%, #f0e68c 100%)', pattern: 'aged-paper', material: 'paper' },
+            { background: '#2f2f2f', pattern: 'dark-vintage', material: 'cardboard' },
+            { background: '#1a1a1a', pattern: 'old-black', material: 'cardboard' },
+            // Wood materials for collect theme
+            { background: 'linear-gradient(90deg, #8B4513 0%, #A0522D 25%, #CD853F 50%, #DEB887 75%, #F4A460 100%)', pattern: 'oak-wood', material: 'wood' },
+            { background: 'linear-gradient(45deg, #654321 0%, #8B4513 30%, #A0522D 70%, #CD853F 100%)', pattern: 'walnut-wood', material: 'wood' },
+            { background: 'linear-gradient(180deg, #F4A460 0%, #DEB887 25%, #D2B48C 50%, #BC9A6A 75%, #8B7D6B 100%)', pattern: 'pine-wood', material: 'wood' },
+            { background: 'linear-gradient(135deg, #722F37 0%, #A0522D 25%, #CD853F 50%, #D2691E 75%, #FF7F50 100%)', pattern: 'cherry-wood', material: 'wood' },
+            // Leather materials
+            { background: 'linear-gradient(45deg, #654321 0%, #8B4513 50%, #A0522D 100%)', pattern: 'brown-leather', material: 'leather' },
+            { background: 'linear-gradient(135deg, #2F1B14 0%, #5D4037 50%, #8D6E63 100%)', pattern: 'dark-leather', material: 'leather' }
           ],
           fonts: [
             'Georgia', 'Times New Roman', 'Garamond', 'Palatino', 'Book Antiqua',
@@ -124,27 +149,27 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             '#ff6600', '#33cc33', '#0099ff', '#cc0099', '#ffff00'
           ],
           backgrounds: [
-            { background: '#00ffff', pattern: 'cyber-cyan' },
-            { background: '#ff00ff', pattern: 'digital-magenta' },
-            { background: '#39ff14', pattern: 'neon-green' },
-            { background: '#000000', pattern: 'digital-black' },
-            { background: '#ffffff', pattern: 'pixel-white' },
-            { background: 'repeating-conic-gradient(from 0deg at 50% 50%, #00ffff 0deg 90deg, #000000 90deg 180deg)', pattern: 'pixel-blocks' },
-            { background: 'repeating-linear-gradient(90deg, #ff00ff 0px, #ff00ff 8px, #000000 8px, #000000 16px)', pattern: 'pixel-stripes' },
-            { background: 'repeating-linear-gradient(45deg, #39ff14 0px, #39ff14 4px, #000000 4px, #000000 8px)', pattern: 'diagonal-pixels' },
-            { background: '#2a2a2a', pattern: 'dark-block' },
-            { background: '#404040', pattern: 'grey-block' },
-            { background: '#1a1a2e', pattern: 'navy-block' },
-            { background: '#0f3460', pattern: 'blue-block' },
-            { background: 'linear-gradient(90deg, #000000 0%, #404040 100%)', pattern: 'subtle-fade' }
+            { background: '#00ffff', pattern: 'cyber-cyan', material: 'glass' },
+            { background: '#ff00ff', pattern: 'digital-magenta', material: 'glass' },
+            { background: '#39ff14', pattern: 'neon-green', material: 'chrome' },
+            { background: '#000000', pattern: 'digital-black', material: 'cardboard' },
+            { background: '#ffffff', pattern: 'pixel-white', material: 'paper' },
+            { background: 'repeating-conic-gradient(from 0deg at 50% 50%, #00ffff 0deg 90deg, #000000 90deg 180deg)', pattern: 'pixel-blocks', material: 'cardboard' },
+            { background: 'repeating-linear-gradient(90deg, #ff00ff 0px, #ff00ff 8px, #000000 8px, #000000 16px)', pattern: 'pixel-stripes', material: 'cardboard' },
+            { background: 'repeating-linear-gradient(45deg, #39ff14 0px, #39ff14 4px, #000000 4px, #000000 8px)', pattern: 'diagonal-pixels', material: 'cardboard' },
+            { background: '#2a2a2a', pattern: 'dark-block', material: 'cardboard' },
+            { background: '#404040', pattern: 'grey-block', material: 'cardboard' },
+            { background: '#1a1a2e', pattern: 'navy-block', material: 'cardboard' },
+            { background: '#0f3460', pattern: 'blue-block', material: 'cardboard' },
+            { background: 'linear-gradient(90deg, #000000 0%, #404040 100%)', pattern: 'subtle-fade', material: 'cardboard' }
           ],
           jerseyPatterns: [
-            { background: 'radial-gradient(circle at 30% 30%, #ff6600 2px, transparent 2px), radial-gradient(circle at 70% 70%, #ff6600 2px, transparent 2px)', pattern: 'basketball-dimples', color: '#ff6600' },
-            { background: 'repeating-linear-gradient(45deg, #8b4513 0px, #8b4513 2px, #a0522d 2px, #a0522d 4px)', pattern: 'football-leather', color: '#8b4513' },
-            { background: 'repeating-conic-gradient(from 0deg, #000000 0deg 60deg, #ffffff 60deg 120deg)', pattern: 'soccer-hexagon', color: '#000000' },
-            { background: 'repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)', pattern: 'jersey-mesh', color: '#00ffff' },
-            { background: 'repeating-linear-gradient(90deg, #0099ff 0px, #0099ff 10px, #ffffff 10px, #ffffff 20px)', pattern: 'team-stripes', color: '#0099ff' },
-            { background: 'linear-gradient(45deg, #39ff14 25%, transparent 25%), linear-gradient(-45deg, #39ff14 25%, transparent 25%)', pattern: 'athletic-fabric', color: '#39ff14' }
+            { background: 'radial-gradient(circle at 30% 30%, #ff6600 2px, transparent 2px), radial-gradient(circle at 70% 70%, #ff6600 2px, transparent 2px)', pattern: 'basketball-dimples', color: '#ff6600', material: 'jersey' },
+            { background: 'repeating-linear-gradient(45deg, #8b4513 0px, #8b4513 2px, #a0522d 2px, #a0522d 4px)', pattern: 'football-leather', color: '#8b4513', material: 'jersey' },
+            { background: 'repeating-conic-gradient(from 0deg, #000000 0deg 60deg, #ffffff 60deg 120deg)', pattern: 'soccer-hexagon', color: '#000000', material: 'jersey' },
+            { background: 'repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)', pattern: 'jersey-mesh', color: '#00ffff', material: 'jersey' },
+            { background: 'repeating-linear-gradient(90deg, #0099ff 0px, #0099ff 10px, #ffffff 10px, #ffffff 20px)', pattern: 'team-stripes', color: '#0099ff', material: 'jersey' },
+            { background: 'linear-gradient(45deg, #39ff14 25%, transparent 25%), linear-gradient(-45deg, #39ff14 25%, transparent 25%)', pattern: 'athletic-fabric', color: '#39ff14', material: 'jersey' }
           ],
           fonts: [
             'Courier New', 'Monaco', 'Consolas', 'Lucida Console', 'Menlo',
@@ -156,6 +181,36 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   };
 
   const themeConfig = getThemeConfig(theme);
+
+  // Generate material-specific border radius for authentic shapes
+  const generateMaterialBorderRadius = (material: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood'): string => {
+    switch (material) {
+      case 'paper':
+        // Irregular torn edges
+        return `${Math.random() * 8 + 2}px ${Math.random() * 15 + 3}px ${Math.random() * 12 + 2}px ${Math.random() * 6 + 1}px`;
+      case 'cardboard':
+        // Chunky, rough rectangular
+        return `${Math.random() * 6 + 1}px`;
+      case 'jersey':
+        // Fabric-like rounded
+        return `${Math.random() * 10 + 5}px`;
+      case 'gold':
+      case 'chrome':
+        // Sharp, clean cuts
+        return `${Math.random() * 4 + 1}px`;
+      case 'leather':
+        // Soft, curved edges
+        return `${Math.random() * 12 + 6}px ${Math.random() * 8 + 4}px`;
+      case 'glass':
+        // Clean geometric
+        return `${Math.random() * 3 + 1}px`;
+      case 'wood':
+        // Natural, organic shapes
+        return `${Math.random() * 10 + 3}px ${Math.random() * 8 + 2}px ${Math.random() * 6 + 1}px ${Math.random() * 12 + 4}px`;
+      default:
+        return `${Math.random() * 8 + 2}px`;
+    }
+  };
 
   // Generate letter shape
   const generateLetterShape = (): 'square' | 'wide' | 'tall' | 'skew' => {
@@ -281,21 +336,24 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return Math.random() > 0.5 ? '#ffffff' : '#000000';
   };
 
-  const generateLetterStyle = (letterType: 'card' | 'transparent' | 'jersey' = 'card'): LetterStyle => {
-    let bgStyle, textColor;
+  const generateLetterStyle = (letterType: 'card' | 'transparent' | 'jersey' = 'card'): { style: LetterStyle; materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood' } => {
+    let bgStyle: any, textColor: string, materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood';
     
     if (letterType === 'transparent') {
       // Transparent letters have no background
-      bgStyle = { background: 'transparent', pattern: 'transparent' };
+      bgStyle = { background: 'transparent', pattern: 'transparent', material: 'paper' };
       textColor = getRandomColor();
+      materialType = 'paper';
     } else if (letterType === 'jersey' && theme === 'connect' && themeConfig.jerseyPatterns) {
       // Jersey patterns for connect theme
       bgStyle = themeConfig.jerseyPatterns[Math.floor(Math.random() * themeConfig.jerseyPatterns.length)];
       textColor = getContrastingColor(bgStyle.background);
+      materialType = (bgStyle as any).material || 'jersey';
     } else {
-      // Regular card backgrounds
+      // Regular card backgrounds with material types
       bgStyle = themeConfig.backgrounds[Math.floor(Math.random() * themeConfig.backgrounds.length)];
       textColor = getContrastingColor(bgStyle.background);
+      materialType = (bgStyle as any).material || 'paper';
     }
     
     // Enhanced shadow effects with depth layering
@@ -324,11 +382,14 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     const shadowOptions = getTextShadowForType(letterType);
 
     return {
-      color: textColor,
-      fontFamily: themeConfig.fonts[Math.floor(Math.random() * themeConfig.fonts.length)],
-      fontSize: `${1.0 + Math.random() * 0.5}em`,
-      backgroundColor: bgStyle.background,
-      textShadow: shadowOptions[Math.floor(Math.random() * shadowOptions.length)]
+      style: {
+        color: textColor,
+        fontFamily: themeConfig.fonts[Math.floor(Math.random() * themeConfig.fonts.length)],
+        fontSize: `${1.0 + Math.random() * 0.5}em`,
+        backgroundColor: bgStyle.background,
+        textShadow: shadowOptions[Math.floor(Math.random() * shadowOptions.length)]
+      },
+      materialType
     };
   };
 
@@ -343,10 +404,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       // Generate transparency pattern
       const transparencyPattern = generateTransparencyPattern(children);
       
-      // Only allow 1-2 letters to have sharp angles (>10 degrees)
+      // Allow more letters to have sharp angles (enhanced for fun physics)
       const totalLetters = processedText.length;
       const sharpAngleIndices = new Set<number>();
-      const numSharpAngles = Math.min(2, Math.max(1, Math.floor(totalLetters * 0.2))); // 1-2 letters
+      const numSharpAngles = Math.min(4, Math.max(2, Math.floor(totalLetters * 0.3))); // 2-4 letters
       
       while (sharpAngleIndices.size < numSharpAngles) {
         const randomIndex = Math.floor(Math.random() * totalLetters);
@@ -360,38 +421,42 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         const isThemeWord = detectThemeWord(children, index);
         const isTransparent = transparencyPattern[index] || false;
         const letterType = generateLetterType(index, isTransparent);
+        const { style, materialType } = generateLetterStyle(letterType);
         
         return {
           char,
           isAnimating: false,
           animationType: 'float' as const,
           animationProgress: 0,
-          rotation: hasSharpAngle ? (Math.random() * 30 - 15) : (Math.random() * 6 - 3), // Sharp: ±15°, Normal: ±3°
+          rotation: hasSharpAngle ? (Math.random() * 70 - 35) : (Math.random() * 24 - 12), // Sharp: ±35°, Normal: ±12°
           float: Math.random() * 2,
-          lean: hasSharpAngle ? (Math.random() * 12 - 6) : (Math.random() * 4 - 2), // Controlled lean
+          lean: hasSharpAngle ? (Math.random() * 20 - 10) : (Math.random() * 8 - 4), // Enhanced lean
           glowIntensity: 0.5 + Math.random() * 0.5,
-          style: generateLetterStyle(letterType),
+          style,
           shape: generateLetterShape(),
           size: generateLetterSize(index, totalLetters),
           isThemeWord,
           isTransparent,
           letterType,
           backgroundOffset: char === ' ' ? 0 : 0,
-          // Paper cut-out styling - generated once and stored
-          borderRadius: `${Math.random() * 6 + 2}px`,
-          padding: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
-          margin: `${Math.random() * 2}px ${Math.random() * 3 + 1}px`,
-          topOffset: Math.random() * 4 - 2,
-          leftOffset: Math.random() * 2 - 1,
-          zIndex: Math.floor(Math.random() * 3) + 1,
-          borderStyle: Math.random() > 0.7 ? `1px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.2)` : 'none',
-          paperShadow: Math.random() > 0.5 ? 
-            `${Math.random() * 2 + 1}px ${Math.random() * 2 + 1}px ${Math.random() * 3 + 2}px rgba(0,0,0,0.${Math.floor(Math.random() * 3) + 1})` : 
+          materialType,
+          // Enhanced paper cut-out styling with material-specific shapes
+          borderRadius: generateMaterialBorderRadius(materialType),
+          padding: `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`, // Bigger padding range
+          margin: `${Math.random() * 6 + 1}px ${Math.random() * 8 + 1}px`, // Enhanced margin for overlapping
+          topOffset: Math.random() * 16 - 8, // Increased from ±2px to ±8px
+          leftOffset: Math.random() * 10 - 5, // Increased from ±1px to ±5px
+          zIndex: Math.floor(Math.random() * 5) + 1, // More z-index levels for overlapping
+          borderStyle: Math.random() > 0.6 ? `${Math.random() > 0.3 ? '2' : '1'}px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.${Math.floor(Math.random() * 4) + 1})` : 'none',
+          paperShadow: Math.random() > 0.4 ? 
+            `${Math.random() * 4 + 2}px ${Math.random() * 4 + 2}px ${Math.random() * 8 + 3}px rgba(0,0,0,0.${Math.floor(Math.random() * 4) + 2})` : 
             'none',
-          fontWeight: Math.random() > 0.7 ? 'bold' : 'normal',
-          fontStyle: Math.random() > 0.9 ? 'italic' : 'normal',
-          textDecoration: Math.random() > 0.95 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
-          opacity: Math.random() > 0.95 ? 0.8 : 1
+          fontWeight: Math.random() > 0.6 ? 'bold' : 'normal',
+          fontStyle: Math.random() > 0.85 ? 'italic' : 'normal',
+          textDecoration: Math.random() > 0.92 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
+          opacity: Math.random() > 0.9 ? 0.7 + Math.random() * 0.3 : 1,
+          scale: 0.9 + Math.random() * 0.4, // Scale breathing effect
+          perspective: Math.random() * 20 - 10 // 3D perspective rotation
         };
       });
       setLetters(newLetters);
@@ -401,32 +466,62 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   }, [children, theme]);
 
   useEffect(() => {
+    // Slower, more pleasant animations (25s main cycle, 600ms phase)
     const variationInterval = setInterval(() => {
+      // 30% chance to pause animation for better readability
+      if (Math.random() < 0.3) {
+        return;
+      }
+      
       if (Math.random() < 0.3) {
         setIsSpellingOut(true);
         setSpellIndex(0);
         setActiveAnimations([]);
         
         // Sequential animation timing for spelling out
-        setLetters(prev => prev.map((letter, index) => ({
-          ...letter,
-          style: generateLetterStyle(letter.letterType)
-        })));
+        setLetters(prev => prev.map((letter, index) => {
+          const { style, materialType } = generateLetterStyle(letter.letterType);
+          return {
+            ...letter,
+            style,
+            materialType,
+            borderRadius: generateMaterialBorderRadius(materialType),
+            // Regenerate cut-out properties for variety
+            padding: `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`,
+            margin: `${Math.random() * 6 + 1}px ${Math.random() * 8 + 1}px`,
+            topOffset: Math.random() * 16 - 8,
+            leftOffset: Math.random() * 10 - 5,
+            scale: 0.9 + Math.random() * 0.4,
+            perspective: Math.random() * 20 - 10
+          };
+        }));
       } else {
         setAnimationKey(prev => prev + 1);
         setActiveAnimations([]);
         setIsSpellingOut(false);
         
-        setLetters(prev => prev.map(letter => ({
-          ...letter,
-          style: generateLetterStyle(letter.letterType)
-        })));
+        setLetters(prev => prev.map(letter => {
+          const { style, materialType } = generateLetterStyle(letter.letterType);
+          return {
+            ...letter,
+            style,
+            materialType,
+            borderRadius: generateMaterialBorderRadius(materialType),
+            // Regenerate cut-out properties for variety
+            padding: `${Math.random() * 13 + 2}px ${Math.random() * 15 + 3}px`,
+            margin: `${Math.random() * 6 + 1}px ${Math.random() * 8 + 1}px`,
+            topOffset: Math.random() * 16 - 8,
+            leftOffset: Math.random() * 10 - 5,
+            scale: 0.9 + Math.random() * 0.4,
+            perspective: Math.random() * 20 - 10
+          };
+        }));
       }
-    }, 8000);
+    }, 25000); // Slowed down from 8s to 25s
 
     const phaseInterval = setInterval(() => {
       setAnimPhase(prev => prev + 1);
-    }, 200);
+    }, 600); // Slowed down from 200ms to 600ms
 
     return () => {
       clearInterval(variationInterval);
@@ -480,8 +575,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     }
   };
 
+  // Enhanced floating movement with more amplitude
   const getLetterFloat = (index: number) => {
-    return Math.sin(animPhase * 0.01 + index * 0.5) * 3;
+    return Math.sin(animPhase * 0.005 + index * 0.5) * 8; // Increased amplitude from 3px to 8px
   };
 
   return (
@@ -525,7 +621,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
                 letter.isAnimating ? 'animate-bounce' : ''
               } ${
                 letter.isThemeWord ? 'animate-pulse' : ''
-              } transition-all duration-300`}
+              }`}
               style={{
                 position: 'relative',
                 display: 'inline-block',
@@ -540,13 +636,16 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
                 textShadow: letter.style.textShadow,
                 transform: `
                   rotate(${letter.rotation}deg) 
+                  rotateX(${letter.perspective}deg)
+                  scale(${letter.scale})
                   translateY(${getLetterFloat(index) + letter.topOffset}px)
                   translateX(${letter.leftOffset}px)
                   ${isFlipping ? 'rotateY(180deg)' : ''}
                 `,
                 transformOrigin: 'center center',
-                transition: `all ${0.3 + Math.random() * 0.4}s ease-out`,
+                transition: `all ${0.5 + Math.random() * 0.8}s cubic-bezier(0.68, -0.55, 0.265, 1.55)`, // Spring physics
                 animationDelay: `${animationDelay}s`,
+                willChange: 'transform', // GPU acceleration
                 
                 filter: `
                   brightness(${0.9 + Math.random() * 0.2}) 
