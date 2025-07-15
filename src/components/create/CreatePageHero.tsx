@@ -4,7 +4,8 @@ import { StandardHero } from '@/components/shared/StandardHero';
 
 export const CreatePageHero: React.FC = () => {
   return (
-    <StandardHero
+    <div className="mt-6">
+      <StandardHero
       label="CUT, CRAFT & CREATE DIGITALLY"
       title={
         <>
@@ -27,6 +28,7 @@ export const CreatePageHero: React.FC = () => {
       showDecorations={true}
       fullWidth={true}
       heroVariant="hero"
-    />
+      />
+    </div>
   );
 };
