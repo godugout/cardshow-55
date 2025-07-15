@@ -239,7 +239,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return backgrounds[Math.floor(Math.random() * backgrounds.length)];
   };
 
-  // Generate clip-path based on letter index for specific side distribution with 95% letter visibility
+  // Generate clip-path based on letter index for complete letter visibility
   const generateClipPath = (letterIndex: number, char: string): string => {
     // Distribution: 6 four-sided (75%), 1 five-sided (12.5%), 1 six-sided (12.5%)
     // CARDSHOW: C,A,R,D,S,H = 4-sided, O = 5-sided, W = 6-sided
@@ -259,8 +259,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       
       switch (shapeType) {
         case 'square':
-          const size = 50 + Math.random() * 20; // Increased to 50-70% for more letter space
-          const rotation = [-15, -30, 0, 15, 30, 45][Math.floor(Math.random() * 6)];
+          const size = 80 + Math.random() * 10; // Increased to 80-90% for full letter visibility
+          const rotation = [-10, -5, 0, 5, 10][Math.floor(Math.random() * 5)]; // Reduced rotation for better fit
           const rad = (rotation * Math.PI) / 180;
           const cos = Math.cos(rad);
           const sin = Math.sin(rad);
@@ -273,30 +273,30 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             centerY + (x * sin + y * cos)
           ]);
           
-          return `polygon(${corners.map(([x, y]) => `${Math.max(2, Math.min(98, x))}% ${Math.max(2, Math.min(98, y))}%`).join(', ')})`;
+          return `polygon(${corners.map(([x, y]) => `${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`).join(', ')})`;
           
         case 'tall-rect':
-          const tallWidth = 40 + Math.random() * 20; // Increased to 40-60% width
-          const tallHeight = 55 + Math.random() * 20; // Increased to 55-75% height
+          const tallWidth = 70 + Math.random() * 15; // Increased to 70-85% width
+          const tallHeight = 85 + Math.random() * 10; // Increased to 85-95% height
           return `polygon(${centerX - tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY + tallHeight/2}%, ${centerX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
           
         case 'wide-rect':
-          const wideWidth = 55 + Math.random() * 20; // Increased to 55-75% width
-          const wideHeight = 40 + Math.random() * 20; // Increased to 40-60% height
+          const wideWidth = 85 + Math.random() * 10; // Increased to 85-95% width
+          const wideHeight = 70 + Math.random() * 15; // Increased to 70-85% height
           return `polygon(${centerX - wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY + wideHeight/2}%, ${centerX - wideWidth/2}% ${centerY + wideHeight/2}%)`;
           
         case 'diamond':
-          const diamondSize = 50 + Math.random() * 20; // Increased to 50-70%
+          const diamondSize = 80 + Math.random() * 10; // Increased to 80-90%
           return `polygon(${centerX}% ${centerY - diamondSize/2}%, ${centerX + diamondSize/2}% ${centerY}%, ${centerX}% ${centerY + diamondSize/2}%, ${centerX - diamondSize/2}% ${centerY}%)`;
           
         case 'parallelogram':
-          const paraWidth = 50 + Math.random() * 20; // Increased to 50-70%
-          const paraHeight = 45 + Math.random() * 20; // Increased to 45-65%
-          const skew = 5 + Math.random() * 10; // Skew amount
+          const paraWidth = 80 + Math.random() * 10; // Increased to 80-90%
+          const paraHeight = 75 + Math.random() * 15; // Increased to 75-90%
+          const skew = 3 + Math.random() * 5; // Reduced skew for better letter fit
           return `polygon(${centerX - paraWidth/2 + skew}% ${centerY - paraHeight/2}%, ${centerX + paraWidth/2 + skew}% ${centerY - paraHeight/2}%, ${centerX + paraWidth/2 - skew}% ${centerY + paraHeight/2}%, ${centerX - paraWidth/2 - skew}% ${centerY + paraHeight/2}%)`;
           
         default:
-          return `polygon(${centerX - 50}% ${centerY - 50}%, ${centerX + 50}% ${centerY - 50}%, ${centerX + 50}% ${centerY + 50}%, ${centerX - 50}% ${centerY + 50}%)`;
+          return `polygon(${centerX - 45}% ${centerY - 45}%, ${centerX + 45}% ${centerY - 45}%, ${centerX + 45}% ${centerY + 45}%, ${centerX - 45}% ${centerY + 45}%)`;
       }
     };
 
@@ -304,15 +304,15 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       // Pentagon shape with larger area for letter visibility
       const centerX = 50;
       const centerY = 50;
-      const radiusX = 55; // Increased to 55 for better letter visibility
-      const radiusY = 50; // Increased to 50 for better letter visibility
+      const radiusX = 70; // Increased to 70 for full letter visibility
+      const radiusY = 75; // Increased to 75 for full letter visibility
       
       const points = [];
       for (let i = 0; i < 5; i++) {
         const angle = (i / 5) * 2 * Math.PI - Math.PI / 2; // Start from top
         const x = centerX + radiusX * Math.cos(angle);
         const y = centerY + radiusY * Math.sin(angle);
-        points.push(`${Math.max(2, Math.min(98, x))}% ${Math.max(2, Math.min(98, y))}%`);
+        points.push(`${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`);
       }
       
       return `polygon(${points.join(', ')})`;
@@ -322,15 +322,15 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       // Hexagon shape with larger area for letter visibility  
       const centerX = 50;
       const centerY = 50;
-      const radiusX = 57; // Increased to 57 for better letter visibility
-      const radiusY = 53; // Increased to 53 for better letter visibility
+      const radiusX = 72; // Increased to 72 for full letter visibility
+      const radiusY = 75; // Increased to 75 for full letter visibility
       
       const points = [];
       for (let i = 0; i < 6; i++) {
         const angle = (i / 6) * 2 * Math.PI;
         const x = centerX + radiusX * Math.cos(angle);
         const y = centerY + radiusY * Math.sin(angle);
-        points.push(`${Math.max(2, Math.min(98, x))}% ${Math.max(2, Math.min(98, y))}%`);
+        points.push(`${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`);
       }
       
       return `polygon(${points.join(', ')})`;
@@ -636,7 +636,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           borderRadius: generateMaterialBorderRadius(materialType),
           padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`, // Smart padding for visibility
           margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`, // Reduced margin to prevent excessive gaps
-          topOffset: Math.random() * 6 - 3, // Reduced from ±8px to ±3px for less overlap
+          topOffset: 0, // Fixed to 0 for consistent baseline alignment
           leftOffset: Math.random() * 4 - 2, // Reduced from ±5px to ±2px for better readability
           zIndex: Math.floor(Math.random() * 3) + 1, // Reduced layers from 5 to 3 for less chaos
           borderStyle: Math.random() > 0.6 ? `${Math.random() > 0.3 ? '2' : '1'}px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.${Math.floor(Math.random() * 4) + 1})` : 'none',
@@ -704,7 +704,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             // Regenerate cut-out properties for variety with less aggressive positioning
             padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
             margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
-            topOffset: (Math.random() - 0.5) * 3, // Reduced from 6 to 3
+            topOffset: 0, // Fixed to 0 for consistent baseline alignment
             leftOffset: (Math.random() - 0.5) * 2, // Reduced from 4 to 2
             zIndex: Math.floor(Math.random() * 3) + 1, // Limited to 3 levels
             scale: 0.9 + Math.random() * 0.4,
@@ -753,7 +753,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
               // Less aggressive positioning for better visibility
               padding: index % 3 === 0 ? `${Math.random() * 15 + 12}px ${Math.random() * 18 + 14}px` : `${Math.random() * 8 + 6}px ${Math.random() * 10 + 8}px`,
               margin: `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`,
-              topOffset: (Math.random() - 0.5) * 3, // Reduced from 6 to 3
+              topOffset: 0, // Fixed to 0 for consistent baseline alignment
               leftOffset: (Math.random() - 0.5) * 2, // Reduced from 4 to 2
               zIndex: Math.floor(Math.random() * 3) + 1, // Limited to 3 levels
               scale: 0.9 + Math.random() * 0.4,
@@ -879,7 +879,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
                   rotate(${letter.rotation}deg) 
                   rotateX(${letter.perspective}deg)
                   scale(${letter.scale})
-                  translateY(${getLetterFloat(index) + letter.topOffset}px)
+                  translateY(${getLetterFloat(index)}px)
                   translateX(${letter.leftOffset}px)
                   ${isFlipping ? 'rotateY(180deg)' : ''}
                 `,
