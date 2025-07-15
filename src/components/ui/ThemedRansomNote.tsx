@@ -101,23 +101,32 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           colors: [
             '#00ffff', '#ff00ff', '#00ff00', '#0080ff', '#ff0080', '#80ff00',
             '#ffffff', '#000000', '#c0c0c0', '#808080', '#404040',
-            '#39ff14', '#ff073a', '#9400d3', '#00ced1', '#ff1493'
+            '#39ff14', '#ff073a', '#9400d3', '#00ced1', '#ff1493',
+            '#ff6600', '#33cc33', '#0099ff', '#cc0099', '#ffff00'
           ],
           backgrounds: [
+            // Pixel/block aesthetics mixed with cyber
             { background: '#00ffff', pattern: 'cyber-cyan' },
             { background: '#ff00ff', pattern: 'digital-magenta' },
             { background: '#39ff14', pattern: 'neon-green' },
-            { background: '#0080ff', pattern: 'electric-blue' },
-            { background: 'linear-gradient(45deg, #00ffff 0%, #ff00ff 100%)', pattern: 'cyber-gradient' },
-            { background: 'linear-gradient(90deg, #39ff14 0%, #0080ff 100%)', pattern: 'matrix-gradient' },
-            { background: 'linear-gradient(135deg, #ff00ff 0%, #00ffff 50%, #39ff14 100%)', pattern: 'rgb-shift' },
             { background: '#000000', pattern: 'digital-black' },
-            { background: '#1a1a1a', pattern: 'cyber-dark' },
-            { background: 'repeating-linear-gradient(45deg, #00ffff, #00ffff 8px, #000000 8px, #000000 16px)', pattern: 'digital-stripes' }
+            { background: '#ffffff', pattern: 'pixel-white' },
+            // Block patterns using CSS
+            { background: 'repeating-conic-gradient(from 0deg at 50% 50%, #00ffff 0deg 90deg, #000000 90deg 180deg)', pattern: 'pixel-blocks' },
+            { background: 'repeating-linear-gradient(90deg, #ff00ff 0px, #ff00ff 8px, #000000 8px, #000000 16px)', pattern: 'pixel-stripes' },
+            { background: 'repeating-linear-gradient(45deg, #39ff14 0px, #39ff14 4px, #000000 4px, #000000 8px)', pattern: 'diagonal-pixels' },
+            // Solid blocks
+            { background: '#2a2a2a', pattern: 'dark-block' },
+            { background: '#404040', pattern: 'grey-block' },
+            { background: '#1a1a2e', pattern: 'navy-block' },
+            { background: '#0f3460', pattern: 'blue-block' },
+            // Minimal gradients for variety
+            { background: 'linear-gradient(90deg, #000000 0%, #404040 100%)', pattern: 'subtle-fade' }
           ],
           fonts: [
             'Courier New', 'Monaco', 'Consolas', 'Lucida Console', 'Menlo',
-            'Orbitron', 'Rajdhani', 'Russo One', 'Quantico', 'Michroma'
+            'Orbitron', 'Rajdhani', 'Russo One', 'Quantico', 'Michroma',
+            'Impact', 'Arial Black', 'Bebas Neue'
           ]
         };
     }
