@@ -15,7 +15,7 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
   useEffect(() => {
     // Switch variations every 5 seconds
     const variationInterval = setInterval(() => {
-      setCurrentVariation(prev => (prev + 1) % 5);
+      setCurrentVariation(prev => (prev + 1) % 4);
     }, 5000);
 
     // Fast animation phases for glitch effects
@@ -29,126 +29,93 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
     };
   }, []);
 
-  // Variation 1: Matrix Green Glitch
-  const matrixStyle = () => ({
-    color: '#00ff00',
-    textShadow: `
-      ${animPhase % 2 === 0 ? '2px' : '-1px'} 0 0 #00ff00,
-      ${animPhase % 3 === 0 ? '-1px' : '2px'} 0 0 #008800,
-      0 0 ${10 + (animPhase % 5) * 2}px #00ff00
-    `,
-    filter: `contrast(1.3) brightness(${0.8 + (animPhase % 10) * 0.04})`,
-    transform: `translateX(${animPhase % 7 === 0 ? (animPhase % 2 === 0 ? '2px' : '-2px') : '0'})`,
-  });
-
-  // Variation 2: Cyberpunk Neon
-  const cyberpunkStyle = () => {
-    const hue = (animPhase * 3) % 360;
+  // Variation 1: Matrix Green - Gentle pulse and glow
+  const matrixStyle = () => {
+    const pulse = Math.sin(animPhase * 0.05) * 0.3 + 0.7; // Slow, gentle pulse
+    const glow = Math.sin(animPhase * 0.03) * 3 + 8; // Breathing glow effect
     return {
-      color: `hsl(${hue}, 90%, 70%)`,
+      color: '#00ff00',
       textShadow: `
-        0 0 ${5 + (animPhase % 3)}px hsl(${hue}, 100%, 50%),
-        0 0 ${10 + (animPhase % 5)}px hsl(${hue + 60}, 100%, 60%),
-        0 0 ${15 + (animPhase % 4)}px hsl(${hue + 120}, 100%, 70%)
+        0 0 ${glow}px #00ff00,
+        0 0 ${glow * 1.5}px #00dd00,
+        0 0 ${glow * 2}px rgba(0, 255, 0, 0.3)
       `,
-      filter: 'contrast(1.2)',
-      transform: `scale(${1 + (animPhase % 8 === 0 ? 0.02 : 0)})`,
+      filter: `brightness(${pulse}) contrast(1.1)`,
+      transform: `scale(${0.98 + pulse * 0.02})`,
     };
   };
 
-  // Variation 3: Holographic Rainbow
-  const holographicStyle = () => ({
-    color: '#ffffff',
-    textShadow: `
-      1px 1px 0 #ff0080,
-      -1px -1px 0 #0080ff,
-      2px 0 0 #ff8000,
-      -2px 0 0 #8000ff,
-      0 2px 0 #00ff80,
-      0 -2px 0 #ff0040
-    `,
-    filter: `hue-rotate(${animPhase * 5}deg) saturate(1.2)`,
-    transform: `skew(${animPhase % 6 === 0 ? (animPhase % 2 === 0 ? '1deg' : '-1deg') : '0'})`,
-  });
-
-  // Variation 4: VHS Static
-  const vhsStyle = () => ({
-    color: '#ffffff',
-    textShadow: `
-      ${animPhase % 3 === 0 ? '3px' : '1px'} 0 0 #ff0040,
-      ${animPhase % 4 === 0 ? '-2px' : '-1px'} 0 0 #00ffff,
-      0 0 ${8 + (animPhase % 6)}px rgba(255, 255, 255, 0.8)
-    `,
-    filter: `contrast(${1.1 + (animPhase % 8) * 0.05}) brightness(${0.9 + (animPhase % 6) * 0.02})`,
-    transform: `
-      translateY(${animPhase % 12 === 0 ? (animPhase % 2 === 0 ? '1px' : '-1px') : '0'})
-      scaleY(${animPhase % 15 === 0 ? '0.98' : '1'})
-    `,
-  });
-
-  // Variation 5: Pixel Dissolve to Matrix
-  const pixelDissolveStyle = () => {
-    const dissolvePhase = (animPhase % 50) / 50; // 5 second cycle
-    const isDissolving = dissolvePhase < 0.3; // First 1.5 seconds
-    const isReforming = dissolvePhase > 0.3 && dissolvePhase < 0.7; // Next 2 seconds
-    const isMatrix = dissolvePhase >= 0.7; // Final 1.5 seconds
-    
-    if (isDissolving) {
-      // Dissolve phase - pixelated fade out
-      const dissolveAmount = dissolvePhase / 0.3;
-      return {
-        color: `rgba(255, 255, 255, ${1 - dissolveAmount * 0.8})`,
-        textShadow: `
-          0 0 ${2 + dissolveAmount * 8}px rgba(255, 255, 255, ${1 - dissolveAmount}),
-          ${dissolveAmount * 4}px 0 0 rgba(255, 255, 255, ${0.5 - dissolveAmount * 0.5}),
-          ${-dissolveAmount * 3}px 0 0 rgba(255, 255, 255, ${0.3 - dissolveAmount * 0.3})
-        `,
-        filter: `blur(${dissolveAmount * 2}px) contrast(${1 - dissolveAmount * 0.5})`,
-        transform: `scale(${1 + dissolveAmount * 0.2}) translateY(${dissolveAmount * 10}px)`,
-      };
-    } else if (isReforming) {
-      // Reforming phase - vertical streams
-      const reformAmount = (dissolvePhase - 0.3) / 0.4;
-      const streamOffset = Math.sin(animPhase * 0.3) * 2;
-      return {
-        color: `rgba(0, 255, 0, ${reformAmount * 0.8})`,
-        textShadow: `
-          0 ${streamOffset}px 0 rgba(0, 255, 0, ${reformAmount}),
-          0 ${streamOffset + 2}px 0 rgba(0, 200, 0, ${reformAmount * 0.8}),
-          0 ${streamOffset + 4}px 0 rgba(0, 150, 0, ${reformAmount * 0.6}),
-          0 ${streamOffset + 6}px 0 rgba(0, 100, 0, ${reformAmount * 0.4})
-        `,
-        filter: `contrast(${1 + reformAmount * 0.5}) brightness(${0.8 + reformAmount * 0.4})`,
-        transform: `translateY(${-20 + reformAmount * 20}px) scaleY(${0.6 + reformAmount * 0.4})`,
-      };
-    } else {
-      // Matrix phase - full green with vertical effects
-      const matrixIntensity = Math.sin(animPhase * 0.2) * 0.5 + 0.5;
-      const verticalShift = Math.sin(animPhase * 0.15) * 3;
-      return {
-        color: '#00ff00',
-        textShadow: `
-          0 ${verticalShift}px 0 #00ff00,
-          0 ${verticalShift + 1}px 0 #00dd00,
-          0 ${verticalShift + 2}px 0 #00bb00,
-          0 ${verticalShift + 3}px 0 #009900,
-          0 0 ${5 + matrixIntensity * 10}px #00ff00
-        `,
-        filter: `contrast(1.3) brightness(${0.9 + matrixIntensity * 0.2})`,
-        transform: `translateY(${verticalShift * 0.5}px) scaleY(${1 + matrixIntensity * 0.05})`,
-      };
-    }
+  // Variation 2: Cyberpunk Neon - Slow color breathing
+  const cyberpunkStyle = () => {
+    const breathe = Math.sin(animPhase * 0.04) * 0.2 + 0.8; // Slow breathing effect
+    const hue = (animPhase * 0.8) % 360; // Much slower color cycling
+    const saturation = 90 + Math.sin(animPhase * 0.06) * 10; // Gentle saturation variance
+    return {
+      color: `hsl(${hue}, ${saturation}%, 70%)`,
+      textShadow: `
+        0 0 ${6 + breathe * 4}px hsl(${hue}, 100%, 50%),
+        0 0 ${10 + breathe * 6}px hsl(${(hue + 30) % 360}, 80%, 60%),
+        0 0 ${14 + breathe * 8}px rgba(255, 255, 255, 0.1)
+      `,
+      filter: `saturate(${1.2 + breathe * 0.3}) brightness(${0.9 + breathe * 0.2})`,
+      transform: `scale(${0.99 + breathe * 0.01})`,
+    };
   };
 
-  const variations = [matrixStyle, cyberpunkStyle, holographicStyle, vhsStyle, pixelDissolveStyle];
+  // Variation 3: Holographic Rainbow - Gentle shimmer
+  const holographicStyle = () => {
+    const shimmer = Math.sin(animPhase * 0.08) * 0.5 + 0.5; // Gentle shimmer
+    const shift = Math.sin(animPhase * 0.02) * 1; // Very subtle shift
+    return {
+      color: '#ffffff',
+      textShadow: `
+        ${shift}px 0 0 rgba(255, 0, 0, ${0.7 + shimmer * 0.3}),
+        ${shift * 1.5}px 0 0 rgba(255, 119, 0, ${0.6 + shimmer * 0.2}),
+        ${shift * 2}px 0 0 rgba(255, 255, 0, ${0.5 + shimmer * 0.3}),
+        ${shift * 2.5}px 0 0 rgba(0, 255, 0, ${0.4 + shimmer * 0.2}),
+        ${shift * 3}px 0 0 rgba(0, 119, 255, ${0.5 + shimmer * 0.3}),
+        ${shift * 3.5}px 0 0 rgba(136, 0, 255, ${0.4 + shimmer * 0.2}),
+        0 0 ${8 + shimmer * 4}px rgba(255, 255, 255, 0.6)
+      `,
+      filter: `brightness(${1.1 + shimmer * 0.2}) contrast(1.05)`,
+      transform: `translateX(${shift * 0.5}px)`,
+    };
+  };
+
+  // Variation 4: VHS Static - Gentle vibration
+  const vhsStyle = () => {
+    const vibration = Math.sin(animPhase * 0.3) * 0.5; // Gentle vibration
+    const glitch = Math.sin(animPhase * 0.1) * 0.3 + 0.7; // Soft glitch intensity
+    const chromatic = Math.sin(animPhase * 0.07) * 1; // Subtle chromatic aberration
+    return {
+      color: '#ffffff',
+      textShadow: `
+        ${chromatic}px 0 0 rgba(255, 0, 64, ${0.6 + glitch * 0.2}),
+        ${-chromatic * 0.7}px 0 0 rgba(0, 255, 255, ${0.5 + glitch * 0.2}),
+        0 0 ${5 + glitch * 3}px rgba(255, 255, 255, 0.8)
+      `,
+      filter: `
+        contrast(${1.1 + glitch * 0.2}) 
+        brightness(${0.95 + glitch * 0.1})
+        saturate(${0.9 + glitch * 0.2})
+      `,
+      transform: `
+        translateX(${vibration}px)
+        translateY(${vibration * 0.3}px)
+      `,
+    };
+  };
+
+  const variations = [matrixStyle, cyberpunkStyle, holographicStyle, vhsStyle];
   const currentStyle = variations[currentVariation]();
 
   return (
     <span 
-      className={`relative inline-block font-mono tracking-wider font-bold transition-all duration-100 ${className}`}
+      className={`relative inline-block font-mono tracking-wider font-bold transition-all duration-300 ${className}`}
       style={{
         ...currentStyle,
-        transitionProperty: 'transform, filter',
+        transitionProperty: 'color, text-shadow, filter, transform',
+        transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
       {children}
