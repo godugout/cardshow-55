@@ -70,7 +70,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       )}
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center pb-4 pt-[150px]">
+      <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           {/* Label */}
           {label && (
