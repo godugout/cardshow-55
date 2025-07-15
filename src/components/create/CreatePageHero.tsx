@@ -11,10 +11,14 @@ export const CreatePageHero: React.FC = () => {
       label="CUT, CRAFT & CREATE DIGITALLY"
       title={
         <>
-          <span className="font-light text-center block">From paper scraps to <GlitchyArt>digital art</GlitchyArt></span><br />
-          <span>
-            <RansomNote>craft</RansomNote> cards that <span className="gradient-text-green-blue-purple">come alive</span>
-          </span>
+          <div className="flex justify-center items-center h-16 mb-2">
+            <span className="font-light text-center">From paper scraps to <GlitchyArt>digital art</GlitchyArt></span>
+          </div>
+          <div className="flex justify-center items-center h-16">
+            <span>
+              <RansomNote>craft</RansomNote> cards that <span className="gradient-text-green-blue-purple">come alive</span>
+            </span>
+          </div>
         </>
       }
       tagline="No glue required."
