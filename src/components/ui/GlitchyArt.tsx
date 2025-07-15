@@ -188,18 +188,19 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
 
   return (
     <span 
-      className={`relative inline-block tracking-wider font-bold transition-all duration-300 ${className}`}
+      className={`relative inline tracking-wider font-bold transition-all duration-300 ${className}`}
       style={{
         ...finalStyle,
         transitionProperty: 'color, text-shadow, filter, transform, background',
         transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
         minWidth: '140px', // Prevent layout shift
-        minHeight: '1.5em', // Stable height
-        padding: '0.25rem 0.5rem', // Internal padding
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        fontSize: '0.9em', // Slightly smaller to match surrounding text height
+        lineHeight: '1', // Tight line height for better alignment
+        padding: '0 0.25rem', // Minimal horizontal padding
+        display: 'inline',
         verticalAlign: 'middle',
+        position: 'relative',
+        top: '-0.05em', // Fine-tune vertical position
       }}
     >
       {children}
