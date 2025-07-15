@@ -47,6 +47,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
   const [goldLetterIndex, setGoldLetterIndex] = useState<number>(-1); // Track which letter has gold background
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionPhase, setTransitionPhase] = useState<'idle' | 'fade-out' | 'fade-in'>('idle');
+  const [fadeOpacity, setFadeOpacity] = useState(1);
 
   // Theme-specific configurations
   const getThemeConfig = (theme: 'craft' | 'collect' | 'connect') => {
@@ -505,88 +508,134 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     initializeLetters();
   }, [children, theme]);
 
+  // Smooth transition system
+  const performSmoothTransition = (updateFunction: () => void) => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
+    setTransitionPhase('fade-out');
+    
+    // Animate fade-out over 1 second
+    const fadeOutStart = Date.now();
+    const fadeOutDuration = 1000;
+    
+    const fadeOutInterval = setInterval(() => {
+      const elapsed = Date.now() - fadeOutStart;
+      const progress = Math.min(elapsed / fadeOutDuration, 1);
+      setFadeOpacity(0.9 * (1 - progress)); // Fade from 0.9 to 0
+      
+      if (progress >= 1) {
+        clearInterval(fadeOutInterval);
+        
+        // Update styles while invisible
+        updateFunction();
+        setTransitionPhase('fade-in');
+        
+        // Animate fade-in over 1.2 seconds
+        const fadeInStart = Date.now();
+        const fadeInDuration = 1200;
+        
+        const fadeInInterval = setInterval(() => {
+          const elapsed = Date.now() - fadeInStart;
+          const progress = Math.min(elapsed / fadeInDuration, 1);
+          setFadeOpacity(0.9 * progress); // Fade from 0 to 0.9
+          
+          if (progress >= 1) {
+            clearInterval(fadeInInterval);
+            setIsTransitioning(false);
+            setTransitionPhase('idle');
+            setFadeOpacity(0.9);
+          }
+        }, 16); // ~60fps
+      }
+    }, 16); // ~60fps
+  };
+
   useEffect(() => {
     if (isPaused) return; // Pause main variation loop
     
     const variationInterval = setInterval(() => {
       console.log('🎨 ThemedRansomNote: Starting new variation cycle, theme:', theme);
-      if (Math.random() < 0.3) {
-        setIsSpellingOut(true);
-        setSpellIndex(0);
-        setActiveAnimations([]);
-        
-        // Pick new gold letter for collect theme
-        let newGoldIndex = goldLetterIndex;
-        if (theme === 'collect') {
-          setLetters(currentLetters => {
-            const validIndices = currentLetters.map((letter, i) => letter.char !== ' ' && !letter.isTransparent && letter.letterType === 'card' ? i : -1).filter(i => i !== -1);
-            if (validIndices.length > 0) {
-              newGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
-              setGoldLetterIndex(newGoldIndex);
-            }
-            
-            return currentLetters.map((letter, index) => {
-              // For collect theme, enforce gold constraint
-              let forceGold = false;
-              let avoidGold = false;
-              if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
-                forceGold = index === newGoldIndex;
-                avoidGold = index !== newGoldIndex;
+      
+      performSmoothTransition(() => {
+        if (Math.random() < 0.3) {
+          setIsSpellingOut(true);
+          setSpellIndex(0);
+          setActiveAnimations([]);
+          
+          // Pick new gold letter for collect theme
+          let newGoldIndex = goldLetterIndex;
+          if (theme === 'collect') {
+            setLetters(currentLetters => {
+              const validIndices = currentLetters.map((letter, i) => letter.char !== ' ' && !letter.isTransparent && letter.letterType === 'card' ? i : -1).filter(i => i !== -1);
+              if (validIndices.length > 0) {
+                newGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+                setGoldLetterIndex(newGoldIndex);
               }
               
-              return {
-                ...letter,
-                style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
-                backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
-              };
+              return currentLetters.map((letter, index) => {
+                // For collect theme, enforce gold constraint
+                let forceGold = false;
+                let avoidGold = false;
+                if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
+                  forceGold = index === newGoldIndex;
+                  avoidGold = index !== newGoldIndex;
+                }
+                
+                return {
+                  ...letter,
+                  style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
+                  backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+                };
+              });
             });
-          });
+          } else {
+            setLetters(prev => prev.map(letter => ({
+              ...letter,
+              style: generateLetterStyle(letter.letterType),
+              backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+            })));
+          }
         } else {
-          setLetters(prev => prev.map(letter => ({
-            ...letter,
-            style: generateLetterStyle(letter.letterType),
-            backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
-          })));
-        }
-      } else {
-        setAnimationKey(prev => prev + 1);
-        setActiveAnimations([]);
-        setIsSpellingOut(false);
-        
-        // Pick new gold letter for collect theme
-        let newGoldIndex = goldLetterIndex;
-        if (theme === 'collect') {
-          setLetters(currentLetters => {
-            const validIndices = currentLetters.map((letter, i) => letter.char !== ' ' && !letter.isTransparent && letter.letterType === 'card' ? i : -1).filter(i => i !== -1);
-            if (validIndices.length > 0) {
-              newGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
-              setGoldLetterIndex(newGoldIndex);
-            }
-            
-            return currentLetters.map((letter, index) => {
-              // For collect theme, enforce gold constraint
-              let forceGold = false;
-              let avoidGold = false;
-              if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
-                forceGold = index === newGoldIndex;
-                avoidGold = index !== newGoldIndex;
+          setAnimationKey(prev => prev + 1);
+          setActiveAnimations([]);
+          setIsSpellingOut(false);
+          
+          // Pick new gold letter for collect theme
+          let newGoldIndex = goldLetterIndex;
+          if (theme === 'collect') {
+            setLetters(currentLetters => {
+              const validIndices = currentLetters.map((letter, i) => letter.char !== ' ' && !letter.isTransparent && letter.letterType === 'card' ? i : -1).filter(i => i !== -1);
+              if (validIndices.length > 0) {
+                newGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+                setGoldLetterIndex(newGoldIndex);
               }
               
-              return {
-                ...letter,
-                style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
-                backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
-              };
+              return currentLetters.map((letter, index) => {
+                // For collect theme, enforce gold constraint
+                let forceGold = false;
+                let avoidGold = false;
+                if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
+                  forceGold = index === newGoldIndex;
+                  avoidGold = index !== newGoldIndex;
+                }
+                
+                return {
+                  ...letter,
+                  style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
+                  backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+                };
+              });
             });
-          });
-        } else {
-          setLetters(prev => prev.map(letter => ({
-            ...letter,
-            style: generateLetterStyle(letter.letterType),
-            backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
-          })));
+          } else {
+            setLetters(prev => prev.map(letter => ({
+              ...letter,
+              style: generateLetterStyle(letter.letterType),
+              backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+            })));
+          }
         }
-      }
+      });
     }, 18000); // Increased from 12000 to 18000 (slower pace)
 
     const phaseInterval = setInterval(() => {
@@ -597,7 +646,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       clearInterval(variationInterval);
       clearInterval(phaseInterval);
     };
-  }, [theme, isPaused]); // Added isPaused dependency
+  }, [theme, isPaused, goldLetterIndex, isTransitioning, fadeOpacity]); // Updated dependencies
 
   useEffect(() => {
     if (isSpellingOut) {
@@ -823,7 +872,19 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       margin: stableOffsets.margin,
       border: 'none',
       boxShadow: 'none',
-      opacity: isVisible ? (letter.char === ' ' ? 1 : 0.9) : 0,
+      opacity: (() => {
+        if (!isVisible) return 0;
+        if (letter.char === ' ') return 1;
+        
+        // Apply smooth fade transition
+        if (isTransitioning) {
+          const staggerDelay = index * 30; // 30ms stagger between letters
+          const staggeredOpacity = Math.max(0, fadeOpacity - (staggerDelay / 1000));
+          return Math.max(0, staggeredOpacity);
+        }
+        
+        return 0.9;
+      })(),
       display: letter.char === ' ' ? 'inline' : 'inline-block',
       fontWeight: themeWeight,
       fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
