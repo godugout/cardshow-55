@@ -663,7 +663,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
   return (
     <div className={`inline-block mt-4 ${className}`} style={{ 
-      letterSpacing: '0.01em', 
+      letterSpacing: '-0.05em', 
       transform: 'scale(0.95)',
       lineHeight: '1.4',
       contain: 'layout'
@@ -674,10 +674,11 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           className="inline-block"
           style={{
             position: 'relative',
-            minWidth: letter.char === ' ' ? '0.3em' : '1.1em',
+            minWidth: letter.char === ' ' ? '0.25em' : '0.8em',
             minHeight: '1.3em',
             verticalAlign: 'middle',
             contain: 'layout style',
+            textAlign: 'center',
             ...getLetterStyle(letter, index)
           }}
         >
