@@ -67,18 +67,20 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
             </Typography>
           )}
           
-          {/* Main Heading - Use configurable variant with consistent font size */}
-          {titleEffects ? (
-            titleEffects
-          ) : (
-            <Typography 
-              as="h1" 
-              variant={heroVariant}
-              className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl"
-            >
-              {title}
-            </Typography>
-          )}
+          {/* Main Heading - Consistent spacing regardless of titleEffects vs title */}
+          <div className="mb-4">
+            {titleEffects ? (
+              titleEffects
+            ) : (
+              <Typography 
+                as="h1" 
+                variant={heroVariant}
+                className="leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl"
+              >
+                {title}
+              </Typography>
+            )}
+          </div>
 
           {/* Tagline - styled consistently */}
           {tagline && (
