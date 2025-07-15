@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card as ShadcnCard, CardContent, CardHeader, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
 
 const cardVariants = cva(
   "card-themed overflow-hidden",
@@ -28,8 +28,7 @@ const cardVariants = cva(
   }
 );
 
-export interface CRDCardProps 
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface CRDCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "interactive" | "elevated" | "flat";
   padding?: "none" | "sm" | "default" | "lg";
   header?: React.ReactNode;
@@ -37,7 +36,7 @@ export interface CRDCardProps
 }
 
 export const CRDCard = React.forwardRef<HTMLDivElement, CRDCardProps>(
-  ({ className, variant, padding, header, footer, children, ...props }, ref) => {
+  ({ className, variant = "default", padding = "default", header, footer, children, ...props }, ref) => {
     return (
       <ShadcnCard
         ref={ref}
