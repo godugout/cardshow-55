@@ -5,6 +5,7 @@ interface ThemedRansomNoteProps {
   theme: 'craft' | 'collect' | 'connect';
   className?: string;
   isPaused?: boolean;
+  showTypographyControls?: boolean;
 }
 
 interface LetterState {
@@ -23,6 +24,8 @@ interface LetterState {
   isTransparent: boolean;
   letterType: 'card' | 'transparent' | 'jersey';
   backgroundOffset: number;
+  isTransitioningToTypography: boolean;
+  typographyTransitionProgress: number;
 }
 
 interface LetterStyle {
@@ -37,7 +40,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   children, 
   theme,
   className = "",
-  isPaused = false
+  isPaused = false,
+  showTypographyControls = false
 }) => {
   const [letters, setLetters] = useState<LetterState[]>([]);
   const [animPhase, setAnimPhase] = useState(0);
@@ -50,6 +54,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionPhase, setTransitionPhase] = useState<'idle' | 'fade-out' | 'fade-in'>('idle');
   const [fadeOpacity, setFadeOpacity] = useState(1);
+  const [isReturningToTypography, setIsReturningToTypography] = useState(false);
+  const [typographyTransitionPhase, setTypographyTransitionPhase] = useState<'idle' | 'background-fade' | 'color-transition' | 'font-normalize' | 'typography'>('idle');
+  const [typographyProgress, setTypographyProgress] = useState(0);
 
   // Theme-specific configurations
   const getThemeConfig = (theme: 'craft' | 'collect' | 'connect') => {
@@ -499,7 +506,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           isThemeWord,
           isTransparent,
           letterType,
-          backgroundOffset: char === ' ' ? 0 : generateBackgroundOffset()
+          backgroundOffset: char === ' ' ? 0 : generateBackgroundOffset(),
+          isTransitioningToTypography: false,
+          typographyTransitionProgress: 0
         };
       });
       setLetters(newLetters);
@@ -548,7 +557,73 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           }
         }, 16); // ~60fps
       }
-    }, 16); // ~60fps
+  }, 16); // ~60fps
+  };
+
+  // Typography transition function
+  const transitionToTypography = () => {
+    if (typographyTransitionPhase !== 'idle') return;
+    
+    setIsReturningToTypography(true);
+    setTypographyTransitionPhase('background-fade');
+    setTypographyProgress(0);
+    
+    // Phase 1: Background fade-out (0.5s)
+    setTimeout(() => {
+      setTypographyTransitionPhase('color-transition');
+      
+      // Phase 2: Color transition (1.0s)
+      setTimeout(() => {
+        setTypographyTransitionPhase('font-normalize');
+        
+        // Phase 3: Font normalization (1.0s)
+        setTimeout(() => {
+          setTypographyTransitionPhase('typography');
+          
+          // Apply final typography state
+          setLetters(prev => prev.map(letter => ({
+            ...letter,
+            isTransitioningToTypography: true,
+            typographyTransitionProgress: 1,
+            style: {
+              ...letter.style,
+              backgroundColor: 'transparent',
+              fontFamily: 'Impact',
+              fontSize: '1em',
+              textShadow: 'none'
+            },
+            rotation: 0,
+            float: 0,
+            lean: 0,
+            shape: 'square' as const,
+            size: 'medium' as const
+          })));
+          
+          // Phase 4: Hold in typography state (0.8s)
+          setTimeout(() => {
+            setTypographyTransitionPhase('idle');
+          }, 800);
+          
+        }, 1000);
+      }, 1000);
+    }, 500);
+  };
+
+  // Return to ransom note function
+  const returnToRansomNote = () => {
+    setIsReturningToTypography(false);
+    setTypographyTransitionPhase('idle');
+    setTypographyProgress(0);
+    
+    // Reinitialize letters with ransom note styles
+    setLetters(prev => prev.map(letter => ({
+      ...letter,
+      isTransitioningToTypography: false,
+      typographyTransitionProgress: 0
+    })));
+    
+    // Trigger a refresh of the ransom note styles
+    setAnimationKey(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -901,33 +976,69 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   };
 
   return (
-    <div className={`inline-block mt-4 mb-4 ${className}`} style={{ 
-      letterSpacing: '-0.05em', 
-      transform: 'scale(1.0)',
-      lineHeight: '1.4',
-      contain: 'layout',
-      height: '1.5em', // Fixed baseline height to prevent layout shifts
-      overflow: 'visible',
-      position: 'relative'
-    }}>
-      {letters.map((letter, index) => (
-        <span
-          key={`${index}-${animationKey}-${theme}`}
-          className="inline-block"
-          style={{
-            position: 'relative',
-            minWidth: letter.char === ' ' ? '0.25em' : '0.8em',
-            minHeight: '1.3em',
-            maxHeight: '2.5em', // Baseline constraint
-            verticalAlign: 'top',
-            contain: 'layout style',
-            textAlign: 'center',
-            ...getLetterStyle(letter, index)
-          }}
-        >
-          {letter.char}
-        </span>
-      ))}
+    <div className="relative">
+      {/* Typography Control */}
+      {showTypographyControls && (
+        <div className="absolute -top-8 right-0 z-20">
+          <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm rounded px-2 py-1">
+            <span className="text-xs opacity-70 text-white">Typography:</span>
+            {isReturningToTypography ? (
+              <button
+                onClick={returnToRansomNote}
+                className="p-1 hover:bg-white/20 rounded transition-colors text-white"
+                title="Return to ransom note"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 3h18v18H3z"/>
+                  <path d="M8 12h8"/>
+                  <path d="M12 8v8"/>
+                </svg>
+              </button>
+            ) : (
+              <button
+                onClick={transitionToTypography}
+                className="p-1 hover:bg-white/20 rounded transition-colors text-white"
+                title="Convert to typography"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 7V4h16v3"/>
+                  <path d="M9 20h6"/>
+                  <path d="M12 4v16"/>
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      
+      <div className={`inline-block mt-4 mb-4 ${className}`} style={{ 
+        letterSpacing: '-0.05em', 
+        transform: 'scale(1.0)',
+        lineHeight: '1.4',
+        contain: 'layout',
+        height: '1.5em', // Fixed baseline height to prevent layout shifts
+        overflow: 'visible',
+        position: 'relative'
+      }}>
+        {letters.map((letter, index) => (
+          <span
+            key={`${index}-${animationKey}-${theme}`}
+            className={`inline-block ${isReturningToTypography ? 'gradient-text-green-blue-purple font-bold' : ''}`}
+            style={{
+              position: 'relative',
+              minWidth: letter.char === ' ' ? '0.25em' : '0.8em',
+              minHeight: '1.3em',
+              maxHeight: '2.5em', // Baseline constraint
+              verticalAlign: 'top',
+              contain: 'layout style',
+              textAlign: 'center',
+              ...getLetterStyle(letter, index)
+            }}
+          >
+            {letter.char}
+          </span>
+        ))}
+      </div>
     </div>
   );
 };
