@@ -833,7 +833,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       // Layout containment to prevent shifts
       contain: 'layout style',
       willChange: 'transform',
-      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'all 2.5s cubic-bezier(0.4, 0, 0.2, 1)',
+      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'all 4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
       transformOrigin: 'center center',
     };
   };
