@@ -109,9 +109,9 @@ export const EnhancedHero: React.FC = () => {
     navigate(`/studio/${card.id}`);
   };
 
-  // Create enhanced heading with responsive text wrapping control
+  // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
-    <div className="text-5xl md:text-6xl lg:text-7xl">
+    <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
       Craft cards that come alive<br />
       <span className="xl:whitespace-nowrap">
         with{' '}
@@ -133,7 +133,8 @@ export const EnhancedHero: React.FC = () => {
       {/* Hero content */}
       <StandardHero
         label="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
-        title={enhancedHeading}
+        title="Craft cards that come alive with unlimited potential"
+        titleEffects={enhancedHeading}
         description="Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life."
         primaryCta={{
           text: "Create your first CRD",

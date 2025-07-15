@@ -7,20 +7,14 @@ export const CreatePageHero: React.FC = () => {
     <StandardHero
       label="CUT, CRAFT & CREATE DIGITALLY"
       title={
-        <div className="text-5xl md:text-6xl lg:text-7xl">
+        <>
           From paper scraps<br />to digital art<br />
           <span className="xl:whitespace-nowrap">
             craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
           </span>
-        </div>
+        </>
       }
-      children={
-        <div className="mt-6 mb-8">
-          <p className="text-lg md:text-xl italic text-center font-medium gradient-text-green-blue-purple animate-fade-in">
-            "No glue required."
-          </p>
-        </div>
-      }
+      tagline="No glue required."
       description="Experience the freedom of digital crafting where every cut, layer, and blend creates immersive cards that viewers can explore from every angle."
       primaryCta={{
         text: "Start Creating",

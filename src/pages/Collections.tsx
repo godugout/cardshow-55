@@ -14,12 +14,10 @@ const Collections: React.FC = () => {
         label="DISCOVER, COLLECT & CONNECT"
         title={
           <>
-            <span className="text-4xl md:text-5xl lg:text-6xl">Your gateway to the world of</span>
-            <div className="text-center">
-              <span className="gradient-text-green-blue-purple whitespace-nowrap">
-                digital cards
-              </span>
-            </div>
+            Your gateway to the world of<br />
+            <span className="gradient-text-green-blue-purple whitespace-nowrap">
+              digital cards
+            </span>
           </>
         }
         description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."
@@ -32,6 +30,7 @@ const Collections: React.FC = () => {
           link: "/collections/create"
         }}
         fullWidth={true}
+        heroVariant="hero"
       />
 
       {/* Gallery Preview Section */}

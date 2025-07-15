@@ -16,6 +16,8 @@ interface CTAConfig {
 interface StandardHeroProps {
   label?: string;
   title: React.ReactNode;
+  tagline?: string;
+  titleEffects?: React.ReactNode;
   description: string;
   primaryCta: CTAConfig;
   secondaryCta?: CTAConfig;
@@ -29,6 +31,8 @@ interface StandardHeroProps {
 export const StandardHero: React.FC<StandardHeroProps> = ({
   label,
   title,
+  tagline,
+  titleEffects,
   description,
   primaryCta,
   secondaryCta,
@@ -63,14 +67,27 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
             </Typography>
           )}
           
-          {/* Main Heading - Use configurable variant */}
-          <Typography 
-            as="h1" 
-            variant={heroVariant}
-            className="mb-4 leading-tight text-crd-white drop-shadow-lg"
-          >
-            {title}
-          </Typography>
+          {/* Main Heading - Use configurable variant with consistent font size */}
+          {titleEffects ? (
+            titleEffects
+          ) : (
+            <Typography 
+              as="h1" 
+              variant={heroVariant}
+              className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl"
+            >
+              {title}
+            </Typography>
+          )}
+
+          {/* Tagline - styled consistently */}
+          {tagline && (
+            <div className="mt-6 mb-8">
+              <p className="text-lg md:text-xl italic text-center font-medium gradient-text-green-blue-purple animate-fade-in">
+                "{tagline}"
+              </p>
+            </div>
+          )}
           
           {/* Description */}
           <Typography 
