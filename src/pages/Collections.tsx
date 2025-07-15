@@ -5,6 +5,7 @@ import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
 import { Typography, CRDButton } from '@/components/ui/design-system';
 import { ThemedPage } from '@/components/ui/design-system/ThemedLayout';
 import { StandardHero } from '@/components/shared/StandardHero';
+import { AnimatedCardPixelsText } from '@/components/ui/AnimatedCardPixelsText';
 
 const Collections: React.FC = () => {
   return (
@@ -15,9 +16,10 @@ const Collections: React.FC = () => {
         title={
           <>
             <span className="text-4xl md:text-5xl lg:text-6xl">Your gateway to the world of</span><br />
-            <span className="gradient-text-green-blue-purple whitespace-nowrap">
-              digital cards
-            </span>
+            <AnimatedCardPixelsText 
+              text="digital cards"
+              className="whitespace-nowrap"
+            />
           </>
         }
         description="Explore thousands of unique cards, build your personal collections, and connect with creators and collectors worldwide."
