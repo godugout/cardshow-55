@@ -482,10 +482,30 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         }}
       >
         {letters.map((letter, index) => {
+          if (letter.char === ' ') {
+            return <span key={`${animationKey}-${index}`} style={{ marginRight: '0.5em' }}>\u00A0</span>;
+          }
+
           const animationDelay = isSpellingOut ? index * 0.1 : Math.random() * 2;
           const isActive = activeAnimations.includes(index);
           const isFlipping = flippingLetters.includes(index);
           
+          // Random paper cut-out variations for authentic ransom note look
+          const borderRadius = `${Math.random() * 6 + 2}px`; // 2-8px random
+          const padding = `${Math.random() * 3 + 2}px ${Math.random() * 4 + 3}px`; // Random padding
+          const margin = `${Math.random() * 2}px ${Math.random() * 3 + 1}px`; // Random margin
+          const topOffset = Math.random() * 4 - 2; // ±2px vertical offset
+          const leftOffset = Math.random() * 2 - 1; // ±1px horizontal offset
+          const zIndex = Math.floor(Math.random() * 3) + 1;
+          
+          // Random border for paper cut-out effect
+          const borderStyle = Math.random() > 0.7 ? `1px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.2)` : 'none';
+          
+          // Random shadow for paper depth
+          const paperShadow = Math.random() > 0.5 ? 
+            `${Math.random() * 2 + 1}px ${Math.random() * 2 + 1}px ${Math.random() * 3 + 2}px rgba(0,0,0,0.${Math.floor(Math.random() * 3) + 1})` : 
+            getSizeStyles(letter.size).shadow;
+
           return (
             <span
               key={`${animationKey}-${index}`}
@@ -498,14 +518,18 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
                 position: 'relative',
                 display: 'inline-block',
                 verticalAlign: 'middle',
-                zIndex: letter.size === 'extra-large' ? 20 : letter.size === 'large' ? 15 : 10,
+                zIndex,
                 fontSize: getSizeStyles(letter.size).fontSize,
                 color: letter.style.color,
                 fontFamily: letter.style.fontFamily,
+                fontWeight: Math.random() > 0.7 ? 'bold' : 'normal',
+                fontStyle: Math.random() > 0.9 ? 'italic' : 'normal',
+                textDecoration: Math.random() > 0.95 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
                 textShadow: letter.style.textShadow,
                 transform: `
-                  rotate(${letter.rotation * 0.3}deg) 
-                  translateY(${getLetterFloat(index) * 0.3}px)
+                  rotate(${letter.rotation}deg) 
+                  translateY(${getLetterFloat(index) + topOffset}px)
+                  translateX(${leftOffset}px)
                   ${isFlipping ? 'rotateY(180deg)' : ''}
                 `,
                 transformOrigin: 'center center',
@@ -517,18 +541,16 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
                   contrast(${0.95 + Math.random() * 0.1})
                   ${letter.glowIntensity > 0.8 ? `drop-shadow(0 0 ${letter.glowIntensity * 3}px ${letter.style.color}40)` : ''}
                 `,
-                marginRight: letter.char === ' ' ? '0.5em' : '0.05em',
-                paddingLeft: letter.letterType !== 'transparent' ? '0.15em' : '0',
-                paddingRight: letter.letterType !== 'transparent' ? '0.15em' : '0',
-                paddingTop: letter.letterType !== 'transparent' ? '0.1em' : '0',
-                paddingBottom: letter.letterType !== 'transparent' ? '0.1em' : '0',
+                padding: letter.letterType !== 'transparent' ? padding : '0',
+                margin: letter.letterType !== 'transparent' ? margin : '0.05em',
                 background: letter.letterType !== 'transparent' ? letter.style.backgroundColor : 'transparent',
-                borderRadius: letter.letterType !== 'transparent' ? getShapeStyles(letter.shape).borderRadius : '0',
-                boxShadow: letter.letterType !== 'transparent' ? getSizeStyles(letter.size).shadow : 'none',
-                border: letter.letterType !== 'transparent' ? '1px solid rgba(0,0,0,0.1)' : 'none'
+                borderRadius: letter.letterType !== 'transparent' ? borderRadius : '0',
+                border: letter.letterType !== 'transparent' ? borderStyle : 'none',
+                boxShadow: letter.letterType !== 'transparent' ? paperShadow : 'none',
+                opacity: Math.random() > 0.95 ? 0.8 : 1 // Occasional worn paper effect
               }}
             >
-              {letter.char === ' ' ? '\u00A0' : letter.char}
+              {letter.char}
             </span>
           );
         })}
