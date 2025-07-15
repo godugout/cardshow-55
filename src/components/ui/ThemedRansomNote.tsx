@@ -174,6 +174,11 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             { background: 'radial-gradient(circle at 30% 30%, #ff1493 2px, transparent 2px), radial-gradient(circle at 70% 70%, #ff1493 2px, transparent 2px)', pattern: '90s-basketball', color: '#ff1493' },
             // Windbreaker pattern
             { background: 'repeating-linear-gradient(45deg, #ff073a 0px, #ff073a 8px, #00ffff 8px, #00ffff 16px, #ffff00 16px, #ffff00 24px)', pattern: '90s-windbreaker', color: '#ff073a' },
+            // Black and white checkers
+            { background: 'repeating-conic-gradient(from 0deg at 0% 0%, #000000 0deg 90deg, #ffffff 90deg 180deg, #000000 180deg 270deg, #ffffff 270deg 360deg)', pattern: 'checkers-large', color: '#ff1493' },
+            { background: 'repeating-linear-gradient(45deg, #000000 0px, #000000 10px, #ffffff 10px, #ffffff 20px), repeating-linear-gradient(-45deg, #000000 0px, #000000 10px, #ffffff 10px, #ffffff 20px)', pattern: 'checkers-diagonal', color: '#00ffff' },
+            { background: 'repeating-conic-gradient(from 0deg at 0% 0%, #000000 0deg 45deg, #ffffff 45deg 90deg, #000000 90deg 135deg, #ffffff 135deg 180deg, #000000 180deg 225deg, #ffffff 225deg 270deg, #000000 270deg 315deg, #ffffff 315deg 360deg)', pattern: 'checkers-small', color: '#39ff14' },
+            { background: 'linear-gradient(90deg, #000000 50%, #ffffff 50%), linear-gradient(0deg, #000000 50%, #ffffff 50%)', pattern: 'checkers-quad', color: '#ff00ff' },
             // Zebra print patterns
             { background: 'repeating-linear-gradient(30deg, #000000 0px, #000000 8px, #ffffff 8px, #ffffff 16px, #000000 16px, #000000 32px, #ffffff 32px, #ffffff 40px)', pattern: 'zebra-stripe-1', color: '#ff1493' },
             { background: 'repeating-conic-gradient(from 45deg at 50% 50%, #000000 0deg 30deg, #ffffff 30deg 60deg, #000000 60deg 90deg, #ffffff 90deg 120deg)', pattern: 'zebra-radial', color: '#00ffff' },
