@@ -33,6 +33,8 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   const [animPhase, setAnimPhase] = useState(0);
   const [activeAnimations, setActiveAnimations] = useState<number[]>([]);
   const [animationKey, setAnimationKey] = useState(0);
+  const [isSpellingOut, setIsSpellingOut] = useState(false);
+  const [spellIndex, setSpellIndex] = useState(0);
 
   // Text colors with good contrast
   const textColors = [
@@ -143,14 +145,30 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   useEffect(() => {
     // Switch variations every 8 seconds (slower transitions)
     const variationInterval = setInterval(() => {
-      setAnimationKey(prev => prev + 1);
-      // Reset letter animations for new variation
-      setActiveAnimations([]);
-      // Regenerate all letter styles
-      setLetters(prev => prev.map(letter => ({
-        ...letter,
-        style: generateLetterStyle()
-      })));
+      // Decide if we should do a spell-out animation (30% chance)
+      if (Math.random() < 0.3) {
+        // Start spell-out animation
+        setIsSpellingOut(true);
+        setSpellIndex(0);
+        setActiveAnimations([]);
+        
+        // Hide all letters initially for spell-out
+        setLetters(prev => prev.map(letter => ({
+          ...letter,
+          style: generateLetterStyle()
+        })));
+      } else {
+        // Regular style change
+        setAnimationKey(prev => prev + 1);
+        setActiveAnimations([]);
+        setIsSpellingOut(false);
+        
+        // Regenerate all letter styles
+        setLetters(prev => prev.map(letter => ({
+          ...letter,
+          style: generateLetterStyle()
+        })));
+      }
     }, 8000);
 
     // Slower animation phases for effects
@@ -163,6 +181,24 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
       clearInterval(phaseInterval);
     };
   }, []);
+
+  // Handle spell-out animation
+  useEffect(() => {
+    if (isSpellingOut) {
+      const spellInterval = setInterval(() => {
+        setSpellIndex(prev => {
+          const nextIndex = prev + 1;
+          if (nextIndex >= children.length) {
+            setIsSpellingOut(false);
+            return 0;
+          }
+          return nextIndex;
+        });
+      }, 400); // 400ms between each letter
+
+      return () => clearInterval(spellInterval);
+    }
+  }, [isSpellingOut, children.length]);
 
   // Manage individual letter animations
   useEffect(() => {
@@ -203,6 +239,9 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     const isActive = activeAnimations.includes(index);
     const specialEffectMultiplier = isActive ? letter.glowIntensity * 2 : 1;
     
+    // Handle spell-out visibility
+    const isVisible = !isSpellingOut || index < spellIndex;
+    
     // Enhanced styling for each letter
     const randomBorder = Math.random() > 0.7 ? 
       `${Math.floor(Math.random() * 2) + 1}px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.3)` : 
@@ -232,6 +271,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
         ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
         ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
         ${isActive ? `translateZ(${Math.sin(animPhase * 0.06 + index) * 10}px)` : ''}
+        ${isSpellingOut && index === spellIndex - 1 ? 'scale(1.2)' : ''}
       `,
       filter: `brightness(${1 + (isActive ? 0.5 : 0) * Math.sin(animPhase * 0.06 + index)})`,
       padding: letter.char === ' ' ? '0' : `${4 + Math.floor(Math.random() * 4)}px ${6 + Math.floor(Math.random() * 4)}px`,
@@ -239,7 +279,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
       borderRadius: randomRadius,
       border: randomBorder,
       boxShadow: randomShadow,
-      opacity: letter.char === ' ' ? 1 : 0.9,
+      opacity: isVisible ? (letter.char === ' ' ? 1 : 0.9) : 0,
       display: letter.char === ' ' ? 'inline' : 'inline-block',
       fontWeight: Math.random() > 0.4 ? 'bold' : Math.random() > 0.7 ? '900' : 'normal',
       fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
@@ -248,7 +288,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
       top: `${(Math.random() - 0.5) * 6}px`,
       left: `${(Math.random() - 0.5) * 2}px`,
       zIndex: Math.floor(Math.random() * 3) + 1,
-      transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
       transformOrigin: 'center center',
     };
   };
