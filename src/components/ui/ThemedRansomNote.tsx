@@ -357,15 +357,15 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     
     const isVisible = !isSpellingOut || index < spellIndex;
     
-    const randomBorder = Math.random() > 0.7 ? 
-      `${Math.floor(Math.random() * 2) + 1}px ${Math.random() > 0.5 ? 'solid' : 'dashed'} rgba(0,0,0,0.3)` : 
-      'none';
-    const randomRadius = Math.random() > 0.6 ? 
-      `${Math.floor(Math.random() * 8) + 2}px` : 
-      `${Math.floor(Math.random() * 3)}px`;
-    const randomShadow = Math.random() > 0.7 ? 
-      `${Math.floor(Math.random() * 3) + 1}px ${Math.floor(Math.random() * 3) + 1}px ${Math.floor(Math.random() * 5) + 2}px rgba(0,0,0,0.4)` : 
-      'none';
+    // Pre-calculated stable values to prevent layout shifts
+    const stableOffsets = {
+      rotation: letter.rotation,
+      float: -letter.float,
+      lean: letter.lean,
+      borderRadius: '4px',
+      padding: letter.char === ' ' ? '0' : '6px 8px',
+      margin: letter.char === ' ' ? '0 0.4em' : '0 3px'
+    };
     
     return {
       color: letter.style.color,
@@ -377,48 +377,59 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         0 0 ${15 * specialEffectMultiplier}px currentColor,
         0 0 ${25 * specialEffectMultiplier}px currentColor
       ` : letter.style.textShadow,
+      // Use transforms only - no layout-affecting properties
       transform: `
-        rotateZ(${letter.rotation}deg)
-        rotateX(${letter.lean}deg)
-        translateY(${-letter.float}px)
+        translateX(0px) translateY(${stableOffsets.float}px)
+        rotateZ(${stableOffsets.rotation}deg)
+        rotateX(${stableOffsets.lean}deg)
         ${isFlipping ? `rotateY(${Math.sin(animPhase * 0.05) * 180}deg)` : ''}
         ${isActive ? `rotateY(${Math.sin(animPhase * 0.05 + index) * 45}deg)` : ''}
         ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
         ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
-        ${isActive ? `translateZ(${Math.sin(animPhase * 0.06 + index) * 10}px)` : ''}
         ${isSpellingOut && index === spellIndex - 1 ? 'scale(1.2)' : ''}
       `,
       filter: `brightness(${1 + (isActive ? 0.5 : 0) * Math.sin(animPhase * 0.06 + index)})`,
-      padding: letter.char === ' ' ? '0' : `${4 + Math.floor(Math.random() * 4)}px ${6 + Math.floor(Math.random() * 4)}px`,
-      margin: letter.char === ' ' ? '0 0.4em' : `0 ${2 + Math.floor(Math.random() * 3)}px`,
-      borderRadius: randomRadius,
-      border: randomBorder,
-      boxShadow: randomShadow,
+      padding: stableOffsets.padding,
+      margin: stableOffsets.margin,
+      borderRadius: stableOffsets.borderRadius,
+      border: 'none',
+      boxShadow: 'none',
       opacity: isVisible ? (letter.char === ' ' ? 1 : 0.9) : 0,
       display: letter.char === ' ' ? 'inline' : 'inline-block',
       fontWeight: Math.random() > 0.4 ? 'bold' : Math.random() > 0.7 ? '900' : 'normal',
       fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
       textDecoration: Math.random() > 0.85 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
-      position: 'relative' as const,
-      top: `${(Math.random() - 0.5) * 6}px`,
-      left: `${(Math.random() - 0.5) * 2}px`,
-      zIndex: Math.floor(Math.random() * 3) + 1,
-      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+      // Layout containment to prevent shifts
+      contain: 'layout style',
+      willChange: 'transform',
+      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
       transformOrigin: 'center center',
     };
   };
 
   return (
-    <span className={`inline-block mt-4 ${className}`} style={{ letterSpacing: '0.1em', transform: 'scale(1.05)' }}>
+    <div className={`inline-block mt-4 ${className}`} style={{ 
+      letterSpacing: '0.1em', 
+      transform: 'scale(1.05)',
+      lineHeight: '1.6',
+      contain: 'layout'
+    }}>
       {letters.map((letter, index) => (
         <span
           key={`${index}-${animationKey}-${theme}`}
-          className="inline-block transition-all duration-1000 ease-in-out"
-          style={getLetterStyle(letter, index)}
+          className="inline-block"
+          style={{
+            position: 'relative',
+            minWidth: letter.char === ' ' ? '0.4em' : '1.2em',
+            minHeight: '1.4em',
+            verticalAlign: 'baseline',
+            contain: 'layout style',
+            ...getLetterStyle(letter, index)
+          }}
         >
           {letter.char}
         </span>
       ))}
-    </span>
+    </div>
   );
 };
