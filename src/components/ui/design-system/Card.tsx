@@ -28,9 +28,12 @@ const cardVariants = cva(
   }
 );
 
+type CardVariants = VariantProps<typeof cardVariants>;
+
 export interface CRDCardProps 
-  extends React.HTMLAttributes<HTMLDivElement>, 
-         VariantProps<typeof cardVariants> {
+  extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: CardVariants['variant'];
+  padding?: CardVariants['padding'];
   header?: React.ReactNode;
   footer?: React.ReactNode;
 }
