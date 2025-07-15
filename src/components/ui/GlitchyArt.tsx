@@ -11,26 +11,11 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
 }) => {
   const [currentVariation, setCurrentVariation] = useState(0);
   const [animPhase, setAnimPhase] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionType, setTransitionType] = useState<'plasma' | 'pixel' | 'crt'>('plasma');
 
   useEffect(() => {
-    // Switch variations every 5 seconds with transition effects
+    // Switch variations every 5 seconds
     const variationInterval = setInterval(() => {
-      // Start transition effect
-      setIsTransitioning(true);
-      const transitions: Array<'plasma' | 'pixel' | 'crt'> = ['plasma', 'pixel', 'crt'];
-      setTransitionType(transitions[Math.floor(Math.random() * transitions.length)]);
-      
-      // After 800ms of transition, change the variation
-      setTimeout(() => {
-        setCurrentVariation(prev => (prev + 1) % 4);
-        
-        // End transition after another 800ms
-        setTimeout(() => {
-          setIsTransitioning(false);
-        }, 800);
-      }, 800);
+      setCurrentVariation(prev => (prev + 1) % 4);
     }, 5000);
 
     // Fast animation phases for glitch effects
@@ -128,79 +113,13 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
   const variations = [matrixStyle, cyberpunkStyle, holographicStyle, vhsStyle];
   const currentStyle = variations[currentVariation]();
 
-  // Generate transition effects as text background only
-  const getTransitionStyle = () => {
-    if (!isTransitioning) return {};
-    
-    let transitionBackground = '';
-    
-    switch (transitionType) {
-      case 'plasma':
-        transitionBackground = `radial-gradient(circle at ${50 + Math.sin(animPhase * 0.08) * 40}% ${50 + Math.cos(animPhase * 0.08) * 40}%, 
-          #00ff00 0%, 
-          #ffffff 50%, 
-          #00ffff 100%)`;
-        break;
-      case 'pixel':
-        transitionBackground = `repeating-conic-gradient(from ${animPhase * 2}deg at 50% 50%, 
-          #00ff00 0deg, 
-          #ffffff 22.5deg,
-          #ff00ff 45deg, 
-          #00ffff 67.5deg,
-          #ffff00 90deg,
-          #ff0000 112.5deg,
-          #0000ff 135deg,
-          #ffffff 157.5deg)`;
-        break;
-      case 'crt':
-        transitionBackground = `repeating-linear-gradient(0deg, 
-          #00ff00 0px, 
-          #00ffff 2px, 
-          #ffffff 4px,
-          #00ff00 6px),
-          linear-gradient(90deg, 
-            #00ff00 0%, 
-            #ffffff 50%, 
-            #00ffff 100%)`;
-        break;
-      default:
-        return {};
-    }
-    
-    return {
-      background: transitionBackground,
-      backgroundClip: 'text',
-      WebkitBackgroundClip: 'text',
-      color: 'transparent',
-      filter: `brightness(${1.5 + Math.sin(animPhase * 0.2) * 0.5}) contrast(1.2)`,
-      backgroundSize: transitionType === 'pixel' ? '8px 8px' : '100% 100%',
-    };
-  };
-
-  const finalStyle = isTransitioning 
-    ? { 
-        ...currentStyle, 
-        ...getTransitionStyle(),
-        // Ensure no background bleeds outside text
-        backgroundColor: 'transparent',
-      }
-    : currentStyle;
-
   return (
     <span 
-      className={`relative inline tracking-wider font-bold transition-all duration-300 ${className}`}
+      className={`relative inline-block tracking-wider font-bold transition-all duration-300 ${className}`}
       style={{
-        ...finalStyle,
-        transitionProperty: 'color, text-shadow, filter, transform, background',
+        ...currentStyle,
+        transitionProperty: 'color, text-shadow, filter, transform',
         transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-        minWidth: '140px', // Prevent layout shift
-        fontSize: '0.9em', // Slightly smaller to match surrounding text height
-        lineHeight: '1', // Tight line height for better alignment
-        padding: '0 0.25rem', // Minimal horizontal padding
-        display: 'inline',
-        verticalAlign: 'middle',
-        position: 'relative',
-        top: '-0.05em', // Fine-tune vertical position
       }}
     >
       {children}

@@ -163,7 +163,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   }, [children]);
 
   useEffect(() => {
-    // Switch variations every 8 seconds
+    // Switch variations every 8 seconds (slower transitions)
     const variationInterval = setInterval(() => {
       // Decide if we should do a spell-out animation (30% chance)
       if (Math.random() < 0.3) {
@@ -354,25 +354,8 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     };
   };
 
-
   return (
-    <span 
-      className={`relative inline-block mt-8 ${className}`} 
-      style={{ 
-        letterSpacing: '0.1em',
-        minWidth: '120px', // Prevent layout shift
-        minHeight: '2.5em', // Stable height for floating letters
-        padding: '0.5rem 0.25rem', // Internal padding
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        verticalAlign: 'middle',
-        backgroundColor: 'transparent', // Ensure no background bleeds
-        fontSize: '0.9em', // Match height with surrounding text
-        lineHeight: '1', // Tight line height
-        top: '-0.05em', // Slight vertical offset for better alignment
-      }}
-    >
+    <span className={`inline-block mt-8 ${className}`} style={{ letterSpacing: '0.1em' }}>
       {letters.map((letter, index) => (
         <span
           key={`${index}-${animationKey}`}

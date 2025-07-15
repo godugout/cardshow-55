@@ -13,7 +13,7 @@ export const CreatePageHero: React.FC = () => {
         <>
           <span className="font-light">From paper scraps to <GlitchyArt>digital art</GlitchyArt></span><br />
           <span className="xl:whitespace-nowrap">
-            <RansomNote>craft</RansomNote> cards that <span className="gradient-text-green-blue-purple inline-block" style={{ fontSize: '0.9em', lineHeight: '1', verticalAlign: 'middle', top: '-0.05em' }}>come alive</span>
+            <RansomNote>craft</RansomNote> cards that <span className="gradient-text-green-blue-purple">come alive</span>
           </span>
         </>
       }
