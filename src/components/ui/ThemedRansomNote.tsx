@@ -111,36 +111,26 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             '#ff6600', '#33cc33', '#0099ff', '#cc0099', '#ffff00'
           ],
           backgrounds: [
-            // Pixel/block aesthetics mixed with cyber
             { background: '#00ffff', pattern: 'cyber-cyan' },
             { background: '#ff00ff', pattern: 'digital-magenta' },
             { background: '#39ff14', pattern: 'neon-green' },
             { background: '#000000', pattern: 'digital-black' },
             { background: '#ffffff', pattern: 'pixel-white' },
-            // Block patterns using CSS
             { background: 'repeating-conic-gradient(from 0deg at 50% 50%, #00ffff 0deg 90deg, #000000 90deg 180deg)', pattern: 'pixel-blocks' },
             { background: 'repeating-linear-gradient(90deg, #ff00ff 0px, #ff00ff 8px, #000000 8px, #000000 16px)', pattern: 'pixel-stripes' },
             { background: 'repeating-linear-gradient(45deg, #39ff14 0px, #39ff14 4px, #000000 4px, #000000 8px)', pattern: 'diagonal-pixels' },
-            // Solid blocks
             { background: '#2a2a2a', pattern: 'dark-block' },
             { background: '#404040', pattern: 'grey-block' },
             { background: '#1a1a2e', pattern: 'navy-block' },
             { background: '#0f3460', pattern: 'blue-block' },
-            // Minimal gradients for variety
             { background: 'linear-gradient(90deg, #000000 0%, #404040 100%)', pattern: 'subtle-fade' }
           ],
           jerseyPatterns: [
-            // Basketball textures
             { background: 'radial-gradient(circle at 30% 30%, #ff6600 2px, transparent 2px), radial-gradient(circle at 70% 70%, #ff6600 2px, transparent 2px)', pattern: 'basketball-dimples', color: '#ff6600' },
-            // Football leather texture
             { background: 'repeating-linear-gradient(45deg, #8b4513 0px, #8b4513 2px, #a0522d 2px, #a0522d 4px)', pattern: 'football-leather', color: '#8b4513' },
-            // Soccer ball hexagon pattern
             { background: 'repeating-conic-gradient(from 0deg, #000000 0deg 60deg, #ffffff 60deg 120deg)', pattern: 'soccer-hexagon', color: '#000000' },
-            // Jersey mesh texture
             { background: 'repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)', pattern: 'jersey-mesh', color: '#00ffff' },
-            // Team stripes
             { background: 'repeating-linear-gradient(90deg, #0099ff 0px, #0099ff 10px, #ffffff 10px, #ffffff 20px)', pattern: 'team-stripes', color: '#0099ff' },
-            // Athletic fabric
             { background: 'linear-gradient(45deg, #39ff14 25%, transparent 25%), linear-gradient(-45deg, #39ff14 25%, transparent 25%)', pattern: 'athletic-fabric', color: '#39ff14' }
           ],
           fonts: [
@@ -198,17 +188,6 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     }
     
     return 'card';
-  };
-
-  // Generate background vertical offset for card positioning
-  const generateBackgroundOffset = (): number => {
-    const random = Math.random();
-    // Random vertical offset for card backgrounds: -0.3em to 0.3em
-    if (random < 0.2) return -0.3; // top
-    if (random < 0.4) return -0.15; // slightly above
-    if (random < 0.6) return 0; // middle
-    if (random < 0.8) return 0.15; // slightly below
-    return 0.3; // bottom
   };
 
   // Generate letter size with mixed distribution
@@ -384,7 +363,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           isThemeWord,
           isTransparent,
           letterType,
-          backgroundOffset: char === ' ' ? 0 : generateBackgroundOffset()
+          backgroundOffset: char === ' ' ? 0 : 0
         };
       });
       setLetters(newLetters);
@@ -400,10 +379,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         setSpellIndex(0);
         setActiveAnimations([]);
         
-        setLetters(prev => prev.map(letter => ({
+        // Sequential animation timing for spelling out
+        setLetters(prev => prev.map((letter, index) => ({
           ...letter,
-          style: generateLetterStyle(letter.letterType),
-          backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+          style: generateLetterStyle(letter.letterType)
         })));
       } else {
         setAnimationKey(prev => prev + 1);
@@ -412,8 +391,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         
         setLetters(prev => prev.map(letter => ({
           ...letter,
-          style: generateLetterStyle(letter.letterType),
-          backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+          style: generateLetterStyle(letter.letterType)
         })));
       }
     }, 8000);
@@ -429,279 +407,128 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   }, [theme]);
 
   useEffect(() => {
-    if (isSpellingOut) {
-      const spellInterval = setInterval(() => {
-        setSpellIndex(prev => {
-          const nextIndex = prev + 1;
-          if (nextIndex >= children.length) {
-            setIsSpellingOut(false);
-            return 0;
-          }
-          return nextIndex;
-        });
-      }, 400);
-
-      return () => clearInterval(spellInterval);
+    if (isSpellingOut && spellIndex < letters.length) {
+      const timer = setTimeout(() => {
+        // Skip spaces but include them in the count for proper ordering
+        if (letters[spellIndex].char !== ' ') {
+          setActiveAnimations(prev => [...prev, spellIndex]);
+        }
+        setSpellIndex(prev => prev + 1);
+      }, letters[spellIndex]?.char === ' ' ? 50 : 100); // Faster for spaces
+      return () => clearTimeout(timer);
+    } else if (isSpellingOut && spellIndex >= letters.length) {
+      setTimeout(() => setIsSpellingOut(false), 1000);
     }
-  }, [isSpellingOut, children.length]);
+  }, [isSpellingOut, spellIndex, letters.length]);
 
-  useEffect(() => {
-    const letterInterval = setInterval(() => {
-      setLetters(prev => prev.map((letter, index) => ({
-        ...letter,
-        rotation: letter.rotation + (Math.sin(animPhase * 0.015 + index) * 0.2), // Gentler rotation changes
-        float: 0.5 + Math.sin(animPhase * 0.02 + index * 0.5) * 1.5, // Smaller float range
-        lean: Math.sin(animPhase * 0.018 + index * 0.3) * 2, // Much smaller lean movement
-        glowIntensity: 0.5 + Math.sin(animPhase * 0.03 + index * 0.7) * 0.5
-      })));
-
-      if (Math.random() < 0.4) {
-        const availableLetters = letters.map((_, i) => i).filter(i => 
-          !activeAnimations.includes(i) && 
-          !flippingLetters.includes(i) && 
-          letters[i]?.char !== ' '
-        );
-        
-        if (availableLetters.length > 0) {
-          const numToFlip = Math.min(1 + Math.floor(Math.random() * 3), availableLetters.length);
-          const newFlipping = [];
-          
-          for (let i = 0; i < numToFlip; i++) {
-            const randomIndex = availableLetters[Math.floor(Math.random() * availableLetters.length)];
-            newFlipping.push(randomIndex);
-            availableLetters.splice(availableLetters.indexOf(randomIndex), 1);
-          }
-          
-          setFlippingLetters(newFlipping);
-          
-          setTimeout(() => {
-            setLetters(prev => prev.map((letter, index) => 
-              newFlipping.includes(index) 
-                ? { 
-                    ...letter, 
-                    style: generateLetterStyle(letter.letterType),
-                    backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.4 ? generateBackgroundOffset() : letter.backgroundOffset)
-                  }
-                : letter
-            ));
-          }, 800);
-          
-          setTimeout(() => {
-            setFlippingLetters(prev => prev.filter(i => !newFlipping.includes(i)));
-          }, 1600);
-        }
-      }
-
-      if (Math.random() < 0.1) {
-        const availableLetters = letters.map((_, i) => i).filter(i => 
-          !activeAnimations.includes(i) && 
-          !flippingLetters.includes(i)
-        );
-        if (availableLetters.length > 0) {
-          const numToAnimate = Math.min(1 + Math.floor(Math.random() * 2), availableLetters.length);
-          const newActive = [];
-          for (let i = 0; i < numToAnimate; i++) {
-            const randomIndex = availableLetters[Math.floor(Math.random() * availableLetters.length)];
-            newActive.push(randomIndex);
-            availableLetters.splice(availableLetters.indexOf(randomIndex), 1);
-          }
-          setActiveAnimations(newActive);
-          
-          setTimeout(() => {
-            setActiveAnimations(prev => prev.filter(i => !newActive.includes(i)));
-          }, 4000 + Math.random() * 2000);
-        }
-      }
-    }, 300);
-
-    return () => clearInterval(letterInterval);
-  }, [animPhase, activeAnimations, letters, flippingLetters, theme]);
-
-  const getLetterStyle = (letter: LetterState, index: number) => {
-    const isActive = activeAnimations.includes(index);
-    const isFlipping = flippingLetters.includes(index);
-    const specialEffectMultiplier = isActive ? letter.glowIntensity * 2 : 1;
-    
-    const isVisible = !isSpellingOut || index < spellIndex;
-    
-    // Get size-based scaling
-    const getSizeScale = (size: string): number => {
-      switch (size) {
-        case 'small': return 0.8;
-        case 'medium': return 1.0;
-        case 'large': return 1.3;
-        case 'extra-large': return 1.6;
-        default: return 1.0;
-      }
-    };
-    
-    // Get shape-specific styles
-    const getShapeStyles = (shape: string) => {
-      switch (shape) {
-        case 'square':
-          return {
-            aspectRatio: '1',
-            borderRadius: '6px',
-            clipPath: 'none'
-          };
-        case 'wide':
-          return {
-            width: '1.4em',
-            height: '1em',
-            borderRadius: '4px',
-            clipPath: 'none'
-          };
-        case 'tall':
-          return {
-            width: '0.8em',
-            height: '1.3em',
-            borderRadius: '8px',
-            clipPath: 'none'
-          };
-        case 'skew':
-          return {
-            borderRadius: '4px',
-            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)'
-          };
-        default:
-          return {
-            borderRadius: '4px',
-            clipPath: 'none'
-          };
-      }
-    };
-    
-    const shapeStyles = getShapeStyles(letter.shape);
-    const sizeScale = getSizeScale(letter.size);
-    
-    // Theme word highlighting and transparent letter handling
-    const isThemeWord = letter.isThemeWord;
-    const isTransparent = letter.isTransparent;
-    const themeColor = isThemeWord ? getThemeHighlightColor() : letter.style.color;
-    const themeWeight = isThemeWord ? 'bold' : (Math.random() > 0.4 ? 'bold' : Math.random() > 0.7 ? '900' : 'normal');
-    
-    // Enhanced styles for transparent letters
-    const transparentStyles = isTransparent ? {
-      background: 'transparent',
-      fontSize: `${parseFloat(letter.style.fontSize) * sizeScale * 1.1}em`, // Slightly larger
-      zIndex: 10,
-      textShadow: isThemeWord 
-        ? `0 0 8px ${themeColor}, 0 0 16px ${themeColor}, ${letter.style.textShadow}`
-        : letter.style.textShadow
-    } : {};
-    
-    // Pre-calculated stable values to prevent layout shifts
-    const stableOffsets = {
-      rotation: letter.rotation,
-      float: -letter.float + letter.backgroundOffset,
-      lean: letter.lean,
-      padding: letter.char === ' ' ? '0' : '5px 6px',
-      margin: letter.char === ' ' ? '0 0.3em' : '0 2px'
-    };
-    
-    return {
-      color: themeColor,
-      fontFamily: letter.style.fontFamily,
-      fontSize: transparentStyles.fontSize || `${parseFloat(letter.style.fontSize) * sizeScale}em`,
-      background: transparentStyles.background || letter.style.backgroundColor,
-      textShadow: isActive ? `
-        ${letter.style.textShadow},
-        0 0 ${15 * specialEffectMultiplier}px currentColor,
-        0 0 ${25 * specialEffectMultiplier}px currentColor
-      ` : (transparentStyles.textShadow || letter.style.textShadow),
-      zIndex: transparentStyles.zIndex || 'auto',
-      // Use transforms only - no layout-affecting properties
-      transform: `
-        translateX(0px) translateY(${stableOffsets.float}px)
-        rotateZ(${stableOffsets.rotation}deg)
-        rotateX(${stableOffsets.lean}deg)
-        ${isFlipping ? `rotateY(${Math.sin(animPhase * 0.05) * 180}deg)` : ''}
-        ${isActive ? `rotateY(${Math.sin(animPhase * 0.05 + index) * 45}deg)` : ''}
-        ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
-        ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
-        ${isSpellingOut && index === spellIndex - 1 ? 'scale(1.2)' : ''}
-      `,
-      filter: `brightness(${1 + (isActive ? 0.5 : 0) * Math.sin(animPhase * 0.06 + index)})`,
-      padding: stableOffsets.padding,
-      margin: stableOffsets.margin,
-      border: 'none',
-      boxShadow: 'none',
-      opacity: isVisible ? (letter.char === ' ' ? 1 : 0.9) : 0,
-      display: letter.char === ' ' ? 'inline' : 'inline-block',
-      fontWeight: themeWeight,
-      fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
-      textDecoration: Math.random() > 0.85 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
-      letterSpacing: Math.random() > 0.7 ? '0.1em' : 'normal',
-      // Apply shape styles
-      ...shapeStyles,
-      // Layout containment to prevent shifts
-      contain: 'layout style',
-      willChange: 'transform',
-      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-      transformOrigin: 'center center',
-    };
+  // Helper functions for styling
+  const getSizeStyles = (size: string) => {
+    switch (size) {
+      case 'small':
+        return { fontSize: '0.8em', shadow: '0 2px 4px rgba(0,0,0,0.1)' };
+      case 'medium':
+        return { fontSize: '1.0em', shadow: '0 3px 6px rgba(0,0,0,0.15)' };
+      case 'large':
+        return { fontSize: '1.3em', shadow: '0 4px 8px rgba(0,0,0,0.2)' };
+      case 'extra-large':
+        return { fontSize: '1.6em', shadow: '0 6px 12px rgba(0,0,0,0.25)' };
+      default:
+        return { fontSize: '1.0em', shadow: '0 3px 6px rgba(0,0,0,0.15)' };
+    }
   };
 
-  // Calculate letter positioning
-  const calculateLetterPositions = () => {
-    let cumulativeWidth = 0;
-    return letters.map((letter, index) => {
-      const currentPos = cumulativeWidth;
-      const baseWidth = letter.char === ' ' ? 0.4 : 1.2;
-      const sizeMultiplier = letter.size === 'extra-large' ? 1.6 : 
-                            letter.size === 'large' ? 1.3 : 
-                            letter.size === 'medium' ? 1.0 : 0.8;
-      const letterWidth = baseWidth * sizeMultiplier + 0.1;
-      cumulativeWidth += letterWidth;
-      return { left: currentPos, width: letterWidth };
-    });
+  const getShapeStyles = (shape: string) => {
+    switch (shape) {
+      case 'square':
+        return { borderRadius: '6px', transform: 'none' };
+      case 'wide':
+        return { borderRadius: '4px', transform: 'scaleX(1.2)' };
+      case 'tall':
+        return { borderRadius: '8px', transform: 'scaleY(1.2)' };
+      case 'skew':
+        return { borderRadius: '4px', transform: 'skewX(-8deg)' };
+      default:
+        return { borderRadius: '4px', transform: 'none' };
+    }
   };
 
-  const letterPositions = calculateLetterPositions();
-  const totalWidth = letterPositions[letterPositions.length - 1]?.left + letterPositions[letterPositions.length - 1]?.width || 0;
+  const getLetterFloat = (index: number) => {
+    return Math.sin(animPhase * 0.01 + index * 0.5) * 3;
+  };
 
   return (
     <div 
-      className={`relative mt-4 ${className}`} 
+      className={`relative inline-block ${className}`}
       style={{ 
-        height: '4em', // Fixed height container
-        width: '100%',
-        contain: 'layout size',
-        overflow: 'visible',
-        transform: 'scale(0.95)',
-        transformOrigin: 'center top'
+        height: '3.5em',
+        lineHeight: '1.4',
+        fontWeight: 'bold',
+        perspective: '1000px',
+        transformStyle: 'preserve-3d'
       }}
     >
+      {/* Letters container */}
       <div
         className="absolute"
         style={{
           top: '50%',
           left: '50%',
-          transform: `translateX(-50%) translateY(-50%)`,
+          transform: 'translateX(-50%) translateY(-50%)',
           whiteSpace: 'nowrap',
-          width: `${totalWidth}em`
+          display: 'inline-flex',
+          alignItems: 'middle',
+          letterSpacing: '0.1em',
+          wordSpacing: '0.3em'
         }}
       >
         {letters.map((letter, index) => {
-          const position = letterPositions[index];
+          const animationDelay = isSpellingOut ? index * 0.1 : Math.random() * 2;
+          const isActive = activeAnimations.includes(index);
+          const isFlipping = flippingLetters.includes(index);
           
           return (
             <span
-              key={`${index}-${animationKey}-${theme}`}
-              className="absolute"
+              key={`${animationKey}-${index}`}
+              className={`inline-block font-bold ${
+                letter.isAnimating ? 'animate-bounce' : ''
+              } ${
+                letter.isThemeWord ? 'animate-pulse' : ''
+              } transition-all duration-300`}
               style={{
-                left: `${position.left}em`,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                minWidth: letter.char === ' ' ? '0.4em' : '1.2em',
-                minHeight: '1.4em',
+                position: 'relative',
+                display: 'inline-block',
                 verticalAlign: 'middle',
-                contain: 'layout style',
-                willChange: 'transform',
-                ...getLetterStyle(letter, index)
+                zIndex: letter.size === 'extra-large' ? 20 : letter.size === 'large' ? 15 : 10,
+                fontSize: getSizeStyles(letter.size).fontSize,
+                color: letter.style.color,
+                fontFamily: letter.style.fontFamily,
+                textShadow: letter.style.textShadow,
+                transform: `
+                  rotate(${letter.rotation * 0.3}deg) 
+                  translateY(${getLetterFloat(index) * 0.3}px)
+                  ${isFlipping ? 'rotateY(180deg)' : ''}
+                `,
+                transformOrigin: 'center center',
+                transition: `all ${0.3 + Math.random() * 0.4}s ease-out`,
+                animationDelay: `${animationDelay}s`,
+                
+                filter: `
+                  brightness(${0.9 + Math.random() * 0.2}) 
+                  contrast(${0.95 + Math.random() * 0.1})
+                  ${letter.glowIntensity > 0.8 ? `drop-shadow(0 0 ${letter.glowIntensity * 3}px ${letter.style.color}40)` : ''}
+                `,
+                marginRight: letter.char === ' ' ? '0.5em' : '0.05em',
+                paddingLeft: letter.letterType !== 'transparent' ? '0.15em' : '0',
+                paddingRight: letter.letterType !== 'transparent' ? '0.15em' : '0',
+                paddingTop: letter.letterType !== 'transparent' ? '0.1em' : '0',
+                paddingBottom: letter.letterType !== 'transparent' ? '0.1em' : '0',
+                background: letter.letterType !== 'transparent' ? letter.style.backgroundColor : 'transparent',
+                borderRadius: letter.letterType !== 'transparent' ? getShapeStyles(letter.shape).borderRadius : '0',
+                boxShadow: letter.letterType !== 'transparent' ? getSizeStyles(letter.size).shadow : 'none',
+                border: letter.letterType !== 'transparent' ? '1px solid rgba(0,0,0,0.1)' : 'none'
               }}
             >
-              {letter.char}
+              {letter.char === ' ' ? '\u00A0' : letter.char}
             </span>
           );
         })}
