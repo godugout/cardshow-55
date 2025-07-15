@@ -8,7 +8,7 @@ import { StandardHero } from '@/components/shared/StandardHero';
 
 const Collections: React.FC = () => {
   return (
-    <ThemedPage>
+    <div className="min-h-screen bg-crd-darkest">
       {/* Hero Section */}
       <StandardHero
         label="DISCOVER, COLLECT & CONNECT"
@@ -34,7 +34,7 @@ const Collections: React.FC = () => {
       />
 
       {/* Gallery Preview Section */}
-      <section className="mb-16">
+      <section className="mb-16 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div>
             <Typography variant="h2" className="text-crd-white mb-2">
@@ -72,7 +72,7 @@ const Collections: React.FC = () => {
       </section>
 
       {/* Your Collections Section */}
-      <section className="mb-16">
+      <section className="mb-16 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div>
             <Typography variant="h2" className="text-crd-white mb-2">
@@ -118,7 +118,7 @@ const Collections: React.FC = () => {
       </section>
 
       {/* Trending Collections Section */}
-      <section className="mb-16">
+      <section className="mb-16 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div>
             <Typography variant="h2" className="text-crd-white mb-2">
@@ -169,7 +169,7 @@ const Collections: React.FC = () => {
       </section>
 
       {/* Community Activity Section */}
-      <section className="mb-16">
+      <section className="mb-16 px-4 sm:px-6 lg:px-8">
         <Typography variant="h2" className="text-crd-white mb-8">
           Community Activity
         </Typography>
@@ -194,7 +194,7 @@ const Collections: React.FC = () => {
           ))}
         </div>
       </section>
-    </ThemedPage>
+    </div>
   );
 };
 
