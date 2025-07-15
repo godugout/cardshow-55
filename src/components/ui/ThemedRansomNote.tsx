@@ -38,6 +38,12 @@ interface LetterState {
   materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood';
   scale: number;
   perspective: number;
+  // Authentic ransom note properties
+  materialSource: 'magazine-headline' | 'newspaper' | 'magazine-body' | 'advertisement' | 'book-page' | 'label';
+  clipPath: string;
+  overlayTexture: string;
+  isOverlapping: boolean;
+  shadowDepth: number;
 }
 
 interface LetterStyle {
@@ -182,34 +188,133 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
   const themeConfig = getThemeConfig(theme);
 
-  // Generate material-specific styling for authentic magazine cutouts
-  const generateMaterialBorderRadius = (material: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood'): string => {
-    // For ransom notes, we want minimal border radius to look like sharp cutouts
-    switch (material) {
-      case 'paper':
-        // Sharp magazine/newspaper cuts with slight irregularity
-        return `${Math.random() * 3 + 1}px ${Math.random() * 4 + 1}px ${Math.random() * 2 + 1}px ${Math.random() * 3 + 1}px`;
-      case 'cardboard':
-        // Very minimal rounding for thick paper cuts
-        return `${Math.random() * 2 + 1}px`;
-      case 'jersey':
-        // Fabric cuts - slightly softer
-        return `${Math.random() * 4 + 2}px`;
-      case 'gold':
-      case 'chrome':
-        // Metallic materials - very sharp cuts
-        return `${Math.random() * 2}px`;
-      case 'leather':
-        // Leather - minimal soft edges
-        return `${Math.random() * 3 + 1}px`;
-      case 'glass':
-        // Glass - sharp geometric cuts
-        return `${Math.random() * 1}px`;
-      case 'wood':
-        // Wood - slightly irregular natural cuts
-        return `${Math.random() * 3 + 1}px ${Math.random() * 2 + 1}px`;
+  // Generate authentic material source types
+  const generateMaterialSource = (): 'magazine-headline' | 'newspaper' | 'magazine-body' | 'advertisement' | 'book-page' | 'label' => {
+    const sources = ['magazine-headline', 'newspaper', 'magazine-body', 'advertisement', 'book-page', 'label'] as const;
+    return sources[Math.floor(Math.random() * sources.length)];
+  };
+
+  // Generate authentic material backgrounds based on source type
+  const generateMaterialBackground = (source: string) => {
+    const sourceBackgrounds = {
+      'magazine-headline': [
+        { background: '#ff1744', pattern: 'magazine-headline-red', material: 'paper' },
+        { background: '#2196f3', pattern: 'magazine-headline-blue', material: 'paper' },
+        { background: '#ffeb3b', pattern: 'magazine-headline-yellow', material: 'paper' },
+        { background: '#000000', pattern: 'magazine-headline-black', material: 'paper' },
+        { background: 'linear-gradient(45deg, #ff6b6b 0%, #ff8e53 100%)', pattern: 'magazine-gradient', material: 'paper' }
+      ],
+      'newspaper': [
+        { background: '#f5f5dc', pattern: 'newspaper-cream', material: 'paper' },
+        { background: '#ffffff', pattern: 'newspaper-white', material: 'paper' },
+        { background: '#faebd7', pattern: 'newspaper-antique', material: 'paper' },
+        { background: 'linear-gradient(180deg, #fffacd 0%, #f0e68c 100%)', pattern: 'aged-paper', material: 'paper' }
+      ],
+      'magazine-body': [
+        { background: '#ffffff', pattern: 'magazine-white', material: 'paper' },
+        { background: '#f8f8f8', pattern: 'magazine-light-gray', material: 'paper' },
+        { background: '#e3f2fd', pattern: 'magazine-light-blue', material: 'paper' },
+        { background: '#fff3e0', pattern: 'magazine-cream', material: 'paper' }
+      ],
+      'advertisement': [
+        { background: '#ff0080', pattern: 'ad-hot-pink', material: 'paper' },
+        { background: '#00ff80', pattern: 'ad-bright-green', material: 'paper' },
+        { background: '#8000ff', pattern: 'ad-purple', material: 'paper' },
+        { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', pattern: 'ad-gradient', material: 'paper' }
+      ],
+      'book-page': [
+        { background: '#fffacd', pattern: 'book-cream', material: 'paper' },
+        { background: '#f0e68c', pattern: 'book-aged', material: 'paper' },
+        { background: '#fdf5e6', pattern: 'book-old-lace', material: 'paper' }
+      ],
+      'label': [
+        { background: '#ffffff', pattern: 'label-white', material: 'paper' },
+        { background: '#f0f0f0', pattern: 'label-gray', material: 'paper' },
+        { background: '#ffff99', pattern: 'label-yellow', material: 'paper' }
+      ]
+    };
+    
+    const backgrounds = sourceBackgrounds[source as keyof typeof sourceBackgrounds] || sourceBackgrounds['magazine-headline'];
+    return backgrounds[Math.floor(Math.random() * backgrounds.length)];
+  };
+
+  // Generate irregular clip-path for authentic cutout shapes
+  const generateClipPath = (materialSource: string): string => {
+    const generateTornEdge = () => {
+      const points = [];
+      const numPoints = 8 + Math.floor(Math.random() * 6); // 8-14 points for irregularity
+      
+      for (let i = 0; i < numPoints; i++) {
+        const angle = (i / numPoints) * 2 * Math.PI;
+        const baseRadius = 45 + Math.random() * 10; // Base size with variation
+        const irregularity = Math.random() * 15; // Random jagged edges
+        const radius = baseRadius + (Math.sin(angle * 3) * irregularity);
+        
+        const x = 50 + radius * Math.cos(angle);
+        const y = 50 + radius * Math.sin(angle);
+        points.push(`${Math.max(0, Math.min(100, x))}% ${Math.max(0, Math.min(100, y))}%`);
+      }
+      
+      return `polygon(${points.join(', ')})`;
+    };
+
+    const generateCleanCut = () => {
+      // Rectangular with slight irregularities
+      const tl = Math.random() * 5; // top-left variation
+      const tr = 95 + Math.random() * 5; // top-right variation
+      const bl = Math.random() * 5; // bottom-left variation
+      const br = 95 + Math.random() * 5; // bottom-right variation
+      const tt = Math.random() * 5; // top variation
+      const bb = 95 + Math.random() * 5; // bottom variation
+      
+      return `polygon(${tl}% ${tt}%, ${tr}% ${tt}%, ${br}% ${bb}%, ${bl}% ${bb}%)`;
+    };
+
+    const generateRoughCut = () => {
+      // Mix of torn and clean edges
+      const x1 = Math.random() * 8;
+      const x2 = 92 + Math.random() * 8;
+      const y1 = Math.random() * 8;
+      const y2 = 92 + Math.random() * 8;
+      const midX = 45 + Math.random() * 10;
+      const midY = 45 + Math.random() * 10;
+      
+      return `polygon(${x1}% ${y1}%, ${midX}% ${y1}%, ${x2}% ${midY}%, ${x2}% ${y2}%, ${midX}% ${y2}%, ${x1}% ${midY}%)`;
+    };
+
+    switch (materialSource) {
+      case 'magazine-headline':
+      case 'advertisement':
+        return Math.random() < 0.7 ? generateCleanCut() : generateRoughCut();
+      case 'newspaper':
+      case 'book-page':
+        return Math.random() < 0.4 ? generateTornEdge() : generateRoughCut();
+      case 'magazine-body':
+        return Math.random() < 0.5 ? generateCleanCut() : generateTornEdge();
+      case 'label':
+        return generateCleanCut();
       default:
-        return `${Math.random() * 2 + 1}px`;
+        return generateRoughCut();
+    }
+  };
+
+  // Generate overlay texture based on material source
+  const generateOverlayTexture = (materialSource: string): string => {
+    switch (materialSource) {
+      case 'magazine-headline':
+        return 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.05) 100%)'; // Glossy finish
+      case 'newspaper':
+        return 'radial-gradient(circle at 20% 30%, rgba(0,0,0,0.05) 1px, transparent 1px), radial-gradient(circle at 80% 70%, rgba(0,0,0,0.03) 1px, transparent 1px)'; // Print dots
+      case 'magazine-body':
+        return 'linear-gradient(90deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(0,0,0,0.03) 100%)'; // Subtle paper texture
+      case 'advertisement':
+        return 'linear-gradient(45deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.05) 100%)'; // Shiny ad paper
+      case 'book-page':
+        return 'repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(0,0,0,0.02) 15px, rgba(0,0,0,0.02) 16px)'; // Book lines
+      case 'label':
+        return 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)'; // Label gloss
+      default:
+        return 'none';
     }
   };
 
@@ -293,15 +398,26 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return false;
   };
 
-  // Get theme-specific highlight color for special words
-  const getThemeHighlightColor = (): string => {
-    switch (theme) {
-      case 'craft':
-        return ['#ff1744', '#00e676', '#2196f3'][Math.floor(Math.random() * 3)];
-      case 'collect':
-        return ['#daa520', '#8b4513', '#cd853f'][Math.floor(Math.random() * 3)];
-      case 'connect':
-        return ['#00ffff', '#ff00ff', '#39ff14'][Math.floor(Math.random() * 3)];
+  // Generate material border radius based on material type
+  const generateMaterialBorderRadius = (materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood'): string => {
+    switch (materialType) {
+      case 'paper':
+        return `${Math.random() * 3 + 1}px`; // 1-4px for paper
+      case 'cardboard':
+        return `${Math.random() * 2 + 2}px`; // 2-4px for cardboard
+      case 'jersey':
+        return `${Math.random() * 4 + 2}px`; // 2-6px for jersey
+      case 'gold':
+      case 'chrome':
+        return `${Math.random() * 2 + 3}px`; // 3-5px for metals
+      case 'leather':
+        return `${Math.random() * 3 + 2}px`; // 2-5px for leather
+      case 'glass':
+        return `${Math.random() * 4 + 1}px`; // 1-5px for glass
+      case 'wood':
+        return `${Math.random() * 2 + 1}px`; // 1-3px for wood
+      default:
+        return `${Math.random() * 3 + 2}px`;
     }
   };
 
@@ -337,7 +453,22 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return Math.random() > 0.5 ? '#ffffff' : '#000000';
   };
 
-  const generateLetterStyle = (letterType: 'card' | 'transparent' | 'jersey' = 'card'): { style: LetterStyle; materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood' } => {
+  // Generate font based on material source
+  const getFontForSource = (source: string): string => {
+    const sourceFonts = {
+      'magazine-headline': ['Impact', 'Arial Black', 'Bebas Neue', 'Anton', 'Oswald'],
+      'newspaper': ['Times New Roman', 'Georgia', 'serif'],
+      'magazine-body': ['Arial', 'Helvetica', 'Verdana', 'sans-serif'],
+      'advertisement': ['Impact', 'Arial Black', 'Futura', 'Helvetica Bold'],
+      'book-page': ['Times New Roman', 'Garamond', 'Palatino', 'Book Antiqua'],
+      'label': ['Arial', 'Helvetica', 'Verdana', 'Calibri']
+    };
+    
+    const fonts = sourceFonts[source as keyof typeof sourceFonts] || themeConfig.fonts;
+    return fonts[Math.floor(Math.random() * fonts.length)];
+  };
+
+  const generateLetterStyle = (letterType: 'card' | 'transparent' | 'jersey' = 'card', materialSource?: string): { style: LetterStyle; materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood' } => {
     let bgStyle: any, textColor: string, materialType: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood';
     
     if (letterType === 'transparent') {
@@ -351,12 +482,12 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       textColor = getContrastingColor(bgStyle.background);
       materialType = (bgStyle as any).material || 'jersey';
     } else {
-      // Regular card backgrounds with material types
-      bgStyle = themeConfig.backgrounds[Math.floor(Math.random() * themeConfig.backgrounds.length)];
+      // Generate authentic material backgrounds based on source
+      bgStyle = generateMaterialBackground(materialSource || 'magazine-headline');
       textColor = getContrastingColor(bgStyle.background);
       materialType = (bgStyle as any).material || 'paper';
     }
-    
+
     // Enhanced shadow effects with depth layering
     const getTextShadowForType = (type: 'card' | 'transparent' | 'jersey') => {
       if (type === 'transparent') {
@@ -381,11 +512,12 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     };
 
     const shadowOptions = getTextShadowForType(letterType);
+    const fontFamily = getFontForSource(materialSource || 'magazine-headline');
 
     return {
       style: {
         color: textColor,
-        fontFamily: themeConfig.fonts[Math.floor(Math.random() * themeConfig.fonts.length)],
+        fontFamily: fontFamily,
         fontSize: `${1.0 + Math.random() * 0.5}em`,
         backgroundColor: bgStyle.background,
         textShadow: shadowOptions[Math.floor(Math.random() * shadowOptions.length)]
@@ -422,7 +554,16 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         const isThemeWord = detectThemeWord(children, index);
         const isTransparent = transparencyPattern[index] || false;
         const letterType = generateLetterType(index, isTransparent);
-        const { style, materialType } = generateLetterStyle(letterType);
+        const materialSource = generateMaterialSource();
+        const { style, materialType } = generateLetterStyle(letterType, materialSource);
+        
+        // Generate authentic cutout properties
+        const clipPath = generateClipPath(materialSource);
+        const overlayTexture = generateOverlayTexture(materialSource);
+        
+        // Enhanced overlapping logic
+        const isOverlapping = index > 0 && Math.random() < 0.3; // 30% chance to overlap with previous letter
+        const shadowDepth = Math.random() * 3 + 1; // 1-4 depth levels
         
         return {
           char,
@@ -457,7 +598,12 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           textDecoration: Math.random() > 0.92 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
           opacity: Math.random() > 0.9 ? 0.7 + Math.random() * 0.3 : 1,
           scale: 0.9 + Math.random() * 0.4, // Scale breathing effect
-          perspective: Math.random() * 20 - 10 // 3D perspective rotation
+          perspective: Math.random() * 20 - 10, // 3D perspective rotation
+          materialSource,
+          clipPath,
+          overlayTexture,
+          isOverlapping,
+          shadowDepth
         };
       });
       setLetters(newLetters);
@@ -465,6 +611,21 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
     initializeLetters();
   }, [children, theme]);
+
+  useEffect(() => {
+    if (isSpellingOut && spellIndex < letters.length) {
+      const timer = setTimeout(() => {
+        // Skip spaces but include them in the count for proper ordering
+        if (letters[spellIndex].char !== ' ') {
+          setActiveAnimations(prev => [...prev, spellIndex]);
+        }
+        setSpellIndex(prev => prev + 1);
+      }, letters[spellIndex]?.char === ' ' ? 50 : 100); // Faster for spaces
+      return () => clearTimeout(timer);
+    } else if (isSpellingOut && spellIndex >= letters.length) {
+      setTimeout(() => setIsSpellingOut(false), 1000);
+    }
+  }, [isSpellingOut, spellIndex, letters.length]);
 
   useEffect(() => {
     // Slower, more pleasant animations (25s main cycle, 600ms phase)
@@ -481,7 +642,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         
         // Sequential animation timing for spelling out
         setLetters(prev => prev.map((letter, index) => {
-          const { style, materialType } = generateLetterStyle(letter.letterType);
+          const { style, materialType } = generateLetterStyle(letter.letterType, letter.materialSource);
           return {
             ...letter,
             style,
@@ -502,7 +663,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         setIsSpellingOut(false);
         
         setLetters(prev => prev.map(letter => {
-          const { style, materialType } = generateLetterStyle(letter.letterType);
+          const { style, materialType } = generateLetterStyle(letter.letterType, letter.materialSource);
           return {
             ...letter,
             style,
@@ -529,21 +690,6 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       clearInterval(phaseInterval);
     };
   }, [theme]);
-
-  useEffect(() => {
-    if (isSpellingOut && spellIndex < letters.length) {
-      const timer = setTimeout(() => {
-        // Skip spaces but include them in the count for proper ordering
-        if (letters[spellIndex].char !== ' ') {
-          setActiveAnimations(prev => [...prev, spellIndex]);
-        }
-        setSpellIndex(prev => prev + 1);
-      }, letters[spellIndex]?.char === ' ' ? 50 : 100); // Faster for spaces
-      return () => clearTimeout(timer);
-    } else if (isSpellingOut && spellIndex >= letters.length) {
-      setTimeout(() => setIsSpellingOut(false), 1000);
-    }
-  }, [isSpellingOut, spellIndex, letters.length]);
 
   // Helper functions for styling
   const getSizeStyles = (size: string) => {
@@ -659,11 +805,26 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
                 borderRadius: letter.letterType !== 'transparent' ? letter.borderRadius : '0',
                 border: letter.letterType !== 'transparent' ? letter.borderStyle : 'none',
                 boxShadow: letter.letterType !== 'transparent' ? (letter.paperShadow !== 'none' ? letter.paperShadow : getSizeStyles(letter.size).shadow) : 'none',
-                opacity: letter.opacity
+                opacity: letter.opacity,
+                clipPath: letter.clipPath
               }}
-            >
-              {letter.char}
-            </span>
+        >
+          {letter.char}
+          {/* Overlay texture for material authenticity */}
+          <div 
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: letter.overlayTexture,
+              pointerEvents: 'none',
+              borderRadius: letter.borderRadius,
+              clipPath: letter.clipPath
+            }}
+          />
+        </span>
           );
         })}
       </div>
