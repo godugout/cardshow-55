@@ -509,6 +509,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     if (isPaused) return; // Pause main variation loop
     
     const variationInterval = setInterval(() => {
+      console.log('🎨 ThemedRansomNote: Starting new variation cycle, theme:', theme);
       if (Math.random() < 0.3) {
         setIsSpellingOut(true);
         setSpellIndex(0);
