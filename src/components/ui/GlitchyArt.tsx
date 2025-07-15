@@ -86,18 +86,19 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
     };
   };
 
-  // Variation 4: VHS Static - Gentle vibration
-  const vhsStyle = () => {
+  // Variation 4: 8-bit Retro - Gentle vibration
+  const retro8BitStyle = () => {
     const vibration = Math.sin(animPhase * 0.3) * 0.1; // Reduced vibration
     const glitch = Math.sin(animPhase * 0.1) * 0.05 + 0.95; // Reduced glitch
     const chromatic = Math.sin(animPhase * 0.07) * 0.2; // Reduced chromatic aberration
     return {
-      color: '#ffffff',
-      fontFamily: "'Source Code Pro', monospace",
+      color: '#00ff00',
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: '0.9em', // Slightly smaller to match other fonts better
       textShadow: `
         ${chromatic}px 0 0 rgba(255, 0, 64, ${0.4 + glitch * 0.1}),
         ${-chromatic * 0.5}px 0 0 rgba(0, 255, 255, ${0.3 + glitch * 0.1}),
-        0 0 ${3 + glitch * 1}px rgba(255, 255, 255, 0.6)
+        0 0 ${3 + glitch * 1}px rgba(0, 255, 0, 0.6)
       `,
       filter: `
         contrast(${glitch * 0.05 + 1}) 
@@ -113,7 +114,7 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
     };
   };
 
-  const variations = [matrixStyle, cyberpunkStyle, holographicStyle, vhsStyle];
+  const variations = [matrixStyle, cyberpunkStyle, holographicStyle, retro8BitStyle];
   const currentStyle = variations[currentVariation]();
 
   return (

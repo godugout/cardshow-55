@@ -289,7 +289,7 @@ export default {
         'fredoka': ['Fredoka One', 'cursive'], // Fun craft font
         // Digital art themed fonts
         'jetbrains': ['JetBrains Mono', 'monospace'], // Matrix/terminal style
-        'source-code': ['Source Code Pro', 'monospace'], // VHS/retro style
+        'press-start': ['Press Start 2P', 'monospace'], // 8-bit/retro arcade style
         'exo': ['Exo 2', 'sans-serif'], // Cyberpunk/futuristic
         'audiowide': ['Audiowide', 'cursive'], // Holographic/sci-fi
       },
