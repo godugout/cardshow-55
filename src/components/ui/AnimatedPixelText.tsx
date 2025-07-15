@@ -76,8 +76,6 @@ export const AnimatedPixelText: React.FC<AnimatedPixelTextProps> = ({
     <span
       className={cn(
         "inline-block relative cursor-pointer",
-        // Apply the exact same styling as display variant Typography
-        "text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-tight tracking-[-1.28px] text-crd-white",
         className
       )}
       onMouseEnter={() => setIsHovered(true)}

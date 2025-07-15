@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Star, TrendingUp, Clock } from 'lucide-react';
@@ -15,10 +16,15 @@ const Collections: React.FC = () => {
         title={
           <>
             Your gateway to the world of<br />
-            <AnimatedPixelText 
-              text="digital"
+            <Typography 
+              variant="display" 
+              as="span" 
               className="whitespace-nowrap mr-2"
-            />
+            >
+              <AnimatedPixelText 
+                text="digital"
+              />
+            </Typography>
             <Typography 
               variant="display" 
               as="span" 
