@@ -114,7 +114,7 @@ export const EnhancedHero: React.FC = () => {
   // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
     <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-      <RansomNote>Craft</RansomNote> cards that come alive<br />
+      <RansomNote>Craft</RansomNote> your vision into reality<br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         with{' '}
         <SparkleText>
