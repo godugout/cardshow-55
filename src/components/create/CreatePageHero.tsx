@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { StandardHero } from '@/components/shared/StandardHero';
+import { MatrixDigital } from '@/components/ui/MatrixDigital';
 
 export const CreatePageHero: React.FC = () => {
   return (
@@ -8,7 +9,7 @@ export const CreatePageHero: React.FC = () => {
       label="CUT, CRAFT & CREATE DIGITALLY"
       title={
         <>
-          <span className="font-light">From paper scraps to digital art</span><br />
+          <span className="font-light">From paper scraps to <MatrixDigital>digital</MatrixDigital> art</span><br />
           <span className="xl:whitespace-nowrap">
             craft cards that <span className="gradient-text-green-blue-purple">come alive</span>
           </span>
