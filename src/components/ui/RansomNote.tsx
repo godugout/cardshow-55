@@ -36,6 +36,8 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   const [isSpellingOut, setIsSpellingOut] = useState(false);
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionType, setTransitionType] = useState<'plasma' | 'pixel' | 'crt'>('plasma');
 
   // Text colors with good contrast
   const textColors = [
@@ -163,32 +165,45 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   }, [children]);
 
   useEffect(() => {
-    // Switch variations every 8 seconds (slower transitions)
+    // Switch variations every 8 seconds with transition effects
     const variationInterval = setInterval(() => {
-      // Decide if we should do a spell-out animation (30% chance)
-      if (Math.random() < 0.3) {
-        // Start spell-out animation
-        setIsSpellingOut(true);
-        setSpellIndex(0);
-        setActiveAnimations([]);
+      // Start transition effect
+      setIsTransitioning(true);
+      const transitions: Array<'plasma' | 'pixel' | 'crt'> = ['plasma', 'pixel', 'crt'];
+      setTransitionType(transitions[Math.floor(Math.random() * transitions.length)]);
+      
+      // After 1 second of transition, change the styles
+      setTimeout(() => {
+        // Decide if we should do a spell-out animation (30% chance)
+        if (Math.random() < 0.3) {
+          // Start spell-out animation
+          setIsSpellingOut(true);
+          setSpellIndex(0);
+          setActiveAnimations([]);
+          
+          // Hide all letters initially for spell-out
+          setLetters(prev => prev.map(letter => ({
+            ...letter,
+            style: generateLetterStyle()
+          })));
+        } else {
+          // Regular style change
+          setAnimationKey(prev => prev + 1);
+          setActiveAnimations([]);
+          setIsSpellingOut(false);
+          
+          // Regenerate all letter styles
+          setLetters(prev => prev.map(letter => ({
+            ...letter,
+            style: generateLetterStyle()
+          })));
+        }
         
-        // Hide all letters initially for spell-out
-        setLetters(prev => prev.map(letter => ({
-          ...letter,
-          style: generateLetterStyle()
-        })));
-      } else {
-        // Regular style change
-        setAnimationKey(prev => prev + 1);
-        setActiveAnimations([]);
-        setIsSpellingOut(false);
-        
-        // Regenerate all letter styles
-        setLetters(prev => prev.map(letter => ({
-          ...letter,
-          style: generateLetterStyle()
-        })));
-      }
+        // End transition after another second
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 1000);
+      }, 1000);
     }, 8000);
 
     // Slower animation phases for effects
@@ -354,8 +369,88 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     };
   };
 
+  // Generate transition overlay effects
+  const getTransitionOverlay = () => {
+    if (!isTransitioning) return null;
+    
+    switch (transitionType) {
+      case 'plasma':
+        return (
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `radial-gradient(circle at ${50 + Math.sin(animPhase * 0.1) * 30}% ${50 + Math.cos(animPhase * 0.1) * 30}%, 
+                rgba(255, 0, 255, 0.6) 0%, 
+                rgba(0, 255, 255, 0.4) 50%, 
+                transparent 100%)`,
+              filter: 'blur(2px)',
+              opacity: Math.sin(animPhase * 0.2) * 0.5 + 0.5,
+              mixBlendMode: 'screen',
+            }}
+          />
+        );
+      case 'pixel':
+        return (
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `repeating-conic-gradient(from 0deg at 50% 50%, 
+                #ff00ff 0deg, 
+                #00ffff 90deg, 
+                #ffff00 180deg, 
+                #ff00ff 270deg)`,
+              backgroundSize: '8px 8px',
+              opacity: Math.sin(animPhase * 0.3) * 0.7 + 0.3,
+              filter: 'pixelate(4px)',
+              mixBlendMode: 'difference',
+            }}
+          />
+        );
+      case 'crt':
+        return (
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `repeating-linear-gradient(0deg, 
+                transparent 0px, 
+                rgba(0, 255, 0, 0.3) 1px, 
+                transparent 2px, 
+                rgba(0, 255, 0, 0.1) 3px)`,
+              filter: `brightness(${1.5 + Math.sin(animPhase * 0.4) * 0.5})`,
+              opacity: 0.8,
+              mixBlendMode: 'overlay',
+            }}
+          >
+            <div 
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: `radial-gradient(ellipse at center, transparent 30%, rgba(0, 255, 0, 0.1) 100%)`,
+                filter: 'blur(1px)',
+              }}
+            />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <span className={`inline-block mt-8 ${className}`} style={{ letterSpacing: '0.1em' }}>
+    <span 
+      className={`relative inline-block mt-8 ${className}`} 
+      style={{ 
+        letterSpacing: '0.1em',
+        minWidth: '120px', // Prevent layout shift
+        minHeight: '2.5em', // Stable height for floating letters
+        padding: '0.5rem 0.25rem', // Internal padding
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        verticalAlign: 'middle',
+      }}
+    >
+      {getTransitionOverlay()}
       {letters.map((letter, index) => (
         <span
           key={`${index}-${animationKey}`}

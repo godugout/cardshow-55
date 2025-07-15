@@ -11,11 +11,26 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
 }) => {
   const [currentVariation, setCurrentVariation] = useState(0);
   const [animPhase, setAnimPhase] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionType, setTransitionType] = useState<'plasma' | 'pixel' | 'crt'>('plasma');
 
   useEffect(() => {
-    // Switch variations every 5 seconds
+    // Switch variations every 5 seconds with transition effects
     const variationInterval = setInterval(() => {
-      setCurrentVariation(prev => (prev + 1) % 4);
+      // Start transition effect
+      setIsTransitioning(true);
+      const transitions: Array<'plasma' | 'pixel' | 'crt'> = ['plasma', 'pixel', 'crt'];
+      setTransitionType(transitions[Math.floor(Math.random() * transitions.length)]);
+      
+      // After 800ms of transition, change the variation
+      setTimeout(() => {
+        setCurrentVariation(prev => (prev + 1) % 4);
+        
+        // End transition after another 800ms
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 800);
+      }, 800);
     }, 5000);
 
     // Fast animation phases for glitch effects
@@ -113,6 +128,75 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
   const variations = [matrixStyle, cyberpunkStyle, holographicStyle, vhsStyle];
   const currentStyle = variations[currentVariation]();
 
+  // Generate transition overlay effects
+  const getTransitionOverlay = () => {
+    if (!isTransitioning) return null;
+    
+    switch (transitionType) {
+      case 'plasma':
+        return (
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `radial-gradient(circle at ${50 + Math.sin(animPhase * 0.08) * 40}% ${50 + Math.cos(animPhase * 0.08) * 40}%, 
+                rgba(0, 255, 0, 0.8) 0%, 
+                rgba(255, 255, 255, 0.6) 50%, 
+                transparent 100%)`,
+              filter: 'blur(1px)',
+              opacity: Math.sin(animPhase * 0.15) * 0.6 + 0.4,
+              mixBlendMode: 'screen',
+            }}
+          />
+        );
+      case 'pixel':
+        return (
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `repeating-conic-gradient(from ${animPhase * 2}deg at 50% 50%, 
+                #00ff00 0deg, 
+                #ffffff 45deg, 
+                #00ff00 90deg, 
+                #ffffff 135deg)`,
+              backgroundSize: '6px 6px',
+              opacity: Math.sin(animPhase * 0.2) * 0.8 + 0.2,
+              filter: 'contrast(2)',
+              mixBlendMode: 'difference',
+            }}
+          />
+        );
+      case 'crt':
+        return (
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `repeating-linear-gradient(0deg, 
+                transparent 0px, 
+                rgba(0, 255, 255, 0.4) 1px, 
+                transparent 2px)`,
+              filter: `brightness(${2 + Math.sin(animPhase * 0.3) * 0.8})`,
+              opacity: 0.6,
+              mixBlendMode: 'overlay',
+            }}
+          >
+            <div 
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: `linear-gradient(90deg, 
+                  transparent 0%, 
+                  rgba(0, 255, 255, 0.2) 50%, 
+                  transparent 100%)`,
+                transform: `translateX(${Math.sin(animPhase * 0.1) * 20}px)`,
+              }}
+            />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <span 
       className={`relative inline-block tracking-wider font-bold transition-all duration-300 ${className}`}
@@ -120,8 +204,16 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
         ...currentStyle,
         transitionProperty: 'color, text-shadow, filter, transform',
         transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        minWidth: '140px', // Prevent layout shift
+        minHeight: '1.5em', // Stable height
+        padding: '0.25rem 0.5rem', // Internal padding
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        verticalAlign: 'middle',
       }}
     >
+      {getTransitionOverlay()}
       {children}
     </span>
   );
