@@ -288,10 +288,10 @@ export default {
         'raleway': ['Raleway', 'sans-serif'],
         'fredoka': ['Fredoka One', 'cursive'], // Fun craft font
         // Digital art themed fonts
-        'share-tech': ['Share Tech Mono', 'monospace'], // Matrix/terminal
+        'jetbrains': ['JetBrains Mono', 'monospace'], // Matrix/terminal style
+        'source-code': ['Source Code Pro', 'monospace'], // VHS/retro style
         'exo': ['Exo 2', 'sans-serif'], // Cyberpunk/futuristic
         'audiowide': ['Audiowide', 'cursive'], // Holographic/sci-fi
-        'vt323': ['VT323', 'monospace'], // VHS/retro
       },
       fontSize: {
         'display': ['3rem', { lineHeight: '1.1', fontWeight: '800' }], // 48px

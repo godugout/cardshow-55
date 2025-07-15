@@ -31,18 +31,19 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
 
   // Variation 1: Matrix Green - Gentle pulse and glow
   const matrixStyle = () => {
-    const pulse = Math.sin(animPhase * 0.05) * 0.2 + 0.8; // Subtle pulse
-    const glow = Math.sin(animPhase * 0.03) * 2 + 6; // Gentle glow
+    const pulse = Math.sin(animPhase * 0.05) * 0.05 + 0.95; // Reduced pulse
+    const glow = Math.sin(animPhase * 0.03) * 1 + 4; // Reduced glow
     return {
       color: '#00ff00',
-      fontFamily: "'Share Tech Mono', monospace",
+      fontFamily: "'JetBrains Mono', monospace",
       textShadow: `
         0 0 ${glow}px #00ff00,
         0 0 ${glow * 1.5}px #00dd00,
         0 0 ${glow * 2}px rgba(0, 255, 0, 0.2)
       `,
-      filter: `brightness(${pulse}) contrast(1.05)`,
-      transform: `scale(${0.98 + pulse * 0.01})`,
+      filter: `brightness(${pulse}) contrast(1.02)`,
+      transform: `scale(${pulse})`,
+      transformOrigin: 'center',
     };
   };
 
@@ -87,26 +88,28 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
 
   // Variation 4: VHS Static - Gentle vibration
   const vhsStyle = () => {
-    const vibration = Math.sin(animPhase * 0.3) * 0.3; // Gentle vibration
-    const glitch = Math.sin(animPhase * 0.1) * 0.2 + 0.8; // Soft glitch
-    const chromatic = Math.sin(animPhase * 0.07) * 0.5; // Subtle chromatic aberration
+    const vibration = Math.sin(animPhase * 0.3) * 0.1; // Reduced vibration
+    const glitch = Math.sin(animPhase * 0.1) * 0.05 + 0.95; // Reduced glitch
+    const chromatic = Math.sin(animPhase * 0.07) * 0.2; // Reduced chromatic aberration
     return {
       color: '#ffffff',
-      fontFamily: "'VT323', monospace",
+      fontFamily: "'Source Code Pro', monospace",
       textShadow: `
-        ${chromatic}px 0 0 rgba(255, 0, 64, ${0.5 + glitch * 0.15}),
-        ${-chromatic * 0.5}px 0 0 rgba(0, 255, 255, ${0.4 + glitch * 0.15}),
-        0 0 ${4 + glitch * 2}px rgba(255, 255, 255, 0.7)
+        ${chromatic}px 0 0 rgba(255, 0, 64, ${0.4 + glitch * 0.1}),
+        ${-chromatic * 0.5}px 0 0 rgba(0, 255, 255, ${0.3 + glitch * 0.1}),
+        0 0 ${3 + glitch * 1}px rgba(255, 255, 255, 0.6)
       `,
       filter: `
-        contrast(${1.05 + glitch * 0.1}) 
-        brightness(${0.95 + glitch * 0.08})
-        saturate(${0.9 + glitch * 0.15})
+        contrast(${glitch * 0.05 + 1}) 
+        brightness(${glitch})
+        saturate(${0.95 + glitch * 0.05})
       `,
       transform: `
-        translateX(${vibration * 0.5}px)
-        translateY(${vibration * 0.2}px)
+        translateX(${vibration}px)
+        translateY(${vibration * 0.5}px)
+        scale(${glitch})
       `,
+      transformOrigin: 'center',
     };
   };
 
@@ -120,6 +123,11 @@ export const GlitchyArt: React.FC<GlitchyArtProps> = ({
         ...currentStyle,
         transitionProperty: 'color, text-shadow, filter, transform',
         transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        lineHeight: '1.2',
+        verticalAlign: 'baseline',
+        display: 'inline-block',
+        minHeight: '1.2em',
+        overflow: 'hidden',
       }}
     >
       {children}
