@@ -238,63 +238,82 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return backgrounds[Math.floor(Math.random() * backgrounds.length)];
   };
 
-  // Generate irregular clip-path for authentic cutout shapes
-  const generateClipPath = (materialSource: string): string => {
-    const generateTornEdge = () => {
-      const points = [];
-      const numPoints = 8 + Math.floor(Math.random() * 6); // 8-14 points for irregularity
+  // Generate clip-path based on letter index for specific side distribution
+  const generateClipPath = (letterIndex: number, char: string): string => {
+    // Distribution: 6 four-sided (75%), 1 five-sided (12.5%), 1 six-sided (12.5%)
+    // CARDSHOW: C,A,R,D,S,H = 4-sided, O = 5-sided, W = 6-sided
+    const letterMap: { [key: string]: number } = {
+      'C': 4, 'A': 4, 'R': 4, 'D': 4, 'S': 4, 'H': 4, 'O': 5, 'W': 6
+    };
+    
+    const sides = letterMap[char.toUpperCase()] || 4;
+    
+    const generateFourSided = () => {
+      // Shorter rectangles and squares
+      const isSquare = Math.random() < 0.4;
+      const height = isSquare ? 70 : 45 + Math.random() * 20; // Much shorter height
+      const width = isSquare ? height : 60 + Math.random() * 25;
       
-      for (let i = 0; i < numPoints; i++) {
-        const angle = (i / numPoints) * 2 * Math.PI;
-        const baseRadius = 45 + Math.random() * 10; // Base size with variation
-        const irregularity = Math.random() * 15; // Random jagged edges
-        const radius = baseRadius + (Math.sin(angle * 3) * irregularity);
-        
-        const x = 50 + radius * Math.cos(angle);
-        const y = 50 + radius * Math.sin(angle);
-        points.push(`${Math.max(0, Math.min(100, x))}% ${Math.max(0, Math.min(100, y))}%`);
+      // Center the shape
+      const centerX = 50;
+      const centerY = 50;
+      const halfWidth = width / 2;
+      const halfHeight = height / 2;
+      
+      // Add slight irregularities
+      const tl = Math.random() * 3; // top-left variation
+      const tr = Math.random() * 3; // top-right variation
+      const bl = Math.random() * 3; // bottom-left variation
+      const br = Math.random() * 3; // bottom-right variation
+      
+      return `polygon(${centerX - halfWidth + tl}% ${centerY - halfHeight + tl}%, ${centerX + halfWidth - tr}% ${centerY - halfHeight + tr}%, ${centerX + halfWidth - br}% ${centerY + halfHeight - br}%, ${centerX - halfWidth + bl}% ${centerY + halfHeight - bl}%)`;
+    };
+
+    const generateFiveSided = () => {
+      // Pentagon shape, shorter height
+      const centerX = 50;
+      const centerY = 50;
+      const radiusX = 35;
+      const radiusY = 25; // Shorter height
+      
+      const points = [];
+      for (let i = 0; i < 5; i++) {
+        const angle = (i / 5) * 2 * Math.PI - Math.PI / 2; // Start from top
+        const x = centerX + radiusX * Math.cos(angle);
+        const y = centerY + radiusY * Math.sin(angle);
+        points.push(`${x}% ${y}%`);
       }
       
       return `polygon(${points.join(', ')})`;
     };
 
-    const generateCleanCut = () => {
-      // Rectangular with slight irregularities
-      const tl = Math.random() * 5; // top-left variation
-      const tr = 95 + Math.random() * 5; // top-right variation
-      const bl = Math.random() * 5; // bottom-left variation
-      const br = 95 + Math.random() * 5; // bottom-right variation
-      const tt = Math.random() * 5; // top variation
-      const bb = 95 + Math.random() * 5; // bottom variation
+    const generateSixSided = () => {
+      // Hexagon shape, shorter height
+      const centerX = 50;
+      const centerY = 50;
+      const radiusX = 38;
+      const radiusY = 28; // Shorter height
       
-      return `polygon(${tl}% ${tt}%, ${tr}% ${tt}%, ${br}% ${bb}%, ${bl}% ${bb}%)`;
+      const points = [];
+      for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * 2 * Math.PI;
+        const x = centerX + radiusX * Math.cos(angle);
+        const y = centerY + radiusY * Math.sin(angle);
+        points.push(`${x}% ${y}%`);
+      }
+      
+      return `polygon(${points.join(', ')})`;
     };
 
-    const generateRoughCut = () => {
-      // Mix of torn and clean edges
-      const x1 = Math.random() * 8;
-      const x2 = 92 + Math.random() * 8;
-      const y1 = Math.random() * 8;
-      const y2 = 92 + Math.random() * 8;
-      const midX = 45 + Math.random() * 10;
-      const midY = 45 + Math.random() * 10;
-      
-      return `polygon(${x1}% ${y1}%, ${midX}% ${y1}%, ${x2}% ${midY}%, ${x2}% ${y2}%, ${midX}% ${y2}%, ${x1}% ${midY}%)`;
-    };
-
-    switch (materialSource) {
-      case 'magazine-headline':
-      case 'advertisement':
-        return Math.random() < 0.7 ? generateCleanCut() : generateRoughCut();
-      case 'newspaper':
-      case 'book-page':
-        return Math.random() < 0.4 ? generateTornEdge() : generateRoughCut();
-      case 'magazine-body':
-        return Math.random() < 0.5 ? generateCleanCut() : generateTornEdge();
-      case 'label':
-        return generateCleanCut();
+    switch (sides) {
+      case 4:
+        return generateFourSided();
+      case 5:
+        return generateFiveSided();
+      case 6:
+        return generateSixSided();
       default:
-        return generateRoughCut();
+        return generateFourSided();
     }
   };
 
@@ -558,7 +577,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         const { style, materialType } = generateLetterStyle(letterType, materialSource);
         
         // Generate authentic cutout properties
-        const clipPath = generateClipPath(materialSource);
+        const clipPath = generateClipPath(index, char);
         const overlayTexture = generateOverlayTexture(materialSource);
         
         // Enhanced overlapping logic
