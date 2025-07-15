@@ -34,7 +34,7 @@ export const Hero3: React.FC<Hero3Props> = ({
         {[...featuredCards, ...featuredCards].map((card, index) => (
           <div 
             key={`${card.id}-${index}`}
-            className="flex-shrink-0 w-72 cursor-pointer hover:scale-105 transition-transform duration-300"
+            className="flex-shrink-0 w-[432px] cursor-pointer hover:scale-105 transition-transform duration-300"
             onClick={() => onCardClick(card)}
           >
             <div className="bg-crd-dark rounded-xl overflow-hidden shadow-lg border border-crd-mediumGray/20">
