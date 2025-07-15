@@ -5,7 +5,7 @@ import { useCards } from "@/hooks/useCards";
 import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
 import { SparkleText } from "@/components/hero/SparkleText";
-import { RansomNote } from "@/components/ui/RansomNote";
+import { ThemedRansomNote } from "@/components/ui/ThemedRansomNote";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { Hero3 } from "@/components/ui/design-system";
 import type { Tables } from '@/integrations/supabase/types';
@@ -16,6 +16,9 @@ type DbCard = Tables<'cards'>;
 export const EnhancedHero: React.FC = () => {
   const { cards, featuredCards, loading, fetchAllCardsFromDatabase } = useCards();
   const navigate = useNavigate();
+  
+  // Hero rotation state
+  const [currentHero, setCurrentHero] = useState(0);
   
   // Secret menu state for text effects
   const [secretMenuOpen, setSecretMenuOpen] = useState(false);
@@ -93,6 +96,15 @@ export const EnhancedHero: React.FC = () => {
     setGlowEnabled(defaults.glowEnabled);
     saveSettings(defaults);
   };
+
+  // Hero rotation effect - switch every 12 seconds
+  useEffect(() => {
+    const heroRotationInterval = setInterval(() => {
+      setCurrentHero(prev => (prev + 1) % 3);
+    }, 12000);
+
+    return () => clearInterval(heroRotationInterval);
+  }, []);
   
   // Use all cards if available, otherwise featured cards for ticker carousel
   const allCards = cards.length > 0 ? cards : featuredCards;
@@ -111,13 +123,46 @@ export const EnhancedHero: React.FC = () => {
     navigate(`/studio/${card.id}`);
   };
 
+  // Hero configurations
+  const heroConfigs = [
+    {
+      theme: 'craft' as const,
+      word: 'Craft',
+      tagline: 'your vision into reality',
+      label: 'THE FIRST PRINT & MINT DIGITAL CARD MARKET',
+      description: 'Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life.',
+      ctaText: 'Create your first CRD',
+      ctaLink: '/create'
+    },
+    {
+      theme: 'collect' as const,
+      word: 'Collect',
+      tagline: 'memories that last forever',
+      label: 'DISCOVER RARE & VINTAGE DIGITAL TREASURES',
+      description: 'Build your digital collection with unique cards from talented creators around the world. Every card tells a story worth preserving.',
+      ctaText: 'Start collecting',
+      ctaLink: '/discover'
+    },
+    {
+      theme: 'connect' as const,
+      word: 'Connect',
+      tagline: 'with creators worldwide',
+      label: 'JOIN THE GLOBAL CREATOR COMMUNITY',
+      description: 'Network with artists, share your work, and collaborate on groundbreaking digital card projects in our vibrant creator ecosystem.',
+      ctaText: 'Join community',
+      ctaLink: '/community'
+    }
+  ];
+
+  const currentConfig = heroConfigs[currentHero];
+
   // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
     <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-      <RansomNote>Craft</RansomNote><br />
+      <ThemedRansomNote theme={currentConfig.theme}>{currentConfig.word}</ThemedRansomNote><br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
-        your vision into{' '}
-        <span className="gradient-text-green-blue-purple">reality</span>
+        {currentConfig.tagline.split(' ').slice(0, -1).join(' ')}{' '}
+        <span className="gradient-text-green-blue-purple">{currentConfig.tagline.split(' ').slice(-1)[0]}</span>
       </span>
     </div>
   );
@@ -126,13 +171,13 @@ export const EnhancedHero: React.FC = () => {
     <div className="relative">
       {/* Hero content */}
       <StandardHero
-        label="THE FIRST PRINT & MINT DIGITAL CARD MARKET"
-        title="Craft cards that come alive with unlimited potential"
+        label={currentConfig.label}
+        title={`${currentConfig.word} ${currentConfig.tagline}`}
         titleEffects={enhancedHeading}
-        description="Experience cards like never before with immersive 3D viewing, professional lighting, and visual effects that bring your art to life."
+        description={currentConfig.description}
         primaryCta={{
-          text: "Create your first CRD",
-          link: "/create"
+          text: currentConfig.ctaText,
+          link: currentConfig.ctaLink
         }}
         heroVariant="hero"
       >
