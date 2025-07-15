@@ -36,8 +36,6 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   const [isSpellingOut, setIsSpellingOut] = useState(false);
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionType, setTransitionType] = useState<'plasma' | 'pixel' | 'crt'>('plasma');
 
   // Text colors with good contrast
   const textColors = [
@@ -165,45 +163,32 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   }, [children]);
 
   useEffect(() => {
-    // Switch variations every 8 seconds with transition effects
+    // Switch variations every 8 seconds
     const variationInterval = setInterval(() => {
-      // Start transition effect
-      setIsTransitioning(true);
-      const transitions: Array<'plasma' | 'pixel' | 'crt'> = ['plasma', 'pixel', 'crt'];
-      setTransitionType(transitions[Math.floor(Math.random() * transitions.length)]);
-      
-      // After 1 second of transition, change the styles
-      setTimeout(() => {
-        // Decide if we should do a spell-out animation (30% chance)
-        if (Math.random() < 0.3) {
-          // Start spell-out animation
-          setIsSpellingOut(true);
-          setSpellIndex(0);
-          setActiveAnimations([]);
-          
-          // Hide all letters initially for spell-out
-          setLetters(prev => prev.map(letter => ({
-            ...letter,
-            style: generateLetterStyle()
-          })));
-        } else {
-          // Regular style change
-          setAnimationKey(prev => prev + 1);
-          setActiveAnimations([]);
-          setIsSpellingOut(false);
-          
-          // Regenerate all letter styles
-          setLetters(prev => prev.map(letter => ({
-            ...letter,
-            style: generateLetterStyle()
-          })));
-        }
+      // Decide if we should do a spell-out animation (30% chance)
+      if (Math.random() < 0.3) {
+        // Start spell-out animation
+        setIsSpellingOut(true);
+        setSpellIndex(0);
+        setActiveAnimations([]);
         
-        // End transition after another second
-        setTimeout(() => {
-          setIsTransitioning(false);
-        }, 1000);
-      }, 1000);
+        // Hide all letters initially for spell-out
+        setLetters(prev => prev.map(letter => ({
+          ...letter,
+          style: generateLetterStyle()
+        })));
+      } else {
+        // Regular style change
+        setAnimationKey(prev => prev + 1);
+        setActiveAnimations([]);
+        setIsSpellingOut(false);
+        
+        // Regenerate all letter styles
+        setLetters(prev => prev.map(letter => ({
+          ...letter,
+          style: generateLetterStyle()
+        })));
+      }
     }, 8000);
 
     // Slower animation phases for effects
@@ -369,39 +354,6 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     };
   };
 
-  // Generate transition effects as background (masked to text)
-  const getTransitionBackground = () => {
-    if (!isTransitioning) return '';
-    
-    switch (transitionType) {
-      case 'plasma':
-        return `radial-gradient(circle at ${50 + Math.sin(animPhase * 0.1) * 30}% ${50 + Math.cos(animPhase * 0.1) * 30}%, 
-          rgba(255, 0, 255, 1) 0%, 
-          rgba(0, 255, 255, 1) 50%, 
-          rgba(255, 255, 0, 1) 100%)`;
-      case 'pixel':
-        return `repeating-conic-gradient(from ${animPhase * 3}deg at 50% 50%, 
-          #ff00ff 0deg, 
-          #00ffff 30deg,
-          #ffff00 60deg, 
-          #ff0000 90deg,
-          #00ff00 120deg,
-          #0000ff 150deg,
-          #ffffff 180deg)`;
-      case 'crt':
-        return `repeating-linear-gradient(0deg, 
-          #ff00ff 0px, 
-          #00ff00 3px, 
-          #00ffff 6px,
-          #ffffff 9px),
-          linear-gradient(90deg, 
-            #00ff00 0%, 
-            #ff00ff 50%, 
-            #00ffff 100%)`;
-      default:
-        return '';
-    }
-  };
 
   return (
     <span 
@@ -425,17 +377,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
         <span
           key={`${index}-${animationKey}`}
           className="inline-block transition-all duration-1000 ease-in-out"
-          style={{
-            ...getLetterStyle(letter, index),
-            // Apply transition background directly to text when transitioning
-            ...(isTransitioning && {
-              background: getTransitionBackground(),
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              color: 'transparent',
-              backgroundSize: transitionType === 'pixel' ? '10px 10px' : '100% 100%',
-            })
-          }}
+          style={getLetterStyle(letter, index)}
         >
           {letter.char}
         </span>
