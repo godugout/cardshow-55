@@ -141,7 +141,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   }, [children]);
 
   useEffect(() => {
-    // Switch variations every 5 seconds
+    // Switch variations every 8 seconds (slower transitions)
     const variationInterval = setInterval(() => {
       setAnimationKey(prev => prev + 1);
       // Reset letter animations for new variation
@@ -151,12 +151,12 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
         ...letter,
         style: generateLetterStyle()
       })));
-    }, 5000);
+    }, 8000);
 
-    // Fast animation phases for effects
+    // Slower animation phases for effects
     const phaseInterval = setInterval(() => {
       setAnimPhase(prev => prev + 1);
-    }, 100);
+    }, 200);
 
     return () => {
       clearInterval(variationInterval);
@@ -169,17 +169,17 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
     const letterInterval = setInterval(() => {
       setLetters(prev => prev.map((letter, index) => ({
         ...letter,
-        rotation: letter.rotation + (Math.sin(animPhase * 0.02 + index) * 0.3),
-        float: 2 + Math.sin(animPhase * 0.03 + index * 0.5) * 1.5,
-        lean: Math.sin(animPhase * 0.025 + index * 0.3) * 3,
-        glowIntensity: 0.5 + Math.sin(animPhase * 0.04 + index * 0.7) * 0.4
+        rotation: letter.rotation + (Math.sin(animPhase * 0.01 + index) * 0.15), // Slower, smaller rotation
+        float: 1 + Math.sin(animPhase * 0.015 + index * 0.5) * 2, // More pronounced floating
+        lean: Math.sin(animPhase * 0.012 + index * 0.3) * 2, // Smaller lean movement
+        glowIntensity: 0.5 + Math.sin(animPhase * 0.02 + index * 0.7) * 0.3
       })));
 
-      // Randomly activate 2-3 letters for special animations
-      if (Math.random() < 0.3) {
+      // Less frequent special animations (lower probability)
+      if (Math.random() < 0.15) {
         const availableLetters = letters.map((_, i) => i).filter(i => !activeAnimations.includes(i));
         if (availableLetters.length > 0) {
-          const numToAnimate = Math.min(2 + Math.floor(Math.random() * 2), availableLetters.length);
+          const numToAnimate = Math.min(1 + Math.floor(Math.random() * 2), availableLetters.length); // 1-2 letters max
           const newActive = [];
           for (let i = 0; i < numToAnimate; i++) {
             const randomIndex = availableLetters[Math.floor(Math.random() * availableLetters.length)];
@@ -188,13 +188,13 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
           }
           setActiveAnimations(newActive);
           
-          // Clear animations after 2-3 seconds
+          // Longer duration for special animations (4-6 seconds)
           setTimeout(() => {
             setActiveAnimations(prev => prev.filter(i => !newActive.includes(i)));
-          }, 2000 + Math.random() * 1000);
+          }, 4000 + Math.random() * 2000);
         }
       }
-    }, 150);
+    }, 300); // Slower update interval
 
     return () => clearInterval(letterInterval);
   }, [animPhase, activeAnimations, letters]);
@@ -228,8 +228,10 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
         rotateZ(${letter.rotation}deg)
         rotateX(${letter.lean}deg)
         translateY(${-letter.float}px)
-        ${isActive ? `rotateY(${Math.sin(animPhase * 0.1 + index) * 20}deg)` : ''}
-        ${isActive ? `scale(${1 + Math.sin(animPhase * 0.08 + index) * 0.1})` : ''}
+        ${isActive ? `rotateY(${Math.sin(animPhase * 0.05 + index) * 45}deg)` : ''}
+        ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
+        ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
+        ${isActive ? `translateZ(${Math.sin(animPhase * 0.06 + index) * 10}px)` : ''}
       `,
       filter: `brightness(${1 + (isActive ? 0.5 : 0) * Math.sin(animPhase * 0.06 + index)})`,
       padding: letter.char === ' ' ? '0' : `${4 + Math.floor(Math.random() * 4)}px ${6 + Math.floor(Math.random() * 4)}px`,
@@ -246,7 +248,7 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
       top: `${(Math.random() - 0.5) * 6}px`,
       left: `${(Math.random() - 0.5) * 2}px`,
       zIndex: Math.floor(Math.random() * 3) + 1,
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
       transformOrigin: 'center center',
     };
   };
