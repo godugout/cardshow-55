@@ -202,13 +202,13 @@ export const CardGrid: React.FC<CardGridProps> = ({
   // Mobile-optimized grid classes
   const getGridClasses = () => {
     if (viewMode === 'masonry') {
-      return 'columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-4 sm:gap-6 space-y-4 sm:space-y-6';
+      return 'columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6 space-y-4 sm:space-y-6';
     }
     if (viewMode === 'feed') {
       return 'space-y-6';
     }
     // Grid mode with mobile-first responsive breakpoints
-    return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6';
+    return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
   };
 
   if (loading) {

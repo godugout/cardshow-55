@@ -53,7 +53,7 @@ const Collections: React.FC = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((card) => (
             <div key={card} className="mobile-card bg-crd-darker p-4">
               <div className="aspect-[3/4] bg-gradient-to-br from-crd-blue/20 to-crd-purple/20 rounded-lg mb-3 flex items-center justify-center">

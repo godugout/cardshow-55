@@ -123,7 +123,7 @@ export const Hero3: React.FC<Hero3Props> = ({
               <div className="mb-12">
                 <CRDButton
                   variant="primary"
-                  size="2xl"
+                  size="xl"
                   className="liquid-gradient-cta"
                   asChild
                 >

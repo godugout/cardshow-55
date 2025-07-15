@@ -70,7 +70,7 @@ export const SimplifiedCTA: React.FC = () => {
           <Link to="/create">
             <CRDButton 
               variant="primary" 
-              size="2xl"
+              size="xl"
               className="liquid-gradient-cta"
             >
               Create a CRD

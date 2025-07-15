@@ -93,7 +93,7 @@ export const SimplifiedDiscover = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4">
             {Array.from({ length: 14 }).map((_, i) => (
               <div key={i} className="bg-themed-secondary/10 rounded-lg h-48 animate-pulse" />
             ))}
@@ -135,7 +135,7 @@ export const SimplifiedDiscover = () => {
         </div>
 
         {/* Cards Grid - More columns for smaller cards */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {cards.map((card) => (
             <Card key={card.id} className="card-themed group hover:scale-105 transition-all duration-300 max-w-[200px] mx-auto">
               <div className="relative aspect-[3/4] overflow-hidden rounded-t-lg">

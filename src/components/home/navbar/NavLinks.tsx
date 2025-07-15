@@ -55,8 +55,8 @@ export const NavLinks = () => {
             : 'text-themed-secondary'
         }`}
       >
-        <span className="hidden lg:inline">Creators</span>
-        <span className="lg:hidden">Cr</span>
+        <span className="hidden xl:inline">Creators</span>
+        <span className="xl:hidden">Cr</span>
       </Link>
     </div>
   );

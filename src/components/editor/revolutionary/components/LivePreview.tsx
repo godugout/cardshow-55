@@ -146,7 +146,7 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
       </div>
 
       {/* Preview Canvas */}
-      <div className="flex-1 bg-crd-darkest/50 p-2 sm:p-4 lg:p-6 2xl:p-8">
+      <div className="flex-1 bg-crd-darkest/50 p-2 sm:p-4 lg:p-6 xl:p-8">
         <div className="h-full flex items-center justify-center">
           <div 
             className="bg-crd-darker/80 border border-crd-mediumGray/30 rounded-xl shadow-2xl transition-all duration-300 relative overflow-hidden w-full max-w-none"

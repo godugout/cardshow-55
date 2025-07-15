@@ -286,7 +286,7 @@ const BulkUpload = () => {
             )}
 
             {/* Files Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {uploadedFiles.map((fileData) => (
                 <CRDCard key={fileData.id} className="bg-crd-darker border-crd-mediumGray/20 overflow-hidden">
                   <div className="relative">

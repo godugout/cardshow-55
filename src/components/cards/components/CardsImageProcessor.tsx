@@ -339,7 +339,7 @@ export const CardsImageProcessor: React.FC<CardsImageProcessorProps> = ({
           </div>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {extractedCards.map((card) => (
             <div key={card.id} className="relative group">
               <div className="aspect-[3/4] bg-editor-dark rounded-lg overflow-hidden border border-crd-mediumGray">

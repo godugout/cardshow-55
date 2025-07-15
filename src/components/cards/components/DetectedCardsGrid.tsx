@@ -109,7 +109,7 @@ export const DetectedCardsGrid: React.FC<DetectedCardsGridProps> = ({
             </div>
 
             {/* Detected Cards Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {result.detectedCards.map((card, index) => (
                 <Card key={index} className="bg-crd-darkGray border-crd-mediumGray/30 overflow-hidden group hover:border-crd-blue/50 transition-all">
                   <div className="aspect-[2.5/3.5] relative">
