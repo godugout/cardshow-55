@@ -71,6 +71,24 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', pattern: 'electric-purple' },
             { background: 'linear-gradient(45deg, #fa709a 0%, #fee140 100%)', pattern: 'sunset' }
           ],
+          jerseyPatterns: [
+            // Cotton jersey textures
+            { background: 'radial-gradient(circle at 25% 25%, rgba(255,255,255,0.3) 1px, transparent 1px), radial-gradient(circle at 75% 75%, rgba(0,0,0,0.1) 1px, transparent 1px)', pattern: 'cotton-texture', color: '#ff1744' },
+            // Perforated material
+            { background: 'radial-gradient(circle at 30% 30%, transparent 2px, #2196f3 2px, #2196f3 4px, transparent 4px), radial-gradient(circle at 70% 70%, transparent 2px, #2196f3 2px, #2196f3 4px, transparent 4px)', pattern: 'perforated-blue', color: '#ffffff' },
+            // Wool texture
+            { background: 'repeating-linear-gradient(45deg, #8b4513 0px, #8b4513 2px, #a0522d 2px, #a0522d 4px), repeating-linear-gradient(-45deg, rgba(255,255,255,0.1) 0px, rgba(255,255,255,0.1) 1px, transparent 1px, transparent 2px)', pattern: 'wool-texture', color: '#ffffff' },
+            // Nike Dri-FIT style
+            { background: 'linear-gradient(90deg, #00e676 0%, #00d2d3 50%, #00e676 100%), repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0px, rgba(255,255,255,0.1) 1px, transparent 1px, transparent 4px)', pattern: 'dri-fit-green', color: '#000000' },
+            // Athletic mesh
+            { background: 'repeating-conic-gradient(from 0deg at 50% 50%, #ff5722 0deg 60deg, transparent 60deg 120deg, #ff5722 120deg 180deg, transparent 180deg 240deg, #ff5722 240deg 300deg, transparent 300deg 360deg)', pattern: 'athletic-mesh', color: '#ffffff' },
+            // Compression fabric
+            { background: 'linear-gradient(45deg, #9c27b0 25%, transparent 25%), linear-gradient(-45deg, #9c27b0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #9c27b0 75%), linear-gradient(-45deg, transparent 75%, #9c27b0 75%)', pattern: 'compression-fabric', color: '#ffffff' },
+            // Polyester blend
+            { background: 'repeating-linear-gradient(0deg, #ffeb3b 0px, #ffeb3b 3px, #ffd700 3px, #ffd700 6px), repeating-linear-gradient(90deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 1px, transparent 1px, transparent 2px)', pattern: 'polyester-blend', color: '#000000' },
+            // Jersey knit texture
+            { background: 'repeating-radial-gradient(circle at 25% 25%, #e91e63 0px, #e91e63 1px, transparent 1px, transparent 3px), repeating-radial-gradient(circle at 75% 75%, #e91e63 0px, #e91e63 1px, transparent 1px, transparent 3px)', pattern: 'jersey-knit', color: '#ffffff' }
+          ],
           fonts: [
             'Impact', 'Arial Black', 'Helvetica Bold', 'Bebas Neue', 'Anton',
             'Oswald', 'Squada One', 'Russo One', 'Exo 2', 'Orbitron'
@@ -144,6 +162,16 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             { background: 'radial-gradient(circle at 30% 30%, #ff1493 2px, transparent 2px), radial-gradient(circle at 70% 70%, #ff1493 2px, transparent 2px)', pattern: '90s-basketball', color: '#ff1493' },
             // Windbreaker pattern
             { background: 'repeating-linear-gradient(45deg, #ff073a 0px, #ff073a 8px, #00ffff 8px, #00ffff 16px, #ffff00 16px, #ffff00 24px)', pattern: '90s-windbreaker', color: '#ff073a' },
+            // Zebra print patterns
+            { background: 'repeating-linear-gradient(30deg, #000000 0px, #000000 8px, #ffffff 8px, #ffffff 16px, #000000 16px, #000000 32px, #ffffff 32px, #ffffff 40px)', pattern: 'zebra-stripe-1', color: '#ff1493' },
+            { background: 'repeating-conic-gradient(from 45deg at 50% 50%, #000000 0deg 30deg, #ffffff 30deg 60deg, #000000 60deg 90deg, #ffffff 90deg 120deg)', pattern: 'zebra-radial', color: '#00ffff' },
+            { background: 'repeating-linear-gradient(75deg, #000000 0px, #000000 6px, #ffffff 6px, #ffffff 14px, #000000 14px, #000000 22px, #ffffff 22px, #ffffff 28px)', pattern: 'zebra-diagonal', color: '#39ff14' },
+            // Nike fluorescent materials
+            { background: 'linear-gradient(90deg, #39ff14 0%, #7fff00 25%, #39ff14 50%, #adff2f 75%, #39ff14 100%), repeating-linear-gradient(45deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 2px, transparent 2px, transparent 4px)', pattern: 'nike-volt', color: '#000000' },
+            { background: 'linear-gradient(45deg, #ff073a 0%, #ff1493 25%, #ff073a 50%, #ff4500 75%, #ff073a 100%), repeating-radial-gradient(circle at 25% 25%, rgba(255,255,255,0.3) 1px, transparent 1px)', pattern: 'nike-bright-crimson', color: '#ffffff' },
+            { background: 'linear-gradient(135deg, #00ffff 0%, #1e90ff 25%, #00ffff 50%, #00ced1 75%, #00ffff 100%), repeating-linear-gradient(90deg, rgba(255,255,255,0.15) 0px, rgba(255,255,255,0.15) 3px, transparent 3px, transparent 6px)', pattern: 'nike-blue-fury', color: '#000000' },
+            { background: 'linear-gradient(180deg, #ff00ff 0%, #da70d6 25%, #ff00ff 50%, #9400d3 75%, #ff00ff 100%), repeating-conic-gradient(from 0deg at 30% 70%, rgba(255,255,255,0.2) 0deg 45deg, transparent 45deg 90deg)', pattern: 'nike-vivid-purple', color: '#ffffff' },
+            { background: 'linear-gradient(0deg, #ffff00 0%, #ffd700 25%, #ffff00 50%, #ffb347 75%, #ffff00 100%), repeating-linear-gradient(60deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 4px)', pattern: 'nike-opti-yellow', color: '#000000' },
             // Geometric 90s pattern
             { background: 'repeating-conic-gradient(from 0deg, #ff00ff 0deg 45deg, #39ff14 45deg 90deg, #00ffff 90deg 135deg, #ff1493 135deg 180deg)', pattern: '90s-geometric', color: '#ff00ff' },
             // Neon mesh texture
