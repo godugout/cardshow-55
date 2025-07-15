@@ -105,48 +105,67 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       case 'connect':
         return {
           colors: [
-            '#00ffff', '#ff00ff', '#00ff00', '#0080ff', '#ff0080', '#80ff00',
-            '#ffffff', '#000000', '#c0c0c0', '#808080', '#404040',
-            '#39ff14', '#ff073a', '#9400d3', '#00ced1', '#ff1493',
-            '#ff6600', '#33cc33', '#0099ff', '#cc0099', '#ffff00'
+            // Classic 90s neon colors
+            '#ff1493', '#00ffff', '#ff00ff', '#39ff14', '#ffff00', '#ff6600',
+            '#ff073a', '#9400d3', '#00ced1', '#ff4500', '#adff2f', '#ff69b4',
+            '#00ff7f', '#1e90ff', '#ff1493', '#7fff00', '#ff4500', '#da70d6',
+            // Retro tech colors
+            '#ffffff', '#000000', '#c0c0c0', '#808080', '#ff8c00', '#32cd32',
+            // Memphis design inspired colors
+            '#ff3030', '#30ff30', '#3030ff', '#ffff30', '#ff30ff', '#30ffff'
           ],
           backgrounds: [
-            // Pixel/block aesthetics mixed with cyber
-            { background: '#00ffff', pattern: 'cyber-cyan' },
-            { background: '#ff00ff', pattern: 'digital-magenta' },
-            { background: '#39ff14', pattern: 'neon-green' },
-            { background: '#000000', pattern: 'digital-black' },
-            { background: '#ffffff', pattern: 'pixel-white' },
-            // Block patterns using CSS
-            { background: 'repeating-conic-gradient(from 0deg at 50% 50%, #00ffff 0deg 90deg, #000000 90deg 180deg)', pattern: 'pixel-blocks' },
-            { background: 'repeating-linear-gradient(90deg, #ff00ff 0px, #ff00ff 8px, #000000 8px, #000000 16px)', pattern: 'pixel-stripes' },
-            { background: 'repeating-linear-gradient(45deg, #39ff14 0px, #39ff14 4px, #000000 4px, #000000 8px)', pattern: 'diagonal-pixels' },
-            // Solid blocks
-            { background: '#2a2a2a', pattern: 'dark-block' },
-            { background: '#404040', pattern: 'grey-block' },
-            { background: '#1a1a2e', pattern: 'navy-block' },
-            { background: '#0f3460', pattern: 'blue-block' },
-            // Minimal gradients for variety
-            { background: 'linear-gradient(90deg, #000000 0%, #404040 100%)', pattern: 'subtle-fade' }
+            // 90s geometric patterns
+            { background: '#ff1493', pattern: '90s-hot-pink' },
+            { background: '#00ffff', pattern: '90s-cyan' },
+            { background: '#39ff14', pattern: '90s-electric-lime' },
+            { background: '#ff00ff', pattern: '90s-magenta' },
+            { background: '#ffff00', pattern: '90s-yellow' },
+            { background: '#ff6600', pattern: '90s-orange' },
+            // Retro gradients
+            { background: 'linear-gradient(45deg, #ff1493 0%, #00ffff 50%, #39ff14 100%)', pattern: '90s-rainbow' },
+            { background: 'linear-gradient(90deg, #ff00ff 0%, #00ffff 25%, #ffff00 50%, #ff1493 75%, #9400d3 100%)', pattern: '90s-spectrum' },
+            { background: 'linear-gradient(135deg, #ff073a 0%, #ff8c00 50%, #ffff00 100%)', pattern: '90s-sunset' },
+            { background: 'linear-gradient(180deg, #1e90ff 0%, #9400d3 50%, #ff1493 100%)', pattern: '90s-vaporwave' },
+            // Memphis design patterns
+            { background: 'repeating-linear-gradient(45deg, #ff1493 0px, #ff1493 10px, #00ffff 10px, #00ffff 20px)', pattern: 'memphis-stripes' },
+            { background: 'repeating-conic-gradient(from 0deg at 50% 50%, #ff00ff 0deg 72deg, #ffff00 72deg 144deg, #00ffff 144deg 216deg, #ff1493 216deg 288deg, #39ff14 288deg 360deg)', pattern: 'memphis-wheel' },
+            // Pixelated/digital patterns
+            { background: 'repeating-linear-gradient(90deg, #ff1493 0px, #ff1493 4px, #000000 4px, #000000 8px)', pattern: 'pixel-pink' },
+            { background: 'repeating-linear-gradient(45deg, #00ffff 0px, #00ffff 3px, #ff00ff 3px, #ff00ff 6px)', pattern: 'pixel-diagonal' },
+            // Chrome/metallic 90s effect
+            { background: 'linear-gradient(90deg, #c0c0c0 0%, #ffffff 25%, #c0c0c0 50%, #808080 75%, #c0c0c0 100%)', pattern: 'chrome-90s' },
+            // Solid retro blocks
+            { background: '#000000', pattern: 'retro-black' },
+            { background: '#ffffff', pattern: 'retro-white' }
           ],
           jerseyPatterns: [
-            // Basketball textures
-            { background: 'radial-gradient(circle at 30% 30%, #ff6600 2px, transparent 2px), radial-gradient(circle at 70% 70%, #ff6600 2px, transparent 2px)', pattern: 'basketball-dimples', color: '#ff6600' },
-            // Football leather texture
-            { background: 'repeating-linear-gradient(45deg, #8b4513 0px, #8b4513 2px, #a0522d 2px, #a0522d 4px)', pattern: 'football-leather', color: '#8b4513' },
-            // Soccer ball hexagon pattern
-            { background: 'repeating-conic-gradient(from 0deg, #000000 0deg 60deg, #ffffff 60deg 120deg)', pattern: 'soccer-hexagon', color: '#000000' },
-            // Jersey mesh texture
-            { background: 'repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)', pattern: 'jersey-mesh', color: '#00ffff' },
-            // Team stripes
-            { background: 'repeating-linear-gradient(90deg, #0099ff 0px, #0099ff 10px, #ffffff 10px, #ffffff 20px)', pattern: 'team-stripes', color: '#0099ff' },
-            // Athletic fabric
-            { background: 'linear-gradient(45deg, #39ff14 25%, transparent 25%), linear-gradient(-45deg, #39ff14 25%, transparent 25%)', pattern: 'athletic-fabric', color: '#39ff14' }
+            // 90s sports aesthetics
+            { background: 'radial-gradient(circle at 30% 30%, #ff1493 2px, transparent 2px), radial-gradient(circle at 70% 70%, #ff1493 2px, transparent 2px)', pattern: '90s-basketball', color: '#ff1493' },
+            // Windbreaker pattern
+            { background: 'repeating-linear-gradient(45deg, #ff073a 0px, #ff073a 8px, #00ffff 8px, #00ffff 16px, #ffff00 16px, #ffff00 24px)', pattern: '90s-windbreaker', color: '#ff073a' },
+            // Geometric 90s pattern
+            { background: 'repeating-conic-gradient(from 0deg, #ff00ff 0deg 45deg, #39ff14 45deg 90deg, #00ffff 90deg 135deg, #ff1493 135deg 180deg)', pattern: '90s-geometric', color: '#ff00ff' },
+            // Neon mesh texture
+            { background: 'repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(255,20,147,0.3) 2px, rgba(255,20,147,0.3) 4px)', pattern: '90s-neon-mesh', color: '#ff1493' },
+            // Retro stripes
+            { background: 'repeating-linear-gradient(90deg, #ff073a 0px, #ff073a 12px, #39ff14 12px, #39ff14 24px, #00ffff 24px, #00ffff 36px)', pattern: '90s-retro-stripes', color: '#ff073a' },
+            // Holographic effect
+            { background: 'linear-gradient(45deg, #ff1493 0%, #00ffff 25%, #39ff14 50%, #ff00ff 75%, #ffff00 100%)', pattern: '90s-holographic', color: '#ffffff' },
+            // Digital camouflage
+            { background: 'repeating-linear-gradient(30deg, #ff1493 0px, #ff1493 6px, #000000 6px, #000000 12px, #00ffff 12px, #00ffff 18px)', pattern: '90s-digi-camo', color: '#ffffff' },
+            // Cyberpunk grid
+            { background: 'linear-gradient(rgba(255,20,147,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.1) 1px, transparent 1px)', pattern: '90s-cyber-grid', color: '#39ff14' }
           ],
           fonts: [
+            // Digital/tech fonts
             'Courier New', 'Monaco', 'Consolas', 'Lucida Console', 'Menlo',
+            // Futuristic fonts
             'Orbitron', 'Rajdhani', 'Russo One', 'Quantico', 'Michroma',
-            'Impact', 'Arial Black', 'Bebas Neue'
+            // Bold 90s style fonts
+            'Impact', 'Arial Black', 'Bebas Neue', 'Anton', 'Squada One',
+            // Retro gaming inspired
+            'Press Start 2P', 'VT323', 'Share Tech Mono'
           ]
         };
     }
