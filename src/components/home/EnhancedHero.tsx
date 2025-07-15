@@ -8,6 +8,7 @@ import { SparkleText } from "@/components/hero/SparkleText";
 import { ThemedRansomNote } from "@/components/ui/ThemedRansomNote";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { Hero3 } from "@/components/ui/design-system";
+import { Pause, Play, SkipBack, SkipForward, Settings } from "lucide-react";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -27,6 +28,11 @@ export const EnhancedHero: React.FC = () => {
   const [intensity, setIntensity] = useState(0.8);
   const [speed, setSpeed] = useState(1.5);
   const [glowEnabled, setGlowEnabled] = useState(true);
+  
+  // Hero slideshow and animation controls
+  const [isPaused, setIsPaused] = useState(false);
+  const [isAnimationPaused, setIsAnimationPaused] = useState(false);
+  const [showControls, setShowControls] = useState(false);
 
   // Load preferences from localStorage
   useEffect(() => {
@@ -97,14 +103,38 @@ export const EnhancedHero: React.FC = () => {
     saveSettings(defaults);
   };
 
-  // Hero rotation effect - switch every 12 seconds
+  // Hero rotation effect - switch every 12 seconds (respects pause state)
   useEffect(() => {
+    if (isPaused) return;
+    
     const heroRotationInterval = setInterval(() => {
       setCurrentHero(prev => (prev + 1) % 3);
     }, 12000);
 
     return () => clearInterval(heroRotationInterval);
+  }, [isPaused]);
+  
+  // Keyboard shortcuts for controls (Ctrl+Shift+H to show/hide controls)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'H') {
+        e.preventDefault();
+        setShowControls(prev => !prev);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+  
+  // Control handlers
+  const handlePrevSlide = () => {
+    setCurrentHero(prev => prev === 0 ? 2 : prev - 1);
+  };
+  
+  const handleNextSlide = () => {
+    setCurrentHero(prev => (prev + 1) % 3);
+  };
   
   // Use all cards if available, otherwise featured cards for ticker carousel
   const allCards = cards.length > 0 ? cards : featuredCards;
@@ -214,6 +244,67 @@ export const EnhancedHero: React.FC = () => {
         onGlowChange={handleGlowChange}
         onReset={handleReset}
       />
+      
+      {/* Hidden Controls (Ctrl+Shift+H to toggle) */}
+      {showControls && (
+        <div className="fixed top-4 right-4 z-50 bg-black/80 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+          <div className="flex items-center gap-3 text-white text-sm">
+            <span className="font-mono text-xs opacity-70">Hero Controls</span>
+            
+            {/* Slideshow Controls */}
+            <div className="flex items-center gap-2 border-r border-white/20 pr-3">
+              <button
+                onClick={handlePrevSlide}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                title="Previous slide"
+              >
+                <SkipBack size={16} />
+              </button>
+              
+              <button
+                onClick={() => setIsPaused(prev => !prev)}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                title={isPaused ? "Resume slideshow" : "Pause slideshow"}
+              >
+                {isPaused ? <Play size={16} /> : <Pause size={16} />}
+              </button>
+              
+              <button
+                onClick={handleNextSlide}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                title="Next slide"
+              >
+                <SkipForward size={16} />
+              </button>
+            </div>
+            
+            {/* Animation Controls */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs opacity-70">Anim:</span>
+              <button
+                onClick={() => setIsAnimationPaused(prev => !prev)}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                title={isAnimationPaused ? "Resume animation" : "Pause animation"}
+              >
+                {isAnimationPaused ? <Play size={16} /> : <Pause size={16} />}
+              </button>
+            </div>
+            
+            {/* Close button */}
+            <button
+              onClick={() => setShowControls(false)}
+              className="p-1 hover:bg-white/20 rounded transition-colors ml-2"
+              title="Hide controls (Ctrl+Shift+H)"
+            >
+              <Settings size={16} />
+            </button>
+          </div>
+          
+          <div className="text-xs opacity-50 mt-2 font-mono">
+            Current: {currentConfig.theme} ({currentHero + 1}/3)
+          </div>
+        </div>
+      )}
     </div>
   );
 };

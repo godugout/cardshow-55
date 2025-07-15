@@ -108,6 +108,18 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             { background: '#daa520', pattern: 'golden' },
             { background: '#cd853f', pattern: 'peru' },
             { background: '#8b4513', pattern: 'saddle-brown' },
+            // Wood textures
+            { background: 'repeating-linear-gradient(90deg, #8b4513 0px, #8b4513 8px, #a0522d 8px, #a0522d 16px, #d2691e 16px, #d2691e 24px)', pattern: 'oak-grain' },
+            { background: 'repeating-linear-gradient(45deg, #654321 0px, #654321 4px, #8b4513 4px, #8b4513 8px, #a0522d 8px, #a0522d 12px)', pattern: 'walnut-grain' },
+            { background: 'linear-gradient(180deg, #deb887 0%, #d2691e 25%, #cd853f 50%, #bc8f8f 75%, #f4a460 100%), repeating-linear-gradient(90deg, rgba(139,69,19,0.3) 0px, rgba(139,69,19,0.3) 2px, transparent 2px, transparent 6px)', pattern: 'pine-wood' },
+            { background: 'repeating-conic-gradient(from 0deg at 50% 50%, #654321 0deg 30deg, #8b4513 30deg 60deg, #a0522d 60deg 90deg, #d2691e 90deg 120deg)', pattern: 'wood-rings' },
+            // Gold and chrome metals
+            { background: 'linear-gradient(135deg, #ffd700 0%, #ffed4e 25%, #ffd700 50%, #b8860b 75%, #daa520 100%), repeating-linear-gradient(45deg, rgba(255,255,255,0.3) 0px, rgba(255,255,255,0.3) 2px, transparent 2px, transparent 4px)', pattern: 'brushed-gold' },
+            { background: 'linear-gradient(90deg, #c0c0c0 0%, #ffffff 25%, #c0c0c0 50%, #808080 75%, #c0c0c0 100%), repeating-linear-gradient(0deg, rgba(255,255,255,0.4) 0px, rgba(255,255,255,0.4) 1px, transparent 1px, transparent 3px)', pattern: 'brushed-chrome' },
+            { background: 'radial-gradient(circle at 30% 30%, #ffd700 0%, #ffed4e 25%, #b8860b 50%, #daa520 75%, #ffd700 100%)', pattern: 'polished-gold' },
+            { background: 'conic-gradient(from 45deg, #c0c0c0 0deg, #ffffff 90deg, #808080 180deg, #c0c0c0 270deg, #ffffff 360deg)', pattern: 'chrome-reflection' },
+            { background: 'linear-gradient(45deg, #b8860b 0%, #ffd700 25%, #ffed4e 50%, #daa520 75%, #b8860b 100%), repeating-radial-gradient(circle at 25% 25%, rgba(255,255,255,0.2) 1px, transparent 1px)', pattern: 'antique-gold' },
+            // Enhanced vintage patterns
             { background: 'linear-gradient(45deg, #f5f5dc 0%, #f0f0f0 25%, #f5f5dc 50%, #e8e8e8 75%, #f5f5dc 100%)', pattern: 'newspaper' },
             { background: 'linear-gradient(90deg, #fff8dc 0%, #faebd7 50%, #fff8dc 100%)', pattern: 'vintage-paper' },
             { background: 'linear-gradient(180deg, #fffacd 0%, #f0e68c 100%)', pattern: 'aged-paper' },
