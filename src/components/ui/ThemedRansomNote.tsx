@@ -47,7 +47,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           colors: [
             '#ff1744', '#00e676', '#2196f3', '#ffeb3b', '#e91e63', '#9c27b0',
             '#ff5722', '#00bcd4', '#ff0080', '#00ff80', '#8000ff', '#ff4000',
-            '#ffffff', '#000000'
+            '#ffd700', '#ff6b35', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57',
+            '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3', '#ff9f43', '#a55eea',
+            '#2ed573', '#ff4757', '#3742fa', '#2f3542', '#57606f', '#ffffff'
           ],
           backgrounds: [
             { background: '#ff1744', pattern: 'electric-red' },
@@ -55,6 +57,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             { background: '#2196f3', pattern: 'electric-blue' },
             { background: '#ffeb3b', pattern: 'neon-yellow' },
             { background: '#e91e63', pattern: 'hot-pink' },
+            { background: '#ffd700', pattern: 'gold' },
+            { background: '#ff6b35', pattern: 'orange' },
+            { background: '#4ecdc4', pattern: 'turquoise' },
+            { background: '#ffffff', pattern: 'white' },
             { background: 'linear-gradient(45deg, #ff6b6b 0%, #ff8e53 100%)', pattern: 'vibrant-1' },
             { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', pattern: 'electric-purple' },
             { background: 'linear-gradient(45deg, #fa709a 0%, #fee140 100%)', pattern: 'sunset' }
@@ -119,7 +125,17 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
   const themeConfig = getThemeConfig(theme);
 
+  // Use colored letters directly instead of just black/white
+  const getRandomColor = (): string => {
+    return themeConfig.colors[Math.floor(Math.random() * themeConfig.colors.length)];
+  };
+
   const getContrastingColor = (bgColor: string): string => {
+    // 60% chance to use colored letters, 40% chance for contrast
+    if (Math.random() < 0.6) {
+      return getRandomColor();
+    }
+    
     if (bgColor.includes('gradient') || bgColor.includes('repeating')) {
       return Math.random() > 0.5 ? '#ffffff' : '#000000';
     }
@@ -145,18 +161,23 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     const bgStyle = themeConfig.backgrounds[Math.floor(Math.random() * themeConfig.backgrounds.length)];
     const textColor = getContrastingColor(bgStyle.background);
     
+    // Enhanced 3D shadow effects
     const decorations = [
       'none',
       '2px 2px 4px rgba(0,0,0,0.3)',
       '1px 1px 2px rgba(255,255,255,0.8)',
       '0 0 3px rgba(0,0,0,0.5)',
       'inset 0 1px 0 rgba(255,255,255,0.2)',
+      // 3D shadow effects
+      '3px 3px 0px rgba(0,0,0,0.4), 6px 6px 8px rgba(0,0,0,0.2)',
+      '2px 2px 0px rgba(255,255,255,0.3), 4px 4px 6px rgba(0,0,0,0.3)',
+      '1px 1px 0px rgba(0,0,0,0.5), 2px 2px 0px rgba(0,0,0,0.3), 3px 3px 0px rgba(0,0,0,0.2)',
     ];
 
     return {
       color: textColor,
       fontFamily: themeConfig.fonts[Math.floor(Math.random() * themeConfig.fonts.length)],
-      fontSize: `${1.2 + Math.random() * 1.0}em`,
+      fontSize: `${0.9 + Math.random() * 0.4}em`, // Reduced from 1.2-2.2em to 0.9-1.3em
       backgroundColor: bgStyle.background,
       textShadow: decorations[Math.floor(Math.random() * decorations.length)]
     };
@@ -164,17 +185,38 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
   useEffect(() => {
     const initializeLetters = () => {
-      const newLetters = children.split('').map(char => ({
-        char,
-        isAnimating: false,
-        animationType: 'float' as const,
-        animationProgress: 0,
-        rotation: Math.random() * 40 - 20,
-        float: Math.random() * 4,
-        lean: Math.random() * 20 - 10,
-        glowIntensity: 0.5 + Math.random() * 0.5,
-        style: generateLetterStyle()
-      }));
+      // Make letters case agnostic - randomly mix uppercase and lowercase
+      const processedText = children.split('').map(char => {
+        if (char === ' ') return char;
+        return Math.random() > 0.5 ? char.toUpperCase() : char.toLowerCase();
+      }).join('');
+      
+      // Only allow 1-2 letters to have sharp angles (>10 degrees)
+      const totalLetters = processedText.length;
+      const sharpAngleIndices = new Set<number>();
+      const numSharpAngles = Math.min(2, Math.max(1, Math.floor(totalLetters * 0.2))); // 1-2 letters
+      
+      while (sharpAngleIndices.size < numSharpAngles) {
+        const randomIndex = Math.floor(Math.random() * totalLetters);
+        if (processedText[randomIndex] !== ' ') {
+          sharpAngleIndices.add(randomIndex);
+        }
+      }
+      
+      const newLetters = processedText.split('').map((char, index) => {
+        const hasSharpAngle = sharpAngleIndices.has(index);
+        return {
+          char,
+          isAnimating: false,
+          animationType: 'float' as const,
+          animationProgress: 0,
+          rotation: hasSharpAngle ? (Math.random() * 30 - 15) : (Math.random() * 6 - 3), // Sharp: ±15°, Normal: ±3°
+          float: Math.random() * 2,
+          lean: hasSharpAngle ? (Math.random() * 12 - 6) : (Math.random() * 4 - 2), // Controlled lean
+          glowIntensity: 0.5 + Math.random() * 0.5,
+          style: generateLetterStyle()
+        };
+      });
       setLetters(newLetters);
     };
 
@@ -235,9 +277,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     const letterInterval = setInterval(() => {
       setLetters(prev => prev.map((letter, index) => ({
         ...letter,
-        rotation: letter.rotation + (Math.sin(animPhase * 0.02 + index) * 0.5),
-        float: 2 + Math.sin(animPhase * 0.025 + index * 0.5) * 4,
-        lean: Math.sin(animPhase * 0.018 + index * 0.3) * 8,
+        rotation: letter.rotation + (Math.sin(animPhase * 0.015 + index) * 0.2), // Gentler rotation changes
+        float: 0.5 + Math.sin(animPhase * 0.02 + index * 0.5) * 1.5, // Smaller float range
+        lean: Math.sin(animPhase * 0.018 + index * 0.3) * 2, // Much smaller lean movement
         glowIntensity: 0.5 + Math.sin(animPhase * 0.03 + index * 0.7) * 0.5
       })));
 
@@ -358,7 +400,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   };
 
   return (
-    <span className={`inline-block mt-8 scale-125 ${className}`} style={{ letterSpacing: '0.15em', transform: 'scale(1.3)' }}>
+    <span className={`inline-block mt-4 ${className}`} style={{ letterSpacing: '0.1em', transform: 'scale(0.9)' }}>
       {letters.map((letter, index) => (
         <span
           key={`${index}-${animationKey}-${theme}`}
