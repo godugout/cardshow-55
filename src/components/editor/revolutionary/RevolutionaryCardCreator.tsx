@@ -211,7 +211,7 @@ export const RevolutionaryCardCreator: React.FC<RevolutionaryCardCreatorProps> =
       {/* Main Content - Responsive 3-Panel Layout */}
       <div className="flex-1 flex min-h-0 w-full">
         {/* Left Panel - Tools (responsive width) */}
-        <div className="hidden lg:flex lg:w-80 xl:w-96 2xl:w-[420px] border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
+        <div className="hidden lg:flex lg:w-80 2xl:w-96 border-r border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
             <TabsList className="grid grid-cols-3 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
               <TabsTrigger value="states" className="text-xs">States</TabsTrigger>
@@ -271,7 +271,7 @@ export const RevolutionaryCardCreator: React.FC<RevolutionaryCardCreatorProps> =
         </div>
 
         {/* Right Panel - Advanced Features (responsive width) */}
-        <div className="hidden xl:flex xl:w-80 2xl:w-96 border-l border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
+        <div className="hidden 2xl:flex 2xl:w-80 border-l border-crd-mediumGray/20 bg-crd-darker/30 overflow-y-auto flex-col">
           <Tabs defaultValue="media" className="h-full">
             <TabsList className="grid grid-cols-2 w-full bg-crd-mediumGray/20 p-1 mx-3 mt-3 mb-0">
               <TabsTrigger value="media" className="text-xs">Media</TabsTrigger>

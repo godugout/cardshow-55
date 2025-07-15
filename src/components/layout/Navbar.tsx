@@ -233,7 +233,7 @@ export const Navbar = () => {
               </Link>
 
               {/* Dev Login Button */}
-              <div className="hidden xl:block">
+              <div className="hidden lg:block">
                 <DevLoginButton 
                   variant="outline" 
                   size="sm" 

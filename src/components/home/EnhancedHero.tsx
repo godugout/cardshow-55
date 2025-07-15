@@ -114,7 +114,7 @@ export const EnhancedHero: React.FC = () => {
   const enhancedHeading = (
     <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
       Craft cards that come alive<br />
-      <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
+      <span className="text-6xl md:text-7xl lg:text-8xl">
         with{' '}
         <SparkleText>
           unlimited potential
