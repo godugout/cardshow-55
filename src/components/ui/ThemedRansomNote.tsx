@@ -16,6 +16,9 @@ interface LetterState {
   lean: number;
   glowIntensity: number;
   style: LetterStyle;
+  shape: 'square' | 'wide' | 'tall' | 'skew';
+  size: 'small' | 'medium' | 'large' | 'extra-large';
+  isThemeWord: boolean;
 }
 
 interface LetterStyle {
@@ -134,6 +137,58 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
   const themeConfig = getThemeConfig(theme);
 
+  // Generate letter shape
+  const generateLetterShape = (): 'square' | 'wide' | 'tall' | 'skew' => {
+    const shapes = ['square', 'wide', 'tall', 'skew'] as const;
+    return shapes[Math.floor(Math.random() * shapes.length)];
+  };
+
+  // Generate letter size with mixed distribution
+  const generateLetterSize = (index: number, totalLetters: number): 'small' | 'medium' | 'large' | 'extra-large' => {
+    // Limit extra-large letters to 1-2 per word
+    const extraLargeChance = Math.random() < 0.15 && index % 3 === 0 ? 'extra-large' : null;
+    if (extraLargeChance) return 'extra-large';
+    
+    const sizes = ['small', 'medium', 'large'] as const;
+    const weights = [0.3, 0.5, 0.2]; // More medium, some small, fewer large
+    const random = Math.random();
+    
+    if (random < weights[0]) return 'small';
+    if (random < weights[0] + weights[1]) return 'medium';
+    return 'large';
+  };
+
+  // Detect theme words for special highlighting
+  const detectThemeWord = (text: string, index: number): boolean => {
+    const lowerText = text.toLowerCase();
+    const themeWords = {
+      craft: ['craft', 'reality'],
+      collect: ['collect', 'memories'],
+      connect: ['connect', 'creators']
+    };
+    
+    const targetWords = themeWords[theme];
+    for (const word of targetWords) {
+      const wordIndex = lowerText.indexOf(word);
+      if (wordIndex !== -1 && index >= wordIndex && index < wordIndex + word.length) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // Get theme-specific highlight color for special words
+  const getThemeHighlightColor = (): string => {
+    switch (theme) {
+      case 'craft':
+        return ['#ff1744', '#00e676', '#2196f3'][Math.floor(Math.random() * 3)];
+      case 'collect':
+        return ['#daa520', '#8b4513', '#cd853f'][Math.floor(Math.random() * 3)];
+      case 'connect':
+        return ['#00ffff', '#ff00ff', '#39ff14'][Math.floor(Math.random() * 3)];
+    }
+  };
+
   // Use colored letters directly instead of just black/white
   const getRandomColor = (): string => {
     return themeConfig.colors[Math.floor(Math.random() * themeConfig.colors.length)];
@@ -214,6 +269,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       
       const newLetters = processedText.split('').map((char, index) => {
         const hasSharpAngle = sharpAngleIndices.has(index);
+        const isThemeWord = detectThemeWord(children, index);
         return {
           char,
           isAnimating: false,
@@ -223,7 +279,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           float: Math.random() * 2,
           lean: hasSharpAngle ? (Math.random() * 12 - 6) : (Math.random() * 4 - 2), // Controlled lean
           glowIntensity: 0.5 + Math.random() * 0.5,
-          style: generateLetterStyle()
+          style: generateLetterStyle(),
+          shape: generateLetterShape(),
+          size: generateLetterSize(index, totalLetters),
+          isThemeWord
         };
       });
       setLetters(newLetters);
@@ -357,20 +416,74 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     
     const isVisible = !isSpellingOut || index < spellIndex;
     
+    // Get size-based scaling
+    const getSizeScale = (size: string): number => {
+      switch (size) {
+        case 'small': return 0.8;
+        case 'medium': return 1.0;
+        case 'large': return 1.3;
+        case 'extra-large': return 1.6;
+        default: return 1.0;
+      }
+    };
+    
+    // Get shape-specific styles
+    const getShapeStyles = (shape: string) => {
+      switch (shape) {
+        case 'square':
+          return {
+            aspectRatio: '1',
+            borderRadius: '6px',
+            clipPath: 'none'
+          };
+        case 'wide':
+          return {
+            width: '1.4em',
+            height: '1em',
+            borderRadius: '4px',
+            clipPath: 'none'
+          };
+        case 'tall':
+          return {
+            width: '0.8em',
+            height: '1.3em',
+            borderRadius: '8px',
+            clipPath: 'none'
+          };
+        case 'skew':
+          return {
+            borderRadius: '4px',
+            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)'
+          };
+        default:
+          return {
+            borderRadius: '4px',
+            clipPath: 'none'
+          };
+      }
+    };
+    
+    const shapeStyles = getShapeStyles(letter.shape);
+    const sizeScale = getSizeScale(letter.size);
+    
+    // Theme word highlighting
+    const isThemeWord = letter.isThemeWord;
+    const themeColor = isThemeWord ? getThemeHighlightColor() : letter.style.color;
+    const themeWeight = isThemeWord ? 'bold' : (Math.random() > 0.4 ? 'bold' : Math.random() > 0.7 ? '900' : 'normal');
+    
     // Pre-calculated stable values to prevent layout shifts
     const stableOffsets = {
       rotation: letter.rotation,
       float: -letter.float,
       lean: letter.lean,
-      borderRadius: '4px',
-      padding: letter.char === ' ' ? '0' : '6px 8px',
-      margin: letter.char === ' ' ? '0 0.4em' : '0 3px'
+      padding: letter.char === ' ' ? '0' : '5px 6px',
+      margin: letter.char === ' ' ? '0 0.3em' : '0 2px'
     };
     
     return {
-      color: letter.style.color,
+      color: themeColor,
       fontFamily: letter.style.fontFamily,
-      fontSize: letter.style.fontSize,
+      fontSize: `${parseFloat(letter.style.fontSize) * sizeScale}em`,
       background: letter.style.backgroundColor,
       textShadow: isActive ? `
         ${letter.style.textShadow},
@@ -391,14 +504,16 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       filter: `brightness(${1 + (isActive ? 0.5 : 0) * Math.sin(animPhase * 0.06 + index)})`,
       padding: stableOffsets.padding,
       margin: stableOffsets.margin,
-      borderRadius: stableOffsets.borderRadius,
       border: 'none',
       boxShadow: 'none',
       opacity: isVisible ? (letter.char === ' ' ? 1 : 0.9) : 0,
       display: letter.char === ' ' ? 'inline' : 'inline-block',
-      fontWeight: Math.random() > 0.4 ? 'bold' : Math.random() > 0.7 ? '900' : 'normal',
+      fontWeight: themeWeight,
       fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
       textDecoration: Math.random() > 0.85 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
+      letterSpacing: Math.random() > 0.7 ? '0.1em' : 'normal',
+      // Apply shape styles
+      ...shapeStyles,
       // Layout containment to prevent shifts
       contain: 'layout style',
       willChange: 'transform',
@@ -409,9 +524,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
   return (
     <div className={`inline-block mt-4 ${className}`} style={{ 
-      letterSpacing: '0.1em', 
-      transform: 'scale(1.05)',
-      lineHeight: '1.6',
+      letterSpacing: '0.05em', 
+      transform: 'scale(0.95)',
+      lineHeight: '1.5',
       contain: 'layout'
     }}>
       {letters.map((letter, index) => (
