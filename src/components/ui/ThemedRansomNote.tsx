@@ -732,6 +732,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       transform: 'scale(1.0)',
       lineHeight: '1.4',
       contain: 'layout',
+      height: '1.5em', // Fixed baseline height to prevent layout shifts
       overflow: 'visible',
       position: 'relative'
     }}>
