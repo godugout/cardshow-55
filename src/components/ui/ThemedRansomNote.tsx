@@ -21,7 +21,7 @@ interface LetterState {
   isThemeWord: boolean;
   isTransparent: boolean;
   letterType: 'card' | 'transparent' | 'jersey';
-  verticalAlign: 'top' | 'middle' | 'bottom' | 'baseline';
+  backgroundOffset: number;
 }
 
 interface LetterStyle {
@@ -200,14 +200,15 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     return 'card';
   };
 
-  // Generate vertical alignment with weighted distribution
-  const generateVerticalAlignment = (): 'top' | 'middle' | 'bottom' | 'baseline' => {
+  // Generate background vertical offset for card positioning
+  const generateBackgroundOffset = (): number => {
     const random = Math.random();
-    // Distribution: 30% baseline, 25% middle, 25% top, 20% bottom
-    if (random < 0.3) return 'baseline';
-    if (random < 0.55) return 'middle';
-    if (random < 0.8) return 'top';
-    return 'bottom';
+    // Random vertical offset for card backgrounds: -0.3em to 0.3em
+    if (random < 0.2) return -0.3; // top
+    if (random < 0.4) return -0.15; // slightly above
+    if (random < 0.6) return 0; // middle
+    if (random < 0.8) return 0.15; // slightly below
+    return 0.3; // bottom
   };
 
   // Generate letter size with mixed distribution
@@ -383,7 +384,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           isThemeWord,
           isTransparent,
           letterType,
-          verticalAlign: char === ' ' ? 'baseline' : generateVerticalAlignment()
+          backgroundOffset: char === ' ' ? 0 : generateBackgroundOffset()
         };
       });
       setLetters(newLetters);
@@ -402,7 +403,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         setLetters(prev => prev.map(letter => ({
           ...letter,
           style: generateLetterStyle(letter.letterType),
-          verticalAlign: letter.char === ' ' ? 'baseline' : (Math.random() < 0.3 ? generateVerticalAlignment() : letter.verticalAlign)
+          backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
         })));
       } else {
         setAnimationKey(prev => prev + 1);
@@ -412,7 +413,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         setLetters(prev => prev.map(letter => ({
           ...letter,
           style: generateLetterStyle(letter.letterType),
-          verticalAlign: letter.char === ' ' ? 'baseline' : (Math.random() < 0.3 ? generateVerticalAlignment() : letter.verticalAlign)
+          backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
         })));
       }
     }, 8000);
@@ -479,7 +480,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
                 ? { 
                     ...letter, 
                     style: generateLetterStyle(letter.letterType),
-                    verticalAlign: letter.char === ' ' ? 'baseline' : (Math.random() < 0.4 ? generateVerticalAlignment() : letter.verticalAlign)
+                    backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.4 ? generateBackgroundOffset() : letter.backgroundOffset)
                   }
                 : letter
             ));
@@ -589,21 +590,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         : letter.style.textShadow
     } : {};
     
-    // Get vertical alignment offset
-    const getVerticalOffset = (alignment: string): number => {
-      switch (alignment) {
-        case 'top': return -0.3;
-        case 'middle': return -0.15;
-        case 'bottom': return 0.3;
-        case 'baseline':
-        default: return 0;
-      }
-    };
-
     // Pre-calculated stable values to prevent layout shifts
     const stableOffsets = {
       rotation: letter.rotation,
-      float: -letter.float + getVerticalOffset(letter.verticalAlign),
+      float: -letter.float + letter.backgroundOffset,
       lean: letter.lean,
       padding: letter.char === ' ' ? '0' : '5px 6px',
       margin: letter.char === ' ' ? '0 0.3em' : '0 2px'
@@ -667,7 +657,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             position: 'relative',
             minWidth: letter.char === ' ' ? '0.4em' : '1.2em',
             minHeight: '1.4em',
-            verticalAlign: letter.verticalAlign,
+            verticalAlign: 'middle',
             contain: 'layout style',
             ...getLetterStyle(letter, index)
           }}
