@@ -248,7 +248,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       return generateRoundOval();
     }
     
-    return generateFourSided();
+    return generateFourSided(char);
   };
 
   const generateRoundOval = (): string => {
@@ -267,7 +267,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     }
   };
 
-  const generateFourSided = (): string => {
+  const generateFourSided = (char?: string): string => {
     // Create varied shapes: squares, rectangles, balanced diamonds (no narrow verticals)
     const shapeTypes = ['square', 'tall-rect', 'wide-rect', 'diamond'];
     const shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
@@ -276,41 +276,48 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     const centerY = 50;
     
     switch (shapeType) {
-      case 'square':
-        const size = 80 + Math.random() * 10; // 80-90% for full letter visibility
-        const rotation = [-5, -3, 0, 3, 5][Math.floor(Math.random() * 5)]; // Reduced tilt degrees
-        const rad = (rotation * Math.PI) / 180;
-        const cos = Math.cos(rad);
-        const sin = Math.sin(rad);
-        
-        // Rotate square corners around center
-        const corners = [
-          [-size/2, -size/2], [size/2, -size/2], [size/2, size/2], [-size/2, size/2]
-        ].map(([x, y]) => [
-          centerX + (x * cos - y * sin),
-          centerY + (x * sin + y * cos)
-        ]);
-        
-        return `polygon(${corners.map(([x, y]) => `${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`).join(', ')})`;
-        
-      case 'tall-rect':
-        const tallWidth = 70 + Math.random() * 15; // 70-85% width
-        const tallHeight = 85 + Math.random() * 10; // 85-95% height
-        return `polygon(${centerX - tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY + tallHeight/2}%, ${centerX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
-        
-      case 'wide-rect':
-        const wideWidth = 85 + Math.random() * 10; // 85-95% width
-        const wideHeight = 70 + Math.random() * 15; // 70-85% height
-        return `polygon(${centerX - wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY + wideHeight/2}%, ${centerX - wideWidth/2}% ${centerY + wideHeight/2}%)`;
-        
-      case 'diamond':
-        // Balanced diamond (no narrow vertical diamonds)
-        const diamondWidth = 75 + Math.random() * 15; // 75-90% width
-        const diamondHeight = 75 + Math.random() * 15; // 75-90% height (balanced proportions)
-        return `polygon(${centerX}% ${centerY - diamondHeight/2}%, ${centerX + diamondWidth/2}% ${centerY}%, ${centerX}% ${centerY + diamondHeight/2}%, ${centerX - diamondWidth/2}% ${centerY}%)`;
-        
-      default:
-        return `polygon(${centerX - 40}% ${centerY - 40}%, ${centerX + 40}% ${centerY - 40}%, ${centerX + 40}% ${centerY + 40}%, ${centerX - 40}% ${centerY + 40}%)`;
+        case 'square':
+          const size = 80 + Math.random() * 10; // 80-90% for full letter visibility
+          const rotation = [-2, -1, 0, 1, 2][Math.floor(Math.random() * 5)]; // Minimal tilt
+          const rad = (rotation * Math.PI) / 180;
+          const cos = Math.cos(rad);
+          const sin = Math.sin(rad);
+          
+          // Rotate square corners around center
+          const corners = [
+            [-size/2, -size/2], [size/2, -size/2], [size/2, size/2], [-size/2, size/2]
+          ].map(([x, y]) => [
+            centerX + (x * cos - y * sin),
+            centerY + (x * sin + y * cos)
+          ]);
+          
+          return `polygon(${corners.map(([x, y]) => `${Math.max(1, Math.min(99, x))}% ${Math.max(1, Math.min(99, y))}%`).join(', ')})`;
+          
+        case 'tall-rect':
+          const tallWidth = 75 + Math.random() * 10; // 75-85% width (reduced aspect ratio)
+          const tallHeight = 85 + Math.random() * 5; // 85-90% height (reduced)
+          return `polygon(${centerX - tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY - tallHeight/2}%, ${centerX + tallWidth/2}% ${centerY + tallHeight/2}%, ${centerX - tallWidth/2}% ${centerY + tallHeight/2}%)`;
+          
+        case 'wide-rect':
+          const wideWidth = 85 + Math.random() * 5; // 85-90% width (reduced)
+          const wideHeight = 75 + Math.random() * 10; // 75-85% height
+          return `polygon(${centerX - wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY - wideHeight/2}%, ${centerX + wideWidth/2}% ${centerY + wideHeight/2}%, ${centerX - wideWidth/2}% ${centerY + wideHeight/2}%)`;
+          
+        case 'diamond':
+          // Skip diamond for tall letters to avoid cutoff
+          const tallLetters = ['I', 'l', 'j', 'f', 't', 'i', '!', '|'];
+          if (tallLetters.includes(char)) {
+            // Use square instead for tall letters
+            const squareSize = 80 + Math.random() * 10;
+            return `polygon(${centerX - squareSize/2}% ${centerY - squareSize/2}%, ${centerX + squareSize/2}% ${centerY - squareSize/2}%, ${centerX + squareSize/2}% ${centerY + squareSize/2}%, ${centerX - squareSize/2}% ${centerY + squareSize/2}%)`;
+          }
+          // Balanced diamond (limited height to 70% max)
+          const diamondWidth = 75 + Math.random() * 10; // 75-85% width
+          const diamondHeight = 60 + Math.random() * 10; // 60-70% height (limited to prevent cutoff)
+          return `polygon(${centerX}% ${centerY - diamondHeight/2}%, ${centerX + diamondWidth/2}% ${centerY}%, ${centerX}% ${centerY + diamondHeight/2}%, ${centerX - diamondWidth/2}% ${centerY}%)`;
+          
+        default:
+          return `polygon(${centerX - 40}% ${centerY - 40}%, ${centerX + 40}% ${centerY - 40}%, ${centerX + 40}% ${centerY + 40}%, ${centerX - 40}% ${centerY + 40}%)`;
     }
   };
 
@@ -444,30 +451,44 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   };
 
   const getContrastingColor = (bgColor: string): string => {
-    // 60% chance to use colored letters, 40% chance for contrast
-    if (Math.random() < 0.6) {
+    // Improved contrast detection for better readability
+    const isLightBackground = (color: string): boolean => {
+      if (color.includes('ffffff') || color.includes('#fff') || 
+          color.includes('#f5f5dc') || color.includes('#faebd7') || 
+          color.includes('#fff8dc') || color.includes('#ffeb3b') ||
+          color.includes('#ffffff') || color.includes('#f0f0f0') ||
+          color.includes('#ffff99') || color.includes('#ffd700')) {
+        return true;
+      }
+      return false;
+    };
+    
+    const isDarkBackground = (color: string): boolean => {
+      if (color.includes('#000000') || color.includes('#1a1a1a') || 
+          color.includes('#333333') || color.includes('#404040') ||
+          color.includes('#2a2a2a') || color.includes('#0f3460')) {
+        return true;
+      }
+      return false;
+    };
+    
+    // 30% chance for colored text, 70% for high contrast
+    if (Math.random() < 0.3) {
       return getRandomColor();
     }
     
-    if (bgColor.includes('gradient') || bgColor.includes('repeating')) {
+    // Ensure high contrast for readability
+    if (isLightBackground(bgColor)) {
+      return '#000000'; // Black on light backgrounds
+    } else if (isDarkBackground(bgColor)) {
+      return '#ffffff'; // White on dark backgrounds
+    } else {
+      // For medium colors, choose based on theme
+      if (theme === 'connect') {
+        return '#ffffff'; // White for connect theme visibility
+      }
       return Math.random() > 0.5 ? '#ffffff' : '#000000';
     }
-    
-    // Theme-specific contrast logic
-    if (theme === 'collect') {
-      const lightBgs = ['#f5f5dc', '#faebd7', '#fff8dc', '#fffacd', '#f0e68c'];
-      const isDark = !lightBgs.some(color => bgColor.includes(color));
-      return isDark ? '#ffffff' : '#000000';
-    }
-    
-    if (theme === 'connect') {
-      const darkBgs = ['#000000', '#1a1a1a', '#404040'];
-      const isDark = darkBgs.some(color => bgColor.includes(color));
-      return isDark ? '#00ffff' : '#000000';
-    }
-    
-    // Default craft theme
-    return Math.random() > 0.5 ? '#ffffff' : '#000000';
   };
 
   // Generate font based on material source
@@ -505,26 +526,23 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       materialType = (bgStyle as any).material || 'paper';
     }
 
-    // Enhanced shadow effects with depth layering
+    // Subtle shadow effects for better readability
     const getTextShadowForType = (type: 'card' | 'transparent' | 'jersey') => {
       if (type === 'transparent') {
-        // Layered shadows for transparent letters to create depth
+        // Moderate shadows for transparent letters
         return [
-          '2px 2px 4px rgba(0,0,0,0.8), 4px 4px 8px rgba(0,0,0,0.6), 6px 6px 12px rgba(0,0,0,0.4)',
-          '1px 1px 3px rgba(0,0,0,0.9), 3px 3px 6px rgba(0,0,0,0.7), 5px 5px 10px rgba(0,0,0,0.5)',
-          '3px 3px 0px rgba(0,0,0,0.8), 6px 6px 8px rgba(0,0,0,0.6), 9px 9px 15px rgba(0,0,0,0.4)'
+          '1px 1px 2px rgba(0,0,0,0.7), 2px 2px 4px rgba(0,0,0,0.5)',
+          '1px 1px 3px rgba(0,0,0,0.6), 2px 2px 5px rgba(0,0,0,0.4)',
+          '2px 2px 0px rgba(0,0,0,0.5), 3px 3px 6px rgba(0,0,0,0.3)'
         ];
       }
       
       return [
         'none',
-        '2px 2px 4px rgba(0,0,0,0.3)',
-        '1px 1px 2px rgba(255,255,255,0.8)',
-        '0 0 3px rgba(0,0,0,0.5)',
-        'inset 0 1px 0 rgba(255,255,255,0.2)',
-        '3px 3px 0px rgba(0,0,0,0.4), 6px 6px 8px rgba(0,0,0,0.2)',
-        '2px 2px 0px rgba(255,255,255,0.3), 4px 4px 6px rgba(0,0,0,0.3)',
-        '1px 1px 0px rgba(0,0,0,0.5), 2px 2px 0px rgba(0,0,0,0.3), 3px 3px 0px rgba(0,0,0,0.2)',
+        '1px 1px 2px rgba(0,0,0,0.4)', // Subtle shadows
+        '1px 1px 1px rgba(255,255,255,0.6)', // Light outline
+        '0 0 2px rgba(0,0,0,0.3)', // Soft glow
+        '1px 1px 0px rgba(0,0,0,0.3), 2px 2px 4px rgba(0,0,0,0.2)' // Minimal layered
       ];
     };
 
@@ -587,9 +605,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           isAnimating: false,
           animationType: 'float' as const,
           animationProgress: 0,
-          rotation: hasSharpAngle ? (Math.random() * 70 - 35) : (Math.random() * 24 - 12), // Sharp: ±35°, Normal: ±12°
+          rotation: hasSharpAngle ? (Math.random() * 8 - 4) : (Math.random() * 6 - 3), // Sharp: ±4°, Normal: ±3° (much reduced)
           float: Math.random() * 2,
-          lean: hasSharpAngle ? (Math.random() * 20 - 10) : (Math.random() * 8 - 4), // Enhanced lean
+          lean: hasSharpAngle ? (Math.random() * 6 - 3) : (Math.random() * 4 - 2), // Minimal lean
           glowIntensity: 0.5 + Math.random() * 0.5,
           style,
           shape: generateLetterShape(),
@@ -615,7 +633,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           textDecoration: Math.random() > 0.92 ? (Math.random() > 0.5 ? 'underline' : 'overline') : 'none',
           opacity: Math.random() > 0.9 ? 0.7 + Math.random() * 0.3 : 1,
           scale: 0.9 + Math.random() * 0.4, // Scale breathing effect
-          perspective: Math.random() * 20 - 10, // 3D perspective rotation
+          perspective: Math.random() * 6 - 3, // Minimal 3D perspective rotation
           materialSource,
           clipPath,
           overlayTexture,
@@ -675,7 +693,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             leftOffset: (Math.random() - 0.5) * 2, // Reduced from 4 to 2
             zIndex: Math.floor(Math.random() * 3) + 1, // Limited to 3 levels
             scale: 0.9 + Math.random() * 0.4,
-            perspective: Math.random() * 12 - 6 // Reduced perspective rotation for more upright letters
+            perspective: Math.random() * 6 - 3 // Minimal perspective rotation for upright letters
           };
         }));
       } else {
@@ -724,7 +742,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
               leftOffset: (Math.random() - 0.5) * 2, // Reduced from 4 to 2
               zIndex: Math.floor(Math.random() * 3) + 1, // Limited to 3 levels
               scale: 0.9 + Math.random() * 0.4,
-              perspective: Math.random() * 20 - 10
+              perspective: Math.random() * 6 - 3 // Consistent minimal perspective
             };
           });
           
@@ -783,9 +801,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     }
   };
 
-  // Enhanced floating movement with more amplitude
+  // Subtle floating movement for gentle letter motion
   const getLetterFloat = (index: number) => {
-    return Math.sin(animPhase * 0.005 + index * 0.5) * 8; // Increased amplitude from 3px to 8px
+    return Math.sin(animPhase * 0.003 + index * 0.3) * 2; // Reduced to 2px for subtle movement
   };
 
   return (
@@ -856,9 +874,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
                 willChange: 'transform', // GPU acceleration
                 
                 filter: `
-                  brightness(${0.9 + Math.random() * 0.2}) 
-                  contrast(${0.95 + Math.random() * 0.1})
-                  ${letter.glowIntensity > 0.8 ? `drop-shadow(0 0 ${letter.glowIntensity * 3}px ${letter.style.color}40)` : ''}
+                  brightness(${0.95 + Math.random() * 0.1}) 
+                  contrast(${0.98 + Math.random() * 0.04})
+                  ${letter.glowIntensity > 0.9 ? `drop-shadow(0 0 ${letter.glowIntensity * 1}px ${letter.style.color}20)` : ''}
                 `,
                 padding: letter.letterType !== 'transparent' ? letter.padding : '0',
                 margin: letter.letterType !== 'transparent' ? letter.margin : '0.05em',
