@@ -22,12 +22,14 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   const [letterStyles, setLetterStyles] = useState<LetterStyle[]>([]);
   const [animationKey, setAnimationKey] = useState(0);
 
-  // Random color palette for ransom note effect
+  // Brand colors from CRD design system
   const colors = [
-    '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff',
-    '#ff6600', '#6600ff', '#ff0066', '#00ff66', '#6600ff', '#ff9900',
-    '#9900ff', '#ff0099', '#0099ff', '#99ff00', '#ff3366', '#33ff66',
-    '#ffffff', '#000000', '#888888'
+    'hsl(var(--crd-green))',
+    'hsl(var(--crd-blue))', 
+    'hsl(var(--crd-purple))',
+    'hsl(var(--crd-orange))',
+    'hsl(var(--crd-white))',
+    'hsl(var(--crd-lightGray))'
   ];
 
   // Random font families for variety
@@ -43,13 +45,13 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
   ];
 
   const generateLetterStyle = (): LetterStyle => ({
-    color: colors[Math.floor(Math.random() * colors.length)],
+    color: Math.random() > 0.5 ? 'transparent' : '#000000',
     fontFamily: fontFamilies[Math.floor(Math.random() * fontFamilies.length)],
     fontSize: `${0.8 + Math.random() * 0.4}em`, // 0.8em to 1.2em
     rotation: (Math.random() - 0.5) * 20, // -10 to 10 degrees
     skew: (Math.random() - 0.5) * 10, // slight skew
-    backgroundColor: backgroundColors[Math.floor(Math.random() * backgroundColors.length)],
-    textShadow: Math.random() > 0.5 ? '2px 2px 4px rgba(0,0,0,0.3)' : 'none'
+    backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+    textShadow: 'none'
   });
 
   useEffect(() => {
@@ -85,10 +87,10 @@ export const RansomNote: React.FC<RansomNoteProps> = ({
               transform: `rotate(${style.rotation}deg) skew(${style.skew}deg)`,
               backgroundColor: style.backgroundColor,
               textShadow: style.textShadow,
-              padding: char === ' ' ? '0' : '1px 2px',
-              margin: char === ' ' ? '0 0.2em' : '0 1px',
-              borderRadius: '2px',
-              border: style.backgroundColor !== 'transparent' ? '1px solid rgba(0,0,0,0.1)' : 'none',
+              padding: char === ' ' ? '0' : '4px 6px',
+              margin: char === ' ' ? '0 0.2em' : '0 2px',
+              borderRadius: '4px',
+              opacity: char === ' ' ? 1 : 0.9,
               display: char === ' ' ? 'inline' : 'inline-block',
               fontWeight: Math.random() > 0.5 ? 'bold' : 'normal',
               fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
