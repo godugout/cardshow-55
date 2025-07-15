@@ -186,29 +186,29 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const generateMaterialBorderRadius = (material: 'paper' | 'cardboard' | 'jersey' | 'gold' | 'chrome' | 'leather' | 'glass' | 'wood'): string => {
     switch (material) {
       case 'paper':
-        // Irregular torn edges
-        return `${Math.random() * 8 + 2}px ${Math.random() * 15 + 3}px ${Math.random() * 12 + 2}px ${Math.random() * 6 + 1}px`;
+        // Extremely irregular torn edges
+        return `${Math.random() * 25 + 5}px ${Math.random() * 30 + 8}px ${Math.random() * 20 + 3}px ${Math.random() * 35 + 2}px`;
       case 'cardboard':
-        // Chunky, rough rectangular
-        return `${Math.random() * 6 + 1}px`;
+        // Very chunky, rough rectangular with big corners
+        return `${Math.random() * 15 + 3}px ${Math.random() * 25 + 5}px`;
       case 'jersey':
-        // Fabric-like rounded
-        return `${Math.random() * 10 + 5}px`;
+        // Very fabric-like rounded with huge variation
+        return `${Math.random() * 20 + 10}px ${Math.random() * 15 + 8}px ${Math.random() * 25 + 5}px`;
       case 'gold':
       case 'chrome':
-        // Sharp, clean cuts
-        return `${Math.random() * 4 + 1}px`;
+        // Sharp metallic but with some variation
+        return `${Math.random() * 8 + 2}px ${Math.random() * 12 + 1}px`;
       case 'leather':
-        // Soft, curved edges
-        return `${Math.random() * 12 + 6}px ${Math.random() * 8 + 4}px`;
+        // Very soft, huge curved edges
+        return `${Math.random() * 30 + 15}px ${Math.random() * 25 + 10}px ${Math.random() * 20 + 8}px`;
       case 'glass':
-        // Clean geometric
-        return `${Math.random() * 3 + 1}px`;
+        // Clean but with some geometric variation  
+        return `${Math.random() * 10 + 2}px ${Math.random() * 15 + 3}px`;
       case 'wood':
-        // Natural, organic shapes
-        return `${Math.random() * 10 + 3}px ${Math.random() * 8 + 2}px ${Math.random() * 6 + 1}px ${Math.random() * 12 + 4}px`;
+        // Very natural, huge organic shapes
+        return `${Math.random() * 35 + 8}px ${Math.random() * 28 + 5}px ${Math.random() * 22 + 3}px ${Math.random() * 40 + 10}px`;
       default:
-        return `${Math.random() * 8 + 2}px`;
+        return `${Math.random() * 20 + 5}px ${Math.random() * 25 + 8}px`;
     }
   };
 
