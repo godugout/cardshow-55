@@ -19,10 +19,17 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
       fontWeight: '900',
       fontSize: '1em',
       color: 'transparent',
+      // Use both webkit and standard properties for better compatibility
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
+      // Force the background to only show within text bounds
+      backgroundAttachment: 'local',
       imageRendering: 'pixelated' as any,
+      display: 'inline-block',
+      position: 'relative',
+      // Add text stroke to ensure proper clipping
+      WebkitTextStroke: '0px transparent',
     };
 
     switch (animationType) {
