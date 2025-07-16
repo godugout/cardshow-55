@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useAnimationTask } from './useAnimationController';
 
 export type QualityLevel = 'low' | 'medium' | 'high' | 'ultra';
 
@@ -79,7 +80,6 @@ export const usePerformanceMonitor = () => {
   const frameCountRef = useRef(0);
   const lastTimeRef = useRef(performance.now());
   const frameTimesRef = useRef<number[]>([]);
-  const rafIdRef = useRef<number>();
 
   // Detect device capabilities
   const isMobile = useCallback(() => {
@@ -121,50 +121,42 @@ export const usePerformanceMonitor = () => {
     }
   }, [getTargets]);
 
-  // Performance monitoring loop
-  const monitorPerformance = useCallback(() => {
-    const now = performance.now();
-    const deltaTime = now - lastTimeRef.current;
-    
-    frameCountRef.current++;
-    frameTimesRef.current.push(deltaTime);
+  // Centralized performance monitoring
+  useAnimationTask(
+    'performance-monitor',
+    useCallback((timestamp: number) => {
+      const now = performance.now();
+      const deltaTime = now - lastTimeRef.current;
+      
+      frameCountRef.current++;
+      frameTimesRef.current.push(deltaTime);
 
-    // Keep only last 60 frames for rolling average
-    if (frameTimesRef.current.length > 60) {
-      frameTimesRef.current.shift();
-    }
-
-    // Calculate metrics every 30 frames (~0.5 seconds at 60fps)
-    if (frameCountRef.current % 30 === 0) {
-      const avgFrameTime = frameTimesRef.current.reduce((a, b) => a + b, 0) / frameTimesRef.current.length;
-      const currentFps = 1000 / avgFrameTime;
-      const memoryUsage = getMemoryUsage();
-      const newQuality = calculateQuality(avgFrameTime, memoryUsage);
-      const targets = getTargets();
-
-      setMetrics(prev => ({
-        fps: Math.round(currentFps),
-        frameTime: Math.round(avgFrameTime * 100) / 100,
-        memoryUsage: Math.round(memoryUsage),
-        quality: newQuality,
-        isThrottling: avgFrameTime > targets.frameTime * 1.5,
-      }));
-    }
-
-    lastTimeRef.current = now;
-    rafIdRef.current = requestAnimationFrame(monitorPerformance);
-  }, [calculateQuality, getMemoryUsage, getTargets]);
-
-  // Start/stop monitoring
-  useEffect(() => {
-    rafIdRef.current = requestAnimationFrame(monitorPerformance);
-    
-    return () => {
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current);
+      // Keep only last 60 frames for rolling average
+      if (frameTimesRef.current.length > 60) {
+        frameTimesRef.current.shift();
       }
-    };
-  }, [monitorPerformance]);
+
+      // Calculate metrics every 30 frames (~0.5 seconds at 60fps)
+      if (frameCountRef.current % 30 === 0) {
+        const avgFrameTime = frameTimesRef.current.reduce((a, b) => a + b, 0) / frameTimesRef.current.length;
+        const currentFps = 1000 / avgFrameTime;
+        const memoryUsage = getMemoryUsage();
+        const newQuality = calculateQuality(avgFrameTime, memoryUsage);
+        const targets = getTargets();
+
+        setMetrics(prev => ({
+          fps: Math.round(currentFps),
+          frameTime: Math.round(avgFrameTime * 100) / 100,
+          memoryUsage: Math.round(memoryUsage),
+          quality: newQuality,
+          isThrottling: avgFrameTime > targets.frameTime * 1.5,
+        }));
+      }
+
+      lastTimeRef.current = now;
+    }, [calculateQuality, getMemoryUsage, getTargets]),
+    0 // Lower priority for monitoring
+  );
 
   // Get quality settings for current level
   const getQualitySettings = useCallback((quality: QualityLevel = metrics.quality) => {

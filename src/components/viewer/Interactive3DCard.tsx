@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, MousePointer, Smartphone, Zap, Eye, RotateCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAnimationTask } from '@/hooks/useAnimationController';
 import type { CardData } from '@/types/card';
 
 export type InteractionMode = 'tilt' | 'orbital' | 'gyroscope' | 'physics' | 'magnetic' | 'carousel';
@@ -130,31 +131,24 @@ export const Interactive3DCard = ({
     }
   };
 
-  // Physics animation loop
-  useEffect(() => {
-    if (mode === 'physics' && !isInteracting) {
-      const animate = () => {
-        velocityRef.current.x *= 0.95;
-        velocityRef.current.y *= 0.95;
-        
-        if (Math.abs(velocityRef.current.x) > 0.1 || Math.abs(velocityRef.current.y) > 0.1) {
-          setRotation(prev => ({
-            x: prev.x + velocityRef.current.y,
-            y: prev.y + velocityRef.current.x,
-            z: prev.z
-          }));
-          animationRef.current = requestAnimationFrame(animate);
-        }
-      };
-      animationRef.current = requestAnimationFrame(animate);
-    }
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+  // Centralized physics animation
+  useAnimationTask(
+    'interactive3d-physics',
+    () => {
+      velocityRef.current.x *= 0.95;
+      velocityRef.current.y *= 0.95;
+      
+      if (Math.abs(velocityRef.current.x) > 0.1 || Math.abs(velocityRef.current.y) > 0.1) {
+        setRotation(prev => ({
+          x: prev.x + velocityRef.current.y,
+          y: prev.y + velocityRef.current.x,
+          z: prev.z
+        }));
       }
-    };
-  }, [mode, isInteracting]);
+    },
+    1, // High priority
+    mode === 'physics' && !isInteracting
+  );
 
   const handleMouseEnter = () => {
     setIsInteracting(true);
