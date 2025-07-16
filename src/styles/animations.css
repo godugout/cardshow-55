@@ -70,4 +70,29 @@
   .carousel-card {
     flex-shrink: 0;
   }
+
+  /* Optimized card grid performance */
+  .card-grid {
+    contain: layout style;
+    /* Prevent unnecessary repaints */
+    isolation: isolate;
+  }
+
+  .card-item {
+    /* Only animate transform and opacity for 60fps */
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+    /* Create new stacking context */
+    transform: translateZ(0);
+    /* Optimize for animations */
+    will-change: transform;
+  }
+
+  .card-item:hover {
+    transform: translateY(-4px) translateZ(0);
+  }
+
+  /* Remove will-change after animation */
+  .card-item:not(:hover) {
+    will-change: auto;
+  }
 }

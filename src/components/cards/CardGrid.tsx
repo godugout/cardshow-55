@@ -74,8 +74,7 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
   return (
     <div 
       className="
-        group cursor-pointer transition-all duration-200 ease-out
-        hover:scale-105 hover:-translate-y-1
+        group cursor-pointer card-item
       "
       style={{
         filter: rarityStyles.hasGlow ? `drop-shadow(0 0 12px ${rarityStyles.glowColor})` : 'none'

@@ -48,12 +48,12 @@ export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClic
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 card-grid">
       {cards.map((card) => (
         <div
           key={card.id}
           onClick={() => onCardClick(card)}
-          className="cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
+          className="cursor-pointer card-item"
         >
           <CardItem
             title={card.title || 'Untitled Card'}
