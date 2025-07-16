@@ -279,11 +279,35 @@ const CardMonolith: React.FC = () => {
 
 export const FloatingCard3D: React.FC = () => {
   return (
-    <div className="w-full h-[800px] mx-auto bg-gradient-to-b from-purple-900/20 via-blue-900/20 to-black rounded-lg overflow-hidden">
+    <div className="w-full h-[800px] mx-auto bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black rounded-lg overflow-hidden relative">
+      {/* Matching star field for seamless integration */}
+      <div className="absolute inset-0">
+        {Array.from({ length: 100 }).map((_, i) => {
+          const size = Math.random() * 2 + 0.5;
+          const opacity = Math.random() * 0.6 + 0.2;
+          const animationDelay = Math.random() * 3;
+          
+          return (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${size}px`,
+                height: `${size}px`,
+                opacity,
+                animationDelay: `${animationDelay}s`,
+                animationDuration: `${2 + Math.random() * 2}s`
+              }}
+            />
+          );
+        })}
+      </div>
       <Canvas
         camera={{ position: [0, 0, 15], fov: 60 }}
-        gl={{ antialias: true, alpha: false }}
-        scene={{ background: new THREE.Color('#0a0a2e') }}
+        gl={{ antialias: true, alpha: true }}
+        scene={{ background: null }}
       >
         {/* Minimal ambient space lighting */}
         <ambientLight intensity={0.02} color="#000033" />
