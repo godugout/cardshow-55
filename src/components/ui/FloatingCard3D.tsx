@@ -38,7 +38,7 @@ const CardMonolith: React.FC = () => {
         </mesh>
         
         {/* Card back - CRD design */}
-        <mesh position={[0, 0, 0.16]}>
+        <mesh position={[0, 0, -0.16]}>
           <boxGeometry args={[2.4, 3.4, 0.01]} />
           <meshStandardMaterial 
             color="#1a1a2e"
@@ -50,7 +50,7 @@ const CardMonolith: React.FC = () => {
         </mesh>
         
         {/* CRD Logo on back */}
-        <mesh position={[0, 0.8, 0.17]}>
+        <mesh position={[0, 0.8, -0.17]}>
           <boxGeometry args={[1.5, 0.3, 0.01]} />
           <meshStandardMaterial 
             color="#ffffff"
@@ -60,7 +60,7 @@ const CardMonolith: React.FC = () => {
         </mesh>
         
         {/* Card image area */}
-        <mesh position={[0, -0.2, 0.17]}>
+        <mesh position={[0, -0.2, -0.17]}>
           <boxGeometry args={[2.0, 1.8, 0.01]} />
           <meshStandardMaterial 
             color="#2a2a4e"
@@ -72,7 +72,7 @@ const CardMonolith: React.FC = () => {
         </mesh>
         
         {/* Card text area */}
-        <mesh position={[0, -1.3, 0.17]}>
+        <mesh position={[0, -1.3, -0.17]}>
           <boxGeometry args={[2.0, 0.8, 0.01]} />
           <meshStandardMaterial 
             color="#1a1a1a"
