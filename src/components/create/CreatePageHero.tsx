@@ -16,7 +16,7 @@ export const CreatePageHero: React.FC = () => {
           </div>
           <div className="flex justify-center items-center h-16">
             <span>
-              <ThemedRansomNote theme="craft" showTypographyControls={true}>craft</ThemedRansomNote> cards that <span className="gradient-text-green-blue-purple">come alive</span>
+              <ThemedRansomNote theme="craft">craft</ThemedRansomNote> cards that <span className="gradient-text-green-blue-purple">come alive</span>
             </span>
           </div>
         </>
