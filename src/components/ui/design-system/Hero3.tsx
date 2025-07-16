@@ -154,7 +154,7 @@ export const Hero3: React.FC<Hero3Props> = ({
   }
 
   return (
-    <div className="w-full overflow-hidden relative mb-[-2rem] z-10">
+    <div className="w-full overflow-hidden relative z-10">
       {/* Horizontal scrolling carousel with larger cards */}
       <div 
         ref={carouselRef}
@@ -187,18 +187,16 @@ export const Hero3: React.FC<Hero3Props> = ({
                   </div>
                 )}
                 
-                {/* Hover Details Overlay */}
-                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 via-black/40 to-transparent transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                    <h3 className="font-semibold text-lg mb-1 truncate">{card.title}</h3>
-                    <div className="flex items-center justify-between text-sm">
-                      <div>
-                        <p className="text-crd-lightGray">Creator: {card.creator_name || 'Unknown'}</p>
-                        {card.curator && (
-                          <p className="text-crd-lightGray">Curated by: {card.curator}</p>
-                        )}
-                      </div>
-                      <div className="text-right">
+                {/* Hover Details Overlay - Only shows on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out flex flex-col justify-end">
+                  <div className="p-4 text-white">
+                    <h3 className="font-semibold text-lg mb-2 truncate">{card.title}</h3>
+                    <div className="space-y-2 text-sm">
+                      <p className="text-crd-lightGray">Creator: {card.creator_name || 'Unknown'}</p>
+                      {card.curator && (
+                        <p className="text-crd-lightGray">Curated by: {card.curator}</p>
+                      )}
+                      <div className="flex items-center justify-between pt-2">
                         {card.rarity && (
                           <span className={`px-2 py-1 rounded text-xs font-bold ${
                             card.rarity === 'legendary' ? 'bg-crd-orange text-black' :
@@ -209,13 +207,13 @@ export const Hero3: React.FC<Hero3Props> = ({
                             {card.rarity.charAt(0).toUpperCase() + card.rarity.slice(1)}
                           </span>
                         )}
-                        {card.view_count && (
-                          <p className="text-crd-lightGray mt-1">{card.view_count} views</p>
-                        )}
                         {card.price && (
-                          <p className="text-crd-green font-bold mt-1">${card.price}</p>
+                          <p className="text-crd-green font-bold">${card.price}</p>
                         )}
                       </div>
+                      {card.view_count && (
+                        <p className="text-crd-lightGray">{card.view_count} views</p>
+                      )}
                     </div>
                   </div>
                 </div>
