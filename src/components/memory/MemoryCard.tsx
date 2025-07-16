@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import type { Memory } from '@/types/memory';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,8 +13,8 @@ interface MemoryCardProps {
   onReaction?: (memoryId: string, reactionType: 'heart' | 'thumbs-up' | 'party' | 'baseball') => void;
 }
 
-export const MemoryCard: React.FC<MemoryCardProps> = ({ memory, onReaction }) => {
-  const handleReaction = () => {
+const MemoryCardComponent: React.FC<MemoryCardProps> = ({ memory, onReaction }) => {
+  const handleReaction = useCallback(() => {
     if (onReaction) {
       onReaction(memory.id, 'heart');
       toast({
@@ -22,28 +22,28 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory, onReaction }) =>
         description: "You liked this card",
       });
     }
-  };
+  }, [memory.id, onReaction]);
 
-  const handleShare = () => {
+  const handleShare = useCallback(() => {
     navigator.clipboard.writeText(window.location.origin + '/card/' + memory.id);
     toast({
       title: "Link copied",
       description: "Card link copied to clipboard",
     });
-  };
+  }, [memory.id]);
 
   // Format date to more readable format
-  const formatDate = (dateString: string) => {
+  const formatDate = useCallback((dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', { 
       month: 'short', 
       day: 'numeric', 
       year: 'numeric' 
     }).format(date);
-  };
+  }, []);
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300">
+    <Card className="overflow-hidden memory-card">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
@@ -134,3 +134,8 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory, onReaction }) =>
     </Card>
   );
 };
+
+export const MemoryCard = memo(MemoryCardComponent, (prev, next) => 
+  prev.memory.id === next.memory.id && 
+  prev.memory.createdAt === next.memory.createdAt
+);

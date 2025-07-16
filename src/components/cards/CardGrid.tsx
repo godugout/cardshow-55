@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -39,16 +39,15 @@ const UNSPLASH_IMAGES = [
   'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400&q=80', // Abstract colorful
 ];
 
-const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
+const CardGridItem = memo(({ card, index }: { card: CardData; index: number }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
   
   const rarity = (card.rarity || 'common') as CardRarity;
   const rarityStyles = getRarityStyles(rarity);
   const badgeStyles = getRarityBadgeStyles(rarity);
   
-  const getDisplayImage = () => {
+  const getDisplayImage = useCallback(() => {
     // Check for valid image URLs, avoiding blob URLs
     if (card.image_url && !card.image_url.startsWith('blob:') && !imageError) {
       return card.image_url;
@@ -58,29 +57,25 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
     }
     // Use placeholder image
     return '/placeholder.svg';
-  };
+  }, [card.image_url, card.thumbnail_url, imageError]);
 
   const displayImage = getDisplayImage();
 
-  const handleImageLoad = () => {
+  const handleImageLoad = useCallback(() => {
     setImageLoading(false);
-  };
+  }, []);
 
-  const handleImageError = () => {
+  const handleImageError = useCallback(() => {
     setImageError(true);
     setImageLoading(false);
-  };
+  }, []);
 
   return (
     <div 
-      className="
-        group cursor-pointer card-item
-      "
+      className="group cursor-pointer card-item"
       style={{
         filter: rarityStyles.hasGlow ? `drop-shadow(0 0 12px ${rarityStyles.glowColor})` : 'none'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <Card 
         className="card-themed rounded-xl overflow-hidden relative"
@@ -125,11 +120,11 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
           )}
 
           {/* Quick Actions Overlay */}
-          <div className={`
+          <div className="
             absolute inset-0 bg-black/60 flex items-center justify-center gap-2
             transition-all duration-200 ease-out
-            ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}
-          `}>
+            opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto
+          ">
             <CRDButton
               size="sm"
               variant="outline"
@@ -175,7 +170,7 @@ const CardGridItem = ({ card, index }: { card: CardData; index: number }) => {
       </Card>
     </div>
   );
-};
+}, (prev, next) => prev.card.id === next.card.id && prev.index === next.index);
 
 const LoadingSkeleton = () => (
   <div className="animate-pulse">

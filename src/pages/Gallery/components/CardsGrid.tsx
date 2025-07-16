@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { CardItem } from '@/components/shared/CardItem';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Tables } from '@/integrations/supabase/types';
@@ -11,6 +11,37 @@ interface CardsGridProps {
   loading: boolean;
   onCardClick: (card: DbCard) => void;
 }
+
+const CardGridItem = memo(({ card, onCardClick }: { card: DbCard; onCardClick: (card: DbCard) => void }) => {
+  const handleClick = useCallback(() => {
+    onCardClick(card);
+  }, [card, onCardClick]);
+
+  const getCardImageUrl = useCallback((card: DbCard): string => {
+    // Try image_url first, then thumbnail_url, then fallback to placeholder
+    if (card.image_url && !card.image_url.startsWith('blob:')) {
+      return card.image_url;
+    }
+    if (card.thumbnail_url && !card.thumbnail_url.startsWith('blob:')) {
+      return card.thumbnail_url;
+    }
+    // Return empty string to let CardItem handle the fallback
+    return '';
+  }, []);
+
+  return (
+    <div
+      onClick={handleClick}
+      className="cursor-pointer card-item"
+    >
+      <CardItem
+        title={card.title || 'Untitled Card'}
+        price="1.5"
+        image={getCardImageUrl(card)}
+      />
+    </div>
+  );
+}, (prev, next) => prev.card.id === next.card.id);
 
 export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClick }) => {
   if (loading) {
@@ -35,32 +66,15 @@ export const CardsGrid: React.FC<CardsGridProps> = ({ cards, loading, onCardClic
     );
   }
 
-  const getCardImageUrl = (card: DbCard): string => {
-    // Try image_url first, then thumbnail_url, then fallback to placeholder
-    if (card.image_url && !card.image_url.startsWith('blob:')) {
-      return card.image_url;
-    }
-    if (card.thumbnail_url && !card.thumbnail_url.startsWith('blob:')) {
-      return card.thumbnail_url;
-    }
-    // Return empty string to let CardItem handle the fallback
-    return '';
-  };
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 card-grid">
       {cards.map((card) => (
-        <div
-          key={card.id}
-          onClick={() => onCardClick(card)}
-          className="cursor-pointer card-item"
-        >
-          <CardItem
-            title={card.title || 'Untitled Card'}
-            price="1.5"
-            image={getCardImageUrl(card)}
-          />
-        </div>
+        <CardGridItem 
+          key={card.id} 
+          card={card} 
+          onCardClick={onCardClick}
+        />
       ))}
     </div>
   );

@@ -91,8 +91,21 @@
     transform: translateY(-4px) translateZ(0);
   }
 
+  .card-item:active {
+    transform: translateY(-2px) translateZ(0);
+  }
+
   /* Remove will-change after animation */
   .card-item:not(:hover) {
     will-change: auto;
+  }
+
+  /* Memory card optimizations */
+  .memory-card {
+    transition: box-shadow 0.3s ease-out;
+  }
+
+  .memory-card:hover {
+    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 }
