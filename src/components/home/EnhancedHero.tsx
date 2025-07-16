@@ -144,11 +144,13 @@ export const EnhancedHero: React.FC = () => {
   const allCards = cards.length > 0 ? cards : featuredCards;
   const showcaseCards = allCards.length > 0 ? allCards : [];
 
-  // Fetch all cards for the ticker on mount
+  // Fetch all cards for the ticker on mount - only once
   React.useEffect(() => {
-    // Always fetch all cards for the carousel to have enough content
-    fetchAllCardsFromDatabase();
-  }, [fetchAllCardsFromDatabase]);
+    // Only fetch if we don't have enough cards for the carousel
+    if (allCards.length < 10) {
+      fetchAllCardsFromDatabase();
+    }
+  }, []); // Remove dependency to prevent infinite loop
 
   // Make cards clickable, no immersive preview
   const handleCardStudioOpen = (card: DbCard) => {

@@ -155,7 +155,7 @@ export const useCards = () => {
     // Initial fetch - load all cards for better user experience
     console.log('🚀 useCards mounted, starting initial fetch with all cards...');
     fetchCards(true); // Load all cards by default
-  }, [fetchCards]);
+  }, []); // Remove fetchCards from dependency to prevent infinite loop
 
   // Debug log current state
   useEffect(() => {
