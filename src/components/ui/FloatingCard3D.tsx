@@ -279,7 +279,7 @@ const CardMonolith: React.FC = () => {
 
 export const FloatingCard3D: React.FC = () => {
   return (
-    <div className="w-full h-[800px] mx-auto bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black rounded-lg overflow-hidden relative">
+    <div className="w-full h-full bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
       {/* Matching star field for seamless integration */}
       <div className="absolute inset-0">
         {Array.from({ length: 100 }).map((_, i) => {

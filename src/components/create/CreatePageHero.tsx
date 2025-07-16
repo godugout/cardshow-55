@@ -19,45 +19,12 @@ const AnimatedTagline: React.FC = () => {
 export const CreatePageHero: React.FC = () => {
   return (
     <div className="relative w-screen -mx-[50vw] left-1/2 overflow-hidden">
-      {/* Space background with gradient */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-purple-900/30 via-blue-900/20 to-black"></div>
-      
-      {/* Animated stars throughout the background */}
-      <div className="absolute inset-0">
-        {Array.from({ length: 200 }).map((_, i) => {
-          const size = Math.random() * 3 + 1;
-          const opacity = Math.random() * 0.8 + 0.2;
-          const animationDelay = Math.random() * 3;
-          const left = Math.random() * 100;
-          const top = Math.random() * 100;
-          
-          return (
-            <div
-              key={i}
-              className="absolute rounded-full bg-white animate-pulse"
-              style={{
-                left: `${left}%`,
-                top: `${top}%`,
-                width: `${size}px`,
-                height: `${size}px`,
-                opacity,
-                animationDelay: `${animationDelay}s`,
-                animationDuration: `${2 + Math.random() * 2}s`
-              }}
-            />
-          );
-        })}
+      {/* 3D Background covering entire hero section */}
+      <div className="absolute inset-0 z-0">
+        <FloatingCard3D />
       </div>
       
-      {/* Gradient overlays for depth */}
-      <div className="absolute inset-0 bg-gradient-radial from-purple-500/10 via-transparent to-transparent"></div>
-      <div className="absolute inset-0 bg-gradient-radial from-blue-500/10 via-transparent to-transparent"></div>
-      
-      {/* Decorative elements */}
-      <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-crd-green/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-crd-blue/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      
-      {/* Hero Content */}
+      {/* Hero Content Overlay */}
       <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           {/* Label */}
@@ -105,10 +72,8 @@ export const CreatePageHero: React.FC = () => {
           {/* Animated Tagline */}
           <AnimatedTagline />
           
-          {/* 3D Trading Card */}
-          <div className="mt-16 mb-32">
-            <FloatingCard3D />
-          </div>
+          {/* Extra spacing to account for 3D card being in background */}
+          <div className="mt-32 mb-32"></div>
         </div>
       </div>
       
