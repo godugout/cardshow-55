@@ -198,8 +198,6 @@
   /* Active state for /create route */
   .nav-create-active {
     --sparkle-cycle: var(--active-sparkle-cycle);
-    background: linear-gradient(135deg, hsl(15, 20%, 50% / 0.1), hsl(100, 20%, 50% / 0.1), hsl(200, 20%, 50% / 0.1));
-    box-shadow: inset 0 0 12px hsl(15, 60%, 60% / 0.2);
   }
 
   .nav-create-active .nav-create-text {
