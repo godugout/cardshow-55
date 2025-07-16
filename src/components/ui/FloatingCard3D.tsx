@@ -7,18 +7,6 @@ const CardMonolith: React.FC = () => {
   const cardRef = useRef<THREE.Group>(null);
   const sunRef = useRef<THREE.Group>(null);
   
-  // Load the CRD catalog card texture
-  const cardTexture = useLoader(THREE.TextureLoader, 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=600&fit=crop');
-  
-  // Configure the texture
-  useMemo(() => {
-    if (cardTexture) {
-      cardTexture.wrapS = THREE.ClampToEdgeWrapping;
-      cardTexture.wrapT = THREE.ClampToEdgeWrapping;
-      cardTexture.minFilter = THREE.LinearFilter;
-      cardTexture.magFilter = THREE.LinearFilter;
-    }
-  }, [cardTexture]);
   
   useFrame((state) => {
     if (cardRef.current) {
@@ -74,15 +62,6 @@ const CardMonolith: React.FC = () => {
           />
         </mesh>
         
-        {/* Card image area with CRD catalog image */}
-        <mesh position={[0, -0.2, -0.2]} rotation={[0, Math.PI, 0]}>
-          <boxGeometry args={[2.0, 1.8, 0.01]} />
-          <meshStandardMaterial 
-            map={cardTexture}
-            metalness={0.1}
-            roughness={0.8}
-          />
-        </mesh>
         
         {/* Card title text */}
         <Text
