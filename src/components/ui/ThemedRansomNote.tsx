@@ -530,8 +530,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const performSlideAnimation = (updateFunction: () => void) => {
     if (isSliding) return;
     
+    console.log('🎭 Starting slide animation');
     setIsSliding(true);
     const slideDirection = Math.random() > 0.5 ? 'left' : 'right';
+    console.log(`📤 Slide direction: ${slideDirection}`);
     
     // Phase 1: Slide off screen (0.3s, fast)
     setLetters(prev => prev.map(letter => ({
@@ -1000,9 +1002,10 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         
         // Add slide animation transform
         if (letter.isSliding) {
-          const slideDistance = window.innerWidth || 1200; // Fallback width
+          const slideDistance = 300; // Fixed visible slide distance
           const direction = letter.slideDirection === 'left' ? -1 : 1;
           const slideX = direction * slideDistance * letter.slideProgress;
+          console.log(`🎭 Letter "${letter.char}" sliding: direction=${letter.slideDirection}, progress=${letter.slideProgress.toFixed(2)}, slideX=${slideX}px`);
           baseTransform = `translateX(${slideX}px) ${baseTransform}`;
         } else {
           baseTransform = `translateX(0px) ${baseTransform}`;
