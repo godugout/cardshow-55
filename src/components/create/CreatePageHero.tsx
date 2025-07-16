@@ -13,7 +13,7 @@ export const CreatePageHero: React.FC = () => {
           </div>
           <div className="flex justify-center items-center">
             <span>
-              <span className="text-white">create </span>
+              <span className="text-white">to </span>
               <span className="text-[#00C851]">digital art</span>
               <span className="text-white"> that comes alive!</span>
             </span>
