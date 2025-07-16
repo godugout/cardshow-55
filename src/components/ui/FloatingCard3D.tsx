@@ -13,7 +13,7 @@ const CardMonolith: React.FC = () => {
       // Subtle floating animation
       cardRef.current.position.y += Math.sin(state.clock.elapsedTime * 0.3) * 0.001;
       // Position the card in the lower portion of the screen where cards section would be
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
+      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 4;
     }
     
     if (sunRef.current) {
@@ -135,7 +135,7 @@ const CardMonolith: React.FC = () => {
       </group>
       
       {/* Realistic Sun */}
-      <group ref={sunRef} position={[0, 2, -10]}>
+      <group ref={sunRef} position={[0, -1, -10]}>
         {/* Sun light source */}
         <pointLight
           intensity={8}
