@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface Hero3Props {
   caption?: string;
@@ -27,19 +28,61 @@ export const Hero3: React.FC<Hero3Props> = ({
   const [animationState, setAnimationState] = useState<'idle' | 'running' | 'decelerating' | 'accelerating'>('idle');
   const [currentPosition, setCurrentPosition] = useState(0);
   const [animationSpeed, setAnimationSpeed] = useState(0);
+  const [showControls, setShowControls] = useState(false);
+  const [isManualMode, setIsManualMode] = useState(false);
   const animationFrameRef = useRef<number>();
   const carouselRef = useRef<HTMLDivElement>(null);
+  const manualTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Calculate single set width for position normalization
   const singleSetWidth = featuredCards.length * (384 + 24); // 384px card + 24px gap
 
+  // Manual navigation functions
+  const scrollLeft = () => {
+    if (isManualMode) return;
+    setIsManualMode(true);
+    setAnimationState('idle');
+    setCurrentPosition(prev => {
+      let newPos = prev + (408); // One card width + gap
+      if (newPos > 0) {
+        newPos -= singleSetWidth;
+      }
+      return newPos;
+    });
+    clearTimeout(manualTimeoutRef.current);
+    manualTimeoutRef.current = setTimeout(() => {
+      setIsManualMode(false);
+    }, 3000);
+  };
+
+  const scrollRight = () => {
+    if (isManualMode) return;
+    setIsManualMode(true);
+    setAnimationState('idle');
+    setCurrentPosition(prev => {
+      let newPos = prev - (408); // One card width + gap
+      if (newPos <= -singleSetWidth) {
+        newPos += singleSetWidth;
+      }
+      return newPos;
+    });
+    clearTimeout(manualTimeoutRef.current);
+    manualTimeoutRef.current = setTimeout(() => {
+      setIsManualMode(false);
+    }, 3000);
+  };
+
+  const handleControlHover = (show: boolean) => {
+    setShowControls(show);
+  };
+
   useEffect(() => {
-    if (shouldStartAnimation && animationState === 'idle') {
+    if (shouldStartAnimation && animationState === 'idle' && !isManualMode) {
       setAnimationState('accelerating');
     } else if (!shouldStartAnimation && animationState === 'running') {
       setAnimationState('decelerating');
     }
-  }, [shouldStartAnimation, animationState]);
+  }, [shouldStartAnimation, animationState, isManualMode]);
 
   useEffect(() => {
     const animate = () => {
@@ -108,7 +151,7 @@ export const Hero3: React.FC<Hero3Props> = ({
   }
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full overflow-hidden relative">
       {/* Horizontal scrolling carousel with larger cards */}
       <div 
         ref={carouselRef}
@@ -174,6 +217,35 @@ export const Hero3: React.FC<Hero3Props> = ({
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Hover Area for Controls */}
+      <div 
+        className="absolute inset-x-0 bottom-0 h-20 -mb-20 pointer-events-auto"
+        onMouseEnter={() => handleControlHover(true)}
+        onMouseLeave={() => handleControlHover(false)}
+      >
+        {/* Carousel Controls */}
+        <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ease-out ${
+          showControls ? 'opacity-100' : 'opacity-0'
+        }`}>
+          <div className="flex items-center gap-4 bg-black/20 backdrop-blur-sm border border-crd-mediumGray/30 rounded-full px-4 py-2">
+            <button
+              onClick={scrollLeft}
+              className="p-2 rounded-full text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/30 transition-all duration-200 active:scale-95"
+              disabled={isManualMode}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={scrollRight}
+              className="p-2 rounded-full text-crd-lightGray hover:text-white hover:bg-crd-mediumGray/30 transition-all duration-200 active:scale-95"
+              disabled={isManualMode}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
