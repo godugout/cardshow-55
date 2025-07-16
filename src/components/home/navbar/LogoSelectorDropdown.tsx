@@ -163,12 +163,14 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
         onClick={() => setIsOpen(!isOpen)}
         className="group flex items-center gap-2 cursor-pointer outline-none focus:outline-none border-none bg-transparent p-2 rounded-lg transition-all duration-300"
       >
-        <LogoWithFallback 
-          imageUrl={selectedLogo.imageUrl}
-          logoName={selectedLogo.displayName}
-          dnaCode={selectedLogo.dnaCode}
-          className="h-12 w-28 object-contain" 
-        />
+        <div className="sparkles-yellow-filter-green">
+          <LogoWithFallback 
+            imageUrl={selectedLogo.imageUrl}
+            logoName={selectedLogo.displayName}
+            dnaCode={selectedLogo.dnaCode}
+            className="h-12 w-28 object-contain" 
+          />
+        </div>
         <ChevronDown className={`h-4 w-4 text-gray-400 transition-all duration-300 opacity-0 group-hover:opacity-100 ${isOpen ? 'rotate-180 opacity-100' : ''}`} />
       </button>
 
