@@ -93,7 +93,7 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
       {/* Pixel grid background */}
       <canvas 
         ref={canvasRef}
-        className="absolute inset-0 opacity-25"
+        className="absolute inset-0 opacity-60 z-0"
         style={{
           width: '100%',
           height: '100%',
