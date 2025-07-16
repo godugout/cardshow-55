@@ -39,18 +39,25 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   className = "",
   isPaused = false
 }) => {
-  // EMERGENCY SIMPLIFIED VERSION - disable complex animations temporarily
-  const SIMPLIFIED_MODE = true;
+  // PHASE 2: Simplified animation system with budget management
+  const [isSimplified, setIsSimplified] = useState(true);
   
-  if (SIMPLIFIED_MODE) {
+  // Simple themed animations only
+  if (isSimplified) {
     const themeStyles = {
-      craft: 'text-red-500 font-bold',
-      collect: 'text-yellow-600 font-serif',
-      connect: 'text-cyan-400 font-mono'
+      craft: `text-crd-red font-bold animate-pulse transition-all duration-500 ${className}`,
+      collect: `text-crd-yellow font-serif transition-all duration-700 hover:scale-105 ${className}`,
+      connect: `text-crd-cyan font-mono transition-all duration-300 hover:text-crd-green ${className}`
     };
     
     return (
-      <span className={`${themeStyles[theme]} ${className} transition-all duration-300`}>
+      <span 
+        className={themeStyles[theme]}
+        style={{
+          animationDuration: isPaused ? '0s' : undefined,
+          animationPlayState: isPaused ? 'paused' : 'running'
+        }}
+      >
         {children}
       </span>
     );

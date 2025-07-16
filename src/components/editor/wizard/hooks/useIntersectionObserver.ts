@@ -15,19 +15,26 @@ export const useIntersectionObserver = ({
   const targetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // SIMPLIFIED INTERSECTION OBSERVER - prevent over-triggering
+    // PHASE 3: Single optimized intersection observer with proper cleanup
+    let timeoutId: NodeJS.Timeout;
+    
     const observer = new IntersectionObserver(
       ([entry]) => {
         const isCurrentlyIntersecting = entry.isIntersecting;
         
-        // Add debouncing to prevent rapid state changes
-        setTimeout(() => {
+        // Clear any pending updates
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        
+        // Debounced state updates with cleanup
+        timeoutId = setTimeout(() => {
           setIsIntersecting(isCurrentlyIntersecting);
           
           if (isCurrentlyIntersecting && !hasIntersected) {
             setHasIntersected(true);
           }
-        }, 100);
+        }, 150); // Slightly longer debounce for stability
       },
       {
         threshold,
@@ -45,6 +52,11 @@ export const useIntersectionObserver = ({
     }
 
     return () => {
+      // Clear any pending timeouts
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      
       if (currentTarget) {
         try {
           observer.unobserve(currentTarget);
@@ -52,6 +64,8 @@ export const useIntersectionObserver = ({
           console.warn('Failed to unobserve:', error);
         }
       }
+      
+      observer.disconnect();
     };
   }, [threshold, rootMargin]);
 
