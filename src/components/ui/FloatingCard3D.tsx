@@ -75,10 +75,12 @@ const CardMonolith: React.FC = () => {
           color="#111111"
           anchorX="center"
           anchorY="middle"
-          material-emissive="#001100"
-          material-emissiveIntensity={0.1}
         >
           CRD
+          <meshStandardMaterial 
+            emissive="#001100"
+            emissiveIntensity={0.1}
+          />
         </Text>
       </group>
       
