@@ -334,50 +334,6 @@
     }
   }
 
-  /* Digital text fill animations */
-  @keyframes scanning-fill {
-    0% { background-position: -200% 0%; }
-    100% { background-position: 200% 0%; }
-  }
-
-  @keyframes matrix-fill {
-    0% { background-position: 0% -100%; }
-    100% { background-position: 0% 200%; }
-  }
-
-  @keyframes construction-fill {
-    0% { background-position: -100% 0%; }
-    100% { background-position: 100% 0%; }
-  }
-
-  @keyframes datastream-fill {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 300% 0%; }
-  }
-
-  /* Enhanced digital text animations with pixel effects */
-  @keyframes scanning-sweep {
-    0% { background-position: -200% 0%, 0% 0%; }
-    50% { background-position: 200% 0%, 0% 0%; }
-    100% { background-position: -200% 0%, 0% 0%; }
-  }
-
-  @keyframes matrix-cascade {
-    0% { background-position: 0% -200%, 0% 0%; }
-    100% { background-position: 0% 200%, 0% 0%; }
-  }
-
-  @keyframes construction-build {
-    0% { background-position: 0% 0%, 0% 0%; }
-    50% { background-position: 100% 0%, 0% 0%; }
-    100% { background-position: 0% 0%, 0% 0%; }
-  }
-
-  @keyframes datastream-flow {
-    0% { background-position: 0% 0%, 0% 0%; }
-    100% { background-position: 300% 0%, 0% 0%; }
-  }
-
   /* Utility animations */
   @keyframes flash {
     0% { background-color: transparent; }
@@ -413,18 +369,6 @@
     50% { transform: translate(2px, -2px); }
     75% { transform: translate(-1px, -1px); }
     100% { transform: translate(0, 0); }
-  }
-
-  /* Terminal/Digital glitch effects */
-  @keyframes scan {
-    0%, 100% { 
-      text-shadow: 0 0 10px #00ff41;
-      opacity: 1;
-    }
-    50% { 
-      text-shadow: 0 0 20px #00ff41, 0 0 30px #00ff41;
-      opacity: 0.8;
-    }
   }
 
   /* Carousel component styles */
@@ -507,23 +451,6 @@
   /* Pixel digital effect animations */
   .pixel-glitch {
     animation: pixelGlitch var(--duration-fast) ease-in-out infinite;
-  }
-
-  /* Digital text fill animations */
-  .animate-scanning-fill {
-    animation: scanning-fill 3s ease-in-out infinite;
-  }
-
-  .animate-matrix-fill {
-    animation: matrix-fill 2s linear infinite;
-  }
-
-  .animate-construction-fill {
-    animation: construction-fill 4s ease-in-out infinite;
-  }
-
-  .animate-datastream-fill {
-    animation: datastream-fill 2.5s linear infinite;
   }
 
   /* Chrome effect animations */
