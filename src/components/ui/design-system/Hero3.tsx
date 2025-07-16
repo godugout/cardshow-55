@@ -1,5 +1,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useIntersectionObserver } from '../../../components/editor/wizard/hooks/useIntersectionObserver';
 
 export interface Hero3Props {
   caption?: string;
@@ -23,11 +24,18 @@ export const Hero3: React.FC<Hero3Props> = ({
   onCardClick = () => {} 
 }) => {
   const [position, setPosition] = useState(0);
-  const [isRunning, setIsRunning] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const [animationProgress, setAnimationProgress] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const rafId = useRef<number>();
   const lastTimestamp = useRef<number>();
-  const speed = 0.5; // pixels per millisecond
+  const speed = 0.15; // pixels per millisecond (reduced from 0.5 for better viewing)
+  
+  // Intersection observer to control animation based on scroll position
+  const { targetRef, isIntersecting } = useIntersectionObserver({
+    threshold: 0.5, // Start animation when 50% visible
+    rootMargin: '50px'
+  });
   
   if (!showFeaturedCards || featuredCards.length === 0) {
     return (
@@ -42,13 +50,29 @@ export const Hero3: React.FC<Hero3Props> = ({
     );
   }
 
-  // Optimized carousel animation with RAF
+  // Check if user prefers reduced motion
+  const prefersReducedMotion = useRef(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  // Smooth easing function for acceleration/deceleration
+  const easeInOutCubic = (t: number): number => {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  };
+
+  // Optimized carousel animation with RAF and smooth start/stop
   const animateCarousel = useCallback(() => {
-    if (!isRunning) return;
+    const shouldAnimate = isIntersecting && !isHovered && !prefersReducedMotion.current;
     
     const animate = (timestamp: number) => {
       if (!lastTimestamp.current) lastTimestamp.current = timestamp;
       const delta = timestamp - lastTimestamp.current;
+      
+      // Smooth acceleration/deceleration
+      setAnimationProgress(prev => {
+        const targetProgress = shouldAnimate ? 1 : 0;
+        const progressSpeed = 0.005; // How fast to reach target progress
+        const diff = targetProgress - prev;
+        return prev + diff * progressSpeed * delta;
+      });
       
       // Use transform3d for hardware acceleration
       setPosition(prev => {
@@ -60,7 +84,11 @@ export const Hero3: React.FC<Hero3Props> = ({
         
         // Calculate based on single array length for proper reset
         const singleSetWidth = (cardWidth + gap) * featuredCards.length;
-        const next = prev - (speed * delta);
+        
+        // Apply smooth easing to the speed
+        const easedProgress = easeInOutCubic(animationProgress);
+        const currentSpeed = speed * easedProgress;
+        const next = prev - (currentSpeed * delta);
         
         // Reset position for seamless loop when we've moved past one full set
         if (next <= -singleSetWidth) {
@@ -70,36 +98,31 @@ export const Hero3: React.FC<Hero3Props> = ({
       });
       
       lastTimestamp.current = timestamp;
-      if (isRunning) {
-        rafId.current = requestAnimationFrame(animate);
-      }
+      rafId.current = requestAnimationFrame(animate);
     };
     
     rafId.current = requestAnimationFrame(animate);
-  }, [isRunning, featuredCards.length, speed]);
+  }, [isIntersecting, isHovered, animationProgress, featuredCards.length, speed]);
 
-  // Start/stop animation
+  // Start/stop animation based on intersection and hover state
   useEffect(() => {
-    if (isRunning) {
-      lastTimestamp.current = undefined;
-      animateCarousel();
-    } else if (rafId.current) {
-      cancelAnimationFrame(rafId.current);
-    }
+    lastTimestamp.current = undefined;
+    animateCarousel();
     
     return () => {
       if (rafId.current) {
         cancelAnimationFrame(rafId.current);
       }
     };
-  }, [isRunning, animateCarousel]);
+  }, [animateCarousel]);
 
   // Pause on hover for better UX
-  const handleMouseEnter = () => setIsRunning(false);
-  const handleMouseLeave = () => setIsRunning(true);
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
 
   return (
     <div 
+      ref={targetRef}
       className="w-full overflow-hidden relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
