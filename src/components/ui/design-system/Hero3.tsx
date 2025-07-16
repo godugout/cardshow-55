@@ -151,7 +151,7 @@ export const Hero3: React.FC<Hero3Props> = ({
   }
 
   return (
-    <div className="w-full overflow-hidden relative">
+    <div className="w-full overflow-hidden relative mb-[-2rem] z-10">
       {/* Horizontal scrolling carousel with larger cards */}
       <div 
         ref={carouselRef}
