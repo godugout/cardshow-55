@@ -83,9 +83,9 @@ export default {
           lightGray: '#777E90',
           white: '#FCFCFD',
           
-          // Brand colors
+          // Brand colors - Better CRD logo colors
           orange: '#EA6E48',
-          blue: '#3772FF',
+          blue: '#45B7D1', // Better blue from CRD logo
           green: '#45B26B',
           purple: '#9757D7',
           gold: '#FFD700',

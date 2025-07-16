@@ -150,6 +150,27 @@
   border: 2px solid hsl(var(--crd-green));
 }
 
+/* Performance Optimizations */
+.animation-container {
+  contain: layout style paint;
+  will-change: transform;
+}
+
+.letter-transition {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+.letter-exit {
+  transform: translateY(-20px) scale(0.8);
+  opacity: 0;
+}
+
+.letter-enter {
+  transform: translateY(20px) scale(0.8);
+  opacity: 0;
+}
+
 /* Interactive Elements */
 .interactive-element-active {
   position: relative;
