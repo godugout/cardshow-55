@@ -1,63 +1,45 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, RoundedBox, Text, Sphere, Plane } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
 const CardMonolith: React.FC = () => {
   const cardRef = useRef<THREE.Group>(null);
-  const sunRef = useRef<THREE.Mesh>(null);
   
   useFrame((state) => {
     if (cardRef.current) {
-      // Very subtle floating animation for the monolith
       cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.05;
-    }
-    
-    if (sunRef.current) {
-      // Subtle sun rotation
-      sunRef.current.rotation.z = state.clock.elapsedTime * 0.1;
     }
   });
 
   return (
     <>
       {/* Ground Plane - Lunar surface */}
-      <Plane
-        args={[50, 50]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -2, 0]}
-      >
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
+        <planeGeometry args={[50, 50]} />
         <meshStandardMaterial 
           color="#2a2a2a"
           roughness={0.9}
           metalness={0.1}
         />
-      </Plane>
+      </mesh>
       
       {/* Card Monolith */}
       <group ref={cardRef} position={[0, 0, 0]}>
         {/* Main monolith structure */}
-        <RoundedBox
-          args={[2.5, 3.5, 0.3]} // 2.5x3.5 aspect ratio, thicker like monolith
-          radius={0.05}
-          smoothness={4}
-          position={[0, 0, 0]}
-        >
+        <mesh>
+          <boxGeometry args={[2.5, 3.5, 0.3]} />
           <meshStandardMaterial 
             color="#000000"
             metalness={0.9}
             roughness={0.1}
             emissive="#111111"
           />
-        </RoundedBox>
+        </mesh>
         
         {/* Mysterious glow effect */}
-        <RoundedBox
-          args={[2.6, 3.6, 0.31]}
-          radius={0.05}
-          smoothness={4}
-          position={[0, 0, 0]}
-        >
+        <mesh>
+          <boxGeometry args={[2.6, 3.6, 0.31]} />
           <meshStandardMaterial 
             color="#000000"
             metalness={1}
@@ -66,42 +48,22 @@ const CardMonolith: React.FC = () => {
             opacity={0.3}
             emissive="#0a0a2e"
           />
-        </RoundedBox>
-        
-        {/* Subtle CRD text that appears only under certain light */}
-        <Text
-          position={[0, 0, 0.16]}
-          fontSize={0.15}
-          color="#111111"
-          anchorX="center"
-          anchorY="middle"
-        >
-          CRD
-          <meshStandardMaterial 
-            emissive="#001100"
-            emissiveIntensity={0.1}
-          />
-        </Text>
+        </mesh>
       </group>
       
       {/* The Sun */}
-      <Sphere
-        ref={sunRef}
-        args={[1.5, 32, 32]}
-        position={[0, 8, -10]}
-      >
+      <mesh position={[0, 8, -10]}>
+        <sphereGeometry args={[1.5, 32, 32]} />
         <meshStandardMaterial 
           color="#ffff88"
           emissive="#ffaa00"
           emissiveIntensity={2}
         />
-      </Sphere>
+      </mesh>
       
       {/* Sun corona effect */}
-      <Sphere
-        args={[2, 32, 32]}
-        position={[0, 8, -10]}
-      >
+      <mesh position={[0, 8, -10]}>
+        <sphereGeometry args={[2, 32, 32]} />
         <meshStandardMaterial 
           color="#ffff00"
           emissive="#ffaa00"
@@ -109,25 +71,25 @@ const CardMonolith: React.FC = () => {
           transparent
           opacity={0.3}
         />
-      </Sphere>
+      </mesh>
       
       {/* Distant stars */}
       {Array.from({ length: 50 }).map((_, i) => (
-        <Sphere
+        <mesh
           key={i}
-          args={[0.02, 8, 8]}
           position={[
             (Math.random() - 0.5) * 100,
             Math.random() * 20 + 5,
             (Math.random() - 0.5) * 100 - 20
           ]}
         >
+          <sphereGeometry args={[0.02, 8, 8]} />
           <meshStandardMaterial 
             color="#ffffff"
             emissive="#ffffff"
             emissiveIntensity={Math.random() * 0.5 + 0.3}
           />
-        </Sphere>
+        </mesh>
       ))}
     </>
   );
