@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Navbar } from '@/components/layout/Navbar';
+import { Navbar } from '@/components/home/Navbar';
 import { Loader } from 'lucide-react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NotificationProvider } from '@/components/common/NotificationCenter';

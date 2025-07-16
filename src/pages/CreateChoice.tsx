@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { CreatePageHero } from '@/components/create/CreatePageHero';
-import { CreationOptions } from '@/components/create/CreationOptions';
 
 const CreateChoice: React.FC = () => {
   return (
@@ -10,8 +9,7 @@ const CreateChoice: React.FC = () => {
         {/* Full Width Hero Section */}
         <CreatePageHero />
         
-        {/* Creation Options Section */}
-        <CreationOptions />
+        {/* Rest of the create page content would go here */}
       </div>
     </div>
   );

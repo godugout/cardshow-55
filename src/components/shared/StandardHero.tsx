@@ -15,7 +15,6 @@ interface CTAConfig {
 
 interface StandardHeroProps {
   label?: string;
-  labelRef?: React.RefObject<HTMLElement>;
   title: React.ReactNode;
   tagline?: string;
   titleEffects?: React.ReactNode;
@@ -31,7 +30,6 @@ interface StandardHeroProps {
 
 export const StandardHero: React.FC<StandardHeroProps> = ({
   label,
-  labelRef,
   title,
   tagline,
   titleEffects,
@@ -70,15 +68,11 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       )}
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
+      <div className="relative z-10 text-center pb-4 pt-[150px]">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           {/* Label */}
           {label && (
-            <Typography 
-              ref={labelRef}
-              variant="label" 
-              className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider"
-            >
+            <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
               {label}
             </Typography>
           )}

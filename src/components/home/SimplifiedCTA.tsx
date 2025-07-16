@@ -22,7 +22,7 @@ export const SimplifiedCTA: React.FC = () => {
         {/* Community Stats */}
         <div className="grid grid-cols-3 gap-8 mb-12 w-full max-w-2xl">
           <div className="text-center">
-            <Typography variant="h2" className="text-crd-blue mb-2">
+            <Typography variant="h2" className="text-crd-green mb-2">
               {stats.creators}
             </Typography>
             <Typography variant="body" className="text-crd-lightGray">
@@ -30,7 +30,7 @@ export const SimplifiedCTA: React.FC = () => {
             </Typography>
           </div>
           <div className="text-center">
-            <Typography variant="h2" className="text-crd-green mb-2">
+            <Typography variant="h2" className="text-crd-blue mb-2">
               {stats.cardsCreated}
             </Typography>
             <Typography variant="body" className="text-crd-lightGray">
@@ -81,7 +81,7 @@ export const SimplifiedCTA: React.FC = () => {
         {/* Feature Highlights */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 text-left">
           <div className="bg-crd-dark/50 p-6 rounded-xl border border-crd-mediumGray">
-            <Typography variant="h3" className="text-crd-blue mb-3">
+            <Typography variant="h3" className="text-crd-green mb-3">
               3D Effects
             </Typography>
             <Typography variant="body" className="text-crd-lightGray text-sm">
@@ -89,7 +89,7 @@ export const SimplifiedCTA: React.FC = () => {
             </Typography>
           </div>
           <div className="bg-crd-dark/50 p-6 rounded-xl border border-crd-mediumGray">
-            <Typography variant="h3" className="text-crd-green mb-3">
+            <Typography variant="h3" className="text-crd-blue mb-3">
               Export Quality
             </Typography>
             <Typography variant="body" className="text-crd-lightGray text-sm">

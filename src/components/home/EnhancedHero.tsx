@@ -7,7 +7,6 @@ import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/compo
 import { SparkleText } from "@/components/hero/SparkleText";
 import { ThemedRansomNote } from "@/components/ui/ThemedRansomNote";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
-import { useScrollTrigger } from "@/hooks/useScrollTrigger";
 import { Hero3 } from "@/components/ui/design-system";
 import { Pause, Play, SkipBack, SkipForward, Settings } from "lucide-react";
 import type { Tables } from '@/integrations/supabase/types';
@@ -34,12 +33,6 @@ export const EnhancedHero: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const [showControls, setShowControls] = useState(false);
-
-  // Scroll trigger for label visibility
-  const { targetRef: labelRef, isVisible: isLabelVisible } = useScrollTrigger({
-    threshold: 0.5,
-    rootMargin: '-50px 0px'
-  });
 
   // Load preferences from localStorage
   useEffect(() => {
@@ -196,7 +189,7 @@ export const EnhancedHero: React.FC = () => {
   // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
     <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-      <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused || !isLabelVisible}>{currentConfig.word}</ThemedRansomNote><br />
+      <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused}>{currentConfig.word}</ThemedRansomNote><br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         {currentConfig.tagline.split(' ').slice(0, -1).join(' ')}{' '}
         <span className="gradient-text-green-blue-purple">{currentConfig.tagline.split(' ').slice(-1)[0]}</span>
@@ -209,7 +202,6 @@ export const EnhancedHero: React.FC = () => {
       {/* Hero content */}
       <StandardHero
         label={currentConfig.label}
-        labelRef={labelRef}
         title={`${currentConfig.word} ${currentConfig.tagline}`}
         titleEffects={enhancedHeading}
         description={currentConfig.description}
@@ -231,7 +223,6 @@ export const EnhancedHero: React.FC = () => {
               showFeaturedCards={true}
               featuredCards={showcaseCards}
               onCardClick={handleCardStudioOpen}
-              shouldStartAnimation={!isLabelVisible}
             />
           </div>
         )}
