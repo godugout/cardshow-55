@@ -167,7 +167,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
           imageUrl={selectedLogo.imageUrl}
           logoName={selectedLogo.displayName}
           dnaCode={selectedLogo.dnaCode}
-          className="h-12 w-28 object-contain" 
+          className="h-18 w-42 object-contain" 
         />
         <ChevronDown className={`h-4 w-4 text-gray-400 transition-all duration-300 opacity-0 group-hover:opacity-100 ${isOpen ? 'rotate-180 opacity-100' : ''}`} />
       </button>
