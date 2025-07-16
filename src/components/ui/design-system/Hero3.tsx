@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export interface Hero3Props {
   caption?: string;
@@ -24,14 +24,65 @@ export const Hero3: React.FC<Hero3Props> = ({
   onCardClick = () => {},
   shouldStartAnimation = false
 }) => {
+  const [animationState, setAnimationState] = useState<'idle' | 'running' | 'decelerating'>('idle');
+  const [currentPosition, setCurrentPosition] = useState(0);
+  const [animationSpeed, setAnimationSpeed] = useState(1);
+  const animationFrameRef = useRef<number>();
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (shouldStartAnimation && animationState === 'idle') {
+      setAnimationState('running');
+      setAnimationSpeed(1);
+    } else if (!shouldStartAnimation && animationState === 'running') {
+      setAnimationState('decelerating');
+    }
+  }, [shouldStartAnimation, animationState]);
+
+  useEffect(() => {
+    const animate = () => {
+      if (animationState === 'running') {
+        setCurrentPosition(prev => prev - animationSpeed);
+        animationFrameRef.current = requestAnimationFrame(animate);
+      } else if (animationState === 'decelerating') {
+        setAnimationSpeed(prev => {
+          const newSpeed = prev * 0.95; // Gradually slow down
+          if (newSpeed < 0.01) {
+            setAnimationState('idle');
+            return 0;
+          }
+          return newSpeed;
+        });
+        setCurrentPosition(prev => prev - animationSpeed);
+        animationFrameRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    if (animationState !== 'idle') {
+      animationFrameRef.current = requestAnimationFrame(animate);
+    }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [animationState, animationSpeed]);
+
   if (!showFeaturedCards || featuredCards.length === 0) {
     return null;
   }
 
+  const isAnimating = animationState !== 'idle';
+
   return (
     <div className="w-full overflow-hidden">
       {/* Horizontal scrolling carousel with larger cards */}
-      <div className={`flex gap-6 ${shouldStartAnimation ? 'animate-scroll-right' : ''}`}>
+      <div 
+        ref={carouselRef}
+        className="flex gap-6"
+        style={isAnimating ? { transform: `translateX(${currentPosition}px)` } : undefined}
+      >
         {/* Duplicate the cards array to create seamless loop */}
         {[...featuredCards, ...featuredCards].map((card, index) => (
           <div 
