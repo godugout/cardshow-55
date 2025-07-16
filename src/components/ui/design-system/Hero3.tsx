@@ -52,8 +52,12 @@ export const Hero3: React.FC<Hero3Props> = ({
       
       // Use transform3d for hardware acceleration
       setPosition(prev => {
-        const cardWidth = 384; // lg:w-96 = 384px
+        // Calculate actual card width based on responsive breakpoints
+        const isMobile = window.innerWidth < 768;
+        const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+        const cardWidth = isMobile ? 288 : isTablet ? 320 : 384; // w-72, w-80, w-96
         const gap = 24; // gap-6 = 24px
+        
         // Calculate based on single array length for proper reset
         const singleSetWidth = (cardWidth + gap) * featuredCards.length;
         const next = prev - (speed * delta);
@@ -96,25 +100,25 @@ export const Hero3: React.FC<Hero3Props> = ({
 
   return (
     <div 
-      className="w-full overflow-hidden animation-container"
+      className="w-full overflow-hidden relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      style={{ height: '420px' }} // Fixed height to prevent layout shifts
     >
       {/* Horizontal scrolling carousel with smooth RAF animation */}
       <div 
         ref={containerRef}
-        className="flex gap-6"
+        className="flex gap-6 h-full"
         style={{
           transform: `translate3d(${position}px, 0, 0)`,
-          willChange: 'transform',
-          contain: 'layout style paint'
+          willChange: 'transform'
         }}
       >
         {/* Duplicate the cards array multiple times for infinite scroll */}
-        {[...featuredCards, ...featuredCards, ...featuredCards, ...featuredCards].map((card, index) => (
+        {[...featuredCards, ...featuredCards, ...featuredCards, ...featuredCards, ...featuredCards, ...featuredCards].map((card, index) => (
           <div 
             key={`${card.id}-${index}`}
-            className="flex-shrink-0 w-72 md:w-80 lg:w-96 cursor-pointer letter-transition hover:scale-105"
+            className="flex-shrink-0 w-72 md:w-80 lg:w-96 cursor-pointer transition-transform duration-200 hover:scale-105 relative z-10"
             onClick={() => onCardClick(card)}
           >
             <div className="bg-crd-dark rounded-xl overflow-hidden shadow-lg border border-crd-mediumGray/20 interactive-element-active">
