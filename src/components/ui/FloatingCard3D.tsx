@@ -1,11 +1,24 @@
-import React, { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import React, { useRef, useMemo } from 'react';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
 const CardMonolith: React.FC = () => {
   const cardRef = useRef<THREE.Group>(null);
   const sunRef = useRef<THREE.Group>(null);
+  
+  // Load the CRD catalog card texture
+  const cardTexture = useLoader(THREE.TextureLoader, 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=600&fit=crop');
+  
+  // Configure the texture
+  useMemo(() => {
+    if (cardTexture) {
+      cardTexture.wrapS = THREE.ClampToEdgeWrapping;
+      cardTexture.wrapT = THREE.ClampToEdgeWrapping;
+      cardTexture.minFilter = THREE.LinearFilter;
+      cardTexture.magFilter = THREE.LinearFilter;
+    }
+  }, [cardTexture]);
   
   useFrame((state) => {
     if (cardRef.current) {
@@ -59,19 +72,40 @@ const CardMonolith: React.FC = () => {
           />
         </mesh>
         
-        {/* Card image area */}
+        {/* Card image area with CRD catalog image */}
         <mesh position={[0, -0.2, -0.17]}>
           <boxGeometry args={[2.0, 1.8, 0.01]} />
           <meshStandardMaterial 
-            color="#2a2a4e"
+            map={cardTexture}
             metalness={0.1}
             roughness={0.8}
-            emissive="#1a1a3e"
-            emissiveIntensity={0.3}
           />
         </mesh>
         
-        {/* Card text area */}
+        {/* Card title text */}
+        <Text
+          position={[0, 0.8, -0.18]}
+          fontSize={0.15}
+          color="#ffffff"
+          anchorX="center"
+          anchorY="middle"
+          fontWeight="bold"
+        >
+          LeBron James
+        </Text>
+        
+        {/* Card subtitle text */}
+        <Text
+          position={[0, 0.6, -0.18]}
+          fontSize={0.08}
+          color="#cccccc"
+          anchorX="center"
+          anchorY="middle"
+        >
+          Los Angeles Lakers
+        </Text>
+        
+        {/* Card description area */}
         <mesh position={[0, -1.3, -0.17]}>
           <boxGeometry args={[2.0, 0.8, 0.01]} />
           <meshStandardMaterial 
@@ -82,6 +116,28 @@ const CardMonolith: React.FC = () => {
             emissiveIntensity={0.1}
           />
         </mesh>
+        
+        {/* Card stats text */}
+        <Text
+          position={[0, -1.2, -0.18]}
+          fontSize={0.08}
+          color="#ffffff"
+          anchorX="center"
+          anchorY="middle"
+        >
+          Forward | 38 years | 4x NBA Champion
+        </Text>
+        
+        {/* Card rarity text */}
+        <Text
+          position={[0, -1.4, -0.18]}
+          fontSize={0.07}
+          color="#ff6b35"
+          anchorX="center"
+          anchorY="middle"
+        >
+          LEGENDARY
+        </Text>
         
         {/* Mysterious glow effect */}
         <mesh>
