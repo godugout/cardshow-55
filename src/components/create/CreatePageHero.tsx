@@ -19,19 +19,43 @@ const AnimatedTagline: React.FC = () => {
 export const CreatePageHero: React.FC = () => {
   return (
     <div className="relative w-screen -mx-[50vw] left-1/2 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
+      {/* Space background with gradient */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-purple-900/30 via-blue-900/20 to-black"></div>
+      
+      {/* Animated stars throughout the background */}
+      <div className="absolute inset-0">
+        {Array.from({ length: 200 }).map((_, i) => {
+          const size = Math.random() * 3 + 1;
+          const opacity = Math.random() * 0.8 + 0.2;
+          const animationDelay = Math.random() * 3;
+          const left = Math.random() * 100;
+          const top = Math.random() * 100;
+          
+          return (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white animate-pulse"
+              style={{
+                left: `${left}%`,
+                top: `${top}%`,
+                width: `${size}px`,
+                height: `${size}px`,
+                opacity,
+                animationDelay: `${animationDelay}s`,
+                animationDuration: `${2 + Math.random() * 2}s`
+              }}
+            />
+          );
+        })}
+      </div>
+      
+      {/* Gradient overlays for depth */}
+      <div className="absolute inset-0 bg-gradient-radial from-purple-500/10 via-transparent to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-radial from-blue-500/10 via-transparent to-transparent"></div>
       
       {/* Decorative elements */}
       <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-crd-green/20 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-crd-blue/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      
-      {/* Sparkly Stars */}
-      <div className="absolute top-20 left-10 w-1 h-1 bg-yellow-400 rounded-full shadow-[0_0_6px_#fbbf24,0_0_12px_#fbbf24] animate-pulse"></div>
-      <div className="absolute top-32 right-20 w-2 h-2 bg-white rounded-full shadow-[0_0_8px_#ffffff,0_0_16px_#ffffff] animate-pulse delay-500"></div>
-      <div className="absolute top-60 left-1/3 w-1.5 h-1.5 bg-yellow-300 rounded-full shadow-[0_0_10px_#fde047,0_0_20px_#fde047] animate-pulse delay-1000"></div>
-      <div className="absolute bottom-40 right-10 w-1 h-1 bg-white rounded-full shadow-[0_0_6px_#ffffff,0_0_12px_#ffffff] animate-pulse delay-300"></div>
-      <div className="absolute bottom-20 left-1/5 w-2.5 h-2.5 bg-yellow-400 rounded-full shadow-[0_0_12px_#fbbf24,0_0_24px_#fbbf24] animate-pulse delay-700"></div>
       
       {/* Hero Content */}
       <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
