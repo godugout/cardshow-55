@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 
 interface ThemedRansomNoteProps {
   children: string;
@@ -6,6 +6,46 @@ interface ThemedRansomNoteProps {
   className?: string;
   isPaused?: boolean;
   showTypographyControls?: boolean;
+}
+
+// Animation performance pool for managing all animations in a single RAF loop
+class AnimationPool {
+  private static instance: AnimationPool;
+  private animations = new Map<string, () => void>();
+  private rafId: number | null = null;
+
+  static getInstance(): AnimationPool {
+    if (!AnimationPool.instance) {
+      AnimationPool.instance = new AnimationPool();
+    }
+    return AnimationPool.instance;
+  }
+
+  add(id: string, callback: () => void) {
+    this.animations.set(id, callback);
+    if (!this.rafId) this.start();
+  }
+
+  remove(id: string) {
+    this.animations.delete(id);
+    if (this.animations.size === 0) this.stop();
+  }
+
+  private start = () => {
+    this.rafId = requestAnimationFrame(this.animate);
+  };
+
+  private stop() {
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+  }
+
+  private animate = () => {
+    this.animations.forEach(callback => callback());
+    this.rafId = requestAnimationFrame(this.animate);
+  };
 }
 
 interface LetterState {
@@ -41,6 +81,19 @@ interface LetterStyle {
   textShadow: string;
 }
 
+// Debounce utility for performance optimization
+const debounce = (func: Function, wait: number) => {
+  let timeout: NodeJS.Timeout;
+  return function executedFunction(...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
+
 export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({ 
   children, 
   theme,
@@ -55,15 +108,20 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const [isSpellingOut, setIsSpellingOut] = useState(false);
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
-  const [goldLetterIndex, setGoldLetterIndex] = useState<number>(-1); // Track which letter has gold background
+  const [goldLetterIndex, setGoldLetterIndex] = useState<number>(-1);
   const [isReturningToTypography, setIsReturningToTypography] = useState(false);
   const [typographyTransitionPhase, setTypographyTransitionPhase] = useState<'idle' | 'background-fade' | 'color-transition' | 'font-normalize' | 'typography'>('idle');
   const [typographyProgress, setTypographyProgress] = useState(0);
-  // New slide animation state
   const [isSliding, setIsSliding] = useState(false);
+  
+  // Performance optimization refs
+  const animationPoolRef = useRef(AnimationPool.getInstance());
+  const componentIdRef = useRef(`ransom-note-${Math.random().toString(36).substr(2, 9)}`);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Theme-specific configurations
-  const getThemeConfig = (theme: 'craft' | 'collect' | 'connect') => {
+  // Memoized theme configuration for performance
+  const themeConfig = useMemo(() => {
+    const getThemeConfig = (theme: 'craft' | 'collect' | 'connect') => {
     switch (theme) {
       case 'craft':
         return {
@@ -234,16 +292,15 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             'Press Start 2P', 'VT323', 'Share Tech Mono'
           ]
         };
-    }
-  };
+    };
+    return getThemeConfig(theme);
+  }, [theme]);
 
-  const themeConfig = getThemeConfig(theme);
-
-  // Generate letter shape
-  const generateLetterShape = (): 'square' | 'wide' | 'tall' | 'skew' => {
+  // Memoized utility functions for performance
+  const generateLetterShape = useCallback((): 'square' | 'wide' | 'tall' | 'skew' => {
     const shapes = ['square', 'wide', 'tall', 'skew'] as const;
     return shapes[Math.floor(Math.random() * shapes.length)];
-  };
+  }, []);
 
   // Generate transparency pattern - 2-3 letters per word
   const generateTransparencyPattern = (text: string): boolean[] => {
