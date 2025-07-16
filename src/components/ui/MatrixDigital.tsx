@@ -99,26 +99,11 @@ export const MatrixDigital: React.FC<MatrixDigitalProps> = ({
             ? 'linear-gradient(45deg, transparent 48%, #00ff00 50%, transparent 52%)'
             : 'none',
           animation: showMatrix 
-            ? 'glitch 0.3s ease-in-out'
+            ? 'glitch var(--duration-glitch) var(--easing-sharp)'
             : 'none',
         }}
       />
 
-      {/* CSS for glitch animation */}
-      <style>{`
-        @keyframes glitch {
-          0%, 100% { transform: translateX(0); }
-          10% { transform: translateX(-2px) scaleX(0.98); }
-          20% { transform: translateX(2px) scaleY(1.02); }
-          30% { transform: translateX(-1px) scaleX(1.01); }
-          40% { transform: translateX(1px) scaleY(0.99); }
-          50% { transform: translateX(-2px) scaleX(0.99); }
-          60% { transform: translateX(2px) scaleY(1.01); }
-          70% { transform: translateX(-1px) scaleX(1.02); }
-          80% { transform: translateX(1px) scaleY(0.98); }
-          90% { transform: translateX(-1px) scaleX(0.99); }
-        }
-      `}</style>
     </span>
   );
 };

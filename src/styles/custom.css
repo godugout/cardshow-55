@@ -19,56 +19,9 @@
   border-radius: 4px;
 }
 
-/* Secret menu animations */
-@keyframes flash {
-  0% { background-color: transparent; }
-  50% { background-color: hsl(var(--crd-green) / 0.1); }
-  100% { background-color: transparent; }
-}
+/* Duplicate keyframes removed - now consolidated in animations.css */
 
-/* Text effect animations - shimmer moved to animations.css */
-
-@keyframes wave {
-  0%, 100% { transform: perspective(500px) rotateX(15deg) rotateY(0deg); }
-  25% { transform: perspective(500px) rotateX(20deg) rotateY(5deg); }
-  75% { transform: perspective(500px) rotateX(10deg) rotateY(-5deg); }
-}
-
-@keyframes typing {
-  from { width: 0; }
-  to { width: 100%; }
-}
-
-@keyframes gradient-flow {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-@keyframes sparkle-float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-    opacity: 0.4;
-  }
-  50% {
-    transform: translateY(-10px) rotate(180deg);
-    opacity: 1;
-  }
-}
-
-@keyframes twinkle {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.2);
-  }
-}
+/* Duplicate keyframes removed - now consolidated in animations.css */
 
 .animate-shimmer {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
@@ -168,11 +121,7 @@
 }
 
 /* Gradient Animation */
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+/* Duplicate keyframes removed - now consolidated in animations.css */
 
 /* Enhanced hover states for interactive elements */
 .interactive-element-active:hover {
@@ -185,46 +134,4 @@
   animation: interactive-pulse 2s ease-in-out infinite;
 }
 
-@keyframes interactive-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
-}
-
-/* Hero Animation Keyframes */
-@keyframes cascadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(20px) scale(0.8);
-  }
-  60% {
-    opacity: 1;
-    transform: translateY(-5px) scale(1.05);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes shimmerSweep {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
-
-@keyframes shimmerOverlay {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
+/* Duplicate keyframes removed - now consolidated in animations.css */

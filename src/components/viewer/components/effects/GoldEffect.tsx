@@ -101,15 +101,6 @@ export const GoldEffect: React.FC<GoldEffectProps> = ({
         }}
       />
 
-      {/* Style tag for animations */}
-      <style>
-        {`
-          @keyframes gold-pulse {
-            0% { opacity: 0.4 }
-            100% { opacity: 0.7 }
-          }
-        `}
-      </style>
     </>
   );
 };

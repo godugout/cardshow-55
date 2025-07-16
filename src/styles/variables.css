@@ -72,12 +72,45 @@
   --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary) / 0.8));
   --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent) / 0.8));
 
-  /* Animations */
+  /* Animation System */
   --transition-fast: 0.15s ease-out;
   --transition-normal: 0.3s ease-out;
   --transition-slow: 0.5s ease-out;
+  --transition-ultra-fast: 0.08s ease-out;
+  --transition-ultra-slow: 0.8s ease-out;
+  
+  /* Easing Functions */
   --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   --easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-sharp: cubic-bezier(0.4, 0, 0.6, 1);
+  --easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --easing-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --easing-back: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Animation Durations */
+  --duration-instant: 0ms;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 800ms;
+  --duration-shimmer: 2000ms;
+  --duration-carousel: 120s;
+  --duration-pulse: 2s;
+  --duration-glow: 1.5s;
+  --duration-glitch: 300ms;
+  --duration-sparkle: 1.2s;
+  
+  /* Animation Timing */
+  --delay-stagger: 0.05s;
+  --delay-cascade: 0.1s;
+  --delay-sequence: 0.15s;
+  
+  /* Effect Intensities */
+  --intensity-subtle: 0.1;
+  --intensity-low: 0.3;
+  --intensity-medium: 0.5;
+  --intensity-high: 0.7;
+  --intensity-extreme: 0.9;
 }
 
 .dark {

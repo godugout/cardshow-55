@@ -68,28 +68,7 @@
     @apply border-crd-blue;
   }
 
-  /* Card back logo animation */
-  @keyframes logo-glow-pulse {
-    0%, 100% {
-      filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
-    }
-    50% {
-      filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 60px rgba(59, 130, 246, 0.4));
-    }
-  }
-
-  /* Liquid gradient animation for CTAs */
-  @keyframes liquid-gradient {
-    0% { 
-      background-position: 0% 50%; 
-    }
-    50% { 
-      background-position: 100% 50%; 
-    }
-    100% { 
-      background-position: 0% 50%; 
-    }
-  }
+  /* Duplicate keyframes removed - now consolidated in animations.css */
 
   /* Vibrant liquid gradient button */
   .liquid-gradient-cta {
