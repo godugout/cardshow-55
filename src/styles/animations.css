@@ -355,6 +355,29 @@
     100% { background-position: 300% 0%; }
   }
 
+  /* Enhanced digital text animations with pixel effects */
+  @keyframes scanning-sweep {
+    0% { background-position: -200% 0%, 0% 0%; }
+    50% { background-position: 200% 0%, 0% 0%; }
+    100% { background-position: -200% 0%, 0% 0%; }
+  }
+
+  @keyframes matrix-cascade {
+    0% { background-position: 0% -200%, 0% 0%; }
+    100% { background-position: 0% 200%, 0% 0%; }
+  }
+
+  @keyframes construction-build {
+    0% { background-position: 0% 0%, 0% 0%; }
+    50% { background-position: 100% 0%, 0% 0%; }
+    100% { background-position: 0% 0%, 0% 0%; }
+  }
+
+  @keyframes datastream-flow {
+    0% { background-position: 0% 0%, 0% 0%; }
+    100% { background-position: 300% 0%, 0% 0%; }
+  }
+
   /* Utility animations */
   @keyframes flash {
     0% { background-color: transparent; }

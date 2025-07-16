@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 
 interface PixelDigitalProps {
   children: string;
@@ -11,141 +11,181 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
   className = "",
   animationType = "scanning"
 }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
+  // Generate pixelated text shadows to simulate digital pixels inside letters
+  const generatePixelShadows = () => {
+    const shadows = [];
+    const colors = ['#00e6ff', '#00b8e6', '#00a3d9', '#008fb3'];
     
-    if (!canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Set canvas size
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * 2; // Higher resolution
-    canvas.height = rect.height * 2;
-    ctx.scale(2, 2);
-
-    // Pixel grid settings
-    const gridSize = 3;
-    const cols = Math.floor(rect.width / gridSize);
-    const rows = Math.floor(rect.height / gridSize);
-
-    // Animation state
-    let animationFrame: number;
-    let time = 0;
-
-    const animate = () => {
-      ctx.clearRect(0, 0, rect.width, rect.height);
-      
-      // Create animated pixel patterns with Casio Indiglo style
-      for (let x = 0; x < cols; x++) {
-        for (let y = 0; y < rows; y++) {
-          const wave1 = Math.sin((x * 0.08) + (time * 0.01)) * 0.5 + 0.5;
-          const wave2 = Math.cos((y * 0.12) + (time * 0.012)) * 0.5 + 0.5;
-          const wave3 = Math.sin(((x + y) * 0.06) + (time * 0.008)) * 0.5 + 0.5;
-          
-          // Combine waves for pixel artifacts
-          const intensity = (wave1 * wave2 * wave3) * 0.6;
-          
-          // Casio Indiglo color palette (distinctive blue-green)
-          const hue = 185 + (wave3 * 25); // Blue-green range like Indiglo
-          const saturation = 85 + (intensity * 15);
-          const lightness = 15 + (intensity * 45); // Less bright for visible pixels
-          
-          // Make individual pixels more visible
-          if (intensity > 0.3) {
-            ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-            ctx.fillRect(x * gridSize, y * gridSize, gridSize - 1, gridSize - 1);
-          }
-        }
+    // Create a grid of small shadows to simulate pixels within the text
+    for (let x = -1; x <= 1; x += 0.5) {
+      for (let y = -1; y <= 1; y += 0.5) {
+        if (x === 0 && y === 0) continue;
+        const colorIndex = (Math.abs(x * 2) + Math.abs(y * 2)) % colors.length;
+        const opacity = Math.random() > 0.6 ? '88' : '44'; // Random opacity for pixel effect
+        shadows.push(`${x}px ${y}px 0px ${colors[colorIndex]}${opacity}`);
       }
-      
-      time += 1;
-      animationFrame = requestAnimationFrame(animate);
+    }
+    
+    return shadows.join(', ');
+  };
+
+  const getAnimationStyle = () => {
+    const baseStyle = {
+      fontFamily: 'monospace',
+      letterSpacing: '0.1em',
+      fontWeight: 'bold',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      color: 'transparent',
+      // Add pixelated shadows inside the text
+      filter: 'contrast(1.5) brightness(1.2)',
     };
 
-    animate();
-
-    return () => {
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-      }
-    };
-  }, [mounted]);
-
-  if (!mounted) {
-    return (
-      <span className={`inline-block ${className}`}>
-        {children}
-      </span>
-    );
-  }
+    switch (animationType) {
+      case 'scanning':
+        return {
+          ...baseStyle,
+          background: `
+            repeating-linear-gradient(
+              90deg,
+              #00e6ff 0px,
+              #00e6ff 2px,
+              #00b8e6 2px,
+              #00b8e6 4px,
+              #00a3d9 4px,
+              #00a3d9 6px,
+              #008fb3 6px,
+              #008fb3 8px
+            ),
+            linear-gradient(
+              90deg,
+              transparent 0%,
+              rgba(0, 230, 255, 0.8) 30%,
+              rgba(0, 184, 230, 0.9) 50%,
+              rgba(0, 163, 217, 0.8) 70%,
+              transparent 100%
+            )
+          `,
+          backgroundSize: '8px 100%, 300% 100%',
+          animation: 'scanning-sweep 3s ease-in-out infinite',
+          textShadow: generatePixelShadows(),
+        };
+        
+      case 'matrix':
+        return {
+          ...baseStyle,
+          background: `
+            repeating-linear-gradient(
+              0deg,
+              #00e6ff 0px,
+              #00e6ff 1px,
+              #00b8e6 1px,
+              #00b8e6 2px,
+              #00a3d9 2px,
+              #00a3d9 3px,
+              #008fb3 3px,
+              #008fb3 4px
+            ),
+            linear-gradient(
+              180deg,
+              rgba(0, 230, 255, 0.9) 0%,
+              rgba(0, 184, 230, 0.7) 50%,
+              rgba(0, 163, 217, 0.9) 100%
+            )
+          `,
+          backgroundSize: '100% 4px, 100% 400%',
+          animation: 'matrix-cascade 2s linear infinite',
+          textShadow: generatePixelShadows(),
+        };
+        
+      case 'construction':
+        return {
+          ...baseStyle,
+          background: `
+            repeating-linear-gradient(
+              45deg,
+              #00e6ff 0px,
+              #00e6ff 3px,
+              #00b8e6 3px,
+              #00b8e6 6px,
+              #00a3d9 6px,
+              #00a3d9 9px,
+              #008fb3 9px,
+              #008fb3 12px
+            ),
+            repeating-linear-gradient(
+              -45deg,
+              transparent 0px,
+              transparent 2px,
+              rgba(0, 230, 255, 0.3) 2px,
+              rgba(0, 230, 255, 0.3) 4px
+            )
+          `,
+          backgroundSize: '12px 12px, 8px 8px',
+          animation: 'construction-build 1.5s ease-in-out infinite',
+          textShadow: generatePixelShadows(),
+        };
+        
+      case 'datastream':
+        return {
+          ...baseStyle,
+          background: `
+            repeating-linear-gradient(
+              135deg,
+              #00e6ff 0px,
+              #00e6ff 2px,
+              #00b8e6 2px,
+              #00b8e6 4px,
+              #00a3d9 4px,
+              #00a3d9 6px,
+              #008fb3 6px,
+              #008fb3 8px
+            ),
+            linear-gradient(
+              45deg,
+              rgba(0, 230, 255, 0.8) 0%,
+              rgba(0, 184, 230, 0.6) 25%,
+              rgba(0, 163, 217, 0.8) 50%,
+              rgba(0, 143, 179, 0.6) 75%,
+              rgba(0, 230, 255, 0.8) 100%
+            )
+          `,
+          backgroundSize: '8px 8px, 400% 100%',
+          animation: 'datastream-flow 2.5s linear infinite',
+          textShadow: generatePixelShadows(),
+        };
+        
+      default:
+        return {
+          ...baseStyle,
+          background: `
+            repeating-linear-gradient(
+              90deg,
+              #00e6ff 0px,
+              #00e6ff 2px,
+              #00b8e6 2px,
+              #00b8e6 4px,
+              #00a3d9 4px,
+              #00a3d9 6px,
+              #008fb3 6px,
+              #008fb3 8px
+            )
+          `,
+          backgroundSize: '8px 100%',
+          textShadow: generatePixelShadows(),
+        };
+    }
+  };
 
   return (
-    <span 
-      className={`relative inline-block ${className}`}
-      style={{ position: 'relative' }}
-    >
-      {/* Pixel grid background */}
-      <canvas 
-        ref={canvasRef}
-        className="absolute inset-0 opacity-25"
-        style={{
-          width: '100%',
-          height: '100%',
-          mixBlendMode: 'screen',
-        }}
-      />
-      
-      {/* Text with animated digital effects */}
+    <span className={`relative inline-block ${className}`}>
       <span 
-        className={`relative z-10 font-mono tracking-wider ${
-          animationType === 'scanning' ? 'animate-scanning-fill' :
-          animationType === 'matrix' ? 'animate-matrix-fill' :
-          animationType === 'construction' ? 'animate-construction-fill' :
-          animationType === 'datastream' ? 'animate-datastream-fill' : ''
-        }`}
-        style={{
-          textShadow: `
-            0 0 4px #00e6ff,
-            0 0 8px #00b8e6,
-            0 0 12px #00a3d9,
-            1px 1px 0px #003d4d,
-            -1px -1px 0px #003d4d
-          `,
-          background: animationType === 'scanning' 
-            ? 'linear-gradient(90deg, transparent 0%, #00e6ff 25%, #00b8e6 50%, #00a3d9 75%, transparent 100%)'
-            : animationType === 'matrix' 
-            ? 'linear-gradient(180deg, #00e6ff 0%, #00b8e6 33%, #00a3d9 66%, #008fb3 100%)'
-            : animationType === 'construction'
-            ? 'linear-gradient(90deg, #00e6ff 0%, #00b8e6 100%)'
-            : animationType === 'datastream'
-            ? 'linear-gradient(45deg, #00e6ff 0%, #00b8e6 25%, #00a3d9 50%, #008fb3 75%, #00e6ff 100%)'
-            : 'linear-gradient(45deg, #00e6ff, #00b8e6, #00a3d9, #008fb3)',
-          backgroundSize: animationType === 'scanning' 
-            ? '200% 100%'
-            : animationType === 'matrix' 
-            ? '100% 200%'
-            : animationType === 'construction'
-            ? '200% 100%'
-            : animationType === 'datastream'
-            ? '300% 100%'
-            : '100% 100%',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          filter: 'contrast(1.2) brightness(1.1)',
-        }}
+        className="relative z-10 font-mono tracking-wider"
+        style={getAnimationStyle()}
       >
         {children}
       </span>
-      
-      {/* Removed glitch lines overlay as requested */}
-      
     </span>
   );
 };
