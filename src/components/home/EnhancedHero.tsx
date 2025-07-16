@@ -221,7 +221,7 @@ export const EnhancedHero: React.FC = () => {
       >
         {/* Featured Cards Section */}
         {showcaseCards.length > 0 && (
-          <div className="mt-16">
+          <div className="mt-8">
             <Hero3
               caption=""
               heading=""
