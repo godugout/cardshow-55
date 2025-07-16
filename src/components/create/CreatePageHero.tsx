@@ -17,10 +17,7 @@ const AnimatedTagline: React.FC = () => {
 
 export const CreatePageHero: React.FC = () => {
   return (
-    <div className="relative w-screen -mx-[50vw] left-1/2 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
-      
+    <div className="relative min-h-screen bg-crd-darkest overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-crd-green/20 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-crd-blue/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -33,8 +30,8 @@ export const CreatePageHero: React.FC = () => {
       <div className="absolute bottom-20 left-1/5 w-2.5 h-2.5 bg-yellow-400 rounded-full shadow-[0_0_12px_#fbbf24,0_0_24px_#fbbf24] animate-pulse delay-700"></div>
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 text-center pb-4 pt-32">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Label */}
           <div className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-sm uppercase">
             CUT, CRAFT & CREATE DIGITALLY
