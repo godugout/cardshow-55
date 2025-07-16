@@ -24,16 +24,18 @@ export const Hero3: React.FC<Hero3Props> = ({
   onCardClick = () => {},
   shouldStartAnimation = false
 }) => {
-  const [animationState, setAnimationState] = useState<'idle' | 'running' | 'decelerating'>('idle');
+  const [animationState, setAnimationState] = useState<'idle' | 'running' | 'decelerating' | 'accelerating'>('idle');
   const [currentPosition, setCurrentPosition] = useState(0);
-  const [animationSpeed, setAnimationSpeed] = useState(1);
+  const [animationSpeed, setAnimationSpeed] = useState(0);
   const animationFrameRef = useRef<number>();
   const carouselRef = useRef<HTMLDivElement>(null);
 
+  // Calculate single set width for position normalization
+  const singleSetWidth = featuredCards.length * (384 + 24); // 384px card + 24px gap
+
   useEffect(() => {
     if (shouldStartAnimation && animationState === 'idle') {
-      setAnimationState('running');
-      setAnimationSpeed(1);
+      setAnimationState('accelerating');
     } else if (!shouldStartAnimation && animationState === 'running') {
       setAnimationState('decelerating');
     }
@@ -41,8 +43,33 @@ export const Hero3: React.FC<Hero3Props> = ({
 
   useEffect(() => {
     const animate = () => {
-      if (animationState === 'running') {
-        setCurrentPosition(prev => prev - animationSpeed);
+      if (animationState === 'accelerating') {
+        setAnimationSpeed(prev => {
+          const newSpeed = Math.min(prev + 0.05, 1); // Gradually speed up
+          if (newSpeed >= 1) {
+            setAnimationState('running');
+            return 1;
+          }
+          return newSpeed;
+        });
+        setCurrentPosition(prev => {
+          let newPos = prev - animationSpeed;
+          // Normalize position for seamless infinite scroll
+          if (newPos <= -singleSetWidth) {
+            newPos += singleSetWidth;
+          }
+          return newPos;
+        });
+        animationFrameRef.current = requestAnimationFrame(animate);
+      } else if (animationState === 'running') {
+        setCurrentPosition(prev => {
+          let newPos = prev - animationSpeed;
+          // Normalize position for seamless infinite scroll
+          if (newPos <= -singleSetWidth) {
+            newPos += singleSetWidth;
+          }
+          return newPos;
+        });
         animationFrameRef.current = requestAnimationFrame(animate);
       } else if (animationState === 'decelerating') {
         setAnimationSpeed(prev => {
@@ -53,7 +80,14 @@ export const Hero3: React.FC<Hero3Props> = ({
           }
           return newSpeed;
         });
-        setCurrentPosition(prev => prev - animationSpeed);
+        setCurrentPosition(prev => {
+          let newPos = prev - animationSpeed;
+          // Normalize position for seamless infinite scroll
+          if (newPos <= -singleSetWidth) {
+            newPos += singleSetWidth;
+          }
+          return newPos;
+        });
         animationFrameRef.current = requestAnimationFrame(animate);
       }
     };
@@ -67,13 +101,11 @@ export const Hero3: React.FC<Hero3Props> = ({
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [animationState, animationSpeed]);
+  }, [animationState, animationSpeed, singleSetWidth]);
 
   if (!showFeaturedCards || featuredCards.length === 0) {
     return null;
   }
-
-  const isAnimating = animationState !== 'idle';
 
   return (
     <div className="w-full overflow-hidden">
@@ -81,7 +113,7 @@ export const Hero3: React.FC<Hero3Props> = ({
       <div 
         ref={carouselRef}
         className="flex gap-6"
-        style={isAnimating ? { transform: `translateX(${currentPosition}px)` } : undefined}
+        style={{ transform: `translateX(${currentPosition}px)` }}
       >
         {/* Duplicate the cards array to create seamless loop */}
         {[...featuredCards, ...featuredCards].map((card, index) => (
