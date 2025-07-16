@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { StandardHero } from '@/components/shared/StandardHero';
 import { Link } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system/Button';
+import { PixelDigital } from '@/components/ui/PixelDigital';
 
 const AnimatedTagline: React.FC = () => {
   const fonts = [
@@ -56,14 +57,14 @@ export const CreatePageHero: React.FC = () => {
           
           {/* Main Heading */}
           <div className="mb-4">
-             <h1 className="leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-               <div className="flex justify-center items-center mb-2">
+             <h1 className="leading-tight text-crd-white drop-shadow-lg">
+               <div className="flex justify-center items-center mb-2 text-5xl md:text-6xl lg:text-7xl">
                  <span className="text-gray-400 font-light">From paper scraps and cardboard to</span>
                </div>
-               <div className="flex justify-center items-center">
+               <div className="flex justify-center items-center text-6xl md:text-7xl lg:text-8xl">
                  <span className="font-bold">
-                   <span className="text-[#00C851]">digital art</span>
-                   <span className="text-white"> that comes alive!</span>
+                   <PixelDigital className="inline">digital</PixelDigital>
+                   <span className="text-white"> art that comes alive!</span>
                  </span>
                </div>
              </h1>
