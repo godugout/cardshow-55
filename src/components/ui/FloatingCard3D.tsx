@@ -1,155 +1,186 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, RoundedBox, Text } from '@react-three/drei';
+import { OrbitControls, RoundedBox, Text, Sphere, Plane } from '@react-three/drei';
 import * as THREE from 'three';
 
-const Card3D: React.FC = () => {
+const CardMonolith: React.FC = () => {
   const cardRef = useRef<THREE.Group>(null);
+  const sunRef = useRef<THREE.Mesh>(null);
   
   useFrame((state) => {
     if (cardRef.current) {
-      // Gentle floating animation
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.1;
-      // Subtle rotation
-      cardRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+      // Very subtle floating animation for the monolith
+      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.05;
+    }
+    
+    if (sunRef.current) {
+      // Subtle sun rotation
+      sunRef.current.rotation.z = state.clock.elapsedTime * 0.1;
     }
   });
 
   return (
-    <group ref={cardRef}>
-      {/* Card Base */}
-      <RoundedBox
-        args={[2.5, 3.5, 0.1]} // 2.5x3.5 aspect ratio
-        radius={0.1}
-        smoothness={4}
-        position={[0, 0, 0]}
+    <>
+      {/* Ground Plane - Lunar surface */}
+      <Plane
+        args={[50, 50]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -2, 0]}
       >
         <meshStandardMaterial 
-          color="#1a1a2e"
-          metalness={0.3}
-          roughness={0.4}
+          color="#2a2a2a"
+          roughness={0.9}
+          metalness={0.1}
         />
-      </RoundedBox>
+      </Plane>
       
-      {/* Card Front Design */}
-      <RoundedBox
-        args={[2.3, 3.3, 0.02]}
-        radius={0.08}
-        smoothness={4}
-        position={[0, 0, 0.06]}
+      {/* Card Monolith */}
+      <group ref={cardRef} position={[0, 0, 0]}>
+        {/* Main monolith structure */}
+        <RoundedBox
+          args={[2.5, 3.5, 0.3]} // 2.5x3.5 aspect ratio, thicker like monolith
+          radius={0.05}
+          smoothness={4}
+          position={[0, 0, 0]}
+        >
+          <meshStandardMaterial 
+            color="#000000"
+            metalness={0.9}
+            roughness={0.1}
+            emissive="#111111"
+          />
+        </RoundedBox>
+        
+        {/* Mysterious glow effect */}
+        <RoundedBox
+          args={[2.6, 3.6, 0.31]}
+          radius={0.05}
+          smoothness={4}
+          position={[0, 0, 0]}
+        >
+          <meshStandardMaterial 
+            color="#000000"
+            metalness={1}
+            roughness={0}
+            transparent
+            opacity={0.3}
+            emissive="#0a0a2e"
+          />
+        </RoundedBox>
+        
+        {/* Subtle CRD text that appears only under certain light */}
+        <Text
+          position={[0, 0, 0.16]}
+          fontSize={0.15}
+          color="#111111"
+          anchorX="center"
+          anchorY="middle"
+          material-emissive="#001100"
+          material-emissiveIntensity={0.1}
+        >
+          CRD
+        </Text>
+      </group>
+      
+      {/* The Sun */}
+      <Sphere
+        ref={sunRef}
+        args={[1.5, 32, 32]}
+        position={[0, 8, -10]}
       >
         <meshStandardMaterial 
-          color="#16325c"
-          metalness={0.8}
-          roughness={0.2}
+          color="#ffff88"
+          emissive="#ffaa00"
+          emissiveIntensity={2}
         />
-      </RoundedBox>
+      </Sphere>
       
-      {/* Holographic overlay */}
-      <RoundedBox
-        args={[2.1, 3.1, 0.01]}
-        radius={0.06}
-        smoothness={4}
-        position={[0, 0, 0.08]}
+      {/* Sun corona effect */}
+      <Sphere
+        args={[2, 32, 32]}
+        position={[0, 8, -10]}
       >
         <meshStandardMaterial 
-          color="#00C851"
-          metalness={1}
-          roughness={0}
+          color="#ffff00"
+          emissive="#ffaa00"
+          emissiveIntensity={0.5}
           transparent
           opacity={0.3}
         />
-      </RoundedBox>
+      </Sphere>
       
-      {/* Card Text */}
-      <Text
-        position={[0, 1.2, 0.09]}
-        fontSize={0.2}
-        color="#00C851"
-        anchorX="center"
-        anchorY="middle"
-      >
-        CRD
-      </Text>
-      
-      <Text
-        position={[0, 0.8, 0.09]}
-        fontSize={0.12}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
-      >
-        COLLECTIBLE
-      </Text>
-      
-      {/* Center artwork placeholder */}
-      <RoundedBox
-        args={[1.8, 1.5, 0.01]}
-        radius={0.05}
-        smoothness={4}
-        position={[0, -0.2, 0.09]}
-      >
-        <meshStandardMaterial 
-          color="#2a4d3a"
-          metalness={0.6}
-          roughness={0.3}
-        />
-      </RoundedBox>
-      
-      {/* Bottom text area */}
-      <RoundedBox
-        args={[2.0, 0.8, 0.01]}
-        radius={0.05}
-        smoothness={4}
-        position={[0, -1.3, 0.09]}
-      >
-        <meshStandardMaterial 
-          color="#1a1a2e"
-          metalness={0.4}
-          roughness={0.6}
-        />
-      </RoundedBox>
-      
-      <Text
-        position={[0, -1.3, 0.1]}
-        fontSize={0.08}
-        color="#cccccc"
-        anchorX="center"
-        anchorY="middle"
-      >
-        Digital Trading Card
-      </Text>
-    </group>
+      {/* Distant stars */}
+      {Array.from({ length: 50 }).map((_, i) => (
+        <Sphere
+          key={i}
+          args={[0.02, 8, 8]}
+          position={[
+            (Math.random() - 0.5) * 100,
+            Math.random() * 20 + 5,
+            (Math.random() - 0.5) * 100 - 20
+          ]}
+        >
+          <meshStandardMaterial 
+            color="#ffffff"
+            emissive="#ffffff"
+            emissiveIntensity={Math.random() * 0.5 + 0.3}
+          />
+        </Sphere>
+      ))}
+    </>
   );
 };
 
 export const FloatingCard3D: React.FC = () => {
   return (
-    <div className="w-80 h-96 mx-auto">
+    <div className="w-full h-[600px] mx-auto bg-black rounded-lg overflow-hidden">
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 50 }}
-        gl={{ antialias: true, alpha: true }}
+        camera={{ position: [3, 2, 8], fov: 60 }}
+        gl={{ antialias: true, alpha: false }}
+        scene={{ background: new THREE.Color('#000011') }}
       >
-        <ambientLight intensity={0.4} />
+        {/* Ambient space lighting */}
+        <ambientLight intensity={0.1} color="#000033" />
+        
+        {/* Main sun light */}
         <directionalLight
-          position={[10, 10, 5]}
-          intensity={1}
+          position={[0, 8, -10]}
+          intensity={3}
+          color="#ffaa00"
           castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
         />
+        
+        {/* Fill light for the monolith */}
         <pointLight
-          position={[-10, -10, -5]}
+          position={[5, 3, 5]}
           intensity={0.5}
-          color="#00C851"
+          color="#ffffff"
         />
-        <Card3D />
+        
+        {/* Dramatic rim light */}
+        <directionalLight
+          position={[-10, 5, 10]}
+          intensity={1}
+          color="#4444ff"
+        />
+        
+        <CardMonolith />
+        
         <OrbitControls 
-          enableZoom={false}
+          enableZoom={true}
           enablePan={false}
-          maxPolarAngle={Math.PI / 2}
-          minPolarAngle={Math.PI / 2}
-          autoRotate
-          autoRotateSpeed={0.5}
+          maxDistance={15}
+          minDistance={5}
+          maxPolarAngle={Math.PI / 2 + 0.3}
+          minPolarAngle={Math.PI / 6}
+          autoRotate={false}
+          target={[0, 0, 0]}
         />
+        
+        {/* Fog for atmospheric depth */}
+        <fog args={['#000011', 10, 100]} />
       </Canvas>
     </div>
   );
