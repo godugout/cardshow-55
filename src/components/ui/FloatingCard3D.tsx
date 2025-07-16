@@ -73,7 +73,7 @@ const CardMonolith: React.FC = () => {
         </mesh>
         
         {/* Card image area with CRD catalog image */}
-        <mesh position={[0, -0.2, -0.17]}>
+        <mesh position={[0, -0.2, -0.2]} scale={[-1, 1, 1]}>
           <boxGeometry args={[2.0, 1.8, 0.01]} />
           <meshStandardMaterial 
             map={cardTexture}
