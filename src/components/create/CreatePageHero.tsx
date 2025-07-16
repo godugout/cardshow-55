@@ -2,7 +2,7 @@
 import React from 'react';
 import { StandardHero } from '@/components/shared/StandardHero';
 import { MatrixDigital } from '@/components/ui/MatrixDigital';
-import { ThemedRansomNote } from '@/components/ui/ThemedRansomNote';
+import { RansomNote } from '@/components/ui/RansomNote';
 import { GlitchyArt } from '@/components/ui/GlitchyArt';
 
 export const CreatePageHero: React.FC = () => {
@@ -16,7 +16,7 @@ export const CreatePageHero: React.FC = () => {
           </div>
           <div className="flex justify-center items-center h-16">
             <span>
-              <ThemedRansomNote theme="craft">craft</ThemedRansomNote> cards that <span className="gradient-text-green-blue-purple">come alive</span>
+              <RansomNote>craft</RansomNote> cards that <span className="gradient-text-green-blue-purple">come alive</span>
             </span>
           </div>
         </>

@@ -152,9 +152,9 @@ export const useCards = () => {
   useRealtimeCardSubscription(fetchCards, user?.id);
 
   useEffect(() => {
-    // Initial fetch
-    console.log('🚀 useCards mounted, starting initial fetch...');
-    fetchCards();
+    // Initial fetch - load all cards for better user experience
+    console.log('🚀 useCards mounted, starting initial fetch with all cards...');
+    fetchCards(true); // Load all cards by default
   }, [fetchCards]);
 
   // Debug log current state
