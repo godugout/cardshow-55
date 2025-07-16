@@ -26,6 +26,11 @@ interface LetterState {
   backgroundOffset: number;
   isTransitioningToTypography: boolean;
   typographyTransitionProgress: number;
+  // New slide animation properties
+  isSliding: boolean;
+  slideDirection: 'left' | 'right';
+  slideProgress: number;
+  settlingProgress: number;
 }
 
 interface LetterStyle {
@@ -51,12 +56,11 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
   const [goldLetterIndex, setGoldLetterIndex] = useState<number>(-1); // Track which letter has gold background
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionPhase, setTransitionPhase] = useState<'idle' | 'fade-out' | 'fade-in'>('idle');
-  const [fadeOpacity, setFadeOpacity] = useState(1);
   const [isReturningToTypography, setIsReturningToTypography] = useState(false);
   const [typographyTransitionPhase, setTypographyTransitionPhase] = useState<'idle' | 'background-fade' | 'color-transition' | 'font-normalize' | 'typography'>('idle');
   const [typographyProgress, setTypographyProgress] = useState(0);
+  // New slide animation state
+  const [isSliding, setIsSliding] = useState(false);
 
   // Theme-specific configurations
   const getThemeConfig = (theme: 'craft' | 'collect' | 'connect') => {
@@ -508,7 +512,12 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           letterType,
           backgroundOffset: char === ' ' ? 0 : generateBackgroundOffset(),
           isTransitioningToTypography: false,
-          typographyTransitionProgress: 0
+          typographyTransitionProgress: 0,
+          // Initialize slide animation properties
+          isSliding: false,
+          slideDirection: 'left' as const,
+          slideProgress: 0,
+          settlingProgress: 1
         };
       });
       setLetters(newLetters);
@@ -517,47 +526,92 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     initializeLetters();
   }, [children, theme]);
 
-  // Smooth transition system
-  const performSmoothTransition = (updateFunction: () => void) => {
-    if (isTransitioning) return;
+  // Dynamic slide animation system
+  const performSlideAnimation = (updateFunction: () => void) => {
+    if (isSliding) return;
     
-    setIsTransitioning(true);
-    setTransitionPhase('fade-out');
+    setIsSliding(true);
+    const slideDirection = Math.random() > 0.5 ? 'left' : 'right';
     
-    // Animate fade-out over 1 second
-    const fadeOutStart = Date.now();
-    const fadeOutDuration = 1000;
+    // Phase 1: Slide off screen (0.3s, fast)
+    setLetters(prev => prev.map(letter => ({
+      ...letter,
+      isSliding: true,
+      slideDirection: slideDirection as 'left' | 'right',
+      slideProgress: 0
+    })));
     
-    const fadeOutInterval = setInterval(() => {
-      const elapsed = Date.now() - fadeOutStart;
-      const progress = Math.min(elapsed / fadeOutDuration, 1);
-      setFadeOpacity(0.9 * (1 - progress)); // Fade from 0.9 to 0
+    const slideOffDuration = 300;
+    const slideOffStart = Date.now();
+    
+    const slideOffInterval = setInterval(() => {
+      const elapsed = Date.now() - slideOffStart;
+      const progress = Math.min(elapsed / slideOffDuration, 1);
+      
+      setLetters(prev => prev.map(letter => ({
+        ...letter,
+        slideProgress: progress
+      })));
       
       if (progress >= 1) {
-        clearInterval(fadeOutInterval);
+        clearInterval(slideOffInterval);
         
-        // Update styles while invisible
+        // Phase 2: Update styles while off-screen (instant)
         updateFunction();
-        setTransitionPhase('fade-in');
         
-        // Animate fade-in over 1.2 seconds
-        const fadeInStart = Date.now();
-        const fadeInDuration = 1200;
+        // Phase 3: Slide in from opposite side (0.4s, fast)
+        const oppositeDirection = slideDirection === 'left' ? 'right' : 'left';
+        setLetters(prev => prev.map(letter => ({
+          ...letter,
+          slideDirection: oppositeDirection as 'left' | 'right',
+          slideProgress: 1
+        })));
         
-        const fadeInInterval = setInterval(() => {
-          const elapsed = Date.now() - fadeInStart;
-          const progress = Math.min(elapsed / fadeInDuration, 1);
-          setFadeOpacity(0.9 * progress); // Fade from 0 to 0.9
+        const slideInDuration = 400;
+        const slideInStart = Date.now();
+        
+        const slideInInterval = setInterval(() => {
+          const elapsed = Date.now() - slideInStart;
+          const progress = Math.min(elapsed / slideInDuration, 1);
+          
+          setLetters(prev => prev.map(letter => ({
+            ...letter,
+            slideProgress: 1 - progress
+          })));
           
           if (progress >= 1) {
-            clearInterval(fadeInInterval);
-            setIsTransitioning(false);
-            setTransitionPhase('idle');
-            setFadeOpacity(0.9);
+            clearInterval(slideInInterval);
+            
+            // Phase 4: Settle into floating baseline positions (0.8s, ease-out)
+            const settleDuration = 800;
+            const settleStart = Date.now();
+            
+            const settleInterval = setInterval(() => {
+              const elapsed = Date.now() - settleStart;
+              const settleProgress = Math.min(elapsed / settleDuration, 1);
+              const easeOut = 1 - Math.pow(1 - settleProgress, 3);
+              
+              setLetters(prev => prev.map(letter => ({
+                ...letter,
+                settlingProgress: easeOut,
+                float: letter.float * (1 - easeOut) + (Math.random() * 0.8 - 0.4) * easeOut // Settle around baseline
+              })));
+              
+              if (settleProgress >= 1) {
+                clearInterval(settleInterval);
+                setLetters(prev => prev.map(letter => ({
+                  ...letter,
+                  isSliding: false,
+                  slideProgress: 0,
+                  settlingProgress: 1
+                })));
+                setIsSliding(false);
+              }
+            }, 16);
           }
-        }, 16); // ~60fps
+        }, 16);
       }
-  }, 16); // ~60fps
+    }, 16);
   };
 
   // Typography transition function
@@ -632,7 +686,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     const variationInterval = setInterval(() => {
       console.log('🎨 ThemedRansomNote: Starting new variation cycle, theme:', theme);
       
-      performSmoothTransition(() => {
+      performSlideAnimation(() => {
         if (Math.random() < 0.3) {
           setIsSpellingOut(true);
           setSpellIndex(0);
@@ -721,7 +775,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       clearInterval(variationInterval);
       clearInterval(phaseInterval);
     };
-  }, [theme, isPaused, goldLetterIndex, isTransitioning, fadeOpacity]); // Updated dependencies
+  }, [theme, isPaused, goldLetterIndex, isSliding]); // Updated dependencies
 
   useEffect(() => {
     if (isSpellingOut) {
@@ -932,16 +986,30 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       ` : (transparentStyles.textShadow || letter.style.textShadow),
       zIndex: transparentStyles.zIndex || 'auto',
       // Use transforms only - no layout-affecting properties
-      transform: `
-        translateX(0px) translateY(${stableOffsets.float}px)
-        rotateZ(${stableOffsets.rotation}deg)
-        rotateX(${stableOffsets.lean}deg)
-        ${isFlipping ? `rotateY(${Math.sin(animPhase * 0.2) * 180}deg) rotateZ(${Math.sin(animPhase * 0.3) * 5}deg)` : ''}
-        ${isActive ? `rotateY(${Math.sin(animPhase * 0.05 + index) * 45}deg)` : ''}
-        ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
-        ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
-        ${isSpellingOut && index === spellIndex - 1 ? 'scale(1.2)' : ''}
-      `,
+      transform: (() => {
+        let baseTransform = `
+          translateY(${stableOffsets.float}px)
+          rotateZ(${stableOffsets.rotation}deg)
+          rotateX(${stableOffsets.lean}deg)
+          ${isFlipping ? `rotateY(${Math.sin(animPhase * 0.2) * 180}deg) rotateZ(${Math.sin(animPhase * 0.3) * 5}deg)` : ''}
+          ${isActive ? `rotateY(${Math.sin(animPhase * 0.05 + index) * 45}deg)` : ''}
+          ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
+          ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
+          ${isSpellingOut && index === spellIndex - 1 ? 'scale(1.2)' : ''}
+        `;
+        
+        // Add slide animation transform
+        if (letter.isSliding) {
+          const slideDistance = window.innerWidth || 1200; // Fallback width
+          const direction = letter.slideDirection === 'left' ? -1 : 1;
+          const slideX = direction * slideDistance * letter.slideProgress;
+          baseTransform = `translateX(${slideX}px) ${baseTransform}`;
+        } else {
+          baseTransform = `translateX(0px) ${baseTransform}`;
+        }
+        
+        return baseTransform;
+      })(),
       filter: `brightness(${1 + (isActive ? 0.5 : 0) * Math.sin(animPhase * 0.06 + index)})`,
       padding: stableOffsets.padding,
       margin: stableOffsets.margin,
@@ -951,11 +1019,15 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         if (!isVisible) return 0;
         if (letter.char === ' ') return 1;
         
-        // Apply smooth fade transition
-        if (isTransitioning) {
-          const staggerDelay = index * 30; // 30ms stagger between letters
-          const staggeredOpacity = Math.max(0, fadeOpacity - (staggerDelay / 1000));
-          return Math.max(0, staggeredOpacity);
+        // Apply slide animation opacity
+        if (letter.isSliding) {
+          // During slide-off: fade out as letters move off screen
+          // During slide-in: fade in as letters arrive
+          if (letter.slideProgress < 0.5) {
+            return 0.9 * (1 - letter.slideProgress * 2); // Fade out during first half of slide
+          } else {
+            return 0.9 * ((letter.slideProgress - 0.5) * 2); // Fade in during second half
+          }
         }
         
         return 0.9;
