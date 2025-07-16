@@ -6,24 +6,9 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { PixelDigital } from '@/components/ui/PixelDigital';
 
 const AnimatedTagline: React.FC = () => {
-  const fonts = [
-    'font-fredoka', // Original font
-    'font-caveat text-3xl md:text-4xl', // Handwritten font made bigger
-  ];
-  
-  const [currentFontIndex, setCurrentFontIndex] = useState(0);
-  
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentFontIndex((prev) => (prev + 1) % fonts.length);
-    }, 2000);
-    
-    return () => clearInterval(interval);
-  }, []);
-  
   return (
-    <div className="mt-6 mb-8">
-      <p className={`text-2xl md:text-3xl italic text-center text-crd-orange animate-fade-in transition-all duration-500 ${fonts[currentFontIndex]}`}>
+    <div className="mt-12 mb-8">
+      <p className="text-4xl md:text-6xl italic text-center text-crd-orange animate-fade-in font-caveat">
         "No glue needed."
       </p>
     </div>
@@ -71,7 +56,7 @@ export const CreatePageHero: React.FC = () => {
           </div>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center my-12">
             <Link to="/create/new">
               <CRDButton 
                 size="lg" 
