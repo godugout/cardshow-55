@@ -91,7 +91,7 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
       {/* Pixel grid background */}
       <canvas 
         ref={canvasRef}
-        className="absolute inset-0 opacity-40"
+        className="absolute inset-0 opacity-25"
         style={{
           width: '100%',
           height: '100%',
@@ -104,9 +104,9 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
         className="relative z-10 font-mono tracking-wider"
         style={{
           textShadow: `
-            0 0 8px #00e6ff,
-            0 0 16px #00b8e6,
-            0 0 24px #00a3d9,
+            0 0 4px #00e6ff,
+            0 0 8px #00b8e6,
+            0 0 12px #00a3d9,
             1px 1px 0px #003d4d,
             -1px -1px 0px #003d4d
           `,
@@ -114,7 +114,7 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
-          filter: 'contrast(1.1) brightness(0.85)', // Less bright
+          filter: 'contrast(1.2) brightness(1.1)',
         }}
       >
         {children}
