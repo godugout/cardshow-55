@@ -1,6 +1,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useIntersectionObserver } from '../../../components/editor/wizard/hooks/useIntersectionObserver';
+import { useIntersectionObserver } from '@/components/editor/wizard/hooks/useIntersectionObserver';
 
 export interface Hero3Props {
   caption?: string;
