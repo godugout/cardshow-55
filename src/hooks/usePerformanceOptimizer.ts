@@ -163,22 +163,24 @@ export const usePerformanceOptimizer = () => {
     }
   }, []);
 
-  // Initialize performance monitoring
+  // Initialize performance monitoring - SIMPLIFIED TO PREVENT CRASHES
   useEffect(() => {
     const capabilities = detectDeviceCapabilities();
     setMetrics(prev => ({ ...prev, ...capabilities }));
     
-    measureFPS();
-    monitorBattery();
+    // Disable continuous monitoring temporarily to stabilize app
+    // measureFPS();
+    // monitorBattery();
     
-    const memoryInterval = setInterval(measureMemory, 5000);
-    const optimizeInterval = setInterval(autoOptimize, 3000);
+    // Much longer intervals to reduce overhead
+    // const memoryInterval = setInterval(measureMemory, 30000);
+    // const optimizeInterval = setInterval(autoOptimize, 60000);
     
-    return () => {
-      clearInterval(memoryInterval);
-      clearInterval(optimizeInterval);
-    };
-  }, [detectDeviceCapabilities, measureFPS, measureMemory, autoOptimize, monitorBattery]);
+    // return () => {
+    //   clearInterval(memoryInterval);
+    //   clearInterval(optimizeInterval);
+    // };
+  }, [detectDeviceCapabilities]);
 
   // Manual override functions
   const enableHighPerformanceMode = useCallback(() => {

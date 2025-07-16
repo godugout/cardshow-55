@@ -39,6 +39,23 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   className = "",
   isPaused = false
 }) => {
+  // EMERGENCY SIMPLIFIED VERSION - disable complex animations temporarily
+  const SIMPLIFIED_MODE = true;
+  
+  if (SIMPLIFIED_MODE) {
+    const themeStyles = {
+      craft: 'text-red-500 font-bold',
+      collect: 'text-yellow-600 font-serif',
+      connect: 'text-cyan-400 font-mono'
+    };
+    
+    return (
+      <span className={`${themeStyles[theme]} ${className} transition-all duration-300`}>
+        {children}
+      </span>
+    );
+  }
+  
   const [letters, setLetters] = useState<LetterState[]>([]);
   const [animPhase, setAnimPhase] = useState(0);
   const [activeAnimations, setActiveAnimations] = useState<number[]>([]);

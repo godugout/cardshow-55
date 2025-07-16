@@ -15,14 +15,19 @@ export const useIntersectionObserver = ({
   const targetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // SIMPLIFIED INTERSECTION OBSERVER - prevent over-triggering
     const observer = new IntersectionObserver(
       ([entry]) => {
         const isCurrentlyIntersecting = entry.isIntersecting;
-        setIsIntersecting(isCurrentlyIntersecting);
         
-        if (isCurrentlyIntersecting && !hasIntersected) {
-          setHasIntersected(true);
-        }
+        // Add debouncing to prevent rapid state changes
+        setTimeout(() => {
+          setIsIntersecting(isCurrentlyIntersecting);
+          
+          if (isCurrentlyIntersecting && !hasIntersected) {
+            setHasIntersected(true);
+          }
+        }, 100);
       },
       {
         threshold,
@@ -32,15 +37,23 @@ export const useIntersectionObserver = ({
 
     const currentTarget = targetRef.current;
     if (currentTarget) {
-      observer.observe(currentTarget);
+      try {
+        observer.observe(currentTarget);
+      } catch (error) {
+        console.warn('Intersection observer failed:', error);
+      }
     }
 
     return () => {
       if (currentTarget) {
-        observer.unobserve(currentTarget);
+        try {
+          observer.unobserve(currentTarget);
+        } catch (error) {
+          console.warn('Failed to unobserve:', error);
+        }
       }
     };
-  }, [threshold, rootMargin, hasIntersected]);
+  }, [threshold, rootMargin]);
 
   return { targetRef, isIntersecting, hasIntersected };
 };
