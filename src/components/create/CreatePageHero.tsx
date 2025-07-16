@@ -6,11 +6,8 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 
 const AnimatedTagline: React.FC = () => {
   const fonts = [
-    'font-fredoka',
-    'font-comic',
-    'font-playful',
-    'font-bouncy',
-    'font-fun'
+    'font-fredoka', // Original font
+    'font-caveat text-3xl md:text-4xl', // Handwritten font made bigger
   ];
   
   const [currentFontIndex, setCurrentFontIndex] = useState(0);
@@ -24,8 +21,8 @@ const AnimatedTagline: React.FC = () => {
   }, []);
   
   return (
-    <div className="mt-8 text-center">
-      <p className={`text-2xl md:text-3xl italic text-crd-orange transition-all duration-500 ${fonts[currentFontIndex]} animate-pulse`}>
+    <div className="mt-6 mb-8">
+      <p className={`text-2xl md:text-3xl italic text-center text-crd-orange animate-fade-in transition-all duration-500 ${fonts[currentFontIndex]}`}>
         "No glue needed."
       </p>
     </div>
@@ -59,18 +56,17 @@ export const CreatePageHero: React.FC = () => {
           
           {/* Main Heading */}
           <div className="mb-4">
-            <h1 className="leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-              <div className="flex justify-center items-center mb-2">
-                <span className="text-gray-400">From paper scraps and cardboard</span>
-              </div>
-              <div className="flex justify-center items-center">
-                <span>
-                  <span className="text-white">to </span>
-                  <span className="text-[#00C851]">digital art</span>
-                  <span className="text-white"> that comes alive!</span>
-                </span>
-              </div>
-            </h1>
+             <h1 className="leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
+               <div className="flex justify-center items-center mb-2">
+                 <span className="text-gray-400 font-light">From paper scraps and cardboard to</span>
+               </div>
+               <div className="flex justify-center items-center">
+                 <span className="font-bold">
+                   <span className="text-[#00C851]">digital art</span>
+                   <span className="text-white"> that comes alive!</span>
+                 </span>
+               </div>
+             </h1>
           </div>
           
           {/* CTA Buttons */}
