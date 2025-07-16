@@ -329,7 +329,7 @@
     }
 
     .nav-create-active {
-      background: hsl(15, 20%, 50% / 0.1);
+      background: none;
       box-shadow: none;
     }
   }
