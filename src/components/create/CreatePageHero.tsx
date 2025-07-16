@@ -18,9 +18,9 @@ const AnimatedTagline: React.FC = () => {
 
 export const CreatePageHero: React.FC = () => {
   return (
-    <div className="relative w-screen -mx-[50vw] left-1/2 overflow-hidden">
+    <div className="relative w-screen -mx-[50vw] left-1/2 overflow-hidden h-screen">
       {/* 3D Background covering entire hero section */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 h-full">
         <FloatingCard3D />
       </div>
       
