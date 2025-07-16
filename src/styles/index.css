@@ -88,4 +88,38 @@
     filter: hue-rotate(80deg) saturate(150%) brightness(125%) contrast(110%);
     transition: filter 0.3s ease;
   }
+
+  /* 3D Crafting animations */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  /* Floating animation for building blocks */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Crafting step cards */
+  .crafting-step {
+    background: linear-gradient(135deg, hsl(var(--crd-darker)) 0%, hsl(var(--crd-dark)) 100%);
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .crafting-step:hover {
+    border-color: hsl(var(--crd-green));
+    transform: translateY(-4px);
+    box-shadow: 
+      0 10px 30px hsla(var(--crd-green), 0.2),
+      inset 0 0 20px hsla(var(--crd-green), 0.1);
+  }
 }
