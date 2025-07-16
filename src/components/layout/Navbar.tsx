@@ -172,16 +172,6 @@ export const Navbar = () => {
                   flex items-center space-x-1 lg:space-x-2 px-2 lg:px-3 py-2 rounded-md text-sm font-medium
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
-                  ${isActive('/create') 
-                    ? (isHomeTeamMode 
-                        ? 'text-slate-800' 
-                        : 'text-themed-active'
-                      )
-                    : (isHomeTeamMode 
-                        ? 'text-slate-600 hover:text-slate-800' 
-                        : 'text-themed-secondary hover-themed'
-                      )
-                  }
                   ${!prefersReducedMotion ? 'hover:shadow-sm' : ''}
                 `}
               >
