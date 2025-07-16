@@ -142,10 +142,9 @@ export const EnhancedHero: React.FC = () => {
 
   // Fetch all cards for the ticker on mount
   React.useEffect(() => {
-    if (allCards.length === 0) {
-      fetchAllCardsFromDatabase();
-    }
-  }, [fetchAllCardsFromDatabase, allCards.length]);
+    // Always fetch all cards for the carousel to have enough content
+    fetchAllCardsFromDatabase();
+  }, [fetchAllCardsFromDatabase]);
 
   // Make cards clickable, no immersive preview
   const handleCardStudioOpen = (card: DbCard) => {
@@ -212,7 +211,7 @@ export const EnhancedHero: React.FC = () => {
         heroVariant="hero"
       >
         {/* Featured Cards Section */}
-        {showcaseCards.length > 0 && (
+        {showcaseCards.length > 0 ? (
           <div className="mt-8">
             <Hero3
               caption=""
@@ -224,6 +223,15 @@ export const EnhancedHero: React.FC = () => {
               featuredCards={showcaseCards}
               onCardClick={handleCardStudioOpen}
             />
+          </div>
+        ) : (
+          <div className="mt-8 text-center py-8">
+            <div className="text-crd-lightGray text-lg mb-4">
+              🎨 No cards to display yet
+            </div>
+            <p className="text-crd-lightGray/70 text-sm max-w-md mx-auto">
+              Cards will appear here once they're loaded from the database or when creators start sharing their work.
+            </p>
           </div>
         )}
       </StandardHero>

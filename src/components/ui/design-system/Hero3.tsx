@@ -30,7 +30,16 @@ export const Hero3: React.FC<Hero3Props> = ({
   const speed = 0.5; // pixels per millisecond
   
   if (!showFeaturedCards || featuredCards.length === 0) {
-    return null;
+    return (
+      <div className="w-full text-center py-8">
+        <div className="text-crd-lightGray text-lg mb-2">
+          🎨 No cards available
+        </div>
+        <p className="text-crd-lightGray/70 text-sm">
+          Cards will appear here once they're loaded.
+        </p>
+      </div>
+    );
   }
 
   // Optimized carousel animation with RAF
@@ -45,12 +54,13 @@ export const Hero3: React.FC<Hero3Props> = ({
       setPosition(prev => {
         const cardWidth = 384; // lg:w-96 = 384px
         const gap = 24; // gap-6 = 24px
-        const totalWidth = (cardWidth + gap) * featuredCards.length;
+        // Calculate based on single array length for proper reset
+        const singleSetWidth = (cardWidth + gap) * featuredCards.length;
         const next = prev - (speed * delta);
         
-        // Reset position for seamless loop
-        if (next <= -totalWidth) {
-          return next + totalWidth;
+        // Reset position for seamless loop when we've moved past one full set
+        if (next <= -singleSetWidth) {
+          return next + singleSetWidth;
         }
         return next;
       });
