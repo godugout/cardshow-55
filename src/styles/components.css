@@ -175,12 +175,12 @@
   }
 
   .nav-create-gradient .nav-create-text {
-    background: linear-gradient(135deg, hsl(15, 100%, 65%), hsl(100, 40%, 60%), hsl(200, 70%, 60%));
-    background-size: 200% 200%;
+    background: linear-gradient(135deg, hsl(15, 100%, 70%), hsl(100, 45%, 65%), hsl(200, 75%, 65%), hsl(280, 70%, 70%));
+    background-size: 300% 300%;
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: liquid-gradient 4s ease-in-out infinite;
+    animation: liquid-gradient 3s ease-in-out infinite;
     transition: all 0.3s ease;
   }
 
@@ -190,12 +190,12 @@
   }
 
   .nav-create-gradient:hover .nav-create-text {
-    background: linear-gradient(135deg, hsl(15, 100%, 70%), hsl(100, 45%, 65%), hsl(200, 75%, 65%));
-    background-size: 250% 250%;
+    background: linear-gradient(135deg, hsl(15, 100%, 80%), hsl(100, 55%, 75%), hsl(200, 85%, 75%), hsl(280, 80%, 80%));
+    background-size: 400% 400%;
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: liquid-gradient 2.5s ease-in-out infinite;
+    animation: liquid-gradient 1.5s ease-in-out infinite;
   }
 
   /* Active state for /create route */
@@ -204,11 +204,11 @@
   }
 
   .nav-create-active .nav-create-text {
-    background: linear-gradient(135deg, hsl(15, 100%, 70%), hsl(100, 50%, 65%), hsl(200, 80%, 65%));
+    background: linear-gradient(135deg, hsl(15, 100%, 85%), hsl(100, 60%, 80%), hsl(200, 90%, 80%), hsl(280, 85%, 85%));
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: liquid-gradient 3s ease-in-out infinite;
+    animation: liquid-gradient 2s ease-in-out infinite;
   }
 
   /* Sparkle cycle controller - shows sparkles every 3-4 gradient cycles */
@@ -218,31 +218,73 @@
     40%, 100% { opacity: 0; }
   }
 
-  /* Tighter sparkle positioning around icon */
+  /* Enhanced natural sparkle movements */
   @keyframes sparkle-float {
-    0%, 100% { 
-      transform: translate(0, 0) scale(0.8) rotate(0deg); 
+    0% { 
+      transform: translate(0, 0) scale(0.7) rotate(0deg);
+      opacity: 0.6;
+    }
+    25% { 
+      transform: translate(-3px, -2px) scale(1.1) rotate(45deg);
+      opacity: 1;
     }
     50% { 
-      transform: translate(-1px, -1px) scale(1.1) rotate(45deg); 
+      transform: translate(2px, -4px) scale(0.9) rotate(90deg);
+      opacity: 0.8;
+    }
+    75% { 
+      transform: translate(-1px, 2px) scale(1.2) rotate(135deg);
+      opacity: 1;
+    }
+    100% { 
+      transform: translate(0, 0) scale(0.7) rotate(180deg);
+      opacity: 0.6;
     }
   }
 
   @keyframes sparkle-float-2 {
-    0%, 100% { 
-      transform: translate(0, 0) scale(0.6) rotate(0deg); 
+    0% { 
+      transform: translate(0, 0) scale(0.5) rotate(0deg);
+      opacity: 0.7;
     }
-    50% { 
-      transform: translate(2px, -2px) scale(1) rotate(-30deg); 
+    20% { 
+      transform: translate(4px, -1px) scale(0.9) rotate(-60deg);
+      opacity: 1;
+    }
+    40% { 
+      transform: translate(-2px, -3px) scale(1.3) rotate(-120deg);
+      opacity: 0.9;
+    }
+    60% { 
+      transform: translate(3px, 1px) scale(0.8) rotate(-180deg);
+      opacity: 1;
+    }
+    80% { 
+      transform: translate(-1px, -2px) scale(1.1) rotate(-240deg);
+      opacity: 0.8;
+    }
+    100% { 
+      transform: translate(0, 0) scale(0.5) rotate(-300deg);
+      opacity: 0.7;
     }
   }
 
   @keyframes sparkle-float-3 {
-    0%, 100% { 
-      transform: translate(0, 0) scale(0.7) rotate(0deg); 
+    0% { 
+      transform: translate(0, 0) scale(0.6) rotate(0deg);
+      opacity: 0.5;
     }
-    50% { 
-      transform: translate(-1px, 1px) scale(1) rotate(60deg); 
+    33% { 
+      transform: translate(-4px, 3px) scale(1.0) rotate(120deg);
+      opacity: 1;
+    }
+    66% { 
+      transform: translate(2px, -2px) scale(1.4) rotate(240deg);
+      opacity: 0.9;
+    }
+    100% { 
+      transform: translate(0, 0) scale(0.6) rotate(360deg);
+      opacity: 0.5;
     }
   }
 
@@ -279,26 +321,30 @@
     animation-delay: 1.8s, 2s;
   }
 
-  /* Add third sparkle for active state */
+  /* Enhanced active state sparkles */
   .nav-create-active .nav-plus-sparkles::before {
     animation: 
-      sparkle-float 1.8s ease-in-out infinite;
+      sparkle-float 2.5s ease-in-out infinite;
+    animation-delay: 0.2s;
   }
 
   .nav-create-active .nav-plus-sparkles::after {
     animation: 
-      sparkle-float-2 2.1s ease-in-out infinite;
+      sparkle-float-2 2.9s ease-in-out infinite;
+    animation-delay: 0.6s;
   }
 
-  /* Enhanced hover sparkles */
+  /* Enhanced hover sparkles with natural timing */
   .nav-create-gradient:hover .nav-plus-sparkles::before {
     animation: 
-      sparkle-float 1.2s ease-in-out infinite;
+      sparkle-float 2.8s ease-in-out infinite;
+    animation-delay: 0.3s;
   }
 
   .nav-create-gradient:hover .nav-plus-sparkles::after {
     animation: 
-      sparkle-float-2 1.4s ease-in-out infinite;
+      sparkle-float-2 3.2s ease-in-out infinite;
+    animation-delay: 0.7s;
   }
 
   /* Respect reduced motion preferences */
@@ -338,6 +384,97 @@
       background: none;
       box-shadow: none;
     }
+  }
+
+  /* Navbar spotlight effect */
+  @keyframes navbar-spotlight {
+    0% {
+      transform: translateX(-100%) rotate(-15deg);
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.4;
+    }
+    100% {
+      transform: translateX(200%) rotate(-15deg);
+      opacity: 0;
+    }
+  }
+
+  .nav-create-gradient::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    right: -50px;
+    bottom: -50px;
+    background: linear-gradient(45deg, 
+      transparent 40%, 
+      hsla(200, 80%, 70%, 0.1) 50%, 
+      hsla(100, 60%, 60%, 0.15) 55%,
+      hsla(15, 100%, 70%, 0.1) 60%,
+      transparent 70%);
+    animation: navbar-spotlight 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+    border-radius: 50%;
+    filter: blur(20px);
+  }
+
+  .nav-create-gradient:hover::before {
+    animation: navbar-spotlight 3s ease-in-out infinite;
+  }
+
+  /* Twinkling stars animation for logo */
+  @keyframes star-twinkle {
+    0%, 100% {
+      opacity: 0.6;
+      transform: scale(1) rotate(0deg);
+      filter: brightness(1) drop-shadow(0 0 2px currentColor);
+    }
+    25% {
+      opacity: 1;
+      transform: scale(1.2) rotate(90deg);
+      filter: brightness(1.5) drop-shadow(0 0 6px currentColor);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(0.9) rotate(180deg);
+      filter: brightness(1.2) drop-shadow(0 0 4px currentColor);
+    }
+    75% {
+      opacity: 1;
+      transform: scale(1.1) rotate(270deg);
+      filter: brightness(1.3) drop-shadow(0 0 8px currentColor);
+    }
+  }
+
+  @keyframes star-glow-pulse {
+    0%, 100% {
+      filter: brightness(1) drop-shadow(0 0 3px rgba(255, 215, 0, 0.6));
+    }
+    50% {
+      filter: brightness(1.4) drop-shadow(0 0 12px rgba(255, 215, 0, 0.9)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+    }
+  }
+
+  /* Apply twinkling to yellow elements that look like stars */
+  .sparkles-yellow-filter-green *[fill*="yellow"], 
+  .sparkles-yellow-filter-green *[fill*="#FFD700"],
+  .sparkles-yellow-filter-green *[fill*="#FFFF00"] {
+    animation: star-twinkle 3s ease-in-out infinite, star-glow-pulse 2s ease-in-out infinite;
+  }
+
+  .sparkles-yellow-filter-green *[fill*="yellow"]:nth-child(1) {
+    animation-delay: 0s, 0.2s;
+  }
+
+  .sparkles-yellow-filter-green *[fill*="yellow"]:nth-child(2) {
+    animation-delay: 1s, 1.2s;
+  }
+
+  .sparkles-yellow-filter-green *[fill*="yellow"]:nth-child(3) {
+    animation-delay: 2s, 2.2s;
   }
 
   /* Mobile-first responsive utilities */
