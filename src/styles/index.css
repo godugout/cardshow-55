@@ -89,3 +89,20 @@
     transition: filter 0.3s ease;
   }
 }
+  
+  /* Animated tagline fonts */
+  .font-comic {
+    font-family: 'Comic Sans MS', cursive;
+  }
+  
+  .font-playful {
+    font-family: 'Caveat', cursive;
+  }
+  
+  .font-bouncy {
+    font-family: 'Fredoka One', cursive;
+  }
+  
+  .font-fun {
+    font-family: 'Chewy', cursive;
+  }

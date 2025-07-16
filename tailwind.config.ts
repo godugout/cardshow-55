@@ -301,6 +301,13 @@ export default {
         'press-start': ['Press Start 2P', 'monospace'], // 8-bit/retro arcade style
         'exo': ['Exo 2', 'sans-serif'], // Cyberpunk/futuristic
         'audiowide': ['Audiowide', 'cursive'], // Holographic/sci-fi
+        // Additional animated tagline fonts
+        'comic': ['Comic Sans MS', 'cursive'],
+        'caveat': ['Caveat', 'cursive'],
+        'chewy': ['Chewy', 'cursive'],
+        'bouncy': ['Fredoka One', 'cursive'], // alias for fredoka
+        'playful': ['Caveat', 'cursive'], // alias for caveat
+        'fun': ['Chewy', 'cursive'], // alias for chewy
       },
       fontSize: {
         'display': ['3rem', { lineHeight: '1.1', fontWeight: '800' }], // 48px
