@@ -5,24 +5,43 @@ import * as THREE from 'three';
 
 const CardMonolith: React.FC = () => {
   const cardRef = useRef<THREE.Group>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera>(null);
   
   useFrame((state) => {
+    const elapsed = state.clock.elapsedTime;
+    
+    // Phase 1: Approach (0-8 seconds)
+    // Phase 2: Eclipse (8-16 seconds)
+    // Phase 3: Reset (16-20 seconds)
+    const cycle = elapsed % 20;
+    
     if (cardRef.current) {
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.05;
+      if (cycle < 8) {
+        // Approach phase: Move camera forward toward monolith
+        const progress = cycle / 8;
+        const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+        state.camera.position.z = 15 - (easeProgress * 12); // Move from 15 to 3
+        cardRef.current.position.y = Math.sin(elapsed * 0.3) * 0.05;
+        cardRef.current.position.x = 0;
+      } else if (cycle < 16) {
+        // Eclipse phase: Monolith moves up to block sun
+        const progress = (cycle - 8) / 8;
+        const easeProgress = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2; // Ease in-out
+        state.camera.position.z = 3;
+        cardRef.current.position.y = easeProgress * 8; // Move up to block sun
+        cardRef.current.position.x = 0;
+      } else {
+        // Reset phase
+        const progress = (cycle - 16) / 4;
+        state.camera.position.z = 3 + (progress * 12); // Move back to 15
+        cardRef.current.position.y = 8 - (progress * 8); // Move back down
+        cardRef.current.position.x = 0;
+      }
     }
   });
 
   return (
     <>
-      {/* Ground Plane - Lunar surface */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
-        <planeGeometry args={[50, 50]} />
-        <meshStandardMaterial 
-          color="#2a2a2a"
-          roughness={0.9}
-          metalness={0.1}
-        />
-      </mesh>
       
       {/* Card Monolith */}
       <group ref={cardRef} position={[0, 0, 0]}>
@@ -73,24 +92,54 @@ const CardMonolith: React.FC = () => {
         />
       </mesh>
       
-      {/* Distant stars */}
-      {Array.from({ length: 50 }).map((_, i) => (
-        <mesh
-          key={i}
-          position={[
-            (Math.random() - 0.5) * 100,
-            Math.random() * 20 + 5,
-            (Math.random() - 0.5) * 100 - 20
-          ]}
-        >
-          <sphereGeometry args={[0.02, 8, 8]} />
-          <meshStandardMaterial 
-            color="#ffffff"
-            emissive="#ffffff"
-            emissiveIntensity={Math.random() * 0.5 + 0.3}
-          />
-        </mesh>
-      ))}
+      {/* Deep space star field */}
+      {Array.from({ length: 200 }).map((_, i) => {
+        const distance = Math.random() * 200 + 50;
+        const size = Math.random() * 0.1 + 0.01;
+        const intensity = Math.random() * 0.8 + 0.2;
+        
+        return (
+          <mesh
+            key={i}
+            position={[
+              (Math.random() - 0.5) * distance,
+              (Math.random() - 0.5) * distance,
+              (Math.random() - 0.5) * distance - 50
+            ]}
+          >
+            <sphereGeometry args={[size, 8, 8]} />
+            <meshStandardMaterial 
+              color="#ffffff"
+              emissive="#ffffff"
+              emissiveIntensity={intensity}
+            />
+          </mesh>
+        );
+      })}
+      
+      {/* Bright foreground stars */}
+      {Array.from({ length: 30 }).map((_, i) => {
+        const size = Math.random() * 0.05 + 0.03;
+        const intensity = Math.random() * 1.2 + 0.8;
+        
+        return (
+          <mesh
+            key={`bright-${i}`}
+            position={[
+              (Math.random() - 0.5) * 60,
+              (Math.random() - 0.5) * 60,
+              Math.random() * 30 - 15
+            ]}
+          >
+            <sphereGeometry args={[size, 8, 8]} />
+            <meshStandardMaterial 
+              color="#ffffff"
+              emissive="#ffffff"
+              emissiveIntensity={intensity}
+            />
+          </mesh>
+        );
+      })}
     </>
   );
 };
@@ -99,52 +148,41 @@ export const FloatingCard3D: React.FC = () => {
   return (
     <div className="w-full h-[600px] mx-auto bg-black rounded-lg overflow-hidden">
       <Canvas
-        camera={{ position: [3, 2, 8], fov: 60 }}
+        camera={{ position: [0, 0, 15], fov: 60 }}
         gl={{ antialias: true, alpha: false }}
         scene={{ background: new THREE.Color('#000011') }}
       >
         {/* Ambient space lighting */}
-        <ambientLight intensity={0.1} color="#000033" />
+        <ambientLight intensity={0.05} color="#000033" />
         
         {/* Main sun light */}
         <directionalLight
           position={[0, 8, -10]}
-          intensity={3}
+          intensity={4}
           color="#ffaa00"
           castShadow
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
         />
         
-        {/* Fill light for the monolith */}
-        <pointLight
-          position={[5, 3, 5]}
-          intensity={0.5}
+        {/* Dramatic rim light from behind monolith */}
+        <directionalLight
+          position={[0, 8, 5]}
+          intensity={2}
           color="#ffffff"
         />
         
-        {/* Dramatic rim light */}
+        {/* Subtle blue rim light */}
         <directionalLight
           position={[-10, 5, 10]}
-          intensity={1}
+          intensity={0.5}
           color="#4444ff"
         />
         
         <CardMonolith />
         
-        <OrbitControls 
-          enableZoom={true}
-          enablePan={false}
-          maxDistance={15}
-          minDistance={5}
-          maxPolarAngle={Math.PI / 2 + 0.3}
-          minPolarAngle={Math.PI / 6}
-          autoRotate={false}
-          target={[0, 0, 0]}
-        />
-        
-        {/* Fog for atmospheric depth */}
-        <fog args={['#000011', 10, 100]} />
+        {/* Deep space fog */}
+        <fog args={['#000011', 20, 150]} />
       </Canvas>
     </div>
   );
