@@ -9,7 +9,7 @@ import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 interface CTAConfig {
   text: string;
   link: string;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'create' | 'collective';
   className?: string;
 }
 
@@ -121,7 +121,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
               <CRDButton 
                 size="lg" 
                 variant={primaryCta.variant || 'primary'}
-                className={`liquid-gradient-cta min-w-[200px] ${primaryCta.className || ''}`}
+                className={`min-w-[200px] ${primaryCta.className || ''}`}
               >
                 {primaryCta.text}
                 <ArrowRight className="ml-2 h-5 w-5" />

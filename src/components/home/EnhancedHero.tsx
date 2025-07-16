@@ -186,7 +186,7 @@ export const EnhancedHero: React.FC = () => {
       tagline: 'with creators worldwide',
       label: 'JOIN THE GLOBAL CREATOR COMMUNITY',
       description: 'Network with artists, share your work, and collaborate on groundbreaking digital card projects in our vibrant creator ecosystem.',
-      ctaText: 'Join community',
+      ctaText: 'Join the Collective',
       ctaLink: '/community'
     }
   ];
@@ -215,7 +215,10 @@ export const EnhancedHero: React.FC = () => {
         description={currentConfig.description}
         primaryCta={{
           text: currentConfig.ctaText,
-          link: currentConfig.ctaLink
+          link: currentConfig.ctaLink,
+          variant: currentConfig.theme === 'craft' ? 'create' : 
+                   currentConfig.theme === 'connect' ? 'collective' : 
+                   'primary'
         }}
         heroVariant="hero"
       >
