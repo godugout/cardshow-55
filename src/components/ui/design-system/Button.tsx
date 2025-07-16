@@ -19,6 +19,8 @@ const buttonVariants = cva(
         create: "crd-create-button",
         // Official Collective CTA button with orange gradient
         collective: "crd-collective-button",
+        // Official Collect CTA button with blue-purple gradient
+        collect: "crd-collect-button",
         // Fallback variants - also rounded pills
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",

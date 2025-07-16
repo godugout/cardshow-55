@@ -9,7 +9,7 @@ import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 interface CTAConfig {
   text: string;
   link: string;
-  variant?: 'primary' | 'secondary' | 'outline' | 'create' | 'collective';
+  variant?: 'primary' | 'secondary' | 'outline' | 'create' | 'collective' | 'collect';
   className?: string;
 }
 

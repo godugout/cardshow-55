@@ -218,7 +218,7 @@ export const EnhancedHero: React.FC = () => {
           link: currentConfig.ctaLink,
           variant: currentConfig.theme === 'craft' ? 'create' : 
                    currentConfig.theme === 'connect' ? 'collective' : 
-                   'primary'
+                   'collect'
         }}
         heroVariant="hero"
       >
