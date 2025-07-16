@@ -15,6 +15,8 @@ const buttonVariants = cva(
         outline: "btn-themed-ghost",
         ghost: "btn-themed-ghost",
         action: "p-3 btn-themed-secondary team-spirit-glow",
+        // Official Create CTA button with custom gradient
+        create: "crd-create-button",
         // Fallback variants - also rounded pills
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",

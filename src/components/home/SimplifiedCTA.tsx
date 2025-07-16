@@ -69,9 +69,8 @@ export const SimplifiedCTA: React.FC = () => {
         <div className="flex gap-6 flex-wrap justify-center">
           <Link to="/create">
             <CRDButton 
-              variant="primary" 
+              variant="create" 
               size="xl"
-              className="liquid-gradient-cta"
             >
               Create a CRD
             </CRDButton>
