@@ -100,8 +100,8 @@ export const Hero3: React.FC<Hero3Props> = ({
           contain: 'layout style paint'
         }}
       >
-        {/* Duplicate the cards array to create seamless loop */}
-        {[...featuredCards, ...featuredCards].map((card, index) => (
+        {/* Duplicate the cards array multiple times for infinite scroll */}
+        {[...featuredCards, ...featuredCards, ...featuredCards, ...featuredCards].map((card, index) => (
           <div 
             key={`${card.id}-${index}`}
             className="flex-shrink-0 w-72 md:w-80 lg:w-96 cursor-pointer letter-transition hover:scale-105"

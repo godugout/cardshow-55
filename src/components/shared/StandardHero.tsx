@@ -72,13 +72,13 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
         <div className="w-full px-4 sm:px-6 lg:px-8">
           {/* Label */}
           {label && (
-            <Typography variant="label" className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider">
+            <Typography variant="label" className="mb-8 gradient-text-green-blue-purple font-bold tracking-wider">
               {label}
             </Typography>
           )}
           
           {/* Main Heading - Consistent spacing regardless of titleEffects vs title */}
-          <div className="mb-4">
+          <div className="mb-12">
             {titleEffects ? (
               titleEffects
             ) : (
