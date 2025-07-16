@@ -5,38 +5,19 @@ import * as THREE from 'three';
 
 const CardMonolith: React.FC = () => {
   const cardRef = useRef<THREE.Group>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera>(null);
+  const sunRef = useRef<THREE.Group>(null);
   
   useFrame((state) => {
-    const elapsed = state.clock.elapsedTime;
-    
-    // Phase 1: Approach (0-8 seconds)
-    // Phase 2: Eclipse (8-16 seconds)
-    // Phase 3: Reset (16-20 seconds)
-    const cycle = elapsed % 20;
-    
     if (cardRef.current) {
-      if (cycle < 8) {
-        // Approach phase: Move camera forward toward monolith
-        const progress = cycle / 8;
-        const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
-        state.camera.position.z = 15 - (easeProgress * 12); // Move from 15 to 3
-        cardRef.current.position.y = Math.sin(elapsed * 0.3) * 0.05;
-        cardRef.current.position.x = 0;
-      } else if (cycle < 16) {
-        // Eclipse phase: Monolith moves up to block sun
-        const progress = (cycle - 8) / 8;
-        const easeProgress = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2; // Ease in-out
-        state.camera.position.z = 3;
-        cardRef.current.position.y = easeProgress * 8; // Move up to block sun
-        cardRef.current.position.x = 0;
-      } else {
-        // Reset phase
-        const progress = (cycle - 16) / 4;
-        state.camera.position.z = 3 + (progress * 12); // Move back to 15
-        cardRef.current.position.y = 8 - (progress * 8); // Move back down
-        cardRef.current.position.x = 0;
-      }
+      // Subtle floating animation
+      cardRef.current.position.y += Math.sin(state.clock.elapsedTime * 0.3) * 0.001;
+    }
+    
+    if (sunRef.current) {
+      // Subtle sun rotation and pulsing
+      sunRef.current.rotation.z = state.clock.elapsedTime * 0.1;
+      const pulse = Math.sin(state.clock.elapsedTime * 2) * 0.1 + 1;
+      sunRef.current.scale.setScalar(pulse);
     }
   });
 
@@ -70,33 +51,64 @@ const CardMonolith: React.FC = () => {
         </mesh>
       </group>
       
-      {/* The Sun */}
-      <mesh position={[0, 8, -10]}>
-        <sphereGeometry args={[1.5, 32, 32]} />
-        <meshStandardMaterial 
-          color="#ffff88"
-          emissive="#ffaa00"
-          emissiveIntensity={2}
-        />
-      </mesh>
-      
-      {/* Sun corona effect */}
-      <mesh position={[0, 8, -10]}>
-        <sphereGeometry args={[2, 32, 32]} />
-        <meshStandardMaterial 
-          color="#ffff00"
-          emissive="#ffaa00"
-          emissiveIntensity={0.5}
-          transparent
-          opacity={0.3}
-        />
-      </mesh>
+      {/* Realistic Sun */}
+      <group ref={sunRef} position={[0, 8, -10]}>
+        {/* Sun core */}
+        <mesh>
+          <sphereGeometry args={[1.8, 64, 64]} />
+          <meshStandardMaterial 
+            color="#ffdd44"
+            emissive="#ff8800"
+            emissiveIntensity={3}
+          />
+        </mesh>
+        
+        {/* Sun's chromosphere */}
+        <mesh>
+          <sphereGeometry args={[2.2, 32, 32]} />
+          <meshStandardMaterial 
+            color="#ff4400"
+            emissive="#ff6600"
+            emissiveIntensity={1}
+            transparent
+            opacity={0.4}
+          />
+        </mesh>
+        
+        {/* Sun's corona */}
+        <mesh>
+          <sphereGeometry args={[3, 32, 32]} />
+          <meshStandardMaterial 
+            color="#ffaa00"
+            emissive="#ffaa00"
+            emissiveIntensity={0.3}
+            transparent
+            opacity={0.15}
+          />
+        </mesh>
+        
+        {/* Outer corona glow */}
+        <mesh>
+          <sphereGeometry args={[4, 24, 24]} />
+          <meshStandardMaterial 
+            color="#ffccaa"
+            emissive="#ffccaa"
+            emissiveIntensity={0.1}
+            transparent
+            opacity={0.08}
+          />
+        </mesh>
+      </group>
       
       {/* Deep space star field */}
       {Array.from({ length: 200 }).map((_, i) => {
         const distance = Math.random() * 200 + 50;
-        const size = Math.random() * 0.1 + 0.01;
-        const intensity = Math.random() * 0.8 + 0.2;
+        const size = Math.random() * 0.08 + 0.01;
+        const intensity = Math.random() * 0.3 + 0.1;
+        
+        // Gradient colors from purple to blue to match background
+        const colors = ['#9333ea', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
         
         return (
           <mesh
@@ -109,9 +121,11 @@ const CardMonolith: React.FC = () => {
           >
             <sphereGeometry args={[size, 8, 8]} />
             <meshStandardMaterial 
-              color="#ffffff"
-              emissive="#ffffff"
+              color={color}
+              emissive={color}
               emissiveIntensity={intensity}
+              transparent
+              opacity={0.6}
             />
           </mesh>
         );
@@ -119,8 +133,12 @@ const CardMonolith: React.FC = () => {
       
       {/* Bright foreground stars */}
       {Array.from({ length: 30 }).map((_, i) => {
-        const size = Math.random() * 0.05 + 0.03;
-        const intensity = Math.random() * 1.2 + 0.8;
+        const size = Math.random() * 0.04 + 0.02;
+        const intensity = Math.random() * 0.8 + 0.4;
+        
+        // Warmer colors for foreground stars
+        const colors = ['#ffffff', '#fff4e6', '#fef3c7', '#fde68a'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
         
         return (
           <mesh
@@ -133,9 +151,11 @@ const CardMonolith: React.FC = () => {
           >
             <sphereGeometry args={[size, 8, 8]} />
             <meshStandardMaterial 
-              color="#ffffff"
-              emissive="#ffffff"
+              color={color}
+              emissive={color}
               emissiveIntensity={intensity}
+              transparent
+              opacity={0.8}
             />
           </mesh>
         );
@@ -146,11 +166,11 @@ const CardMonolith: React.FC = () => {
 
 export const FloatingCard3D: React.FC = () => {
   return (
-    <div className="w-full h-[600px] mx-auto bg-black rounded-lg overflow-hidden">
+    <div className="w-full h-[800px] mx-auto bg-gradient-to-b from-purple-900/20 via-blue-900/20 to-black rounded-lg overflow-hidden">
       <Canvas
         camera={{ position: [0, 0, 15], fov: 60 }}
         gl={{ antialias: true, alpha: false }}
-        scene={{ background: new THREE.Color('#000011') }}
+        scene={{ background: new THREE.Color('#0a0a2e') }}
       >
         {/* Ambient space lighting */}
         <ambientLight intensity={0.05} color="#000033" />
@@ -181,8 +201,18 @@ export const FloatingCard3D: React.FC = () => {
         
         <CardMonolith />
         
+        <OrbitControls
+          enableZoom={true}
+          enablePan={true}
+          enableRotate={true}
+          maxDistance={25}
+          minDistance={3}
+          autoRotate={false}
+          target={[0, 0, 0]}
+        />
+        
         {/* Deep space fog */}
-        <fog args={['#000011', 20, 150]} />
+        <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
     </div>
   );
