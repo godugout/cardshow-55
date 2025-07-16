@@ -72,7 +72,7 @@ export const CreatePageHero: React.FC = () => {
           {/* Animated Tagline */}
           <AnimatedTagline />
           
-          {/* Extra spacing to account for 3D card being in background */}
+          {/* Extra spacing to position 3D card in visible area */}
           <div className="mt-32 mb-32"></div>
         </div>
       </div>

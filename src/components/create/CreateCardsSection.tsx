@@ -2,7 +2,7 @@ import React from 'react';
 
 export const CreateCardsSection: React.FC = () => {
   return (
-    <div className="relative z-10 py-32 px-4 sm:px-6 lg:px-8 min-h-screen bg-crd-darkest">
+    <div className="relative z-10 py-32 px-4 sm:px-6 lg:px-8 min-h-screen bg-crd-darkest mt-[100vh]">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-4 text-white">
           What do you feel like creating today?
