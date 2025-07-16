@@ -21,7 +21,7 @@ interface DiscoverCard {
 export const SimplifiedDiscover = () => {
   const [cards, setCards] = useState<DiscoverCard[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState('featured');
+  const [activeFilter, setActiveFilter] = useState('new');
 
   useEffect(() => {
     fetchCards();
@@ -34,7 +34,7 @@ export const SimplifiedDiscover = () => {
         .from('cards')
         .select('*')
         .eq('is_public', true)
-        .limit(12);
+        .limit(9);
 
       switch (activeFilter) {
         case 'trending':
@@ -94,7 +94,7 @@ export const SimplifiedDiscover = () => {
           </div>
           
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4">
-            {Array.from({ length: 14 }).map((_, i) => (
+            {Array.from({ length: 9 }).map((_, i) => (
               <div key={i} className="bg-themed-secondary/10 rounded-lg h-48 animate-pulse" />
             ))}
           </div>
@@ -117,7 +117,7 @@ export const SimplifiedDiscover = () => {
 
         <div className="flex justify-center mb-4 sm:mb-6">
           <div className="tabs-themed inline-flex rounded-lg p-1 w-full max-w-sm sm:max-w-none sm:w-auto">
-            {['featured', 'trending', 'new'].map((filter) => (
+            {['new', 'featured', 'trending'].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
@@ -125,17 +125,24 @@ export const SimplifiedDiscover = () => {
                   "flex-1 sm:flex-none py-3 px-4 sm:px-6 text-sm font-medium rounded-md transition-all duration-200 min-h-[44px] flex items-center justify-center",
                   activeFilter === filter 
                     ? "tab-themed-active" 
-                    : "tab-themed-inactive"
+                    : "tab-themed-inactive",
+                  filter === 'featured' && "relative"
                 )}
               >
+                {filter === 'featured' && (
+                  <Star className="w-4 h-4 mr-1.5 text-yellow-400" />
+                )}
                 {getFilterLabel(filter)}
+                {filter === 'featured' && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                )}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Cards Grid - More columns for smaller cards */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        {/* Cards Grid - 3x3 layout */}
+        <div className="grid grid-cols-3 gap-4 mb-6 sm:mb-8 max-w-2xl mx-auto">
           {cards.map((card) => (
             <Card key={card.id} className="card-themed group hover:scale-105 transition-all duration-300 max-w-[200px] mx-auto">
               <div className="relative aspect-[3/4] overflow-hidden rounded-t-lg">

@@ -72,17 +72,20 @@ export const Hero3: React.FC<Hero3Props> = ({
     }, 3000);
   };
 
+  // Reduced motion support
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const handleControlHover = (show: boolean) => {
     setShowControls(show);
   };
 
   useEffect(() => {
-    if (shouldStartAnimation && animationState === 'idle' && !isManualMode) {
+    if (shouldStartAnimation && animationState === 'idle' && !isManualMode && !prefersReducedMotion) {
       setAnimationState('accelerating');
     } else if (!shouldStartAnimation && animationState === 'running') {
       setAnimationState('decelerating');
     }
-  }, [shouldStartAnimation, animationState, isManualMode]);
+  }, [shouldStartAnimation, animationState, isManualMode, prefersReducedMotion]);
 
   useEffect(() => {
     const animate = () => {
@@ -156,7 +159,10 @@ export const Hero3: React.FC<Hero3Props> = ({
       <div 
         ref={carouselRef}
         className="flex gap-6"
-        style={{ transform: `translateX(${currentPosition}px)` }}
+        style={{ 
+          transform: `translate3d(${currentPosition}px, 0, 0)`,
+          willChange: animationState !== 'idle' ? 'transform' : 'auto'
+        }}
       >
         {/* Duplicate the cards array to create seamless loop */}
         {[...featuredCards, ...featuredCards].map((card, index) => (

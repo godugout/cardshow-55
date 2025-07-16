@@ -5,7 +5,7 @@ import { useCards } from "@/hooks/useCards";
 import { SecretMenu3D } from "@/components/hero/SecretMenu3D";
 import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/components/hero/TextEffects3D";
 import { SparkleText } from "@/components/hero/SparkleText";
-import { ThemedRansomNote } from "@/components/ui/ThemedRansomNote";
+import { ThemedRansomNoteOptimized } from "@/components/ui/ThemedRansomNoteOptimized";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { useScrollTrigger } from "@/hooks/useScrollTrigger";
 import { Hero3 } from "@/components/ui/design-system";
@@ -143,16 +143,16 @@ export const EnhancedHero: React.FC = () => {
     setCurrentHero(prev => (prev + 1) % 3);
   };
   
-  // Use all cards if available, otherwise featured cards for ticker carousel
-  const allCards = cards.length > 0 ? cards : featuredCards;
-  const showcaseCards = allCards.length > 0 ? allCards : [];
+  // Use all cards for carousel (405 cards for seamless looping)
+  const showcaseCards = cards.length > 0 ? cards : [];
 
-  // Fetch all cards for the ticker on mount
+  // Fetch all cards for the carousel on mount
   React.useEffect(() => {
-    if (allCards.length === 0) {
+    if (cards.length === 0) {
+      console.log('Fetching all cards for carousel...');
       fetchAllCardsFromDatabase();
     }
-  }, [fetchAllCardsFromDatabase, allCards.length]);
+  }, [fetchAllCardsFromDatabase, cards.length]);
 
   // Make cards clickable, no immersive preview
   const handleCardStudioOpen = (card: DbCard) => {
@@ -196,7 +196,7 @@ export const EnhancedHero: React.FC = () => {
   // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
     <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-      <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused || !isLabelVisible}>{currentConfig.word}</ThemedRansomNote><br />
+      <ThemedRansomNoteOptimized theme={currentConfig.theme} isPaused={isAnimationPaused || !isLabelVisible}>{currentConfig.word}</ThemedRansomNoteOptimized><br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         {currentConfig.tagline.split(' ').slice(0, -1).join(' ')}{' '}
         <span className="gradient-text-green-blue-purple">{currentConfig.tagline.split(' ').slice(-1)[0]}</span>
