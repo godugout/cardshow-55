@@ -12,217 +12,83 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
   animationType = "scanning"
 }) => {
 
-  const getBaseStyle = (): React.CSSProperties => {
-    return {
-      fontFamily: 'monospace',
-      letterSpacing: '0.2em',
-      fontWeight: '900',
+  const getAnimationStyle = (): React.CSSProperties => {
+    const baseStyle: React.CSSProperties = {
+      fontFamily: '"Courier New", "Consolas", "Monaco", monospace',
+      letterSpacing: '0.1em',
+      fontWeight: '700',
       fontSize: '1em',
-      color: 'transparent',
-      imageRendering: 'pixelated' as any,
+      position: 'relative',
       display: 'inline-block',
-      position: 'relative' as const,
+      color: '#00ff41',
+      textShadow: '0 0 10px #00ff41',
     };
-  };
 
-  const getPatternStyle = () => {
-    const basePatternStyle: React.CSSProperties = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      fontFamily: 'monospace',
-      letterSpacing: '0.2em',
-      fontWeight: '900',
-      fontSize: '1em',
-      color: 'transparent',
-      imageRendering: 'pixelated' as any,
-      overflow: 'hidden',
-      WebkitMask: `linear-gradient(black, black)`,
-      mask: `linear-gradient(black, black)`,
-      WebkitMaskComposite: 'source-in',
-      maskComposite: 'intersect',
+    const glitchStyle: React.CSSProperties = {
+      ...baseStyle,
+      animation: 'glitch 2s infinite',
+    };
+
+    const staticStyle: React.CSSProperties = {
+      ...baseStyle,
+      animation: 'static 0.1s infinite',
+    };
+
+    const scanStyle: React.CSSProperties = {
+      ...baseStyle,
+      animation: 'scan 3s infinite',
     };
 
     switch (animationType) {
       case 'scanning':
-        return {
-          ...basePatternStyle,
-          background: `
-            repeating-linear-gradient(
-              90deg,
-              #00e6ff 0px,
-              #00e6ff 1px,
-              transparent 1px,
-              transparent 2px
-            )
-          `,
-          backgroundSize: '4px 100%',
-          animation: 'scanning-sweep 3s ease-in-out infinite',
-        };
-        
+        return scanStyle;
       case 'matrix':
         return {
-          ...basePatternStyle,
-          background: `
-            repeating-linear-gradient(
-              0deg,
-              #00e6ff 0px,
-              #00e6ff 1px,
-              transparent 1px,
-              transparent 2px
-            )
-          `,
-          backgroundSize: '100% 4px',
-          animation: 'matrix-cascade 2s linear infinite',
+          ...baseStyle,
+          animation: 'matrix-rain 2s infinite',
+          color: '#00ff41',
         };
-        
       case 'construction':
-        return {
-          ...basePatternStyle,
-          background: `
-            repeating-linear-gradient(
-              45deg,
-              #00e6ff 0px,
-              #00e6ff 2px,
-              #00b8e6 2px,
-              #00b8e6 4px
-            )
-          `,
-          backgroundSize: '8px 8px',
-          animation: 'construction-build 1.5s ease-in-out infinite',
-        };
-        
+        return glitchStyle;
       case 'datastream':
-        return {
-          ...basePatternStyle,
-          background: `
-            repeating-linear-gradient(
-              45deg,
-              #00e6ff 0px,
-              #00e6ff 1px,
-              transparent 1px,
-              transparent 2px,
-              #00b8e6 2px,
-              #00b8e6 3px,
-              transparent 3px,
-              transparent 4px
-            )
-          `,
-          backgroundSize: '8px 8px',
-          animation: 'datastream-flow 2.5s linear infinite',
-        };
-        
+        return staticStyle;
       default:
-        return {
-          ...basePatternStyle,
-          background: `
-            repeating-linear-gradient(
-              90deg,
-              #00e6ff 0px,
-              #00e6ff 1px,
-              transparent 1px,
-              transparent 2px
-            )
-          `,
-          backgroundSize: '4px 100%',
-        };
+        return baseStyle;
     }
   };
 
   return (
     <span className={`relative inline-block ${className}`}>
       <span 
-        className="font-mono tracking-wider select-none"
+        className="relative z-10 font-mono tracking-wider select-none"
+        style={getAnimationStyle()}
+      >
+        {children}
+      </span>
+      
+      {/* Glitch overlay effect */}
+      <span 
+        className="absolute inset-0 font-mono tracking-wider select-none pointer-events-none"
         style={{
-          fontFamily: 'monospace',
-          letterSpacing: '0.2em',
-          fontWeight: '900',
-          fontSize: '1em',
-          color: 'transparent',
-          imageRendering: 'pixelated' as any,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          backgroundAttachment: 'local',
-          ...(() => {
-            switch (animationType) {
-              case 'scanning':
-                return {
-                  background: `
-                    repeating-linear-gradient(
-                      90deg,
-                      #00e6ff 0px,
-                      #00e6ff 1px,
-                      transparent 1px,
-                      transparent 2px
-                    )
-                  `,
-                  backgroundSize: '4px 100%',
-                  animation: 'scanning-sweep 3s ease-in-out infinite',
-                };
-              case 'matrix':
-                return {
-                  background: `
-                    repeating-linear-gradient(
-                      0deg,
-                      #00e6ff 0px,
-                      #00e6ff 1px,
-                      transparent 1px,
-                      transparent 2px
-                    )
-                  `,
-                  backgroundSize: '100% 4px',
-                  animation: 'matrix-cascade 2s linear infinite',
-                };
-              case 'construction':
-                return {
-                  background: `
-                    repeating-linear-gradient(
-                      45deg,
-                      #00e6ff 0px,
-                      #00e6ff 2px,
-                      #00b8e6 2px,
-                      #00b8e6 4px
-                    )
-                  `,
-                  backgroundSize: '8px 8px',
-                  animation: 'construction-build 1.5s ease-in-out infinite',
-                };
-              case 'datastream':
-                return {
-                  background: `
-                    repeating-linear-gradient(
-                      45deg,
-                      #00e6ff 0px,
-                      #00e6ff 1px,
-                      transparent 1px,
-                      transparent 2px,
-                      #00b8e6 2px,
-                      #00b8e6 3px,
-                      transparent 3px,
-                      transparent 4px
-                    )
-                  `,
-                  backgroundSize: '8px 8px',
-                  animation: 'datastream-flow 2.5s linear infinite',
-                };
-              default:
-                return {
-                  background: `
-                    repeating-linear-gradient(
-                      90deg,
-                      #00e6ff 0px,
-                      #00e6ff 1px,
-                      transparent 1px,
-                      transparent 2px
-                    )
-                  `,
-                  backgroundSize: '4px 100%',
-                };
-            }
-          })(),
+          ...getAnimationStyle(),
+          color: '#ff0080',
+          opacity: 0.3,
+          animation: 'glitch-overlay 1.5s infinite',
+          transform: 'translate(-1px, 0)',
+        }}
+      >
+        {children}
+      </span>
+      
+      {/* Static noise overlay */}
+      <span 
+        className="absolute inset-0 font-mono tracking-wider select-none pointer-events-none"
+        style={{
+          ...getAnimationStyle(),
+          color: '#0080ff',
+          opacity: 0.2,
+          animation: 'static-noise 0.3s infinite',
+          transform: 'translate(1px, 0)',
         }}
       >
         {children}

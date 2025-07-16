@@ -415,6 +415,103 @@
     100% { transform: translate(0, 0); }
   }
 
+  /* Terminal/Digital glitch effects */
+  @keyframes glitch-overlay {
+    0%, 100% { 
+      transform: translateX(0);
+      opacity: 0.3;
+    }
+    20% { 
+      transform: translateX(-2px);
+      opacity: 0.5;
+    }
+    40% { 
+      transform: translateX(2px);
+      opacity: 0.2;
+    }
+    60% { 
+      transform: translateX(-1px);
+      opacity: 0.6;
+    }
+    80% { 
+      transform: translateX(1px);
+      opacity: 0.1;
+    }
+  }
+
+  @keyframes static-noise {
+    0%, 100% { 
+      transform: translateX(0);
+      opacity: 0.2;
+    }
+    10% { 
+      transform: translateX(1px);
+      opacity: 0.3;
+    }
+    20% { 
+      transform: translateX(-1px);
+      opacity: 0.1;
+    }
+    30% { 
+      transform: translateX(2px);
+      opacity: 0.4;
+    }
+    40% { 
+      transform: translateX(-2px);
+      opacity: 0.2;
+    }
+    50% { 
+      transform: translateX(1px);
+      opacity: 0.5;
+    }
+    60% { 
+      transform: translateX(-1px);
+      opacity: 0.1;
+    }
+    70% { 
+      transform: translateX(2px);
+      opacity: 0.3;
+    }
+    80% { 
+      transform: translateX(-2px);
+      opacity: 0.2;
+    }
+    90% { 
+      transform: translateX(1px);
+      opacity: 0.4;
+    }
+  }
+
+  @keyframes scan {
+    0%, 100% { 
+      text-shadow: 0 0 10px #00ff41;
+      opacity: 1;
+    }
+    50% { 
+      text-shadow: 0 0 20px #00ff41, 0 0 30px #00ff41;
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes matrix-rain {
+    0%, 100% { 
+      color: #00ff41;
+      text-shadow: 0 0 10px #00ff41;
+    }
+    25% { 
+      color: #00cc33;
+      text-shadow: 0 0 15px #00cc33;
+    }
+    50% { 
+      color: #00ff41;
+      text-shadow: 0 0 20px #00ff41, 0 0 30px #00ff41;
+    }
+    75% { 
+      color: #00cc33;
+      text-shadow: 0 0 15px #00cc33;
+    }
+  }
+
   /* Carousel component styles */
   .carousel-container {
     overflow: hidden;
