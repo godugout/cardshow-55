@@ -45,12 +45,12 @@ export const Hero3: React.FC<Hero3Props> = ({
       setPosition(prev => {
         const cardWidth = 384; // lg:w-96 = 384px
         const gap = 24; // gap-6 = 24px
-        const singleSetWidth = (cardWidth + gap) * featuredCards.length;
+        const totalWidth = (cardWidth + gap) * featuredCards.length;
         const next = prev - (speed * delta);
         
-        // Reset position for seamless loop - reset when one full set has passed
-        if (next <= -singleSetWidth) {
-          return next + singleSetWidth;
+        // Reset position for seamless loop
+        if (next <= -totalWidth) {
+          return next + totalWidth;
         }
         return next;
       });

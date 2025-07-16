@@ -10,11 +10,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         // Exact specification buttons with proper styling - all rounded pills
-        primary: "btn-themed-primary team-spirit-glow btn-sparkle-dust",
-        secondary: "btn-themed-secondary team-spirit-glow btn-sparkle-dust",
+        primary: "btn-themed-primary team-spirit-glow",
+        secondary: "btn-themed-secondary team-spirit-glow", 
         outline: "btn-themed-ghost",
         ghost: "btn-themed-ghost",
-        action: "p-3 btn-themed-secondary team-spirit-glow btn-sparkle-dust",
+        action: "p-3 btn-themed-secondary team-spirit-glow",
         // Fallback variants - also rounded pills
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
