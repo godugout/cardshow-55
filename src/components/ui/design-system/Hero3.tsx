@@ -31,11 +31,28 @@ export const Hero3: React.FC<Hero3Props> = ({
   const lastTimestamp = useRef<number>();
   const speed = 0.15; // pixels per millisecond (reduced from 0.5 for better viewing)
   
-  // Intersection observer to control animation based on scroll position
+  // State to track if hero animation has completed (scroll-based)
+  const [heroAnimationComplete, setHeroAnimationComplete] = useState(false);
+  
+  // Intersection observer to detect when we're past the hero section
   const { targetRef, isIntersecting } = useIntersectionObserver({
-    threshold: 0.5, // Start animation when 50% visible
-    rootMargin: '50px'
+    threshold: 0.3,
+    rootMargin: '0px'
   });
+
+  // Monitor scroll position to detect when hero animation should complete
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+      // Complete hero animation when user scrolls about 40% down the page
+      if (scrollPercent > 0.4 && !heroAnimationComplete) {
+        setHeroAnimationComplete(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [heroAnimationComplete]);
   
   if (!showFeaturedCards || featuredCards.length === 0) {
     return (
@@ -58,9 +75,10 @@ export const Hero3: React.FC<Hero3Props> = ({
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   };
 
-  // Optimized carousel animation with RAF and smooth start/stop
+  // Optimized carousel animation with RAF and smart start control
   const animateCarousel = useCallback(() => {
-    const shouldAnimate = isIntersecting && !isHovered && !prefersReducedMotion.current;
+    // Only animate when hero animation is complete AND we're intersecting AND not hovered
+    const shouldAnimate = heroAnimationComplete && isIntersecting && !isHovered && !prefersReducedMotion.current;
     
     const animate = (timestamp: number) => {
       if (!lastTimestamp.current) lastTimestamp.current = timestamp;
@@ -102,7 +120,7 @@ export const Hero3: React.FC<Hero3Props> = ({
     };
     
     rafId.current = requestAnimationFrame(animate);
-  }, [isIntersecting, isHovered, animationProgress, featuredCards.length, speed]);
+  }, [heroAnimationComplete, isIntersecting, isHovered, animationProgress, featuredCards.length, speed]);
 
   // Start/stop animation based on intersection and hover state
   useEffect(() => {
@@ -126,7 +144,10 @@ export const Hero3: React.FC<Hero3Props> = ({
       className="w-full overflow-hidden relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{ height: '420px' }} // Fixed height to prevent layout shifts
+      style={{ 
+        height: '520px', // Increased from 420px for better card visibility
+        contain: 'layout style paint', // Performance optimization
+      }} // Fixed height to prevent layout shifts
     >
       {/* Horizontal scrolling carousel with smooth RAF animation */}
       <div 
@@ -134,7 +155,8 @@ export const Hero3: React.FC<Hero3Props> = ({
         className="flex gap-6 h-full"
         style={{
           transform: `translate3d(${position}px, 0, 0)`,
-          willChange: 'transform'
+          willChange: heroAnimationComplete ? 'transform' : 'auto', // Smart will-change management
+          contain: 'layout style paint' // Performance containment
         }}
       >
         {/* Duplicate the cards array multiple times for infinite scroll */}

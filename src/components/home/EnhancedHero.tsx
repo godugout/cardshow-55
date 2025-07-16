@@ -9,6 +9,7 @@ import { ThemedRansomNote } from "@/components/ui/ThemedRansomNote";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { Hero3 } from "@/components/ui/design-system";
 import { Pause, Play, SkipBack, SkipForward, Settings } from "lucide-react";
+import { usePerformanceOptimizer } from "@/hooks/usePerformanceOptimizer";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -17,6 +18,9 @@ type DbCard = Tables<'cards'>;
 export const EnhancedHero: React.FC = () => {
   const { cards, featuredCards, loading, fetchAllCardsFromDatabase } = useCards();
   const navigate = useNavigate();
+  
+  // Performance monitoring and adaptive settings
+  const { settings: perfSettings } = usePerformanceOptimizer();
   
   // Hero rotation state
   const [currentHero, setCurrentHero] = useState(0);
@@ -185,13 +189,20 @@ export const EnhancedHero: React.FC = () => {
 
   const currentConfig = heroConfigs[currentHero];
 
-  // Create enhanced heading with responsive text wrapping control and consistent typography
+  // Create enhanced heading with performance-aware animations
   const enhancedHeading = (
     <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-      <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused}>{currentConfig.word}</ThemedRansomNote><br />
+      <ThemedRansomNote 
+        theme={currentConfig.theme} 
+        isPaused={isAnimationPaused || !perfSettings.animationsEnabled}
+      >
+        {currentConfig.word}
+      </ThemedRansomNote><br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         {currentConfig.tagline.split(' ').slice(0, -1).join(' ')}{' '}
-        <span className="gradient-text-green-blue-purple">{currentConfig.tagline.split(' ').slice(-1)[0]}</span>
+        <span className={perfSettings.animationsEnabled ? "gradient-text-green-blue-purple" : "text-crd-green"}>
+          {currentConfig.tagline.split(' ').slice(-1)[0]}
+        </span>
       </span>
     </div>
   );
