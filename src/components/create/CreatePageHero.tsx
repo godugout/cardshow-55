@@ -1,9 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { StandardHero } from '@/components/shared/StandardHero';
 import { Link } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { PixelDigital } from '@/components/ui/PixelDigital';
+import { FloatingCard3D } from '@/components/ui/FloatingCard3D';
 
 const AnimatedTagline: React.FC = () => {
   return (
@@ -79,11 +80,16 @@ export const CreatePageHero: React.FC = () => {
           
           {/* Animated Tagline */}
           <AnimatedTagline />
+          
+          {/* 3D Trading Card */}
+          <div className="mt-16 mb-32">
+            <FloatingCard3D />
+          </div>
         </div>
       </div>
       
-      {/* Cards Section */}
-      <div className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
+      {/* Cards Section - Below the fold */}
+      <div className="relative z-10 py-32 px-4 sm:px-6 lg:px-8 min-h-screen">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-4 text-white">
             What do you feel like creating today?
