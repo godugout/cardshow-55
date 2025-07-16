@@ -11,6 +11,7 @@ export interface Hero3Props {
   showFeaturedCards?: boolean;
   featuredCards?: any[];
   onCardClick?: (card: any) => void;
+  externalAnimationTrigger?: boolean;
 }
 
 export const Hero3: React.FC<Hero3Props> = ({ 
@@ -21,7 +22,8 @@ export const Hero3: React.FC<Hero3Props> = ({
   ctaLink, 
   showFeaturedCards = false, 
   featuredCards = [], 
-  onCardClick = () => {} 
+  onCardClick = () => {},
+  externalAnimationTrigger = false
 }) => {
   const [position, setPosition] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -33,7 +35,7 @@ export const Hero3: React.FC<Hero3Props> = ({
   
   // Intersection observer to control animation based on scroll position
   const { targetRef, isIntersecting } = useIntersectionObserver({
-    threshold: 0.5, // Start animation when 50% visible
+    threshold: 0.3, // Start animation when 30% visible for better timing
     rootMargin: '50px'
   });
   
@@ -60,7 +62,7 @@ export const Hero3: React.FC<Hero3Props> = ({
 
   // Optimized carousel animation with RAF and smooth start/stop
   const animateCarousel = useCallback(() => {
-    const shouldAnimate = isIntersecting && !isHovered && !prefersReducedMotion.current;
+    const shouldAnimate = externalAnimationTrigger && isIntersecting && !isHovered && !prefersReducedMotion.current;
     
     const animate = (timestamp: number) => {
       if (!lastTimestamp.current) lastTimestamp.current = timestamp;
@@ -114,7 +116,7 @@ export const Hero3: React.FC<Hero3Props> = ({
         cancelAnimationFrame(rafId.current);
       }
     };
-  }, [animateCarousel]);
+  }, [animateCarousel, externalAnimationTrigger]);
 
   // Pause on hover for better UX
   const handleMouseEnter = () => setIsHovered(true);
@@ -126,7 +128,7 @@ export const Hero3: React.FC<Hero3Props> = ({
       className="w-full overflow-hidden relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{ height: '420px' }} // Fixed height to prevent layout shifts
+      style={{ height: '560px' }} // Increased height to show full cards
     >
       {/* Horizontal scrolling carousel with smooth RAF animation */}
       <div 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { StandardHero } from "@/components/shared/StandardHero";
 import { useCards } from "@/hooks/useCards";
@@ -9,6 +9,7 @@ import { ThemedRansomNote } from "@/components/ui/ThemedRansomNote";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
 import { Hero3 } from "@/components/ui/design-system";
 import { Pause, Play, SkipBack, SkipForward, Settings } from "lucide-react";
+import { useIntersectionObserver } from "@/components/editor/wizard/hooks/useIntersectionObserver";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -33,6 +34,17 @@ export const EnhancedHero: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const [showControls, setShowControls] = useState(false);
+
+  // Animation coordination state
+  const [ransomLetterPaused, setRansomLetterPaused] = useState(false);
+  const [carouselShouldStart, setCarouselShouldStart] = useState(false);
+  const ransomLetterRef = useRef<HTMLDivElement>(null);
+
+  // Intersection observer for ransom letter - watch for when top half is off screen
+  const { targetRef: ransomTargetRef, isIntersecting: isRansomIntersecting } = useIntersectionObserver({
+    threshold: 0.5, // When 50% of ransom letter is visible
+    rootMargin: '-25% 0px 0px 0px' // Trigger when top quarter is off screen
+  });
 
   // Load preferences from localStorage
   useEffect(() => {
@@ -114,6 +126,20 @@ export const EnhancedHero: React.FC = () => {
     return () => clearInterval(heroRotationInterval);
   }, [isPaused]);
   
+  // Animation coordination based on scroll position
+  useEffect(() => {
+    // When ransom letter moves off screen (top half), pause it and start carousel
+    if (!isRansomIntersecting && !ransomLetterPaused) {
+      setRansomLetterPaused(true);
+      setCarouselShouldStart(true);
+    }
+    // When ransom letter comes back into view, resume it and pause carousel
+    else if (isRansomIntersecting && ransomLetterPaused) {
+      setRansomLetterPaused(false);
+      setCarouselShouldStart(false);
+    }
+  }, [isRansomIntersecting, ransomLetterPaused]);
+
   // Keyboard shortcuts for controls (Ctrl+Shift+H to show/hide controls)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -187,8 +213,8 @@ export const EnhancedHero: React.FC = () => {
 
   // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
-    <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-      <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused}>{currentConfig.word}</ThemedRansomNote><br />
+    <div ref={ransomTargetRef} className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
+      <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused || ransomLetterPaused}>{currentConfig.word}</ThemedRansomNote><br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         {currentConfig.tagline.split(' ').slice(0, -1).join(' ')}{' '}
         <span className="gradient-text-green-blue-purple">{currentConfig.tagline.split(' ').slice(-1)[0]}</span>
@@ -212,7 +238,7 @@ export const EnhancedHero: React.FC = () => {
       >
         {/* Featured Cards Section */}
         {showcaseCards.length > 0 ? (
-          <div className="mt-8">
+          <div className="mt-16 mb-32">
             <Hero3
               caption=""
               heading=""
@@ -222,6 +248,7 @@ export const EnhancedHero: React.FC = () => {
               showFeaturedCards={true}
               featuredCards={showcaseCards}
               onCardClick={handleCardStudioOpen}
+              externalAnimationTrigger={carouselShouldStart}
             />
           </div>
         ) : (
