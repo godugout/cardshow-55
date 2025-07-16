@@ -154,7 +154,7 @@ const CardMonolith: React.FC = () => {
       </group>
       
       {/* Realistic Sun */}
-      <group ref={sunRef} position={[0, 8, -10]}>
+      <group ref={sunRef} position={[0, 2, -10]}>
         {/* Sun light source */}
         <pointLight
           intensity={8}
