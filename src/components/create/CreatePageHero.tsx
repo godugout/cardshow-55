@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { StandardHero } from '@/components/shared/StandardHero';
 
 // Supporting Components
 const Hero3DText: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -15,7 +15,7 @@ const Hero3DText: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const BuildingBlocksAnimation: React.FC = () => {
   return (
-    <div className="relative w-64 h-64 mt-12 opacity-0 animate-fade-in" 
+    <div className="relative w-64 h-64 mt-12 opacity-0 animate-fade-in mx-auto" 
          style={{ animationDelay: '2s', animationFillMode: 'forwards' }}>
       {/* Base Layer */}
       <div className="absolute inset-0 transform animate-float">
@@ -86,84 +86,70 @@ const craftingSteps = [
 ];
 
 export const CreatePageHero: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-crd-darkest text-crd-white">
-      <div className="container mx-auto px-5 md:px-10">
-        {/* Hero Section */}
-        <section className="min-h-[80vh] flex flex-col justify-center items-center text-center">
-          {/* 3D Layered Hero with Building Metaphor */}
-          <Hero3DText>
-            <span 
-              className="block text-crd-mediumGray text-5xl md:text-7xl opacity-80" 
-              style={{ transform: 'translateZ(-40px)' }}
-            >
-              Build in layers
-            </span>
-            <span 
-              className="block text-crd-green text-6xl md:text-8xl font-black animate-pulse" 
-              style={{ transform: 'translateZ(0px)' }}
-            >
-              craft in 3D
-            </span>
-            <span 
-              className="block text-crd-white text-5xl md:text-7xl" 
-              style={{ 
-                transform: 'translateZ(40px)',
-                textShadow: '0 0 20px rgba(0, 200, 81, 0.4)'
-              }}
-            >
-              create legends
-            </span>
-          </Hero3DText>
-          
-          {/* Animated Subhead */}
-          <div className="mt-8 space-y-2">
-            <p className="text-xl md:text-2xl text-crd-lightGray opacity-0 animate-fade-in"
-               style={{ animationDelay: '1s', animationFillMode: 'forwards' }}>
-              Stack. Shape. Sculpt. Watch your cards come alive.
-            </p>
-            
-            {/* Supporting text */}
-            <p className="text-lg text-crd-mediumGray opacity-0 animate-fade-in"
-               style={{ animationDelay: '1.5s', animationFillMode: 'forwards' }}>
-              Professional tools meet digital craftsmanship
-            </p>
-          </div>
-          
-          {/* Visual Building Blocks Animation */}
-          <BuildingBlocksAnimation />
-          
-          {/* CTA Buttons with Craft Theme */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-12 opacity-0 animate-fade-in"
-               style={{ animationDelay: '2.5s', animationFillMode: 'forwards' }}>
-            <Link 
-              to="/create/new"
-              className="group px-8 py-4 bg-crd-green text-crd-darkest font-bold rounded-lg hover:bg-crd-green/90 transition-all relative overflow-hidden"
-            >
-              <span className="relative z-10">Start Crafting</span>
-            </Link>
-            <Link 
-              to="/templates"
-              className="px-8 py-4 border-2 border-crd-mediumGray rounded-lg hover:border-crd-green transition-all backdrop-blur-sm"
-            >
-              Explore Templates
-            </Link>
-          </div>
-        </section>
-
-        {/* Crafting Process Section */}
-        <section className="py-20">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-crd-white">
-            Your digital workshop awaits
-          </h2>
-          
-          <div className="grid md:grid-cols-4 gap-6">
-            {craftingSteps.map((step, index) => (
-              <CraftingStep key={index} {...step} delay={index * 0.2 + 3} />
-            ))}
-          </div>
-        </section>
-      </div>
+  // Create 3D layered heading
+  const enhanced3DHeading = (
+    <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
+      <Hero3DText>
+        <span 
+          className="block text-crd-mediumGray text-5xl md:text-7xl opacity-80" 
+          style={{ transform: 'translateZ(-40px)' }}
+        >
+          Build in layers
+        </span>
+        <span 
+          className="block text-crd-green text-6xl md:text-8xl font-black animate-pulse" 
+          style={{ transform: 'translateZ(0px)' }}
+        >
+          craft in 3D
+        </span>
+        <span 
+          className="block text-crd-white text-5xl md:text-7xl" 
+          style={{ 
+            transform: 'translateZ(40px)',
+            textShadow: '0 0 20px rgba(0, 200, 81, 0.4)'
+          }}
+        >
+          create legends
+        </span>
+      </Hero3DText>
     </div>
+  );
+
+  return (
+    <StandardHero
+      label="CUT, CRAFT & CREATE DIGITALLY"
+      title="Build in layers, craft in 3D, create legends"
+      titleEffects={enhanced3DHeading}
+      tagline="Stack. Shape. Sculpt. Watch your cards come alive."
+      description="Professional tools meet digital craftsmanship. Experience the freedom of digital crafting where every cut, layer, and blend creates immersive cards that viewers can explore from every angle."
+      primaryCta={{
+        text: "Start Crafting",
+        link: "/create/new",
+        variant: "create"
+      }}
+      secondaryCta={{
+        text: "Explore Templates",
+        link: "/templates"
+      }}
+      showDecorations={true}
+      fullWidth={true}
+      heroVariant="hero"
+    >
+      {/* Visual Building Blocks Animation */}
+      <BuildingBlocksAnimation />
+      
+      {/* Crafting Process Section */}
+      <section className="py-20 max-w-6xl mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-crd-white">
+          Your digital workshop awaits
+        </h2>
+        
+        <div className="grid md:grid-cols-4 gap-6">
+          {craftingSteps.map((step, index) => (
+            <CraftingStep key={index} {...step} delay={index * 0.2 + 3} />
+          ))}
+        </div>
+      </section>
+    </StandardHero>
   );
 };
