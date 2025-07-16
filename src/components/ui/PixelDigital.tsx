@@ -23,11 +23,6 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
           animationType === 'datastream' ? 'animate-datastream-fill' : ''
         }`}
         style={{
-          textShadow: `
-            0 0 4px #00e6ff,
-            0 0 8px #00b8e6,
-            0 0 12px #00a3d9
-          `,
           background: animationType === 'scanning' 
             ? 'linear-gradient(90deg, #001a1a 0%, #00e6ff 25%, #00b8e6 50%, #00a3d9 75%, #001a1a 100%)'
             : animationType === 'matrix' 
