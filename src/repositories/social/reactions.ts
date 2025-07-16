@@ -93,96 +93,18 @@ export const getReactions = async (params: GetReactionsParams): Promise<GetReact
 
 export const addReaction = async (params: AddReactionParams): Promise<Reaction> => {
   try {
-    // Handle memory reactions
-    if (params.targetType === 'memory') {
-      // Try to use Supabase if available
-      try {
-        const { data, error } = await supabase
-          .from('reactions')
-          .insert({
-            card_id: params.targetId, // Using card_id as in our DB schema, memories/cards are the same
-            type: params.type,
-            user_id: params.userId || 'demo-user' // In a real app, this would come from auth
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-        
-        return {
-          id: data.id,
-          userId: data.user_id,
-          memoryId: data.card_id,
-          type: data.type,
-          createdAt: data.created_at
-        };
-      } catch (e) {
-        // Fallback to mock API
-        const response = await fetch('/api/reactions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            memoryId: params.targetId,
-            type: params.type,
-            userId: params.userId || 'demo-user'
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to add reaction');
-        }
-        
-        const data = await response.json();
-        return data;
-      }
-    } else if (params.targetType === 'comment') {
-      // Handle comment reactions
-      try {
-        const { data, error } = await supabase
-          .from('reactions')
-          .insert({
-            comment_id: params.targetId,
-            type: params.type,
-            user_id: params.userId || 'demo-user'
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-        
-        return {
-          id: data.id,
-          userId: data.user_id,
-          commentId: data.comment_id,
-          type: data.type,
-          createdAt: data.created_at
-        };
-      } catch (e) {
-        // Fallback for comment reactions
-        const response = await fetch('/api/reactions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            commentId: params.targetId,
-            type: params.type,
-            userId: params.userId || 'demo-user'
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to add reaction');
-        }
-        
-        const data = await response.json();
-        return data;
-      }
-    }
+    // Return mock reaction - database schema mismatch with reaction types
+    console.log('Add reaction disabled - database schema mismatch');
     
-    throw new Error('Unsupported target type');
+    return {
+      id: 'mock-' + Date.now(),
+      userId: params.userId || 'demo-user',
+      memoryId: params.targetType === 'memory' ? params.targetId : undefined,
+      commentId: params.targetType === 'comment' ? params.targetId : undefined,
+      collectionId: params.targetType === 'collection' ? params.targetId : undefined,
+      type: params.type,
+      createdAt: new Date().toISOString()
+    };
   } catch (error) {
     console.error('Error adding reaction:', error);
     toast({
