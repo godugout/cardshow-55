@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { RotateCcw, MousePointer, Smartphone, Zap, Eye, RotateCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAnimationTask } from '@/hooks/useAnimationController';
+import { useAdvancedPerformanceMarks } from '@/hooks/usePerformanceMarks';
 import type { CardData } from '@/types/card';
 
 export type InteractionMode = 'tilt' | 'orbital' | 'gyroscope' | 'physics' | 'magnetic' | 'carousel';
@@ -22,6 +23,13 @@ export const Interactive3DCard = ({
   onModeChange,
   className 
 }: Interactive3DCardProps) => {
+  // Performance monitoring with animation tracking
+  const { markInteraction, markAnimationStart } = useAdvancedPerformanceMarks('Interactive3DCard', {
+    trackInteractions: true,
+    trackAnimations: true,
+    logThreshold: 16 // Only log if takes longer than 16ms
+  });
+
   const cardRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
@@ -131,10 +139,12 @@ export const Interactive3DCard = ({
     }
   };
 
-  // Centralized physics animation
+  // Centralized physics animation with performance tracking
   useAnimationTask(
     'interactive3d-physics',
     () => {
+      const stopAnimation = markAnimationStart('physics-update');
+      
       velocityRef.current.x *= 0.95;
       velocityRef.current.y *= 0.95;
       
@@ -145,12 +155,15 @@ export const Interactive3DCard = ({
           z: prev.z
         }));
       }
+      
+      stopAnimation?.();
     },
     1, // High priority
     mode === 'physics' && !isInteracting
   );
 
   const handleMouseEnter = () => {
+    markInteraction('mouse-enter');
     setIsInteracting(true);
   };
 

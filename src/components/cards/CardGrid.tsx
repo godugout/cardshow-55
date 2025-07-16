@@ -1,5 +1,6 @@
 
 import React, { useState, memo, useCallback } from 'react';
+import { usePerformanceMarks } from '@/hooks/usePerformanceMarks';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -193,6 +194,9 @@ export const CardGrid: React.FC<CardGridProps> = ({
   useProgressiveLoading = true,
   onCardClick 
 }) => {
+  // Performance monitoring in development
+  usePerformanceMarks('CardGrid');
+
   // Mobile-optimized grid classes
   const getGridClasses = () => {
     if (viewMode === 'masonry') {

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
+import { usePerformanceMarks } from '@/hooks/usePerformanceMarks';
 
 interface Card {
   id: string;
@@ -60,6 +61,9 @@ interface CarouselTrackProps {
 
 // Use CSS-only animation with GPU acceleration
 export const CarouselTrack = memo(({ cards }: CarouselTrackProps) => {
+  // Performance monitoring in development
+  usePerformanceMarks('CarouselTrack');
+
   if (!cards || cards.length === 0) {
     return null;
   }
