@@ -184,10 +184,9 @@
     transition: all 0.3s ease;
   }
 
-  /* Enhanced hover state without background interference */
+  /* Enhanced hover state without any background fill */
   .nav-create-gradient:hover {
     transform: scale(1.02);
-    filter: drop-shadow(0 0 8px hsl(15, 80%, 60% / 0.3));
   }
 
   .nav-create-gradient:hover .nav-create-text {
