@@ -106,7 +106,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     []
   );
 
-  // Generate optimized letter state
+  // Generate dramatic letter state with wild animations
   const generateLetterState = useCallback((char: string, index: number): LetterState => {
     const animationTypes: ('spell' | 'spin' | 'float' | 'glow' | 'none')[] = ['spell', 'spin', 'float', 'glow', 'none'];
     const randomAnimationType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
@@ -114,23 +114,27 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     const randomFont = themeConfig.fonts[Math.floor(Math.random() * themeConfig.fonts.length)];
     const randomPattern = themeConfig.patterns[Math.floor(Math.random() * themeConfig.patterns.length)];
     
+    // Dramatic positioning and transforms
+    const rotation = Math.random() > 0.9 ? (Math.random() - 0.5) * 720 : (Math.random() - 0.5) * 120; // Occasional full spins
+    const scale = Math.random() * 1.2 + 0.6; // Wild scaling from 0.6 to 1.8
+    
     return {
       char,
       id: `letter-${index}-${Date.now()}`,
       animationType: randomAnimationType,
       isAnimating: false,
-      position: { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 },
+      position: { x: Math.random() * 30 - 15, y: Math.random() * 30 - 15 }, // Dramatic ±15px movement
       color: randomColor,
-      fontSize: `${Math.random() * 0.8 + 1.2}em`,
+      fontSize: `${Math.random() * 1.5 + 0.8}em`, // Wider font size range
       fontFamily: randomFont,
-      opacity: Math.random() * 0.3 + 0.7,
-      transform: `rotate(${(Math.random() - 0.5) * 20}deg) scale(${Math.random() * 0.4 + 0.8})`,
+      opacity: Math.random() * 0.5 + 0.5,
+      transform: `rotate(${rotation}deg) scale(${scale})`,
       pattern: randomPattern,
-      textShadow: Math.random() > 0.7 ? `2px 2px 4px rgba(0,0,0,0.3)` : 'none',
-      border: Math.random() > 0.8 ? `2px solid ${randomColor}` : 'none',
-      borderRadius: Math.random() > 0.6 ? `${Math.random() * 10 + 5}px` : '0',
-      backgroundColor: Math.random() > 0.8 ? `${randomColor}22` : 'transparent',
-      zIndex: Math.floor(Math.random() * 10) + 1
+      textShadow: Math.random() > 0.5 ? `${Math.random() * 4 + 1}px ${Math.random() * 4 + 1}px ${Math.random() * 8 + 2}px rgba(0,0,0,0.4)` : 'none',
+      border: Math.random() > 0.7 ? `${Math.random() * 3 + 1}px solid ${randomColor}` : 'none',
+      borderRadius: Math.random() > 0.5 ? `${Math.random() * 15 + 2}px` : '0',
+      backgroundColor: Math.random() > 0.7 ? `${randomColor}33` : 'transparent',
+      zIndex: Math.floor(Math.random() * 20) + 1
     };
   }, [themeConfig]);
 
@@ -140,48 +144,54 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     setLetters(letterArray);
   }, [children, generateLetterState]);
 
-  // Animation loop with performance optimizations
+  // Dramatic animation loop with individual letter timing
   useEffect(() => {
     if (isPaused) return;
 
-    animationIdRef.current = `ransom-note-${Date.now()}`;
-    const animationId = animationIdRef.current;
-    let startTime = performance.now();
+    const intervals: NodeJS.Timeout[] = [];
 
-    const animate = () => {
-      const currentTime = performance.now();
-      if (currentTime - startTime > 2000) { // Update every 2 seconds
-        debouncedUpdate(() => {
-          setLetters(prev => prev.map(letter => {
-            const shouldAnimate = Math.random() > 0.7;
-            if (!shouldAnimate) return letter;
+    // Create individual animation intervals for each letter
+    letters.forEach((_, index) => {
+      const randomInterval = Math.random() * 800 + 200; // 200ms to 1000ms per letter
+      
+      const interval = setInterval(() => {
+        setLetters(prev => prev.map((letter, letterIndex) => {
+          if (letterIndex !== index) return letter;
+          
+          const shouldAnimate = Math.random() > 0.4; // Higher chance of animation
+          if (!shouldAnimate) return letter;
 
-            const animationTypes: ('spell' | 'spin' | 'float' | 'glow' | 'none')[] = ['spell', 'spin', 'float', 'glow', 'none'];
-            const newAnimationType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
-            
-            return {
-              ...letter,
-              animationType: newAnimationType,
-              isAnimating: shouldAnimate,
-              position: { 
-                x: Math.random() * 4 - 2, 
-                y: Math.random() * 4 - 2 
-              },
-              transform: `rotate(${(Math.random() - 0.5) * 30}deg) scale(${Math.random() * 0.5 + 0.75})`,
-              opacity: Math.random() * 0.4 + 0.6
-            };
-          }));
-        });
-        startTime = currentTime;
-      }
-    };
-
-    animationPool.add(animationId, animate);
+          const animationTypes: ('spell' | 'spin' | 'float' | 'glow' | 'none')[] = ['spell', 'spin', 'float', 'glow', 'none'];
+          const newAnimationType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
+          
+          // Dramatic transformations
+          const rotation = Math.random() > 0.95 ? (Math.random() - 0.5) * 1080 : (Math.random() - 0.5) * 120;
+          const scale = Math.random() * 1.2 + 0.6; // 0.6 to 1.8 scale range
+          
+          return {
+            ...letter,
+            animationType: newAnimationType,
+            isAnimating: shouldAnimate,
+            position: { 
+              x: Math.random() * 30 - 15, // ±15px dramatic movement
+              y: Math.random() * 30 - 15 
+            },
+            transform: `rotate(${rotation}deg) scale(${scale})`,
+            opacity: Math.random() * 0.5 + 0.5,
+            color: themeConfig.colors[Math.floor(Math.random() * themeConfig.colors.length)],
+            fontSize: `${Math.random() * 1.5 + 0.8}em`,
+            fontFamily: themeConfig.fonts[Math.floor(Math.random() * themeConfig.fonts.length)]
+          };
+        }));
+      }, randomInterval);
+      
+      intervals.push(interval);
+    });
 
     return () => {
-      animationPool.remove(animationId);
+      intervals.forEach(interval => clearInterval(interval));
     };
-  }, [isPaused, debouncedUpdate]);
+  }, [isPaused, letters.length, themeConfig]);
 
   // Update animation key when theme changes
   useEffect(() => {
@@ -190,11 +200,11 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
 
   const getAnimationClass = (animationType: string) => {
     switch (animationType) {
-      case 'spell': return 'animate-bounce';
-      case 'spin': return 'animate-spin';
-      case 'float': return 'animate-pulse';
-      case 'glow': return 'animate-ping';
-      default: return '';
+      case 'spell': return 'animate-bounce ransom-float';
+      case 'spin': return 'animate-spin ransom-wiggle';
+      case 'float': return 'animate-pulse ransom-shake';
+      case 'glow': return 'animate-ping ransom-drift';
+      default: return 'ransom-subtle';
     }
   };
 
@@ -228,10 +238,55 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
         willChange: isPaused ? 'auto' : 'transform'
       }}
     >
+      <style>
+        {`
+          @keyframes ransom-float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-3px) rotate(1deg); }
+            50% { transform: translateY(-6px) rotate(-1deg); }
+            75% { transform: translateY(-3px) rotate(2deg); }
+          }
+          
+          @keyframes ransom-wiggle {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(2deg) scale(1.05); }
+            50% { transform: rotate(-2deg) scale(0.95); }
+            75% { transform: rotate(1deg) scale(1.02); }
+          }
+          
+          @keyframes ransom-shake {
+            0%, 100% { transform: translateX(0px); }
+            10% { transform: translateX(-2px) rotate(-1deg); }
+            20% { transform: translateX(2px) rotate(1deg); }
+            30% { transform: translateX(-1px) rotate(-0.5deg); }
+            40% { transform: translateX(1px) rotate(0.5deg); }
+            50% { transform: translateX(-0.5px) rotate(-0.25deg); }
+            60% { transform: translateX(0.5px) rotate(0.25deg); }
+          }
+          
+          @keyframes ransom-drift {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(2px, -2px) scale(1.1); }
+            66% { transform: translate(-1px, 2px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+          }
+          
+          @keyframes ransom-subtle {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(0.5deg); }
+          }
+          
+          .ransom-float { animation: ransom-float 3s ease-in-out infinite; }
+          .ransom-wiggle { animation: ransom-wiggle 2s ease-in-out infinite; }
+          .ransom-shake { animation: ransom-shake 1.5s ease-in-out infinite; }
+          .ransom-drift { animation: ransom-drift 4s ease-in-out infinite; }
+          .ransom-subtle { animation: ransom-subtle 6s ease-in-out infinite; }
+        `}
+      </style>
       {letters.map((letter, index) => (
         <span
           key={`${animationKey}-${index}`}
-          className={`inline-block transition-all duration-300 ${getAnimationClass(letter.animationType)}`}
+          className={`inline-block transition-all duration-500 ${getAnimationClass(letter.animationType)}`}
           style={{
             color: letter.color,
             fontSize: letter.fontSize,
@@ -245,8 +300,9 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
             padding: '0.1em 0.05em',
             margin: '0 0.02em',
             transformOrigin: 'center',
-            // Use transform3d for hardware acceleration
+            // Use transform3d for hardware acceleration with dramatic effects
             transform: `translate3d(${letter.position.x}px, ${letter.position.y}px, 0) ${letter.transform}`,
+            animationDelay: `${index * 50}ms`, // Stagger letter animations
             ...getPatternStyle(letter.pattern, letter.color)
           }}
         >
