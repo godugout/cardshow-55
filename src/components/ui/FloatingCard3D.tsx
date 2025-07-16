@@ -260,9 +260,9 @@ const CardMonolith: React.FC = () => {
 
 export const FloatingCard3D: React.FC = () => {
   return (
-    <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
+    <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative pointer-events-none">
       {/* Matching star field for seamless integration */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 pointer-events-none">
         {Array.from({ length: 100 }).map((_, i) => {
           const size = Math.random() * 2 + 0.5;
           const opacity = Math.random() * 0.6 + 0.2;
@@ -289,6 +289,14 @@ export const FloatingCard3D: React.FC = () => {
         camera={{ position: [0, 0, 15], fov: 60 }}
         gl={{ antialias: true, alpha: true }}
         scene={{ background: null }}
+        className="pointer-events-auto"
+        style={{ 
+          position: 'absolute',
+          top: '60%',
+          left: '0',
+          width: '100%',
+          height: '40%'
+        }}
       >
         {/* Minimal ambient space lighting */}
         <ambientLight intensity={0.02} color="#000033" />
@@ -296,13 +304,15 @@ export const FloatingCard3D: React.FC = () => {
         <CardMonolith />
         
         <OrbitControls
-          enableZoom={true}
-          enablePan={true}
+          enableZoom={false}
+          enablePan={false}
           enableRotate={true}
-          maxDistance={25}
-          minDistance={3}
           autoRotate={false}
           target={[0, 0, 0]}
+          enableDamping={true}
+          dampingFactor={0.05}
+          maxPolarAngle={Math.PI * 0.8}
+          minPolarAngle={Math.PI * 0.2}
         />
         
         {/* Deep space fog */}
