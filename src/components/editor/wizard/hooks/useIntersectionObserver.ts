@@ -15,26 +15,14 @@ export const useIntersectionObserver = ({
   const targetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // PHASE 3: Single optimized intersection observer with proper cleanup
-    let timeoutId: NodeJS.Timeout;
-    
     const observer = new IntersectionObserver(
       ([entry]) => {
         const isCurrentlyIntersecting = entry.isIntersecting;
+        setIsIntersecting(isCurrentlyIntersecting);
         
-        // Clear any pending updates
-        if (timeoutId) {
-          clearTimeout(timeoutId);
+        if (isCurrentlyIntersecting && !hasIntersected) {
+          setHasIntersected(true);
         }
-        
-        // Debounced state updates with cleanup
-        timeoutId = setTimeout(() => {
-          setIsIntersecting(isCurrentlyIntersecting);
-          
-          if (isCurrentlyIntersecting && !hasIntersected) {
-            setHasIntersected(true);
-          }
-        }, 150); // Slightly longer debounce for stability
       },
       {
         threshold,
@@ -44,30 +32,15 @@ export const useIntersectionObserver = ({
 
     const currentTarget = targetRef.current;
     if (currentTarget) {
-      try {
-        observer.observe(currentTarget);
-      } catch (error) {
-        console.warn('Intersection observer failed:', error);
-      }
+      observer.observe(currentTarget);
     }
 
     return () => {
-      // Clear any pending timeouts
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      
       if (currentTarget) {
-        try {
-          observer.unobserve(currentTarget);
-        } catch (error) {
-          console.warn('Failed to unobserve:', error);
-        }
+        observer.unobserve(currentTarget);
       }
-      
-      observer.disconnect();
     };
-  }, [threshold, rootMargin]);
+  }, [threshold, rootMargin, hasIntersected]);
 
   return { targetRef, isIntersecting, hasIntersected };
 };

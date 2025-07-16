@@ -5,6 +5,7 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { InteractiveElement } from '@/components/global/InteractiveElement';
 import { useGlobalSecretEffects } from '@/contexts/GlobalSecretEffectsContext';
 import { Settings, Sparkles, Palette, Wand2 } from 'lucide-react';
+import { CascadingLetterDemo, PrismaticShimmerDemo } from '@/components/animations/HeroAnimationDemos';
 
 const DesignGuide: React.FC = () => {
   const { isEnabled, toggleEnabled, interactiveMode } = useGlobalSecretEffects();
@@ -99,6 +100,31 @@ const DesignGuide: React.FC = () => {
               <Typography variant="body" className="text-crd-lightGray">
                 Body text for general content and descriptions. This text should be easy to read and comfortable for extended reading sessions.
               </Typography>
+            </InteractiveElement>
+          </div>
+        </section>
+
+        {/* Animation Demos Section */}
+        <section className="mb-12">
+          <InteractiveElement elementId="animations-heading" effectType="text">
+            <Typography variant="h2" className="text-crd-white mb-6">
+              Animation Demos
+            </Typography>
+          </InteractiveElement>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <InteractiveElement elementId="cascading-demo" effectType="visual">
+              <CascadingLetterDemo 
+                title="Cascading Letters"
+                description="Letters appear one by one with a scale-up and fade-in effect"
+              />
+            </InteractiveElement>
+            
+            <InteractiveElement elementId="shimmer-demo" effectType="visual">
+              <PrismaticShimmerDemo 
+                title="Prismatic Shimmer"
+                description="A horizontal shimmer reveals text with gradient effects"
+              />
             </InteractiveElement>
           </div>
         </section>

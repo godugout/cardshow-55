@@ -83,9 +83,9 @@ export default {
           lightGray: '#777E90',
           white: '#FCFCFD',
           
-          // Brand colors - Better CRD logo colors
+          // Brand colors
           orange: '#EA6E48',
-          blue: '#45B7D1', // Better blue from CRD logo
+          blue: '#45B7D1',
           green: '#45B26B',
           purple: '#9757D7',
           gold: '#FFD700',
@@ -257,6 +257,14 @@ export default {
           '100%': {
             transform: 'translateX(-50%)'
           }
+        },
+        'scroll-right': {
+          '0%': {
+            transform: 'translateX(0%)'
+          },
+          '100%': {
+            transform: 'translateX(-50%)'
+          }
         }
       },
       animation: {
@@ -278,7 +286,8 @@ export default {
         'logo-glow-pulse': 'logo-glow-pulse 4s ease-in-out infinite',
         'gradient-shift': 'gradient-shift 8s ease-in-out infinite',
         'holographic-flow': 'holographic-flow 2s ease-in-out infinite',
-        'scroll': 'scroll 60s linear infinite'
+        'scroll': 'scroll 60s linear infinite',
+        'scroll-right': 'scroll-right 60s linear infinite'
       },
       fontFamily: {
         'dm-sans': ['DM Sans', 'sans-serif'], // Primary font

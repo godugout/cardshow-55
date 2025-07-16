@@ -27,8 +27,6 @@ import SignIn from '@/pages/auth/SignIn';
 import SignUp from '@/pages/auth/SignUp';
 import { GlobalSecretEffectsProvider } from '@/contexts/GlobalSecretEffectsContext';
 import { GlobalSecretMenu } from '@/components/global/GlobalSecretMenu';
-import { AdaptiveAnimationProvider } from '@/components/performance/AdaptiveAnimations';
-import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
 
 const App = () => {
   // Main App Error Boundary wrapper
@@ -36,8 +34,7 @@ const App = () => {
     <ErrorBoundary>
       <ProductionOptimizer />
       <AuthProvider>
-        <AdaptiveAnimationProvider>
-          <GlobalSecretEffectsProvider>
+        <GlobalSecretEffectsProvider>
           <Router>
             <div className="min-h-screen bg-crd-darkest flex flex-col">
               <Navbar />
@@ -77,12 +74,10 @@ const App = () => {
               />
               <DevLoginFloatingButton />
               <GlobalSecretMenu />
-              <PerformanceMonitor />
             </div>
           </Router>
         </GlobalSecretEffectsProvider>
-      </AdaptiveAnimationProvider>
-    </AuthProvider>
+      </AuthProvider>
     </ErrorBoundary>
   );
 };

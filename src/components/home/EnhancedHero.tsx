@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { StandardHero } from "@/components/shared/StandardHero";
 import { useCards } from "@/hooks/useCards";
@@ -7,11 +7,9 @@ import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/compo
 import { SparkleText } from "@/components/hero/SparkleText";
 import { ThemedRansomNote } from "@/components/ui/ThemedRansomNote";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
+import { useScrollTrigger } from "@/hooks/useScrollTrigger";
 import { Hero3 } from "@/components/ui/design-system";
 import { Pause, Play, SkipBack, SkipForward, Settings } from "lucide-react";
-import { useIntersectionObserver } from "@/components/editor/wizard/hooks/useIntersectionObserver";
-import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import { AnimationBudgetProvider } from "@/components/ui/AnimationBudgetManager";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -37,15 +35,10 @@ export const EnhancedHero: React.FC = () => {
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const [showControls, setShowControls] = useState(false);
 
-  // Animation coordination state
-  const [ransomLetterPaused, setRansomLetterPaused] = useState(false);
-  const [carouselShouldStart, setCarouselShouldStart] = useState(false);
-  const ransomLetterRef = useRef<HTMLDivElement>(null);
-
-  // Intersection observer for ransom letter - watch for when top half is off screen
-  const { targetRef: ransomTargetRef, isIntersecting: isRansomIntersecting } = useIntersectionObserver({
-    threshold: 0.5, // When 50% of ransom letter is visible
-    rootMargin: '-25% 0px 0px 0px' // Trigger when top quarter is off screen
+  // Scroll trigger for label visibility
+  const { targetRef: labelRef, isVisible: isLabelVisible } = useScrollTrigger({
+    threshold: 0.5,
+    rootMargin: '-50px 0px'
   });
 
   // Load preferences from localStorage
@@ -128,20 +121,6 @@ export const EnhancedHero: React.FC = () => {
     return () => clearInterval(heroRotationInterval);
   }, [isPaused]);
   
-  // Animation coordination based on scroll position
-  useEffect(() => {
-    // When ransom letter moves off screen (top half), pause it and start carousel
-    if (!isRansomIntersecting && !ransomLetterPaused) {
-      setRansomLetterPaused(true);
-      setCarouselShouldStart(true);
-    }
-    // When ransom letter comes back into view, resume it and pause carousel
-    else if (isRansomIntersecting && ransomLetterPaused) {
-      setRansomLetterPaused(false);
-      setCarouselShouldStart(false);
-    }
-  }, [isRansomIntersecting, ransomLetterPaused]);
-
   // Keyboard shortcuts for controls (Ctrl+Shift+H to show/hide controls)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -170,9 +149,10 @@ export const EnhancedHero: React.FC = () => {
 
   // Fetch all cards for the ticker on mount
   React.useEffect(() => {
-    // Always fetch all cards for the carousel to have enough content
-    fetchAllCardsFromDatabase();
-  }, [fetchAllCardsFromDatabase]);
+    if (allCards.length === 0) {
+      fetchAllCardsFromDatabase();
+    }
+  }, [fetchAllCardsFromDatabase, allCards.length]);
 
   // Make cards clickable, no immersive preview
   const handleCardStudioOpen = (card: DbCard) => {
@@ -213,19 +193,10 @@ export const EnhancedHero: React.FC = () => {
 
   const currentConfig = heroConfigs[currentHero];
 
-  // Create enhanced heading with error boundary protection
+  // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
-    <div ref={ransomTargetRef} className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-      <ErrorBoundary 
-        fallback={<span className="text-crd-white font-bold">{currentConfig.word}</span>}
-        resetKeys={[currentConfig.theme, String(isAnimationPaused), String(ransomLetterPaused)]}
-        resetOnPropsChange={true}
-      >
-        <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused || ransomLetterPaused}>
-          {currentConfig.word}
-        </ThemedRansomNote>
-      </ErrorBoundary>
-      <br />
+    <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
+      <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused || !isLabelVisible}>{currentConfig.word}</ThemedRansomNote><br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         {currentConfig.tagline.split(' ').slice(0, -1).join(' ')}{' '}
         <span className="gradient-text-green-blue-purple">{currentConfig.tagline.split(' ').slice(-1)[0]}</span>
@@ -234,138 +205,115 @@ export const EnhancedHero: React.FC = () => {
   );
 
   return (
-    <AnimationBudgetProvider maxConcurrentAnimations={2} respectReducedMotion={true}>
-      <div className="relative">
-        {/* Hero content */}
-        <ErrorBoundary 
-          fallback={
-            <div className="min-h-screen flex items-center justify-center bg-crd-background">
-              <div className="text-center">
-                <h1 className="text-4xl font-bold text-crd-white mb-4">Welcome to CRD</h1>
-                <p className="text-crd-lightGray">The ultimate digital card platform</p>
-              </div>
-            </div>
-          }
-        >
-          <StandardHero
-            label={currentConfig.label}
-            title={`${currentConfig.word} ${currentConfig.tagline}`}
-            titleEffects={enhancedHeading}
-            description={currentConfig.description}
-            primaryCta={{
-              text: currentConfig.ctaText,
-              link: currentConfig.ctaLink
-            }}
-            heroVariant="hero"
-          >
-            {/* Featured Cards Section */}
-            {showcaseCards.length > 0 ? (
-              <div className="mt-16 mb-32">
-                <Hero3
-                  caption=""
-                  heading=""
-                  bodyText=""
-                  ctaText=""
-                  ctaLink=""
-                  showFeaturedCards={true}
-                  featuredCards={showcaseCards}
-                  onCardClick={handleCardStudioOpen}
-                  externalAnimationTrigger={carouselShouldStart}
-                />
-              </div>
-            ) : (
-              <div className="mt-8 text-center py-8">
-                <div className="text-crd-lightGray text-lg mb-4">
-                  🎨 No cards to display yet
-                </div>
-                <p className="text-crd-lightGray/70 text-sm max-w-md mx-auto">
-                  Cards will appear here once they're loaded from the database or when creators start sharing their work.
-                </p>
-              </div>
-            )}
-          </StandardHero>
-        </ErrorBoundary>
+    <div className="relative">
+      {/* Hero content */}
+      <StandardHero
+        label={currentConfig.label}
+        labelRef={labelRef}
+        title={`${currentConfig.word} ${currentConfig.tagline}`}
+        titleEffects={enhancedHeading}
+        description={currentConfig.description}
+        primaryCta={{
+          text: currentConfig.ctaText,
+          link: currentConfig.ctaLink
+        }}
+        heroVariant="hero"
+      >
+        {/* Featured Cards Section */}
+        {showcaseCards.length > 0 && (
+          <div className="mt-8">
+            <Hero3
+              caption=""
+              heading=""
+              bodyText=""
+              ctaText=""
+              ctaLink=""
+              showFeaturedCards={true}
+              featuredCards={showcaseCards}
+              onCardClick={handleCardStudioOpen}
+              shouldStartAnimation={!isLabelVisible}
+            />
+          </div>
+        )}
+      </StandardHero>
 
-        {/* Secret Menu */}
-        <ErrorBoundary fallback={<div />}>
-          <SecretMenu3D
-            isOpen={secretMenuOpen}
-            onClose={() => setSecretMenuOpen(false)}
-            textStyle={textStyle}
-            onTextStyleChange={handleTextStyleChange}
-            animation={animation}
-            onAnimationChange={handleAnimationChange}
-            intensity={intensity}
-            onIntensityChange={handleIntensityChange}
-            speed={speed}
-            onSpeedChange={handleSpeedChange}
-            glowEnabled={glowEnabled}
-            onGlowChange={handleGlowChange}
-            onReset={handleReset}
-          />
-        </ErrorBoundary>
+      {/* Secret Menu */}
+      <SecretMenu3D
+        isOpen={secretMenuOpen}
+        onClose={() => setSecretMenuOpen(false)}
+        textStyle={textStyle}
+        onTextStyleChange={handleTextStyleChange}
+        animation={animation}
+        onAnimationChange={handleAnimationChange}
+        intensity={intensity}
+        onIntensityChange={handleIntensityChange}
+        speed={speed}
+        onSpeedChange={handleSpeedChange}
+        glowEnabled={glowEnabled}
+        onGlowChange={handleGlowChange}
+        onReset={handleReset}
+      />
       
-        {/* Hidden Controls (Ctrl+Shift+H to toggle) */}
-        {showControls && (
-          <div className="fixed top-4 right-4 z-50 bg-black/80 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-            <div className="flex items-center gap-3 text-white text-sm">
-              <span className="font-mono text-xs opacity-70">Hero Controls</span>
-              
-              {/* Slideshow Controls */}
-              <div className="flex items-center gap-2 border-r border-white/20 pr-3">
-                <button
-                  onClick={handlePrevSlide}
-                  className="p-1 hover:bg-white/20 rounded transition-colors"
-                  title="Previous slide"
-                >
-                  <SkipBack size={16} />
-                </button>
-                
-                <button
-                  onClick={() => setIsPaused(prev => !prev)}
-                  className="p-1 hover:bg-white/20 rounded transition-colors"
-                  title={isPaused ? "Resume slideshow" : "Pause slideshow"}
-                >
-                  {isPaused ? <Play size={16} /> : <Pause size={16} />}
-                </button>
-                
-                <button
-                  onClick={handleNextSlide}
-                  className="p-1 hover:bg-white/20 rounded transition-colors"
-                  title="Next slide"
-                >
-                  <SkipForward size={16} />
-                </button>
-              </div>
-              
-              {/* Animation Controls */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs opacity-70">Anim:</span>
-                <button
-                  onClick={() => setIsAnimationPaused(prev => !prev)}
-                  className="p-1 hover:bg-white/20 rounded transition-colors"
-                  title={isAnimationPaused ? "Resume animation" : "Pause animation"}
-                >
-                  {isAnimationPaused ? <Play size={16} /> : <Pause size={16} />}
-                </button>
-              </div>
-              
-              {/* Close button */}
+      {/* Hidden Controls (Ctrl+Shift+H to toggle) */}
+      {showControls && (
+        <div className="fixed top-4 right-4 z-50 bg-black/80 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+          <div className="flex items-center gap-3 text-white text-sm">
+            <span className="font-mono text-xs opacity-70">Hero Controls</span>
+            
+            {/* Slideshow Controls */}
+            <div className="flex items-center gap-2 border-r border-white/20 pr-3">
               <button
-                onClick={() => setShowControls(false)}
-                className="p-1 hover:bg-white/20 rounded transition-colors ml-2"
-                title="Hide controls (Ctrl+Shift+H)"
+                onClick={handlePrevSlide}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                title="Previous slide"
               >
-                <Settings size={16} />
+                <SkipBack size={16} />
+              </button>
+              
+              <button
+                onClick={() => setIsPaused(prev => !prev)}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                title={isPaused ? "Resume slideshow" : "Pause slideshow"}
+              >
+                {isPaused ? <Play size={16} /> : <Pause size={16} />}
+              </button>
+              
+              <button
+                onClick={handleNextSlide}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                title="Next slide"
+              >
+                <SkipForward size={16} />
               </button>
             </div>
             
-            <div className="text-xs opacity-50 mt-2 font-mono">
-              Current: {currentConfig.theme} ({currentHero + 1}/3)
+            {/* Animation Controls */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs opacity-70">Anim:</span>
+              <button
+                onClick={() => setIsAnimationPaused(prev => !prev)}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                title={isAnimationPaused ? "Resume animation" : "Pause animation"}
+              >
+                {isAnimationPaused ? <Play size={16} /> : <Pause size={16} />}
+              </button>
             </div>
+            
+            {/* Close button */}
+            <button
+              onClick={() => setShowControls(false)}
+              className="p-1 hover:bg-white/20 rounded transition-colors ml-2"
+              title="Hide controls (Ctrl+Shift+H)"
+            >
+              <Settings size={16} />
+            </button>
           </div>
-        )}
-      </div>
-    </AnimationBudgetProvider>
+          
+          <div className="text-xs opacity-50 mt-2 font-mono">
+            Current: {currentConfig.theme} ({currentHero + 1}/3)
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
