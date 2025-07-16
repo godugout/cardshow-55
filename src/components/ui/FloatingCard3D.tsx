@@ -23,26 +23,37 @@ const CardMonolith: React.FC = () => {
   
   useFrame((state) => {
     if (cardRef.current && sunRef.current && coronaRef.current) {
-      // Subtle floating animation
+      // Floating animation - card moves up and down
       const cardY = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
       cardRef.current.position.y = cardY;
       
-      // Calculate eclipse - when card top edge (cardY + 1.75) passes through sun center (2)
-      const cardTop = cardY + 1.75; // Card height is 3.5, so top is position + half height
-      const sunY = 2;
-      const eclipseDistance = Math.abs(cardTop - sunY);
+      // Automated corona flare at the peak of the animation (simplified approach)
+      const animationPhase = Math.sin(state.clock.elapsedTime * 0.3);
+      const isAtPeak = animationPhase > 0.85; // Trigger near the top of the floating motion
       
-      // Show corona when card is very close to eclipsing the sun (within 0.5 units)
-      const isEclipsing = eclipseDistance < 0.5 && cardTop > sunY - 0.2 && cardTop < sunY + 0.2;
-      
-      if (isEclipsing) {
-        // Flash corona ring with pulsing effect
-        const flashIntensity = (0.5 - eclipseDistance) * 4; // Stronger when closer
-        const pulse = Math.sin(state.clock.elapsedTime * 20) * 0.3 + 0.7;
-        (coronaRef.current.material as THREE.MeshStandardMaterial).opacity = flashIntensity * pulse * 0.8;
-        coronaRef.current.scale.setScalar(2 + flashIntensity * 0.5);
+      if (isAtPeak) {
+        // Create dramatic corona flash with multiple effects
+        const peakIntensity = (animationPhase - 0.85) / 0.15; // 0 to 1 as it approaches peak
+        const fastPulse = Math.sin(state.clock.elapsedTime * 15) * 0.4 + 0.6;
+        const slowPulse = Math.sin(state.clock.elapsedTime * 3) * 0.3 + 0.7;
+        
+        // Combine pulses for dynamic effect
+        const finalOpacity = peakIntensity * fastPulse * slowPulse * 0.9;
+        (coronaRef.current.material as THREE.MeshStandardMaterial).opacity = finalOpacity;
+        
+        // Scale animation - ring grows and shrinks
+        const scaleBase = 1.5 + peakIntensity * 0.8;
+        const scaleVariation = Math.sin(state.clock.elapsedTime * 12) * 0.3;
+        coronaRef.current.scale.setScalar(scaleBase + scaleVariation);
+        
+        // Rotate the corona ring for dynamic movement
+        coronaRef.current.rotation.z = state.clock.elapsedTime * 2;
       } else {
-        (coronaRef.current.material as THREE.MeshStandardMaterial).opacity = 0;
+        // Fade out corona when not at peak
+        (coronaRef.current.material as THREE.MeshStandardMaterial).opacity *= 0.95;
+        if ((coronaRef.current.material as THREE.MeshStandardMaterial).opacity < 0.01) {
+          (coronaRef.current.material as THREE.MeshStandardMaterial).opacity = 0;
+        }
       }
     }
     
@@ -233,14 +244,15 @@ const CardMonolith: React.FC = () => {
         </mesh>
         
         {/* Corona Ring Effect for Eclipse */}
-        <mesh ref={coronaRef}>
-          <ringGeometry args={[2.5, 3.5, 32]} />
+        <mesh ref={coronaRef} position={[0, 0, 0.1]}>
+          <ringGeometry args={[3.0, 4.5, 64]} />
           <meshStandardMaterial 
             color="#ffffff"
-            emissive="#ffff00"
-            emissiveIntensity={2}
+            emissive="#ffdd00"
+            emissiveIntensity={3}
             transparent
             opacity={0}
+            side={THREE.DoubleSide}
           />
         </mesh>
       </group>
