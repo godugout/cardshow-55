@@ -257,12 +257,7 @@ export const CRDFrameRenderer: React.FC<CRDFrameRendererProps> = ({
         </div>
       )}
 
-      <style>{`
-        @keyframes shimmer {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 0.8; }
-        }
-      `}</style>
+      {/* Shimmer animation now centralized in CSS */}
     </div>
   );
 };
