@@ -166,6 +166,116 @@
                 linear-gradient(135deg, hsl(142, 70%, 50%), hsl(200, 75%, 60%), hsl(219, 65%, 65%)) border-box;
   }
 
+  /* Navigation Create button gradient animation */
+  .nav-create-gradient {
+    @apply relative transition-all duration-300;
+  }
+
+  .nav-create-gradient .nav-create-text {
+    background: linear-gradient(135deg, hsl(15, 100%, 65%), hsl(100, 40%, 60%), hsl(200, 70%, 60%));
+    background-size: 200% 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: liquid-gradient 4s ease-in-out infinite;
+  }
+
+  .nav-create-gradient:hover .nav-create-text {
+    background: linear-gradient(135deg, hsl(15, 100%, 70%), hsl(100, 45%, 65%), hsl(200, 75%, 65%));
+    background-size: 250% 250%;
+    animation: liquid-gradient 2s ease-in-out infinite;
+  }
+
+  /* Sparkle animation keyframes */
+  @keyframes sparkle-float {
+    0%, 100% { 
+      opacity: 0; 
+      transform: translate(0, 0) scale(0.8); 
+    }
+    50% { 
+      opacity: 1; 
+      transform: translate(-2px, -2px) scale(1.2); 
+    }
+  }
+
+  @keyframes sparkle-float-2 {
+    0%, 100% { 
+      opacity: 0; 
+      transform: translate(0, 0) scale(0.6); 
+    }
+    50% { 
+      opacity: 0.8; 
+      transform: translate(3px, -3px) scale(1); 
+    }
+  }
+
+  @keyframes sparkle-float-3 {
+    0%, 100% { 
+      opacity: 0; 
+      transform: translate(0, 0) scale(0.7); 
+    }
+    50% { 
+      opacity: 0.6; 
+      transform: translate(-1px, 2px) scale(1.1); 
+    }
+  }
+
+  /* Sparkle container for navigation plus icon */
+  .nav-plus-sparkles {
+    @apply relative;
+  }
+
+  .nav-plus-sparkles::before,
+  .nav-plus-sparkles::after {
+    content: '✨';
+    position: absolute;
+    font-size: 0.5rem;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .nav-plus-sparkles::before {
+    top: -4px;
+    right: -6px;
+    animation: sparkle-float 3s ease-in-out infinite;
+    animation-delay: 0.5s;
+  }
+
+  .nav-plus-sparkles::after {
+    bottom: -4px;
+    left: -6px;
+    animation: sparkle-float-2 3.5s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+
+  .nav-create-gradient:hover .nav-plus-sparkles::before {
+    animation: sparkle-float 1.5s ease-in-out infinite;
+  }
+
+  .nav-create-gradient:hover .nav-plus-sparkles::after {
+    animation: sparkle-float-2 1.8s ease-in-out infinite;
+  }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .nav-create-gradient .nav-create-text,
+    .nav-create-gradient:hover .nav-create-text {
+      animation: none;
+      background: hsl(15, 100%, 65%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .nav-plus-sparkles::before,
+    .nav-plus-sparkles::after,
+    .nav-create-gradient:hover .nav-plus-sparkles::before,
+    .nav-create-gradient:hover .nav-plus-sparkles::after {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
   /* Mobile-first responsive utilities */
   .mobile-container {
     @apply px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto;

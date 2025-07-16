@@ -167,6 +167,7 @@ export const Navbar = () => {
               <Link
                 to="/create"
                 className={`
+                  nav-create-gradient
                   flex items-center space-x-1 lg:space-x-2 px-2 lg:px-3 py-2 rounded-md text-sm font-medium
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
@@ -183,8 +184,10 @@ export const Navbar = () => {
                   ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
                 `}
               >
-                <Plus className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110 group-hover:rotate-90' : ''}`} />
-                <span className="hidden lg:inline">Create</span>
+                <div className="nav-plus-sparkles">
+                  <Plus className={`w-4 h-4 transition-transform duration-200 ${!prefersReducedMotion ? 'group-hover:scale-110 group-hover:rotate-90' : ''}`} />
+                </div>
+                <span className="hidden lg:inline nav-create-text">Create</span>
               </Link>
 
               <Link
