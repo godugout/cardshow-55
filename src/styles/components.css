@@ -386,46 +386,8 @@
     }
   }
 
-  /* Navbar spotlight effect */
-  @keyframes navbar-spotlight {
-    0% {
-      transform: translateX(-100%) rotate(-15deg);
-      opacity: 0;
-    }
-    50% {
-      opacity: 0.4;
-    }
-    100% {
-      transform: translateX(200%) rotate(-15deg);
-      opacity: 0;
-    }
-  }
 
-  .nav-create-gradient::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: -50px;
-    right: -50px;
-    bottom: -50px;
-    background: linear-gradient(45deg, 
-      transparent 40%, 
-      hsla(200, 80%, 70%, 0.1) 50%, 
-      hsla(100, 60%, 60%, 0.15) 55%,
-      hsla(15, 100%, 70%, 0.1) 60%,
-      transparent 70%);
-    animation: navbar-spotlight 8s ease-in-out infinite;
-    pointer-events: none;
-    z-index: -1;
-    border-radius: 50%;
-    filter: blur(20px);
-  }
-
-  .nav-create-gradient:hover::before {
-    animation: navbar-spotlight 3s ease-in-out infinite;
-  }
-
-  /* Twinkling stars animation for Cardshow logo */
+  /* Twinkling stars animation for Cardshow logo - 3 loops only */
   @keyframes logo-sparkle-twinkle {
     0%, 100% {
       filter: brightness(1) drop-shadow(0 0 3px rgba(255, 215, 0, 0.4)) drop-shadow(0 0 6px rgba(255, 255, 255, 0.2));
@@ -445,21 +407,49 @@
     }
   }
 
-  @keyframes subtle-glow-pulse {
+  /* Upper right glow effect for logo */
+  @keyframes upper-right-glow {
     0%, 100% {
-      filter: brightness(1) drop-shadow(0 0 2px rgba(255, 215, 0, 0.3));
+      opacity: 0.6;
+      filter: blur(4px);
     }
     50% {
-      filter: brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 16px rgba(255, 215, 0, 0.3));
+      opacity: 1;
+      filter: blur(2px);
     }
   }
 
-  /* Apply twinkling to logos with sparkles in the name or yellow elements */
-  .sparkles-yellow-filter-green img,
-  img[src*="sparkle" i],
-  img[alt*="sparkle" i] {
-    animation: logo-sparkle-twinkle 4s ease-in-out infinite, subtle-glow-pulse 3s ease-in-out infinite;
-    animation-delay: 0s, 1s;
+  /* Apply twinkling to logos with sparkles - 3 loops only on page load */
+  .sparkles-yellow-filter-green {
+    position: relative;
+  }
+
+  .sparkles-yellow-filter-green img {
+    animation: logo-sparkle-twinkle 2s ease-in-out 3;
+  }
+
+  /* Upper right glow effect */
+  .sparkles-yellow-filter-green::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 50%;
+    background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+  }
+
+  /* Hover and click states to retrigger animation */
+  .sparkles-yellow-filter-green:hover img,
+  .sparkles-yellow-filter-green:active img {
+    animation: logo-sparkle-twinkle 2s ease-in-out 3;
+  }
+
+  .sparkles-yellow-filter-green:hover::after {
+    animation: upper-right-glow 1.5s ease-in-out 2;
   }
 
   /* Mobile-first responsive utilities */
