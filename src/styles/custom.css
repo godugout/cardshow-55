@@ -26,11 +26,7 @@
   100% { background-color: transparent; }
 }
 
-/* Text effect animations */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
+/* Text effect animations - shimmer moved to animations.css */
 
 @keyframes wave {
   0%, 100% { transform: perspective(500px) rotateX(15deg) rotateY(0deg); }

@@ -1,0 +1,37 @@
+/* src/styles/animations.css - Single animation definition file */
+@layer animations {
+  /* Hero animations */
+  @keyframes letterSlide {
+    from { 
+      transform: translateY(100px) rotateX(-90deg);
+      opacity: 0;
+    }
+    to { 
+      transform: translateY(0) rotateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+
+  @keyframes glitch {
+    0%, 100% { text-shadow: 2px 2px 0 rgba(79, 255, 176, 0.5); }
+    25% { text-shadow: -2px -2px 0 rgba(255, 107, 74, 0.5); }
+    50% { text-shadow: 2px -2px 0 rgba(74, 144, 255, 0.5); }
+    75% { text-shadow: -2px 2px 0 rgba(255, 215, 102, 0.5); }
+  }
+
+  /* Carousel animations */
+  @keyframes carouselSlide {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+}

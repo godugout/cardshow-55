@@ -8,6 +8,7 @@
 @import './card-effects.css';
 @import './glass-morphism.css';
 @import './mobile-first.css';
+@import './animations.css';
 
 /* Critical utilities for proper theming */
 @layer utilities {
