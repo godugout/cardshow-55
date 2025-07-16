@@ -168,20 +168,21 @@ export const Navbar = () => {
                 to="/create"
                 className={`
                   nav-create-gradient
+                  ${isActive('/create') ? 'nav-create-active' : ''}
                   flex items-center space-x-1 lg:space-x-2 px-2 lg:px-3 py-2 rounded-md text-sm font-medium
                   min-h-[44px] min-w-[44px]
                   transition-all duration-200 group
                   ${isActive('/create') 
                     ? (isHomeTeamMode 
-                        ? 'text-slate-800 bg-slate-200/60' 
-                        : 'text-themed-active bg-themed-active/10'
+                        ? 'text-slate-800' 
+                        : 'text-themed-active'
                       )
                     : (isHomeTeamMode 
-                        ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' 
+                        ? 'text-slate-600 hover:text-slate-800' 
                         : 'text-themed-secondary hover-themed'
                       )
                   }
-                  ${!prefersReducedMotion ? 'hover:scale-105 hover:shadow-sm' : ''}
+                  ${!prefersReducedMotion ? 'hover:shadow-sm' : ''}
                 `}
               >
                 <div className="nav-plus-sparkles">

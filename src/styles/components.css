@@ -169,6 +169,9 @@
   /* Navigation Create button gradient animation */
   .nav-create-gradient {
     @apply relative transition-all duration-300;
+    --sparkle-cycle: 12s; /* 3 gradient cycles */
+    --hover-sparkle-cycle: 6s; /* Faster on hover */
+    --active-sparkle-cycle: 8s; /* Active state */
   }
 
   .nav-create-gradient .nav-create-text {
@@ -178,49 +181,69 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: liquid-gradient 4s ease-in-out infinite;
+    transition: all 0.3s ease;
+  }
+
+  /* Enhanced hover state without background interference */
+  .nav-create-gradient:hover {
+    transform: scale(1.02);
+    filter: drop-shadow(0 0 8px hsl(15, 80%, 60% / 0.3));
   }
 
   .nav-create-gradient:hover .nav-create-text {
     background: linear-gradient(135deg, hsl(15, 100%, 70%), hsl(100, 45%, 65%), hsl(200, 75%, 65%));
     background-size: 250% 250%;
-    animation: liquid-gradient 2s ease-in-out infinite;
+    animation: liquid-gradient 2.5s ease-in-out infinite;
   }
 
-  /* Sparkle animation keyframes */
+  /* Active state for /create route */
+  .nav-create-active {
+    --sparkle-cycle: var(--active-sparkle-cycle);
+    background: linear-gradient(135deg, hsl(15, 20%, 50% / 0.1), hsl(100, 20%, 50% / 0.1), hsl(200, 20%, 50% / 0.1));
+    box-shadow: inset 0 0 12px hsl(15, 60%, 60% / 0.2);
+  }
+
+  .nav-create-active .nav-create-text {
+    background: linear-gradient(135deg, hsl(15, 100%, 70%), hsl(100, 50%, 65%), hsl(200, 80%, 65%));
+    animation: liquid-gradient 3s ease-in-out infinite;
+  }
+
+  /* Sparkle cycle controller - shows sparkles every 3-4 gradient cycles */
+  @keyframes sparkle-cycle {
+    0%, 20% { opacity: 0; }
+    25%, 35% { opacity: 1; }
+    40%, 100% { opacity: 0; }
+  }
+
+  /* Tighter sparkle positioning around icon */
   @keyframes sparkle-float {
     0%, 100% { 
-      opacity: 0; 
-      transform: translate(0, 0) scale(0.8); 
+      transform: translate(0, 0) scale(0.8) rotate(0deg); 
     }
     50% { 
-      opacity: 1; 
-      transform: translate(-2px, -2px) scale(1.2); 
+      transform: translate(-1px, -1px) scale(1.1) rotate(45deg); 
     }
   }
 
   @keyframes sparkle-float-2 {
     0%, 100% { 
-      opacity: 0; 
-      transform: translate(0, 0) scale(0.6); 
+      transform: translate(0, 0) scale(0.6) rotate(0deg); 
     }
     50% { 
-      opacity: 0.8; 
-      transform: translate(3px, -3px) scale(1); 
+      transform: translate(2px, -2px) scale(1) rotate(-30deg); 
     }
   }
 
   @keyframes sparkle-float-3 {
     0%, 100% { 
-      opacity: 0; 
-      transform: translate(0, 0) scale(0.7); 
+      transform: translate(0, 0) scale(0.7) rotate(0deg); 
     }
     50% { 
-      opacity: 0.6; 
-      transform: translate(-1px, 2px) scale(1.1); 
+      transform: translate(-1px, 1px) scale(1) rotate(60deg); 
     }
   }
 
-  /* Sparkle container for navigation plus icon */
+  /* Sparkle container positioned closer to icon center */
   .nav-plus-sparkles {
     @apply relative;
   }
@@ -229,37 +252,63 @@
   .nav-plus-sparkles::after {
     content: '✨';
     position: absolute;
-    font-size: 0.5rem;
+    font-size: 0.45rem;
     pointer-events: none;
-    opacity: 0;
+    z-index: 10;
   }
 
+  /* Closer positioning to icon */
   .nav-plus-sparkles::before {
-    top: -4px;
-    right: -6px;
-    animation: sparkle-float 3s ease-in-out infinite;
-    animation-delay: 0.5s;
+    top: -2px;
+    right: -3px;
+    animation: 
+      sparkle-cycle var(--sparkle-cycle) ease-in-out infinite,
+      sparkle-float 2s ease-in-out infinite;
+    animation-delay: 1s, 1.2s;
   }
 
   .nav-plus-sparkles::after {
-    bottom: -4px;
-    left: -6px;
-    animation: sparkle-float-2 3.5s ease-in-out infinite;
-    animation-delay: 1s;
+    bottom: -2px;
+    left: -3px;
+    animation: 
+      sparkle-cycle var(--sparkle-cycle) ease-in-out infinite,
+      sparkle-float-2 2.3s ease-in-out infinite;
+    animation-delay: 1.8s, 2s;
   }
 
+  /* Add third sparkle for active state */
+  .nav-create-active .nav-plus-sparkles::before {
+    animation: 
+      sparkle-float 1.8s ease-in-out infinite;
+  }
+
+  .nav-create-active .nav-plus-sparkles::after {
+    animation: 
+      sparkle-float-2 2.1s ease-in-out infinite;
+  }
+
+  /* Enhanced hover sparkles */
   .nav-create-gradient:hover .nav-plus-sparkles::before {
-    animation: sparkle-float 1.5s ease-in-out infinite;
+    animation: 
+      sparkle-float 1.2s ease-in-out infinite;
   }
 
   .nav-create-gradient:hover .nav-plus-sparkles::after {
-    animation: sparkle-float-2 1.8s ease-in-out infinite;
+    animation: 
+      sparkle-float-2 1.4s ease-in-out infinite;
   }
 
   /* Respect reduced motion preferences */
   @media (prefers-reduced-motion: reduce) {
+    .nav-create-gradient {
+      --sparkle-cycle: none;
+      --hover-sparkle-cycle: none;
+      --active-sparkle-cycle: none;
+    }
+    
     .nav-create-gradient .nav-create-text,
-    .nav-create-gradient:hover .nav-create-text {
+    .nav-create-gradient:hover .nav-create-text,
+    .nav-create-active .nav-create-text {
       animation: none;
       background: hsl(15, 100%, 65%);
       background-clip: text;
@@ -270,9 +319,21 @@
     .nav-plus-sparkles::before,
     .nav-plus-sparkles::after,
     .nav-create-gradient:hover .nav-plus-sparkles::before,
-    .nav-create-gradient:hover .nav-plus-sparkles::after {
+    .nav-create-gradient:hover .nav-plus-sparkles::after,
+    .nav-create-active .nav-plus-sparkles::before,
+    .nav-create-active .nav-plus-sparkles::after {
       animation: none;
       opacity: 0;
+    }
+
+    .nav-create-gradient:hover {
+      transform: none;
+      filter: none;
+    }
+
+    .nav-create-active {
+      background: hsl(15, 20%, 50% / 0.1);
+      box-shadow: none;
     }
   }
 
