@@ -11,35 +11,47 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
   className = "",
   animationType = "scanning"
 }) => {
-  // Generate pixelated text shadows to simulate digital pixels inside letters
-  const generatePixelShadows = () => {
-    const shadows = [];
-    const colors = ['#00e6ff', '#00b8e6', '#00a3d9', '#008fb3'];
+  // Generate distinct pixel blocks using box-shadow to create LED-like effect
+  const generatePixelBlocks = () => {
+    const pixels = [];
+    const pixelSize = 2; // Size of each pixel in px
+    const pixelColors = ['#00e6ff', '#00b8e6', '#00a3d9', '#008fb3'];
     
-    // Create a grid of small shadows to simulate pixels within the text
-    for (let x = -1; x <= 1; x += 0.5) {
-      for (let y = -1; y <= 1; y += 0.5) {
-        if (x === 0 && y === 0) continue;
-        const colorIndex = (Math.abs(x * 2) + Math.abs(y * 2)) % colors.length;
-        const opacity = Math.random() > 0.6 ? '88' : '44'; // Random opacity for pixel effect
-        shadows.push(`${x}px ${y}px 0px ${colors[colorIndex]}${opacity}`);
+    // Create a grid of distinct pixels
+    for (let x = -6; x <= 6; x += 2) {
+      for (let y = -6; y <= 6; y += 2) {
+        const colorIndex = (Math.abs(x / 2) + Math.abs(y / 2)) % pixelColors.length;
+        const opacity = Math.random() > 0.4 ? 1 : 0.6; // Random opacity for pixel variation
+        pixels.push(`${x}px ${y}px 0px ${pixelColors[colorIndex]}${opacity >= 1 ? '' : Math.floor(opacity * 100).toString(16)}`);
       }
     }
     
-    return shadows.join(', ');
+    return pixels.join(', ');
   };
 
   const getAnimationStyle = () => {
-    const baseStyle = {
+    const baseStyle: React.CSSProperties = {
       fontFamily: 'monospace',
-      letterSpacing: '0.1em',
-      fontWeight: 'bold',
+      letterSpacing: '0.2em',
+      fontWeight: '900',
+      fontSize: '1em',
+      // Use a pixelated approach with distinct blocks
+      textShadow: generatePixelBlocks(),
+      color: 'transparent',
+      // Add pixelated background pattern
+      background: `
+        radial-gradient(circle at 25% 25%, #00e6ff 0.5px, transparent 0.5px),
+        radial-gradient(circle at 75% 25%, #00b8e6 0.5px, transparent 0.5px),
+        radial-gradient(circle at 25% 75%, #00a3d9 0.5px, transparent 0.5px),
+        radial-gradient(circle at 75% 75%, #008fb3 0.5px, transparent 0.5px)
+      `,
+      backgroundSize: '4px 4px, 4px 4px, 4px 4px, 4px 4px',
+      backgroundPosition: '0 0, 2px 0, 0 2px, 2px 2px',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
-      color: 'transparent',
-      // Add pixelated shadows inside the text
-      filter: 'contrast(1.5) brightness(1.2)',
+      // Add sharp pixelated rendering
+      imageRendering: 'pixelated' as any,
     };
 
     switch (animationType) {
@@ -49,27 +61,24 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
           background: `
             repeating-linear-gradient(
               90deg,
-              #00e6ff 0px,
+              transparent 0px,
+              transparent 1px,
+              #00e6ff 1px,
               #00e6ff 2px,
-              #00b8e6 2px,
-              #00b8e6 4px,
-              #00a3d9 4px,
-              #00a3d9 6px,
-              #008fb3 6px,
-              #008fb3 8px
+              transparent 2px,
+              transparent 3px,
+              #00b8e6 3px,
+              #00b8e6 4px
             ),
             linear-gradient(
               90deg,
               transparent 0%,
-              rgba(0, 230, 255, 0.8) 30%,
-              rgba(0, 184, 230, 0.9) 50%,
-              rgba(0, 163, 217, 0.8) 70%,
+              rgba(0, 230, 255, 0.8) 50%,
               transparent 100%
             )
           `,
-          backgroundSize: '8px 100%, 300% 100%',
+          backgroundSize: '8px 100%, 200% 100%',
           animation: 'scanning-sweep 3s ease-in-out infinite',
-          textShadow: generatePixelShadows(),
         };
         
       case 'matrix':
@@ -78,53 +87,34 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
           background: `
             repeating-linear-gradient(
               0deg,
-              #00e6ff 0px,
+              transparent 0px,
+              transparent 1px,
               #00e6ff 1px,
-              #00b8e6 1px,
-              #00b8e6 2px,
-              #00a3d9 2px,
-              #00a3d9 3px,
-              #008fb3 3px,
-              #008fb3 4px
-            ),
-            linear-gradient(
-              180deg,
-              rgba(0, 230, 255, 0.9) 0%,
-              rgba(0, 184, 230, 0.7) 50%,
-              rgba(0, 163, 217, 0.9) 100%
+              #00e6ff 2px,
+              transparent 2px,
+              transparent 3px,
+              #00b8e6 3px,
+              #00b8e6 4px
             )
           `,
-          backgroundSize: '100% 4px, 100% 400%',
+          backgroundSize: '100% 8px',
           animation: 'matrix-cascade 2s linear infinite',
-          textShadow: generatePixelShadows(),
         };
         
       case 'construction':
         return {
           ...baseStyle,
           background: `
-            repeating-linear-gradient(
-              45deg,
-              #00e6ff 0px,
-              #00e6ff 3px,
-              #00b8e6 3px,
-              #00b8e6 6px,
-              #00a3d9 6px,
-              #00a3d9 9px,
-              #008fb3 9px,
-              #008fb3 12px
-            ),
-            repeating-linear-gradient(
-              -45deg,
-              transparent 0px,
-              transparent 2px,
-              rgba(0, 230, 255, 0.3) 2px,
-              rgba(0, 230, 255, 0.3) 4px
+            repeating-conic-gradient(
+              from 0deg,
+              #00e6ff 0deg 90deg,
+              #00b8e6 90deg 180deg,
+              #00a3d9 180deg 270deg,
+              #008fb3 270deg 360deg
             )
           `,
-          backgroundSize: '12px 12px, 8px 8px',
+          backgroundSize: '4px 4px',
           animation: 'construction-build 1.5s ease-in-out infinite',
-          textShadow: generatePixelShadows(),
         };
         
       case 'datastream':
@@ -132,56 +122,30 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
           ...baseStyle,
           background: `
             repeating-linear-gradient(
-              135deg,
-              #00e6ff 0px,
-              #00e6ff 2px,
-              #00b8e6 2px,
-              #00b8e6 4px,
-              #00a3d9 4px,
-              #00a3d9 6px,
-              #008fb3 6px,
-              #008fb3 8px
-            ),
-            linear-gradient(
               45deg,
-              rgba(0, 230, 255, 0.8) 0%,
-              rgba(0, 184, 230, 0.6) 25%,
-              rgba(0, 163, 217, 0.8) 50%,
-              rgba(0, 143, 179, 0.6) 75%,
-              rgba(0, 230, 255, 0.8) 100%
+              #00e6ff 0px,
+              #00e6ff 1px,
+              transparent 1px,
+              transparent 2px,
+              #00b8e6 2px,
+              #00b8e6 3px,
+              transparent 3px,
+              transparent 4px
             )
           `,
-          backgroundSize: '8px 8px, 400% 100%',
+          backgroundSize: '8px 8px',
           animation: 'datastream-flow 2.5s linear infinite',
-          textShadow: generatePixelShadows(),
         };
         
       default:
-        return {
-          ...baseStyle,
-          background: `
-            repeating-linear-gradient(
-              90deg,
-              #00e6ff 0px,
-              #00e6ff 2px,
-              #00b8e6 2px,
-              #00b8e6 4px,
-              #00a3d9 4px,
-              #00a3d9 6px,
-              #008fb3 6px,
-              #008fb3 8px
-            )
-          `,
-          backgroundSize: '8px 100%',
-          textShadow: generatePixelShadows(),
-        };
+        return baseStyle;
     }
   };
 
   return (
     <span className={`relative inline-block ${className}`}>
       <span 
-        className="relative z-10 font-mono tracking-wider"
+        className="relative z-10 font-mono tracking-wider select-none"
         style={getAnimationStyle()}
       >
         {children}
