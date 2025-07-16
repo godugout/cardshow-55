@@ -37,6 +37,52 @@ const CardMonolith: React.FC = () => {
           />
         </mesh>
         
+        {/* Card back - CRD design */}
+        <mesh position={[0, 0, 0.16]}>
+          <boxGeometry args={[2.4, 3.4, 0.01]} />
+          <meshStandardMaterial 
+            color="#1a1a2e"
+            metalness={0.3}
+            roughness={0.7}
+            emissive="#0a0a2e"
+            emissiveIntensity={0.2}
+          />
+        </mesh>
+        
+        {/* CRD Logo on back */}
+        <mesh position={[0, 0.8, 0.17]}>
+          <boxGeometry args={[1.5, 0.3, 0.01]} />
+          <meshStandardMaterial 
+            color="#ffffff"
+            emissive="#ffffff"
+            emissiveIntensity={0.1}
+          />
+        </mesh>
+        
+        {/* Card image area */}
+        <mesh position={[0, -0.2, 0.17]}>
+          <boxGeometry args={[2.0, 1.8, 0.01]} />
+          <meshStandardMaterial 
+            color="#2a2a4e"
+            metalness={0.1}
+            roughness={0.8}
+            emissive="#1a1a3e"
+            emissiveIntensity={0.3}
+          />
+        </mesh>
+        
+        {/* Card text area */}
+        <mesh position={[0, -1.3, 0.17]}>
+          <boxGeometry args={[2.0, 0.8, 0.01]} />
+          <meshStandardMaterial 
+            color="#1a1a1a"
+            metalness={0.2}
+            roughness={0.9}
+            emissive="#0a0a0a"
+            emissiveIntensity={0.1}
+          />
+        </mesh>
+        
         {/* Mysterious glow effect */}
         <mesh>
           <boxGeometry args={[2.6, 3.6, 0.31]} />
@@ -53,6 +99,17 @@ const CardMonolith: React.FC = () => {
       
       {/* Realistic Sun */}
       <group ref={sunRef} position={[0, 8, -10]}>
+        {/* Sun light source */}
+        <pointLight
+          intensity={8}
+          color="#ffaa00"
+          distance={50}
+          decay={2}
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+        />
+        
         {/* Sun core */}
         <mesh>
           <sphereGeometry args={[1.8, 64, 64]} />
@@ -172,32 +229,8 @@ export const FloatingCard3D: React.FC = () => {
         gl={{ antialias: true, alpha: false }}
         scene={{ background: new THREE.Color('#0a0a2e') }}
       >
-        {/* Ambient space lighting */}
-        <ambientLight intensity={0.05} color="#000033" />
-        
-        {/* Main sun light */}
-        <directionalLight
-          position={[0, 8, -10]}
-          intensity={4}
-          color="#ffaa00"
-          castShadow
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-        />
-        
-        {/* Dramatic rim light from behind monolith */}
-        <directionalLight
-          position={[0, 8, 5]}
-          intensity={2}
-          color="#ffffff"
-        />
-        
-        {/* Subtle blue rim light */}
-        <directionalLight
-          position={[-10, 5, 10]}
-          intensity={0.5}
-          color="#4444ff"
-        />
+        {/* Minimal ambient space lighting */}
+        <ambientLight intensity={0.02} color="#000033" />
         
         <CardMonolith />
         
