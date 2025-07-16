@@ -31,10 +31,10 @@ export const addComment = async (params: AddCommentParams): Promise<Comment> => 
     const { data, error } = await supabase
       .from('comments')
       .insert({
-        author_id: params.userId,
+        user_id: params.userId,
         card_id: params.cardId,
         collection_id: params.collectionId,
-        memory_id: params.teamId,
+        team_id: params.teamId,
         parent_id: params.parentId,
         content: params.content
       })
@@ -47,10 +47,10 @@ export const addComment = async (params: AddCommentParams): Promise<Comment> => 
     
     return {
       id: data.id,
-      userId: data.author_id,
+      userId: data.user_id,
       cardId: data.card_id,
       collectionId: data.collection_id,
-      teamId: data.memory_id,
+      teamId: data.team_id,
       parentId: data.parent_id,
       content: data.content,
       createdAt: data.created_at,
@@ -110,7 +110,7 @@ export const getComments = async (params: GetCommentsParams): Promise<CommentsRe
     } else if (params.collectionId) {
       query = query.eq('collection_id', params.collectionId);
     } else if (params.teamId) {
-      query = query.eq('memory_id', params.teamId);
+      query = query.eq('team_id', params.teamId);
     }
     
     if (params.parentId) {
@@ -129,10 +129,10 @@ export const getComments = async (params: GetCommentsParams): Promise<CommentsRe
     
     const comments = (data || []).map(comment => ({
       id: comment.id,
-      userId: comment.author_id,
+      userId: comment.user_id,
       cardId: comment.card_id,
       collectionId: comment.collection_id,
-      teamId: comment.memory_id,
+      teamId: comment.team_id,
       parentId: comment.parent_id,
       content: comment.content,
       createdAt: comment.created_at,
@@ -142,13 +142,13 @@ export const getComments = async (params: GetCommentsParams): Promise<CommentsRe
         username: comment.user.username,
         profileImage: comment.user.avatar_url
       } : undefined,
-      replyCount: Array.isArray(comment.replies) ? comment.replies.length : 0,
-      replies: Array.isArray(comment.replies) ? comment.replies.map((reply: any) => ({
+      replyCount: (comment.replies || []).length,
+      replies: (comment.replies || []).map((reply: any) => ({
         id: reply.id,
-        userId: reply.author_id,
+        userId: reply.user_id,
         cardId: reply.card_id,
         collectionId: reply.collection_id,
-        teamId: reply.memory_id,
+        teamId: reply.team_id,
         parentId: reply.parent_id,
         content: reply.content,
         createdAt: reply.created_at,
@@ -158,7 +158,7 @@ export const getComments = async (params: GetCommentsParams): Promise<CommentsRe
           username: reply.user.username,
           profileImage: reply.user.avatar_url
         } : undefined
-      })) : []
+      }))
     }));
     
     return {
@@ -222,7 +222,7 @@ export const updateComment = async (commentId: string, userId: string, content: 
       .from('comments')
       .update({ content })
       .eq('id', commentId)
-      .eq('author_id', userId) // Ensure user owns the comment
+      .eq('user_id', userId) // Ensure user owns the comment
       .select('*, user:profiles(*)')
       .single();
     
@@ -232,10 +232,10 @@ export const updateComment = async (commentId: string, userId: string, content: 
     
     return {
       id: data.id,
-      userId: data.author_id,
+      userId: data.user_id,
       cardId: data.card_id,
       collectionId: data.collection_id,
-      teamId: data.memory_id,
+      teamId: data.team_id,
       parentId: data.parent_id,
       content: data.content,
       createdAt: data.created_at,
@@ -245,7 +245,7 @@ export const updateComment = async (commentId: string, userId: string, content: 
         username: data.user.username,
         profileImage: data.user.avatar_url
       } : undefined,
-      replyCount: 0
+      replyCount: data.reply_count || 0
     };
   } catch (error) {
     console.error('Error in updateComment:', error);
@@ -281,7 +281,7 @@ export const deleteComment = async (commentId: string, userId: string): Promise<
       .from('comments')
       .delete()
       .eq('id', commentId)
-      .eq('author_id', userId); // Ensure user owns the comment
+      .eq('user_id', userId); // Ensure user owns the comment
     
     if (error) {
       throw new Error(`Failed to delete comment: ${error.message}`);

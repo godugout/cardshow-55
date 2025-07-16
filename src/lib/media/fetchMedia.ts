@@ -1,11 +1,20 @@
+
 import { supabase } from '../supabase-client';
 import type { MediaItem } from '@/types/media';
 
 export const getMediaByMemoryId = async (memoryId: string): Promise<MediaItem[]> => {
   try {
-    // Temporarily return empty array to avoid database schema issues
-    console.log('getMediaByMemoryId: Temporarily disabled due to schema mismatch');
-    return [];
+    const { data, error } = await supabase
+      .from('media')
+      .select('*')
+      .eq('memoryId', memoryId)
+      .order('createdAt', { ascending: false });
+      
+    if (error) {
+      throw new Error(`Error fetching media: ${error.message}`);
+    }
+    
+    return data as MediaItem[];
     
   } catch (error) {
     console.error('Error in getMediaByMemoryId:', error);

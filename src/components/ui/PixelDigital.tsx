@@ -122,7 +122,15 @@ export const PixelDigital: React.FC<PixelDigitalProps> = ({
       
       {/* Removed glitch lines overlay as requested */}
       
-      {/* Pixel glitch animation moved to custom.css */}
+      <style>{`
+        @keyframes pixelGlitch {
+          0%, 100% { transform: translateY(0px); opacity: 0.05; }
+          20% { transform: translateY(-0.5px); opacity: 0.15; }
+          40% { transform: translateY(0.5px); opacity: 0.08; }
+          60% { transform: translateY(-0.3px); opacity: 0.12; }
+          80% { transform: translateY(0.3px); opacity: 0.06; }
+        }
+      `}</style>
     </span>
   );
 };

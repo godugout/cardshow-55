@@ -1,6 +1,5 @@
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useIntersectionObserver } from '@/components/editor/wizard/hooks/useIntersectionObserver';
+import React, { useState, useEffect, useRef } from 'react';
 
 export interface Hero3Props {
   caption?: string;
@@ -11,6 +10,7 @@ export interface Hero3Props {
   showFeaturedCards?: boolean;
   featuredCards?: any[];
   onCardClick?: (card: any) => void;
+  shouldStartAnimation?: boolean;
 }
 
 export const Hero3: React.FC<Hero3Props> = ({ 
@@ -21,158 +21,115 @@ export const Hero3: React.FC<Hero3Props> = ({
   ctaLink, 
   showFeaturedCards = false, 
   featuredCards = [], 
-  onCardClick = () => {} 
+  onCardClick = () => {},
+  shouldStartAnimation = false
 }) => {
-  const [position, setPosition] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [animationProgress, setAnimationProgress] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const rafId = useRef<number>();
-  const lastTimestamp = useRef<number>();
-  const speed = 0.15; // pixels per millisecond (reduced from 0.5 for better viewing)
-  
-  // State to track if hero animation has completed (scroll-based)
-  const [heroAnimationComplete, setHeroAnimationComplete] = useState(false);
-  
-  // Intersection observer to detect when we're past the hero section
-  const { targetRef, isIntersecting } = useIntersectionObserver({
-    threshold: 0.3,
-    rootMargin: '0px'
-  });
+  const [animationState, setAnimationState] = useState<'idle' | 'running' | 'decelerating' | 'accelerating'>('idle');
+  const [currentPosition, setCurrentPosition] = useState(0);
+  const [animationSpeed, setAnimationSpeed] = useState(0);
+  const animationFrameRef = useRef<number>();
+  const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Monitor scroll position to detect when hero animation should complete
-  React.useEffect(() => {
-    const handleScroll = () => {
-      const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-      // Complete hero animation when user scrolls about 40% down the page
-      if (scrollPercent > 0.4 && !heroAnimationComplete) {
-        setHeroAnimationComplete(true);
+  // Calculate single set width for position normalization
+  const singleSetWidth = featuredCards.length * (384 + 24); // 384px card + 24px gap
+
+  useEffect(() => {
+    if (shouldStartAnimation && animationState === 'idle') {
+      setAnimationState('accelerating');
+    } else if (!shouldStartAnimation && animationState === 'running') {
+      setAnimationState('decelerating');
+    }
+  }, [shouldStartAnimation, animationState]);
+
+  useEffect(() => {
+    const animate = () => {
+      if (animationState === 'accelerating') {
+        setAnimationSpeed(prev => {
+          const newSpeed = Math.min(prev + 0.05, 1); // Gradually speed up
+          if (newSpeed >= 1) {
+            setAnimationState('running');
+            return 1;
+          }
+          return newSpeed;
+        });
+        setCurrentPosition(prev => {
+          let newPos = prev - animationSpeed;
+          // Normalize position for seamless infinite scroll
+          if (newPos <= -singleSetWidth) {
+            newPos += singleSetWidth;
+          }
+          return newPos;
+        });
+        animationFrameRef.current = requestAnimationFrame(animate);
+      } else if (animationState === 'running') {
+        setCurrentPosition(prev => {
+          let newPos = prev - animationSpeed;
+          // Normalize position for seamless infinite scroll
+          if (newPos <= -singleSetWidth) {
+            newPos += singleSetWidth;
+          }
+          return newPos;
+        });
+        animationFrameRef.current = requestAnimationFrame(animate);
+      } else if (animationState === 'decelerating') {
+        setAnimationSpeed(prev => {
+          const newSpeed = prev * 0.95; // Gradually slow down
+          if (newSpeed < 0.01) {
+            setAnimationState('idle');
+            return 0;
+          }
+          return newSpeed;
+        });
+        setCurrentPosition(prev => {
+          let newPos = prev - animationSpeed;
+          // Normalize position for seamless infinite scroll
+          if (newPos <= -singleSetWidth) {
+            newPos += singleSetWidth;
+          }
+          return newPos;
+        });
+        animationFrameRef.current = requestAnimationFrame(animate);
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [heroAnimationComplete]);
-  
+    if (animationState !== 'idle') {
+      animationFrameRef.current = requestAnimationFrame(animate);
+    }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [animationState, animationSpeed, singleSetWidth]);
+
   if (!showFeaturedCards || featuredCards.length === 0) {
-    return (
-      <div className="w-full text-center py-8">
-        <div className="text-crd-lightGray text-lg mb-2">
-          🎨 No cards available
-        </div>
-        <p className="text-crd-lightGray/70 text-sm">
-          Cards will appear here once they're loaded.
-        </p>
-      </div>
-    );
+    return null;
   }
 
-  // Check if user prefers reduced motion
-  const prefersReducedMotion = useRef(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-
-  // Smooth easing function for acceleration/deceleration
-  const easeInOutCubic = (t: number): number => {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  };
-
-  // Optimized carousel animation with RAF and smart start control
-  const animateCarousel = useCallback(() => {
-    // Only animate when hero animation is complete AND we're intersecting AND not hovered
-    const shouldAnimate = heroAnimationComplete && isIntersecting && !isHovered && !prefersReducedMotion.current;
-    
-    const animate = (timestamp: number) => {
-      if (!lastTimestamp.current) lastTimestamp.current = timestamp;
-      const delta = timestamp - lastTimestamp.current;
-      
-      // Smooth acceleration/deceleration
-      setAnimationProgress(prev => {
-        const targetProgress = shouldAnimate ? 1 : 0;
-        const progressSpeed = 0.005; // How fast to reach target progress
-        const diff = targetProgress - prev;
-        return prev + diff * progressSpeed * delta;
-      });
-      
-      // Use transform3d for hardware acceleration
-      setPosition(prev => {
-        // Calculate actual card width based on responsive breakpoints
-        const isMobile = window.innerWidth < 768;
-        const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
-        const cardWidth = isMobile ? 288 : isTablet ? 320 : 384; // w-72, w-80, w-96
-        const gap = 24; // gap-6 = 24px
-        
-        // Calculate based on single array length for proper reset
-        const singleSetWidth = (cardWidth + gap) * featuredCards.length;
-        
-        // Apply smooth easing to the speed
-        const easedProgress = easeInOutCubic(animationProgress);
-        const currentSpeed = speed * easedProgress;
-        const next = prev - (currentSpeed * delta);
-        
-        // Reset position for seamless loop when we've moved past one full set
-        if (next <= -singleSetWidth) {
-          return next + singleSetWidth;
-        }
-        return next;
-      });
-      
-      lastTimestamp.current = timestamp;
-      rafId.current = requestAnimationFrame(animate);
-    };
-    
-    rafId.current = requestAnimationFrame(animate);
-  }, [heroAnimationComplete, isIntersecting, isHovered, animationProgress, featuredCards.length, speed]);
-
-  // Start/stop animation based on intersection and hover state
-  useEffect(() => {
-    lastTimestamp.current = undefined;
-    animateCarousel();
-    
-    return () => {
-      if (rafId.current) {
-        cancelAnimationFrame(rafId.current);
-      }
-    };
-  }, [animateCarousel]);
-
-  // Pause on hover for better UX
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => setIsHovered(false);
-
   return (
-    <div 
-      ref={targetRef}
-      className="w-full overflow-hidden relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      style={{ 
-        height: '520px', // Increased from 420px for better card visibility
-        contain: 'layout style paint', // Performance optimization
-      }} // Fixed height to prevent layout shifts
-    >
-      {/* Horizontal scrolling carousel with smooth RAF animation */}
+    <div className="w-full overflow-hidden">
+      {/* Horizontal scrolling carousel with larger cards */}
       <div 
-        ref={containerRef}
-        className="flex gap-6 h-full"
-        style={{
-          transform: `translate3d(${position}px, 0, 0)`,
-          willChange: heroAnimationComplete ? 'transform' : 'auto', // Smart will-change management
-          contain: 'layout style paint' // Performance containment
-        }}
+        ref={carouselRef}
+        className="flex gap-6"
+        style={{ transform: `translateX(${currentPosition}px)` }}
       >
-        {/* Duplicate the cards array multiple times for infinite scroll */}
-        {[...featuredCards, ...featuredCards, ...featuredCards, ...featuredCards, ...featuredCards, ...featuredCards].map((card, index) => (
+        {/* Duplicate the cards array to create seamless loop */}
+        {[...featuredCards, ...featuredCards].map((card, index) => (
           <div 
             key={`${card.id}-${index}`}
-            className="flex-shrink-0 w-72 md:w-80 lg:w-96 cursor-pointer transition-transform duration-200 hover:scale-105 relative z-10"
+            className="flex-shrink-0 w-64 md:w-80 lg:w-96 cursor-pointer group"
             onClick={() => onCardClick(card)}
           >
-            <div className="bg-crd-dark rounded-xl overflow-hidden shadow-lg border border-crd-mediumGray/20 interactive-element-active">
-              <div className="aspect-[3/4] relative">
+            <div className="relative bg-crd-dark rounded-xl overflow-hidden shadow-lg border border-crd-mediumGray/20 transition-transform duration-300 group-hover:scale-105">
+              {/* Card Image */}
+              <div className="aspect-[3/4] relative overflow-hidden">
                 {card.image_url || card.thumbnail_url ? (
                   <img 
                     src={card.image_url || card.thumbnail_url} 
                     alt={card.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     loading="lazy"
                   />
                 ) : (
@@ -180,12 +137,39 @@ export const Hero3: React.FC<Hero3Props> = ({
                     <div className="text-4xl opacity-50">🎨</div>
                   </div>
                 )}
-              </div>
-              <div className="p-4">
-                <h3 className="text-crd-white font-semibold truncate">{card.title}</h3>
-                <p className="text-crd-lightGray text-sm mt-1">
-                  {card.rarity ? `${card.rarity.charAt(0).toUpperCase() + card.rarity.slice(1)} Card` : 'Digital Card'}
-                </p>
+                
+                {/* Hover Details Overlay */}
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 via-black/40 to-transparent transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                    <h3 className="font-semibold text-lg mb-1 truncate">{card.title}</h3>
+                    <div className="flex items-center justify-between text-sm">
+                      <div>
+                        <p className="text-crd-lightGray">Creator: {card.creator_name || 'Unknown'}</p>
+                        {card.curator && (
+                          <p className="text-crd-lightGray">Curated by: {card.curator}</p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        {card.rarity && (
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${
+                            card.rarity === 'legendary' ? 'bg-crd-orange text-black' :
+                            card.rarity === 'rare' ? 'bg-crd-purple text-white' :
+                            card.rarity === 'uncommon' ? 'bg-crd-blue text-white' :
+                            'bg-crd-mediumGray text-white'
+                          }`}>
+                            {card.rarity.charAt(0).toUpperCase() + card.rarity.slice(1)}
+                          </span>
+                        )}
+                        {card.view_count && (
+                          <p className="text-crd-lightGray mt-1">{card.view_count} views</p>
+                        )}
+                        {card.price && (
+                          <p className="text-crd-green font-bold mt-1">${card.price}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

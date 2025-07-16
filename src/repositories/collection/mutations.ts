@@ -14,8 +14,9 @@ export const createCollection = async (params: CreateCollectionParams): Promise<
     .insert({
       title: params.title,
       description: params.description,
-      user_id: params.ownerId,  // Use user_id instead of owner_id
-      visibility: params.visibility || 'private'
+      owner_id: params.ownerId,
+      visibility: params.visibility || 'private',
+      app_id: appId
     })
     .select()
     .single();
@@ -27,12 +28,12 @@ export const createCollection = async (params: CreateCollectionParams): Promise<
   if (params.cards && params.cards.length > 0) {
     const collectionItems = params.cards.map((cardId, index) => ({
       collection_id: data.id,
-      card_id: cardId,  // Use card_id instead of memory_id
+      memory_id: cardId,
       display_order: index
     }));
     
     const { error: itemsError } = await supabase
-      .from('collection_cards')  // Use collection_cards instead of collection_items
+      .from('collection_items')
       .insert(collectionItems);
       
     if (itemsError) {
@@ -44,10 +45,10 @@ export const createCollection = async (params: CreateCollectionParams): Promise<
     id: data.id,
     title: data.title,
     description: data.description,
-    ownerId: data.user_id,  // Use user_id
+    ownerId: data.owner_id,
     coverImageUrl: data.cover_image_url,
     visibility: data.visibility,
-    theme: (data.theme || 'personal') as any,
+    theme: data.theme || 'personal',
     viewCount: data.view_count || 0,
     cardCount: params.cards?.length || 0,
     createdAt: data.created_at
@@ -77,7 +78,7 @@ export const updateCollection = async (params: UpdateCollectionParams): Promise<
 export const updateCollectionCards = async (collectionId: string, cardIds: string[]): Promise<void> => {
   // First, remove all existing items
   const { error: deleteError } = await supabase
-    .from('collection_cards')  // Use collection_cards
+    .from('collection_items')
     .delete()
     .eq('collection_id', collectionId);
     
@@ -87,12 +88,12 @@ export const updateCollectionCards = async (collectionId: string, cardIds: strin
   if (cardIds.length > 0) {
     const collectionItems = cardIds.map((cardId, index) => ({
       collection_id: collectionId,
-      card_id: cardId,  // Use card_id
+      memory_id: cardId,
       display_order: index
     }));
     
     const { error: insertError } = await supabase
-      .from('collection_cards')  // Use collection_cards
+      .from('collection_items')
       .insert(collectionItems);
       
     if (insertError) throw new Error(`Failed to add cards to collection: ${insertError.message}`);
@@ -106,7 +107,7 @@ export const deleteCollection = async (id: string): Promise<void> => {
 
   // Delete all collection items first
   const { error: itemsError } = await supabase
-    .from('collection_cards')  // Use collection_cards
+    .from('collection_items')
     .delete()
     .eq('collection_id', id);
     

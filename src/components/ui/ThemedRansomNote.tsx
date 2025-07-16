@@ -5,6 +5,7 @@ interface ThemedRansomNoteProps {
   theme: 'craft' | 'collect' | 'connect';
   className?: string;
   isPaused?: boolean;
+  showTypographyControls?: boolean;
 }
 
 interface LetterState {
@@ -23,6 +24,13 @@ interface LetterState {
   isTransparent: boolean;
   letterType: 'card' | 'transparent' | 'jersey';
   backgroundOffset: number;
+  isTransitioningToTypography: boolean;
+  typographyTransitionProgress: number;
+  // New slide animation properties
+  isSliding: boolean;
+  slideDirection: 'left' | 'right';
+  slideProgress: number;
+  settlingProgress: number;
 }
 
 interface LetterStyle {
@@ -37,7 +45,8 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   children, 
   theme,
   className = "",
-  isPaused = false
+  isPaused = false,
+  showTypographyControls = false
 }) => {
   const [letters, setLetters] = useState<LetterState[]>([]);
   const [animPhase, setAnimPhase] = useState(0);
@@ -47,6 +56,11 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
   const [spellIndex, setSpellIndex] = useState(0);
   const [flippingLetters, setFlippingLetters] = useState<number[]>([]);
   const [goldLetterIndex, setGoldLetterIndex] = useState<number>(-1); // Track which letter has gold background
+  const [isReturningToTypography, setIsReturningToTypography] = useState(false);
+  const [typographyTransitionPhase, setTypographyTransitionPhase] = useState<'idle' | 'background-fade' | 'color-transition' | 'font-normalize' | 'typography'>('idle');
+  const [typographyProgress, setTypographyProgress] = useState(0);
+  // New slide animation state
+  const [isSliding, setIsSliding] = useState(false);
 
   // Theme-specific configurations
   const getThemeConfig = (theme: 'craft' | 'collect' | 'connect') => {
@@ -496,7 +510,14 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
           isThemeWord,
           isTransparent,
           letterType,
-          backgroundOffset: char === ' ' ? 0 : generateBackgroundOffset()
+          backgroundOffset: char === ' ' ? 0 : generateBackgroundOffset(),
+          isTransitioningToTypography: false,
+          typographyTransitionProgress: 0,
+          // Initialize slide animation properties
+          isSliding: false,
+          slideDirection: 'left' as const,
+          slideProgress: 0,
+          settlingProgress: 1
         };
       });
       setLetters(newLetters);
@@ -505,87 +526,247 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
     initializeLetters();
   }, [children, theme]);
 
+  // Dynamic slide animation system
+  const performSlideAnimation = (updateFunction: () => void) => {
+    if (isSliding) return;
+    
+    console.log('🎭 Starting slide animation');
+    setIsSliding(true);
+    const slideDirection = Math.random() > 0.5 ? 'left' : 'right';
+    console.log(`📤 Slide direction: ${slideDirection}`);
+    
+    // Phase 1: Slide off screen (0.3s, fast)
+    setLetters(prev => prev.map(letter => ({
+      ...letter,
+      isSliding: true,
+      slideDirection: slideDirection as 'left' | 'right',
+      slideProgress: 0
+    })));
+    
+    const slideOffDuration = 300;
+    const slideOffStart = Date.now();
+    
+    const slideOffInterval = setInterval(() => {
+      const elapsed = Date.now() - slideOffStart;
+      const progress = Math.min(elapsed / slideOffDuration, 1);
+      
+      setLetters(prev => prev.map(letter => ({
+        ...letter,
+        slideProgress: progress
+      })));
+      
+      if (progress >= 1) {
+        clearInterval(slideOffInterval);
+        
+        // Phase 2: Update styles while off-screen (instant)
+        updateFunction();
+        
+        // Phase 3: Slide in from opposite side (0.4s, fast)
+        const oppositeDirection = slideDirection === 'left' ? 'right' : 'left';
+        setLetters(prev => prev.map(letter => ({
+          ...letter,
+          slideDirection: oppositeDirection as 'left' | 'right',
+          slideProgress: 1
+        })));
+        
+        const slideInDuration = 400;
+        const slideInStart = Date.now();
+        
+        const slideInInterval = setInterval(() => {
+          const elapsed = Date.now() - slideInStart;
+          const progress = Math.min(elapsed / slideInDuration, 1);
+          
+          setLetters(prev => prev.map(letter => ({
+            ...letter,
+            slideProgress: 1 - progress
+          })));
+          
+          if (progress >= 1) {
+            clearInterval(slideInInterval);
+            
+            // Phase 4: Settle into floating baseline positions (0.8s, ease-out)
+            const settleDuration = 800;
+            const settleStart = Date.now();
+            
+            const settleInterval = setInterval(() => {
+              const elapsed = Date.now() - settleStart;
+              const settleProgress = Math.min(elapsed / settleDuration, 1);
+              const easeOut = 1 - Math.pow(1 - settleProgress, 3);
+              
+              setLetters(prev => prev.map(letter => ({
+                ...letter,
+                settlingProgress: easeOut,
+                float: letter.float * (1 - easeOut) + (Math.random() * 0.8 - 0.4) * easeOut // Settle around baseline
+              })));
+              
+              if (settleProgress >= 1) {
+                clearInterval(settleInterval);
+                setLetters(prev => prev.map(letter => ({
+                  ...letter,
+                  isSliding: false,
+                  slideProgress: 0,
+                  settlingProgress: 1
+                })));
+                setIsSliding(false);
+              }
+            }, 16);
+          }
+        }, 16);
+      }
+    }, 16);
+  };
+
+  // Typography transition function
+  const transitionToTypography = () => {
+    if (typographyTransitionPhase !== 'idle') return;
+    
+    setIsReturningToTypography(true);
+    setTypographyTransitionPhase('background-fade');
+    setTypographyProgress(0);
+    
+    // Phase 1: Background fade-out (0.5s)
+    setTimeout(() => {
+      setTypographyTransitionPhase('color-transition');
+      
+      // Phase 2: Color transition (1.0s)
+      setTimeout(() => {
+        setTypographyTransitionPhase('font-normalize');
+        
+        // Phase 3: Font normalization (1.0s)
+        setTimeout(() => {
+          setTypographyTransitionPhase('typography');
+          
+          // Apply final typography state
+          setLetters(prev => prev.map(letter => ({
+            ...letter,
+            isTransitioningToTypography: true,
+            typographyTransitionProgress: 1,
+            style: {
+              ...letter.style,
+              backgroundColor: 'transparent',
+              fontFamily: 'Impact',
+              fontSize: '1em',
+              textShadow: 'none'
+            },
+            rotation: 0,
+            float: 0,
+            lean: 0,
+            shape: 'square' as const,
+            size: 'medium' as const
+          })));
+          
+          // Phase 4: Hold in typography state (0.8s)
+          setTimeout(() => {
+            setTypographyTransitionPhase('idle');
+          }, 800);
+          
+        }, 1000);
+      }, 1000);
+    }, 500);
+  };
+
+  // Return to ransom note function
+  const returnToRansomNote = () => {
+    setIsReturningToTypography(false);
+    setTypographyTransitionPhase('idle');
+    setTypographyProgress(0);
+    
+    // Reinitialize letters with ransom note styles
+    setLetters(prev => prev.map(letter => ({
+      ...letter,
+      isTransitioningToTypography: false,
+      typographyTransitionProgress: 0
+    })));
+    
+    // Trigger a refresh of the ransom note styles
+    setAnimationKey(prev => prev + 1);
+  };
+
   useEffect(() => {
     if (isPaused) return; // Pause main variation loop
     
     const variationInterval = setInterval(() => {
-      if (Math.random() < 0.3) {
-        setIsSpellingOut(true);
-        setSpellIndex(0);
-        setActiveAnimations([]);
-        
-        // Pick new gold letter for collect theme
-        let newGoldIndex = goldLetterIndex;
-        if (theme === 'collect') {
-          setLetters(currentLetters => {
-            const validIndices = currentLetters.map((letter, i) => letter.char !== ' ' && !letter.isTransparent && letter.letterType === 'card' ? i : -1).filter(i => i !== -1);
-            if (validIndices.length > 0) {
-              newGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
-              setGoldLetterIndex(newGoldIndex);
-            }
-            
-            return currentLetters.map((letter, index) => {
-              // For collect theme, enforce gold constraint
-              let forceGold = false;
-              let avoidGold = false;
-              if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
-                forceGold = index === newGoldIndex;
-                avoidGold = index !== newGoldIndex;
+      console.log('🎨 ThemedRansomNote: Starting new variation cycle, theme:', theme);
+      
+      performSlideAnimation(() => {
+        if (Math.random() < 0.3) {
+          setIsSpellingOut(true);
+          setSpellIndex(0);
+          setActiveAnimations([]);
+          
+          // Pick new gold letter for collect theme
+          let newGoldIndex = goldLetterIndex;
+          if (theme === 'collect') {
+            setLetters(currentLetters => {
+              const validIndices = currentLetters.map((letter, i) => letter.char !== ' ' && !letter.isTransparent && letter.letterType === 'card' ? i : -1).filter(i => i !== -1);
+              if (validIndices.length > 0) {
+                newGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+                setGoldLetterIndex(newGoldIndex);
               }
               
-              return {
-                ...letter,
-                style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
-                backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
-              };
+              return currentLetters.map((letter, index) => {
+                // For collect theme, enforce gold constraint
+                let forceGold = false;
+                let avoidGold = false;
+                if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
+                  forceGold = index === newGoldIndex;
+                  avoidGold = index !== newGoldIndex;
+                }
+                
+                return {
+                  ...letter,
+                  style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
+                  backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+                };
+              });
             });
-          });
+          } else {
+            setLetters(prev => prev.map(letter => ({
+              ...letter,
+              style: generateLetterStyle(letter.letterType),
+              backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+            })));
+          }
         } else {
-          setLetters(prev => prev.map(letter => ({
-            ...letter,
-            style: generateLetterStyle(letter.letterType),
-            backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
-          })));
-        }
-      } else {
-        setAnimationKey(prev => prev + 1);
-        setActiveAnimations([]);
-        setIsSpellingOut(false);
-        
-        // Pick new gold letter for collect theme
-        let newGoldIndex = goldLetterIndex;
-        if (theme === 'collect') {
-          setLetters(currentLetters => {
-            const validIndices = currentLetters.map((letter, i) => letter.char !== ' ' && !letter.isTransparent && letter.letterType === 'card' ? i : -1).filter(i => i !== -1);
-            if (validIndices.length > 0) {
-              newGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
-              setGoldLetterIndex(newGoldIndex);
-            }
-            
-            return currentLetters.map((letter, index) => {
-              // For collect theme, enforce gold constraint
-              let forceGold = false;
-              let avoidGold = false;
-              if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
-                forceGold = index === newGoldIndex;
-                avoidGold = index !== newGoldIndex;
+          setAnimationKey(prev => prev + 1);
+          setActiveAnimations([]);
+          setIsSpellingOut(false);
+          
+          // Pick new gold letter for collect theme
+          let newGoldIndex = goldLetterIndex;
+          if (theme === 'collect') {
+            setLetters(currentLetters => {
+              const validIndices = currentLetters.map((letter, i) => letter.char !== ' ' && !letter.isTransparent && letter.letterType === 'card' ? i : -1).filter(i => i !== -1);
+              if (validIndices.length > 0) {
+                newGoldIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+                setGoldLetterIndex(newGoldIndex);
               }
               
-              return {
-                ...letter,
-                style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
-                backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
-              };
+              return currentLetters.map((letter, index) => {
+                // For collect theme, enforce gold constraint
+                let forceGold = false;
+                let avoidGold = false;
+                if (theme === 'collect' && !letter.isTransparent && letter.letterType === 'card') {
+                  forceGold = index === newGoldIndex;
+                  avoidGold = index !== newGoldIndex;
+                }
+                
+                return {
+                  ...letter,
+                  style: generateLetterStyle(letter.letterType, forceGold, avoidGold),
+                  backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+                };
+              });
             });
-          });
-        } else {
-          setLetters(prev => prev.map(letter => ({
-            ...letter,
-            style: generateLetterStyle(letter.letterType),
-            backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
-          })));
+          } else {
+            setLetters(prev => prev.map(letter => ({
+              ...letter,
+              style: generateLetterStyle(letter.letterType),
+              backgroundOffset: letter.char === ' ' ? 0 : (Math.random() < 0.3 ? generateBackgroundOffset() : letter.backgroundOffset)
+            })));
+          }
         }
-      }
+      });
     }, 18000); // Increased from 12000 to 18000 (slower pace)
 
     const phaseInterval = setInterval(() => {
@@ -596,7 +777,7 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       clearInterval(variationInterval);
       clearInterval(phaseInterval);
     };
-  }, [theme, isPaused]); // Added isPaused dependency
+  }, [theme, isPaused, goldLetterIndex, isSliding]); // Updated dependencies
 
   useEffect(() => {
     if (isSpellingOut) {
@@ -807,22 +988,53 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       ` : (transparentStyles.textShadow || letter.style.textShadow),
       zIndex: transparentStyles.zIndex || 'auto',
       // Use transforms only - no layout-affecting properties
-      transform: `
-        translateX(0px) translateY(${stableOffsets.float}px)
-        rotateZ(${stableOffsets.rotation}deg)
-        rotateX(${stableOffsets.lean}deg)
-        ${isFlipping ? `rotateY(${Math.sin(animPhase * 0.2) * 180}deg) rotateZ(${Math.sin(animPhase * 0.3) * 5}deg)` : ''}
-        ${isActive ? `rotateY(${Math.sin(animPhase * 0.05 + index) * 45}deg)` : ''}
-        ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
-        ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
-        ${isSpellingOut && index === spellIndex - 1 ? 'scale(1.2)' : ''}
-      `,
+      transform: (() => {
+        let baseTransform = `
+          translateY(${stableOffsets.float}px)
+          rotateZ(${stableOffsets.rotation}deg)
+          rotateX(${stableOffsets.lean}deg)
+          ${isFlipping ? `rotateY(${Math.sin(animPhase * 0.2) * 180}deg) rotateZ(${Math.sin(animPhase * 0.3) * 5}deg)` : ''}
+          ${isActive ? `rotateY(${Math.sin(animPhase * 0.05 + index) * 45}deg)` : ''}
+          ${isActive ? `rotateZ(${Math.sin(animPhase * 0.04 + index) * 15}deg)` : ''}
+          ${isActive ? `scale(${1 + Math.sin(animPhase * 0.03 + index) * 0.2})` : ''}
+          ${isSpellingOut && index === spellIndex - 1 ? 'scale(1.2)' : ''}
+        `;
+        
+        // Add slide animation transform
+        if (letter.isSliding) {
+          const slideDistance = 300; // Fixed visible slide distance
+          const direction = letter.slideDirection === 'left' ? -1 : 1;
+          const slideX = direction * slideDistance * letter.slideProgress;
+          console.log(`🎭 Letter "${letter.char}" sliding: direction=${letter.slideDirection}, progress=${letter.slideProgress.toFixed(2)}, slideX=${slideX}px`);
+          baseTransform = `translateX(${slideX}px) ${baseTransform}`;
+        } else {
+          baseTransform = `translateX(0px) ${baseTransform}`;
+        }
+        
+        return baseTransform;
+      })(),
       filter: `brightness(${1 + (isActive ? 0.5 : 0) * Math.sin(animPhase * 0.06 + index)})`,
       padding: stableOffsets.padding,
       margin: stableOffsets.margin,
       border: 'none',
       boxShadow: 'none',
-      opacity: isVisible ? (letter.char === ' ' ? 1 : 0.9) : 0,
+      opacity: (() => {
+        if (!isVisible) return 0;
+        if (letter.char === ' ') return 1;
+        
+        // Apply slide animation opacity
+        if (letter.isSliding) {
+          // During slide-off: fade out as letters move off screen
+          // During slide-in: fade in as letters arrive
+          if (letter.slideProgress < 0.5) {
+            return 0.9 * (1 - letter.slideProgress * 2); // Fade out during first half of slide
+          } else {
+            return 0.9 * ((letter.slideProgress - 0.5) * 2); // Fade in during second half
+          }
+        }
+        
+        return 0.9;
+      })(),
       display: letter.char === ' ' ? 'inline' : 'inline-block',
       fontWeight: themeWeight,
       fontStyle: Math.random() > 0.8 ? 'italic' : 'normal',
@@ -833,39 +1045,75 @@ export const ThemedRansomNote: React.FC<ThemedRansomNoteProps> = ({
       // Layout containment to prevent shifts
       contain: 'layout style',
       willChange: 'transform',
-      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'all 2.5s cubic-bezier(0.4, 0, 0.2, 1)',
+      transition: isSpellingOut ? 'opacity 0.2s ease-in-out, transform 0.3s ease-out' : 'all 4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
       transformOrigin: 'center center',
     };
   };
 
   return (
-    <div className={`inline-block mt-4 mb-4 ${className}`} style={{ 
-      letterSpacing: '-0.05em', 
-      transform: 'scale(1.0)',
-      lineHeight: '1.4',
-      contain: 'layout',
-      height: '1.5em', // Fixed baseline height to prevent layout shifts
-      overflow: 'visible',
-      position: 'relative'
-    }}>
-      {letters.map((letter, index) => (
-        <span
-          key={`${index}-${animationKey}-${theme}`}
-          className="inline-block"
-          style={{
-            position: 'relative',
-            minWidth: letter.char === ' ' ? '0.25em' : '0.8em',
-            minHeight: '1.3em',
-            maxHeight: '2.5em', // Baseline constraint
-            verticalAlign: 'top',
-            contain: 'layout style',
-            textAlign: 'center',
-            ...getLetterStyle(letter, index)
-          }}
-        >
-          {letter.char}
-        </span>
-      ))}
+    <div className="relative">
+      {/* Typography Control */}
+      {showTypographyControls && (
+        <div className="absolute -top-8 right-0 z-20">
+          <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm rounded px-2 py-1">
+            <span className="text-xs opacity-70 text-white">Typography:</span>
+            {isReturningToTypography ? (
+              <button
+                onClick={returnToRansomNote}
+                className="p-1 hover:bg-white/20 rounded transition-colors text-white"
+                title="Return to ransom note"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 3h18v18H3z"/>
+                  <path d="M8 12h8"/>
+                  <path d="M12 8v8"/>
+                </svg>
+              </button>
+            ) : (
+              <button
+                onClick={transitionToTypography}
+                className="p-1 hover:bg-white/20 rounded transition-colors text-white"
+                title="Convert to typography"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 7V4h16v3"/>
+                  <path d="M9 20h6"/>
+                  <path d="M12 4v16"/>
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      
+      <div className={`inline-block mt-4 mb-4 ${className}`} style={{ 
+        letterSpacing: '-0.05em', 
+        transform: 'scale(1.0)',
+        lineHeight: '1.4',
+        contain: 'layout',
+        height: '1.5em', // Fixed baseline height to prevent layout shifts
+        overflow: 'visible',
+        position: 'relative'
+      }}>
+        {letters.map((letter, index) => (
+          <span
+            key={`${index}-${animationKey}-${theme}`}
+            className={`inline-block ${isReturningToTypography ? 'gradient-text-green-blue-purple font-bold' : ''}`}
+            style={{
+              position: 'relative',
+              minWidth: letter.char === ' ' ? '0.25em' : '0.8em',
+              minHeight: '1.3em',
+              maxHeight: '2.5em', // Baseline constraint
+              verticalAlign: 'top',
+              contain: 'layout style',
+              textAlign: 'center',
+              ...getLetterStyle(letter, index)
+            }}
+          >
+            {letter.char}
+          </span>
+        ))}
+      </div>
     </div>
   );
 };

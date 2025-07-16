@@ -7,9 +7,9 @@ import { TextEffects3D, type TextEffectStyle, type TextAnimation } from "@/compo
 import { SparkleText } from "@/components/hero/SparkleText";
 import { ThemedRansomNote } from "@/components/ui/ThemedRansomNote";
 import { useSecretMenuDetection } from "@/hooks/useSecretMenuDetection";
+import { useScrollTrigger } from "@/hooks/useScrollTrigger";
 import { Hero3 } from "@/components/ui/design-system";
 import { Pause, Play, SkipBack, SkipForward, Settings } from "lucide-react";
-import { usePerformanceOptimizer } from "@/hooks/usePerformanceOptimizer";
 import type { Tables } from '@/integrations/supabase/types';
 
 // Use the database type directly
@@ -18,9 +18,6 @@ type DbCard = Tables<'cards'>;
 export const EnhancedHero: React.FC = () => {
   const { cards, featuredCards, loading, fetchAllCardsFromDatabase } = useCards();
   const navigate = useNavigate();
-  
-  // Performance monitoring and adaptive settings
-  const { settings: perfSettings } = usePerformanceOptimizer();
   
   // Hero rotation state
   const [currentHero, setCurrentHero] = useState(0);
@@ -37,6 +34,12 @@ export const EnhancedHero: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const [showControls, setShowControls] = useState(false);
+
+  // Scroll trigger for label visibility
+  const { targetRef: labelRef, isVisible: isLabelVisible } = useScrollTrigger({
+    threshold: 0.5,
+    rootMargin: '-50px 0px'
+  });
 
   // Load preferences from localStorage
   useEffect(() => {
@@ -144,13 +147,12 @@ export const EnhancedHero: React.FC = () => {
   const allCards = cards.length > 0 ? cards : featuredCards;
   const showcaseCards = allCards.length > 0 ? allCards : [];
 
-  // Fetch all cards for the ticker on mount - only once
+  // Fetch all cards for the ticker on mount
   React.useEffect(() => {
-    // Only fetch if we don't have enough cards for the carousel
-    if (allCards.length < 10) {
+    if (allCards.length === 0) {
       fetchAllCardsFromDatabase();
     }
-  }, []); // Remove dependency to prevent infinite loop
+  }, [fetchAllCardsFromDatabase, allCards.length]);
 
   // Make cards clickable, no immersive preview
   const handleCardStudioOpen = (card: DbCard) => {
@@ -191,20 +193,13 @@ export const EnhancedHero: React.FC = () => {
 
   const currentConfig = heroConfigs[currentHero];
 
-  // Create enhanced heading with performance-aware animations
+  // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
     <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
-      <ThemedRansomNote 
-        theme={currentConfig.theme} 
-        isPaused={isAnimationPaused || !perfSettings.animationsEnabled}
-      >
-        {currentConfig.word}
-      </ThemedRansomNote><br />
+      <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused || !isLabelVisible}>{currentConfig.word}</ThemedRansomNote><br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         {currentConfig.tagline.split(' ').slice(0, -1).join(' ')}{' '}
-        <span className={perfSettings.animationsEnabled ? "gradient-text-green-blue-purple" : "text-crd-green"}>
-          {currentConfig.tagline.split(' ').slice(-1)[0]}
-        </span>
+        <span className="gradient-text-green-blue-purple">{currentConfig.tagline.split(' ').slice(-1)[0]}</span>
       </span>
     </div>
   );
@@ -214,6 +209,7 @@ export const EnhancedHero: React.FC = () => {
       {/* Hero content */}
       <StandardHero
         label={currentConfig.label}
+        labelRef={labelRef}
         title={`${currentConfig.word} ${currentConfig.tagline}`}
         titleEffects={enhancedHeading}
         description={currentConfig.description}
@@ -224,8 +220,8 @@ export const EnhancedHero: React.FC = () => {
         heroVariant="hero"
       >
         {/* Featured Cards Section */}
-        {showcaseCards.length > 0 ? (
-          <div className="mt-8">
+        {showcaseCards.length > 0 && (
+          <div className="mt-16">
             <Hero3
               caption=""
               heading=""
@@ -235,16 +231,8 @@ export const EnhancedHero: React.FC = () => {
               showFeaturedCards={true}
               featuredCards={showcaseCards}
               onCardClick={handleCardStudioOpen}
+              shouldStartAnimation={!isLabelVisible}
             />
-          </div>
-        ) : (
-          <div className="mt-8 text-center py-8">
-            <div className="text-crd-lightGray text-lg mb-4">
-              🎨 No cards to display yet
-            </div>
-            <p className="text-crd-lightGray/70 text-sm max-w-md mx-auto">
-              Cards will appear here once they're loaded from the database or when creators start sharing their work.
-            </p>
           </div>
         )}
       </StandardHero>

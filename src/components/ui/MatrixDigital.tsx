@@ -104,7 +104,21 @@ export const MatrixDigital: React.FC<MatrixDigitalProps> = ({
         }}
       />
 
-      {/* Glitch animation moved to custom.css */}
+      {/* CSS for glitch animation */}
+      <style>{`
+        @keyframes glitch {
+          0%, 100% { transform: translateX(0); }
+          10% { transform: translateX(-2px) scaleX(0.98); }
+          20% { transform: translateX(2px) scaleY(1.02); }
+          30% { transform: translateX(-1px) scaleX(1.01); }
+          40% { transform: translateX(1px) scaleY(0.99); }
+          50% { transform: translateX(-2px) scaleX(0.99); }
+          60% { transform: translateX(2px) scaleY(1.01); }
+          70% { transform: translateX(-1px) scaleX(1.02); }
+          80% { transform: translateX(1px) scaleY(0.98); }
+          90% { transform: translateX(-1px) scaleX(0.99); }
+        }
+      `}</style>
     </span>
   );
 };

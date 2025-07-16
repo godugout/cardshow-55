@@ -12,10 +12,7 @@ export default function Index() {
     <div className="bg-[#141416] min-h-screen flex flex-col overflow-hidden">
       <main className="w-full flex-1">
         <EnhancedHero />
-        {/* Add spacing before Discover section */}
-        <div className="mt-16 mb-8">
-          <SimplifiedDiscover />
-        </div>
+        <SimplifiedDiscover />
         <SimplifiedCTA />
       </main>
       <Footer />
