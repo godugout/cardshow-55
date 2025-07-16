@@ -12,6 +12,14 @@
     }
   }
 
+  /* Optimized letter animation class */
+  .letter-animate {
+    display: inline-block;
+    animation: letterSlide 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+    /* Prevent layout shifts */
+    will-change: transform, opacity;
+  }
+
   @keyframes shimmer {
     0% { background-position: -1000px 0; }
     100% { background-position: 1000px 0; }

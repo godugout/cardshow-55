@@ -34,14 +34,13 @@ export const CascadingLetterDemo: React.FC<AnimationDemoProps> = ({ title, descr
           {demoText.split('').map((char, index) => (
             <span
               key={index}
-              className={`inline-block text-2xl font-black text-crd-white transition-all duration-300 ${
+              className={`text-2xl font-black text-crd-white ${
                 isAnimating 
-                  ? 'animate-[cascadeIn_0.6s_ease-out]'
+                  ? 'letter-animate'
                   : 'opacity-100 transform-none'
               }`}
               style={{
-                animationDelay: isAnimating ? `${index * 0.08}s` : '0s',
-                animationFillMode: 'both'
+                animationDelay: isAnimating ? `${index * 0.1}s` : '0s'
               }}
             >
               {char === ' ' ? '\u00A0' : char}
