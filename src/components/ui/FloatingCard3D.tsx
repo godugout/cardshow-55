@@ -6,6 +6,7 @@ import * as THREE from 'three';
 const CardMonolith: React.FC = () => {
   const cardRef = useRef<THREE.Group>(null);
   const sunRef = useRef<THREE.Group>(null);
+  const coronaRef = useRef<THREE.Mesh>(null);
   
   // Load the CRD catalog card texture
   const cardTexture = useLoader(THREE.TextureLoader, 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=600&fit=crop');
@@ -21,11 +22,28 @@ const CardMonolith: React.FC = () => {
   }, [cardTexture]);
   
   useFrame((state) => {
-    if (cardRef.current) {
+    if (cardRef.current && sunRef.current && coronaRef.current) {
       // Subtle floating animation
-      cardRef.current.position.y += Math.sin(state.clock.elapsedTime * 0.3) * 0.001;
-      // Position the card in the lower portion of the screen where cards section would be
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
+      const cardY = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
+      cardRef.current.position.y = cardY;
+      
+      // Calculate eclipse - when card top edge (cardY + 1.75) passes through sun center (2)
+      const cardTop = cardY + 1.75; // Card height is 3.5, so top is position + half height
+      const sunY = 2;
+      const eclipseDistance = Math.abs(cardTop - sunY);
+      
+      // Show corona when card is very close to eclipsing the sun (within 0.5 units)
+      const isEclipsing = eclipseDistance < 0.5 && cardTop > sunY - 0.2 && cardTop < sunY + 0.2;
+      
+      if (isEclipsing) {
+        // Flash corona ring with pulsing effect
+        const flashIntensity = (0.5 - eclipseDistance) * 4; // Stronger when closer
+        const pulse = Math.sin(state.clock.elapsedTime * 20) * 0.3 + 0.7;
+        (coronaRef.current.material as THREE.MeshStandardMaterial).opacity = flashIntensity * pulse * 0.8;
+        coronaRef.current.scale.setScalar(2 + flashIntensity * 0.5);
+      } else {
+        (coronaRef.current.material as THREE.MeshStandardMaterial).opacity = 0;
+      }
     }
     
     if (sunRef.current) {
@@ -211,6 +229,18 @@ const CardMonolith: React.FC = () => {
             emissiveIntensity={0.1}
             transparent
             opacity={0.08}
+          />
+        </mesh>
+        
+        {/* Corona Ring Effect for Eclipse */}
+        <mesh ref={coronaRef}>
+          <ringGeometry args={[2.5, 3.5, 32]} />
+          <meshStandardMaterial 
+            color="#ffffff"
+            emissive="#ffff00"
+            emissiveIntensity={2}
+            transparent
+            opacity={0}
           />
         </mesh>
       </group>
