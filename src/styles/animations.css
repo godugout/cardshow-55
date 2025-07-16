@@ -34,4 +34,32 @@
     0%, 100% { opacity: 0; transform: scale(0); }
     50% { opacity: 1; transform: scale(1); }
   }
+
+  /* Carousel component styles */
+  .carousel-container {
+    overflow: hidden;
+    width: 100%;
+    /* Contain paint and layout for performance */
+    contain: layout style paint;
+    mask: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+
+  .carousel-track {
+    display: flex;
+    gap: 1rem;
+    /* Use CSS animation instead of JS */
+    animation: carouselSlide 120s linear infinite;
+    /* Force GPU acceleration */
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .carousel-container:hover .carousel-track {
+    animation-play-state: paused;
+  }
+
+  .carousel-card {
+    flex-shrink: 0;
+  }
 }
