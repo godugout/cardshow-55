@@ -63,7 +63,7 @@ export const CreatePageHero: React.FC = () => {
                </div>
                <div className="flex justify-center items-center text-6xl md:text-7xl lg:text-8xl">
                  <span className="font-bold">
-                   <PixelDigital className="inline">digital</PixelDigital>
+                   <PixelDigital className="inline" animationType="scanning">digital</PixelDigital>
                    <span className="text-white"> art that comes alive!</span>
                  </span>
                </div>

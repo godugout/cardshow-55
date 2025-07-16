@@ -334,6 +334,27 @@
     }
   }
 
+  /* Digital text fill animations */
+  @keyframes scanning-fill {
+    0% { background-position: -200% 0%; }
+    100% { background-position: 200% 0%; }
+  }
+
+  @keyframes matrix-fill {
+    0% { background-position: 0% -100%; }
+    100% { background-position: 0% 200%; }
+  }
+
+  @keyframes construction-fill {
+    0% { background-position: -100% 0%; }
+    100% { background-position: 100% 0%; }
+  }
+
+  @keyframes datastream-fill {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 300% 0%; }
+  }
+
   /* Utility animations */
   @keyframes flash {
     0% { background-color: transparent; }
@@ -451,6 +472,23 @@
   /* Pixel digital effect animations */
   .pixel-glitch {
     animation: pixelGlitch var(--duration-fast) ease-in-out infinite;
+  }
+
+  /* Digital text fill animations */
+  .animate-scanning-fill {
+    animation: scanning-fill 3s ease-in-out infinite;
+  }
+
+  .animate-matrix-fill {
+    animation: matrix-fill 2s linear infinite;
+  }
+
+  .animate-construction-fill {
+    animation: construction-fill 4s ease-in-out infinite;
+  }
+
+  .animate-datastream-fill {
+    animation: datastream-fill 2.5s linear infinite;
   }
 
   /* Chrome effect animations */
