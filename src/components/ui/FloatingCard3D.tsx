@@ -1,9 +1,13 @@
-import React, { useRef, useMemo } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import React, { useRef, useMemo, useState, useCallback } from 'react';
+import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
-const CardMonolith: React.FC = () => {
+interface CardMonolithProps {
+  isAutoAnimating: boolean;
+}
+
+const CardMonolith: React.FC<CardMonolithProps> = ({ isAutoAnimating }) => {
   const cardRef = useRef<THREE.Group>(null);
   const sunRef = useRef<THREE.Group>(null);
   
@@ -203,7 +207,59 @@ const CardMonolith: React.FC = () => {
   );
 };
 
+const CameraController: React.FC<{ isAutoAnimating: boolean }> = ({ isAutoAnimating }) => {
+  const { camera } = useThree();
+  const targetPosition = useRef(new THREE.Vector3(0, 0, 15));
+  const targetLookAt = useRef(new THREE.Vector3(0, -2, 0));
+
+  useFrame(() => {
+    if (isAutoAnimating) {
+      // Smoothly animate camera to home position
+      camera.position.lerp(targetPosition.current, 0.02);
+      const lookAtTarget = new THREE.Vector3();
+      lookAtTarget.copy(camera.position).add(
+        new THREE.Vector3(0, -2, -15).sub(camera.position).normalize()
+      );
+      camera.lookAt(targetLookAt.current);
+    }
+  });
+
+  return null;
+};
+
 export const FloatingCard3D: React.FC = () => {
+  const [isAutoAnimating, setIsAutoAnimating] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetAutoAnimationTimer = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    setIsAutoAnimating(false);
+    setHasUserInteracted(true);
+    
+    timeoutRef.current = setTimeout(() => {
+      setIsAutoAnimating(true);
+    }, 3000);
+  }, []);
+
+  const handleInteraction = useCallback(() => {
+    resetAutoAnimationTimer();
+  }, [resetAutoAnimationTimer]);
+
+  React.useEffect(() => {
+    // Start the timer when component mounts
+    resetAutoAnimationTimer();
+    
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [resetAutoAnimationTimer]);
+
   return (
     <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
       {/* Matching star field for seamless integration */}
@@ -234,11 +290,15 @@ export const FloatingCard3D: React.FC = () => {
         camera={{ position: [0, 0, 15], fov: 60 }}
         gl={{ antialias: true, alpha: true }}
         scene={{ background: null }}
+        onPointerMove={handleInteraction}
+        onPointerDown={handleInteraction}
+        onWheel={handleInteraction}
       >
         {/* Minimal ambient space lighting */}
         <ambientLight intensity={0.02} color="#000033" />
         
-        <CardMonolith />
+        <CardMonolith isAutoAnimating={isAutoAnimating} />
+        <CameraController isAutoAnimating={isAutoAnimating} />
         
         <OrbitControls
           enableZoom={true}
@@ -248,6 +308,7 @@ export const FloatingCard3D: React.FC = () => {
           minDistance={3}
           autoRotate={false}
           target={[0, 0, 0]}
+          enabled={!isAutoAnimating}
         />
         
         {/* Deep space fog */}
