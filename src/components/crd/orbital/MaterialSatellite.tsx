@@ -10,6 +10,9 @@ const particleVertexShader = `
   attribute float phase;
   attribute float speed;
   attribute float isSparkle;
+  attribute float orbitRadius;
+  attribute float orbitTilt;
+  attribute float orbitEccentricity;
   
   uniform float time;
   uniform float hover;
@@ -19,28 +22,70 @@ const particleVertexShader = `
   varying float vOpacity;
   varying float vIsSparkle;
   
+  // Function to create a rotation matrix around X axis
+  mat3 rotateX(float angle) {
+    float s = sin(angle);
+    float c = cos(angle);
+    return mat3(
+      1.0, 0.0, 0.0,
+      0.0, c, -s,
+      0.0, s, c
+    );
+  }
+  
+  // Function to create a rotation matrix around Z axis
+  mat3 rotateZ(float angle) {
+    float s = sin(angle);
+    float c = cos(angle);
+    return mat3(
+      c, -s, 0.0,
+      s, c, 0.0,
+      0.0, 0.0, 1.0
+    );
+  }
+  
   void main() {
     // Use selected color for particles when active/hovered, original color otherwise
     vColor = isSparkle > 0.5 ? vec3(1.0, 1.0, 1.0) : mix(color, selectedColor, hover);
     vIsSparkle = isSparkle;
     
-    // Particle movement
+    // Particle movement with Saturn-like rings
     float localTime = time * speed + phase;
     
-    // Spiral motion with hover intensity - smaller radius for finer dust
+    // Base orbital position - flat circular orbit
     float angle = localTime * 0.8;
-    float radius = 0.15 + sin(localTime) * 0.03 * hover;
+    
+    // Calculate orbital position with eccentricity (more elliptical when higher)
+    float eccFactor = 1.0 - orbitEccentricity * 0.2;
+    float xRadius = orbitRadius;
+    float zRadius = orbitRadius * eccFactor;
+    
+    // Base orbital position
+    vec3 orbitalPos = vec3(
+      cos(angle) * xRadius,
+      0.0,
+      sin(angle) * zRadius
+    );
+    
+    // Apply orbital tilt (Saturn's rings are tilted)
+    orbitalPos = rotateX(orbitTilt) * orbitalPos;
+    
+    // Add some vertical wobble based on the orbit's natural oscillation
+    float verticalWobble = sin(angle * 2.0 + phase) * 0.01 * hover;
+    orbitalPos.y += verticalWobble;
     
     // Sparkle behavior - more pronounced movement
     if (isSparkle > 0.5) {
-      radius = 0.2 + sin(localTime * 2.0) * 0.08 * hover;
+      // Sparkles have more irregular orbits
+      orbitalPos += vec3(
+        sin(localTime * 3.0) * 0.03 * hover,
+        cos(localTime * 2.0) * 0.05 * hover,
+        sin(localTime * 4.0) * 0.03 * hover
+      );
     }
     
-    // Calculate new position
-    vec3 pos = position;
-    pos.x += cos(angle) * radius;
-    pos.z += sin(angle) * radius;
-    pos.y += cos(localTime) * 0.04 * hover;
+    // Final position
+    vec3 pos = position + orbitalPos;
     
     // Apply hover intensity to size - smaller for dust, larger for sparkles
     float dynamicSize = isSparkle > 0.5 
@@ -165,47 +210,92 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
     const phases = new Float32Array(totalParticleCount);
     const speeds = new Float32Array(totalParticleCount);
     const isSparkle = new Float32Array(totalParticleCount);
+    const orbitRadius = new Float32Array(totalParticleCount);
+    const orbitTilt = new Float32Array(totalParticleCount);
+    const orbitEccentricity = new Float32Array(totalParticleCount);
     
-    // Initialize regular dust particles - smaller and finer
+    // Initialize regular dust particles - organize them into Saturn-like rings
     for (let i = 0; i < regularParticleCount; i++) {
-      // Random position in a tighter spherical shell for finer dust
-      const radius = 0.15 + Math.random() * 0.3;  // Smaller radius range
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
+      // Define 3-4 distinct rings with different properties
+      const ringIndex = Math.floor(i / (regularParticleCount / 3));
       
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = (radius * 0.5) * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
+      // Ring properties - each ring has different parameters
+      const ringProps = [
+        { minRadius: 0.18, maxRadius: 0.22, tilt: 0.1, density: 0.8 },  // Inner dense ring
+        { minRadius: 0.25, maxRadius: 0.32, tilt: 0.12, density: 0.5 }, // Middle ring
+        { minRadius: 0.35, maxRadius: 0.45, tilt: 0.14, density: 0.3 }  // Outer sparse ring
+      ][ringIndex];
       
-      // Slightly vary color for visual interest
-      const colorVariation = 0.10;  // Less variation for more uniform color
-      const r = Math.max(0, Math.min(1, styleColor.r + (Math.random() - 0.5) * colorVariation));
-      const g = Math.max(0, Math.min(1, styleColor.g + (Math.random() - 0.5) * colorVariation));
-      const b = Math.max(0, Math.min(1, styleColor.b + (Math.random() - 0.5) * colorVariation));
+      // Calculate orbital parameters for Saturn-like rings
+      const ringRadius = ringProps.minRadius + Math.random() * (ringProps.maxRadius - ringProps.minRadius);
+      const ringTilt = ringProps.tilt + Math.random() * 0.05 - 0.025; // Slight variation in tilt
+      
+      // Particles distributed around the circle of the ring
+      const angleOnRing = (i % (regularParticleCount / 3)) / (regularParticleCount / 3) * Math.PI * 2;
+      
+      // Add slight randomness for natural look, more concentrated near the ring center
+      const radialDeviation = (Math.random() - 0.5) * 0.03;
+      const finalRadius = ringRadius + radialDeviation;
+      
+      // Start particles already in their orbital positions (they'll animate around these paths)
+      positions[i * 3] = Math.cos(angleOnRing) * finalRadius;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 0.02; // Very small vertical scatter
+      positions[i * 3 + 2] = Math.sin(angleOnRing) * finalRadius;
+      
+      // Store orbit parameters for the shader
+      orbitRadius[i] = finalRadius;
+      orbitTilt[i] = ringTilt;
+      orbitEccentricity[i] = Math.random() * 0.2; // Slight eccentricity for elliptical orbits
+      
+      // Color variance based on ring position - inner rings slightly different color
+      const ringColorVar = 0.08;
+      const ringColorShift = (ringIndex - 1) * 0.04; // Subtle color shift between rings
+      const r = Math.max(0, Math.min(1, styleColor.r + ringColorShift + (Math.random() - 0.5) * ringColorVar));
+      const g = Math.max(0, Math.min(1, styleColor.g + ringColorShift + (Math.random() - 0.5) * ringColorVar));
+      const b = Math.max(0, Math.min(1, styleColor.b + ringColorShift + (Math.random() - 0.5) * ringColorVar));
       
       colors[i * 3] = r;
       colors[i * 3 + 1] = g;
       colors[i * 3 + 2] = b;
       
-      // Finer dust has smaller particles
-      sizes[i] = 0.03 + Math.random() * 0.08;  // Smaller size range
+      // Particle size varies by ring - inner rings have smaller, denser particles
+      sizes[i] = 0.015 + Math.random() * 0.03 * (1 + ringIndex * 0.5);
       phases[i] = Math.random() * Math.PI * 2;
-      speeds[i] = 0.3 + Math.random() * 1.0;  // Slightly slower for finer dust
+      
+      // Orbital speed based on ring - inner rings move faster (Kepler's laws)
+      speeds[i] = (0.5 - ringIndex * 0.1) + Math.random() * 0.2;
+      
       isSparkle[i] = 0.0;  // Not a sparkle
     }
     
-    // Add sparkles - spread around the material
+    // Add sparkles - positioned along the outer edges of rings
     for (let i = 0; i < sparkleCount; i++) {
       const index = regularParticleCount + i;
       
-      // Position sparkles further out
-      const radius = 0.25 + Math.random() * 0.35;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
+      // Distribute sparkles along rings with preference for outer rings
+      const ringChoice = Math.random() < 0.3 ? 0 : Math.random() < 0.5 ? 1 : 2; // More on outer rings
       
-      positions[index * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[index * 3 + 1] = (radius * 0.6) * Math.sin(phi) * Math.sin(theta);
-      positions[index * 3 + 2] = radius * Math.cos(phi);
+      // Sparkle ring properties - position sparkles around ring edges
+      const ringProps = [
+        { radius: 0.22, tilt: 0.11 }, // Inner ring edge
+        { radius: 0.33, tilt: 0.13 }, // Middle ring edge
+        { radius: 0.47, tilt: 0.15 }  // Outer ring edge
+      ][ringChoice];
+      
+      // Position around the circumference of the chosen ring
+      const angleOnRing = (Math.random() * Math.PI * 2);
+      const radialDeviation = (Math.random() - 0.5) * 0.02; // Less deviation for sparkles
+      
+      // Calculate position on ring
+      const finalRadius = ringProps.radius + radialDeviation;
+      positions[index * 3] = Math.cos(angleOnRing) * finalRadius;
+      positions[index * 3 + 1] = (Math.random() - 0.5) * 0.03; // Slight vertical scatter
+      positions[index * 3 + 2] = Math.sin(angleOnRing) * finalRadius;
+      
+      // Store orbit parameters
+      orbitRadius[index] = finalRadius;
+      orbitTilt[index] = ringProps.tilt + (Math.random() - 0.5) * 0.03; // Random tilt variation
+      orbitEccentricity[index] = Math.random() * 0.2; // Slight eccentricity
       
       // Sparkles are bright white with a hint of the material color
       colors[index * 3] = 0.95;
@@ -213,9 +303,9 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
       colors[index * 3 + 2] = 0.95;
       
       // Sparkles are smaller but more intense
-      sizes[index] = 0.02 + Math.random() * 0.04;
+      sizes[index] = 0.02 + Math.random() * 0.03;
       phases[index] = Math.random() * Math.PI * 2;
-      speeds[index] = 0.8 + Math.random() * 2.0;  // Faster for more dynamic twinkles
+      speeds[index] = 0.6 + Math.random() * 1.2; // Slightly slower for better visibility
       isSparkle[index] = 1.0;  // Mark as sparkle
     }
     
@@ -225,6 +315,9 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
     geometry.setAttribute('phase', new THREE.BufferAttribute(phases, 1));
     geometry.setAttribute('speed', new THREE.BufferAttribute(speeds, 1));
     geometry.setAttribute('isSparkle', new THREE.BufferAttribute(isSparkle, 1));
+    geometry.setAttribute('orbitRadius', new THREE.BufferAttribute(orbitRadius, 1));
+    geometry.setAttribute('orbitTilt', new THREE.BufferAttribute(orbitTilt, 1));
+    geometry.setAttribute('orbitEccentricity', new THREE.BufferAttribute(orbitEccentricity, 1));
     
     // Create material with custom shaders
     const material = new THREE.ShaderMaterial({
