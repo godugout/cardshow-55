@@ -87,6 +87,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const [cardRotation, setCardRotation] = useState(new THREE.Euler(0, 0, 0));
   const [internalIsPaused, setInternalIsPaused] = useState(false);
   const [isResetAnimating, setIsResetAnimating] = useState(false);
+  const [isCardLocked, setIsCardLocked] = useState(false);
   
   // Use external pause state if provided, otherwise use internal state
   const isPaused = externalIsPaused !== undefined ? externalIsPaused : internalIsPaused;
@@ -130,6 +131,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const handleStyleChange = (styleId: string) => {
     console.log('🎨 CRD Viewer: Style changing from', selectedStyleId, 'to:', styleId);
     setSelectedStyleId(styleId);
+  };
+
+  const handleCardLockToggle = (locked: boolean) => {
+    console.log('🔒 Card lock toggled:', locked);
+    setIsCardLocked(locked);
   };
 
   // Track card rotation for orbital system
@@ -246,10 +252,10 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           onComplete={() => setIsResetAnimating(false)}
         />
         
-        {/* Main Card with Glass Case Container - Responds to mouse */}
+        {/* Main Card with Glass Case Container - Responds to mouse only when not locked */}
         <group 
           position={[0, -2, 0]}
-          rotation={[mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]}
+          rotation={isCardLocked ? [0, 0, 0] : [mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]}
         >
           <Card3DCore
             ref={cardRef}
@@ -258,6 +264,8 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             materialMode={selectedStyleId as any}
             enableAnimation={!isResetAnimating}
             enableGlassCase={enableGlassCase}
+            isLocked={isCardLocked}
+            onLockToggle={handleCardLockToggle}
             onTransformUpdate={handleTransformUpdate}
           />
         </group>
@@ -271,7 +279,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             cardRotation={cardRotation}
             onStyleChange={handleStyleChange}
             selectedStyleId={selectedStyleId}
-            autoRotate={orbitalAutoRotate && !isCardInteracting && !isResetAnimating}
+            autoRotate={orbitalAutoRotate && !isCardInteracting && !isResetAnimating && !isCardLocked}
             rotationSpeed={orbitalRotationSpeed}
             showRing={showOrbitalRing && !isResetAnimating}
             showLockIndicators={showLockIndicators}

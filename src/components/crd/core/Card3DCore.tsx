@@ -13,6 +13,8 @@ interface Card3DCoreProps {
   scale?: THREE.Vector3;
   enableAnimation?: boolean;
   enableGlassCase?: boolean;
+  isLocked?: boolean;
+  onLockToggle?: (locked: boolean) => void;
   onTransformUpdate?: (transform: {
     position: THREE.Vector3;
     rotation: THREE.Euler;
@@ -28,11 +30,15 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
   scale = new THREE.Vector3(1, 1, 1),
   enableAnimation = true,
   enableGlassCase = true,
+  isLocked = false,
+  onLockToggle,
   onTransformUpdate
 }, ref) => {
   const groupRef = useRef<THREE.Group>(null);
   const cardRef = useRef<THREE.Mesh>(null);
   const glassRef = useRef<THREE.Mesh>(null);
+  const lastClickTime = useRef(0);
+  const lockedRotation = useRef(new THREE.Euler(0, 0, 0));
 
   // Combine refs
   React.useImperativeHandle(ref, () => groupRef.current!, []);
@@ -48,8 +54,47 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
     return Object.assign(group, { getCurrentRotation });
   }, [getCurrentRotation]);
 
+  // Handle double-click to lock/unlock
+  const handleDoubleClick = React.useCallback(() => {
+    const currentTime = Date.now();
+    if (currentTime - lastClickTime.current < 300) {
+      // Double click detected
+      if (isLocked) {
+        // Unlock - resume normal behavior
+        onLockToggle?.(false);
+      } else {
+        // Lock - save current rotation and lock in face-first position
+        if (groupRef.current) {
+          lockedRotation.current = new THREE.Euler(0, 0, 0); // Face-first position
+          groupRef.current.rotation.copy(lockedRotation.current);
+        }
+        onLockToggle?.(true);
+      }
+    }
+    lastClickTime.current = currentTime;
+  }, [isLocked, onLockToggle]);
+
   useFrame((state) => {
-    if (!enableAnimation || !groupRef.current) return;
+    if (!groupRef.current) return;
+    
+    
+    // If locked, maintain locked rotation and skip animation
+    if (isLocked) {
+      groupRef.current.position.copy(position);
+      groupRef.current.rotation.copy(lockedRotation.current);
+      groupRef.current.scale.copy(scale);
+      
+      // Still notify parent of transform updates even when locked
+      if (onTransformUpdate) {
+        onTransformUpdate({
+          position: position,
+          rotation: lockedRotation.current
+        });
+      }
+      return;
+    }
+    
+    if (!enableAnimation) return;
     
     const time = state.clock.elapsedTime;
     const factor = intensity;
@@ -140,7 +185,7 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
   };
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} onClick={handleDoubleClick}>
       {/* Main Card */}
       <mesh ref={cardRef}>
         {getCardGeometry()}
