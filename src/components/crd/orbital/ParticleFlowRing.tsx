@@ -152,7 +152,7 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     materialRef.current.uniforms.time.value = state.clock.elapsedTime;
     
     // Subtle flow speed changes on interaction
-    const flowSpeed = hoveredSatellite ? 0.8 : 0.5;
+    const flowSpeed = hoveredSatellite ? 0.6 : 0.5;
     materialRef.current.uniforms.flowSpeed.value = THREE.MathUtils.lerp(
       materialRef.current.uniforms.flowSpeed.value,
       flowSpeed,

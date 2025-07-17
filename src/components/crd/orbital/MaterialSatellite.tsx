@@ -55,7 +55,7 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
         {/* Show the actual material instead of gray shell */}
         <MaterialSystem 
           mode={style.id as any} 
-          intensity={isActive ? 1.4 : isHovered ? 1.1 : 1}
+          intensity={isActive ? 2.2 : isHovered ? 1.8 : 1}
           type="card"
         />
       </mesh>
