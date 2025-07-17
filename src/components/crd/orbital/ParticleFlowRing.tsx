@@ -132,7 +132,7 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
   const waveStateRef = useRef({
     isActive: false,
     startTime: 0,
-    duration: 2.0, // 2 seconds for full wave
+    duration: 0.8, // Faster wave - 0.8 seconds for full wave
     hoveredAngle: 0,
     hoveredColor: new THREE.Color('#22c55e')
   });
@@ -195,7 +195,7 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
         orangeColor: { value: new THREE.Color('#ff6b35') }, // CRD orange
         blueColor: { value: new THREE.Color('#06b6d4') }, // CRD blue
         waveColor: { value: new THREE.Color('#22c55e') }, // Wave color
-        flowSpeed: { value: 0.5 },
+        flowSpeed: { value: 0.15 },
         waveProgress: { value: 0 },
         waveAngle: { value: 0 },
         hasWave: { value: false },
@@ -218,7 +218,7 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     materialRef.current.uniforms.isPaused.value = isPaused;
     
     // Subtle flow speed changes on interaction
-    const flowSpeed = hoveredSatellite ? 0.6 : 0.5;
+    const flowSpeed = hoveredSatellite ? 0.2 : 0.15;
     materialRef.current.uniforms.flowSpeed.value = THREE.MathUtils.lerp(
       materialRef.current.uniforms.flowSpeed.value,
       flowSpeed,
