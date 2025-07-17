@@ -229,7 +229,7 @@ export const FloatingCard3D: React.FC = () => {
         <CardMonolith onHover={setIsHoveringMonolith} />
         
         <OrbitControls
-          enableZoom={isHoveringMonolith}
+          enableZoom={false}
           enablePan={true}
           enableRotate={true}
           maxDistance={25}
