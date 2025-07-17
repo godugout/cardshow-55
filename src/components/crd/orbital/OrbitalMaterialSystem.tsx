@@ -7,12 +7,20 @@ interface OrbitalMaterialSystemProps {
   cardRotation: THREE.Euler;
   onStyleChange: (styleId: string) => void;
   selectedStyleId: string;
+  autoRotate?: boolean;
+  rotationSpeed?: number;
+  showRing?: boolean;
+  showLockIndicators?: boolean;
 }
 
 export const OrbitalMaterialSystem: React.FC<OrbitalMaterialSystemProps> = ({
   cardRotation,
   onStyleChange,
-  selectedStyleId
+  selectedStyleId,
+  autoRotate = true,
+  rotationSpeed = 1,
+  showRing = true,
+  showLockIndicators = true
 }) => {
   const [currentStyle, setCurrentStyle] = useState<CRDVisualStyle>(
     CRDVisualStyles.find(s => s.id === selectedStyleId) || CRDVisualStyles[1]
@@ -35,6 +43,10 @@ export const OrbitalMaterialSystem: React.FC<OrbitalMaterialSystemProps> = ({
         cardRotation={cardRotation}
         onStyleChange={handleStyleChange}
         selectedStyleId={selectedStyleId}
+        autoRotate={autoRotate}
+        rotationSpeed={rotationSpeed}
+        showRing={showRing}
+        showLockIndicators={showLockIndicators}
       />
 
       {/* Optional: Secondary ring for premium styles */}
@@ -44,6 +56,10 @@ export const OrbitalMaterialSystem: React.FC<OrbitalMaterialSystemProps> = ({
           cardRotation={cardRotation}
           onStyleChange={handleStyleChange}
           selectedStyleId={selectedStyleId}
+          autoRotate={autoRotate}
+          rotationSpeed={rotationSpeed * 0.8} // Slightly slower
+          showRing={showRing}
+          showLockIndicators={showLockIndicators}
         />
       )}
     </group>

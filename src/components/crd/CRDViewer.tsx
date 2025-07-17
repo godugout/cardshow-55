@@ -19,6 +19,12 @@ interface CRDViewerProps {
   enableGlassCase?: boolean;
   showModeText?: boolean;
   
+  // Orbital controls
+  orbitalAutoRotate?: boolean;
+  orbitalRotationSpeed?: number;
+  showOrbitalRing?: boolean;
+  showLockIndicators?: boolean;
+  
   className?: string;
   onModeChange?: (mode: AnimationMode) => void;
   onIntensityChange?: (intensity: number) => void;
@@ -35,6 +41,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   enableControls = true,
   enableGlassCase = true,
   showModeText = true,
+  
+  // Orbital controls
+  orbitalAutoRotate = true,
+  orbitalRotationSpeed = 1,
+  showOrbitalRing = true,
+  showLockIndicators = false,
   
   className = "w-full h-screen",
   onModeChange,
@@ -194,6 +206,10 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             cardRotation={cardRotation}
             onStyleChange={handleStyleChange}
             selectedStyleId={selectedStyleId}
+            autoRotate={orbitalAutoRotate}
+            rotationSpeed={orbitalRotationSpeed}
+            showRing={showOrbitalRing}
+            showLockIndicators={showLockIndicators}
           />
         </group>
         

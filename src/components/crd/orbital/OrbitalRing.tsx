@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { MaterialSatellite } from './MaterialSatellite';
 import { CRDVisualStyles, type CRDVisualStyle } from '../styles/StyleRegistry';
@@ -9,16 +9,30 @@ interface OrbitalRingProps {
   cardRotation: THREE.Euler;
   onStyleChange: (style: CRDVisualStyle) => void;
   selectedStyleId: string;
+  autoRotate?: boolean;
+  rotationSpeed?: number;
+  showRing?: boolean;
+  showLockIndicators?: boolean;
 }
 
 export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   radius = 4,
   cardRotation,
   onStyleChange,
-  selectedStyleId
+  selectedStyleId,
+  autoRotate = true,
+  rotationSpeed = 1,
+  showRing = true,
+  showLockIndicators = true
 }) => {
   const [hoveredSatellite, setHoveredSatellite] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartRotation, setDragStartRotation] = useState(0);
+  const [currentRotation, setCurrentRotation] = useState(0);
+  const [lastMouseX, setLastMouseX] = useState(0);
+  
   const ringRef = useRef<THREE.Group>(null);
+  const { camera, gl } = useThree();
 
   // Calculate satellite positions around the equator - SHOW ALL STYLES
   const satellitePositions = React.useMemo(() => {
@@ -71,13 +85,75 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
     return minAngle < Math.PI / 6 ? closestSatellite : null;
   }, [cardRotation, satellitePositions]);
 
-  // Disable automatic style changes - let manual controls handle it
-  // useFrame(() => {
-  //   const pointingAtStyle = getPointingAtSatellite();
-  //   if (pointingAtStyle && pointingAtStyle.id !== selectedStyleId) {
-  //     onStyleChange(pointingAtStyle);
-  //   }
-  // });
+  // Auto-rotation and drag handling
+  useFrame((state) => {
+    if (!ringRef.current) return;
+
+    if (autoRotate && !isDragging) {
+      // Moon orbital period ≈ 27.3 days, scale to reasonable speed
+      const moonSpeed = (Math.PI * 2) / (27.3 * 24 * 3600); // rad/sec
+      const scaledSpeed = moonSpeed * rotationSpeed * 10000; // Scale for visibility
+      
+      setCurrentRotation(prev => prev + scaledSpeed * state.clock.getDelta());
+    }
+
+    ringRef.current.rotation.y = currentRotation;
+  });
+
+  // Mouse drag handlers
+  const handlePointerDown = useCallback((event: any) => {
+    if (!ringRef.current) return;
+    
+    setIsDragging(true);
+    setDragStartRotation(currentRotation);
+    setLastMouseX(event.nativeEvent?.clientX || event.clientX || 0);
+    
+    gl.domElement.style.cursor = 'grabbing';
+  }, [currentRotation, gl.domElement]);
+
+  const handlePointerMove = useCallback((event: any) => {
+    if (!isDragging) return;
+    
+    const deltaX = (event.nativeEvent?.clientX || event.clientX || 0) - lastMouseX;
+    const rotationDelta = deltaX * 0.01; // Sensitivity
+    
+    setCurrentRotation(dragStartRotation + rotationDelta);
+    setLastMouseX(event.nativeEvent?.clientX || event.clientX || 0);
+  }, [isDragging, lastMouseX, dragStartRotation]);
+
+  const handlePointerUp = useCallback(() => {
+    setIsDragging(false);
+    gl.domElement.style.cursor = 'grab';
+  }, [gl.domElement]);
+
+  // Add global mouse listeners
+  React.useEffect(() => {
+    const handleGlobalMove = (e: MouseEvent) => {
+      if (isDragging) {
+        const deltaX = e.clientX - lastMouseX;
+        const rotationDelta = deltaX * 0.01;
+        setCurrentRotation(dragStartRotation + rotationDelta);
+        setLastMouseX(e.clientX);
+      }
+    };
+
+    const handleGlobalUp = () => {
+      if (isDragging) {
+        setIsDragging(false);
+        gl.domElement.style.cursor = 'auto';
+      }
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleGlobalMove);
+      window.addEventListener('mouseup', handleGlobalUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMove);
+      window.removeEventListener('mouseup', handleGlobalUp);
+    };
+  }, [isDragging, lastMouseX, dragStartRotation, gl.domElement]);
 
   const handleSatelliteClick = (style: CRDVisualStyle) => {
     console.log('🎯 Satellite clicked:', style.displayName, 'ID:', style.id);
@@ -90,24 +166,32 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   };
 
   return (
-    <group ref={ringRef}>
-      {/* Orbital ring guide (subtle) */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[radius - 0.1, radius + 0.1, 32]} />
-        <meshBasicMaterial 
-          color="#ffffff" 
-          transparent 
-          opacity={0.05}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
+    <group 
+      ref={ringRef}
+      onPointerDown={handlePointerDown}
+    >
+      {/* Orbital ring guide (conditional) */}
+      {showRing && (
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[radius - 0.1, radius + 0.1, 32]} />
+          <meshBasicMaterial 
+            color="#ffffff" 
+            transparent 
+            opacity={0.05}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      )}
 
       {/* Material Satellites */}
       {satellitePositions.map(({ style, position }) => (
         <MaterialSatellite
           key={style.id}
           position={position}
-          style={style}
+          style={{
+            ...style,
+            locked: showLockIndicators ? style.locked : false
+          }}
           isActive={style.id === selectedStyleId}
           isHovered={hoveredSatellite === style.id}
           onClick={() => handleSatelliteClick(style)}
