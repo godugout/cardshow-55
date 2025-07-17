@@ -15,7 +15,7 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ isAutoAnimating }) => {
   // Define the base transforms for our scene positioning
   const basePosition = new THREE.Vector3(0, -2, 0);
   const baseRotation = new THREE.Euler(-0.4, 0, 0); // Base tilt towards sun
-  const finalRotation = new THREE.Euler(Math.PI * 0.25, 0, 0); // 45 degrees forward
+  const finalRotation = new THREE.Euler(-0.4, 0, Math.PI * 0.25); // Tilt towards sun (Z-axis rotation)
   
   // Easing function for smooth animations
   const easeInOutCubic = (t: number): number => {
@@ -38,14 +38,14 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ isAutoAnimating }) => {
         
         const animationElapsed = elapsed - animationStartTime.current;
         
-        // Stage 3: Final Positioning (4-5 seconds) - Card tilts forward
+        // Stage 3: Final Positioning (4-5 seconds) - Card tilts towards sun
         if (animationElapsed >= 4.0 && animationElapsed <= 5.0) {
           const stageProgress = (animationElapsed - 4.0) / 1.0;
           const easedProgress = easeInOutCubic(stageProgress);
           
-          // Interpolate from base rotation to final rotation
-          const currentRotationX = THREE.MathUtils.lerp(baseRotation.x, finalRotation.x, easedProgress);
-          cardRef.current.rotation.set(currentRotationX, baseRotation.y, baseRotation.z);
+          // Interpolate from base rotation to final rotation (tilting towards sun)
+          const currentRotationZ = THREE.MathUtils.lerp(baseRotation.z, finalRotation.z, easedProgress);
+          cardRef.current.rotation.set(baseRotation.x, baseRotation.y, currentRotationZ);
         } else if (animationElapsed > 5.0) {
           // Maintain final rotation
           cardRef.current.rotation.copy(finalRotation);
@@ -72,53 +72,49 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ isAutoAnimating }) => {
 
   return (
     <>
-      
       {/* Card Monolith */}
-      <group ref={cardRef} position={[0, 0, 0]}>
-        {/* Main monolith structure */}
-        <mesh>
-          <boxGeometry args={[2.5, 3.5, 0.3]} />
+      <group ref={cardRef}>
+        {/* Black stone monolith - the core element */}
+        <mesh position={[0, 0, 0]}>
+          <boxGeometry args={[2.5, 3.5, 0.05]} />
           <meshStandardMaterial 
             color="#000000"
-            metalness={0.9}
             roughness={0.1}
-            emissive="#111111"
+            metalness={0.0}
           />
         </mesh>
         
-        {/* Card back - CRD design */}
-        <mesh position={[0, 0, -0.16]}>
-          <boxGeometry args={[2.4, 3.4, 0.01]} />
-          <meshStandardMaterial 
-            color="#1a1a2e"
-            metalness={0.3}
-            roughness={0.7}
-            emissive="#0a0a2e"
-            emissiveIntensity={0.2}
-          />
-        </mesh>
-        
-        {/* CRD Logo on back */}
-        <mesh position={[0, 0.8, -0.17]}>
-          <boxGeometry args={[1.5, 0.3, 0.01]} />
-          <meshStandardMaterial 
+        {/* Completely transparent glass case - front */}
+        <mesh position={[0, 0, 0.03]}>
+          <boxGeometry args={[2.52, 3.52, 0.02]} />
+          <meshPhysicalMaterial 
             color="#ffffff"
-            emissive="#ffffff"
-            emissiveIntensity={0.1}
+            transmission={1.0}
+            opacity={0.02}
+            transparent={true}
+            roughness={0.0}
+            metalness={0.0}
+            clearcoat={1.0}
+            clearcoatRoughness={0.0}
+            ior={1.5}
+            thickness={0.02}
           />
         </mesh>
         
-        
-        {/* Mysterious glow effect */}
-        <mesh>
-          <boxGeometry args={[2.6, 3.6, 0.31]} />
-          <meshStandardMaterial 
-            color="#000000"
-            metalness={1}
-            roughness={0}
-            transparent
-            opacity={0.3}
-            emissive="#0a0a2e"
+        {/* Completely transparent glass case - back */}
+        <mesh position={[0, 0, -0.03]}>
+          <boxGeometry args={[2.52, 3.52, 0.02]} />
+          <meshPhysicalMaterial 
+            color="#ffffff"
+            transmission={1.0}
+            opacity={0.02}
+            transparent={true}
+            roughness={0.0}
+            metalness={0.0}
+            clearcoat={1.0}
+            clearcoatRoughness={0.0}
+            ior={1.5}
+            thickness={0.02}
           />
         </mesh>
       </group>
