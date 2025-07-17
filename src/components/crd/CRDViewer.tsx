@@ -59,6 +59,10 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Mouse position state for synced movement
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
 
+  // Card interaction state for orbital ring pausing
+  const [isCardInteracting, setIsCardInteracting] = useState(false);
+  const interactionTimeoutRef = useRef<NodeJS.Timeout>();
+
   // Animation State
   const [currentMode, setCurrentMode] = useState<AnimationMode>(initialMode);
   const [currentIntensity, setCurrentIntensity] = useState(initialIntensity);
@@ -130,6 +134,33 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     setLightingIntensity(intensity);
   };
 
+  // Handle orbit controls interaction
+  const handleControlsStart = () => {
+    setIsCardInteracting(true);
+    if (interactionTimeoutRef.current) {
+      clearTimeout(interactionTimeoutRef.current);
+    }
+  };
+
+  const handleControlsEnd = () => {
+    // Use a timeout to allow settling before resuming orbital rotation
+    if (interactionTimeoutRef.current) {
+      clearTimeout(interactionTimeoutRef.current);
+    }
+    interactionTimeoutRef.current = setTimeout(() => {
+      setIsCardInteracting(false);
+    }, 500); // 500ms settling time
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (interactionTimeoutRef.current) {
+        clearTimeout(interactionTimeoutRef.current);
+      }
+    };
+  }, []);
+
 
 
   return (
@@ -179,7 +210,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             cardRotation={cardRotation}
             onStyleChange={handleStyleChange}
             selectedStyleId={selectedStyleId}
-            autoRotate={orbitalAutoRotate}
+            autoRotate={orbitalAutoRotate && !isCardInteracting}
             rotationSpeed={orbitalRotationSpeed}
             showRing={showOrbitalRing}
             showLockIndicators={showLockIndicators}
@@ -217,6 +248,8 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             maxAzimuthAngle={Infinity}
             enableDamping={true}
             dampingFactor={0.05}
+            onStart={handleControlsStart}
+            onEnd={handleControlsEnd}
           />
         )}
         
