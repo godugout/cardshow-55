@@ -32,77 +32,80 @@ export const CreatePageHero: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full overflow-hidden h-screen bg-crd-darkest">
-      {/* 3D Background covering entire hero section */}
-      <div className="absolute inset-0 z-0 h-full">
-        <StarsBackground>
+    <div className="relative w-full overflow-hidden bg-crd-darkest">
+      {/* Hero Content Section - Reduced height */}
+      <div className="relative z-10 min-h-[80vh] flex flex-col justify-center text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+40px)] pb-16">
+        {/* Label */}
+        <div className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-sm uppercase">
+          CUT, CRAFT & CREATE DIGITALLY
+        </div>
+        
+        {/* Main Heading */}
+        <div className="mb-8">
+          <h1 className="leading-tight text-crd-white drop-shadow-lg">
+            <div className="flex justify-center items-center mb-2 text-4xl md:text-5xl lg:text-6xl">
+              <span className="text-gray-400 font-light">From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to</span>
+            </div>
+           <div className="flex justify-center items-center text-5xl md:text-6xl lg:text-7xl">
+             <span className="font-bold">
+               <PixelDigital className="inline">digital</PixelDigital>
+               <span className="text-white"> art that comes alive!</span>
+             </span>
+           </div>
+         </h1>
+        </div>
+        
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+          <Link to="/create/crd">
+            <CRDButton 
+              size="lg" 
+              variant="create"
+              className="min-w-[200px]"
+            >
+              Start Creating
+            </CRDButton>
+          </Link>
+          <Link to="/templates">
+            <CRDButton 
+              variant="outline" 
+              size="lg" 
+              className="min-w-[200px]"
+            >
+              Browse Templates
+            </CRDButton>
+          </Link>
+        </div>
+        
+        {/* Animated Tagline */}
+        <AnimatedTagline />
+      </div>
+
+      {/* 3D Interactive Section */}
+      <div className="relative h-[60vh] bg-gradient-to-b from-crd-darkest to-black">
+        <StarsBackground className="absolute inset-0">
           <FloatingCard3D 
             isPaused={isPaused}
             onTogglePause={handleTogglePause}
             showPauseButton={false}
           />
         </StarsBackground>
-      </div>
-      
-      {/* Reset Button */}
-      <StudioResetButton onReset={handleResetCamera} />
-      
-      {/* Pause Button */}
-      <StudioPauseButton 
-        isPaused={isPaused} 
-        onTogglePause={handleTogglePause} 
-      />
-      
-      {/* Hero Content Overlay */}
-      <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          {/* Label */}
-          <div className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-sm uppercase">
-            CUT, CRAFT & CREATE DIGITALLY
+        
+        {/* Reset Button */}
+        <StudioResetButton onReset={handleResetCamera} />
+        
+        {/* Pause Button */}
+        <StudioPauseButton 
+          isPaused={isPaused} 
+          onTogglePause={handleTogglePause} 
+        />
+        
+        {/* Optional overlay text for 3D section */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="text-center text-crd-white/60">
+            <p className="text-lg mb-2">Interactive 3D Card Preview</p>
+            <p className="text-sm">Click and drag to explore • Single click card to pause • Double click to flip</p>
           </div>
-          
-          {/* Main Heading */}
-          <div className="mb-4">
-              <h1 className="leading-tight text-crd-white drop-shadow-lg">
-                <div className="flex justify-center items-center mb-2 text-5xl md:text-6xl lg:text-7xl">
-                  <span className="text-gray-400 font-light">From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to</span>
-                </div>
-               <div className="flex justify-center items-center text-6xl md:text-7xl lg:text-8xl">
-                 <span className="font-bold">
-                   <PixelDigital className="inline">digital</PixelDigital>
-                   <span className="text-white"> art that comes alive!</span>
-                 </span>
-               </div>
-             </h1>
-          </div>
-          
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center my-12">
-            <Link to="/create/crd">
-              <CRDButton 
-                size="lg" 
-                variant="create"
-                className="min-w-[200px]"
-              >
-                Start Creating
-              </CRDButton>
-            </Link>
-            <Link to="/templates">
-              <CRDButton 
-                variant="outline" 
-                size="lg" 
-                className="min-w-[200px]"
-              >
-                Browse Templates
-              </CRDButton>
-            </Link>
-          </div>
-          
-          {/* Animated Tagline */}
-          <AnimatedTagline />
-          
-          {/* Extra spacing to position 3D card in visible area */}
-          <div className="mt-32 mb-32"></div>
         </div>
       </div>
     </div>
