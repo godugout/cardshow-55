@@ -241,9 +241,12 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ mode, intensity }) => {
 export const FloatingCard3D: React.FC = () => {
   const [currentMode, setCurrentMode] = useState<AnimationMode>('frozen');
   const [currentIntensity, setCurrentIntensity] = useState(1);
+  const [autoMode, setAutoMode] = useState(true);
 
-  // Auto-cycle through modes for demo
+  // Auto-cycle through modes for demo (only when autoMode is true)
   useEffect(() => {
+    if (!autoMode) return;
+    
     const interval = setInterval(() => {
       setCurrentMode(prev => {
         const modes: AnimationMode[] = ['frozen', 'showcase'];
@@ -253,7 +256,7 @@ export const FloatingCard3D: React.FC = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [autoMode]);
 
   return (
     <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
@@ -314,7 +317,10 @@ export const FloatingCard3D: React.FC = () => {
                 {(['frozen', 'showcase'] as AnimationMode[]).map(mode => (
                   <button
                     key={mode}
-                    onClick={() => setCurrentMode(mode)}
+                    onClick={() => {
+                      setCurrentMode(mode);
+                      setAutoMode(false); // Stop auto-switching when user clicks
+                    }}
                     className={`px-3 py-1 text-sm rounded-md transition-colors ${
                       currentMode === mode 
                         ? 'bg-primary text-primary-foreground shadow-lg' 
