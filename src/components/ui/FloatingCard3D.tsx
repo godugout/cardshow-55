@@ -47,17 +47,18 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         break;
         
       case 'gold':
-        // Slight rotation to show gold surfaces
-        rotY = Math.sin(time * 0.6) * 0.05 * factor;
-        rotX = Math.sin(time * 0.5) * 0.02 * factor;
-        posY = Math.sin(time * 0.8) * 0.01 * factor;
+        // More dramatic rotation to show DuckTales-style gold shine
+        rotY = Math.sin(time * 0.8) * 0.08 * factor;
+        rotX = Math.sin(time * 0.6) * 0.04 * factor;
+        posY = Math.sin(time * 1.0) * 0.02 * factor;
         effectsLayerRef.current.visible = false;
         break;
         
       case 'glass':
-        // Subtle movements to show transparency
-        posY = Math.sin(time * 0.7) * 0.03 * factor;
-        rotY = Math.sin(time * 0.4) * 0.03 * factor;
+        // Dynamic movements to catch chrome reflections
+        posY = Math.sin(time * 1.0) * 0.04 * factor;
+        rotY = Math.sin(time * 0.7) * 0.06 * factor;
+        rotX = Math.sin(time * 0.9) * 0.03 * factor;
         effectsLayerRef.current.visible = false;
         break;
         
@@ -104,25 +105,22 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
       case 'gold':
         return (
           <meshStandardMaterial 
-            color="#ffd700"
+            color="#ffef94"
             metalness={1}
-            roughness={0.1}
-            emissive="#ffaa00"
-            emissiveIntensity={0.1}
+            roughness={0.05}
+            emissive="#ffd700"
+            emissiveIntensity={0.3}
           />
         );
       
       case 'glass':
         return (
-          <meshPhysicalMaterial
-            color="#8b7355"
-            metalness={0}
-            roughness={0.1}
-            transmission={0.7}
-            transparent={true}
-            opacity={0.6}
-            thickness={0.1}
-            ior={1.5}
+          <meshStandardMaterial
+            color="#e8e8e8"
+            metalness={1}
+            roughness={0.02}
+            emissive="#ffffff"
+            emissiveIntensity={0.2}
           />
         );
       
