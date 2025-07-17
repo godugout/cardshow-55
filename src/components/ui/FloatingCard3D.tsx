@@ -172,6 +172,20 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         {getCardGeometry()}
         {getCardMaterial()}
       </mesh>
+      
+      {/* Glass case that moves with the card */}
+      <mesh>
+        <boxGeometry args={[2.6, 3.6, 0.32]} />
+        <meshStandardMaterial 
+          color="#e6f3ff"
+          metalness={0}
+          roughness={0}
+          transparent
+          opacity={0.12}
+          emissive="#ffffff"
+          emissiveIntensity={0.03}
+        />
+      </mesh>
     </group>
   );
 };
@@ -200,22 +214,8 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ mode, intensity }) => {
     <>
       {/* Glass Case with Floating Card */}
       <group ref={glassRef} position={[0, 0, 0]}>
-        {/* Floating Card inside the case */}
+        {/* Floating Card inside the case - now moves together */}
         <FloatingCard mode={mode} intensity={intensity} />
-        
-        {/* Clear glass case - same dimensions as before */}
-        <mesh>
-          <boxGeometry args={[2.6, 3.6, 0.32]} />
-          <meshStandardMaterial 
-            color="#e6f3ff"
-            metalness={0}
-            roughness={0}
-            transparent
-            opacity={0.12}
-            emissive="#ffffff"
-            emissiveIntensity={0.03}
-          />
-        </mesh>
       </group>
       
       {/* Text positioned outside the rotating glass case group */}
