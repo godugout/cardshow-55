@@ -51,16 +51,16 @@ const CardMonolith: React.FC<{ onInactivity: boolean }> = ({ onInactivity }) => 
         // Look at the moving card
         camera.lookAt(cardRef.current.position);
       } else {
-        // Normal idle animation
+        // Normal idle animation with subtle floating inside the case
         cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
-        cardRef.current.position.x = 0;
-        cardRef.current.position.z = 0;
+        cardRef.current.position.x = Math.sin(state.clock.elapsedTime * 0.4) * 0.08; // Subtle horizontal float
+        cardRef.current.position.z = Math.cos(state.clock.elapsedTime * 0.5) * 0.06; // Subtle depth float
         
-        // Tilt the card towards the sun with flying motion
+        // Tilt the card towards the sun with gentle floating motion
         const tiltAngle = -0.4 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
-        cardRef.current.rotation.x = tiltAngle;
-        cardRef.current.rotation.y = 0;
-        cardRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.05;
+        cardRef.current.rotation.x = tiltAngle + Math.sin(state.clock.elapsedTime * 0.35) * 0.03; // Extra subtle tilt
+        cardRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.25) * 0.04; // Gentle yaw
+        cardRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.05 + Math.cos(state.clock.elapsedTime * 0.3) * 0.02; // Enhanced roll
       }
     }
     
@@ -90,7 +90,7 @@ const CardMonolith: React.FC<{ onInactivity: boolean }> = ({ onInactivity }) => 
       <group ref={cardRef} position={[0, 0, 0]}>
         {/* Obsidian monolith - centered and clean */}
         <mesh position={[0, 0, 0]}>
-          <boxGeometry args={[2.5, 3.5, 0.3]} />
+          <boxGeometry args={[2.5, 3.5, 0.1]} />
           <meshStandardMaterial 
             color="#000000"
             metalness={0.95}
