@@ -12,9 +12,10 @@ interface FloatingCardProps {
 
 const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
   const cardRef = useRef<THREE.Mesh>(null);
+  const effectsLayerRef = useRef<THREE.Mesh>(null);
   
   useFrame((state) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || !effectsLayerRef.current) return;
     
     const time = state.clock.elapsedTime;
     const factor = intensity;
@@ -24,6 +25,8 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         // Perfectly centered and still
         cardRef.current.position.set(0, 0, 0);
         cardRef.current.rotation.set(0, 0, 0);
+        effectsLayerRef.current.position.set(0, 0, 0.051); // Just above card surface
+        effectsLayerRef.current.rotation.set(0, 0, 0);
         break;
         
       case 'showcase':
@@ -33,22 +36,44 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         cardRef.current.rotation.y = time * 0.3 * factor;
         cardRef.current.rotation.x = Math.sin(time * 0.8) * 0.05 * factor;
         cardRef.current.rotation.z = Math.sin(time * 1.1) * 0.03 * factor;
+        
+        // Effects layer follows card but stays centered on vertical axis and just above surface
+        effectsLayerRef.current.position.x = cardRef.current.position.x;
+        effectsLayerRef.current.position.y = cardRef.current.position.y;
+        effectsLayerRef.current.position.z = cardRef.current.position.z + 0.051; // Always 0.051 above card surface
+        effectsLayerRef.current.rotation.copy(cardRef.current.rotation);
         break;
     }
   });
 
   return (
-    <mesh ref={cardRef}>
-      {/* Thin card - 1/3 the thickness of original monolith */}
-      <boxGeometry args={[2.3, 3.3, 0.1]} />
-      <meshStandardMaterial 
-        color="#1a1a2e"
-        metalness={0.9}
-        roughness={0.1}
-        emissive="#0f0f2a"
-        emissiveIntensity={mode === 'showcase' ? 0.3 : 0.05}
-      />
-    </mesh>
+    <group>
+      {/* Main black card */}
+      <mesh ref={cardRef}>
+        <boxGeometry args={[2.3, 3.3, 0.1]} />
+        <meshStandardMaterial 
+          color="#1a1a2e"
+          metalness={0.9}
+          roughness={0.1}
+          emissive="#0f0f2a"
+          emissiveIntensity={mode === 'showcase' ? 0.3 : 0.05}
+        />
+      </mesh>
+      
+      {/* Effects layer - film sticker just above card surface */}
+      <mesh ref={effectsLayerRef}>
+        <planeGeometry args={[2.25, 3.25]} />
+        <meshStandardMaterial 
+          color="#ff6b6b"
+          metalness={0.8}
+          roughness={0.2}
+          transparent
+          opacity={mode === 'showcase' ? 0.6 : 0.1}
+          emissive="#ff3333"
+          emissiveIntensity={mode === 'showcase' ? 0.4 : 0.0}
+        />
+      </mesh>
+    </group>
   );
 };
 
