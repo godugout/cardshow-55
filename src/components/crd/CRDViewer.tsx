@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
+import { StudioResetButton } from '../studio/StudioResetButton';
+import { StudioPauseButton } from '../studio/StudioPauseButton';
 
 import { type AnimationMode, type LightingPreset, type PathTheme } from './types/CRDTypes';
 
@@ -72,6 +74,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Visual Style State
   const [selectedStyleId, setSelectedStyleId] = useState('matte');
   const [cardRotation, setCardRotation] = useState(new THREE.Euler(0, 0, 0));
+  const [isPaused, setIsPaused] = useState(false);
 
   // Rotation State
   const [autoRotate, setAutoRotate] = useState(initialAutoRotate);
@@ -133,6 +136,16 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
 
   const handleLightingIntensityChange = (intensity: number) => {
     setLightingIntensity(intensity);
+  };
+
+  const handleTogglePause = () => {
+    setIsPaused(prev => !prev);
+  };
+
+  const handleReset = () => {
+    if (controlsRef.current) {
+      controlsRef.current.reset();
+    }
   };
 
   // Handle orbit controls interaction
@@ -230,6 +243,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             rotationSpeed={orbitalRotationSpeed}
             showRing={showOrbitalRing}
             showLockIndicators={showLockIndicators}
+            isPaused={isPaused}
           />
         </group>
         
@@ -274,6 +288,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
       
+      {/* Studio Controls */}
+      <StudioResetButton onReset={handleReset} />
+      <StudioPauseButton 
+        isPaused={isPaused} 
+        onTogglePause={handleTogglePause} 
+      />
     </div>
   );
 };

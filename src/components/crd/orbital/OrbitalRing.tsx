@@ -14,6 +14,7 @@ interface OrbitalRingProps {
   rotationSpeed?: number;
   showRing?: boolean;
   showLockIndicators?: boolean;
+  isPaused?: boolean;
 }
 
 export const OrbitalRing: React.FC<OrbitalRingProps> = ({
@@ -24,7 +25,8 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   autoRotate = true,
   rotationSpeed = 1,
   showRing = true,
-  showLockIndicators = true
+  showLockIndicators = true,
+  isPaused = false
 }) => {
   const [hoveredSatellite, setHoveredSatellite] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -283,6 +285,7 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
           selectedStyleId={selectedStyleId}
           hoveredSatellite={hoveredSatellite}
           satellitePositions={satellitePositions}
+          isPaused={isPaused}
         />
       )}
 

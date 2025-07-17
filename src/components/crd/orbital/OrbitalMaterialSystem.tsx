@@ -11,6 +11,7 @@ interface OrbitalMaterialSystemProps {
   rotationSpeed?: number;
   showRing?: boolean;
   showLockIndicators?: boolean;
+  isPaused?: boolean;
 }
 
 export const OrbitalMaterialSystem: React.FC<OrbitalMaterialSystemProps> = ({
@@ -20,7 +21,8 @@ export const OrbitalMaterialSystem: React.FC<OrbitalMaterialSystemProps> = ({
   autoRotate = true,
   rotationSpeed = 1,
   showRing = true,
-  showLockIndicators = true
+  showLockIndicators = true,
+  isPaused = false
 }) => {
   const [currentStyle, setCurrentStyle] = useState<CRDVisualStyle>(
     CRDVisualStyles.find(s => s.id === selectedStyleId) || CRDVisualStyles[1]
@@ -47,6 +49,7 @@ export const OrbitalMaterialSystem: React.FC<OrbitalMaterialSystemProps> = ({
         rotationSpeed={rotationSpeed}
         showRing={showRing}
         showLockIndicators={showLockIndicators}
+        isPaused={isPaused}
       />
 
       {/* Optional: Secondary ring for premium styles */}
@@ -60,6 +63,7 @@ export const OrbitalMaterialSystem: React.FC<OrbitalMaterialSystemProps> = ({
           rotationSpeed={rotationSpeed * 0.8} // Slightly slower
           showRing={showRing}
           showLockIndicators={showLockIndicators}
+          isPaused={isPaused}
         />
       )}
     </group>

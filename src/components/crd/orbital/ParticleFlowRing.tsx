@@ -7,6 +7,7 @@ interface ParticleFlowRingProps {
   selectedStyleId: string;
   hoveredSatellite: string | null;
   satellitePositions: Array<{ style: any; position: THREE.Vector3; angle: number }>;
+  isPaused?: boolean;
 }
 
 const vertexShader = `
@@ -16,22 +17,62 @@ const vertexShader = `
   
   varying float vAlpha;
   varying vec3 vColor;
+  varying float vLightning;
   
   uniform float time;
   uniform vec3 orangeColor;
   uniform vec3 blueColor;
+  uniform vec3 waveColor;
   uniform float flowSpeed;
+  uniform float waveProgress;
+  uniform float waveAngle;
+  uniform bool hasWave;
+  uniform bool isPaused;
   
   void main() {
-    vAlpha = alpha * 0.4; // More visible for gradient
+    vAlpha = alpha * 0.4;
     
-    // Create gradient from orange to blue around the ring
-    float angle = atan(position.z, position.x) + time * flowSpeed * 0.2;
-    float gradientFactor = (sin(angle) + 1.0) * 0.5;
-    vColor = mix(orangeColor, blueColor, gradientFactor);
+    // Calculate particle angle
+    float particleAngle = atan(position.z, position.x);
+    if (particleAngle < 0.0) particleAngle += 6.28318530718; // Normalize to 0-2π
+    
+    // Color wave logic
+    vec3 baseColor;
+    if (hasWave) {
+      // Calculate distance from wave front (both directions)
+      float waveAngleNorm = waveAngle;
+      if (waveAngleNorm < 0.0) waveAngleNorm += 6.28318530718;
+      
+      float angleDiff1 = abs(particleAngle - waveAngleNorm);
+      float angleDiff2 = 6.28318530718 - angleDiff1; // Other direction around circle
+      float minAngleDiff = min(angleDiff1, angleDiff2);
+      
+      // Wave propagation (travels both ways around ring)
+      float waveRadius = waveProgress * 3.14159265359; // Half circumference
+      float waveFactor = smoothstep(waveRadius + 0.5, waveRadius - 0.5, minAngleDiff);
+      
+      // Lightning effect near wave front
+      float lightningRange = 0.3;
+      float lightningFactor = 1.0 - smoothstep(0.0, lightningRange, minAngleDiff);
+      vLightning = lightningFactor * sin(time * 10.0 + particleAngle * 5.0) * 0.5 + 0.5;
+      
+      // Mix colors based on wave
+      float angle = particleAngle + (isPaused ? 0.0 : time * flowSpeed * 0.2);
+      float gradientFactor = (sin(angle) + 1.0) * 0.5;
+      vec3 originalColor = mix(orangeColor, blueColor, gradientFactor);
+      baseColor = mix(originalColor, waveColor, waveFactor);
+    } else {
+      vLightning = 0.0;
+      // Original gradient
+      float angle = particleAngle + (isPaused ? 0.0 : time * flowSpeed * 0.2);
+      float gradientFactor = (sin(angle) + 1.0) * 0.5;
+      baseColor = mix(orangeColor, blueColor, gradientFactor);
+    }
+    
+    vColor = baseColor;
     
     // Animate position along the ring with subtle movement
-    float animatedPhase = phase + time * flowSpeed * 0.5;
+    float animatedPhase = phase + (isPaused ? 0.0 : time * flowSpeed * 0.5);
     vec3 animatedPosition = position;
     animatedPosition.y += sin(animatedPhase) * 0.05;
     
@@ -43,8 +84,9 @@ const vertexShader = `
     vec4 mvPosition = modelViewMatrix * vec4(animatedPosition, 1.0);
     gl_Position = projectionMatrix * mvPosition;
     
-    // Smaller, softer particles
-    float distanceSize = size * 0.5 * (1.0 + sin(animatedPhase * 2.0) * 0.2);
+    // Smaller, softer particles with lightning enhancement
+    float lightningSize = 1.0 + vLightning * 0.5;
+    float distanceSize = size * 0.5 * (1.0 + sin(animatedPhase * 2.0) * 0.2) * lightningSize;
     gl_PointSize = distanceSize * (200.0 / -mvPosition.z);
   }
 `;
@@ -52,6 +94,7 @@ const vertexShader = `
 const fragmentShader = `
   varying float vAlpha;
   varying vec3 vColor;
+  varying float vLightning;
   
   void main() {
     // Create very soft, gas-like particles
@@ -64,7 +107,14 @@ const fragmentShader = `
     float alpha = vAlpha * pow(1.0 - dist * 2.0, 3.0);
     alpha *= 0.7; // More visible gradient
     
-    gl_FragColor = vec4(vColor, alpha);
+    // Add lightning glow
+    vec3 finalColor = vColor;
+    if (vLightning > 0.1) {
+      finalColor += vec3(1.0, 1.0, 0.8) * vLightning * 0.8; // Electric blue-white
+      alpha += vLightning * 0.3; // Brighter during lightning
+    }
+    
+    gl_FragColor = vec4(finalColor, alpha);
   }
 `;
 
@@ -72,10 +122,20 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
   radius,
   selectedStyleId,
   hoveredSatellite,
-  satellitePositions
+  satellitePositions,
+  isPaused = false
 }) => {
   const particlesRef = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
+  
+  // Wave animation state
+  const waveStateRef = useRef({
+    isActive: false,
+    startTime: 0,
+    duration: 2.0, // 2 seconds for full wave
+    hoveredAngle: 0,
+    hoveredColor: new THREE.Color('#22c55e')
+  });
 
   // Create particle geometry and attributes
   const { geometry, particleCount } = useMemo(() => {
@@ -127,14 +187,19 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     return new THREE.Color(0x22c55e);
   };
 
-  // Shader material with CRD gradient colors
+  // Shader material with CRD gradient colors and wave uniforms
   const material = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0 },
         orangeColor: { value: new THREE.Color('#ff6b35') }, // CRD orange
         blueColor: { value: new THREE.Color('#06b6d4') }, // CRD blue
-        flowSpeed: { value: 0.5 }
+        waveColor: { value: new THREE.Color('#22c55e') }, // Wave color
+        flowSpeed: { value: 0.5 },
+        waveProgress: { value: 0 },
+        waveAngle: { value: 0 },
+        hasWave: { value: false },
+        isPaused: { value: isPaused }
       },
       vertexShader,
       fragmentShader,
@@ -144,12 +209,13 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     });
   }, []);
 
-  // Animation loop
+  // Animation loop with wave management
   useFrame((state) => {
     if (!materialRef.current) return;
     
     // Update time uniform for animation
     materialRef.current.uniforms.time.value = state.clock.elapsedTime;
+    materialRef.current.uniforms.isPaused.value = isPaused;
     
     // Subtle flow speed changes on interaction
     const flowSpeed = hoveredSatellite ? 0.6 : 0.5;
@@ -158,6 +224,42 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
       flowSpeed,
       0.02
     );
+    
+    // Handle hover wave effect
+    if (hoveredSatellite && !waveStateRef.current.isActive) {
+      // Start new wave
+      const hoveredSatellite_ = satellitePositions.find(s => s.style.id === hoveredSatellite);
+      if (hoveredSatellite_) {
+        waveStateRef.current.isActive = true;
+        waveStateRef.current.startTime = state.clock.elapsedTime;
+        waveStateRef.current.hoveredAngle = hoveredSatellite_.angle;
+        waveStateRef.current.hoveredColor = getStyleColor(hoveredSatellite);
+        
+        materialRef.current.uniforms.hasWave.value = true;
+        materialRef.current.uniforms.waveAngle.value = hoveredSatellite_.angle;
+        materialRef.current.uniforms.waveColor.value = waveStateRef.current.hoveredColor;
+      }
+    }
+    
+    // Update active wave
+    if (waveStateRef.current.isActive) {
+      const elapsed = state.clock.elapsedTime - waveStateRef.current.startTime;
+      const progress = Math.min(elapsed / waveStateRef.current.duration, 1.0);
+      
+      materialRef.current.uniforms.waveProgress.value = progress;
+      
+      // End wave when complete
+      if (progress >= 1.0) {
+        waveStateRef.current.isActive = false;
+        materialRef.current.uniforms.hasWave.value = false;
+        materialRef.current.uniforms.waveProgress.value = 0;
+      }
+    }
+    
+    // Reset wave if no hover
+    if (!hoveredSatellite && waveStateRef.current.isActive) {
+      // Allow current wave to complete naturally
+    }
   });
 
   return (
