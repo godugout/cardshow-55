@@ -271,38 +271,6 @@ export const FloatingCard3D: React.FC = () => {
 
   return (
     <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
-      {/* Demo Controls */}
-      <div className="absolute top-4 left-4 z-10 space-y-2">
-        <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3 text-white">
-          <h3 className="text-sm font-semibold mb-2">Card Animation Demo</h3>
-          <div className="flex gap-2 mb-2">
-            {(['frozen', 'subtle', 'active', 'showcase'] as AnimationMode[]).map(mode => (
-              <button
-                key={mode}
-                onClick={() => setCurrentMode(mode)}
-                className={`px-2 py-1 text-xs rounded ${
-                  currentMode === mode ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
-                }`}
-              >
-                {mode}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-2">
-            <label className="text-xs">Intensity:</label>
-            <input
-              type="range"
-              min="0.1"
-              max="3"
-              step="0.1"
-              value={currentIntensity}
-              onChange={(e) => setCurrentIntensity(parseFloat(e.target.value))}
-              className="w-20"
-            />
-            <span className="text-xs w-8">{currentIntensity.toFixed(1)}</span>
-          </div>
-        </div>
-      </div>
       {/* Matching star field for seamless integration */}
       <div className="absolute inset-0">
         {Array.from({ length: 100 }).map((_, i) => {
@@ -347,9 +315,48 @@ export const FloatingCard3D: React.FC = () => {
           target={[0, 0, 0]}
         />
         
-        {/* Deep space fog */}
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
+      
+      {/* Sticky Footer Controls */}
+      <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-white/10 bg-black/70 backdrop-blur-md">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-white text-sm font-medium">Animation Mode:</span>
+              <div className="flex gap-1">
+                {(['frozen', 'subtle', 'active', 'showcase'] as AnimationMode[]).map(mode => (
+                  <button
+                    key={mode}
+                    onClick={() => setCurrentMode(mode)}
+                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                      currentMode === mode 
+                        ? 'bg-primary text-primary-foreground shadow-lg' 
+                        : 'bg-white/10 text-white hover:bg-white/20'
+                    }`}
+                  >
+                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <label className="text-white text-sm font-medium">Intensity:</label>
+              <input
+                type="range"
+                min="0.1"
+                max="3"
+                step="0.1"
+                value={currentIntensity}
+                onChange={(e) => setCurrentIntensity(parseFloat(e.target.value))}
+                className="w-24 accent-primary"
+              />
+              <span className="text-white text-sm font-mono w-8">{currentIntensity.toFixed(1)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
