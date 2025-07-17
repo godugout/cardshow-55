@@ -109,7 +109,7 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     
     // Extract color from gradient or use default
     const gradient = style.ui_preview_gradient;
-    if (gradient.includes('#')) {
+    if (gradient && gradient.includes('#')) {
       const colorMatch = gradient.match(/#[0-9a-fA-F]{6}/);
       if (colorMatch) {
         return new THREE.Color(colorMatch[0]);
