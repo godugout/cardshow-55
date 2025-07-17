@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { StarburstMaterial } from '../shaders/StarburstMaterial';
 
 interface SpaceOdysseyResetProps {
   isAnimating: boolean;
@@ -13,8 +14,49 @@ export const SpaceOdysseyReset: React.FC<SpaceOdysseyResetProps> = ({
 }) => {
   const groupRef = useRef<THREE.Group>(null);
   const sunRef = useRef<THREE.Mesh>(null);
+  const skyRef = useRef<THREE.Mesh>(null);
   const animationStartTime = useRef<number>(0);
   const hasStarted = useRef(false);
+  
+  // Create materials
+  const starburstMaterial = useMemo(() => new StarburstMaterial(), []);
+  const skyMaterial = useMemo(() => new THREE.ShaderMaterial({
+    uniforms: {
+      time: { value: 0 },
+      bottomColor: { value: new THREE.Color(0x1a1a2e) },
+      topColor: { value: new THREE.Color(0x0a0a1e) },
+      sunPosition: { value: new THREE.Vector3(0, 8, -3) }
+    },
+    vertexShader: `
+      varying vec3 vWorldPosition;
+      void main() {
+        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+        vWorldPosition = worldPosition.xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 bottomColor;
+      uniform vec3 topColor;
+      uniform vec3 sunPosition;
+      varying vec3 vWorldPosition;
+      void main() {
+        float h = normalize(vWorldPosition).y;
+        vec3 color = mix(bottomColor, topColor, h * 0.5 + 0.5);
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `
+  }), []);
+
+  // Animation duration constants
+  const TOTAL_DURATION = 6.0;
+  const PHASES = {
+    INITIAL_MOVEMENT: { start: 0, duration: 1.0 },
+    CAMERA_POSITION: { start: 1.0, duration: 1.0 },
+    SUN_DESCENT: { start: 2.0, duration: 2.5 },
+    STARBURST: { start: 3.0, duration: 1.0 },
+    FINAL_SETTLE: { start: 4.5, duration: 1.5 }
+  };
 
   useEffect(() => {
     if (isAnimating && !hasStarted.current) {
@@ -29,70 +71,60 @@ export const SpaceOdysseyReset: React.FC<SpaceOdysseyResetProps> = ({
     if (!isAnimating || !groupRef.current || !sunRef.current) return;
 
     const elapsed = (Date.now() - animationStartTime.current) / 1000;
-    const duration = 4.0; // Total animation duration
-    const progress = Math.min(elapsed / duration, 1);
+    const progress = Math.min(elapsed / TOTAL_DURATION, 1);
 
-    // Animation phases
-    const phase1Duration = 1.0; // Floating and leaning forward
-    const phase2Duration = 1.5; // Rising upright  
-    const phase3Duration = 1.0; // Sun descent
-    const phase4Duration = 0.5; // Materials develop
+    // Update shader materials
+    starburstMaterial.update(elapsed);
+    skyMaterial.uniforms.time.value = elapsed;
 
-    if (progress < phase1Duration / duration) {
-      // Phase 1: Floating in space, leaning forward
-      const phase1Progress = (elapsed / phase1Duration);
-      const floatY = Math.sin(phase1Progress * Math.PI * 4) * 0.1;
-      const leanX = Math.sin(phase1Progress * Math.PI * 2) * 0.3;
+    // Phase calculations
+    const getPhaseProgress = (phase: { start: number; duration: number }) => {
+      const phaseElapsed = elapsed - phase.start;
+      return Math.max(0, Math.min(1, phaseElapsed / phase.duration));
+    };
+
+    // Initial card movement
+    if (elapsed < PHASES.CAMERA_POSITION.start) {
+      const p = getPhaseProgress(PHASES.INITIAL_MOVEMENT);
+      const eased = 1 - Math.pow(1 - p, 3); // Ease out cubic
+      groupRef.current.position.y = Math.sin(p * Math.PI * 2) * 0.2 * (1 - eased);
+      groupRef.current.rotation.x = (0.2 - eased * 0.2);
+    }
+
+    // Camera positioning
+    if (elapsed >= PHASES.CAMERA_POSITION.start && elapsed < PHASES.SUN_DESCENT.start) {
+      const p = getPhaseProgress(PHASES.CAMERA_POSITION);
+      const eased = 1 - Math.pow(1 - p, 3);
+      groupRef.current.position.y = 0;
+      groupRef.current.rotation.x = 0.2 * (1 - eased);
       
-      groupRef.current.position.set(0, floatY, 0);
-      groupRef.current.rotation.set(leanX, 0, 0);
-      
-      // Sun is hidden
-      sunRef.current.visible = false;
-      
-    } else if (progress < (phase1Duration + phase2Duration) / duration) {
-      // Phase 2: Rising upright
-      const phase2Progress = (elapsed - phase1Duration) / phase2Duration;
-      const easedProgress = 1 - Math.pow(1 - phase2Progress, 3); // Ease out cubic
-      
-      // Smooth transition to upright position
-      const floatY = Math.sin((phase1Duration + elapsed - phase1Duration) * Math.PI * 2) * 0.1 * (1 - easedProgress);
-      const leanX = 0.3 * (1 - easedProgress);
-      
-      groupRef.current.position.set(0, floatY, 0);
-      groupRef.current.rotation.set(leanX, 0, 0);
-      
-      // Sun starts appearing
-      sunRef.current.visible = phase2Progress > 0.5;
-      if (sunRef.current.visible) {
-        sunRef.current.position.set(0, 8 - (phase2Progress - 0.5) * 2, -3);
+      // Position sun
+      if (sunRef.current) {
+        sunRef.current.visible = true;
+        sunRef.current.position.set(0, 8, -3);
+        starburstMaterial.setIntensity(p);
       }
+    }
+
+    // Sun descent
+    if (elapsed >= PHASES.SUN_DESCENT.start && elapsed < PHASES.FINAL_SETTLE.start) {
+      const p = getPhaseProgress(PHASES.SUN_DESCENT);
+      const sunY = 8 - p * 6;
       
-    } else if (progress < (phase1Duration + phase2Duration + phase3Duration) / duration) {
-      // Phase 3: Sun descent behind monolith
-      const phase3Progress = (elapsed - phase1Duration - phase2Duration) / phase3Duration;
+      if (sunRef.current) {
+        sunRef.current.position.y = sunY;
+        
+        // Starburst effect when sun aligns with monolith
+        const starburstIntensity = Math.pow(Math.sin(Math.PI * p), 2);
+        starburstMaterial.setIntensity(1.5 + starburstIntensity * 2);
+      }
+    }
+
+    // Final settling
+    if (elapsed >= PHASES.FINAL_SETTLE.start) {
+      const p = getPhaseProgress(PHASES.FINAL_SETTLE);
       
-      // Card is fully upright
-      groupRef.current.position.set(0, 0, 0);
-      groupRef.current.rotation.set(0, 0, 0);
-      
-      // Sun moves down behind the card
-      sunRef.current.visible = true;
-      sunRef.current.position.set(0, 6 - phase3Progress * 8, -3);
-      
-    } else {
-      // Phase 4: Materials and ring develop
-      const phase4Progress = (elapsed - phase1Duration - phase2Duration - phase3Duration) / phase4Duration;
-      
-      // Card remains upright
-      groupRef.current.position.set(0, 0, 0);
-      groupRef.current.rotation.set(0, 0, 0);
-      
-      // Sun has set
-      sunRef.current.visible = false;
-      
-      // Animation complete
-      if (phase4Progress >= 1 && hasStarted.current) {
+      if (p >= 1 && hasStarted.current) {
         hasStarted.current = false;
         onComplete();
       }
@@ -103,32 +135,38 @@ export const SpaceOdysseyReset: React.FC<SpaceOdysseyResetProps> = ({
 
   return (
     <group ref={groupRef}>
-      {/* Glowing Sun */}
+      {/* Sky background */}
+      <mesh ref={skyRef} position={[0, 0, -10]} scale={[20, 20, 1]}>
+        <planeGeometry args={[1, 1]} />
+        <primitive object={skyMaterial} attach="material" />
+      </mesh>
+
+      {/* Sun with starburst effect */}
       <mesh ref={sunRef} position={[0, 8, -3]}>
-        <sphereGeometry args={[0.5, 32, 32]} />
-        <meshBasicMaterial 
-          color="#FFD700" 
-          transparent
-          opacity={0.8}
-        />
-        {/* Sun glow effect */}
-        <mesh scale={[2, 2, 2]}>
-          <sphereGeometry args={[0.5, 32, 32]} />
+        <sphereGeometry args={[0.3, 32, 32]} />
+        <primitive object={starburstMaterial} attach="material" />
+        
+        {/* Outer glow */}
+        <mesh scale={[3, 3, 3]}>
+          <sphereGeometry args={[0.3, 32, 32]} />
           <meshBasicMaterial 
             color="#FFD700" 
             transparent
-            opacity={0.2}
+            opacity={0.1}
+            blending={THREE.AdditiveBlending}
           />
         </mesh>
       </mesh>
-      
-      {/* Overlay to darken the scene during animation */}
-      <mesh position={[0, 0, -5]} scale={[100, 100, 1]}>
+
+      {/* Volumetric light rays */}
+      <mesh position={[0, 0, -1]} scale={[10, 10, 1]}>
         <planeGeometry args={[1, 1]} />
         <meshBasicMaterial 
-          color="#000000" 
+          color="#FFD700"
           transparent
-          opacity={0.7}
+          opacity={0.05}
+          blending={THREE.AdditiveBlending}
+          side={THREE.DoubleSide}
         />
       </mesh>
     </group>
