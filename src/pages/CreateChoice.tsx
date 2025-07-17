@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { CreatePageHero } from '@/components/create/CreatePageHero';
-import { CreateCardsSection } from '@/components/create/CreateCardsSection';
 import { CreationOptions } from '@/components/create/CreationOptions';
 
 const CreateChoice: React.FC = () => {
@@ -11,8 +10,12 @@ const CreateChoice: React.FC = () => {
         {/* Full Width Hero Section */}
         <CreatePageHero />
         
-        {/* Cards Section */}
-        <CreateCardsSection />
+        {/* Short Transition Section */}
+        <div className="relative z-10 h-[100px] flex items-center justify-center bg-crd-darkest">
+          <h2 className="text-3xl font-bold text-center text-white">
+            What do you feel like creating today?
+          </h2>
+        </div>
         
         {/* Creation Options Section */}
         <CreationOptions />
