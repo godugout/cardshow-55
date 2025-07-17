@@ -103,20 +103,20 @@ const fragmentShader = `
     
     if (dist > 0.5) discard;
     
-    // Much more gradual falloff for barely visible dust-like effect
-    float alpha = vAlpha * pow(1.0 - dist * 1.5, 6.0);
-    alpha *= 0.05; // Extremely high transparency - dust-like subtlety
+    // Smooth falloff for subtle dust effect without sharp edges
+    float alpha = vAlpha * pow(1.0 - dist * 1.8, 3.0);
+    alpha *= 0.08; // Subtle but not too extreme transparency
     
     // Very rare glowing particles
     vec3 finalColor = vColor;
-    float glowFactor = sin(gl_FragCoord.x * 0.07 + gl_FragCoord.y * 0.13) * 0.5 + 0.5;
-    if (glowFactor > 0.95) {
-      finalColor += vec3(0.2, 0.3, 0.4) * 0.4; // Very subtle glow
-      alpha += 0.08; // Just barely more visible when glowing
+    float glowFactor = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    if (glowFactor > 0.97) {
+      finalColor += vec3(0.2, 0.3, 0.4) * 0.3; // Very subtle glow
+      alpha += 0.06; // Just barely more visible when glowing
     }
     if (vLightning > 0.2) {
-      finalColor += vec3(0.6, 0.7, 0.8) * vLightning * 0.1; // Barely visible lightning
-      alpha += vLightning * 0.05; // Almost imperceptible during lightning
+      finalColor += vec3(0.6, 0.7, 0.8) * vLightning * 0.08; // Barely visible lightning
+      alpha += vLightning * 0.04; // Almost imperceptible during lightning
     }
     
     gl_FragColor = vec4(finalColor, alpha);
