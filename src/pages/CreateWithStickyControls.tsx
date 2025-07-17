@@ -26,53 +26,55 @@ const CreateWithStickyControls = () => {
   const [showLockIndicators, setShowLockIndicators] = useState(false);
 
   return (
-    <div className="fixed inset-0 bg-crd-darkest overflow-hidden">
-      {/* 3D Card Viewer - No built-in controls */}
-      <CRDViewer
-        mode={animationMode}
-        intensity={animationIntensity}
-        lightingPreset={lightingPreset}
-        pathTheme="neutral"
-        autoRotate={autoRotate}
-        rotationSpeed={rotationSpeed}
-        lightingIntensity={lightingIntensity}
-        orbitalAutoRotate={orbitalAutoRotate}
-        orbitalRotationSpeed={orbitalRotationSpeed}
-        showOrbitalRing={showOrbitalRing}
-        showLockIndicators={showLockIndicators}
-        enableControls={true}
-        enableGlassCase={true}
-        showModeText={true}
-        className="w-full h-full"
-        onModeChange={setAnimationMode}
-        onIntensityChange={setAnimationIntensity}
-      />
-
-      {/* Simplified Sticky Footer Controls */}
-        <CRDStickyFooter
-          animationMode={animationMode}
-          animationIntensity={animationIntensity}
-          onAnimationModeChange={setAnimationMode}
-          onAnimationIntensityChange={setAnimationIntensity}
-          selectedStyleId={selectedStyleId}
-          onStyleChange={setSelectedStyleId}
+    <div className="fixed inset-0 bg-crd-darkest overflow-hidden flex flex-col">
+      {/* 3D Card Viewer - Takes remaining space */}
+      <div className="flex-1 relative">
+        <CRDViewer
+          mode={animationMode}
+          intensity={animationIntensity}
+          lightingPreset={lightingPreset}
+          pathTheme="neutral"
           autoRotate={autoRotate}
           rotationSpeed={rotationSpeed}
-          onAutoRotateChange={setAutoRotate}
-          onRotationSpeedChange={setRotationSpeed}
-          lightingPreset={lightingPreset}
           lightingIntensity={lightingIntensity}
-          onLightingPresetChange={setLightingPreset}
-          onLightingIntensityChange={setLightingIntensity}
           orbitalAutoRotate={orbitalAutoRotate}
           orbitalRotationSpeed={orbitalRotationSpeed}
           showOrbitalRing={showOrbitalRing}
           showLockIndicators={showLockIndicators}
-          onOrbitalAutoRotateChange={setOrbitalAutoRotate}
-          onOrbitalRotationSpeedChange={setOrbitalRotationSpeed}
-          onShowOrbitalRingChange={setShowOrbitalRing}
-          onShowLockIndicatorsChange={setShowLockIndicators}
+          enableControls={true}
+          enableGlassCase={true}
+          showModeText={true}
+          className="w-full h-full"
+          onModeChange={setAnimationMode}
+          onIntensityChange={setAnimationIntensity}
         />
+      </div>
+
+      {/* Sticky Footer Controls */}
+      <CRDStickyFooter
+        animationMode={animationMode}
+        animationIntensity={animationIntensity}
+        onAnimationModeChange={setAnimationMode}
+        onAnimationIntensityChange={setAnimationIntensity}
+        selectedStyleId={selectedStyleId}
+        onStyleChange={setSelectedStyleId}
+        autoRotate={autoRotate}
+        rotationSpeed={rotationSpeed}
+        onAutoRotateChange={setAutoRotate}
+        onRotationSpeedChange={setRotationSpeed}
+        lightingPreset={lightingPreset}
+        lightingIntensity={lightingIntensity}
+        onLightingPresetChange={setLightingPreset}
+        onLightingIntensityChange={setLightingIntensity}
+        orbitalAutoRotate={orbitalAutoRotate}
+        orbitalRotationSpeed={orbitalRotationSpeed}
+        showOrbitalRing={showOrbitalRing}
+        showLockIndicators={showLockIndicators}
+        onOrbitalAutoRotateChange={setOrbitalAutoRotate}
+        onOrbitalRotationSpeedChange={setOrbitalRotationSpeed}
+        onShowOrbitalRingChange={setShowOrbitalRing}
+        onShowLockIndicatorsChange={setShowLockIndicators}
+      />
     </div>
   );
 };
