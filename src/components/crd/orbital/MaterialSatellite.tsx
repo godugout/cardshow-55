@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, Box } from '@react-three/drei';
 import * as THREE from 'three';
 import { MaterialSystem } from '../materials/MaterialSystem';
 import { type CRDVisualStyle } from '../styles/StyleRegistry';
@@ -75,9 +74,9 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
         scale={isActive ? 1.2 : isHovered ? 1.1 : 1}
       >
         {style.category === 'premium' ? (
-          <Box args={[0.2, 0.2, 0.2]} />
+          <boxGeometry args={[0.2, 0.2, 0.2]} />
         ) : (
-          <Sphere args={[0.15, 16, 16]} />
+          <sphereGeometry args={[0.15, 16, 16]} />
         )}
         <MaterialSystem 
           mode={style.baseMaterial as any} 
@@ -88,8 +87,8 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
 
       {/* Connection beam to card (when active) */}
       {isActive && (
-        <mesh>
-          <cylinderGeometry args={[0.002, 0.002, position.length(), 8]} />
+        <mesh rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.002, 0.002, position.length() * 0.8, 8]} />
           <meshBasicMaterial 
             color="#00ffff" 
             transparent 
