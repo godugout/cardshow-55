@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { MaterialSatellite } from './MaterialSatellite';
+import { ParticleFlowRing } from './ParticleFlowRing';
 import { CRDVisualStyles, type CRDVisualStyle } from '../styles/StyleRegistry';
 
 interface OrbitalRingProps {
@@ -170,17 +171,14 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
       ref={ringRef}
       onPointerDown={handlePointerDown}
     >
-      {/* Orbital ring guide (conditional) */}
+      {/* Particle Flow Ring (conditional) */}
       {showRing && (
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[radius - 0.1, radius + 0.1, 32]} />
-          <meshBasicMaterial 
-            color="#ffffff" 
-            transparent 
-            opacity={0.05}
-            side={THREE.DoubleSide}
-          />
-        </mesh>
+        <ParticleFlowRing
+          radius={radius}
+          selectedStyleId={selectedStyleId}
+          hoveredSatellite={hoveredSatellite}
+          satellitePositions={satellitePositions}
+        />
       )}
 
       {/* Material Satellites */}
