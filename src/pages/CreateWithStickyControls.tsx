@@ -25,6 +25,9 @@ const CreateWithStickyControls = () => {
   const [showOrbitalRing, setShowOrbitalRing] = useState(true);
   const [showLockIndicators, setShowLockIndicators] = useState(false);
 
+  // Case control
+  const [enableGlassCase, setEnableGlassCase] = useState(true);
+
   return (
     <div className="fixed inset-0 bg-crd-darkest overflow-hidden flex flex-col">
       {/* 3D Card Viewer - Takes remaining space */}
@@ -42,7 +45,7 @@ const CreateWithStickyControls = () => {
           showOrbitalRing={showOrbitalRing}
           showLockIndicators={showLockIndicators}
           enableControls={true}
-          enableGlassCase={true}
+          enableGlassCase={enableGlassCase}
           showModeText={true}
           className="w-full h-full"
           onModeChange={setAnimationMode}
@@ -74,6 +77,8 @@ const CreateWithStickyControls = () => {
         onOrbitalRotationSpeedChange={setOrbitalRotationSpeed}
         onShowOrbitalRingChange={setShowOrbitalRing}
         onShowLockIndicatorsChange={setShowLockIndicators}
+        enableGlassCase={enableGlassCase}
+        onEnableGlassCaseChange={setEnableGlassCase}
       />
     </div>
   );
