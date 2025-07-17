@@ -2,6 +2,7 @@ import React, { useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
+import { SceneColors } from '@/utils/cssColors';
 
 const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ onHover }) => {
   const cardRef = useRef<THREE.Group>(null);
@@ -39,10 +40,10 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
         >
           <boxGeometry args={[2.5, 3.5, 0.3]} />
           <meshStandardMaterial 
-            color="#000000"
+            color={SceneColors.monolithBase()}
             metalness={0.95}
             roughness={0.05}
-            emissive="#0a0a0a"
+            emissive={SceneColors.monolithEmissive()}
             emissiveIntensity={0.1}
           />
         </mesh>
@@ -54,12 +55,12 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
         >
           <boxGeometry args={[2.6, 3.6, 0.32]} />
           <meshStandardMaterial 
-            color="#e6f3ff"
+            color={SceneColors.glassCase()}
             metalness={0}
             roughness={0}
             transparent
             opacity={0.1}
-            emissive="#ffffff"
+            emissive={SceneColors.glassEmissive()}
             emissiveIntensity={0.02}
           />
         </mesh>
@@ -82,8 +83,8 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
         <mesh>
           <sphereGeometry args={[1.8, 64, 64]} />
           <meshStandardMaterial 
-            color="#ffee44"
-            emissive="#ff9900"
+            color={SceneColors.sunCore()}
+            emissive={SceneColors.sunCoreEmissive()}
             emissiveIntensity={3}
           />
         </mesh>
@@ -92,8 +93,8 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
         <mesh>
           <sphereGeometry args={[2.2, 32, 32]} />
           <meshStandardMaterial 
-            color="#ff6600"
-            emissive="#ff7700"
+            color={SceneColors.sunChromosphere()}
+            emissive={SceneColors.sunChromosphereEmissive()}
             emissiveIntensity={1.2}
             transparent
             opacity={0.4}
@@ -104,8 +105,8 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
         <mesh>
           <sphereGeometry args={[3, 32, 32]} />
           <meshStandardMaterial 
-            color="#ffbb00"
-            emissive="#ffcc33"
+            color={SceneColors.sunCorona()}
+            emissive={SceneColors.sunCoronaEmissive()}
             emissiveIntensity={0.4}
             transparent
             opacity={0.18}
@@ -116,8 +117,8 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
         <mesh>
           <sphereGeometry args={[4, 24, 24]} />
           <meshStandardMaterial 
-            color="#fff8e1"
-            emissive="#fff2c7"
+            color={SceneColors.sunOuterCorona()}
+            emissive={SceneColors.sunOuterEmissive()}
             emissiveIntensity={0.15}
             transparent
             opacity={0.08}
