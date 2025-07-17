@@ -88,7 +88,6 @@
     filter: hue-rotate(80deg) saturate(150%) brightness(125%) contrast(110%);
     transition: filter 0.3s ease;
   }
-}
   
   /* Animated tagline fonts */
   .font-comic {
