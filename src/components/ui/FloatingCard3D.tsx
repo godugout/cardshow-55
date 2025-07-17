@@ -37,9 +37,28 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ isAutoAnimating }) => {
         
         const animationElapsed = elapsed - animationStartTime.current;
         
-        // Keep card in normal orientation throughout animation
-        const sway = Math.sin(elapsed * 0.2) * 0.1;
-        cardRef.current.rotation.set(baseRotation.x + sway, baseRotation.y, Math.sin(elapsed * 0.15) * 0.05);
+        // Stage 4: Flying towards viewer (5+ seconds) - Card flies forward, sun disappears
+        if (animationElapsed >= 5.0) {
+          const stageProgress = Math.min((animationElapsed - 5.0) / 3.0, 1.0); // 3 second flight
+          const easedProgress = easeInOutCubic(stageProgress);
+          
+          // Move card towards viewer
+          const flyDistance = easedProgress * 8; // Fly 8 units closer
+          cardRef.current.position.copy(basePosition).add(new THREE.Vector3(0, bobOffset, flyDistance));
+          
+          // Scale up the card as it gets closer
+          const scaleMultiplier = 1 + easedProgress * 2; // Scale up to 3x size
+          cardRef.current.scale.setScalar(scaleMultiplier);
+          
+          // Keep normal orientation during flight
+          const sway = Math.sin(elapsed * 0.2) * 0.1;
+          cardRef.current.rotation.set(baseRotation.x + sway, baseRotation.y, Math.sin(elapsed * 0.15) * 0.05);
+        } else {
+          // Before stage 4, keep card in normal orientation and scale
+          cardRef.current.scale.setScalar(1);
+          const sway = Math.sin(elapsed * 0.2) * 0.1;
+          cardRef.current.rotation.set(baseRotation.x + sway, baseRotation.y, Math.sin(elapsed * 0.15) * 0.05);
+        }
       } else {
         // Reset animation timing and use base rotation with gentle motion
         animationStartTime.current = null;
@@ -51,8 +70,35 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ isAutoAnimating }) => {
     if (sunRef.current) {
       // Subtle sun rotation and pulsing
       sunRef.current.rotation.z = elapsed * 0.1;
-      const pulse = Math.sin(elapsed * 2) * 0.1 + 1;
-      sunRef.current.scale.setScalar(pulse);
+      
+      // Handle sun shrinking during flying animation
+      if (isAutoAnimating && animationStartTime.current !== null) {
+        const animationElapsed = elapsed - animationStartTime.current;
+        
+        // Stage 4: Sun disappears as card flies towards viewer
+        if (animationElapsed >= 5.0) {
+          const stageProgress = Math.min((animationElapsed - 5.0) / 3.0, 1.0);
+          const sunScale = Math.max(0, 1 - stageProgress); // Shrink to nothing
+          const pulse = Math.sin(elapsed * 2) * 0.1 + 1;
+          sunRef.current.scale.setScalar(pulse * sunScale);
+          
+          // Also fade out the sun's opacity
+          if (sunRef.current.children[0] && 'material' in sunRef.current.children[0]) {
+            const material = (sunRef.current.children[0] as any).material;
+            if (material.opacity !== undefined) {
+              material.opacity = sunScale;
+            }
+          }
+        } else {
+          // Normal sun pulsing before flying stage
+          const pulse = Math.sin(elapsed * 2) * 0.1 + 1;
+          sunRef.current.scale.setScalar(pulse);
+        }
+      } else {
+        // Normal sun pulsing when not auto-animating
+        const pulse = Math.sin(elapsed * 2) * 0.1 + 1;
+        sunRef.current.scale.setScalar(pulse);
+      }
     }
   });
 
@@ -299,10 +345,26 @@ const CameraController: React.FC<{ isAutoAnimating: boolean }> = ({ isAutoAnimat
         camera.position.copy(finalPosition);
         camera.lookAt(finalTarget);
         
-        // Continue subtle orbital movement
-        const orbitAngle = (animationElapsed - 4.0) * 0.5;
-        camera.position.x = finalPosition.x + Math.sin(orbitAngle) * 0.5;
-        camera.position.z = finalPosition.z + Math.cos(orbitAngle) * 0.15;
+        // Stage 4: Camera follows the flying card (5+ seconds)
+        const animationElapsed = state.clock.getElapsedTime() - animationStartTime.current;
+        if (animationElapsed >= 5.0) {
+          const stageProgress = Math.min((animationElapsed - 5.0) / 3.0, 1.0);
+          const easedProgress = easeInOutCubic(stageProgress);
+          
+          // Pull camera back slightly as card approaches
+          const cameraRetreat = easedProgress * 2;
+          camera.position.z = finalPosition.z + cameraRetreat;
+          
+          // Adjust camera target to follow the flying card
+          const cardFlyDistance = easedProgress * 8;
+          const flyingCardTarget = new THREE.Vector3(0, -2, cardFlyDistance);
+          camera.lookAt(flyingCardTarget);
+        } else {
+          // Continue subtle orbital movement before flying stage
+          const orbitAngle = (animationElapsed - 4.0) * 0.5;
+          camera.position.x = finalPosition.x + Math.sin(orbitAngle) * 0.5;
+          camera.position.z = finalPosition.z + Math.cos(orbitAngle) * 0.15;
+        }
       }
     } else {
       // Reset animation timing when not auto-animating
