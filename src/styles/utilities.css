@@ -13,6 +13,8 @@
 .paper-scraps {
   position: relative;
   color: #ffffff;
+  transform: translate(-33%, -10%) rotate(-2deg);
+  display: inline-block;
   background: 
     /* Ruled lines pattern inside the text */
     repeating-linear-gradient(
