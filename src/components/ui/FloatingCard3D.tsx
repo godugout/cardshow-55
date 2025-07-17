@@ -8,11 +8,18 @@ const CardMonolith: React.FC<{ onInactivity: boolean }> = ({ onInactivity }) => 
   const sunRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
   const [animationStartTime, setAnimationStartTime] = useState<number | null>(null);
+  const [startPosition, setStartPosition] = useState<THREE.Vector3>(new THREE.Vector3());
+  const [startRotation, setStartRotation] = useState<THREE.Euler>(new THREE.Euler());
+  const [startCameraPos, setStartCameraPos] = useState<THREE.Vector3>(new THREE.Vector3());
   
   useFrame((state) => {
     // Start animation tracking when inactivity is detected
-    if (onInactivity && animationStartTime === null) {
+    if (onInactivity && animationStartTime === null && cardRef.current) {
       setAnimationStartTime(state.clock.elapsedTime);
+      // Capture current positions for smooth transition
+      setStartPosition(cardRef.current.position.clone());
+      setStartRotation(cardRef.current.rotation.clone());
+      setStartCameraPos(camera.position.clone());
     }
     
     // Reset animation when activity resumes
@@ -30,23 +37,32 @@ const CardMonolith: React.FC<{ onInactivity: boolean }> = ({ onInactivity }) => 
         // Smooth easing function
         const eased = 1 - Math.pow(1 - progress, 3);
         
-        // Move card around in dynamic motion
+        // Move card around in dynamic motion from starting position
         const motionAmplitude = 3;
-        cardRef.current.position.x = Math.sin(animationTime * 0.8) * motionAmplitude * (1 - eased * 0.5);
-        cardRef.current.position.y = Math.cos(animationTime * 0.6) * motionAmplitude * 0.7 * (1 - eased * 0.5);
-        cardRef.current.position.z = eased * 8; // Move closer for zoom effect
+        const dynamicX = Math.sin(animationTime * 0.8) * motionAmplitude * (1 - eased * 0.5);
+        const dynamicY = Math.cos(animationTime * 0.6) * motionAmplitude * 0.7 * (1 - eased * 0.5);
+        const dynamicZ = eased * 8; // Move closer for zoom effect
         
-        // Dynamic rotation for dramatic effect
-        cardRef.current.rotation.x = Math.sin(animationTime * 0.5) * 0.3;
-        cardRef.current.rotation.y = animationTime * 0.4;
-        cardRef.current.rotation.z = Math.cos(animationTime * 0.7) * 0.2;
+        // Interpolate from start position
+        cardRef.current.position.x = THREE.MathUtils.lerp(startPosition.x, dynamicX, eased);
+        cardRef.current.position.y = THREE.MathUtils.lerp(startPosition.y, dynamicY, eased);
+        cardRef.current.position.z = THREE.MathUtils.lerp(startPosition.z, startPosition.z + dynamicZ, eased);
         
-        // Camera zoom and repositioning
-        const targetX = 6; // Halfway across horizontal position
-        const targetZ = 3; // Zoomed in position
+        // Dynamic rotation from starting rotation
+        const targetRotX = startRotation.x + Math.sin(animationTime * 0.5) * 0.3;
+        const targetRotY = startRotation.y + animationTime * 0.4;
+        const targetRotZ = startRotation.z + Math.cos(animationTime * 0.7) * 0.2;
         
-        camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetX, eased * 0.02);
-        camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, eased * 0.02);
+        cardRef.current.rotation.x = THREE.MathUtils.lerp(startRotation.x, targetRotX, eased);
+        cardRef.current.rotation.y = THREE.MathUtils.lerp(startRotation.y, targetRotY, eased);
+        cardRef.current.rotation.z = THREE.MathUtils.lerp(startRotation.z, targetRotZ, eased);
+        
+        // Camera zoom and repositioning from start position
+        const targetX = startCameraPos.x + 6; // Halfway across horizontal position
+        const targetZ = Math.max(3, startCameraPos.z - 12); // Zoomed in position
+        
+        camera.position.x = THREE.MathUtils.lerp(startCameraPos.x, targetX, eased);
+        camera.position.z = THREE.MathUtils.lerp(startCameraPos.z, targetZ, eased);
         
         // Look at the moving card
         camera.lookAt(cardRef.current.position);
@@ -273,30 +289,6 @@ export const FloatingCard3D: React.FC = () => {
 
   return (
     <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
-      {/* Matching star field for seamless integration */}
-      <div className="absolute inset-0">
-        {Array.from({ length: 100 }).map((_, i) => {
-          const size = Math.random() * 2 + 0.5;
-          const opacity = Math.random() * 0.6 + 0.2;
-          const animationDelay = Math.random() * 3;
-          
-          return (
-            <div
-              key={i}
-              className="absolute rounded-full bg-white animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                width: `${size}px`,
-                height: `${size}px`,
-                opacity,
-                animationDelay: `${animationDelay}s`,
-                animationDuration: `${2 + Math.random() * 2}s`
-              }}
-            />
-          );
-        })}
-      </div>
       <Canvas
         camera={{ position: [0, 0, 15], fov: 60 }}
         gl={{ antialias: true, alpha: true }}
