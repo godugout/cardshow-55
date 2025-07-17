@@ -3,7 +3,7 @@ import { CRDCanvasGrid } from './CRDCanvasGrid';
 import { CRDToolbar } from '../toolbar/CRDToolbar';
 import { ToolbarHotZone } from '../toolbar/ToolbarHotZone';
 import { CRDFrameRenderer } from '../frame/CRDFrameRenderer';
-import { CRDBottomInfoBar } from './CRDBottomInfoBar';
+import { CRDBottomToolbar } from './CRDBottomToolbar';
 import { useGridPreferences } from '@/hooks/useGridPreferences';
 import { useAutoHideToolbar } from '@/hooks/useAutoHideToolbar';
 interface CRDCanvasProps {
@@ -66,6 +66,12 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     x: 0,
     y: 0
   });
+  
+  // Bottom toolbar states
+  const [isRotating, setIsRotating] = useState(false);
+  const [showMaterialsRing, setShowMaterialsRing] = useState(true);
+  const [showCase, setShowCase] = useState(true);
+  const [animationPreset, setAnimationPreset] = useState<'subtle' | 'dynamic' | 'epic'>('subtle');
 
   // Canvas controls
   const handleZoomIn = useCallback(() => {
@@ -362,11 +368,19 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         </div>
       </div>
 
-      {/* Bottom Info Bar */}
-      <CRDBottomInfoBar
+      {/* Bottom Toolbar */}
+      <CRDBottomToolbar
         selectedTemplate={template}
         colorPalette={colorPalette}
         effects={effects}
+        isRotating={isRotating}
+        onToggleRotation={() => setIsRotating(!isRotating)}
+        showMaterialsRing={showMaterialsRing}
+        onToggleMaterialsRing={() => setShowMaterialsRing(!showMaterialsRing)}
+        showCase={showCase}
+        onToggleCase={() => setShowCase(!showCase)}
+        animationPreset={animationPreset}
+        onSetAnimationPreset={setAnimationPreset}
       />
     </div>;
 };
