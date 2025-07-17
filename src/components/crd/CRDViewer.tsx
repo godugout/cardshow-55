@@ -114,31 +114,46 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     setLightingIntensity(intensity);
   };
 
+  // Memoize star field to prevent re-generation on every render
+  const starField = React.useMemo(() => {
+    return Array.from({ length: 100 }).map((_, i) => {
+      const size = Math.random() * 2 + 0.5;
+      const opacity = Math.random() * 0.6 + 0.2;
+      const animationDelay = Math.random() * 3;
+      const left = Math.random() * 100;
+      const top = Math.random() * 100;
+      
+      return {
+        id: i,
+        size,
+        opacity,
+        animationDelay,
+        left,
+        top,
+        animationDuration: 2 + Math.random() * 2
+      };
+    });
+  }, []); // Empty dependency array - only calculate once
+
   return (
     <div className={`bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative ${className}`}>
       {/* Star field background */}
       <div className="absolute inset-0">
-        {Array.from({ length: 100 }).map((_, i) => {
-          const size = Math.random() * 2 + 0.5;
-          const opacity = Math.random() * 0.6 + 0.2;
-          const animationDelay = Math.random() * 3;
-          
-          return (
-            <div
-              key={i}
-              className="absolute rounded-full bg-white animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                width: `${size}px`,
-                height: `${size}px`,
-                opacity,
-                animationDelay: `${animationDelay}s`,
-                animationDuration: `${2 + Math.random() * 2}s`
-              }}
-            />
-          );
-        })}
+        {starField.map((star) => (
+          <div
+            key={star.id}
+            className="absolute rounded-full bg-white animate-pulse"
+            style={{
+              left: `${star.left}%`,
+              top: `${star.top}%`,
+              width: `${star.size}px`,
+              height: `${star.size}px`,
+              opacity: star.opacity,
+              animationDelay: `${star.animationDelay}s`,
+              animationDuration: `${star.animationDuration}s`
+            }}
+          />
+        ))}
       </div>
 
       {/* 3D Scene */}
