@@ -12,25 +12,70 @@ import {
 
 import { cn } from "@/lib/utils";
 
+type NebulaLayerProps = HTMLMotionProps<"div"> & {
+  colors: string[];
+  opacity: number;
+  size: number;
+  blur: number;
+};
+
 type StarLayerProps = HTMLMotionProps<"div"> & {
   count: number;
   size: number;
   transition: Transition;
-  starColor: string;
+  starColor: string | string[];
 };
 
-function generateStars(count: number, starColor: string) {
+function generateStars(count: number, starColors: string[]) {
   const shadows: string[] = [];
   for (let i = 0; i < count; i++) {
     const x = Math.floor(Math.random() * 4000) - 2000;
     const y = Math.floor(Math.random() * 4000) - 2000;
-    shadows.push(`${x}px ${y}px ${starColor}`);
+    const color = starColors[Math.floor(Math.random() * starColors.length)];
+    shadows.push(`${x}px ${y}px ${color}`);
   }
   return shadows.join(", ");
 }
 
+function NebulaLayer({ colors, opacity, size, blur, className, ...props }: NebulaLayerProps) {
+  const [nebulaStyle, setNebulaStyle] = React.useState<React.CSSProperties>({});
+
+  React.useEffect(() => {
+    const gradients = colors.map((color, index) => {
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const radius = 20 + Math.random() * 30;
+      return `radial-gradient(circle at ${x}% ${y}%, ${color} 0%, transparent ${radius}%)`;
+    });
+
+    setNebulaStyle({
+      background: gradients.join(", "),
+      opacity,
+      filter: `blur(${blur}px)`,
+    });
+  }, [colors, opacity, blur]);
+
+  return (
+    <motion.div
+      data-slot="nebula-layer"
+      animate={{ 
+        rotate: [0, 360],
+        scale: [1, 1.1, 1]
+      }}
+      transition={{ 
+        duration: 120 + Math.random() * 60, 
+        repeat: Infinity, 
+        ease: "linear" 
+      }}
+      className={cn("absolute inset-0 w-full h-full", className)}
+      style={nebulaStyle}
+      {...props}
+    />
+  );
+}
+
 function StarLayer({
-  count = 1000,
+  count = 200,
   size = 1,
   transition = { repeat: Infinity, duration: 50, ease: "linear" },
   starColor = "#fff",
@@ -40,7 +85,8 @@ function StarLayer({
   const [boxShadow, setBoxShadow] = React.useState<string>("");
 
   React.useEffect(() => {
-    setBoxShadow(generateStars(count, starColor));
+    const starColors = Array.isArray(starColor) ? starColor : [starColor];
+    setBoxShadow(generateStars(count, starColors));
   }, [count, starColor]);
 
   return (
@@ -75,7 +121,7 @@ type StarsBackgroundProps = React.ComponentProps<"div"> & {
   factor?: number;
   speed?: number;
   transition?: SpringOptions;
-  starColor?: string;
+  starColor?: string | string[];
 };
 
 export function StarsBackground({
@@ -84,7 +130,7 @@ export function StarsBackground({
   factor = 0.05,
   speed = 50,
   transition = { stiffness: 50, damping: 20 },
-  starColor = "#fff",
+  starColor = ["#fff", "#e6f3ff", "#ffe6e6", "#f0e6ff", "#e6ffe6"],
   ...props
 }: StarsBackgroundProps) {
   const offsetX = useMotionValue(1);
@@ -109,21 +155,42 @@ export function StarsBackground({
     <div
       data-slot="stars-background"
       className={cn(
-        "relative size-full overflow-hidden bg-[radial-gradient(ellipse_at_bottom,_#262626_0%,_#000_100%)]",
+        "relative size-full overflow-hidden bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black",
         className,
       )}
       onMouseMove={handleMouseMove}
       {...props}
     >
+      {/* Distant nebular clouds */}
+      <NebulaLayer
+        colors={["rgba(138, 43, 226, 0.1)", "rgba(75, 0, 130, 0.08)"]}
+        opacity={0.3}
+        size={100}
+        blur={8}
+      />
+      <NebulaLayer
+        colors={["rgba(25, 25, 112, 0.12)", "rgba(0, 0, 139, 0.1)"]}
+        opacity={0.25}
+        size={80}
+        blur={12}
+      />
+      <NebulaLayer
+        colors={["rgba(138, 43, 226, 0.08)", "rgba(220, 20, 60, 0.06)"]}
+        opacity={0.2}
+        size={120}
+        blur={15}
+      />
+
+      {/* Star layers with reduced counts */}
       <motion.div style={{ x: springX, y: springY }}>
         <StarLayer
-          count={1000}
+          count={150}
           size={1}
           transition={{ repeat: Infinity, duration: speed, ease: "linear" }}
           starColor={starColor}
         />
         <StarLayer
-          count={400}
+          count={80}
           size={2}
           transition={{
             repeat: Infinity,
@@ -133,7 +200,7 @@ export function StarsBackground({
           starColor={starColor}
         />
         <StarLayer
-          count={200}
+          count={40}
           size={3}
           transition={{
             repeat: Infinity,
