@@ -28,6 +28,8 @@ const vertexShader = `
   uniform float waveAngle;
   uniform bool hasWave;
   uniform bool isPaused;
+  uniform vec4 stormCenters[4];  // [angle, intensity, phase, range] for each storm
+  uniform float stormActivity;   // Overall storm activity level
   
   void main() {
     vAlpha = alpha * 0.4;
@@ -55,17 +57,44 @@ const vertexShader = `
       float pulseSpeed = 2.0;
       float pulsePhase = sin(time * pulseSpeed) * 0.5 + 0.5;
       
-      // Lightning effect with exponential falloff and pulsing
-      float lightningRange = 0.25; // Extended range for gradual falloff
-      float distanceFactor = minAngleDiff / lightningRange;
-      float lightningFactor = exp(-distanceFactor * distanceFactor * 8.0); // Exponential falloff
+      // Calculate lightning from multiple storm centers
+      float totalLightning = 0.0;
       
-      // Add pulsing and oscillation
-      float lightning = sin(time * 8.0 + particleAngle * 3.0) * 0.5 + 0.5;
-      lightning *= pulsePhase; // Breathing effect
-      lightning *= lightningFactor; // Distance-based intensity
+      for (int i = 0; i < 4; i++) {
+        vec4 storm = stormCenters[i];
+        float stormAngle = storm.x;
+        float stormIntensity = storm.y;
+        float stormPhase = storm.z;
+        float stormRange = storm.w;
+        
+        if (stormIntensity > 0.1) { // Only process active storms
+          // Calculate angular distance to storm center
+          float angleDiff1 = abs(particleAngle - stormAngle);
+          float angleDiff2 = 6.28318530718 - angleDiff1;
+          float stormDistance = min(angleDiff1, angleDiff2);
+          
+          // Lightning effect within storm range
+          if (stormDistance < stormRange) {
+            float distanceFactor = stormDistance / stormRange;
+            float rangeFalloff = 1.0 - smoothstep(0.0, 1.0, distanceFactor);
+            
+            // Random lightning strikes with storm phase
+            float lightningFreq = 12.0 + sin(stormPhase * 3.0) * 4.0; // Varying frequency
+            float lightning = pow(sin(time * lightningFreq + stormPhase + particleAngle * 8.0) * 0.5 + 0.5, 3.0);
+            
+            // Add random flicker
+            float flicker = sin(time * 25.0 + stormPhase * 7.0) * 0.3 + 0.7;
+            lightning *= flicker;
+            
+            // Apply storm intensity and range falloff
+            lightning *= stormIntensity * rangeFalloff * stormActivity;
+            
+            totalLightning += lightning;
+          }
+        }
+      }
       
-      vLightning = lightning * 0.3; // Base intensity
+      vLightning = min(totalLightning, 1.0); // Clamp to prevent over-brightness
       
       // Mix colors based on wave
       float angle = particleAngle + time * flowSpeed * 0.2;
@@ -159,6 +188,18 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     hoveredColor: new THREE.Color('#22c55e')
   });
 
+  // Storm system state
+  const stormStateRef = useRef({
+    storms: [
+      { angle: 0, intensity: 0, phase: 0, duration: 0, startTime: 0 },
+      { angle: 0, intensity: 0, phase: 0, duration: 0, startTime: 0 },
+      { angle: 0, intensity: 0, phase: 0, duration: 0, startTime: 0 },
+      { angle: 0, intensity: 0, phase: 0, duration: 0, startTime: 0 }
+    ],
+    lastStormUpdate: 0,
+    stormUpdateInterval: 2.0 // Update storm positions every 2 seconds
+  });
+
   // Create particle geometry and attributes
   const { geometry, particleCount } = useMemo(() => {
     const count = 800; // More particles for gas effect
@@ -221,7 +262,14 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
         waveProgress: { value: 0 },
         waveAngle: { value: 0 },
         hasWave: { value: false },
-        isPaused: { value: isPaused }
+        isPaused: { value: isPaused },
+        stormCenters: { value: [
+          new THREE.Vector4(0, 0, 0, 0.4),  // Storm 1: angle, intensity, phase, range
+          new THREE.Vector4(0, 0, 0, 0.4),  // Storm 2
+          new THREE.Vector4(0, 0, 0, 0.4),  // Storm 3
+          new THREE.Vector4(0, 0, 0, 0.4)   // Storm 4
+        ]},
+        stormActivity: { value: 0.0 }
       },
       vertexShader,
       fragmentShader,
@@ -231,13 +279,71 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     });
   }, []);
 
-  // Animation loop with wave management
+  // Animation loop with wave management and storm system
   useFrame((state) => {
     if (!materialRef.current) return;
     
     // Update time uniform for animation
     materialRef.current.uniforms.time.value = state.clock.elapsedTime;
     materialRef.current.uniforms.isPaused.value = isPaused;
+    
+    // Update storm system during hover
+    if (hoveredSatellite) {
+      const currentTime = state.clock.elapsedTime;
+      
+      // Update storm activity level
+      materialRef.current.uniforms.stormActivity.value = THREE.MathUtils.lerp(
+        materialRef.current.uniforms.stormActivity.value,
+        1.0,
+        0.05
+      );
+      
+      // Generate new storms periodically
+      if (currentTime - stormStateRef.current.lastStormUpdate > stormStateRef.current.stormUpdateInterval) {
+        stormStateRef.current.lastStormUpdate = currentTime;
+        
+        // Update 2-3 storms at random positions
+        const activeStorms = Math.floor(Math.random() * 2) + 2; // 2-3 storms
+        
+        for (let i = 0; i < 4; i++) {
+          if (i < activeStorms) {
+            stormStateRef.current.storms[i] = {
+              angle: Math.random() * Math.PI * 2,
+              intensity: 0.6 + Math.random() * 0.4, // Varying intensity
+              phase: Math.random() * Math.PI * 2,
+              duration: 1.5 + Math.random() * 2.0, // 1.5-3.5 second storms
+              startTime: currentTime
+            };
+          } else {
+            // Deactivate storm
+            stormStateRef.current.storms[i].intensity = 0;
+          }
+        }
+      }
+      
+      // Update storm uniforms
+      const stormCenters = stormStateRef.current.storms.map(storm => {
+        const elapsed = currentTime - storm.startTime;
+        let currentIntensity = storm.intensity;
+        
+        // Fade out storms over their duration
+        if (elapsed > storm.duration) {
+          currentIntensity = Math.max(0, storm.intensity * (1 - (elapsed - storm.duration) * 2));
+        }
+        
+        return new THREE.Vector4(storm.angle, currentIntensity, storm.phase, 0.4);
+      });
+      
+      materialRef.current.uniforms.stormCenters.value = stormCenters;
+    } else {
+      // Fade out storm activity when not hovering
+      materialRef.current.uniforms.stormActivity.value = THREE.MathUtils.lerp(
+        materialRef.current.uniforms.stormActivity.value,
+        0.0,
+        0.02
+      );
+    }
+    
     
     // Stop rotation during hover wave effect
     let flowSpeed = 0.15; // Normal speed
