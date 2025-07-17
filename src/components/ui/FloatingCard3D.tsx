@@ -37,11 +37,12 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         cardRef.current.rotation.x = Math.sin(time * 0.8) * 0.05 * factor;
         cardRef.current.rotation.z = Math.sin(time * 1.1) * 0.03 * factor;
         
-        // Effects layer follows card but stays centered on vertical axis and just above surface
+        // Effects layer follows card position but stays flat (no rotation copying)
         effectsLayerRef.current.position.x = cardRef.current.position.x;
         effectsLayerRef.current.position.y = cardRef.current.position.y;
         effectsLayerRef.current.position.z = cardRef.current.position.z + 0.051; // Always 0.051 above card surface
-        effectsLayerRef.current.rotation.copy(cardRef.current.rotation);
+        // Keep effects layer flat - don't copy rotation
+        effectsLayerRef.current.rotation.set(0, 0, 0);
         break;
     }
   });
@@ -125,19 +126,19 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ mode, intensity }) => {
           />
         </mesh>
         
-        {/* Demo Controls */}
-        <group position={[0, -2.2, 0]}>
-          <Text
-            position={[0, 0, 0.2]}
-            fontSize={0.15}
-            color="#ffffff"
-            anchorX="center"
-            anchorY="middle"
-          >
-            Mode: {mode.toUpperCase()} | Intensity: {intensity.toFixed(1)}
-          </Text>
-        </group>
+        {/* Demo Controls - positioned independently so they don't rotate */}
       </group>
+      
+      {/* Text positioned outside the rotating glass case group */}
+      <Text
+        position={[0, -4.5, 0]}
+        fontSize={0.15}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
+        Mode: {mode.toUpperCase()} | Intensity: {intensity.toFixed(1)}
+      </Text>
       
       {/* Realistic Sun */}
       <group ref={sunRef} position={[0, 2, -10]}>
