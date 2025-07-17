@@ -4,7 +4,7 @@ export interface CRDVisualStyle {
   displayName: string;
   locked: boolean;
   isActive: boolean;
-  category: 'signature' | 'material' | 'effect' | 'premium';
+  category: 'signature' | 'material' | 'effect' | 'premium' | 'legendary';
   baseMaterial: string;
   secondaryFinish?: string;
   textureProfile: string;
@@ -16,7 +16,7 @@ export interface CRDVisualStyle {
   unlockMethod: 'free' | 'points' | 'premium' | 'achievement';
   unlockCost?: number;
   performance: {
-    renderCost: 'low' | 'medium' | 'high';
+    renderCost: 'low' | 'medium' | 'high' | 'very-high';
     particleCount: number;
     shaderComplexity: number;
   };
@@ -273,6 +273,136 @@ export const CRDVisualStyles: CRDVisualStyle[] = [
     performance: {
       renderCost: 'high',
       particleCount: 0,
+      shaderComplexity: 8
+    }
+  },
+  {
+    id: 'rubyGem',
+    displayName: 'Ruby Gem',
+    locked: true,
+    isActive: false,
+    category: 'premium',
+    baseMaterial: 'RubyGem',
+    secondaryFinish: 'GemCuts',
+    textureProfile: 'CrystalFacets',
+    particleEffect: 'RubySparkle',
+    lighting: 'JewelHDR',
+    animationProfile: 'GemShine',
+    uiPreviewGradient: 'linear-gradient(135deg, #e0115f, #dc143c, #ff69b4)',
+    visualVibe: 'Passionate & regal',
+    unlockMethod: 'points',
+    unlockCost: 950,
+    performance: {
+      renderCost: 'medium',
+      particleCount: 85,
+      shaderComplexity: 6
+    }
+  },
+  {
+    id: 'sapphireGem',
+    displayName: 'Sapphire Gem',
+    locked: true,
+    isActive: false,
+    category: 'premium',
+    baseMaterial: 'SapphireGem',
+    secondaryFinish: 'GemCuts',
+    textureProfile: 'CrystalFacets',
+    particleEffect: 'SapphireSparkle',
+    lighting: 'JewelHDR',
+    animationProfile: 'GemShine',
+    uiPreviewGradient: 'linear-gradient(135deg, #0f52ba, #4169e1, #87ceeb)',
+    visualVibe: 'Noble & serene',
+    unlockMethod: 'points',
+    unlockCost: 925,
+    performance: {
+      renderCost: 'medium',
+      particleCount: 80,
+      shaderComplexity: 6
+    }
+  },
+  {
+    id: 'diamondGem',
+    displayName: 'Diamond',
+    locked: true,
+    isActive: false,
+    category: 'legendary',
+    baseMaterial: 'DiamondGem',
+    secondaryFinish: 'PerfectCuts',
+    textureProfile: 'DiamondFacets',
+    particleEffect: 'DiamondSparkle',
+    lighting: 'BrilliantHDR',
+    animationProfile: 'BrilliantShine',
+    uiPreviewGradient: 'linear-gradient(135deg, #ffffff, #f0f8ff, #e6e6fa)',
+    visualVibe: 'Ultimate luxury',
+    unlockMethod: 'premium',
+    unlockCost: 2500,
+    performance: {
+      renderCost: 'very-high',
+      particleCount: 300,
+      shaderComplexity: 12
+    }
+  },
+  {
+    id: 'goldLeaf',
+    displayName: 'Gold Leaf',
+    locked: false,
+    isActive: false,
+    category: 'material',
+    baseMaterial: 'GoldLeaf',
+    secondaryFinish: 'MetallicSheen',
+    textureProfile: 'LeafTexture',
+    particleEffect: 'GoldFlakes',
+    lighting: 'WarmMetalHDR',
+    animationProfile: 'MetalShimmer',
+    uiPreviewGradient: 'linear-gradient(135deg, #ffd700, #ffb300, #daa520)',
+    visualVibe: 'Rich & opulent',
+    unlockMethod: 'free',
+    performance: {
+      renderCost: 'medium',
+      particleCount: 60,
+      shaderComplexity: 4
+    }
+  },
+  {
+    id: 'obsidian',
+    displayName: 'Obsidian',
+    locked: false,
+    isActive: false,
+    category: 'material',
+    baseMaterial: 'Obsidian',
+    secondaryFinish: 'VolcanicGlass',
+    textureProfile: 'SmoothGlass',
+    particleEffect: 'DarkSparkles',
+    lighting: 'DarkReflectiveHDR',
+    animationProfile: 'StealthShine',
+    uiPreviewGradient: 'linear-gradient(135deg, #0a0a0a, #1a1a1a, #2d2d2d)',
+    visualVibe: 'Mysterious & sleek',
+    unlockMethod: 'free',
+    performance: {
+      renderCost: 'low',
+      particleCount: 20,
+      shaderComplexity: 3
+    }
+  },
+  {
+    id: 'opalescent',
+    displayName: 'Opalescent',
+    locked: true,
+    isActive: false,
+    category: 'premium',
+    baseMaterial: 'Opalescent',
+    secondaryFinish: 'NacreSheen',
+    textureProfile: 'OpalPatterns',
+    particleEffect: 'ColorShifts',
+    lighting: 'IridescentHDR',
+    animationProfile: 'FlowingColors',
+    uiPreviewGradient: 'linear-gradient(45deg, #ff69b4, #ffd700, #00ced1, #9370db, #ff1493)',
+    visualVibe: 'Ethereal & shifting',
+    unlockMethod: 'points',
+    unlockCost: 800,
+    performance: {
+      renderCost: 'high',
+      particleCount: 120,
       shaderComplexity: 8
     }
   }

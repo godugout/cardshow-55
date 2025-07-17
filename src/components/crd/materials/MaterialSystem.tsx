@@ -317,6 +317,114 @@ export const MaterialSystem: React.FC<MaterialSystemProps> = ({
             opacity={0.9}
           />
         );
+
+      case 'rubyGem':
+      case 'RubyGem':
+        return (
+          <meshPhysicalMaterial
+            color="#e0115f"
+            metalness={0}
+            roughness={0}
+            transmission={0.6}
+            transparent={true}
+            opacity={0.85}
+            thickness={0.3}
+            ior={1.76} // Ruby IOR
+            clearcoat={1}
+            clearcoatRoughness={0}
+            emissive="#dc143c"
+            emissiveIntensity={0.3 * intensity}
+            side={THREE.DoubleSide}
+            envMapIntensity={5}
+          />
+        );
+
+      case 'sapphireGem':
+      case 'SapphireGem':
+        return (
+          <meshPhysicalMaterial
+            color="#0f52ba"
+            metalness={0}
+            roughness={0}
+            transmission={0.65}
+            transparent={true}
+            opacity={0.82}
+            thickness={0.3}
+            ior={1.77} // Sapphire IOR
+            clearcoat={1}
+            clearcoatRoughness={0}
+            emissive="#4169e1"
+            emissiveIntensity={0.25 * intensity}
+            side={THREE.DoubleSide}
+            envMapIntensity={5}
+          />
+        );
+
+      case 'diamondGem':
+      case 'DiamondGem':
+        return (
+          <meshPhysicalMaterial
+            color="#ffffff"
+            metalness={0}
+            roughness={0}
+            transmission={0.95}
+            transparent={true}
+            opacity={0.1}
+            thickness={0.2}
+            ior={2.42} // Diamond IOR - highest refractive index
+            clearcoat={1}
+            clearcoatRoughness={0}
+            emissive="#ffffff"
+            emissiveIntensity={0.1 * intensity}
+            side={THREE.DoubleSide}
+            envMapIntensity={8}
+          />
+        );
+
+      case 'goldLeaf':
+      case 'GoldLeaf':
+        return (
+          <meshStandardMaterial 
+            color="#ffd700"
+            metalness={1}
+            roughness={0.1}
+            emissive="#ffb300"
+            emissiveIntensity={0.4 * intensity}
+            envMapIntensity={3}
+          />
+        );
+
+      case 'obsidian':
+      case 'Obsidian':
+        return (
+          <meshStandardMaterial 
+            color="#0a0a0a"
+            metalness={0.2}
+            roughness={0.05}
+            emissive="#1a1a1a"
+            emissiveIntensity={0.1 * intensity}
+            envMapIntensity={6}
+          />
+        );
+      
+      case 'opalescent':
+      case 'Opalescent':
+        const opalHue1 = (time * 60) % 360;
+        const opalHue2 = (time * 90 + 120) % 360;
+        const opalHue3 = (time * 45 + 240) % 360;
+        return (
+          <meshStandardMaterial 
+            color={new THREE.Color().setHSL(opalHue1 / 360, 0.7, 0.8)}
+            metalness={0.1}
+            roughness={0.3}
+            emissive={new THREE.Color().setHSL(opalHue2 / 360, 0.8, 0.4)}
+            emissiveIntensity={0.6 + Math.sin(time * 3) * 0.3}
+            envMapIntensity={4 + Math.sin(time * 2) * 2}
+            transparent={true}
+            opacity={0.9}
+          />
+        );
+      
       
       default:
         // Default showcase/monolith material

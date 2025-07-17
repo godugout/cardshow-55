@@ -37,7 +37,19 @@ export type MaterialMode =
   | 'emeraldGem'
   | 'EmeraldGem'
   | 'liquidSwirl'
-  | 'LiquidSwirl';
+  | 'LiquidSwirl'
+  | 'rubyGem'
+  | 'RubyGem'
+  | 'sapphireGem'
+  | 'SapphireGem'
+  | 'diamondGem'
+  | 'DiamondGem'
+  | 'goldLeaf'
+  | 'GoldLeaf'
+  | 'obsidian'
+  | 'Obsidian'
+  | 'opalescent'
+  | 'Opalescent';
 
 export type LightingPreset = 
   | 'studio'
