@@ -82,8 +82,8 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
         <mesh>
           <sphereGeometry args={[1.8, 64, 64]} />
           <meshStandardMaterial 
-            color="#ffdd44"
-            emissive="#ff8800"
+            color="#ffee44"
+            emissive="#ff9900"
             emissiveIntensity={3}
           />
         </mesh>
@@ -92,9 +92,9 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
         <mesh>
           <sphereGeometry args={[2.2, 32, 32]} />
           <meshStandardMaterial 
-            color="#ff4400"
-            emissive="#ff6600"
-            emissiveIntensity={1}
+            color="#ff6600"
+            emissive="#ff7700"
+            emissiveIntensity={1.2}
             transparent
             opacity={0.4}
           />
@@ -104,11 +104,11 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
         <mesh>
           <sphereGeometry args={[3, 32, 32]} />
           <meshStandardMaterial 
-            color="#ffaa00"
-            emissive="#ffaa00"
-            emissiveIntensity={0.3}
+            color="#ffbb00"
+            emissive="#ffcc33"
+            emissiveIntensity={0.4}
             transparent
-            opacity={0.15}
+            opacity={0.18}
           />
         </mesh>
         
@@ -116,9 +116,9 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
         <mesh>
           <sphereGeometry args={[4, 24, 24]} />
           <meshStandardMaterial 
-            color="#ffccaa"
-            emissive="#ffccaa"
-            emissiveIntensity={0.1}
+            color="#fff8e1"
+            emissive="#fff2c7"
+            emissiveIntensity={0.15}
             transparent
             opacity={0.08}
           />
