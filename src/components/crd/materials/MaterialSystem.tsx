@@ -1,6 +1,7 @@
 import React from 'react';
 import * as THREE from 'three';
 import { type MaterialMode } from '../types/CRDTypes';
+import { FluidFoilMaterial } from './FluidFoilMaterial';
 
 interface MaterialSystemProps {
   mode: MaterialMode;
@@ -125,17 +126,7 @@ export const MaterialSystem: React.FC<MaterialSystemProps> = ({
 
       case 'oceanWaves':
       case 'FluidFoil':
-        const waveHue = ((time * 40) % 60) + 180; // Blue to cyan range
-        return (
-          <meshStandardMaterial 
-            color={new THREE.Color().setHSL(waveHue / 360, 0.8, 0.6)}
-            metalness={0.4}
-            roughness={0.1}
-            emissive={new THREE.Color().setHSL((waveHue + 20) / 360, 0.9, 0.3)}
-            emissiveIntensity={0.6 * intensity}
-            envMapIntensity={2.5}
-          />
-        );
+        return <FluidFoilMaterial intensity={intensity} />;
 
       // Original animation-based materials
       case 'ice':
