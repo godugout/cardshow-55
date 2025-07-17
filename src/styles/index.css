@@ -88,6 +88,15 @@
     filter: hue-rotate(80deg) saturate(150%) brightness(125%) contrast(110%);
     transition: filter 0.3s ease;
   }
+  
+  /* Space Odyssey Gradient Classes */
+  .bg-space-odyssey {
+    background: var(--gradient-space-odyssey);
+  }
+  
+  .bg-space-to-purple {
+    background: var(--gradient-space-to-purple);
+  }
 }
   
   /* Animated tagline fonts */

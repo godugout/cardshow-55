@@ -71,6 +71,21 @@
   --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.8));
   --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary) / 0.8));
   --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent) / 0.8));
+  
+  /* Space Odyssey Gradients */
+  --gradient-space-odyssey: linear-gradient(180deg, 
+    hsl(0 0% 0%) 0%, 
+    hsl(0 0% 2%) 25%, 
+    hsl(220 13% 9%) 50%, 
+    hsl(220 15% 12%) 75%, 
+    hsl(262 83% 8%) 90%, 
+    hsl(262 83% 15%) 100%
+  );
+  --gradient-space-to-purple: linear-gradient(180deg, 
+    hsl(220 13% 9%) 0%, 
+    hsl(262 83% 8%) 70%, 
+    hsl(262 83% 15%) 100%
+  );
 
   /* Animation System */
   --transition-fast: 0.15s ease-out;

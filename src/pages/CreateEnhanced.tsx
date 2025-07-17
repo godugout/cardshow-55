@@ -105,9 +105,9 @@ const CreateEnhanced: React.FC = () => {
     );
   }
 
-  // Regular create page with hero section and floating orb
+  // Regular create page with space odyssey theme
   return (
-    <div className="min-h-screen bg-crd-darkest overflow-hidden">
+    <div className="min-h-screen bg-space-odyssey overflow-hidden">
       <div className="h-full w-full overflow-y-auto">
         {/* Full Width Hero Section */}
         <CreatePageHero />
