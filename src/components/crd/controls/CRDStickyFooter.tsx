@@ -72,13 +72,13 @@ export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('animation');
 
-  const animationModes: { id: AnimationMode; name: string }[] = [
-    { id: 'monolith', name: 'Monolith' },
-    { id: 'showcase', name: 'Showcase' },
-    { id: 'ice', name: 'Ice' },
-    { id: 'gold', name: 'Gold' },
-    { id: 'glass', name: 'Glass' },
-    { id: 'holo', name: 'Holo' }
+  const animationModes: { id: AnimationMode; name: string; icon: React.ComponentType<any> }[] = [
+    { id: 'monolith', name: 'Monolith', icon: Zap },
+    { id: 'showcase', name: 'Showcase', icon: Waves },
+    { id: 'ice', name: 'Ice', icon: Sparkles },
+    { id: 'gold', name: 'Gold', icon: Lightbulb },
+    { id: 'glass', name: 'Glass', icon: Package },
+    { id: 'holo', name: 'Holo', icon: Orbit }
   ];
 
   const lightingPresets: { id: LightingPreset; name: string }[] = [
@@ -107,116 +107,99 @@ export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
     <div className="fixed bottom-0 left-0 right-0 z-50">
       {/* Main Toolbar Bar */}
       <div className="bg-background/90 backdrop-blur-md border-t border-white/10 px-6 py-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
           {/* Left: Quick Access Buttons */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 min-w-0 flex-shrink-0">
             {/* Rotation Toggle */}
             <button
               onClick={() => onAutoRotateChange(!autoRotate)}
-              className={`p-2 rounded-lg border transition-all ${
+              className={`flex items-center justify-center w-10 h-10 rounded-lg border transition-all ${
                 autoRotate
                   ? 'border-primary bg-primary/20 text-primary'
                   : 'border-white/20 hover:border-white/40 text-foreground/70'
               }`}
               title={autoRotate ? 'Stop Rotation' : 'Start Rotation'}
             >
-              {autoRotate ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              {autoRotate ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
             </button>
 
             {/* Materials Ring Toggle */}
             <button
               onClick={() => onShowOrbitalRingChange?.(!showOrbitalRing)}
-              className={`p-2 rounded-lg border transition-all ${
+              className={`flex items-center justify-center w-10 h-10 rounded-lg border transition-all ${
                 showOrbitalRing
                   ? 'border-primary bg-primary/20 text-primary'
                   : 'border-white/20 hover:border-white/40 text-foreground/70'
               }`}
               title={showOrbitalRing ? 'Hide Materials Ring' : 'Show Materials Ring'}
             >
-              <Orbit className="w-4 h-4" />
+              <Orbit className="w-5 h-5" />
             </button>
 
             {/* Case Toggle */}
             <button
               onClick={() => onEnableGlassCaseChange?.(!enableGlassCase)}
-              className={`p-2 rounded-lg border transition-all ${
+              className={`flex items-center justify-center w-10 h-10 rounded-lg border transition-all ${
                 enableGlassCase
                   ? 'border-primary bg-primary/20 text-primary'
                   : 'border-white/20 hover:border-white/40 text-foreground/70'
               }`}
               title={enableGlassCase ? 'Remove Case' : 'Add Case'}
             >
-              <Package className="w-4 h-4" />
+              <Package className="w-5 h-5" />
             </button>
 
             {/* Animation Presets */}
-            <div className="h-6 w-px bg-white/20 mx-1"></div>
-            <button
-              onClick={() => handleAnimationPreset('monolith')}
-              className={`p-2 rounded-lg border transition-all ${
-                animationMode === 'monolith'
-                  ? 'border-primary bg-primary/20 text-primary'
-                  : 'border-white/20 hover:border-white/40 text-foreground/70'
-              }`}
-              title="Monolith Animation"
-            >
-              <Zap className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleAnimationPreset('holo')}
-              className={`p-2 rounded-lg border transition-all ${
-                animationMode === 'holo'
-                  ? 'border-primary bg-primary/20 text-primary'
-                  : 'border-white/20 hover:border-white/40 text-foreground/70'
-              }`}
-              title="Holo Animation"
-            >
-              <Sparkles className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleAnimationPreset('showcase')}
-              className={`p-2 rounded-lg border transition-all ${
-                animationMode === 'showcase'
-                  ? 'border-primary bg-primary/20 text-primary'
-                  : 'border-white/20 hover:border-white/40 text-foreground/70'
-              }`}
-              title="Showcase Animation"
-            >
-              <Waves className="w-4 h-4" />
-            </button>
+            <div className="h-8 w-px bg-white/20 mx-2"></div>
+            
+            {/* All 6 Animation Mode Buttons */}
+            {animationModes.slice(0, 6).map((mode) => (
+              <button
+                key={mode.id}
+                onClick={() => handleAnimationPreset(mode.id)}
+                className={`flex items-center justify-center w-10 h-10 rounded-lg border transition-all ${
+                  animationMode === mode.id
+                    ? 'border-primary bg-primary/20 text-primary'
+                    : 'border-white/20 hover:border-white/40 text-foreground/70'
+                }`}
+                title={`${mode.name} Animation`}
+              >
+                <mode.icon className="w-5 h-5" />
+              </button>
+            ))}
           </div>
 
           {/* Center: Condensed Card Info */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-center space-x-4 flex-1 min-w-0">
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-primary rounded-full"></div>
-              <span className="text-sm font-medium">
+              <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+              <span className="text-sm font-medium truncate">
                 {activeStyle?.displayName || 'Unknown'}
               </span>
             </div>
-            <div className="h-4 w-px bg-white/20"></div>
-            <span className="text-sm text-foreground/70">
+            <div className="h-5 w-px bg-white/20 flex-shrink-0"></div>
+            <span className="text-sm text-foreground/70 font-medium">
               {animationMode.toUpperCase()}
             </span>
-            <div className="h-4 w-px bg-white/20"></div>
-            <span className="text-sm text-foreground/70">
+            <div className="h-5 w-px bg-white/20 flex-shrink-0"></div>
+            <span className="text-sm text-foreground/70 capitalize">
               {lightingPreset}
             </span>
-            <div className="h-4 w-px bg-white/20"></div>
+            <div className="h-5 w-px bg-white/20 flex-shrink-0"></div>
             <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse flex-shrink-0"></div>
               <span className="text-xs text-green-300 font-medium">Ready</span>
             </div>
           </div>
 
           {/* Right: Expansion Toggle */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-end min-w-0 flex-shrink-0">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg border border-white/20 hover:border-white/40 text-foreground/70 transition-all"
+              className="flex items-center justify-center w-10 h-10 rounded-lg border border-white/20 hover:border-white/40 text-foreground/70 transition-all"
               title="Advanced Settings"
             >
-              <ChevronUp className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+              <ChevronUp className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
           </div>
         </div>
@@ -255,13 +238,14 @@ export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
                     <button
                       key={mode.id}
                       onClick={() => onAnimationModeChange(mode.id)}
-                      className={`p-4 rounded-lg border-2 transition-all ${
+                      className={`p-4 rounded-lg border-2 transition-all flex flex-col items-center space-y-2 ${
                         animationMode === mode.id
                           ? 'border-primary bg-primary/10 text-primary'
                           : 'border-white/20 hover:border-white/40 text-foreground/80'
                       }`}
                     >
-                      <div className="font-medium">{mode.name}</div>
+                      <mode.icon className="w-6 h-6" />
+                      <div className="font-medium text-sm">{mode.name}</div>
                     </button>
                   ))}
                 </div>
