@@ -27,7 +27,7 @@ export const CreatePageHero: React.FC = () => {
         </div>
         
         {/* Hero Content */}
-        <div className="relative z-10 text-center pb-8 pt-[calc(var(--navbar-height)+60px)] md:pt-[calc(var(--navbar-height)+100px)] lg:pt-[calc(var(--navbar-height)+100px)] min-h-screen lg:h-auto flex flex-col justify-center">
+        <div className="relative z-10 text-center pb-8 pt-[calc(var(--navbar-height)+60px)] md:pt-[calc(var(--navbar-height)+100px)] lg:pt-[calc(var(--navbar-height)+100px)] min-h-screen lg:h-auto flex flex-col justify-center lg:justify-start">
           <div className="w-full px-4 sm:px-6 lg:px-8">
             {/* Label */}
             <div className="mb-6 gradient-text-green-blue-purple font-bold tracking-wider text-sm uppercase">

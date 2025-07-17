@@ -10,7 +10,7 @@ const CardMonolith: React.FC = () => {
   useFrame((state) => {
     if (cardRef.current) {
       // Position the card in the lower portion of the screen
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
+      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 3.5;
       
       // Tilt the card towards the sun with flying motion
       const tiltAngle = -0.4 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1; // Base tilt + gentle sway
