@@ -3,7 +3,7 @@ import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
-type AnimationMode = 'frozen' | 'subtle' | 'active' | 'showcase';
+type AnimationMode = 'frozen' | 'showcase';
 
 interface FloatingCardProps {
   mode: AnimationMode;
@@ -19,13 +19,6 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
     const time = state.clock.elapsedTime;
     const factor = intensity;
     
-    // Glass case dimensions: [2.6, 3.6, 0.32]
-    // Card dimensions: [2.3, 3.3, 0.1]
-    // Safe movement bounds: X: ±0.15, Y: ±0.15, Z: ±0.11
-    const maxX = 0.15;
-    const maxY = 0.15;
-    const maxZ = 0.11;
-    
     switch (mode) {
       case 'frozen':
         // Perfectly centered and still
@@ -33,24 +26,8 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         cardRef.current.rotation.set(0, 0, 0);
         break;
         
-      case 'subtle':
-        // Gentle breathing motion - constrained within case
-        cardRef.current.position.y = Math.sin(time * 0.5) * (maxY * 0.3) * factor;
-        cardRef.current.position.z = Math.sin(time * 0.3) * (maxZ * 0.2) * factor;
-        cardRef.current.rotation.z = Math.sin(time * 0.3) * 0.005 * factor;
-        break;
-        
-      case 'active':
-        // Dynamic floating - still constrained within case
-        cardRef.current.position.y = Math.sin(time * 0.8) * (maxY * 0.6) * factor;
-        cardRef.current.position.x = Math.sin(time * 0.6) * (maxX * 0.5) * factor;
-        cardRef.current.position.z = Math.sin(time * 0.4) * (maxZ * 0.4) * factor;
-        cardRef.current.rotation.y = Math.sin(time * 0.4) * 0.02 * factor;
-        cardRef.current.rotation.z = Math.sin(time * 0.7) * 0.01 * factor;
-        break;
-        
       case 'showcase':
-        // Dramatic effects - can break boundaries for demo
+        // Dramatic effects demonstration
         cardRef.current.position.y = Math.sin(time * 1.2) * 0.08 * factor;
         cardRef.current.position.x = Math.sin(time * 0.9) * 0.06 * factor;
         cardRef.current.rotation.y = time * 0.3 * factor;
@@ -262,14 +239,14 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ mode, intensity }) => {
 };
 
 export const FloatingCard3D: React.FC = () => {
-  const [currentMode, setCurrentMode] = useState<AnimationMode>('subtle');
+  const [currentMode, setCurrentMode] = useState<AnimationMode>('frozen');
   const [currentIntensity, setCurrentIntensity] = useState(1);
 
   // Auto-cycle through modes for demo
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentMode(prev => {
-        const modes: AnimationMode[] = ['frozen', 'subtle', 'active', 'showcase'];
+        const modes: AnimationMode[] = ['frozen', 'showcase'];
         const currentIndex = modes.indexOf(prev);
         return modes[(currentIndex + 1) % modes.length];
       });
@@ -334,7 +311,7 @@ export const FloatingCard3D: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="text-white text-sm font-medium">Animation Mode:</span>
               <div className="flex gap-1">
-                {(['frozen', 'subtle', 'active', 'showcase'] as AnimationMode[]).map(mode => (
+                {(['frozen', 'showcase'] as AnimationMode[]).map(mode => (
                   <button
                     key={mode}
                     onClick={() => setCurrentMode(mode)}
