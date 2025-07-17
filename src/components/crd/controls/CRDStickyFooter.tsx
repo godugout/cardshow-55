@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Settings, ChevronUp, X } from 'lucide-react';
-import { CRDControlPanel } from './CRDControlPanel';
-import { type AnimationMode, type LightingPreset } from '../types/CRDTypes';
+import { Play, RotateCw, Palette, ChevronUp, X, Square } from 'lucide-react';
+import { CRDVisualStyles } from '../styles/StyleRegistry';
+import { type AnimationMode } from '../types/CRDTypes';
 
 interface CRDStickyFooterProps {
   // Animation Settings
@@ -19,26 +19,42 @@ interface CRDStickyFooterProps {
   rotationSpeed: number;
   onAutoRotateChange: (enabled: boolean) => void;
   onRotationSpeedChange: (speed: number) => void;
-  
-  // Lighting Settings  
-  lightingPreset: LightingPreset;
-  lightingIntensity: number;
-  onLightingPresetChange: (preset: LightingPreset) => void;
-  onLightingIntensityChange: (intensity: number) => void;
 }
 
-export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = (props) => {
+type DrawerHeight = 'collapsed' | 'small' | 'medium' | 'large';
+
+export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
+  animationMode,
+  selectedStyleId,
+  autoRotate,
+  rotationSpeed,
+  onAnimationModeChange,
+  onStyleChange,
+  onAutoRotateChange,
+  onRotationSpeedChange
+}) => {
   const [isVisible, setIsVisible] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [drawerHeight, setDrawerHeight] = useState<DrawerHeight>('collapsed');
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleToggleExpanded = () => {
-    setIsExpanded(!isExpanded);
+  // Pre-orchestrated animations
+  const animations: { mode: AnimationMode; name: string; icon: any }[] = [
+    { mode: 'monolith', name: 'Static', icon: Square },
+    { mode: 'showcase', name: 'Showcase', icon: Play },
+    { mode: 'holo', name: 'Holographic', icon: Play },
+    { mode: 'ice', name: 'Ice Float', icon: Play },
+    { mode: 'gold', name: 'Gold Shimmer', icon: Play },
+    { mode: 'glass', name: 'Crystal', icon: Play }
+  ];
+
+  const heightMap = {
+    collapsed: 'h-16',
+    small: 'h-32', 
+    medium: 'h-48',
+    large: 'h-64'
   };
 
-  const handleClose = () => {
-    setIsVisible(false);
-  };
+  const shouldShow = isVisible && (isHovered || drawerHeight !== 'collapsed');
 
   if (!isVisible) {
     return (
@@ -46,82 +62,167 @@ export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = (props) => {
         onClick={() => setIsVisible(true)}
         className="fixed bottom-4 right-4 z-50 p-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
       >
-        <Settings className="w-5 h-5" />
+        <Palette className="w-5 h-5" />
       </button>
     );
   }
 
   return (
-    <>
-      {/* Expanded Overlay */}
-      {isExpanded && (
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-          onClick={() => setIsExpanded(false)}
-        />
-      )}
+    <div 
+      className={`
+        fixed bottom-0 left-0 right-0 z-50 
+        bg-card/95 backdrop-blur-md border-t border-border shadow-2xl
+        transform transition-all duration-300 ease-out
+        ${shouldShow ? 'translate-y-0' : 'translate-y-12'}
+        ${heightMap[drawerHeight]}
+      `}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Header Bar - Always Visible */}
+      <div className="h-16 flex items-center justify-between px-4 border-b border-border/50">
+        {/* Quick Status */}
+        <div className="flex items-center gap-4 text-sm">
+          <span className="font-medium text-foreground">
+            {animationMode.charAt(0).toUpperCase() + animationMode.slice(1)}
+          </span>
+          <span className="text-muted-foreground">•</span>
+          <span className="text-muted-foreground">
+            {CRDVisualStyles.find(s => s.id === selectedStyleId)?.displayName || selectedStyleId}
+          </span>
+          {autoRotate && (
+            <>
+              <span className="text-muted-foreground">•</span>
+              <span className="text-green-500 text-xs">Rotating</span>
+            </>
+          )}
+        </div>
 
-      {/* Sticky Footer */}
-      <div 
-        className={`
-          fixed bottom-0 left-0 right-0 z-50 
-          transform transition-all duration-300 ease-out
-          ${isHovered || isExpanded ? 'translate-y-0' : 'translate-y-12'}
-        `}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {/* Expanded Panel */}
-        {isExpanded && (
-          <div className="absolute bottom-full left-4 right-4 mb-2 max-w-4xl mx-auto">
-            <CRDControlPanel
-              {...props}
-              className="shadow-2xl border-2 border-primary/20"
-            />
-          </div>
-        )}
-
-        {/* Footer Bar */}
-        <div className="bg-card/95 backdrop-blur-md border-t border-border shadow-2xl">
-          <div className="max-w-4xl mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
-              {/* Quick Status */}
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">
-                  {props.animationMode.charAt(0).toUpperCase() + props.animationMode.slice(1)}
-                </span>
-                <span>•</span>
-                <span>{props.selectedStyleId}</span>
-                <span>•</span>
-                <span>
-                  {props.lightingPreset.split('-').map(word => 
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                  ).join(' ')}
-                </span>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleToggleExpanded}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-md transition-colors"
-                >
-                  <Settings className="w-4 h-4" />
-                  <span className="hidden sm:inline">Controls</span>
-                  <ChevronUp className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                </button>
-                
-                <button
-                  onClick={handleClose}
-                  className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
+        {/* Header Controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setDrawerHeight(drawerHeight === 'large' ? 'collapsed' : 'large')}
+            className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted rounded-md transition-colors"
+          >
+            <Palette className="w-4 h-4" />
+            <span className="hidden sm:inline">Controls</span>
+            <ChevronUp className={`w-4 h-4 transition-transform ${drawerHeight !== 'collapsed' ? 'rotate-180' : ''}`} />
+          </button>
+          
+          <button
+            onClick={() => setIsVisible(false)}
+            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       </div>
-    </>
+
+      {/* Expandable Content */}
+      {drawerHeight !== 'collapsed' && (
+        <div className="flex-1 overflow-auto p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Animation Controls */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold flex items-center gap-2">
+                <Play className="w-4 h-4" />
+                Animations
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                {animations.map((anim) => (
+                  <button
+                    key={anim.mode}
+                    onClick={() => onAnimationModeChange(anim.mode)}
+                    className={`
+                      p-2 text-xs rounded-md border transition-all duration-200
+                      ${animationMode === anim.mode 
+                        ? 'bg-primary text-primary-foreground border-primary' 
+                        : 'bg-muted/50 hover:bg-muted border-border'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center gap-1 justify-center">
+                      <anim.icon className="w-3 h-3" />
+                      <span>{anim.name}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Rotation Controls */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold flex items-center gap-2">
+                <RotateCw className="w-4 h-4" />
+                Rotation
+              </h3>
+              <div className="space-y-2">
+                <button
+                  onClick={() => onAutoRotateChange(!autoRotate)}
+                  className={`
+                    w-full p-2 text-sm rounded-md border transition-all duration-200
+                    ${autoRotate 
+                      ? 'bg-green-500 text-white border-green-500' 
+                      : 'bg-muted/50 hover:bg-muted border-border'
+                    }
+                  `}
+                >
+                  {autoRotate ? 'Stop Rotation' : 'Auto Rotate'}
+                </button>
+                
+                {autoRotate && (
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground">Speed</label>
+                    <input
+                      type="range"
+                      min="0.1"
+                      max="2"
+                      step="0.1"
+                      value={rotationSpeed}
+                      onChange={(e) => onRotationSpeedChange(parseFloat(e.target.value))}
+                      className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                    />
+                    <div className="text-xs text-muted-foreground text-center">{rotationSpeed.toFixed(1)}x</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Material Selection */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold flex items-center gap-2">
+                <Palette className="w-4 h-4" />
+                Materials
+              </h3>
+              <div className="grid grid-cols-2 gap-2 max-h-32 overflow-auto">
+                {CRDVisualStyles.map((style) => (
+                  <button
+                    key={style.id}
+                    onClick={() => onStyleChange(style.id)}
+                    disabled={style.locked}
+                    className={`
+                      p-2 text-xs rounded-md border transition-all duration-200 text-left
+                      ${selectedStyleId === style.id 
+                        ? 'bg-primary text-primary-foreground border-primary' 
+                        : style.locked
+                        ? 'bg-muted/30 text-muted-foreground border-muted cursor-not-allowed'
+                        : 'bg-muted/50 hover:bg-muted border-border'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="truncate">{style.displayName}</span>
+                      {style.locked && <span className="text-xs">🔒</span>}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+    </div>
   );
 };

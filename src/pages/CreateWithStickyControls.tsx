@@ -38,7 +38,7 @@ const CreateWithStickyControls = () => {
         onIntensityChange={setAnimationIntensity}
       />
 
-      {/* Sticky Footer Controls */}
+      {/* Simplified Sticky Footer Controls */}
       <CRDStickyFooter
         animationMode={animationMode}
         animationIntensity={animationIntensity}
@@ -50,10 +50,6 @@ const CreateWithStickyControls = () => {
         rotationSpeed={rotationSpeed}
         onAutoRotateChange={setAutoRotate}
         onRotationSpeedChange={setRotationSpeed}
-        lightingPreset={lightingPreset}
-        lightingIntensity={lightingIntensity}
-        onLightingPresetChange={setLightingPreset}
-        onLightingIntensityChange={setLightingIntensity}
       />
     </div>
   );
