@@ -19,10 +19,11 @@ export const OrbitalMaterialSystem: React.FC<OrbitalMaterialSystemProps> = ({
   );
 
   const handleStyleChange = useCallback((style: CRDVisualStyle) => {
-    if (!style.locked && style.id !== selectedStyleId) {
+    console.log('🌟 Orbital System: Style change requested:', style.displayName, 'ID:', style.id);
+    if (style.id !== selectedStyleId) {
       setCurrentStyle(style);
       onStyleChange(style.id);
-      console.log('🎨 Orbital system changed style to:', style.displayName);
+      console.log('✅ Orbital system changed style to:', style.displayName);
     }
   }, [selectedStyleId, onStyleChange]);
 

@@ -235,7 +235,58 @@ export const MaterialSystem: React.FC<MaterialSystemProps> = ({
             roughness={0.6}
             emissive="#3d1a00"
             emissiveIntensity={0.1 * intensity}
-            envMapIntensity={0.8}
+          envMapIntensity={0.8}
+          />
+        );
+
+      // New Premium Materials
+      case 'woodGrain':
+      case 'WoodGrain':
+        return (
+          <meshStandardMaterial 
+            color="#8b4513"
+            metalness={0}
+            roughness={0.9}
+            emissive="#5d2f0a"
+            emissiveIntensity={0.05 * intensity}
+            envMapIntensity={0.3}
+          />
+        );
+
+      case 'spectralPrism':
+      case 'SpectralPrism':
+        const spectrumHue = (time * 120) % 360;
+        const spectrum2 = (time * 100 + 120) % 360;
+        const spectrum3 = (time * 80 + 240) % 360;
+        return (
+          <meshStandardMaterial 
+            color={new THREE.Color().setHSL(spectrumHue / 360, 1, 0.6)}
+            metalness={0.3}
+            roughness={0.1}
+            emissive={new THREE.Color().setHSL(spectrum2 / 360, 1, 0.4)}
+            emissiveIntensity={1.5 * intensity}
+            envMapIntensity={6}
+          />
+        );
+
+      case 'emeraldGem':
+      case 'EmeraldGem':
+        return (
+          <meshPhysicalMaterial
+            color="#50c878"
+            metalness={0}
+            roughness={0}
+            transmission={0.7}
+            transparent={true}
+            opacity={0.8}
+            thickness={0.3}
+            ior={1.57} // Emerald IOR
+            clearcoat={1}
+            clearcoatRoughness={0}
+            emissive="#228b22"
+            emissiveIntensity={0.2 * intensity}
+            side={THREE.DoubleSide}
+            envMapIntensity={4}
           />
         );
       

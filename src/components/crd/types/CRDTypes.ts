@@ -28,7 +28,14 @@ export type MaterialMode =
   | 'vintageBoil'
   | 'AgedFoil'
   | 'oceanWaves'
-  | 'FluidFoil';
+  | 'FluidFoil'
+  // New Materials
+  | 'woodGrain'
+  | 'WoodGrain'
+  | 'spectralPrism'
+  | 'SpectralPrism'
+  | 'emeraldGem'
+  | 'EmeraldGem';
 
 export type LightingPreset = 
   | 'studio'

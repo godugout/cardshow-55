@@ -89,8 +89,8 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   };
 
   const handleStyleChange = (styleId: string) => {
+    console.log('🎨 CRD Viewer: Style changing from', selectedStyleId, 'to:', styleId);
     setSelectedStyleId(styleId);
-    console.log('🎨 CRD Viewer: Style changed to:', styleId);
   };
 
   // Track card rotation for orbital system

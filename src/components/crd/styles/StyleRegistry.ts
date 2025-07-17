@@ -190,6 +190,70 @@ export const CRDVisualStyles: CRDVisualStyle[] = [
       particleCount: 120,
       shaderComplexity: 7
     }
+  },
+
+  // New Materials
+  {
+    id: 'woodGrain',
+    displayName: 'Wood Grain',
+    locked: false,
+    isActive: false,
+    category: 'material',
+    baseMaterial: 'WoodGrain',
+    textureProfile: 'WoodTexture',
+    lighting: 'WarmHDR',
+    uiPreviewGradient: 'linear-gradient(135deg, #8b4513, #a0522d, #cd853f)',
+    visualVibe: 'Natural & warm',
+    unlockMethod: 'free',
+    performance: {
+      renderCost: 'medium',
+      particleCount: 0,
+      shaderComplexity: 3
+    }
+  },
+  {
+    id: 'spectralPrism',
+    displayName: 'Spectral Prism',
+    locked: true,
+    isActive: false,
+    category: 'premium',
+    baseMaterial: 'SpectralPrism',
+    secondaryFinish: 'RainbowFlow',
+    textureProfile: 'FluidSpectrum',
+    particleEffect: 'ColorSwirls',
+    lighting: 'PrismaticHDR',
+    animationProfile: 'LavaLampFlow',
+    uiPreviewGradient: 'linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #00ff00, #0080ff, #8000ff, #ff00ff)',
+    visualVibe: 'Hypnotic & mesmerizing',
+    unlockMethod: 'premium',
+    unlockCost: 1200,
+    performance: {
+      renderCost: 'high',
+      particleCount: 200,
+      shaderComplexity: 10
+    }
+  },
+  {
+    id: 'emeraldGem',
+    displayName: 'Emerald Gem',
+    locked: true,
+    isActive: false,
+    category: 'premium',
+    baseMaterial: 'EmeraldGem',
+    secondaryFinish: 'GemCuts',
+    textureProfile: 'CrystalFacets',
+    particleEffect: 'EmeraldSparkle',
+    lighting: 'JewelHDR',
+    animationProfile: 'GemShine',
+    uiPreviewGradient: 'linear-gradient(135deg, #50c878, #228b22, #00ff7f)',
+    visualVibe: 'Precious & luxurious',
+    unlockMethod: 'points',
+    unlockCost: 900,
+    performance: {
+      renderCost: 'medium',
+      particleCount: 80,
+      shaderComplexity: 6
+    }
   }
 ];
 

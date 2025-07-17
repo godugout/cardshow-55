@@ -80,7 +80,8 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   });
 
   const handleSatelliteClick = (style: CRDVisualStyle) => {
-    // Allow selection of locked styles for demo purposes
+    console.log('🎯 Satellite clicked:', style.displayName, 'ID:', style.id);
+    // Allow selection of any style for demo purposes
     onStyleChange(style);
   };
 
