@@ -264,7 +264,7 @@ const CardMonolith: React.FC = () => {
 
 export const FloatingCard3D: React.FC = () => {
   return (
-    <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative pointer-events-none">
+    <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
       {/* Matching star field for seamless integration */}
       <div className="absolute inset-0 pointer-events-none">
         {Array.from({ length: 100 }).map((_, i) => {
@@ -290,12 +290,26 @@ export const FloatingCard3D: React.FC = () => {
         })}
       </div>
       
+      {/* Interaction zone overlay - only this area captures mouse events */}
+      <div 
+        className="absolute z-10 pointer-events-none"
+        style={{
+          top: '30%',
+          right: '10%',
+          width: '400px',
+          height: '400px',
+          transform: 'translate(50%, -50%)',
+          border: '2px solid rgba(255,255,255,0.1)',
+          borderRadius: '8px',
+          pointerEvents: 'auto'
+        }}
+      />
+      
       {/* Full-screen 3D Canvas */}
       <Canvas
         camera={{ position: [0, 0, 15], fov: 75 }}
         gl={{ antialias: true, alpha: true }}
         scene={{ background: null }}
-        className="pointer-events-none"
         style={{ 
           position: 'absolute',
           top: '0',
@@ -309,47 +323,24 @@ export const FloatingCard3D: React.FC = () => {
         
         <CardMonolith />
         
+        <OrbitControls
+          enableZoom={true}
+          enablePan={false}
+          enableRotate={true}
+          autoRotate={false}
+          target={[2, -1, 0]}
+          enableDamping={true}
+          dampingFactor={0.05}
+          maxPolarAngle={Math.PI * 0.8}
+          minPolarAngle={Math.PI * 0.2}
+          minDistance={10}
+          maxDistance={25}
+          zoomSpeed={0.5}
+        />
+        
         {/* Deep space fog */}
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
-      
-      {/* Limited interaction zone - 3x3 grid around card area */}
-      <div 
-        className="absolute pointer-events-auto"
-        style={{
-          top: '35%',
-          right: '15%',
-          width: '300px',
-          height: '300px',
-          transform: 'translate(50%, -50%)'
-        }}
-      >
-        <Canvas
-          camera={{ position: [0, 0, 15], fov: 75 }}
-          gl={{ antialias: true, alpha: true }}
-          scene={{ background: null }}
-          style={{ 
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'auto'
-          }}
-        >
-          <OrbitControls
-            enableZoom={true}
-            enablePan={false}
-            enableRotate={true}
-            autoRotate={false}
-            target={[2, -1, 0]}
-            enableDamping={true}
-            dampingFactor={0.05}
-            maxPolarAngle={Math.PI * 0.8}
-            minPolarAngle={Math.PI * 0.2}
-            minDistance={10}
-            maxDistance={25}
-            zoomSpeed={0.5}
-          />
-        </Canvas>
-      </div>
     </div>
   );
 };
