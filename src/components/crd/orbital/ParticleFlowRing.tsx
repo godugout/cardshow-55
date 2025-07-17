@@ -57,14 +57,14 @@ const vertexShader = `
       vLightning = lightningFactor * sin(time * 8.0 + particleAngle * 3.0) * 0.3 + 0.3;
       
       // Mix colors based on wave
-      float angle = particleAngle + (isPaused ? 0.0 : time * flowSpeed * 0.2);
+      float angle = particleAngle + time * flowSpeed * 0.2;
       float gradientFactor = (sin(angle) + 1.0) * 0.5;
       vec3 originalColor = mix(orangeColor, blueColor, gradientFactor);
       baseColor = mix(originalColor, waveColor, waveFactor);
     } else {
       vLightning = 0.0;
       // Original gradient
-      float angle = particleAngle + (isPaused ? 0.0 : time * flowSpeed * 0.2);
+      float angle = particleAngle + time * flowSpeed * 0.2;
       float gradientFactor = (sin(angle) + 1.0) * 0.5;
       baseColor = mix(orangeColor, blueColor, gradientFactor);
     }
