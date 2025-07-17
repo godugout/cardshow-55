@@ -54,7 +54,7 @@ export const CreatePageHero: React.FC = () => {
       />
       
       {/* Hero Content Overlay */}
-      <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
+      <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)] pointer-events-none">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           {/* Label */}
           <div className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-sm uppercase">
@@ -76,27 +76,27 @@ export const CreatePageHero: React.FC = () => {
              </h1>
           </div>
           
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center my-12">
-            <Link to="/create/crd">
-              <CRDButton 
-                size="lg" 
-                variant="create"
-                className="min-w-[200px]"
-              >
-                Start Creating
-              </CRDButton>
-            </Link>
-            <Link to="/templates">
-              <CRDButton 
-                variant="outline" 
-                size="lg" 
-                className="min-w-[200px]"
-              >
-                Browse Templates
-              </CRDButton>
-            </Link>
-          </div>
+           {/* CTA Buttons */}
+           <div className="flex flex-col sm:flex-row gap-4 justify-center my-12 pointer-events-auto">
+             <Link to="/create/crd">
+               <CRDButton 
+                 size="lg" 
+                 variant="create"
+                 className="min-w-[200px]"
+               >
+                 Start Creating
+               </CRDButton>
+             </Link>
+             <Link to="/templates">
+               <CRDButton 
+                 variant="outline" 
+                 size="lg" 
+                 className="min-w-[200px]"
+               >
+                 Browse Templates
+               </CRDButton>
+             </Link>
+           </div>
           
           {/* Animated Tagline */}
           <AnimatedTagline />
