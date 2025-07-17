@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { OrbitControls, Text } from '@react-three/drei';
+import { OrbitControls, Text, Environment, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 type AnimationMode = 'frozen' | 'showcase' | 'ice' | 'gold' | 'glass' | 'holo';
@@ -83,62 +83,73 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
     effectsLayerRef.current.rotation.set(rotX, rotY, rotZ);
   });
 
-  // Dynamic material based on mode
+  // Create advanced materials
   const getCardMaterial = () => {
+    const time = Date.now() * 0.001;
+    
     switch (mode) {
       case 'ice':
         return (
           <meshPhysicalMaterial
-            color="#87ceeb"
+            color="#e6f3ff"
             metalness={0}
             roughness={0}
-            transmission={0.9}
+            transmission={0.98}
             transparent={true}
-            opacity={0.3}
-            thickness={0.1}
-            ior={1.33}
+            opacity={0.4}
+            thickness={0.2}
+            ior={1.309}
             clearcoat={1}
             clearcoatRoughness={0}
+            emissive="#cce7ff"
+            emissiveIntensity={0.05}
+            side={THREE.DoubleSide}
           />
         );
       
       case 'gold':
         return (
           <meshStandardMaterial 
-            color="#ffef94"
+            color="#ffed4e"
             metalness={1}
-            roughness={0.05}
-            emissive="#ffd700"
-            emissiveIntensity={0.3}
+            roughness={0.02}
+            emissive="#ff9500"
+            emissiveIntensity={0.4}
+            envMapIntensity={2}
           />
         );
       
       case 'glass':
         return (
           <meshPhysicalMaterial
-            color="#87ceeb"
+            color="#e6f7ff"
             metalness={0}
             roughness={0}
-            transmission={0.95}
+            transmission={0.99}
             transparent={true}
-            opacity={0.8}
-            thickness={0.1}
-            ior={2.42}
+            opacity={0.6}
+            thickness={0.15}
+            ior={2.417}
             clearcoat={1}
             clearcoatRoughness={0}
-            emissive="#add8e6"
-            emissiveIntensity={0.1}
+            emissive="#b3e0ff"
+            emissiveIntensity={0.08}
+            side={THREE.DoubleSide}
+            envMapIntensity={3}
           />
         );
       
       case 'holo':
+        const hue = (time * 50) % 360;
+        const emissiveHue = (time * 70) % 360;
         return (
           <meshStandardMaterial 
-            color={`hsl(${(Date.now() * 0.01) % 360}, 80%, 60%)`}
-            metalness={0.8}
-            roughness={0.2}
-            emissive={`hsl(${(Date.now() * 0.02) % 360}, 70%, 30%)`}
-            emissiveIntensity={0.5}
+            color={new THREE.Color().setHSL(hue / 360, 0.8, 0.6)}
+            metalness={1}
+            roughness={0.1}
+            emissive={new THREE.Color().setHSL(emissiveHue / 360, 0.9, 0.4)}
+            emissiveIntensity={0.8}
+            envMapIntensity={4}
           />
         );
       
@@ -150,6 +161,7 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
             roughness={0.1}
             emissive="#0f0f2a"
             emissiveIntensity={mode === 'showcase' ? 0.3 : 0.05}
+            envMapIntensity={1.5}
           />
         );
     }
@@ -172,17 +184,18 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         {getCardMaterial()}
       </mesh>
       
-      {/* Effects layer for showcase and holo modes */}
+      {/* Advanced Effects Layer */}
       <mesh ref={effectsLayerRef} visible={mode === 'showcase' || mode === 'holo'}>
         <planeGeometry args={[2.25, 3.25]} />
         <meshStandardMaterial 
-          color={mode === 'holo' ? `hsl(${(Date.now() * 0.03) % 360}, 90%, 70%)` : "#ff6b6b"}
+          color={mode === 'holo' ? new THREE.Color().setHSL(((Date.now() * 0.003) % 360) / 360, 0.9, 0.7) : "#ff6b6b"}
           metalness={mode === 'holo' ? 1 : 0.8}
-          roughness={mode === 'holo' ? 0 : 0.2}
+          roughness={mode === 'holo' ? 0.05 : 0.2}
           transparent
-          opacity={mode === 'holo' ? 0.8 : 0.7}
-          emissive={mode === 'holo' ? `hsl(${(Date.now() * 0.04) % 360}, 80%, 40%)` : "#ff3333"}
-          emissiveIntensity={mode === 'holo' ? 0.6 : 0.4}
+          opacity={mode === 'holo' ? 0.9 : 0.7}
+          emissive={mode === 'holo' ? new THREE.Color().setHSL(((Date.now() * 0.004) % 360) / 360, 0.8, 0.4) : "#ff3333"}
+          emissiveIntensity={mode === 'holo' ? 1.0 : 0.4}
+          envMapIntensity={mode === 'holo' ? 3 : 1}
         />
       </mesh>
     </group>
@@ -423,11 +436,36 @@ export const FloatingCard3D: React.FC = () => {
       </div>
       <Canvas
         camera={{ position: [0, 0, 15], fov: 60 }}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ 
+          antialias: true, 
+          alpha: true,
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.2
+        }}
         scene={{ background: null }}
       >
-        {/* Minimal ambient space lighting */}
-        <ambientLight intensity={0.02} color="#000033" />
+        {/* Advanced Lighting Setup */}
+        <Environment preset="studio" />
+        
+        {/* Key Light */}
+        <directionalLight
+          position={[10, 10, 5]}
+          intensity={2}
+          color="#ffffff"
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+        />
+        
+        {/* Rim Light */}
+        <directionalLight
+          position={[-5, 5, -5]}
+          intensity={1}
+          color="#87ceeb"
+        />
+        
+        {/* Fill Light */}
+        <ambientLight intensity={0.3} color="#f0f8ff" />
         
         <CardMonolith mode={currentMode} intensity={currentIntensity} />
         
