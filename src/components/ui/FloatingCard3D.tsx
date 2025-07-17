@@ -1,34 +1,91 @@
-import React, { useRef, useMemo } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
+import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
-const CardMonolith: React.FC = () => {
+const CardMonolith: React.FC<{ onInactivity: boolean }> = ({ onInactivity }) => {
   const cardRef = useRef<THREE.Group>(null);
   const sunRef = useRef<THREE.Group>(null);
+  const { camera } = useThree();
+  const [animationStartTime, setAnimationStartTime] = useState<number | null>(null);
   
   useFrame((state) => {
+    // Start animation tracking when inactivity is detected
+    if (onInactivity && animationStartTime === null) {
+      setAnimationStartTime(state.clock.elapsedTime);
+    }
+    
+    // Reset animation when activity resumes
+    if (!onInactivity && animationStartTime !== null) {
+      setAnimationStartTime(null);
+    }
+    
     if (cardRef.current) {
-      // Position the card in the lower portion of the screen
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
-      
-      // Tilt the card towards the sun with flying motion
-      const tiltAngle = -0.4 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1; // Base tilt + gentle sway
-      cardRef.current.rotation.x = tiltAngle;
-      cardRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.05; // Subtle roll
+      if (onInactivity && animationStartTime !== null) {
+        // Animation sequence after 3 seconds of inactivity
+        const animationTime = state.clock.elapsedTime - animationStartTime;
+        const duration = 5; // 5 second animation
+        const progress = Math.min(animationTime / duration, 1);
+        
+        // Smooth easing function
+        const eased = 1 - Math.pow(1 - progress, 3);
+        
+        // Move card around in dynamic motion
+        const motionAmplitude = 3;
+        cardRef.current.position.x = Math.sin(animationTime * 0.8) * motionAmplitude * (1 - eased * 0.5);
+        cardRef.current.position.y = Math.cos(animationTime * 0.6) * motionAmplitude * 0.7 * (1 - eased * 0.5);
+        cardRef.current.position.z = eased * 8; // Move closer for zoom effect
+        
+        // Dynamic rotation for dramatic effect
+        cardRef.current.rotation.x = Math.sin(animationTime * 0.5) * 0.3;
+        cardRef.current.rotation.y = animationTime * 0.4;
+        cardRef.current.rotation.z = Math.cos(animationTime * 0.7) * 0.2;
+        
+        // Camera zoom and repositioning
+        const targetX = 6; // Halfway across horizontal position
+        const targetZ = 3; // Zoomed in position
+        
+        camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetX, eased * 0.02);
+        camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, eased * 0.02);
+        
+        // Look at the moving card
+        camera.lookAt(cardRef.current.position);
+      } else {
+        // Normal idle animation
+        cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
+        cardRef.current.position.x = 0;
+        cardRef.current.position.z = 0;
+        
+        // Tilt the card towards the sun with flying motion
+        const tiltAngle = -0.4 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
+        cardRef.current.rotation.x = tiltAngle;
+        cardRef.current.rotation.y = 0;
+        cardRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.05;
+      }
     }
     
     if (sunRef.current) {
-      // Subtle sun rotation and pulsing
-      sunRef.current.rotation.z = state.clock.elapsedTime * 0.1;
-      const pulse = Math.sin(state.clock.elapsedTime * 2) * 0.1 + 1;
-      sunRef.current.scale.setScalar(pulse);
+      if (onInactivity && animationStartTime !== null) {
+        // Enhanced sun motion during animation
+        const animationTime = state.clock.elapsedTime - animationStartTime;
+        sunRef.current.rotation.z = animationTime * 0.3;
+        sunRef.current.position.x = Math.sin(animationTime * 0.2) * 2;
+        sunRef.current.position.y = 2 + Math.cos(animationTime * 0.15) * 1;
+        const pulse = Math.sin(animationTime * 3) * 0.2 + 1.2;
+        sunRef.current.scale.setScalar(pulse);
+      } else {
+        // Normal sun behavior
+        sunRef.current.rotation.z = state.clock.elapsedTime * 0.1;
+        sunRef.current.position.x = 0;
+        sunRef.current.position.y = 2;
+        const pulse = Math.sin(state.clock.elapsedTime * 2) * 0.1 + 1;
+        sunRef.current.scale.setScalar(pulse);
+      }
     }
   });
 
   return (
     <>
-      
       {/* Obsidian Monolith in Glass Case */}
       <group ref={cardRef} position={[0, 0, 0]}>
         {/* Obsidian monolith - centered and clean */}
@@ -183,6 +240,37 @@ const CardMonolith: React.FC = () => {
 };
 
 export const FloatingCard3D: React.FC = () => {
+  const [isInactive, setIsInactive] = useState(false);
+  const [lastActivity, setLastActivity] = useState(Date.now());
+  
+  useEffect(() => {
+    const handleActivity = () => {
+      setLastActivity(Date.now());
+      setIsInactive(false);
+    };
+    
+    // Track mouse movement, clicks, scrolling
+    const events = ['mousemove', 'mousedown', 'click', 'scroll', 'wheel', 'keydown'];
+    events.forEach(event => {
+      document.addEventListener(event, handleActivity);
+    });
+    
+    // Check for inactivity every second
+    const inactivityTimer = setInterval(() => {
+      const now = Date.now();
+      if (now - lastActivity > 3000) { // 3 seconds of inactivity
+        setIsInactive(true);
+      }
+    }, 1000);
+    
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleActivity);
+      });
+      clearInterval(inactivityTimer);
+    };
+  }, [lastActivity]);
+
   return (
     <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
       {/* Matching star field for seamless integration */}
@@ -217,7 +305,7 @@ export const FloatingCard3D: React.FC = () => {
         {/* Minimal ambient space lighting */}
         <ambientLight intensity={0.02} color="#000033" />
         
-        <CardMonolith />
+        <CardMonolith onInactivity={isInactive} />
         
         <OrbitControls
           enableZoom={true}
