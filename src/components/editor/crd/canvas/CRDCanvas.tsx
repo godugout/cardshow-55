@@ -3,7 +3,7 @@ import { CRDCanvasGrid } from './CRDCanvasGrid';
 import { CRDToolbar } from '../toolbar/CRDToolbar';
 import { ToolbarHotZone } from '../toolbar/ToolbarHotZone';
 import { CRDFrameRenderer } from '../frame/CRDFrameRenderer';
-import { CRDBottomToolbar } from './CRDBottomToolbar';
+import { CRDBottomInfoBar } from './CRDBottomInfoBar';
 import { useGridPreferences } from '@/hooks/useGridPreferences';
 import { useAutoHideToolbar } from '@/hooks/useAutoHideToolbar';
 interface CRDCanvasProps {
@@ -66,12 +66,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     x: 0,
     y: 0
   });
-  
-  // Bottom toolbar states
-  const [isRotating, setIsRotating] = useState(false);
-  const [showMaterialsRing, setShowMaterialsRing] = useState(true);
-  const [showCase, setShowCase] = useState(true);
-  const [animationPreset, setAnimationPreset] = useState<'subtle' | 'dynamic' | 'epic'>('subtle');
 
   // Canvas controls
   const handleZoomIn = useCallback(() => {
@@ -82,20 +76,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   }, []);
   const handleZoomReset = useCallback(() => {
     setZoom(125); // Reset to optimal default
-  }, []);
-
-  // Auto-reset to center position and optimal viewing angle
-  const handleAutoResetToCenter = useCallback(() => {
-    // Reset zoom to optimal viewing level
-    setZoom(125);
-    
-    // Reset pan offset to center
-    setPanOffset({ x: 0, y: 0 });
-    
-    // Reset any dragging state
-    setIsDragging(false);
-    
-    console.log('🎯 Auto-reset: Card centered at optimal viewing angle');
   }, []);
 
   // Calculate card dimensions
@@ -248,8 +228,7 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         zoom={zoom} 
         onZoomIn={handleZoomIn} 
         onZoomOut={handleZoomOut} 
-        onZoomReset={handleZoomReset}
-        onAutoReset={handleAutoResetToCenter}
+        onZoomReset={handleZoomReset} 
         showGrid={showGrid} 
         onGridToggle={() => setShowGrid(!showGrid)} 
         gridType={gridType} 
@@ -368,19 +347,11 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         </div>
       </div>
 
-      {/* Bottom Toolbar */}
-      <CRDBottomToolbar
+      {/* Bottom Info Bar */}
+      <CRDBottomInfoBar
         selectedTemplate={template}
         colorPalette={colorPalette}
         effects={effects}
-        isRotating={isRotating}
-        onToggleRotation={() => setIsRotating(!isRotating)}
-        showMaterialsRing={showMaterialsRing}
-        onToggleMaterialsRing={() => setShowMaterialsRing(!showMaterialsRing)}
-        showCase={showCase}
-        onToggleCase={() => setShowCase(!showCase)}
-        animationPreset={animationPreset}
-        onSetAnimationPreset={setAnimationPreset}
       />
     </div>;
 };
