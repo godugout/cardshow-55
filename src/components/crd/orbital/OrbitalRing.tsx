@@ -30,6 +30,7 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
 }) => {
   const [hoveredSatellite, setHoveredSatellite] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isMouseOverRing, setIsMouseOverRing] = useState(false);
   const [currentRotation, setCurrentRotation] = useState(0);
   const [userDirection, setUserDirection] = useState<'clockwise' | 'counterclockwise' | null>(null);
   const [rotationVelocity, setRotationVelocity] = useState(0);
@@ -109,14 +110,14 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
         const newVelocity = rotationVelocity * dampingFactor;
         setRotationVelocity(newVelocity);
         setCurrentRotation(prev => prev + newVelocity * delta);
-      } else if (autoRotate && !userDirection) {
-        // Default auto-rotation only when user hasn't set a direction
+      } else if (autoRotate && !userDirection && !isMouseOverRing) {
+        // Default auto-rotation only when user hasn't set a direction AND mouse is not over ring
         const baseSpeed = rotationSpeed * 0.5 * delta;
         setCurrentRotation(prev => prev + baseSpeed);
       } else if (Math.abs(rotationVelocity) <= 0.001) {
-        // Reset to gentle auto-rotation after momentum stops
+        // Reset to gentle auto-rotation after momentum stops (but not if mouse is over ring)
         setRotationVelocity(0);
-        if (autoRotate) {
+        if (autoRotate && !isMouseOverRing) {
           const gentleSpeed = rotationSpeed * 0.2 * delta;
           setCurrentRotation(prev => prev + gentleSpeed);
         }
@@ -277,6 +278,8 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
     <group 
       ref={ringRef}
       onPointerDown={handlePointerDown}
+      onPointerEnter={() => setIsMouseOverRing(true)}
+      onPointerLeave={() => setIsMouseOverRing(false)}
     >
       {/* Particle Flow Ring (conditional) */}
       {showRing && (
