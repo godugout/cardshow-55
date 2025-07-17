@@ -29,52 +29,31 @@ const CardMonolith: React.FC = () => {
   return (
     <>
       
-      {/* Card Monolith */}
+      {/* Obsidian Monolith in Glass Case */}
       <group ref={cardRef} position={[0, 0, 0]}>
-        {/* Main monolith structure */}
-        <mesh>
+        {/* Obsidian monolith - centered and clean */}
+        <mesh position={[0, 0, 0]}>
           <boxGeometry args={[2.5, 3.5, 0.3]} />
           <meshStandardMaterial 
             color="#000000"
-            metalness={0.9}
-            roughness={0.1}
-            emissive="#111111"
-          />
-        </mesh>
-        
-        {/* Card back - CRD design */}
-        <mesh position={[0, 0, -0.16]}>
-          <boxGeometry args={[2.4, 3.4, 0.01]} />
-          <meshStandardMaterial 
-            color="#1a1a2e"
-            metalness={0.3}
-            roughness={0.7}
-            emissive="#0a0a2e"
-            emissiveIntensity={0.2}
-          />
-        </mesh>
-        
-        {/* CRD Logo on back */}
-        <mesh position={[0, 0.8, -0.17]}>
-          <boxGeometry args={[1.5, 0.3, 0.01]} />
-          <meshStandardMaterial 
-            color="#ffffff"
-            emissive="#ffffff"
+            metalness={0.95}
+            roughness={0.05}
+            emissive="#0a0a0a"
             emissiveIntensity={0.1}
           />
         </mesh>
         
-        
-        {/* Mysterious glow effect */}
+        {/* Clear glass case */}
         <mesh>
-          <boxGeometry args={[2.6, 3.6, 0.31]} />
+          <boxGeometry args={[2.6, 3.6, 0.32]} />
           <meshStandardMaterial 
-            color="#000000"
-            metalness={1}
+            color="#e6f3ff"
+            metalness={0}
             roughness={0}
             transparent
-            opacity={0.3}
-            emissive="#0a0a2e"
+            opacity={0.1}
+            emissive="#ffffff"
+            emissiveIntensity={0.02}
           />
         </mesh>
       </group>
