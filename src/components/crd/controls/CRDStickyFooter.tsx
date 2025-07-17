@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, RotateCw, Palette, ChevronUp, X, Square } from 'lucide-react';
+import { Play, RotateCw, Palette, ChevronUp, X, Orbit, Lightbulb } from 'lucide-react';
 import { CRDVisualStyles } from '../styles/StyleRegistry';
 import { type AnimationMode, type LightingPreset } from '../types/CRDTypes';
 
@@ -37,7 +37,7 @@ interface CRDStickyFooterProps {
   onShowLockIndicatorsChange?: (show: boolean) => void;
 }
 
-type DrawerHeight = 'collapsed' | 'small' | 'medium' | 'large';
+type TabId = 'animation' | 'materials' | 'rotation' | 'lighting';
 
 export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
   animationMode,
@@ -57,264 +57,281 @@ export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
   orbitalAutoRotate = true,
   orbitalRotationSpeed = 1,
   showOrbitalRing = true,
-  showLockIndicators = true,
+  showLockIndicators = false,
   onOrbitalAutoRotateChange,
   onOrbitalRotationSpeedChange,
   onShowOrbitalRingChange,
   onShowLockIndicatorsChange
 }) => {
-  const [isVisible, setIsVisible] = useState(true);
-  const [drawerHeight, setDrawerHeight] = useState<DrawerHeight>('collapsed');
-  const [isHovered, setIsHovered] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabId>('animation');
 
-  // Pre-orchestrated animations
-  const animationModes: { id: AnimationMode; name: string; icon: any }[] = [
-    { id: 'monolith', name: 'Monolith', icon: Square },
-    { id: 'showcase', name: 'Showcase', icon: Play },
-    { id: 'ice', name: 'Ice', icon: Square },
-    { id: 'gold', name: 'Gold', icon: Square },
-    { id: 'glass', name: 'Glass', icon: Square },
-    { id: 'holo', name: 'Holo', icon: Square }
+  const animationModes: { id: AnimationMode; name: string }[] = [
+    { id: 'monolith', name: 'Monolith' },
+    { id: 'showcase', name: 'Showcase' },
+    { id: 'ice', name: 'Ice' },
+    { id: 'gold', name: 'Gold' },
+    { id: 'glass', name: 'Glass' },
+    { id: 'holo', name: 'Holo' }
   ];
 
-  const getDrawerHeightClass = (height: DrawerHeight) => {
-    switch (height) {
-      case 'collapsed': return 'h-0 opacity-0';
-      case 'small': return 'h-40 opacity-100';
-      case 'medium': return 'h-60 opacity-100';
-      case 'large': return 'h-80 opacity-100';
-    }
-  };
+  const lightingPresets: { id: LightingPreset; name: string }[] = [
+    { id: 'studio', name: 'Studio' },
+    { id: 'dramatic', name: 'Dramatic' },
+    { id: 'soft', name: 'Soft' },
+    { id: 'showcase', name: 'Showcase' }
+  ];
 
-  const toggleHeight = () => {
-    if (drawerHeight === 'collapsed') {
-      setDrawerHeight('medium');
-    } else {
-      setDrawerHeight('collapsed');
-    }
-  };
+  const tabs = [
+    { id: 'animation' as TabId, name: 'Animation', icon: Play },
+    { id: 'materials' as TabId, name: 'Materials', icon: Palette },
+    { id: 'rotation' as TabId, name: 'Motion', icon: Orbit },
+    { id: 'lighting' as TabId, name: 'Lighting', icon: Lightbulb }
+  ];
 
   const activeStyle = CRDVisualStyles.find(s => s.id === selectedStyleId);
 
-  if (!isVisible) {
-    return (
-      <div 
-        className="fixed bottom-4 right-4 z-50"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <button
-          onClick={() => setIsVisible(true)}
-          className="bg-background/20 backdrop-blur-sm text-foreground rounded-full p-3 shadow-lg transition-all duration-300 hover:bg-background/40"
-        >
-          <ChevronUp className="w-5 h-5" />
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 transition-all duration-300">
-      {/* Header Bar - Always visible */}
+    <div className="fixed bottom-0 left-0 right-0 z-50">
+      {/* Header Bar */}
       <div 
-        className="bg-background/20 backdrop-blur-md border-t border-white/10 px-4 py-2 cursor-pointer transition-all duration-300 hover:bg-background/30"
-        onClick={toggleHeight}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        className="bg-background/90 backdrop-blur-md border-t border-white/10 px-6 py-3 cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            {/* Quick Status */}
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-primary rounded-full"></div>
-              <span className="text-sm text-foreground/80">
+              <span className="text-sm font-medium">
                 {activeStyle?.displayName || 'Unknown'} • {animationMode.toUpperCase()}
               </span>
             </div>
-            
-            {/* Quick Animation Toggle */}
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                const modes: AnimationMode[] = ['monolith', 'showcase', 'ice', 'gold', 'glass', 'holo'];
-                const currentIndex = modes.indexOf(animationMode);
-                const nextMode = modes[(currentIndex + 1) % modes.length];
-                onAnimationModeChange(nextMode);
-              }}
-              className="p-1 rounded bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <Play className="w-4 h-4" />
-            </button>
-
-            {/* Quick Rotation Toggle */}
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                onAutoRotateChange(!autoRotate);
-              }}
-              className={`p-1 rounded transition-colors ${autoRotate ? 'bg-primary/20 text-primary' : 'bg-white/10 hover:bg-white/20'}`}
-            >
-              <RotateCw className="w-4 h-4" />
-            </button>
           </div>
-
+          
           <div className="flex items-center space-x-2">
-            {/* Expand/Collapse */}
-            <button 
-              onClick={toggleHeight}
-              className="p-1 rounded bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <ChevronUp className={`w-4 h-4 transition-transform ${drawerHeight === 'collapsed' ? '' : 'rotate-180'}`} />
-            </button>
-            
-            {/* Hide */}
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsVisible(false);
-              }}
-              className="p-1 rounded bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <ChevronUp className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
           </div>
         </div>
       </div>
 
-      {/* Expandable Content */}
-      <div className={`bg-background/30 backdrop-blur-md transition-all duration-300 overflow-hidden ${getDrawerHeightClass(drawerHeight)}`}>
-        <div className="p-4 h-full overflow-y-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            {/* Animation Controls */}
-            <div className="bg-card/50 backdrop-blur rounded-lg p-3">
-              <h4 className="text-sm font-medium mb-2 text-foreground/80">Animation</h4>
-              <div className="grid grid-cols-2 gap-1">
-                {animationModes.map((mode) => (
-                  <button
-                    key={mode.id}
-                    onClick={() => onAnimationModeChange(mode.id)}
-                    className={`p-2 rounded-md text-xs transition-colors ${
-                      animationMode === mode.id
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-white/10 hover:bg-white/20 text-foreground/80'
-                    }`}
-                  >
-                    {mode.name}
-                  </button>
-                ))}
-              </div>
-            </div>
+      {/* Drawer Content */}
+      <div className={`bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${
+        isOpen ? 'h-80' : 'h-0'
+      }`}>
+        <div className="h-full flex flex-col">
+          {/* Tab Navigation */}
+          <div className="flex border-b border-white/10">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 transition-colors ${
+                  activeTab === tab.id
+                    ? 'bg-primary/20 text-primary border-b-2 border-primary'
+                    : 'hover:bg-white/5 text-foreground/70'
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                <span className="text-sm font-medium">{tab.name}</span>
+              </button>
+            ))}
+          </div>
 
-            {/* Rotation Controls */}
-            <div className="bg-card/50 backdrop-blur rounded-lg p-3">
-              <h4 className="text-sm font-medium mb-2 text-foreground/80">Rotation</h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label htmlFor="auto-rotate" className="text-xs">Auto Rotate</label>
-                  <input
-                    id="auto-rotate"
-                    type="checkbox"
-                    checked={autoRotate}
-                    onChange={(e) => onAutoRotateChange(e.target.checked)}
-                    className="rounded"
-                  />
+          {/* Tab Content */}
+          <div className="flex-1 p-6">
+            {activeTab === 'animation' && (
+              <div className="h-full flex flex-col">
+                <h3 className="text-lg font-semibold mb-4">Animation Modes</h3>
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {animationModes.map((mode) => (
+                    <button
+                      key={mode.id}
+                      onClick={() => onAnimationModeChange(mode.id)}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        animationMode === mode.id
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-white/20 hover:border-white/40 text-foreground/80'
+                      }`}
+                    >
+                      <div className="font-medium">{mode.name}</div>
+                    </button>
+                  ))}
                 </div>
-                {autoRotate && (
-                  <div className="space-y-1">
-                    <label htmlFor="rotation-speed" className="text-xs">Speed</label>
+                <div className="space-y-3">
+                  <label className="block">
+                    <span className="text-sm font-medium text-foreground/80 mb-2 block">
+                      Intensity: {animationIntensity.toFixed(1)}x
+                    </span>
                     <input
-                      id="rotation-speed"
                       type="range"
                       min="0.1"
                       max="3"
                       step="0.1"
-                      value={rotationSpeed}
-                      onChange={(e) => onRotationSpeedChange(parseFloat(e.target.value))}
+                      value={animationIntensity}
+                      onChange={(e) => onAnimationIntensityChange(parseFloat(e.target.value))}
                       className="w-full"
                     />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Orbital Controls */}
-            <div className="bg-card/50 backdrop-blur rounded-lg p-3">
-              <h4 className="text-sm font-medium mb-2 text-foreground/80">Orbital Ring</h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label htmlFor="orbital-auto-rotate" className="text-xs">Auto Orbit</label>
-                  <input
-                    id="orbital-auto-rotate"
-                    type="checkbox"
-                    checked={orbitalAutoRotate}
-                    onChange={(e) => onOrbitalAutoRotateChange?.(e.target.checked)}
-                    className="rounded"
-                  />
+                  </label>
                 </div>
-                {orbitalAutoRotate && (
-                  <div className="space-y-1">
-                    <label htmlFor="orbital-speed" className="text-xs">Orbit Speed</label>
+              </div>
+            )}
+
+            {activeTab === 'materials' && (
+              <div className="h-full flex flex-col">
+                <h3 className="text-lg font-semibold mb-4">Visual Materials</h3>
+                <div className="grid grid-cols-6 gap-3">
+                  {CRDVisualStyles.map((style) => (
+                    <button
+                      key={style.id}
+                      onClick={() => onStyleChange(style.id)}
+                      className={`aspect-square rounded-lg border-2 transition-all relative overflow-hidden ${
+                        selectedStyleId === style.id
+                          ? 'border-primary ring-2 ring-primary/30'
+                          : 'border-white/20 hover:border-white/40'
+                      }`}
+                      style={{
+                        background: style.uiPreviewGradient || '#333',
+                      }}
+                      title={style.displayName}
+                    >
+                      {style.locked && !showLockIndicators && (
+                        <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                      )}
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 truncate">
+                        {style.displayName}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'rotation' && (
+              <div className="h-full flex flex-col space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Card Rotation</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">Auto Rotate</span>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={autoRotate}
+                          onChange={(e) => onAutoRotateChange(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                    </div>
+                    {autoRotate && (
+                      <div>
+                        <label className="block">
+                          <span className="text-sm font-medium text-foreground/80 mb-2 block">
+                            Speed: {rotationSpeed.toFixed(1)}x
+                          </span>
+                          <input
+                            type="range"
+                            min="0.1"
+                            max="3"
+                            step="0.1"
+                            value={rotationSpeed}
+                            onChange={(e) => onRotationSpeedChange(parseFloat(e.target.value))}
+                            className="w-full"
+                          />
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Orbital Ring</h3>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Auto Orbit</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={orbitalAutoRotate}
+                            onChange={(e) => onOrbitalAutoRotateChange?.(e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-8 h-5 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Show Ring</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={showOrbitalRing}
+                            onChange={(e) => onShowOrbitalRingChange?.(e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-8 h-5 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                      </div>
+                    </div>
+                    {orbitalAutoRotate && (
+                      <div>
+                        <label className="block">
+                          <span className="text-sm font-medium text-foreground/80 mb-2 block">
+                            Orbit Speed: {orbitalRotationSpeed?.toFixed(1)}x
+                          </span>
+                          <input
+                            type="range"
+                            min="0.1"
+                            max="5"
+                            step="0.1"
+                            value={orbitalRotationSpeed}
+                            onChange={(e) => onOrbitalRotationSpeedChange?.(parseFloat(e.target.value))}
+                            className="w-full"
+                          />
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'lighting' && (
+              <div className="h-full flex flex-col">
+                <h3 className="text-lg font-semibold mb-4">Lighting Setup</h3>
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  {lightingPresets.map((preset) => (
+                    <button
+                      key={preset.id}
+                      onClick={() => onLightingPresetChange(preset.id)}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        lightingPreset === preset.id
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-white/20 hover:border-white/40 text-foreground/80'
+                      }`}
+                    >
+                      <div className="font-medium">{preset.name}</div>
+                    </button>
+                  ))}
+                </div>
+                <div className="space-y-3">
+                  <label className="block">
+                    <span className="text-sm font-medium text-foreground/80 mb-2 block">
+                      Intensity: {lightingIntensity.toFixed(1)}x
+                    </span>
                     <input
-                      id="orbital-speed"
                       type="range"
                       min="0.1"
-                      max="5"
+                      max="3"
                       step="0.1"
-                      value={orbitalRotationSpeed}
-                      onChange={(e) => onOrbitalRotationSpeedChange?.(parseFloat(e.target.value))}
+                      value={lightingIntensity}
+                      onChange={(e) => onLightingIntensityChange(parseFloat(e.target.value))}
                       className="w-full"
                     />
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <label htmlFor="show-ring" className="text-xs">Show Ring</label>
-                  <input
-                    id="show-ring"
-                    type="checkbox"
-                    checked={showOrbitalRing}
-                    onChange={(e) => onShowOrbitalRingChange?.(e.target.checked)}
-                    className="rounded"
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <label htmlFor="show-locks" className="text-xs">Lock Indicators</label>
-                  <input
-                    id="show-locks"
-                    type="checkbox"
-                    checked={showLockIndicators}
-                    onChange={(e) => onShowLockIndicatorsChange?.(e.target.checked)}
-                    className="rounded"
-                  />
+                  </label>
                 </div>
               </div>
-            </div>
-
-            {/* Material Selection */}
-            <div className="bg-card/50 backdrop-blur rounded-lg p-3">
-              <h4 className="text-sm font-medium mb-2 text-foreground/80">Material</h4>
-              <div className="grid grid-cols-3 gap-1">
-                {CRDVisualStyles.slice(0, 12).map((style) => (
-                  <button
-                    key={style.id}
-                    onClick={() => onStyleChange(style.id)}
-                    className={`aspect-square rounded-md text-xs transition-colors relative ${
-                      selectedStyleId === style.id
-                        ? 'ring-2 ring-primary'
-                        : 'hover:ring-1 hover:ring-white/30'
-                    }`}
-                    style={{
-                      background: style.uiPreviewGradient || '#333',
-                    }}
-                    title={style.displayName}
-                  >
-                    {style.locked && (
-                      <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
