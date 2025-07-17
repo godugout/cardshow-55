@@ -23,7 +23,7 @@ const vertexShader = `
   uniform float flowSpeed;
   
   void main() {
-    vAlpha = alpha * 0.15; // Much more subtle
+    vAlpha = alpha * 0.4; // More visible for gradient
     
     // Create gradient from orange to blue around the ring
     float angle = atan(position.z, position.x) + time * flowSpeed * 0.2;
@@ -62,7 +62,7 @@ const fragmentShader = `
     
     // Very soft falloff for gas-like effect
     float alpha = vAlpha * pow(1.0 - dist * 2.0, 3.0);
-    alpha *= 0.3; // Extra subtle
+    alpha *= 0.7; // More visible gradient
     
     gl_FragColor = vec4(vColor, alpha);
   }
@@ -98,7 +98,7 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
       positions[i * 3 + 1] = (Math.random() - 0.5) * 0.4; // More vertical spread
       positions[i * 3 + 2] = Math.sin(angle) * particleRadius;
       
-      alphas[i] = Math.random() * 0.4 + 0.1; // Much lower alpha
+      alphas[i] = Math.random() * 0.6 + 0.2; // Brighter for gradient visibility
       sizes[i] = Math.random() * 8 + 2; // Larger but softer particles
       phases[i] = Math.random() * Math.PI * 2;
     }
