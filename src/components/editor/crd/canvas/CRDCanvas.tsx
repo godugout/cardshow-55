@@ -78,6 +78,20 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     setZoom(125); // Reset to optimal default
   }, []);
 
+  // Auto-reset to center position and optimal viewing angle
+  const handleAutoResetToCenter = useCallback(() => {
+    // Reset zoom to optimal viewing level
+    setZoom(125);
+    
+    // Reset pan offset to center
+    setPanOffset({ x: 0, y: 0 });
+    
+    // Reset any dragging state
+    setIsDragging(false);
+    
+    console.log('🎯 Auto-reset: Card centered at optimal viewing angle');
+  }, []);
+
   // Calculate card dimensions
   const cardAspectRatio = 2.5 / 3.5;
   const baseCardWidth = 420; // Increased from 320
@@ -228,7 +242,8 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         zoom={zoom} 
         onZoomIn={handleZoomIn} 
         onZoomOut={handleZoomOut} 
-        onZoomReset={handleZoomReset} 
+        onZoomReset={handleZoomReset}
+        onAutoReset={handleAutoResetToCenter}
         showGrid={showGrid} 
         onGridToggle={() => setShowGrid(!showGrid)} 
         gridType={gridType} 

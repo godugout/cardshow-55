@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, LayoutGrid, Grid, Diamond, Construction, Camera, X, Ruler, Move, Edit3, ChevronDown } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, LayoutGrid, Grid, Diamond, Construction, Camera, X, Ruler, Move, Edit3, ChevronDown, Target } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ interface CRDToolbarProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onZoomReset: () => void;
+  onAutoReset?: () => void;
   showGrid: boolean;
   onGridToggle: () => void;
   gridType: 'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography';
@@ -47,6 +48,7 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   onZoomIn,
   onZoomOut,
   onZoomReset,
+  onAutoReset,
   showGrid,
   onGridToggle,
   gridType,
@@ -146,6 +148,13 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
                 <RotateCcw className="w-3 h-3 mr-1" />
                 Reset
               </CRDButton>
+              
+              {onAutoReset && (
+                <CRDButton variant="outline" size="sm" onClick={onAutoReset} className="h-8 px-2 text-xs bg-crd-blue/10 border-crd-blue/30 hover:bg-crd-blue/20 text-crd-blue" title="Auto-center card at perfect viewing angle">
+                  <Target className="w-3 h-3 mr-1" />
+                  Center
+                </CRDButton>
+              )}
             </div>
           </div>
 
