@@ -13,23 +13,19 @@ const CardMonolith: React.FC<{ onInactivity: boolean }> = ({ onInactivity }) => 
   const [startCameraPos, setStartCameraPos] = useState<THREE.Vector3>(new THREE.Vector3());
   
   useFrame((state) => {
-    // Start animation tracking when inactivity is detected
-    if (onInactivity && animationStartTime === null && cardRef.current) {
-      setAnimationStartTime(state.clock.elapsedTime);
-      // Capture current positions for smooth transition
-      setStartPosition(cardRef.current.position.clone());
-      setStartRotation(cardRef.current.rotation.clone());
-      setStartCameraPos(camera.position.clone());
-    }
-    
-    // Reset animation when activity resumes
-    if (!onInactivity && animationStartTime !== null) {
-      setAnimationStartTime(null);
-    }
-    
     if (cardRef.current) {
-      if (onInactivity && animationStartTime !== null) {
-        // Animation sequence after 3 seconds of inactivity
+      if (onInactivity) {
+        // Initialize animation on first frame of inactivity
+        if (animationStartTime === null) {
+          setAnimationStartTime(state.clock.elapsedTime);
+          // Capture exact current positions for seamless transition
+          setStartPosition(cardRef.current.position.clone());
+          setStartRotation(cardRef.current.rotation.clone());
+          setStartCameraPos(camera.position.clone());
+          return; // Skip this frame to avoid any jumps
+        }
+        
+        // Animation sequence after inactivity detected
         const animationTime = state.clock.elapsedTime - animationStartTime;
         const duration = 5; // 5 second animation
         const progress = Math.min(animationTime / duration, 1);
@@ -37,36 +33,42 @@ const CardMonolith: React.FC<{ onInactivity: boolean }> = ({ onInactivity }) => 
         // Smooth easing function
         const eased = 1 - Math.pow(1 - progress, 3);
         
-        // Move card around in dynamic motion from starting position
+        // Calculate target positions for dynamic motion
         const motionAmplitude = 3;
-        const dynamicX = Math.sin(animationTime * 0.8) * motionAmplitude * (1 - eased * 0.5);
-        const dynamicY = Math.cos(animationTime * 0.6) * motionAmplitude * 0.7 * (1 - eased * 0.5);
-        const dynamicZ = eased * 8; // Move closer for zoom effect
+        const targetX = startPosition.x + Math.sin(animationTime * 0.8) * motionAmplitude * (1 - eased * 0.5);
+        const targetY = startPosition.y + Math.cos(animationTime * 0.6) * motionAmplitude * 0.7 * (1 - eased * 0.5);
+        const targetZ = startPosition.z + eased * 8; // Move closer for zoom effect
         
-        // Interpolate from start position
-        cardRef.current.position.x = THREE.MathUtils.lerp(startPosition.x, dynamicX, eased);
-        cardRef.current.position.y = THREE.MathUtils.lerp(startPosition.y, dynamicY, eased);
-        cardRef.current.position.z = THREE.MathUtils.lerp(startPosition.z, startPosition.z + dynamicZ, eased);
+        // Smooth interpolation from start position
+        cardRef.current.position.x = THREE.MathUtils.lerp(startPosition.x, targetX, eased);
+        cardRef.current.position.y = THREE.MathUtils.lerp(startPosition.y, targetY, eased);
+        cardRef.current.position.z = THREE.MathUtils.lerp(startPosition.z, targetZ, eased);
         
-        // Dynamic rotation from starting rotation
+        // Calculate target rotations for dynamic motion
         const targetRotX = startRotation.x + Math.sin(animationTime * 0.5) * 0.3;
         const targetRotY = startRotation.y + animationTime * 0.4;
         const targetRotZ = startRotation.z + Math.cos(animationTime * 0.7) * 0.2;
         
+        // Smooth rotation interpolation
         cardRef.current.rotation.x = THREE.MathUtils.lerp(startRotation.x, targetRotX, eased);
         cardRef.current.rotation.y = THREE.MathUtils.lerp(startRotation.y, targetRotY, eased);
         cardRef.current.rotation.z = THREE.MathUtils.lerp(startRotation.z, targetRotZ, eased);
         
-        // Camera zoom and repositioning from start position
-        const targetX = startCameraPos.x + 6; // Halfway across horizontal position
-        const targetZ = Math.max(3, startCameraPos.z - 12); // Zoomed in position
+        // Camera movement from start position
+        const targetCamX = startCameraPos.x + 6; // Halfway across horizontal position
+        const targetCamZ = Math.max(3, startCameraPos.z - 12); // Zoomed in position
         
-        camera.position.x = THREE.MathUtils.lerp(startCameraPos.x, targetX, eased);
-        camera.position.z = THREE.MathUtils.lerp(startCameraPos.z, targetZ, eased);
+        camera.position.x = THREE.MathUtils.lerp(startCameraPos.x, targetCamX, eased);
+        camera.position.z = THREE.MathUtils.lerp(startCameraPos.z, targetCamZ, eased);
         
         // Look at the moving card
         camera.lookAt(cardRef.current.position);
       } else {
+        // Reset animation state when activity resumes
+        if (animationStartTime !== null) {
+          setAnimationStartTime(null);
+        }
+        
         // Normal idle animation with subtle floating inside the case
         cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
         cardRef.current.position.x = Math.sin(state.clock.elapsedTime * 0.4) * 0.08; // Subtle horizontal float
