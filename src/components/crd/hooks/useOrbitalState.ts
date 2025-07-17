@@ -5,12 +5,14 @@ interface UseOrbitalStateProps {
   autoRotate: boolean;
   rotationSpeed: number;
   isPaused: boolean;
+  cardPaused?: boolean;
 }
 
 export function useOrbitalState({ 
   autoRotate, 
   rotationSpeed,
-  isPaused 
+  isPaused,
+  cardPaused = false
 }: UseOrbitalStateProps) {
   // Rotation state
   const [currentRotation, setCurrentRotation] = useState(0);
@@ -19,6 +21,7 @@ export function useOrbitalState({
   // Hover state - centralized
   const [hoveredSatellite, setHoveredSatellite] = useState<string | null>(null);
   const [isMouseOverRing, setIsMouseOverRing] = useState(false);
+  const [isMouseOverCard, setIsMouseOverCard] = useState(false);
   
   // Drag state
   const [isDragging, setIsDragging] = useState(false);
@@ -38,9 +41,13 @@ export function useOrbitalState({
     } 
     
     if (autoRotate) {
-      // Auto-rotation with hover speed adjustment
-      const hoverSpeedMultiplier = isMouseOverRing || hoveredSatellite ? 0.15 : 1.0;
-      const baseSpeed = rotationSpeed * 0.25 * delta * hoverSpeedMultiplier;
+      // Ring stops completely when mouse is over ring OR when any satellite is hovered
+      const shouldStop = isMouseOverRing || hoveredSatellite !== null;
+      if (shouldStop) {
+        return currentRotation; // Completely stop rotation
+      }
+      
+      const baseSpeed = rotationSpeed * 0.25 * delta;
       return currentRotation + baseSpeed;
     }
 
@@ -86,9 +93,13 @@ export function useOrbitalState({
         if (!isDragging) {
           setIsMouseOverRing(false);
         }
-      }, 100);
+      }, 150); // Longer delay to ensure stable hover detection
     }
   }, [isDragging]);
+
+  const handleCardHover = useCallback((isOver: boolean) => {
+    setIsMouseOverCard(isOver);
+  }, []);
 
   return {
     // Rotation state
@@ -102,8 +113,10 @@ export function useOrbitalState({
     // Hover state
     hoveredSatellite,
     isMouseOverRing,
+    isMouseOverCard,
     handleSatelliteHover,
     handleRingHover,
+    handleCardHover,
     
     // Drag state
     isDragging,

@@ -31,6 +31,7 @@ interface CRDViewerProps {
   
   // Pause controls
   isPaused?: boolean;
+  cardPaused?: boolean;
   onTogglePause?: () => void;
   showPauseButton?: boolean;
   
@@ -87,6 +88,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const [cardRotation, setCardRotation] = useState(new THREE.Euler(0, 0, 0));
   const [internalIsPaused, setInternalIsPaused] = useState(false);
   const [isResetAnimating, setIsResetAnimating] = useState(false);
+  const [isCardPaused, setIsCardPaused] = useState(false);
   const [isCardLocked, setIsCardLocked] = useState(false);
   
   // Use external pause state if provided, otherwise use internal state
@@ -131,6 +133,14 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const handleStyleChange = (styleId: string) => {
     console.log('🎨 CRD Viewer: Style changing from', selectedStyleId, 'to:', styleId);
     setSelectedStyleId(styleId);
+  };
+
+  const handleCardPauseToggle = (paused: boolean) => {
+    setIsCardPaused(paused);
+  };
+
+  const handleCardHover = (hovered: boolean) => {
+    // Card hover can be used for future features like highlighting
   };
 
   const handleCardLockToggle = (locked: boolean) => {
@@ -257,17 +267,20 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           position={[0, -2, 0]}
           rotation={isCardLocked ? [0, 0, 0] : [mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]}
         >
-          <Card3DCore
-            ref={cardRef}
-            mode={currentMode}
-            intensity={currentIntensity}
-            materialMode={selectedStyleId as any}
-            enableAnimation={!isResetAnimating}
-            enableGlassCase={enableGlassCase}
-            isLocked={isCardLocked}
-            onLockToggle={handleCardLockToggle}
-            onTransformUpdate={handleTransformUpdate}
-          />
+        <Card3DCore
+          ref={cardRef}
+          mode={currentMode}
+          intensity={currentIntensity}
+          materialMode={selectedStyleId as any}
+          enableAnimation={!isResetAnimating}
+          enableGlassCase={enableGlassCase}
+          isLocked={isCardLocked}
+          isPaused={isCardPaused}
+          onLockToggle={handleCardLockToggle}
+          onPauseToggle={handleCardPauseToggle}
+          onHover={handleCardHover}
+          onTransformUpdate={handleTransformUpdate}
+        />
         </group>
 
         {/* Orbital Material Ring System - Synced with mouse */}
@@ -284,6 +297,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             showRing={showOrbitalRing && !isResetAnimating}
             showLockIndicators={showLockIndicators}
             isPaused={isPaused || isResetAnimating}
+            cardPaused={isCardPaused}
           />
         </group>
         

@@ -14,7 +14,10 @@ interface Card3DCoreProps {
   enableAnimation?: boolean;
   enableGlassCase?: boolean;
   isLocked?: boolean;
+  isPaused?: boolean;
   onLockToggle?: (locked: boolean) => void;
+  onPauseToggle?: (paused: boolean) => void;
+  onHover?: (hovered: boolean) => void;
   onTransformUpdate?: (transform: {
     position: THREE.Vector3;
     rotation: THREE.Euler;
@@ -31,7 +34,10 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
   enableAnimation = true,
   enableGlassCase = true,
   isLocked = false,
+  isPaused = false,
   onLockToggle,
+  onPauseToggle,
+  onHover,
   onTransformUpdate
 }, ref) => {
   const groupRef = useRef<THREE.Group>(null);
@@ -54,24 +60,26 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
     return Object.assign(group, { getCurrentRotation });
   }, [getCurrentRotation]);
 
-  // Handle double-click to lock/unlock
-  const handleDoubleClick = React.useCallback(() => {
-    const currentTime = Date.now();
-    if (currentTime - lastClickTime.current < 300) {
-      // Double click detected
-      if (isLocked) {
-        // Unlock - resume normal behavior
-        onLockToggle?.(false);
-      } else {
-        // Lock - save current rotation and lock in face-first position
-        if (groupRef.current) {
-          lockedRotation.current = new THREE.Euler(0, 0, 0); // Face-first position
-          groupRef.current.rotation.copy(lockedRotation.current);
-        }
-        onLockToggle?.(true);
+  // Handle single click to pause/unpause card animation
+  const handleClick = React.useCallback(() => {
+    onPauseToggle?.(!isPaused);
+  }, [isPaused, onPauseToggle]);
+
+  // Handle double-click to lock/unlock and flip card
+  const handleDoubleClick = React.useCallback((event: any) => {
+    event.stopPropagation(); // Prevent single click from firing
+    
+    if (isLocked) {
+      // Unlock - resume normal behavior
+      onLockToggle?.(false);
+    } else {
+      // Lock - flip to back side (180° rotation)
+      if (groupRef.current) {
+        lockedRotation.current = new THREE.Euler(0, Math.PI, 0); // Back side
+        groupRef.current.rotation.copy(lockedRotation.current);
       }
+      onLockToggle?.(true);
     }
-    lastClickTime.current = currentTime;
   }, [isLocked, onLockToggle]);
 
   useFrame((state) => {
@@ -94,7 +102,15 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
       return;
     }
     
-    if (!enableAnimation) return;
+    // If paused, skip animation but still update position/scale
+    if (isPaused && !isLocked) {
+      groupRef.current.position.copy(position);
+      groupRef.current.rotation.copy(rotation);
+      groupRef.current.scale.copy(scale);
+      return;
+    }
+    
+    if (!enableAnimation && !isLocked) return;
     
     const time = state.clock.elapsedTime;
     const factor = intensity;
@@ -184,8 +200,22 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
     return <boxGeometry args={[2.6, 3.6, 0.32]} />;
   };
 
+  const handlePointerEnter = React.useCallback(() => {
+    onHover?.(true);
+  }, [onHover]);
+
+  const handlePointerLeave = React.useCallback(() => {
+    onHover?.(false);
+  }, [onHover]);
+
   return (
-    <group ref={groupRef} onDoubleClick={handleDoubleClick}>
+    <group 
+      ref={groupRef} 
+      onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
+    >
       {/* Main Card */}
       <mesh ref={cardRef}>
         {getCardGeometry()}

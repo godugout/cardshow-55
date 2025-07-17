@@ -18,6 +18,7 @@ interface OrbitalRingProps {
   showRing?: boolean;
   showLockIndicators?: boolean;
   isPaused?: boolean;
+  cardPaused?: boolean;
 }
 
 export const OrbitalRing: React.FC<OrbitalRingProps> = ({
@@ -29,7 +30,8 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   rotationSpeed = 1,
   showRing = true,
   showLockIndicators = true,
-  isPaused = false
+  isPaused = false,
+  cardPaused = false
 }) => {
   const ringRef = useRef<THREE.Group>(null);
   const { gl } = useThree();
@@ -44,11 +46,13 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
     applyRotation,
     hoveredSatellite,
     isMouseOverRing,
+    isMouseOverCard,
     handleSatelliteHover,
     handleRingHover,
+    handleCardHover,
     isDragging,
     setIsDragging
-  } = useOrbitalState({ autoRotate, rotationSpeed, isPaused });
+  } = useOrbitalState({ autoRotate, rotationSpeed, isPaused, cardPaused });
 
   const {
     handleDragStart,
