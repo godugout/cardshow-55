@@ -11,7 +11,24 @@ export type MaterialMode =
   | 'glass-case'
   | 'sports'      // Future: Sports path theming
   | 'fantasy'     // Future: Fantasy/Sci-Fi path theming  
-  | 'life';       // Future: Life path theming
+  | 'life'        // Future: Life path theming
+  // Premium Visual Styles
+  | 'matte'
+  | 'MattePaper'
+  | 'basicFoil'
+  | 'StandardFoil'
+  | 'classicGloss'
+  | 'GlossyCard'
+  | 'holoBurst'
+  | 'PrismaticFoil'
+  | 'crystalInterference'
+  | 'CrystalClear'
+  | 'chromeBurst'
+  | 'ChromeMetal'
+  | 'vintageBoil'
+  | 'AgedFoil'
+  | 'oceanWaves'
+  | 'FluidFoil';
 
 export type LightingPreset = 
   | 'studio'

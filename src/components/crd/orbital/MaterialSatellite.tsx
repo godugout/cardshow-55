@@ -79,7 +79,7 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
           <sphereGeometry args={[0.15, 16, 16]} />
         )}
         <MaterialSystem 
-          mode={style.baseMaterial as any} 
+          mode={style.id as any} 
           intensity={1}
           type="card"
         />

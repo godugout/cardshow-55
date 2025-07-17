@@ -20,13 +20,13 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   const [hoveredSatellite, setHoveredSatellite] = useState<string | null>(null);
   const ringRef = useRef<THREE.Group>(null);
 
-  // Calculate satellite positions around the equator
+  // Calculate satellite positions around the equator - SHOW ALL STYLES
   const satellitePositions = React.useMemo(() => {
     const positions: { style: CRDVisualStyle; position: THREE.Vector3; angle: number }[] = [];
-    const unlockedStyles = CRDVisualStyles.filter(style => !style.locked);
-    const angleStep = (Math.PI * 2) / unlockedStyles.length;
+    const allStyles = CRDVisualStyles; // Show ALL styles, not just unlocked ones
+    const angleStep = (Math.PI * 2) / allStyles.length;
 
-    unlockedStyles.forEach((style, index) => {
+    allStyles.forEach((style, index) => {
       const angle = index * angleStep;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
@@ -80,9 +80,8 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   });
 
   const handleSatelliteClick = (style: CRDVisualStyle) => {
-    if (!style.locked) {
-      onStyleChange(style);
-    }
+    // Allow selection of locked styles for demo purposes
+    onStyleChange(style);
   };
 
   const handleSatelliteHover = (styleId: string, hovered: boolean) => {

@@ -20,6 +20,122 @@ export const MaterialSystem: React.FC<MaterialSystemProps> = ({
   // Card Materials
   if (type === 'card') {
     switch (mode) {
+      // Premium Visual Styles
+      case 'matte':
+      case 'MattePaper':
+        return (
+          <meshStandardMaterial 
+            color="#2a2a2a"
+            metalness={0}
+            roughness={0.8}
+            emissive="#1a1a1a"
+            emissiveIntensity={0.05 * intensity}
+          />
+        );
+
+      case 'basicFoil':
+      case 'StandardFoil':
+        return (
+          <meshStandardMaterial 
+            color="#e8e8e8"
+            metalness={0.7}
+            roughness={0.2}
+            emissive="#cccccc"
+            emissiveIntensity={0.1 * intensity}
+            envMapIntensity={1.5}
+          />
+        );
+
+      case 'classicGloss':
+      case 'GlossyCard':
+        return (
+          <meshStandardMaterial 
+            color="#ffffff"
+            metalness={0.1}
+            roughness={0.02}
+            emissive="#f0f0f0"
+            emissiveIntensity={0.08 * intensity}
+            envMapIntensity={2}
+          />
+        );
+
+      case 'holoBurst':
+      case 'PrismaticFoil':
+        const hue = (time * 80) % 360;
+        const emissiveHue = (time * 100) % 360;
+        return (
+          <meshStandardMaterial 
+            color={new THREE.Color().setHSL(hue / 360, 0.9, 0.7)}
+            metalness={1}
+            roughness={0.05}
+            emissive={new THREE.Color().setHSL(emissiveHue / 360, 1, 0.5)}
+            emissiveIntensity={1.2 * intensity}
+            envMapIntensity={5}
+          />
+        );
+
+      case 'crystalInterference':
+      case 'CrystalClear':
+        return (
+          <meshPhysicalMaterial
+            color="#e6f7ff"
+            metalness={0}
+            roughness={0}
+            transmission={0.95}
+            transparent={true}
+            opacity={0.3}
+            thickness={0.1}
+            ior={2.4}
+            clearcoat={1}
+            clearcoatRoughness={0}
+            emissive="#80d4ff"
+            emissiveIntensity={0.3 * intensity}
+            side={THREE.DoubleSide}
+            envMapIntensity={4}
+          />
+        );
+
+      case 'chromeBurst':
+      case 'ChromeMetal':
+        return (
+          <meshStandardMaterial 
+            color="#c0c0c0"
+            metalness={1}
+            roughness={0.01}
+            emissive="#808080"
+            emissiveIntensity={0.2 * intensity}
+            envMapIntensity={3}
+          />
+        );
+
+      case 'vintageBoil':
+      case 'AgedFoil':
+        return (
+          <meshStandardMaterial 
+            color="#d4af37"
+            metalness={0.6}
+            roughness={0.3}
+            emissive="#b8860b"
+            emissiveIntensity={0.15 * intensity}
+            envMapIntensity={1.8}
+          />
+        );
+
+      case 'oceanWaves':
+      case 'FluidFoil':
+        const waveHue = ((time * 40) % 60) + 180; // Blue to cyan range
+        return (
+          <meshStandardMaterial 
+            color={new THREE.Color().setHSL(waveHue / 360, 0.8, 0.6)}
+            metalness={0.4}
+            roughness={0.1}
+            emissive={new THREE.Color().setHSL((waveHue + 20) / 360, 0.9, 0.3)}
+            emissiveIntensity={0.6 * intensity}
+            envMapIntensity={2.5}
+          />
+        );
+
+      // Original animation-based materials
       case 'ice':
         return (
           <meshPhysicalMaterial
@@ -72,24 +188,24 @@ export const MaterialSystem: React.FC<MaterialSystemProps> = ({
         );
       
       case 'holo':
-        const hue = (time * 50) % 360;
-        const emissiveHue = (time * 70) % 360;
+        const holoHue = (time * 50) % 360;
+        const holoEmissiveHue = (time * 70) % 360;
         return (
           <meshStandardMaterial 
-            color={new THREE.Color().setHSL(hue / 360, 0.8, 0.6)}
+            color={new THREE.Color().setHSL(holoHue / 360, 0.8, 0.6)}
             metalness={1}
             roughness={0.1}
-            emissive={new THREE.Color().setHSL(emissiveHue / 360, 0.9, 0.4)}
+            emissive={new THREE.Color().setHSL(holoEmissiveHue / 360, 0.9, 0.4)}
             emissiveIntensity={0.8 * intensity}
             envMapIntensity={4}
           />
         );
 
-      // Future path-specific materials
+      // Path-specific materials
       case 'sports':
         return (
           <meshStandardMaterial 
-            color="#1a472a" // Sports green base
+            color="#1a472a"
             metalness={0.3}
             roughness={0.4}
             emissive="#0f2817"
@@ -114,7 +230,7 @@ export const MaterialSystem: React.FC<MaterialSystemProps> = ({
       case 'life':
         return (
           <meshStandardMaterial 
-            color="#8b4513" // Earthy brown
+            color="#8b4513"
             metalness={0.1}
             roughness={0.6}
             emissive="#3d1a00"
