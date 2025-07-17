@@ -1,9 +1,9 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
-const CardMonolith: React.FC = () => {
+const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ onHover }) => {
   const cardRef = useRef<THREE.Group>(null);
   const sunRef = useRef<THREE.Group>(null);
   
@@ -32,7 +32,11 @@ const CardMonolith: React.FC = () => {
       {/* Obsidian Monolith in Glass Case */}
       <group ref={cardRef} position={[0, 0, 0]}>
         {/* Obsidian monolith - centered and clean */}
-        <mesh position={[0, 0, 0]}>
+        <mesh 
+          position={[0, 0, 0]}
+          onPointerEnter={() => onHover(true)}
+          onPointerLeave={() => onHover(false)}
+        >
           <boxGeometry args={[2.5, 3.5, 0.3]} />
           <meshStandardMaterial 
             color="#000000"
@@ -44,7 +48,10 @@ const CardMonolith: React.FC = () => {
         </mesh>
         
         {/* Clear glass case */}
-        <mesh>
+        <mesh
+          onPointerEnter={() => onHover(true)}
+          onPointerLeave={() => onHover(false)}
+        >
           <boxGeometry args={[2.6, 3.6, 0.32]} />
           <meshStandardMaterial 
             color="#e6f3ff"
@@ -183,6 +190,7 @@ const CardMonolith: React.FC = () => {
 };
 
 export const FloatingCard3D: React.FC = () => {
+  const [isHoveringMonolith, setIsHoveringMonolith] = useState(false);
   return (
     <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
       {/* Matching star field for seamless integration */}
@@ -217,12 +225,14 @@ export const FloatingCard3D: React.FC = () => {
         {/* Minimal ambient space lighting */}
         <ambientLight intensity={0.02} color="#000033" />
         
-        <CardMonolith />
+        <CardMonolith onHover={setIsHoveringMonolith} />
         
         <OrbitControls
-          enableZoom={false}
+          enableZoom={isHoveringMonolith}
           enablePan={true}
           enableRotate={true}
+          maxDistance={25}
+          minDistance={3}
           autoRotate={false}
           target={[0, 0, 0]}
         />
