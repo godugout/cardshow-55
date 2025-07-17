@@ -17,7 +17,14 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
     if (!cardRef.current) return;
     
     const time = state.clock.elapsedTime;
-    const factor = intensity * 0.1;
+    const factor = intensity;
+    
+    // Glass case dimensions: [2.6, 3.6, 0.32]
+    // Card dimensions: [2.3, 3.3, 0.1]
+    // Safe movement bounds: X: ±0.15, Y: ±0.15, Z: ±0.11
+    const maxX = 0.15;
+    const maxY = 0.15;
+    const maxZ = 0.11;
     
     switch (mode) {
       case 'frozen':
@@ -27,21 +34,23 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         break;
         
       case 'subtle':
-        // Gentle breathing motion
-        cardRef.current.position.y = Math.sin(time * 0.5) * 0.02 * factor;
-        cardRef.current.rotation.z = Math.sin(time * 0.3) * 0.01 * factor;
+        // Gentle breathing motion - constrained within case
+        cardRef.current.position.y = Math.sin(time * 0.5) * (maxY * 0.3) * factor;
+        cardRef.current.position.z = Math.sin(time * 0.3) * (maxZ * 0.2) * factor;
+        cardRef.current.rotation.z = Math.sin(time * 0.3) * 0.005 * factor;
         break;
         
       case 'active':
-        // Dynamic floating with rotation
-        cardRef.current.position.y = Math.sin(time * 0.8) * 0.05 * factor;
-        cardRef.current.position.x = Math.sin(time * 0.6) * 0.03 * factor;
-        cardRef.current.rotation.y = Math.sin(time * 0.4) * 0.1 * factor;
-        cardRef.current.rotation.z = Math.sin(time * 0.7) * 0.02 * factor;
+        // Dynamic floating - still constrained within case
+        cardRef.current.position.y = Math.sin(time * 0.8) * (maxY * 0.6) * factor;
+        cardRef.current.position.x = Math.sin(time * 0.6) * (maxX * 0.5) * factor;
+        cardRef.current.position.z = Math.sin(time * 0.4) * (maxZ * 0.4) * factor;
+        cardRef.current.rotation.y = Math.sin(time * 0.4) * 0.02 * factor;
+        cardRef.current.rotation.z = Math.sin(time * 0.7) * 0.01 * factor;
         break;
         
       case 'showcase':
-        // Dramatic effects demonstration
+        // Dramatic effects - can break boundaries for demo
         cardRef.current.position.y = Math.sin(time * 1.2) * 0.08 * factor;
         cardRef.current.position.x = Math.sin(time * 0.9) * 0.06 * factor;
         cardRef.current.rotation.y = time * 0.3 * factor;
