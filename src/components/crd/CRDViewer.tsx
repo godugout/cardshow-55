@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
-import { StarsBackground } from '@/components/ui/stars';
+
 import { type AnimationMode, type LightingPreset, type PathTheme } from './types/CRDTypes';
 
 interface CRDViewerProps {
@@ -130,20 +130,10 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     setLightingIntensity(intensity);
   };
 
-  // Handle mouse movement from stars background
-  const handleStarsMouseMove = React.useCallback((offsetX: number, offsetY: number) => {
-    setMouseOffset({ x: offsetX, y: offsetY });
-  }, []);
 
 
   return (
-    <StarsBackground 
-      className={`overflow-hidden relative ${className}`}
-      starColor={["#ffffff", "#e6f3ff", "#ffe6e6", "#f0e6ff", "#e6ffe6"]}
-      speed={40}
-      factor={0.03}
-      onStarsMove={handleStarsMouseMove}
-    >
+    <div className={`overflow-hidden relative ${className}`}>
 
       {/* 3D Scene */}
       <Canvas
@@ -234,6 +224,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
       
-    </StarsBackground>
+    </div>
   );
 };
