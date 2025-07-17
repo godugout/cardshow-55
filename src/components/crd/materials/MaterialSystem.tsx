@@ -71,6 +71,8 @@ export const MaterialSystem: React.FC<MaterialSystemProps> = ({
             emissive={new THREE.Color().setHSL(emissiveHue / 360, 1, 0.5)}
             emissiveIntensity={1.2 * intensity}
             envMapIntensity={5}
+            transparent={true}
+            opacity={0.3}
           />
         );
 
