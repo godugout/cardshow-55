@@ -35,6 +35,7 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   const [userDirection, setUserDirection] = useState<'clockwise' | 'counterclockwise' | null>(null);
   const [rotationVelocity, setRotationVelocity] = useState(0);
   const [lastFrameRotation, setLastFrameRotation] = useState(0);
+  const lastInteractionTime = useRef(0);
   
   // Drag tracking
   const dragState = useRef({
@@ -102,34 +103,31 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   // Enhanced rotation system with momentum
   useFrame((state, delta) => {
     if (!ringRef.current) return;
-
+    
     if (!isDragging && !isPaused) {
+      // Momentum-based rotation after user drag
       if (userDirection && Math.abs(rotationVelocity) > 0.001) {
-        // Continue rotation in user's preferred direction with momentum
-        const dampingFactor = 0.98; // Gradual slowdown
-        const newVelocity = rotationVelocity * dampingFactor;
+        const newVelocity = rotationVelocity * 0.98; // Damping factor
         setRotationVelocity(newVelocity);
         setCurrentRotation(prev => prev + newVelocity * delta);
-      } else if (autoRotate && !userDirection && !isMouseOverRing) {
-        // Default auto-rotation only when user hasn't set a direction AND mouse is not over ring
+      } 
+      // Auto-rotation when no user input or momentum
+      else if (autoRotate && !isMouseOverRing) {
         const baseSpeed = rotationSpeed * 0.5 * delta;
         setCurrentRotation(prev => prev + baseSpeed);
-      } else if (Math.abs(rotationVelocity) <= 0.001) {
-        // Reset to gentle auto-rotation after momentum stops (but not if mouse is over ring)
+      }
+      
+      // Clear velocity when movement stops
+      if (Math.abs(rotationVelocity) <= 0.001) {
         setRotationVelocity(0);
-        if (autoRotate && !isMouseOverRing) {
-          const gentleSpeed = rotationSpeed * 0.2 * delta;
-          setCurrentRotation(prev => prev + gentleSpeed);
-        }
+        setUserDirection(null);
       }
     }
 
-    // Apply rotation smoothly
+    // Smooth rotation application
     const targetRotation = currentRotation;
     const currentRingRotation = ringRef.current.rotation.y;
     const rotationDiff = targetRotation - currentRingRotation;
-    
-    // Smooth interpolation for better performance
     ringRef.current.rotation.y += rotationDiff * 0.1;
     
     setLastFrameRotation(ringRef.current.rotation.y);
@@ -204,6 +202,7 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
     }
     
     gl.domElement.style.cursor = 'auto';
+    lastInteractionTime.current = Date.now();
   }, [isDragging, gl.domElement]);
 
   // Enhanced global mouse listeners
@@ -278,8 +277,20 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
     <group 
       ref={ringRef}
       onPointerDown={handlePointerDown}
-      onPointerEnter={() => setIsMouseOverRing(true)}
-      onPointerLeave={() => setIsMouseOverRing(false)}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerEnter={() => {
+        setIsMouseOverRing(true);
+        lastInteractionTime.current = Date.now();
+      }}
+      onPointerLeave={() => {
+        // Only reset mouse over state after a delay and if we're not dragging
+        setTimeout(() => {
+          if (!isDragging && Date.now() - lastInteractionTime.current > 300) {
+            setIsMouseOverRing(false);
+          }
+        }, 300);
+      }}
     >
       {/* Particle Flow Ring (conditional) */}
       {showRing && (
