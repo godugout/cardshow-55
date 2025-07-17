@@ -38,31 +38,6 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
 
   return (
     <group position={position}>
-      {/* Subtle Aura for Selected Satellite */}
-      {isActive && (
-        <mesh>
-          <sphereGeometry args={[0.4, 16, 16]} />
-          <meshBasicMaterial 
-            transparent 
-            opacity={0.15}
-            color="#22c55e" // Green from the CRD gradient
-          />
-        </mesh>
-      )}
-      
-      {/* Outer glow ring for selected satellite */}
-      {isActive && (
-        <mesh>
-          <ringGeometry args={[0.35, 0.45, 16]} />
-          <meshBasicMaterial 
-            transparent 
-            opacity={0.2}
-            color="#06b6d4" // Blue-green from the CRD gradient
-            side={THREE.DoubleSide}
-          />
-        </mesh>
-      )}
-
       {/* Main Satellite with Actual Material */}
       <mesh 
         ref={meshRef}

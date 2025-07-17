@@ -9,7 +9,7 @@ import { FloatingCard3D } from '@/components/ui/FloatingCard3D';
 const AnimatedTagline: React.FC = () => {
   return (
     <div className="mt-12 mb-8">
-      <p className="font-caveat text-6xl md:text-8xl italic text-center text-crd-orange animate-fade-in">
+      <p className="font-caveat text-4xl md:text-5xl italic text-center text-crd-orange animate-fade-in">
         "No glue needed."
       </p>
     </div>
