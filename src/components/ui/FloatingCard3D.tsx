@@ -1,26 +1,29 @@
-import React, { useRef, useMemo, useState } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { SceneColors } from '@/utils/cssColors';
 
-const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ onHover }) => {
+const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void; scrollProgress: number }> = ({ onHover, scrollProgress }) => {
   const cardRef = useRef<THREE.Group>(null);
   const sunRef = useRef<THREE.Group>(null);
   
   useFrame((state) => {
     if (cardRef.current) {
-      // Position the card in the lower portion of the screen
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 3.5;
+      // Base position moved higher, then scroll-driven movement
+      const baseY = -1.5 + scrollProgress * -2; // Start higher, move down with scroll
+      cardRef.current.position.y = baseY + Math.sin(state.clock.elapsedTime * 0.3) * 0.3;
       
-      // Tilt the card towards the sun with flying motion
-      const tiltAngle = -0.4 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1; // Base tilt + gentle sway
-      cardRef.current.rotation.x = tiltAngle;
-      cardRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.05; // Subtle roll
+      // Dramatic scroll-driven tilt towards the sun + subtle floating motion
+      const baseTilt = -0.2 - scrollProgress * 1.2; // Increasingly dramatic tilt
+      const floatingMotion = Math.sin(state.clock.elapsedTime * 0.2) * 0.08;
+      cardRef.current.rotation.x = baseTilt + floatingMotion;
+      cardRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.04;
     }
     
     if (sunRef.current) {
-      // Subtle sun rotation and pulsing
+      // Sun moves slightly with scroll progression
+      sunRef.current.position.y = -1 + scrollProgress * 0.5;
       sunRef.current.rotation.z = state.clock.elapsedTime * 0.1;
       const pulse = Math.sin(state.clock.elapsedTime * 2) * 0.1 + 1;
       sunRef.current.scale.setScalar(pulse);
@@ -192,6 +195,21 @@ const CardMonolith: React.FC<{ onHover: (isHovering: boolean) => void }> = ({ on
 
 export const FloatingCard3D: React.FC = () => {
   const [isHoveringMonolith, setIsHoveringMonolith] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      // Calculate progress based on first screen height
+      const progress = Math.min(scrollY / windowHeight, 1);
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
       {/* Matching star field for seamless integration */}
@@ -226,7 +244,7 @@ export const FloatingCard3D: React.FC = () => {
         {/* Minimal ambient space lighting */}
         <ambientLight intensity={0.02} color="#000033" />
         
-        <CardMonolith onHover={setIsHoveringMonolith} />
+        <CardMonolith onHover={setIsHoveringMonolith} scrollProgress={scrollProgress} />
         
         <OrbitControls
           enableZoom={false}
