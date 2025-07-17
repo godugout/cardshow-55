@@ -48,13 +48,13 @@ const vertexShader = `
       float minAngleDiff = min(angleDiff1, angleDiff2);
       
       // Wave propagation (travels both ways around ring)
-      float waveRadius = waveProgress * 3.14159265359; // Half circumference
-      float waveFactor = smoothstep(waveRadius + 0.5, waveRadius - 0.5, minAngleDiff);
+      float waveRadius = waveProgress * 0.8; // Smaller wave radius for quick pulse
+      float waveFactor = smoothstep(waveRadius + 0.2, waveRadius - 0.2, minAngleDiff);
       
       // Lightning effect near wave front
-      float lightningRange = 0.3;
+      float lightningRange = 0.15; // Smaller lightning range
       float lightningFactor = 1.0 - smoothstep(0.0, lightningRange, minAngleDiff);
-      vLightning = lightningFactor * sin(time * 10.0 + particleAngle * 5.0) * 0.5 + 0.5;
+      vLightning = lightningFactor * sin(time * 8.0 + particleAngle * 3.0) * 0.3 + 0.3;
       
       // Mix colors based on wave
       float angle = particleAngle + (isPaused ? 0.0 : time * flowSpeed * 0.2);
@@ -97,21 +97,21 @@ const fragmentShader = `
   varying float vLightning;
   
   void main() {
-    // Create very soft, gas-like particles
+    // Create softer, more gas-like particles
     vec2 center = gl_PointCoord - 0.5;
     float dist = length(center);
     
     if (dist > 0.5) discard;
     
-    // Very soft falloff for gas-like effect
-    float alpha = vAlpha * pow(1.0 - dist * 2.0, 3.0);
-    alpha *= 0.7; // More visible gradient
+    // More gradual falloff for less obvious circles
+    float alpha = vAlpha * pow(1.0 - dist * 2.0, 4.0);
+    alpha *= 0.5; // Reduced visibility for subtler effect
     
     // Add lightning glow
     vec3 finalColor = vColor;
     if (vLightning > 0.1) {
-      finalColor += vec3(1.0, 1.0, 0.8) * vLightning * 0.8; // Electric blue-white
-      alpha += vLightning * 0.3; // Brighter during lightning
+      finalColor += vec3(0.8, 0.9, 1.0) * vLightning * 0.4; // Softer blue-white
+      alpha += vLightning * 0.2; // Less intense during lightning
     }
     
     gl_FragColor = vec4(finalColor, alpha);

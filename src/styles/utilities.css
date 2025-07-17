@@ -50,9 +50,9 @@
 .paper-scraps::after {
   content: '';
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 2.6rem;
+  top: 0.2rem;
+  bottom: 0.2rem;
+  left: 2.8rem;
   width: 2px;
   background: #dc143c;
   z-index: 1;
