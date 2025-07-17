@@ -103,7 +103,7 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   useFrame((state, delta) => {
     if (!ringRef.current) return;
 
-    if (!isDragging) {
+    if (!isDragging && !isPaused) {
       if (userDirection && Math.abs(rotationVelocity) > 0.001) {
         // Continue rotation in user's preferred direction with momentum
         const dampingFactor = 0.98; // Gradual slowdown
