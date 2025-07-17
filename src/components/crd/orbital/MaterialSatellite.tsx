@@ -85,17 +85,6 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
         />
       </mesh>
 
-      {/* Connection beam to card (when active) */}
-      {isActive && (
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.002, 0.002, position.length() * 0.8, 8]} />
-          <meshBasicMaterial 
-            color="#22c55e" 
-            transparent 
-            opacity={0.4}
-          />
-        </mesh>
-      )}
 
       {/* Lock indicator for locked styles */}
       {style.locked && (
