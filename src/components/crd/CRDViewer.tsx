@@ -7,6 +7,7 @@ import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
 import { StudioResetButton } from '../studio/StudioResetButton';
 import { StudioPauseButton } from '../studio/StudioPauseButton';
+import { SpaceOdysseyReset } from './animations/SpaceOdysseyReset';
 
 import { type AnimationMode, type LightingPreset, type PathTheme } from './types/CRDTypes';
 
@@ -75,6 +76,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const [selectedStyleId, setSelectedStyleId] = useState('matte');
   const [cardRotation, setCardRotation] = useState(new THREE.Euler(0, 0, 0));
   const [isPaused, setIsPaused] = useState(false);
+  const [isResetAnimating, setIsResetAnimating] = useState(false);
 
   // Rotation State
   const [autoRotate, setAutoRotate] = useState(initialAutoRotate);
@@ -143,9 +145,16 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   };
 
   const handleReset = () => {
-    if (controlsRef.current) {
-      controlsRef.current.reset();
-    }
+    // Start the space odyssey reset animation
+    setIsResetAnimating(true);
+    
+    // Reset controls after animation completes
+    setTimeout(() => {
+      if (controlsRef.current) {
+        controlsRef.current.reset();
+      }
+      setIsResetAnimating(false);
+    }, 4000); // Total animation duration
   };
 
   // Handle orbit controls interaction
@@ -214,6 +223,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           enableShadows={true}
         />
         
+        {/* Space Odyssey Reset Animation */}
+        <SpaceOdysseyReset 
+          isAnimating={isResetAnimating}
+          onComplete={() => setIsResetAnimating(false)}
+        />
+        
         {/* Main Card with Glass Case Container - Responds to mouse */}
         <group 
           position={[0, -2, 0]}
@@ -224,7 +239,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             mode={currentMode}
             intensity={currentIntensity}
             materialMode={selectedStyleId as any}
-            enableAnimation={true}
+            enableAnimation={!isResetAnimating}
             enableGlassCase={enableGlassCase}
             onTransformUpdate={handleTransformUpdate}
           />
@@ -239,11 +254,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             cardRotation={cardRotation}
             onStyleChange={handleStyleChange}
             selectedStyleId={selectedStyleId}
-            autoRotate={orbitalAutoRotate && !isCardInteracting}
+            autoRotate={orbitalAutoRotate && !isCardInteracting && !isResetAnimating}
             rotationSpeed={orbitalRotationSpeed}
-            showRing={showOrbitalRing}
+            showRing={showOrbitalRing && !isResetAnimating}
             showLockIndicators={showLockIndicators}
-            isPaused={isPaused}
+            isPaused={isPaused || isResetAnimating}
           />
         </group>
         
