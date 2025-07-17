@@ -58,7 +58,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Animation State
   const [currentMode, setCurrentMode] = useState<AnimationMode>(initialMode);
   const [currentIntensity, setCurrentIntensity] = useState(initialIntensity);
-  const [autoModeEnabled, setAutoModeEnabled] = useState(true);
+  const [autoModeEnabled, setAutoModeEnabled] = useState(false); // Disabled by default
 
   // Visual Style State
   const [selectedStyleId, setSelectedStyleId] = useState('matte');
