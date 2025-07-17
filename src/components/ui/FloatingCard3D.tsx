@@ -55,10 +55,10 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         break;
         
       case 'glass':
-        // Dynamic movements to catch chrome reflections
-        posY = Math.sin(time * 1.0) * 0.04 * factor;
-        rotY = Math.sin(time * 0.7) * 0.06 * factor;
-        rotX = Math.sin(time * 0.9) * 0.03 * factor;
+        // Gentle diamond-like movements to show crystal facets
+        posY = Math.sin(time * 0.8) * 0.03 * factor;
+        rotY = Math.sin(time * 0.5) * 0.04 * factor;
+        rotX = Math.sin(time * 0.6) * 0.02 * factor;
         effectsLayerRef.current.visible = false;
         break;
         
@@ -115,12 +115,19 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
       
       case 'glass':
         return (
-          <meshStandardMaterial
-            color="#e8e8e8"
-            metalness={1}
-            roughness={0.02}
-            emissive="#ffffff"
-            emissiveIntensity={0.2}
+          <meshPhysicalMaterial
+            color="#87ceeb"
+            metalness={0}
+            roughness={0}
+            transmission={0.95}
+            transparent={true}
+            opacity={0.8}
+            thickness={0.1}
+            ior={2.42}
+            clearcoat={1}
+            clearcoatRoughness={0}
+            emissive="#add8e6"
+            emissiveIntensity={0.1}
           />
         );
       
