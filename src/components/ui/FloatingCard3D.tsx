@@ -11,8 +11,8 @@ const CardMonolith: React.FC = () => {
     if (cardRef.current) {
       // Subtle floating animation
       cardRef.current.position.y += Math.sin(state.clock.elapsedTime * 0.3) * 0.001;
-      // Position the card in the lower portion of the screen where cards section would be
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
+      // Position the card in the bottom third of the viewport
+      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 8;
     }
     
     if (sunRef.current) {
