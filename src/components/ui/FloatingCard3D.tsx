@@ -20,36 +20,34 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
     const time = state.clock.elapsedTime;
     const factor = intensity;
     
+    let posX = 0, posY = 0, posZ = 0;
+    let rotX = 0, rotY = 0, rotZ = 0;
+    
     switch (mode) {
       case 'frozen':
-        // Perfectly centered and still
-        cardRef.current.position.set(0, 0, 0);
-        cardRef.current.rotation.set(0, 0, 0);
-        // Effects layer also frozen
-        effectsLayerRef.current.position.set(0, 0, 0.051);
-        effectsLayerRef.current.rotation.set(0, 0, 0);
+        // All values already at 0
         effectsLayerRef.current.visible = false;
         break;
         
       case 'showcase':
-        // Dramatic effects demonstration
-        const newY = Math.sin(time * 1.2) * 0.08 * factor;
-        const newX = Math.sin(time * 0.9) * 0.06 * factor;
-        const newZ = 0; // Keep Z at origin for card
-        const rotY = time * 0.3 * factor;
-        const rotX = Math.sin(time * 0.8) * 0.05 * factor;
-        const rotZ = Math.sin(time * 1.1) * 0.03 * factor;
-        
-        // Update card
-        cardRef.current.position.set(newX, newY, newZ);
-        cardRef.current.rotation.set(rotX, rotY, rotZ);
-        
-        // Effects layer follows exactly with slight Z offset
-        effectsLayerRef.current.position.set(newX, newY, newZ + 0.051);
-        effectsLayerRef.current.rotation.set(rotX, rotY, rotZ);
+        // Calculate new positions and rotations
+        posY = Math.sin(time * 1.2) * 0.08 * factor;
+        posX = Math.sin(time * 0.9) * 0.06 * factor;
+        posZ = 0;
+        rotY = time * 0.3 * factor;
+        rotX = Math.sin(time * 0.8) * 0.05 * factor;
+        rotZ = Math.sin(time * 1.1) * 0.03 * factor;
         effectsLayerRef.current.visible = true;
         break;
     }
+    
+    // Apply the same transforms to both card and effects layer
+    cardRef.current.position.set(posX, posY, posZ);
+    cardRef.current.rotation.set(rotX, rotY, rotZ);
+    
+    // Effects layer follows exactly with Z offset
+    effectsLayerRef.current.position.set(posX, posY, posZ + 0.051);
+    effectsLayerRef.current.rotation.set(rotX, rotY, rotZ);
   });
 
   return (
