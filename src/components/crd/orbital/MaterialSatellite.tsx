@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useMemo, useCallback } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { MaterialSystem } from '../materials/MaterialSystem';
@@ -387,8 +387,8 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
     }
   });
 
-  const handlePointerEnter = () => onHover(true);
-  const handlePointerLeave = () => onHover(false);
+  const handlePointerEnter = useCallback(() => onHover(true), [onHover]);
+  const handlePointerLeave = useCallback(() => onHover(false), [onHover]);
 
   return (
     <group position={position}>

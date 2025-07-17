@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { MaterialSatellite } from './MaterialSatellite';
 import { ParticleFlowRing } from './ParticleFlowRing';
 import { CRDVisualStyles, type CRDVisualStyle } from '../styles/StyleRegistry';
-import { useRingRotation } from '../hooks/useRingRotation';
+import { useOrbitalState } from '../hooks/useOrbitalState';
 import { useDragControl } from '../hooks/useDragControl';
 import { calculateSatellitePositions, findClosestSatellite } from '../utils/rotationUtils';
 
@@ -31,25 +31,26 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   showLockIndicators = true,
   isPaused = false
 }) => {
-  const [hoveredSatellite, setHoveredSatellite] = React.useState<string | null>(null);
   const ringRef = useRef<THREE.Group>(null);
   const { gl } = useThree();
-  const lastInteractionTime = useRef(0);
 
-  // Setup rotation and drag controls
+  // Unified orbital state management
   const {
     currentRotation,
     setCurrentRotation,
     rotationVelocity,
     setRotationVelocity,
-    isMouseOverRing,
-    setIsMouseOverRing,
     updateRotation,
-    applyRotation
-  } = useRingRotation({ autoRotate, rotationSpeed, isPaused });
+    applyRotation,
+    hoveredSatellite,
+    isMouseOverRing,
+    handleSatelliteHover,
+    handleRingHover,
+    isDragging,
+    setIsDragging
+  } = useOrbitalState({ autoRotate, rotationSpeed, isPaused });
 
   const {
-    isDragging,
     handleDragStart,
     handleDragMove,
     handleDragEnd
@@ -65,7 +66,7 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   useFrame((_, delta) => {
     if (!ringRef.current) return;
 
-    const newRotation = updateRotation(delta, isDragging);
+    const newRotation = updateRotation(delta);
     setCurrentRotation(newRotation);
     applyRotation(ringRef.current, newRotation);
 
@@ -78,8 +79,9 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   // Event handlers
   const handlePointerDown = useCallback((event: any) => {
     handleDragStart(event, currentRotation);
+    setIsDragging(true);
     gl.domElement.style.cursor = 'grabbing';
-  }, [currentRotation, gl.domElement, handleDragStart]);
+  }, [currentRotation, gl.domElement, handleDragStart, setIsDragging]);
 
   const handlePointerMove = useCallback((event: any) => {
     const newRotation = handleDragMove(event);
@@ -91,34 +93,26 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   const handlePointerUp = useCallback(() => {
     const momentum = handleDragEnd();
     setRotationVelocity(momentum);
+    setIsDragging(false);
     gl.domElement.style.cursor = 'auto';
-    lastInteractionTime.current = Date.now();
-  }, [gl.domElement, handleDragEnd]);
+  }, [gl.domElement, handleDragEnd, setIsDragging]);
 
   const handlePointerEnter = useCallback(() => {
-    setIsMouseOverRing(true);
-    lastInteractionTime.current = Date.now();
-  }, []);
+    handleRingHover(true);
+  }, [handleRingHover]);
 
   const handlePointerLeave = useCallback(() => {
-    // Use a shorter delay and more predictable behavior
-    const checkDelay = setTimeout(() => {
-      if (!isDragging) {
-        setIsMouseOverRing(false);
-      }
-    }, 100);
-    
-    return () => clearTimeout(checkDelay);
-  }, [isDragging, setIsMouseOverRing]);
+    handleRingHover(false);
+  }, [handleRingHover]);
 
   // Satellite interaction handlers
   const handleSatelliteClick = useCallback((style: CRDVisualStyle) => {
     onStyleChange(style);
   }, [onStyleChange]);
 
-  const handleSatelliteHover = useCallback((styleId: string, hovered: boolean) => {
-    setHoveredSatellite(hovered ? styleId : null);
-  }, []);
+  const handleSatelliteHoverWrapper = useCallback((styleId: string, hovered: boolean) => {
+    handleSatelliteHover(hovered ? styleId : null);
+  }, [handleSatelliteHover]);
 
   return (
     <group 
@@ -150,7 +144,7 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
           isActive={style.id === selectedStyleId}
           isHovered={hoveredSatellite === style.id}
           onClick={() => handleSatelliteClick(style)}
-          onHover={(hovered) => handleSatelliteHover(style.id, hovered)}
+          onHover={(hovered) => handleSatelliteHoverWrapper(style.id, hovered)}
         />
       ))}
     </group>

@@ -67,8 +67,8 @@ const vertexShader = `
         float angleDiff2 = 6.28318530718 - angleDiff1;
         float minAngleDiff = min(angleDiff1, angleDiff2);
         
-        // Create expanding ripple effect
-        float rippleRadius = waveRippleProgress * 3.14159; // Ripple expands across half the ring
+        // Create expanding ripple effect - full round trip
+        float rippleRadius = waveRippleProgress * 6.28318530718; // Ripple expands around full circumference
         float rippleWidth = 0.3; // Width of the thunder band
         
         // Calculate distance from ripple front
