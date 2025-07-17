@@ -189,27 +189,27 @@ export function StarsBackground({
       {/* Star layers with reduced counts */}
       <motion.div style={{ x: springX, y: springY }}>
         <StarLayer
-          count={150}
+          count={25}
           size={1}
-          transition={{ repeat: Infinity, duration: speed, ease: "linear" }}
+          transition={{ repeat: Infinity, duration: speed * 3, ease: "linear" }}
           starColor={starColor}
         />
         <StarLayer
-          count={80}
+          count={12}
           size={2}
           transition={{
             repeat: Infinity,
-            duration: speed * 2,
+            duration: speed * 5,
             ease: "linear",
           }}
           starColor={starColor}
         />
         <StarLayer
-          count={40}
+          count={6}
           size={3}
           transition={{
             repeat: Infinity,
-            duration: speed * 3,
+            duration: speed * 8,
             ease: "linear",
           }}
           starColor={starColor}
