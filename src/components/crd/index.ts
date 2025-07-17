@@ -4,6 +4,12 @@ export { Card3DCore } from './core/Card3DCore';
 export { MaterialSystem } from './materials/MaterialSystem';
 export { AnimationController } from './animation/AnimationController';
 export { LightingRig } from './lighting/LightingRig';
+export { CRDControlPanel } from './controls/CRDControlPanel';
+
+// Premium Styles System
+export { StyleSelector, StyleTile } from './styles/StyleSelector';
+export { StyleRegistry, CRDVisualStyles } from './styles/StyleRegistry';
+export type { CRDVisualStyle } from './styles/StyleRegistry';
 
 // Types
 export type {

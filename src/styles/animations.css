@@ -428,6 +428,11 @@
     will-change: auto;
   }
 
+  /* Hover scale utility */
+  .hover\:scale-102:hover {
+    transform: scale(1.02);
+  }
+
   /* Memory card optimizations */
   .memory-card {
     transition: box-shadow var(--transition-slow);

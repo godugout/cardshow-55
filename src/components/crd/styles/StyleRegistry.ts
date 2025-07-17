@@ -1,0 +1,257 @@
+// Premium Visual Styles Registry
+export interface CRDVisualStyle {
+  id: string;
+  displayName: string;
+  locked: boolean;
+  isActive: boolean;
+  category: 'signature' | 'material' | 'effect' | 'premium';
+  baseMaterial: string;
+  secondaryFinish?: string;
+  textureProfile: string;
+  particleEffect?: string;
+  lighting: string;
+  animationProfile?: string;
+  uiPreviewGradient: string;
+  visualVibe: string;
+  unlockMethod: 'free' | 'points' | 'premium' | 'achievement';
+  unlockCost?: number;
+  performance: {
+    renderCost: 'low' | 'medium' | 'high';
+    particleCount: number;
+    shaderComplexity: number;
+  };
+}
+
+// Premium Visual Styles Database
+export const CRDVisualStyles: CRDVisualStyle[] = [
+  // Free Starter Styles
+  {
+    id: 'basicFoil',
+    displayName: 'Basic Foil',
+    locked: false,
+    isActive: false,
+    category: 'material',
+    baseMaterial: 'StandardFoil',
+    textureProfile: 'Smooth',
+    lighting: 'StudioHDR',
+    uiPreviewGradient: 'linear-gradient(135deg, #c9c9c9, #f0f0f0)',
+    visualVibe: 'Clean & professional',
+    unlockMethod: 'free',
+    performance: {
+      renderCost: 'low',
+      particleCount: 0,
+      shaderComplexity: 1
+    }
+  },
+  {
+    id: 'matte',
+    displayName: 'Matte Finish',
+    locked: false,
+    isActive: true, // Default active
+    category: 'material',
+    baseMaterial: 'MattePaper',
+    textureProfile: 'Textured',
+    lighting: 'SoftHDR',
+    uiPreviewGradient: 'linear-gradient(135deg, #8e8e8e, #b8b8b8)',
+    visualVibe: 'Subtle & elegant',
+    unlockMethod: 'free',
+    performance: {
+      renderCost: 'low',
+      particleCount: 0,
+      shaderComplexity: 1
+    }
+  },
+  {
+    id: 'classicGloss',
+    displayName: 'Classic Gloss',
+    locked: false,
+    isActive: false,
+    category: 'material',
+    baseMaterial: 'GlossyCard',
+    secondaryFinish: 'HighGlossClear',
+    textureProfile: 'Smooth',
+    lighting: 'StudioHDRBright',
+    uiPreviewGradient: 'linear-gradient(135deg, #ffffff, #e8e8e8)',
+    visualVibe: 'Traditional & polished',
+    unlockMethod: 'free',
+    performance: {
+      renderCost: 'low',
+      particleCount: 0,
+      shaderComplexity: 2
+    }
+  },
+
+  // Premium Locked Styles
+  {
+    id: 'holoBurst',
+    displayName: 'Holographic Burst',
+    locked: true,
+    isActive: false,
+    category: 'premium',
+    baseMaterial: 'PrismaticFoil',
+    secondaryFinish: 'HighGlossClear',
+    textureProfile: 'EmbossedLight',
+    particleEffect: 'RainbowSparkle',
+    lighting: 'StudioHDRBright',
+    animationProfile: 'ShimmerPulse',
+    uiPreviewGradient: 'linear-gradient(45deg, #e4d00a, #d95eff, #00d4ff)',
+    visualVibe: 'Futuristic & eye-catching',
+    unlockMethod: 'premium',
+    unlockCost: 500,
+    performance: {
+      renderCost: 'high',
+      particleCount: 150,
+      shaderComplexity: 8
+    }
+  },
+  {
+    id: 'crystalInterference',
+    displayName: 'Crystal Interference',
+    locked: true,
+    isActive: false,
+    category: 'premium',
+    baseMaterial: 'CrystalClear',
+    secondaryFinish: 'IridescentFilm',
+    textureProfile: 'MicroEtchSmooth',
+    particleEffect: 'RefractionBloom',
+    lighting: 'CoolBacklitHDR',
+    animationProfile: 'RefractionShift',
+    uiPreviewGradient: 'linear-gradient(120deg, #6de4dc, #c5b7ff, #ff9de6)',
+    visualVibe: 'Ethereal & high-tech',
+    unlockMethod: 'points',
+    unlockCost: 750,
+    performance: {
+      renderCost: 'high',
+      particleCount: 80,
+      shaderComplexity: 9
+    }
+  },
+  {
+    id: 'chromeBurst',
+    displayName: 'Chrome Burst',
+    locked: true,
+    isActive: false,
+    category: 'premium',
+    baseMaterial: 'ChromeMetal',
+    secondaryFinish: 'MirrorFinish',
+    textureProfile: 'PolishedMetal',
+    particleEffect: 'MetalSpark',
+    lighting: 'DramaticHDR',
+    animationProfile: 'ChromeFlare',
+    uiPreviewGradient: 'linear-gradient(90deg, #434343, #000000, #2c2c2c)',
+    visualVibe: 'Bold & industrial',
+    unlockMethod: 'achievement',
+    unlockCost: 1000,
+    performance: {
+      renderCost: 'medium',
+      particleCount: 60,
+      shaderComplexity: 6
+    }
+  },
+  {
+    id: 'vintageBoil',
+    displayName: 'Vintage Foil',
+    locked: true,
+    isActive: false,
+    category: 'signature',
+    baseMaterial: 'AgedFoil',
+    secondaryFinish: 'PatinaClear',
+    textureProfile: 'VintageWear',
+    lighting: 'WarmHDR',
+    animationProfile: 'SubtleShimmer',
+    uiPreviewGradient: 'linear-gradient(135deg, #d4af37, #b8860b, #cd853f)',
+    visualVibe: 'Nostalgic & timeless',
+    unlockMethod: 'points',
+    unlockCost: 300,
+    performance: {
+      renderCost: 'medium',
+      particleCount: 20,
+      shaderComplexity: 4
+    }
+  },
+  {
+    id: 'oceanWaves',
+    displayName: 'Ocean Waves',
+    locked: true,
+    isActive: false,
+    category: 'effect',
+    baseMaterial: 'FluidFoil',
+    secondaryFinish: 'WaveRefraction',
+    textureProfile: 'FlowingRipple',
+    particleEffect: 'WaterDroplets',
+    lighting: 'AquaticHDR',
+    animationProfile: 'FlowingWaves',
+    uiPreviewGradient: 'linear-gradient(135deg, #007acc, #0099e6, #33ccff)',
+    visualVibe: 'Fluid & dynamic',
+    unlockMethod: 'premium',
+    unlockCost: 800,
+    performance: {
+      renderCost: 'high',
+      particleCount: 120,
+      shaderComplexity: 7
+    }
+  }
+];
+
+// Style Registry Management
+export class StyleRegistry {
+  private static instance: StyleRegistry;
+  private styles: Map<string, CRDVisualStyle> = new Map();
+  private activeStyleId: string = 'matte'; // Default
+
+  static getInstance(): StyleRegistry {
+    if (!StyleRegistry.instance) {
+      StyleRegistry.instance = new StyleRegistry();
+    }
+    return StyleRegistry.instance;
+  }
+
+  constructor() {
+    // Register all styles
+    CRDVisualStyles.forEach(style => {
+      this.styles.set(style.id, style);
+    });
+  }
+
+  getStyle(id: string): CRDVisualStyle | undefined {
+    return this.styles.get(id);
+  }
+
+  getAllStyles(): CRDVisualStyle[] {
+    return Array.from(this.styles.values());
+  }
+
+  getUnlockedStyles(): CRDVisualStyle[] {
+    return this.getAllStyles().filter(style => !style.locked);
+  }
+
+  getStylesByCategory(category: string): CRDVisualStyle[] {
+    return this.getAllStyles().filter(style => style.category === category);
+  }
+
+  setActiveStyle(id: string): boolean {
+    const style = this.getStyle(id);
+    if (style && !style.locked) {
+      // Deactivate all styles
+      this.getAllStyles().forEach(s => s.isActive = false);
+      // Activate selected style
+      style.isActive = true;
+      this.activeStyleId = id;
+      return true;
+    }
+    return false;
+  }
+
+  getActiveStyle(): CRDVisualStyle | undefined {
+    return this.getStyle(this.activeStyleId);
+  }
+
+  unlockStyle(id: string): boolean {
+    const style = this.getStyle(id);
+    if (style) {
+      style.locked = false;
+      return true;
+    }
+    return false;
+  }
+}

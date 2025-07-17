@@ -4,6 +4,7 @@ import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
+import { CRDControlPanel } from './controls/CRDControlPanel';
 import { type AnimationMode, type LightingPreset, type PathTheme } from './types/CRDTypes';
 
 interface CRDViewerProps {
@@ -12,9 +13,12 @@ interface CRDViewerProps {
   lightingPreset?: LightingPreset;
   pathTheme?: PathTheme;
   autoRotate?: boolean;
+  rotationSpeed?: number;
+  lightingIntensity?: number;
   enableControls?: boolean;
   enableGlassCase?: boolean;
   showModeText?: boolean;
+  showControlPanel?: boolean;
   className?: string;
   onModeChange?: (mode: AnimationMode) => void;
   onIntensityChange?: (intensity: number) => void;
@@ -23,23 +27,38 @@ interface CRDViewerProps {
 export const CRDViewer: React.FC<CRDViewerProps> = ({
   mode: initialMode = 'frozen',
   intensity: initialIntensity = 1,
-  lightingPreset = 'studio',
+  lightingPreset: initialLightingPreset = 'studio',
   pathTheme = 'neutral',
-  autoRotate = false,
+  autoRotate: initialAutoRotate = false,
+  rotationSpeed: initialRotationSpeed = 0.5,
+  lightingIntensity: initialLightingIntensity = 1,
   enableControls = true,
   enableGlassCase = true,
   showModeText = true,
+  showControlPanel = true,
   className = "w-full h-screen",
   onModeChange,
   onIntensityChange
 }) => {
+  // Animation State
   const [currentMode, setCurrentMode] = useState<AnimationMode>(initialMode);
   const [currentIntensity, setCurrentIntensity] = useState(initialIntensity);
-  const [autoMode, setAutoMode] = useState(true);
+  const [autoModeEnabled, setAutoModeEnabled] = useState(true);
 
-  // Auto-cycle through modes for demo (only when autoMode is true)
+  // Visual Style State
+  const [selectedStyleId, setSelectedStyleId] = useState('matte');
+
+  // Rotation State
+  const [autoRotate, setAutoRotate] = useState(initialAutoRotate);
+  const [rotationSpeed, setRotationSpeed] = useState(initialRotationSpeed);
+
+  // Lighting State
+  const [lightingPreset, setLightingPreset] = useState<LightingPreset>(initialLightingPreset);
+  const [lightingIntensity, setLightingIntensity] = useState(initialLightingIntensity);
+
+  // Auto-cycle through modes for demo (only when autoModeEnabled is true)
   useEffect(() => {
-    if (!autoMode) return;
+    if (!autoModeEnabled) return;
     
     const interval = setInterval(() => {
       setCurrentMode(prev => {
@@ -52,17 +71,39 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [autoMode, onModeChange]);
+  }, [autoModeEnabled, onModeChange]);
 
   const handleModeChange = (newMode: AnimationMode) => {
     setCurrentMode(newMode);
-    setAutoMode(false); // Stop auto-switching when user clicks
+    setAutoModeEnabled(false); // Stop auto-switching when user manually changes
     onModeChange?.(newMode);
   };
 
   const handleIntensityChange = (newIntensity: number) => {
     setCurrentIntensity(newIntensity);
     onIntensityChange?.(newIntensity);
+  };
+
+  const handleStyleChange = (styleId: string) => {
+    setSelectedStyleId(styleId);
+    console.log('Style changed to:', styleId);
+    // Here we'll integrate with the MaterialSystem to apply the style
+  };
+
+  const handleAutoRotateChange = (enabled: boolean) => {
+    setAutoRotate(enabled);
+  };
+
+  const handleRotationSpeedChange = (speed: number) => {
+    setRotationSpeed(speed);
+  };
+
+  const handleLightingPresetChange = (preset: LightingPreset) => {
+    setLightingPreset(preset);
+  };
+
+  const handleLightingIntensityChange = (intensity: number) => {
+    setLightingIntensity(intensity);
   };
 
   return (
@@ -107,6 +148,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <LightingRig 
           preset={lightingPreset} 
           pathTheme={pathTheme}
+          intensity={lightingIntensity}
           enableShadows={true}
         />
         
@@ -129,7 +171,8 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             anchorX="center"
             anchorY="middle"
           >
-            Mode: {currentMode.toUpperCase()} | Intensity: {currentIntensity.toFixed(1)}
+            {selectedStyleId.charAt(0).toUpperCase() + selectedStyleId.slice(1)} | 
+            {currentMode.toUpperCase()} | {currentIntensity.toFixed(1)}x
           </Text>
         )}
         
@@ -142,7 +185,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             maxDistance={25}
             minDistance={3}
             autoRotate={autoRotate}
-            autoRotateSpeed={0.5}
+            autoRotateSpeed={rotationSpeed}
             target={[0, 0, 0]}
           />
         )}
@@ -151,47 +194,34 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
       
-      {/* Control Panel */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-white/10 bg-black/70 backdrop-blur-md">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            {/* Animation Mode Controls */}
-            <div className="flex items-center gap-2">
-              <span className="text-white text-sm font-medium">Animation Mode:</span>
-              <div className="flex gap-1 flex-wrap">
-                {(['frozen', 'ice', 'gold', 'glass', 'holo', 'showcase'] as AnimationMode[]).map(mode => (
-                  <button
-                    key={mode}
-                    onClick={() => handleModeChange(mode)}
-                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                      currentMode === mode 
-                        ? 'bg-primary text-primary-foreground shadow-lg' 
-                        : 'bg-white/10 text-white hover:bg-white/20'
-                    }`}
-                  >
-                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
+      {/* Modern Control Panel */}
+      {showControlPanel && (
+        <div className="fixed bottom-4 left-4 right-4 z-20 max-w-4xl mx-auto">
+          <CRDControlPanel
+            // Animation props
+            animationMode={currentMode}
+            animationIntensity={currentIntensity}
+            onAnimationModeChange={handleModeChange}
+            onAnimationIntensityChange={handleIntensityChange}
             
-            {/* Intensity Control */}
-            <div className="flex items-center gap-3">
-              <label className="text-white text-sm font-medium">Intensity:</label>
-              <input
-                type="range"
-                min="0.1"
-                max="3"
-                step="0.1"
-                value={currentIntensity}
-                onChange={(e) => handleIntensityChange(parseFloat(e.target.value))}
-                className="w-24 accent-primary"
-              />
-              <span className="text-white text-sm font-mono w-8">{currentIntensity.toFixed(1)}</span>
-            </div>
-          </div>
+            // Style props
+            selectedStyleId={selectedStyleId}
+            onStyleChange={handleStyleChange}
+            
+            // Rotation props
+            autoRotate={autoRotate}
+            rotationSpeed={rotationSpeed}
+            onAutoRotateChange={handleAutoRotateChange}
+            onRotationSpeedChange={handleRotationSpeedChange}
+            
+            // Lighting props
+            lightingPreset={lightingPreset}
+            lightingIntensity={lightingIntensity}
+            onLightingPresetChange={handleLightingPresetChange}
+            onLightingIntensityChange={handleLightingIntensityChange}
+          />
         </div>
-      </div>
+      )}
     </div>
   );
 };
