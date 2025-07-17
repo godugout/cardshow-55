@@ -28,9 +28,19 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
 }) => {
   const [hoveredSatellite, setHoveredSatellite] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStartRotation, setDragStartRotation] = useState(0);
   const [currentRotation, setCurrentRotation] = useState(0);
-  const [lastMouseX, setLastMouseX] = useState(0);
+  const [userDirection, setUserDirection] = useState<'clockwise' | 'counterclockwise' | null>(null);
+  const [rotationVelocity, setRotationVelocity] = useState(0);
+  const [lastFrameRotation, setLastFrameRotation] = useState(0);
+  
+  // Drag tracking
+  const dragState = useRef({
+    startX: 0,
+    startRotation: 0,
+    lastX: 0,
+    lastTime: 0,
+    velocityHistory: [] as number[]
+  });
   
   const ringRef = useRef<THREE.Group>(null);
   const { camera, gl } = useThree();
@@ -86,28 +96,59 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
     return minAngle < Math.PI / 6 ? closestSatellite : null;
   }, [cardRotation, satellitePositions]);
 
-  // Auto-rotation and drag handling
-  useFrame((state) => {
+  // Enhanced rotation system with momentum
+  useFrame((state, delta) => {
     if (!ringRef.current) return;
 
-    if (autoRotate && !isDragging) {
-      // Moon orbital period ≈ 27.3 days, scale to reasonable speed
-      const moonSpeed = (Math.PI * 2) / (27.3 * 24 * 3600); // rad/sec
-      const scaledSpeed = moonSpeed * rotationSpeed * 10000; // Scale for visibility
-      
-      setCurrentRotation(prev => prev + scaledSpeed * state.clock.getDelta());
+    if (!isDragging) {
+      if (userDirection && Math.abs(rotationVelocity) > 0.001) {
+        // Continue rotation in user's preferred direction with momentum
+        const dampingFactor = 0.98; // Gradual slowdown
+        const newVelocity = rotationVelocity * dampingFactor;
+        setRotationVelocity(newVelocity);
+        setCurrentRotation(prev => prev + newVelocity * delta);
+      } else if (autoRotate && !userDirection) {
+        // Default auto-rotation only when user hasn't set a direction
+        const baseSpeed = rotationSpeed * 0.5 * delta;
+        setCurrentRotation(prev => prev + baseSpeed);
+      } else if (Math.abs(rotationVelocity) <= 0.001) {
+        // Reset to gentle auto-rotation after momentum stops
+        setRotationVelocity(0);
+        if (autoRotate) {
+          const gentleSpeed = rotationSpeed * 0.2 * delta;
+          setCurrentRotation(prev => prev + gentleSpeed);
+        }
+      }
     }
 
-    ringRef.current.rotation.y = currentRotation;
+    // Apply rotation smoothly
+    const targetRotation = currentRotation;
+    const currentRingRotation = ringRef.current.rotation.y;
+    const rotationDiff = targetRotation - currentRingRotation;
+    
+    // Smooth interpolation for better performance
+    ringRef.current.rotation.y += rotationDiff * 0.1;
+    
+    setLastFrameRotation(ringRef.current.rotation.y);
   });
 
-  // Mouse drag handlers
+  // Enhanced drag handlers with momentum tracking
   const handlePointerDown = useCallback((event: any) => {
     if (!ringRef.current) return;
     
+    const clientX = event.nativeEvent?.clientX || event.clientX || 0;
+    
     setIsDragging(true);
-    setDragStartRotation(currentRotation);
-    setLastMouseX(event.nativeEvent?.clientX || event.clientX || 0);
+    setRotationVelocity(0); // Stop current momentum
+    
+    // Initialize drag state
+    dragState.current = {
+      startX: clientX,
+      startRotation: currentRotation,
+      lastX: clientX,
+      lastTime: Date.now(),
+      velocityHistory: []
+    };
     
     gl.domElement.style.cursor = 'grabbing';
   }, [currentRotation, gl.domElement]);
@@ -115,31 +156,95 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   const handlePointerMove = useCallback((event: any) => {
     if (!isDragging) return;
     
-    const deltaX = (event.nativeEvent?.clientX || event.clientX || 0) - lastMouseX;
-    const rotationDelta = deltaX * 0.01; // Sensitivity
+    const clientX = event.nativeEvent?.clientX || event.clientX || 0;
+    const currentTime = Date.now();
+    const deltaX = clientX - dragState.current.lastX;
+    const deltaTime = currentTime - dragState.current.lastTime;
     
-    setCurrentRotation(dragStartRotation + rotationDelta);
-    setLastMouseX(event.nativeEvent?.clientX || event.clientX || 0);
-  }, [isDragging, lastMouseX, dragStartRotation]);
+    // Improved sensitivity for smoother interaction
+    const sensitivity = 0.005;
+    const rotationDelta = deltaX * sensitivity;
+    
+    // Calculate instantaneous velocity
+    const instantVelocity = deltaTime > 0 ? rotationDelta / (deltaTime / 1000) : 0;
+    
+    // Track velocity history for momentum calculation
+    dragState.current.velocityHistory.push(instantVelocity);
+    if (dragState.current.velocityHistory.length > 5) {
+      dragState.current.velocityHistory.shift();
+    }
+    
+    // Update rotation
+    setCurrentRotation(dragState.current.startRotation + (clientX - dragState.current.startX) * sensitivity);
+    
+    // Determine and set user direction based on drag
+    if (Math.abs(deltaX) > 2) {
+      const newDirection = deltaX > 0 ? 'clockwise' : 'counterclockwise';
+      setUserDirection(newDirection);
+    }
+    
+    dragState.current.lastX = clientX;
+    dragState.current.lastTime = currentTime;
+  }, [isDragging]);
 
   const handlePointerUp = useCallback(() => {
+    if (!isDragging) return;
+    
     setIsDragging(false);
-    gl.domElement.style.cursor = 'grab';
-  }, [gl.domElement]);
+    
+    // Calculate momentum from velocity history
+    const validVelocities = dragState.current.velocityHistory.filter(v => !isNaN(v) && isFinite(v));
+    if (validVelocities.length > 0) {
+      const avgVelocity = validVelocities.reduce((sum, v) => sum + v, 0) / validVelocities.length;
+      const momentum = Math.max(-2, Math.min(2, avgVelocity * 0.3)); // Clamp momentum
+      setRotationVelocity(momentum);
+    }
+    
+    gl.domElement.style.cursor = 'auto';
+  }, [isDragging, gl.domElement]);
 
-  // Add global mouse listeners
+  // Enhanced global mouse listeners
   React.useEffect(() => {
     const handleGlobalMove = (e: MouseEvent) => {
       if (isDragging) {
-        const deltaX = e.clientX - lastMouseX;
-        const rotationDelta = deltaX * 0.01;
-        setCurrentRotation(dragStartRotation + rotationDelta);
-        setLastMouseX(e.clientX);
+        const currentTime = Date.now();
+        const deltaX = e.clientX - dragState.current.lastX;
+        const deltaTime = currentTime - dragState.current.lastTime;
+        
+        const sensitivity = 0.005;
+        const rotationDelta = deltaX * sensitivity;
+        const instantVelocity = deltaTime > 0 ? rotationDelta / (deltaTime / 1000) : 0;
+        
+        // Update velocity history
+        dragState.current.velocityHistory.push(instantVelocity);
+        if (dragState.current.velocityHistory.length > 5) {
+          dragState.current.velocityHistory.shift();
+        }
+        
+        // Update rotation
+        setCurrentRotation(dragState.current.startRotation + (e.clientX - dragState.current.startX) * sensitivity);
+        
+        // Set direction based on movement
+        if (Math.abs(deltaX) > 1) {
+          const newDirection = deltaX > 0 ? 'clockwise' : 'counterclockwise';
+          setUserDirection(newDirection);
+        }
+        
+        dragState.current.lastX = e.clientX;
+        dragState.current.lastTime = currentTime;
       }
     };
 
     const handleGlobalUp = () => {
       if (isDragging) {
+        // Calculate final momentum
+        const validVelocities = dragState.current.velocityHistory.filter(v => !isNaN(v) && isFinite(v));
+        if (validVelocities.length > 0) {
+          const avgVelocity = validVelocities.reduce((sum, v) => sum + v, 0) / validVelocities.length;
+          const momentum = Math.max(-2, Math.min(2, avgVelocity * 0.3));
+          setRotationVelocity(momentum);
+        }
+        
         setIsDragging(false);
         gl.domElement.style.cursor = 'auto';
       }
@@ -154,7 +259,7 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
       window.removeEventListener('mousemove', handleGlobalMove);
       window.removeEventListener('mouseup', handleGlobalUp);
     };
-  }, [isDragging, lastMouseX, dragStartRotation, gl.domElement]);
+  }, [isDragging, gl.domElement]);
 
   const handleSatelliteClick = (style: CRDVisualStyle) => {
     console.log('🎯 Satellite clicked:', style.displayName, 'ID:', style.id);
