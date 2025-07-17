@@ -50,6 +50,10 @@ const CreateWithStickyControls = () => {
         rotationSpeed={rotationSpeed}
         onAutoRotateChange={setAutoRotate}
         onRotationSpeedChange={setRotationSpeed}
+        lightingPreset={lightingPreset}
+        lightingIntensity={lightingIntensity}
+        onLightingPresetChange={setLightingPreset}
+        onLightingIntensityChange={setLightingIntensity}
       />
     </div>
   );

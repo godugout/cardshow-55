@@ -71,13 +71,13 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
     return minAngle < Math.PI / 6 ? closestSatellite : null;
   }, [cardRotation, satellitePositions]);
 
-  // Update active style based on card direction
-  useFrame(() => {
-    const pointingAtStyle = getPointingAtSatellite();
-    if (pointingAtStyle && pointingAtStyle.id !== selectedStyleId) {
-      onStyleChange(pointingAtStyle);
-    }
-  });
+  // Disable automatic style changes - let manual controls handle it
+  // useFrame(() => {
+  //   const pointingAtStyle = getPointingAtSatellite();
+  //   if (pointingAtStyle && pointingAtStyle.id !== selectedStyleId) {
+  //     onStyleChange(pointingAtStyle);
+  //   }
+  // });
 
   const handleSatelliteClick = (style: CRDVisualStyle) => {
     console.log('🎯 Satellite clicked:', style.displayName, 'ID:', style.id);

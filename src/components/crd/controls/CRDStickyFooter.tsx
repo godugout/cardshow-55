@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Play, RotateCw, Palette, ChevronUp, X, Square } from 'lucide-react';
 import { CRDVisualStyles } from '../styles/StyleRegistry';
-import { type AnimationMode } from '../types/CRDTypes';
+import { type AnimationMode, type LightingPreset } from '../types/CRDTypes';
 
 interface CRDStickyFooterProps {
   // Animation Settings
@@ -19,6 +19,12 @@ interface CRDStickyFooterProps {
   rotationSpeed: number;
   onAutoRotateChange: (enabled: boolean) => void;
   onRotationSpeedChange: (speed: number) => void;
+  
+  // Lighting Settings
+  lightingPreset: LightingPreset;
+  lightingIntensity: number;
+  onLightingPresetChange: (preset: LightingPreset) => void;
+  onLightingIntensityChange: (intensity: number) => void;
 }
 
 type DrawerHeight = 'collapsed' | 'small' | 'medium' | 'large';
@@ -28,10 +34,14 @@ export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
   selectedStyleId,
   autoRotate,
   rotationSpeed,
+  lightingPreset,
+  lightingIntensity,
   onAnimationModeChange,
   onStyleChange,
   onAutoRotateChange,
-  onRotationSpeedChange
+  onRotationSpeedChange,
+  onLightingPresetChange,
+  onLightingIntensityChange
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [drawerHeight, setDrawerHeight] = useState<DrawerHeight>('collapsed');
