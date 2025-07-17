@@ -217,12 +217,18 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     materialRef.current.uniforms.time.value = state.clock.elapsedTime;
     materialRef.current.uniforms.isPaused.value = isPaused;
     
-    // Subtle flow speed changes on interaction
-    const flowSpeed = hoveredSatellite ? 0.2 : 0.15;
+    // Stop rotation during hover wave effect
+    let flowSpeed = 0.15; // Normal speed
+    if (waveStateRef.current.isActive) {
+      flowSpeed = 0; // Stop rotation during wave
+    } else if (hoveredSatellite) {
+      flowSpeed = 0; // Stop rotation on hover (before wave starts)
+    }
+    
     materialRef.current.uniforms.flowSpeed.value = THREE.MathUtils.lerp(
       materialRef.current.uniforms.flowSpeed.value,
       flowSpeed,
-      0.02
+      0.1 // Faster lerp for more responsive stopping
     );
     
     // Handle hover wave effect
@@ -256,9 +262,11 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
       }
     }
     
-    // Reset wave if no hover
+    // Stop wave immediately when hover ends
     if (!hoveredSatellite && waveStateRef.current.isActive) {
-      // Allow current wave to complete naturally
+      waveStateRef.current.isActive = false;
+      materialRef.current.uniforms.hasWave.value = false;
+      materialRef.current.uniforms.waveProgress.value = 0;
     }
   });
 
