@@ -122,6 +122,7 @@ type StarsBackgroundProps = React.ComponentProps<"div"> & {
   speed?: number;
   transition?: SpringOptions;
   starColor?: string | string[];
+  onStarsMove?: (offsetX: number, offsetY: number) => void;
 };
 
 export function StarsBackground({
@@ -131,6 +132,7 @@ export function StarsBackground({
   speed = 50,
   transition = { stiffness: 50, damping: 20 },
   starColor = ["#fff", "#e6f3ff", "#ffe6e6", "#f0e6ff", "#e6ffe6"],
+  onStarsMove,
   ...props
 }: StarsBackgroundProps) {
   const offsetX = useMotionValue(1);
@@ -147,8 +149,11 @@ export function StarsBackground({
       const newOffsetY = -(e.clientY - centerY) * factor;
       offsetX.set(newOffsetX);
       offsetY.set(newOffsetY);
+      
+      // Notify parent component about mouse movement
+      onStarsMove?.(newOffsetX, newOffsetY);
     },
-    [offsetX, offsetY, factor],
+    [offsetX, offsetY, factor, onStarsMove],
   );
 
   return (

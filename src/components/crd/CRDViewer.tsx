@@ -56,6 +56,9 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Refs
   const cardRef = useRef<THREE.Group & { getCurrentRotation?: () => THREE.Euler }>(null);
 
+  // Mouse position state for synced movement
+  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+
   // Animation State
   const [currentMode, setCurrentMode] = useState<AnimationMode>(initialMode);
   const [currentIntensity, setCurrentIntensity] = useState(initialIntensity);
@@ -127,13 +130,19 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     setLightingIntensity(intensity);
   };
 
+  // Handle mouse movement from stars background
+  const handleStarsMouseMove = React.useCallback((offsetX: number, offsetY: number) => {
+    setMouseOffset({ x: offsetX, y: offsetY });
+  }, []);
+
 
   return (
     <StarsBackground 
       className={`overflow-hidden relative ${className}`}
-      starColor="#ffffff"
+      starColor={["#ffffff", "#e6f3ff", "#ffe6e6", "#f0e6ff", "#e6ffe6"]}
       speed={40}
       factor={0.03}
+      onStarsMove={handleStarsMouseMove}
     >
 
       {/* 3D Scene */}
@@ -155,8 +164,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           enableShadows={true}
         />
         
-        {/* Main Card with Glass Case Container */}
-        <group position={[0, -2, 0]}>
+        {/* Main Card with Glass Case Container - Responds to mouse */}
+        <group 
+          position={[0, -2, 0]}
+          rotation={[mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]}
+        >
           <Card3DCore
             ref={cardRef}
             mode={currentMode}
@@ -168,8 +180,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           />
         </group>
 
-        {/* Orbital Material Ring System */}
-        <group position={[0, -2, 0]}>
+        {/* Orbital Material Ring System - Synced with mouse */}
+        <group 
+          position={[0, -2, 0]}
+          rotation={[mouseOffset.y * 0.001, mouseOffset.x * 0.001, 0]}
+        >
           <OrbitalMaterialSystem
             cardRotation={cardRotation}
             onStyleChange={handleStyleChange}
@@ -195,7 +210,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           </Text>
         )}
         
-        {/* Orbit Controls */}
+        {/* Orbit Controls - Modified for synced movement */}
         {enableControls && (
           <OrbitControls
             enableZoom={true}
@@ -205,7 +220,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             minDistance={3}
             autoRotate={autoRotate}
             autoRotateSpeed={rotationSpeed}
-            target={[0, 0, 0]}
+            target={[mouseOffset.x * 0.01, mouseOffset.y * 0.01, 0]}
             minPolarAngle={0}
             maxPolarAngle={Math.PI}
             minAzimuthAngle={-Infinity}
