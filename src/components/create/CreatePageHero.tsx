@@ -6,6 +6,7 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { PixelDigital } from '@/components/ui/PixelDigital';
 import { FloatingCard3D } from '@/components/ui/FloatingCard3D';
 import { StudioResetButton } from '@/components/studio/StudioResetButton';
+import { StarsBackground } from '@/components/ui/stars';
 
 const AnimatedTagline: React.FC = () => {
   return (
@@ -27,7 +28,9 @@ export const CreatePageHero: React.FC = () => {
     <div className="relative w-screen -mx-[50vw] left-1/2 overflow-hidden h-screen">
       {/* 3D Background covering entire hero section */}
       <div className="absolute inset-0 z-0 h-full">
-        <FloatingCard3D />
+        <StarsBackground>
+          <FloatingCard3D />
+        </StarsBackground>
       </div>
       
       {/* Reset Button */}
