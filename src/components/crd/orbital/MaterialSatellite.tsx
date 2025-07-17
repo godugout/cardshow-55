@@ -11,7 +11,8 @@ const particleVertexShader = `
   attribute float speed;
   attribute float isSparkle;
   attribute float orbitRadius;
-  attribute float orbitTilt;
+  attribute float orbitTiltX;
+  attribute float orbitTiltZ;
   attribute float orbitEccentricity;
   
   uniform float time;
@@ -65,10 +66,11 @@ const particleVertexShader = `
       cos(angle) * xRadius,
       0.0,
       sin(angle) * zRadius
-    );
-    
-    // Apply orbital tilt (Saturn's rings are tilted)
-    orbitalPos = rotateX(orbitTilt) * orbitalPos;
+     );
+     
+     // Apply random orbital tilts (both X and Z axis for full randomization)
+     orbitalPos = rotateX(orbitTiltX) * orbitalPos;
+     orbitalPos = rotateZ(orbitTiltZ) * orbitalPos;
     
     // Add some vertical wobble based on the orbit's natural oscillation
     float verticalWobble = sin(angle * 2.0 + phase) * 0.01 * hover;
@@ -211,24 +213,31 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
     const speeds = new Float32Array(totalParticleCount);
     const isSparkle = new Float32Array(totalParticleCount);
     const orbitRadius = new Float32Array(totalParticleCount);
-    const orbitTilt = new Float32Array(totalParticleCount);
+    const orbitTiltX = new Float32Array(totalParticleCount);
+    const orbitTiltZ = new Float32Array(totalParticleCount);
     const orbitEccentricity = new Float32Array(totalParticleCount);
+    
+    
+    // Generate random ring orientations for each satellite (so they're not all equatorial)
+    const randomAxisTiltX = Math.random() * Math.PI * 0.6 - Math.PI * 0.3; // -54° to +54°
+    const randomAxisTiltZ = Math.random() * Math.PI * 0.6 - Math.PI * 0.3; // -54° to +54°
     
     // Initialize regular dust particles - organize them into Saturn-like rings
     for (let i = 0; i < regularParticleCount; i++) {
       // Define 3-4 distinct rings with different properties
       const ringIndex = Math.floor(i / (regularParticleCount / 3));
       
-      // Ring properties - each ring has different parameters
+      // Ring properties - each ring has different parameters but shares the random axis
       const ringProps = [
-        { minRadius: 0.18, maxRadius: 0.22, tilt: 0.1, density: 0.8 },  // Inner dense ring
-        { minRadius: 0.25, maxRadius: 0.32, tilt: 0.12, density: 0.5 }, // Middle ring
-        { minRadius: 0.35, maxRadius: 0.45, tilt: 0.14, density: 0.3 }  // Outer sparse ring
+        { minRadius: 0.18, maxRadius: 0.22, baseTiltX: randomAxisTiltX, baseTiltZ: randomAxisTiltZ, density: 0.8 },  // Inner dense ring
+        { minRadius: 0.25, maxRadius: 0.32, baseTiltX: randomAxisTiltX + 0.02, baseTiltZ: randomAxisTiltZ + 0.02, density: 0.5 }, // Middle ring
+        { minRadius: 0.35, maxRadius: 0.45, baseTiltX: randomAxisTiltX + 0.04, baseTiltZ: randomAxisTiltZ + 0.04, density: 0.3 }  // Outer sparse ring
       ][ringIndex];
       
-      // Calculate orbital parameters for Saturn-like rings
+      // Calculate orbital parameters for Saturn-like rings with random orientation
       const ringRadius = ringProps.minRadius + Math.random() * (ringProps.maxRadius - ringProps.minRadius);
-      const ringTilt = ringProps.tilt + Math.random() * 0.05 - 0.025; // Slight variation in tilt
+      const ringTiltX = ringProps.baseTiltX + Math.random() * 0.05 - 0.025; // Slight variation in tilt
+      const ringTiltZ = ringProps.baseTiltZ + Math.random() * 0.05 - 0.025; // Slight variation in tilt
       
       // Particles distributed around the circle of the ring
       const angleOnRing = (i % (regularParticleCount / 3)) / (regularParticleCount / 3) * Math.PI * 2;
@@ -244,7 +253,8 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
       
       // Store orbit parameters for the shader
       orbitRadius[i] = finalRadius;
-      orbitTilt[i] = ringTilt;
+      orbitTiltX[i] = ringTiltX;
+      orbitTiltZ[i] = ringTiltZ;
       orbitEccentricity[i] = Math.random() * 0.2; // Slight eccentricity for elliptical orbits
       
       // Color variance based on ring position - inner rings slightly different color
@@ -275,11 +285,11 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
       // Distribute sparkles along rings with preference for outer rings
       const ringChoice = Math.random() < 0.3 ? 0 : Math.random() < 0.5 ? 1 : 2; // More on outer rings
       
-      // Sparkle ring properties - position sparkles around ring edges
+      // Sparkle ring properties - position sparkles around ring edges with same random orientation
       const ringProps = [
-        { radius: 0.22, tilt: 0.11 }, // Inner ring edge
-        { radius: 0.33, tilt: 0.13 }, // Middle ring edge
-        { radius: 0.47, tilt: 0.15 }  // Outer ring edge
+        { radius: 0.22, tiltX: randomAxisTiltX + 0.01, tiltZ: randomAxisTiltZ + 0.01 }, // Inner ring edge
+        { radius: 0.33, tiltX: randomAxisTiltX + 0.03, tiltZ: randomAxisTiltZ + 0.03 }, // Middle ring edge
+        { radius: 0.47, tiltX: randomAxisTiltX + 0.05, tiltZ: randomAxisTiltZ + 0.05 }  // Outer ring edge
       ][ringChoice];
       
       // Position around the circumference of the chosen ring
@@ -294,7 +304,8 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
       
       // Store orbit parameters
       orbitRadius[index] = finalRadius;
-      orbitTilt[index] = ringProps.tilt + (Math.random() - 0.5) * 0.03; // Random tilt variation
+      orbitTiltX[index] = ringProps.tiltX + (Math.random() - 0.5) * 0.03; // Random tilt variation
+      orbitTiltZ[index] = ringProps.tiltZ + (Math.random() - 0.5) * 0.03; // Random tilt variation
       orbitEccentricity[index] = Math.random() * 0.2; // Slight eccentricity
       
       // Sparkles are bright white with a hint of the material color
@@ -316,7 +327,8 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
     geometry.setAttribute('speed', new THREE.BufferAttribute(speeds, 1));
     geometry.setAttribute('isSparkle', new THREE.BufferAttribute(isSparkle, 1));
     geometry.setAttribute('orbitRadius', new THREE.BufferAttribute(orbitRadius, 1));
-    geometry.setAttribute('orbitTilt', new THREE.BufferAttribute(orbitTilt, 1));
+    geometry.setAttribute('orbitTiltX', new THREE.BufferAttribute(orbitTiltX, 1));
+    geometry.setAttribute('orbitTiltZ', new THREE.BufferAttribute(orbitTiltZ, 1));
     geometry.setAttribute('orbitEccentricity', new THREE.BufferAttribute(orbitEccentricity, 1));
     
     // Create material with custom shaders
