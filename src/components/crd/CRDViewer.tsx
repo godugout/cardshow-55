@@ -222,6 +222,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             autoRotate={autoRotate}
             autoRotateSpeed={rotationSpeed}
             target={[0, 0, 0]}
+            minPolarAngle={0}
+            maxPolarAngle={Math.PI}
+            minAzimuthAngle={-Infinity}
+            maxAzimuthAngle={Infinity}
+            enableDamping={true}
+            dampingFactor={0.05}
           />
         )}
         
