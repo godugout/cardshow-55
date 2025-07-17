@@ -10,14 +10,18 @@ const CardMonolith: React.FC = () => {
   
   useFrame((state) => {
     if (cardRef.current) {
-      // Subtle floating animation
-      cardRef.current.position.y += Math.sin(state.clock.elapsedTime * 0.3) * 0.001;
-      // Position the card in the lower portion of the screen where cards section would be
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 4;
+      // Enhanced floating animation across more space - starting from lower position
+      cardRef.current.position.x = Math.sin(state.clock.elapsedTime * 0.2) * 2;
+      cardRef.current.position.y = Math.cos(state.clock.elapsedTime * 0.15) * 1.5 - 6;
+      cardRef.current.position.z = Math.sin(state.clock.elapsedTime * 0.1) * 0.5;
+      // Subtle rotation
+      cardRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.1) * 0.1;
     }
     
     if (sunRef.current) {
-      // Subtle sun rotation and pulsing
+      // Enhanced sun movement - position in upper right area
+      sunRef.current.position.x = Math.sin(state.clock.elapsedTime * 0.05) * 3 + 8;
+      sunRef.current.position.y = Math.cos(state.clock.elapsedTime * 0.08) * 2 + 6;
       sunRef.current.rotation.z = state.clock.elapsedTime * 0.1;
       const pulse = Math.sin(state.clock.elapsedTime * 2) * 0.1 + 1;
       sunRef.current.scale.setScalar(pulse);
@@ -27,8 +31,8 @@ const CardMonolith: React.FC = () => {
   return (
     <>
       
-      {/* Card Monolith */}
-      <group ref={cardRef} position={[0, 0, 0]}>
+      {/* Card Monolith - positioned much lower for fly-by animation */}
+      <group ref={cardRef} position={[2, -6, 0]}>
         {/* Main monolith structure */}
         <mesh>
           <boxGeometry args={[2.5, 3.5, 0.3]} />
@@ -134,8 +138,8 @@ const CardMonolith: React.FC = () => {
         </mesh>
       </group>
       
-      {/* Realistic Sun */}
-      <group ref={sunRef} position={[0, -1, -10]}>
+      {/* Realistic Sun - positioned in upper right */}
+      <group ref={sunRef} position={[8, 6, -10]}>
         {/* Sun light source */}
         <pointLight
           intensity={8}
@@ -262,7 +266,7 @@ export const FloatingCard3D: React.FC = () => {
   return (
     <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
       {/* Matching star field for seamless integration */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 pointer-events-none">
         {Array.from({ length: 100 }).map((_, i) => {
           const size = Math.random() * 2 + 0.5;
           const opacity = Math.random() * 0.6 + 0.2;
@@ -285,10 +289,34 @@ export const FloatingCard3D: React.FC = () => {
           );
         })}
       </div>
+      
+      {/* Interaction zone overlay - only this area captures mouse events */}
+      <div 
+        className="absolute z-10 pointer-events-none"
+        style={{
+          top: '30%',
+          right: '10%',
+          width: '400px',
+          height: '400px',
+          transform: 'translate(50%, -50%)',
+          border: '2px solid rgba(255,255,255,0.1)',
+          borderRadius: '8px',
+          pointerEvents: 'auto'
+        }}
+      />
+      
+      {/* Full-screen 3D Canvas */}
       <Canvas
-        camera={{ position: [0, 0, 15], fov: 60 }}
+        camera={{ position: [0, 0, 15], fov: 75 }}
         gl={{ antialias: true, alpha: true }}
         scene={{ background: null }}
+        style={{ 
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%'
+        }}
       >
         {/* Minimal ambient space lighting */}
         <ambientLight intensity={0.02} color="#000033" />
@@ -297,12 +325,17 @@ export const FloatingCard3D: React.FC = () => {
         
         <OrbitControls
           enableZoom={true}
-          enablePan={true}
+          enablePan={false}
           enableRotate={true}
-          maxDistance={25}
-          minDistance={3}
           autoRotate={false}
-          target={[0, 0, 0]}
+          target={[2, -6, 0]}
+          enableDamping={true}
+          dampingFactor={0.05}
+          maxPolarAngle={Math.PI * 0.8}
+          minPolarAngle={Math.PI * 0.2}
+          minDistance={10}
+          maxDistance={25}
+          zoomSpeed={0.5}
         />
         
         {/* Deep space fog */}
