@@ -74,6 +74,16 @@
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
 
+/* Gradient text effect for hero labels */
+.gradient-text-green-blue-purple {
+  background: linear-gradient(135deg, hsl(var(--crd-green)), hsl(var(--crd-blue)), hsl(var(--crd-purple)));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-flow 3s ease infinite;
+}
+
 /* Button text color utilities to ensure proper contrast */
 @layer utilities {
   .btn-text-dark {

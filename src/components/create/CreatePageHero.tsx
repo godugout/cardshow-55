@@ -25,7 +25,7 @@ export const CreatePageHero: React.FC = () => {
   };
 
   return (
-    <div className="relative w-screen -mx-[50vw] left-1/2 overflow-hidden h-screen">
+    <div className="relative w-full overflow-hidden h-screen bg-crd-darkest">
       {/* 3D Background covering entire hero section */}
       <div className="absolute inset-0 z-0 h-full">
         <StarsBackground>

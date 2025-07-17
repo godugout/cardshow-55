@@ -5,8 +5,8 @@ import { CreateOptionsSection } from '@/components/create/CreateOptionsSection';
 
 const CreateChoice: React.FC = () => {
   return (
-    <div className="min-h-screen bg-crd-darkest overflow-hidden">
-      <div className="h-full w-full overflow-y-auto">
+    <div className="min-h-screen bg-crd-darkest">
+      <div className="w-full">
         {/* Full Width Hero Section */}
         <CreatePageHero />
         

@@ -27,7 +27,7 @@
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
 
-  /* CRD Theme Colors */
+  /* CRD Theme Colors - Complete Set */
   --crd-black: 0 0% 4%;
   --crd-white: 0 0% 98%;
   --crd-gray: 0 0% 20%;
@@ -40,6 +40,15 @@
   --crd-purple: 262 83% 58%;
   --crd-pink: 316 73% 69%;
   --crd-teal: 173 58% 39%;
+  
+  /* CRD Design System Colors - Matching tailwind.config.ts */
+  --crd-darkest: 0 0% 7%;        /* #121212 */
+  --crd-darker: 0 0% 10%;        /* #1A1A1A */
+  --crd-dark: 0 0% 10%;          /* #1A1A1A */
+  --crd-darkGray: 223 14% 18%;   /* #23262F */
+  --crd-mediumGray: 223 12% 26%; /* #353945 */
+  --crd-lightGray: 223 7% 53%;   /* #777E90 */
+  --crd-gold: 51 100% 50%;       /* #FFD700 */
 
   /* Spacing System */
   --space-xs: 0.25rem;
