@@ -25,24 +25,28 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         // Perfectly centered and still
         cardRef.current.position.set(0, 0, 0);
         cardRef.current.rotation.set(0, 0, 0);
-        effectsLayerRef.current.position.set(0, 0, 0.051); // Just above card surface
+        // Effects layer also frozen
+        effectsLayerRef.current.position.set(0, 0, 0.051);
         effectsLayerRef.current.rotation.set(0, 0, 0);
-        // Hide effects layer in frozen mode
         effectsLayerRef.current.visible = false;
         break;
         
       case 'showcase':
         // Dramatic effects demonstration
-        cardRef.current.position.y = Math.sin(time * 1.2) * 0.08 * factor;
-        cardRef.current.position.x = Math.sin(time * 0.9) * 0.06 * factor;
-        cardRef.current.rotation.y = time * 0.3 * factor;
-        cardRef.current.rotation.x = Math.sin(time * 0.8) * 0.05 * factor;
-        cardRef.current.rotation.z = Math.sin(time * 1.1) * 0.03 * factor;
+        const newY = Math.sin(time * 1.2) * 0.08 * factor;
+        const newX = Math.sin(time * 0.9) * 0.06 * factor;
+        const newZ = 0; // Keep Z at origin for card
+        const rotY = time * 0.3 * factor;
+        const rotX = Math.sin(time * 0.8) * 0.05 * factor;
+        const rotZ = Math.sin(time * 1.1) * 0.03 * factor;
         
-        // Effects layer follows card position exactly and stays just above surface
-        effectsLayerRef.current.position.copy(cardRef.current.position);
-        effectsLayerRef.current.position.z += 0.051; // Always 0.051 above card surface
-        effectsLayerRef.current.rotation.copy(cardRef.current.rotation);
+        // Update card
+        cardRef.current.position.set(newX, newY, newZ);
+        cardRef.current.rotation.set(rotX, rotY, rotZ);
+        
+        // Effects layer follows exactly with slight Z offset
+        effectsLayerRef.current.position.set(newX, newY, newZ + 0.051);
+        effectsLayerRef.current.rotation.set(rotX, rotY, rotZ);
         effectsLayerRef.current.visible = true;
         break;
     }
