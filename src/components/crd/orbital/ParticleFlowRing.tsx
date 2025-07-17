@@ -30,7 +30,7 @@ const vertexShader = `
   uniform bool isPaused;
   
   void main() {
-    vAlpha = alpha * 0.4;
+    vAlpha = alpha * 0.15;
     
     // Calculate particle angle
     float particleAngle = atan(position.z, position.x);
@@ -57,14 +57,14 @@ const vertexShader = `
       vLightning = lightningFactor * sin(time * 8.0 + particleAngle * 3.0) * 0.3 + 0.3;
       
       // Mix colors based on wave
-      float angle = particleAngle + (isPaused ? 0.0 : time * flowSpeed * 0.2);
+      float angle = particleAngle + (isPaused ? 0.0 : time * flowSpeed * 0.05);
       float gradientFactor = (sin(angle) + 1.0) * 0.5;
       vec3 originalColor = mix(orangeColor, blueColor, gradientFactor);
       baseColor = mix(originalColor, waveColor, waveFactor);
     } else {
       vLightning = 0.0;
       // Original gradient
-      float angle = particleAngle + (isPaused ? 0.0 : time * flowSpeed * 0.2);
+      float angle = particleAngle + (isPaused ? 0.0 : time * flowSpeed * 0.05);
       float gradientFactor = (sin(angle) + 1.0) * 0.5;
       baseColor = mix(orangeColor, blueColor, gradientFactor);
     }
@@ -72,7 +72,7 @@ const vertexShader = `
     vColor = baseColor;
     
     // Animate position along the ring with subtle movement
-    float animatedPhase = phase + (isPaused ? 0.0 : time * flowSpeed * 0.5);
+    float animatedPhase = phase + (isPaused ? 0.0 : time * flowSpeed * 0.1);
     vec3 animatedPosition = position;
     animatedPosition.y += sin(animatedPhase) * 0.05;
     
@@ -105,13 +105,18 @@ const fragmentShader = `
     
     // More gradual falloff for less obvious circles
     float alpha = vAlpha * pow(1.0 - dist * 2.0, 4.0);
-    alpha *= 0.5; // Reduced visibility for subtler effect
+    alpha *= 0.15; // Very high transparency - barely visible circles
     
-    // Add lightning glow
+    // Add subtle glow to random particles
     vec3 finalColor = vColor;
+    float glowFactor = sin(gl_FragCoord.x * 0.1 + gl_FragCoord.y * 0.1) * 0.5 + 0.5;
+    if (glowFactor > 0.85) {
+      finalColor += vec3(0.3, 0.4, 0.6) * 0.8; // Subtle blue glow
+      alpha += 0.3; // Slightly more visible when glowing
+    }
     if (vLightning > 0.1) {
-      finalColor += vec3(0.8, 0.9, 1.0) * vLightning * 0.4; // Softer blue-white
-      alpha += vLightning * 0.2; // Less intense during lightning
+      finalColor += vec3(0.8, 0.9, 1.0) * vLightning * 0.2; // Much softer lightning
+      alpha += vLightning * 0.1; // Very subtle during lightning
     }
     
     gl_FragColor = vec4(finalColor, alpha);
@@ -217,8 +222,8 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     materialRef.current.uniforms.time.value = state.clock.elapsedTime;
     materialRef.current.uniforms.isPaused.value = isPaused;
     
-    // Subtle flow speed changes on interaction
-    const flowSpeed = hoveredSatellite ? 0.6 : 0.5;
+    // Subtle flow speed changes on interaction (moon speed)
+    const flowSpeed = hoveredSatellite ? 0.25 : 0.15;
     materialRef.current.uniforms.flowSpeed.value = THREE.MathUtils.lerp(
       materialRef.current.uniforms.flowSpeed.value,
       flowSpeed,
