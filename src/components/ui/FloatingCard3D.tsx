@@ -10,22 +10,62 @@ interface CardMonolithProps {
 const CardMonolith: React.FC<CardMonolithProps> = ({ isAutoAnimating }) => {
   const cardRef = useRef<THREE.Group>(null);
   const sunRef = useRef<THREE.Group>(null);
+  const animationStartTime = useRef<number | null>(null);
+  
+  // Define the base transforms for our scene positioning
+  const basePosition = new THREE.Vector3(0, -2, 0);
+  const baseRotation = new THREE.Euler(-0.4, 0, 0); // Base tilt towards sun
+  const finalRotation = new THREE.Euler(Math.PI * 0.25, 0, 0); // 45 degrees forward
+  
+  // Easing function for smooth animations
+  const easeInOutCubic = (t: number): number => {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  };
   
   useFrame((state) => {
+    const elapsed = state.clock.getElapsedTime();
+    
     if (cardRef.current) {
-      // Position the card in the lower portion of the screen
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
+      // Gentle bobbing motion in Y-axis only (±0.5 units)
+      const bobOffset = Math.sin(elapsed * 0.8) * 0.5;
+      cardRef.current.position.copy(basePosition).add(new THREE.Vector3(0, bobOffset, 0));
       
-      // Tilt the card towards the sun with flying motion
-      const tiltAngle = -0.4 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1; // Base tilt + gentle sway
-      cardRef.current.rotation.x = tiltAngle;
-      cardRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.05; // Subtle roll
+      // Handle auto-animation rotation
+      if (isAutoAnimating) {
+        if (animationStartTime.current === null) {
+          animationStartTime.current = elapsed;
+        }
+        
+        const animationElapsed = elapsed - animationStartTime.current;
+        
+        // Stage 3: Final Positioning (4-5 seconds) - Card tilts forward
+        if (animationElapsed >= 4.0 && animationElapsed <= 5.0) {
+          const stageProgress = (animationElapsed - 4.0) / 1.0;
+          const easedProgress = easeInOutCubic(stageProgress);
+          
+          // Interpolate from base rotation to final rotation
+          const currentRotationX = THREE.MathUtils.lerp(baseRotation.x, finalRotation.x, easedProgress);
+          cardRef.current.rotation.set(currentRotationX, baseRotation.y, baseRotation.z);
+        } else if (animationElapsed > 5.0) {
+          // Maintain final rotation
+          cardRef.current.rotation.copy(finalRotation);
+        } else {
+          // Before stage 3, use base rotation with gentle sway
+          const sway = Math.sin(elapsed * 0.2) * 0.1;
+          cardRef.current.rotation.set(baseRotation.x + sway, baseRotation.y, Math.sin(elapsed * 0.15) * 0.05);
+        }
+      } else {
+        // Reset animation timing and use base rotation with gentle motion
+        animationStartTime.current = null;
+        const tiltAngle = baseRotation.x + Math.sin(elapsed * 0.2) * 0.1;
+        cardRef.current.rotation.set(tiltAngle, baseRotation.y, Math.sin(elapsed * 0.15) * 0.05);
+      }
     }
     
     if (sunRef.current) {
       // Subtle sun rotation and pulsing
-      sunRef.current.rotation.z = state.clock.elapsedTime * 0.1;
-      const pulse = Math.sin(state.clock.elapsedTime * 2) * 0.1 + 1;
+      sunRef.current.rotation.z = elapsed * 0.1;
+      const pulse = Math.sin(elapsed * 2) * 0.1 + 1;
       sunRef.current.scale.setScalar(pulse);
     }
   });
@@ -209,18 +249,82 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ isAutoAnimating }) => {
 
 const CameraController: React.FC<{ isAutoAnimating: boolean }> = ({ isAutoAnimating }) => {
   const { camera } = useThree();
-  const targetPosition = useRef(new THREE.Vector3(0, 0, 15));
-  const targetLookAt = useRef(new THREE.Vector3(0, -2, 0));
+  const animationStartTime = useRef<number | null>(null);
+  const initialCameraPosition = useRef(new THREE.Vector3());
+  const initialCameraTarget = useRef(new THREE.Vector3());
+  
+  // Animation targets for different stages
+  const homePosition = new THREE.Vector3(0, 0, 15);
+  const homeTarget = new THREE.Vector3(0, -2, 0);
+  const closePosition = new THREE.Vector3(0, -1, 6);
+  const closeTarget = new THREE.Vector3(0, -2, 0);
+  const finalPosition = new THREE.Vector3(0, -0.5, 6);
+  const finalTarget = new THREE.Vector3(0, -2, 0);
+  
+  // Easing function for smooth animations
+  const easeInOutCubic = (t: number): number => {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  };
 
-  useFrame(() => {
+  useFrame((state) => {
     if (isAutoAnimating) {
-      // Smoothly animate camera to home position
-      camera.position.lerp(targetPosition.current, 0.02);
-      const lookAtTarget = new THREE.Vector3();
-      lookAtTarget.copy(camera.position).add(
-        new THREE.Vector3(0, -2, -15).sub(camera.position).normalize()
-      );
-      camera.lookAt(targetLookAt.current);
+      if (animationStartTime.current === null) {
+        animationStartTime.current = state.clock.getElapsedTime();
+        initialCameraPosition.current.copy(camera.position);
+        // Calculate where camera is currently looking
+        const forward = new THREE.Vector3(0, 0, -1);
+        forward.applyQuaternion(camera.quaternion);
+        initialCameraTarget.current.copy(camera.position).add(forward.multiplyScalar(10));
+      }
+      
+      const animationElapsed = state.clock.getElapsedTime() - animationStartTime.current;
+      
+      // Stage 1: Gentle Return (0-2 seconds)
+      if (animationElapsed <= 2.0) {
+        const stageProgress = Math.min(animationElapsed / 2.0, 1.0);
+        const easedProgress = easeInOutCubic(stageProgress);
+        
+        camera.position.lerpVectors(initialCameraPosition.current, homePosition, easedProgress);
+        const currentTarget = new THREE.Vector3().lerpVectors(initialCameraTarget.current, homeTarget, easedProgress);
+        camera.lookAt(currentTarget);
+      }
+      // Stage 2: Zoom and Focus (2-4 seconds)
+      else if (animationElapsed <= 4.0) {
+        const stageProgress = (animationElapsed - 2.0) / 2.0;
+        const easedProgress = easeInOutCubic(stageProgress);
+        
+        camera.position.lerpVectors(homePosition, closePosition, easedProgress);
+        const currentTarget = new THREE.Vector3().lerpVectors(homeTarget, closeTarget, easedProgress);
+        camera.lookAt(currentTarget);
+      }
+      // Stage 3: Final Positioning (4-5 seconds)
+      else if (animationElapsed <= 5.0) {
+        const stageProgress = (animationElapsed - 4.0) / 1.0;
+        const easedProgress = easeInOutCubic(stageProgress);
+        
+        camera.position.lerpVectors(closePosition, finalPosition, easedProgress);
+        const currentTarget = new THREE.Vector3().lerpVectors(closeTarget, finalTarget, easedProgress);
+        camera.lookAt(currentTarget);
+        
+        // Add subtle orbital movement around the card
+        const orbitRadius = 0.5 * easedProgress;
+        const orbitAngle = (animationElapsed - 4.0) * 0.5;
+        camera.position.x += Math.sin(orbitAngle) * orbitRadius;
+        camera.position.z += Math.cos(orbitAngle) * orbitRadius * 0.3;
+      }
+      // Maintain final position
+      else {
+        camera.position.copy(finalPosition);
+        camera.lookAt(finalTarget);
+        
+        // Continue subtle orbital movement
+        const orbitAngle = (animationElapsed - 4.0) * 0.5;
+        camera.position.x = finalPosition.x + Math.sin(orbitAngle) * 0.5;
+        camera.position.z = finalPosition.z + Math.cos(orbitAngle) * 0.15;
+      }
+    } else {
+      // Reset animation timing when not auto-animating
+      animationStartTime.current = null;
     }
   });
 
