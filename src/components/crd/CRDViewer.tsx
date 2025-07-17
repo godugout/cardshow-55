@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
+import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
 import { type AnimationMode, type LightingPreset, type PathTheme } from './types/CRDTypes';
 
 interface CRDViewerProps {
@@ -39,6 +40,9 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   onModeChange,
   onIntensityChange
 }) => {
+  // Refs
+  const cardRef = useRef<THREE.Group & { getCurrentRotation?: () => THREE.Euler }>(null);
+
   // Animation State
   const [currentMode, setCurrentMode] = useState<AnimationMode>(initialMode);
   const [currentIntensity, setCurrentIntensity] = useState(initialIntensity);
@@ -46,6 +50,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
 
   // Visual Style State
   const [selectedStyleId, setSelectedStyleId] = useState('matte');
+  const [cardRotation, setCardRotation] = useState(new THREE.Euler(0, 0, 0));
 
   // Rotation State
   const [autoRotate, setAutoRotate] = useState(initialAutoRotate);
@@ -85,8 +90,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
 
   const handleStyleChange = (styleId: string) => {
     setSelectedStyleId(styleId);
-    console.log('Style changed to:', styleId);
-    // Here we'll integrate with the MaterialSystem to apply the style
+    console.log('🎨 CRD Viewer: Style changed to:', styleId);
+  };
+
+  // Track card rotation for orbital system
+  const handleTransformUpdate = (transform: { position: THREE.Vector3; rotation: THREE.Euler }) => {
+    setCardRotation(transform.rotation.clone());
   };
 
   const handleAutoRotateChange = (enabled: boolean) => {
@@ -154,10 +163,22 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         {/* Main Card with Glass Case Container */}
         <group position={[0, -2, 0]}>
           <Card3DCore
+            ref={cardRef}
             mode={currentMode}
             intensity={currentIntensity}
+            materialMode={selectedStyleId as any}
             enableAnimation={true}
             enableGlassCase={enableGlassCase}
+            onTransformUpdate={handleTransformUpdate}
+          />
+        </group>
+
+        {/* Orbital Material Ring System */}
+        <group position={[0, -2, 0]}>
+          <OrbitalMaterialSystem
+            cardRotation={cardRotation}
+            onStyleChange={handleStyleChange}
+            selectedStyleId={selectedStyleId}
           />
         </group>
         

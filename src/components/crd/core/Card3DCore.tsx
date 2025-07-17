@@ -37,6 +37,17 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
   // Combine refs
   React.useImperativeHandle(ref, () => groupRef.current!, []);
 
+  // Expose current rotation for orbital system
+  const getCurrentRotation = React.useCallback(() => {
+    return groupRef.current?.rotation || new THREE.Euler(0, 0, 0);
+  }, []);
+
+  // Add method to ref for external access
+  React.useImperativeHandle(ref, () => {
+    const group = groupRef.current!;
+    return Object.assign(group, { getCurrentRotation });
+  }, [getCurrentRotation]);
+
   useFrame((state) => {
     if (!enableAnimation || !groupRef.current) return;
     

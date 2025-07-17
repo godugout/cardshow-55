@@ -7,6 +7,11 @@ export { LightingRig } from './lighting/LightingRig';
 export { CRDControlPanel } from './controls/CRDControlPanel';
 export { CRDStickyFooter } from './controls/CRDStickyFooter';
 
+// Orbital Material System
+export { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
+export { OrbitalRing } from './orbital/OrbitalRing';
+export { MaterialSatellite } from './orbital/MaterialSatellite';
+
 // Premium Styles System
 export { StyleSelector, StyleTile } from './styles/StyleSelector';
 export { StyleRegistry, CRDVisualStyles } from './styles/StyleRegistry';
