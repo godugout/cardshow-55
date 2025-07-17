@@ -254,6 +254,27 @@ export const CRDVisualStyles: CRDVisualStyle[] = [
       particleCount: 80,
       shaderComplexity: 6
     }
+  },
+  {
+    id: 'liquidSwirl',
+    displayName: 'Liquid Swirl',
+    locked: false,
+    isActive: false,
+    category: 'material',
+    baseMaterial: 'LiquidSwirl',
+    secondaryFinish: 'FluidMotion',
+    textureProfile: 'FluidTurbulence',
+    particleEffect: 'FluidRipples',
+    lighting: 'AquaticHDR',
+    animationProfile: 'TurbulentFlow',
+    uiPreviewGradient: 'linear-gradient(135deg, #1e40af, #3b82f6, #06b6d4, #0891b2)',
+    visualVibe: 'Fluid & hypnotic',
+    unlockMethod: 'free',
+    performance: {
+      renderCost: 'high',
+      particleCount: 0,
+      shaderComplexity: 8
+    }
   }
 ];
 

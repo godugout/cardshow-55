@@ -35,7 +35,9 @@ export type MaterialMode =
   | 'spectralPrism'
   | 'SpectralPrism'
   | 'emeraldGem'
-  | 'EmeraldGem';
+  | 'EmeraldGem'
+  | 'liquidSwirl'
+  | 'LiquidSwirl';
 
 export type LightingPreset = 
   | 'studio'

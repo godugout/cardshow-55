@@ -285,8 +285,34 @@ export const MaterialSystem: React.FC<MaterialSystemProps> = ({
             clearcoatRoughness={0}
             emissive="#228b22"
             emissiveIntensity={0.2 * intensity}
-            side={THREE.DoubleSide}
-            envMapIntensity={4}
+          side={THREE.DoubleSide}
+          envMapIntensity={4}
+        />
+      );
+
+      case 'liquidSwirl':
+      case 'LiquidSwirl':
+        // Liquid swirl with multiple flowing layers
+        const swirl1 = (time * 60) % 360;
+        const swirl2 = (time * 80 + 120) % 360;
+        const swirl3 = (time * 40 + 240) % 360;
+        const flowSpeed = time * 0.5;
+        
+        // Create flowing blue-cyan base with animated swirls
+        const liquidHue = (swirl1 + Math.sin(flowSpeed) * 30 + 200) / 360; // Blue-cyan range
+        const liquidSat = 0.8 + Math.sin(time * 3) * 0.2; // Pulsing saturation
+        const liquidLight = 0.4 + Math.sin(time * 2) * 0.2; // Breathing luminosity
+        
+        return (
+          <meshStandardMaterial 
+            color={new THREE.Color().setHSL(liquidHue, liquidSat, liquidLight)}
+            metalness={0.1}
+            roughness={0.05}
+            emissive={new THREE.Color().setHSL((swirl2 + 180) / 360, 0.6, 0.3)}
+            emissiveIntensity={0.8 + Math.sin(time * 4) * 0.4}
+            envMapIntensity={3 + Math.sin(time * 1.5) * 1}
+            transparent={true}
+            opacity={0.9}
           />
         );
       
