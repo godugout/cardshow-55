@@ -15,7 +15,6 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ isAutoAnimating }) => {
   // Define the base transforms for our scene positioning
   const basePosition = new THREE.Vector3(0, -2, 0);
   const baseRotation = new THREE.Euler(-0.4, 0, 0); // Base tilt towards sun
-  const finalRotation = new THREE.Euler(-0.4, 0, Math.PI * 0.25); // Tilt towards sun (Z-axis rotation)
   
   // Easing function for smooth animations
   const easeInOutCubic = (t: number): number => {
@@ -38,22 +37,9 @@ const CardMonolith: React.FC<CardMonolithProps> = ({ isAutoAnimating }) => {
         
         const animationElapsed = elapsed - animationStartTime.current;
         
-        // Stage 3: Final Positioning (4-5 seconds) - Card tilts towards sun
-        if (animationElapsed >= 4.0 && animationElapsed <= 5.0) {
-          const stageProgress = (animationElapsed - 4.0) / 1.0;
-          const easedProgress = easeInOutCubic(stageProgress);
-          
-          // Interpolate from base rotation to final rotation (tilting towards sun)
-          const currentRotationZ = THREE.MathUtils.lerp(baseRotation.z, finalRotation.z, easedProgress);
-          cardRef.current.rotation.set(baseRotation.x, baseRotation.y, currentRotationZ);
-        } else if (animationElapsed > 5.0) {
-          // Maintain final rotation
-          cardRef.current.rotation.copy(finalRotation);
-        } else {
-          // Before stage 3, use base rotation with gentle sway
-          const sway = Math.sin(elapsed * 0.2) * 0.1;
-          cardRef.current.rotation.set(baseRotation.x + sway, baseRotation.y, Math.sin(elapsed * 0.15) * 0.05);
-        }
+        // Keep card in normal orientation throughout animation
+        const sway = Math.sin(elapsed * 0.2) * 0.1;
+        cardRef.current.rotation.set(baseRotation.x + sway, baseRotation.y, Math.sin(elapsed * 0.15) * 0.05);
       } else {
         // Reset animation timing and use base rotation with gentle motion
         animationStartTime.current = null;
