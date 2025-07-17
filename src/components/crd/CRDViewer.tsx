@@ -55,6 +55,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
 }) => {
   // Refs
   const cardRef = useRef<THREE.Group & { getCurrentRotation?: () => THREE.Euler }>(null);
+  const controlsRef = useRef<any>(null);
 
   // Mouse position state for synced movement
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
@@ -161,6 +162,21 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     };
   }, []);
 
+  // Camera reset event listener
+  useEffect(() => {
+    const handleCameraReset = () => {
+      if (controlsRef.current) {
+        controlsRef.current.reset();
+      }
+    };
+
+    window.addEventListener('crd-reset-camera', handleCameraReset);
+    
+    return () => {
+      window.removeEventListener('crd-reset-camera', handleCameraReset);
+    };
+  }, []);
+
 
 
   return (
@@ -234,6 +250,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         {/* Orbit Controls - Modified for synced movement */}
         {enableControls && (
           <OrbitControls
+            ref={controlsRef}
             enableZoom={true}
             enablePan={true}
             enableRotate={true}

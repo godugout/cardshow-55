@@ -12,7 +12,7 @@ export const FloatingCard3D: React.FC = () => {
       autoRotate={false}
       enableControls={true}
       enableGlassCase={true}
-      showModeText={true}
+      showModeText={false}
       className="w-full h-screen"
     />
   );

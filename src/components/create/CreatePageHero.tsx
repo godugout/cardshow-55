@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { PixelDigital } from '@/components/ui/PixelDigital';
 import { FloatingCard3D } from '@/components/ui/FloatingCard3D';
+import { StudioResetButton } from '@/components/studio/StudioResetButton';
 
 const AnimatedTagline: React.FC = () => {
   return (
@@ -17,12 +18,20 @@ const AnimatedTagline: React.FC = () => {
 };
 
 export const CreatePageHero: React.FC = () => {
+  const handleResetCamera = () => {
+    // Trigger a camera reset - this will be handled by the CRDViewer component
+    window.dispatchEvent(new CustomEvent('crd-reset-camera'));
+  };
+
   return (
     <div className="relative w-screen -mx-[50vw] left-1/2 overflow-hidden h-screen">
       {/* 3D Background covering entire hero section */}
       <div className="absolute inset-0 z-0 h-full">
         <FloatingCard3D />
       </div>
+      
+      {/* Reset Button */}
+      <StudioResetButton onReset={handleResetCamera} />
       
       {/* Hero Content Overlay */}
       <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
@@ -34,10 +43,10 @@ export const CreatePageHero: React.FC = () => {
           
           {/* Main Heading */}
           <div className="mb-4">
-             <h1 className="leading-tight text-crd-white drop-shadow-lg">
-               <div className="flex justify-center items-center mb-2 text-5xl md:text-6xl lg:text-7xl">
-                 <span className="text-gray-400 font-light">From paper scraps and cardboard to</span>
-               </div>
+              <h1 className="leading-tight text-crd-white drop-shadow-lg">
+                <div className="flex justify-center items-center mb-2 text-5xl md:text-6xl lg:text-7xl">
+                  <span className="text-gray-400 font-light">From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to</span>
+                </div>
                <div className="flex justify-center items-center text-6xl md:text-7xl lg:text-8xl">
                  <span className="font-bold">
                    <PixelDigital className="inline">digital</PixelDigital>

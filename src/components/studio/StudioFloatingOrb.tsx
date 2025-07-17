@@ -9,7 +9,7 @@ export const StudioFloatingOrb: React.FC<StudioFloatingOrbProps> = ({ onClick })
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-6 left-6 z-50 w-16 h-16 rounded-full bg-gradient-to-br from-crd-orange to-crd-blue shadow-lg shadow-crd-orange/25 hover:shadow-xl hover:shadow-crd-orange/35 transition-all duration-300 flex items-center justify-center group animate-pulse hover:animate-none"
+      className="fixed bottom-6 left-6 z-50 w-16 h-16 rounded-full bg-gradient-to-br from-crd-blue to-crd-purple shadow-lg shadow-crd-blue/25 hover:shadow-xl hover:shadow-crd-purple/35 transition-all duration-300 flex items-center justify-center group hover:scale-105"
     >
       {/* Main orb content */}
       <div className="relative z-10 flex items-center justify-center">
