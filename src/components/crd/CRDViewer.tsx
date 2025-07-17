@@ -20,7 +20,6 @@ interface CRDViewerProps {
   rotationSpeed?: number;
   lightingIntensity?: number;
   enableControls?: boolean;
-  enableInteractiveControls?: boolean; // New prop for interactive controls
   enableGlassCase?: boolean;
   showModeText?: boolean;
   
@@ -50,7 +49,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   rotationSpeed: initialRotationSpeed = 0.5,
   lightingIntensity: initialLightingIntensity = 1,
   enableControls = true,
-  enableInteractiveControls = false, // Default to false for hero sections
   enableGlassCase = true,
   showModeText = true,
   
@@ -318,7 +316,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         )}
         
         {/* Orbit Controls - Modified for synced movement */}
-        {enableControls && enableInteractiveControls && (
+        {enableControls && (
           <OrbitControls
             ref={controlsRef}
             enableZoom={true}
