@@ -177,7 +177,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         controlsRef.current.reset();
       }
       setIsResetAnimating(false);
-    }, 4000); // Total animation duration
+    }, 6000); // Total animation duration
   };
 
   // Handle orbit controls interaction

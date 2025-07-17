@@ -185,7 +185,7 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
   };
 
   return (
-    <group ref={groupRef} onClick={handleDoubleClick}>
+    <group ref={groupRef} onDoubleClick={handleDoubleClick}>
       {/* Main Card */}
       <mesh ref={cardRef}>
         {getCardGeometry()}

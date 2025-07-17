@@ -194,8 +194,12 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
   
   // Create particle system
   const [particles, particlesMaterial] = useMemo(() => {
-    // Extract color from style
-    const styleColor = new THREE.Color(style.uiPreviewGradient);
+    // Extract color from style gradient
+    const extractColorFromGradient = (gradientStr: string): string => {
+      const colorMatch = gradientStr.match(/#[0-9a-fA-F]{6}/);
+      return colorMatch ? colorMatch[0] : '#4169e1'; // Default blue fallback
+    };
+    const styleColor = new THREE.Color(extractColorFromGradient(style.uiPreviewGradient));
     
     // Smaller, finer particles with some sparkles
     const regularParticleCount = isActive ? 120 : 80;
@@ -336,7 +340,7 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
       uniforms: {
         time: { value: 0 },
         hover: { value: 0 },
-        selectedColor: { value: new THREE.Color(style.uiPreviewGradient) },
+        selectedColor: { value: new THREE.Color(extractColorFromGradient(style.uiPreviewGradient)) },
         particleTexture: { value: particleTexture }
       },
       vertexShader: particleVertexShader,
@@ -365,9 +369,15 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
       particlesMaterial.uniforms.time.value = time;
       
       // Make sure selected color matches the currently selected style's color
+      // Extract color from gradient string or use fallback
+      const extractColorFromGradient = (gradientStr: string): string => {
+        const colorMatch = gradientStr.match(/#[0-9a-fA-F]{6}/);
+        return colorMatch ? colorMatch[0] : '#4169e1'; // Default blue fallback
+      };
+      
       const selectedMaterial = isActive || isHovered 
-        ? new THREE.Color(style.uiPreviewGradient)  // Use this material's color when it's active/hovered
-        : particlesMaterial.uniforms.selectedColor.value; // Keep current value
+        ? new THREE.Color(extractColorFromGradient(style.uiPreviewGradient))
+        : particlesMaterial.uniforms.selectedColor.value;
       particlesMaterial.uniforms.selectedColor.value = selectedMaterial;
       
       // Smoothly transition hover intensity
