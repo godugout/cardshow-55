@@ -48,13 +48,24 @@ const vertexShader = `
       float minAngleDiff = min(angleDiff1, angleDiff2);
       
       // Wave propagation (travels both ways around ring)
-      float waveRadius = waveProgress * 0.4; // Much smaller wave radius for tighter effect
+      float waveRadius = waveProgress * 0.4;
       float waveFactor = smoothstep(waveRadius + 0.1, waveRadius - 0.1, minAngleDiff);
       
-      // Lightning effect near wave front - more localized
-      float lightningRange = 0.08; // Smaller lightning range - half the previous size
-      float lightningFactor = 1.0 - smoothstep(0.0, lightningRange, minAngleDiff);
-      vLightning = lightningFactor * sin(time * 8.0 + particleAngle * 3.0) * 0.15 + 0.15; // Reduced intensity
+      // Pulsing animation for breathing effect
+      float pulseSpeed = 2.0;
+      float pulsePhase = sin(time * pulseSpeed) * 0.5 + 0.5;
+      
+      // Lightning effect with exponential falloff and pulsing
+      float lightningRange = 0.25; // Extended range for gradual falloff
+      float distanceFactor = minAngleDiff / lightningRange;
+      float lightningFactor = exp(-distanceFactor * distanceFactor * 8.0); // Exponential falloff
+      
+      // Add pulsing and oscillation
+      float lightning = sin(time * 8.0 + particleAngle * 3.0) * 0.5 + 0.5;
+      lightning *= pulsePhase; // Breathing effect
+      lightning *= lightningFactor; // Distance-based intensity
+      
+      vLightning = lightning * 0.3; // Base intensity
       
       // Mix colors based on wave
       float angle = particleAngle + time * flowSpeed * 0.2;
@@ -107,12 +118,23 @@ const fragmentShader = `
     float alpha = vAlpha * pow(1.0 - dist * 2.0, 4.0);
     alpha *= 0.5; // Reduced visibility for subtler effect
     
-    // Add lightning glow - more subtle
+    // Add layered lightning glow with gradual falloff
     vec3 finalColor = vColor;
-    if (vLightning > 0.1) {
-      finalColor += vec3(0.4, 0.5, 0.6) * vLightning * 0.2; // Much softer and less intense
-      alpha += vLightning * 0.1; // Reduced alpha boost
-    }
+    
+    // Primary glow layer - strongest in center
+    float primaryGlow = pow(vLightning, 0.8);
+    finalColor += vec3(0.3, 0.4, 0.5) * primaryGlow * 0.3;
+    
+    // Secondary glow layer - softer and more widespread
+    float secondaryGlow = pow(vLightning, 0.4);
+    finalColor += vec3(0.2, 0.3, 0.4) * secondaryGlow * 0.15;
+    
+    // Outer glow layer - very soft and subtle
+    float outerGlow = pow(vLightning, 0.2);
+    finalColor += vec3(0.1, 0.15, 0.2) * outerGlow * 0.08;
+    
+    // Gradual alpha boost based on lightning intensity
+    alpha += vLightning * vLightning * 0.15; // Quadratic for smoother falloff
     
     gl_FragColor = vec4(finalColor, alpha);
   }
