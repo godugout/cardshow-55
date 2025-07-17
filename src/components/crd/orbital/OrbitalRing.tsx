@@ -101,12 +101,15 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
   }, []);
 
   const handlePointerLeave = useCallback(() => {
-    setTimeout(() => {
-      if (!isDragging && Date.now() - lastInteractionTime.current > 300) {
+    // Use a shorter delay and more predictable behavior
+    const checkDelay = setTimeout(() => {
+      if (!isDragging) {
         setIsMouseOverRing(false);
       }
-    }, 300);
-  }, [isDragging]);
+    }, 100);
+    
+    return () => clearTimeout(checkDelay);
+  }, [isDragging, setIsMouseOverRing]);
 
   // Satellite interaction handlers
   const handleSatelliteClick = useCallback((style: CRDVisualStyle) => {

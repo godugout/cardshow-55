@@ -29,7 +29,7 @@ export function useRingRotation({
     if (autoRotate) {
       // Auto-rotation with hover speed adjustment
       const hoverSpeedMultiplier = isMouseOverRing ? 0.15 : 1.0;
-      const baseSpeed = rotationSpeed * 0.5 * delta * hoverSpeedMultiplier;
+      const baseSpeed = rotationSpeed * 0.25 * delta * hoverSpeedMultiplier;
       return currentRotation + baseSpeed;
     }
 
