@@ -29,6 +29,11 @@ interface CRDViewerProps {
   showOrbitalRing?: boolean;
   showLockIndicators?: boolean;
   
+  // Pause controls
+  isPaused?: boolean;
+  onTogglePause?: () => void;
+  showPauseButton?: boolean;
+  
   className?: string;
   onModeChange?: (mode: AnimationMode) => void;
   onIntensityChange?: (intensity: number) => void;
@@ -51,6 +56,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   orbitalRotationSpeed = 1,
   showOrbitalRing = true,
   showLockIndicators = false,
+  
+  // Pause controls
+  isPaused: externalIsPaused,
+  onTogglePause: externalOnTogglePause,
+  showPauseButton = true,
   
   className = "w-full h-screen",
   onModeChange,
@@ -75,8 +85,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Visual Style State
   const [selectedStyleId, setSelectedStyleId] = useState('matte');
   const [cardRotation, setCardRotation] = useState(new THREE.Euler(0, 0, 0));
-  const [isPaused, setIsPaused] = useState(false);
+  const [internalIsPaused, setInternalIsPaused] = useState(false);
   const [isResetAnimating, setIsResetAnimating] = useState(false);
+  
+  // Use external pause state if provided, otherwise use internal state
+  const isPaused = externalIsPaused !== undefined ? externalIsPaused : internalIsPaused;
 
   // Rotation State
   const [autoRotate, setAutoRotate] = useState(initialAutoRotate);
@@ -141,7 +154,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   };
 
   const handleTogglePause = () => {
-    setIsPaused(prev => !prev);
+    if (externalOnTogglePause) {
+      externalOnTogglePause();
+    } else {
+      setInternalIsPaused(prev => !prev);
+    }
   };
 
   const handleReset = () => {
@@ -305,10 +322,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
       
       {/* Studio Controls */}
       <StudioResetButton onReset={handleReset} />
-      <StudioPauseButton 
-        isPaused={isPaused} 
-        onTogglePause={handleTogglePause} 
-      />
+      {showPauseButton && (
+        <StudioPauseButton 
+          isPaused={isPaused} 
+          onTogglePause={handleTogglePause} 
+        />
+      )}
     </div>
   );
 };

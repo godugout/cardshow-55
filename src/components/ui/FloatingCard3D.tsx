@@ -1,8 +1,18 @@
 import React from 'react';
 import { CRDViewer } from '@/components/crd/CRDViewer';
 
+interface FloatingCard3DProps {
+  isPaused?: boolean;
+  onTogglePause?: () => void;
+  showPauseButton?: boolean;
+}
+
 // Legacy wrapper that maintains exact same API and functionality
-export const FloatingCard3D: React.FC = () => {
+export const FloatingCard3D: React.FC<FloatingCard3DProps> = ({ 
+  isPaused, 
+  onTogglePause,
+  showPauseButton = false 
+}) => {
   return (
     <CRDViewer
       mode="monolith" // Starts in monolith mode
@@ -14,6 +24,9 @@ export const FloatingCard3D: React.FC = () => {
       enableGlassCase={true}
       showModeText={false}
       className="w-full h-screen"
+      isPaused={isPaused}
+      onTogglePause={onTogglePause}
+      showPauseButton={showPauseButton}
     />
   );
 };

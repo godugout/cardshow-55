@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { StandardHero } from '@/components/shared/StandardHero';
 import { Link } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { PixelDigital } from '@/components/ui/PixelDigital';
 import { FloatingCard3D } from '@/components/ui/FloatingCard3D';
 import { StudioResetButton } from '@/components/studio/StudioResetButton';
+import { StudioPauseButton } from '@/components/studio/StudioPauseButton';
 import { StarsBackground } from '@/components/ui/stars';
 
 const AnimatedTagline: React.FC = () => {
@@ -19,9 +20,15 @@ const AnimatedTagline: React.FC = () => {
 };
 
 export const CreatePageHero: React.FC = () => {
+  const [isPaused, setIsPaused] = useState(false);
+  
   const handleResetCamera = () => {
     // Trigger a camera reset - this will be handled by the CRDViewer component
     window.dispatchEvent(new CustomEvent('crd-reset-camera'));
+  };
+
+  const handleTogglePause = () => {
+    setIsPaused(prev => !prev);
   };
 
   return (
@@ -29,12 +36,22 @@ export const CreatePageHero: React.FC = () => {
       {/* 3D Background covering entire hero section */}
       <div className="absolute inset-0 z-0 h-full">
         <StarsBackground>
-          <FloatingCard3D />
+          <FloatingCard3D 
+            isPaused={isPaused}
+            onTogglePause={handleTogglePause}
+            showPauseButton={false}
+          />
         </StarsBackground>
       </div>
       
       {/* Reset Button */}
       <StudioResetButton onReset={handleResetCamera} />
+      
+      {/* Pause Button */}
+      <StudioPauseButton 
+        isPaused={isPaused} 
+        onTogglePause={handleTogglePause} 
+      />
       
       {/* Hero Content Overlay */}
       <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
