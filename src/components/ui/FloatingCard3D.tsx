@@ -27,6 +27,8 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         cardRef.current.rotation.set(0, 0, 0);
         effectsLayerRef.current.position.set(0, 0, 0.051); // Just above card surface
         effectsLayerRef.current.rotation.set(0, 0, 0);
+        // Hide effects layer in frozen mode
+        effectsLayerRef.current.visible = false;
         break;
         
       case 'showcase':
@@ -37,12 +39,11 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         cardRef.current.rotation.x = Math.sin(time * 0.8) * 0.05 * factor;
         cardRef.current.rotation.z = Math.sin(time * 1.1) * 0.03 * factor;
         
-        // Effects layer follows card position but stays flat (no rotation copying)
-        effectsLayerRef.current.position.x = cardRef.current.position.x;
-        effectsLayerRef.current.position.y = cardRef.current.position.y;
-        effectsLayerRef.current.position.z = cardRef.current.position.z + 0.051; // Always 0.051 above card surface
-        // Keep effects layer flat - don't copy rotation
-        effectsLayerRef.current.rotation.set(0, 0, 0);
+        // Effects layer follows card position exactly and stays just above surface
+        effectsLayerRef.current.position.copy(cardRef.current.position);
+        effectsLayerRef.current.position.z += 0.051; // Always 0.051 above card surface
+        effectsLayerRef.current.rotation.copy(cardRef.current.rotation);
+        effectsLayerRef.current.visible = true;
         break;
     }
   });
@@ -62,16 +63,16 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
       </mesh>
       
       {/* Effects layer - film sticker just above card surface */}
-      <mesh ref={effectsLayerRef}>
+      <mesh ref={effectsLayerRef} visible={mode === 'showcase'}>
         <planeGeometry args={[2.25, 3.25]} />
         <meshStandardMaterial 
           color="#ff6b6b"
           metalness={0.8}
           roughness={0.2}
           transparent
-          opacity={mode === 'showcase' ? 0.6 : 0.1}
+          opacity={0.7}
           emissive="#ff3333"
-          emissiveIntensity={mode === 'showcase' ? 0.4 : 0.0}
+          emissiveIntensity={0.4}
         />
       </mesh>
     </group>
