@@ -12,10 +12,9 @@ interface FloatingCardProps {
 
 const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
   const cardRef = useRef<THREE.Mesh>(null);
-  const effectsLayerRef = useRef<THREE.Mesh>(null);
   
   useFrame((state) => {
-    if (!cardRef.current || !effectsLayerRef.current) return;
+    if (!cardRef.current) return;
     
     const time = state.clock.elapsedTime;
     const factor = intensity;
@@ -26,7 +25,6 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
     switch (mode) {
       case 'frozen':
         // All values already at 0
-        effectsLayerRef.current.visible = false;
         break;
         
       case 'showcase':
@@ -36,14 +34,12 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         rotY = time * 0.3 * factor;
         rotX = Math.sin(time * 0.8) * 0.05 * factor;
         rotZ = Math.sin(time * 1.1) * 0.03 * factor;
-        effectsLayerRef.current.visible = true;
         break;
         
       case 'ice':
         // Gentle floating like frozen in ice
         posY = Math.sin(time * 0.4) * 0.02 * factor;
         rotY = Math.sin(time * 0.3) * 0.01 * factor;
-        effectsLayerRef.current.visible = false;
         break;
         
       case 'gold':
@@ -51,7 +47,6 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         rotY = Math.sin(time * 0.8) * 0.08 * factor;
         rotX = Math.sin(time * 0.6) * 0.04 * factor;
         posY = Math.sin(time * 1.0) * 0.02 * factor;
-        effectsLayerRef.current.visible = false;
         break;
         
       case 'glass':
@@ -59,7 +54,6 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         posY = Math.sin(time * 0.8) * 0.03 * factor;
         rotY = Math.sin(time * 0.5) * 0.04 * factor;
         rotX = Math.sin(time * 0.6) * 0.02 * factor;
-        effectsLayerRef.current.visible = false;
         break;
         
       case 'holo':
@@ -70,17 +64,12 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         rotY = time * 0.5 * factor;
         rotX = Math.sin(time * 1.3) * 0.08 * factor;
         rotZ = Math.sin(time * 1.7) * 0.05 * factor;
-        effectsLayerRef.current.visible = true;
         break;
     }
     
-    // Apply the same transforms to both card and effects layer
+    // Apply transforms to the card
     cardRef.current.position.set(posX, posY, posZ);
     cardRef.current.rotation.set(rotX, rotY, rotZ);
-    
-    // Effects layer follows exactly with Z offset
-    effectsLayerRef.current.position.set(posX, posY, posZ + 0.051);
-    effectsLayerRef.current.rotation.set(rotX, rotY, rotZ);
   });
 
   // Create advanced materials
@@ -182,21 +171,6 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
       <mesh ref={cardRef}>
         {getCardGeometry()}
         {getCardMaterial()}
-      </mesh>
-      
-      {/* Advanced Effects Layer */}
-      <mesh ref={effectsLayerRef} visible={mode === 'showcase' || mode === 'holo'}>
-        <planeGeometry args={[2.25, 3.25]} />
-        <meshStandardMaterial 
-          color={mode === 'holo' ? new THREE.Color().setHSL(((Date.now() * 0.003) % 360) / 360, 0.9, 0.7) : "#ff6b6b"}
-          metalness={mode === 'holo' ? 1 : 0.8}
-          roughness={mode === 'holo' ? 0.05 : 0.2}
-          transparent
-          opacity={mode === 'holo' ? 0.9 : 0.7}
-          emissive={mode === 'holo' ? new THREE.Color().setHSL(((Date.now() * 0.004) % 360) / 360, 0.8, 0.4) : "#ff3333"}
-          emissiveIntensity={mode === 'holo' ? 1.0 : 0.4}
-          envMapIntensity={mode === 'holo' ? 3 : 1}
-        />
       </mesh>
     </group>
   );
