@@ -13,51 +13,7 @@
 .paper-scraps {
   position: relative;
   color: #ffffff;
-  background: 
-    /* Ruled lines pattern inside the text */
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 8px,
-      #0047ab 8px,
-      #0047ab 9px,
-      transparent 9px,
-      transparent 17px,
-      #0047ab 17px,
-      #0047ab 18px,
-      transparent 18px,
-      transparent 26px,
-      #0047ab 26px,
-      #0047ab 27px,
-      transparent 27px,
-      transparent 35px,
-      #0047ab 35px,
-      #0047ab 36px,
-      transparent 36px,
-      transparent 44px,
-      #0047ab 44px,
-      #0047ab 45px
-    ),
-    /* Base bright white color */
-    #ffffff;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-}
-
-/* Vertical red margin line through the middle of 'a' */
-.paper-scraps::after {
-  content: '';
-  position: absolute;
-  top: 0.2rem;
-  bottom: 0.2rem;
-  left: 2.8rem;
-  width: 2px;
-  background: #dc143c;
-  z-index: 1;
-  pointer-events: none;
-  clip-path: polygon(0 20%, 100% 20%, 100% 80%, 0 80%);
 }
 
 .cardboard-text {
