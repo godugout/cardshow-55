@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { StandardHero } from '@/components/shared/StandardHero';
 import { Link } from 'react-router-dom';
@@ -18,6 +19,11 @@ const AnimatedTagline: React.FC = () => {
 export const CreatePageHero: React.FC = () => {
   return (
     <div className="relative w-screen -mx-[50vw] left-1/2 overflow-hidden h-screen">
+      {/* 3D Background covering entire hero section */}
+      <div className="absolute inset-0 z-0 h-full">
+        <FloatingCard3D />
+      </div>
+      
       {/* Hero Content Overlay */}
       <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
         <div className="w-full px-4 sm:px-6 lg:px-8">
@@ -69,11 +75,6 @@ export const CreatePageHero: React.FC = () => {
           {/* Extra spacing to position 3D card in visible area */}
           <div className="mt-32 mb-32"></div>
         </div>
-      </div>
-      
-      {/* 3D Background covering entire hero section - moved to z-20 to appear on top */}
-      <div className="absolute inset-0 z-20 h-full">
-        <FloatingCard3D />
       </div>
     </div>
   );
