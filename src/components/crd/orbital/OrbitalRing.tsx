@@ -111,9 +111,10 @@ export const OrbitalRing: React.FC<OrbitalRingProps> = ({
         setRotationVelocity(newVelocity);
         setCurrentRotation(prev => prev + newVelocity * delta);
       } 
-      // Auto-rotation when no user input or momentum
-      else if (autoRotate && !isMouseOverRing) {
-        const baseSpeed = rotationSpeed * 0.5 * delta;
+      // Auto-rotation with speed based on hover state
+      else if (autoRotate) {
+        const hoverSpeedMultiplier = isMouseOverRing ? 0.15 : 1.0; // Slow down to 15% speed when hovering
+        const baseSpeed = rotationSpeed * 0.5 * delta * hoverSpeedMultiplier;
         setCurrentRotation(prev => prev + baseSpeed);
       }
       
