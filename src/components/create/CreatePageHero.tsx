@@ -49,7 +49,7 @@ export const CreatePageHero: React.FC = () => {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center my-12">
-            <Link to="/create/new">
+            <Link to="/create/crd">
               <CRDButton 
                 size="lg" 
                 variant="create"

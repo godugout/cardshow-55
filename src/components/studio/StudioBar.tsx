@@ -101,7 +101,7 @@ export const StudioBar: React.FC<StudioBarProps> = ({
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-crd-dark/95 backdrop-blur-xl border-t border-crd-gray/20 shadow-2xl">
       {/* Top Bar - Always Visible */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-crd-gray/10">
+      <div className="flex items-center justify-between px-6 py-2 border-b border-crd-gray/10">
         {/* Left: Studio Title */}
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-crd-orange animate-pulse" />
@@ -176,16 +176,16 @@ export const StudioBar: React.FC<StudioBarProps> = ({
 
       {/* Expandable Content */}
       {isExpanded && (
-        <div className="p-6">
+        <div className="p-4">
           {/* Tab Navigation */}
-          <div className="flex gap-1 mb-6 bg-crd-gray/10 p-1 rounded-lg">
+          <div className="flex gap-1 mb-4 bg-crd-gray/10 p-1 rounded-lg">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md text-sm font-medium transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
                     activeTab === tab.id
                       ? 'bg-white text-crd-dark shadow-sm'
                       : 'text-crd-lightGray hover:text-white hover:bg-crd-gray/20'
@@ -199,10 +199,10 @@ export const StudioBar: React.FC<StudioBarProps> = ({
           </div>
 
           {/* Tab Content */}
-          <div className="min-h-[200px]">
+          <div className="min-h-[150px]">
             {/* Animation Controls */}
             {activeTab === 'animation' && (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-white mb-4">Animation Controls</h3>
                 
                 <div>
@@ -247,7 +247,7 @@ export const StudioBar: React.FC<StudioBarProps> = ({
             {activeTab === 'materials' && (
               <div className="h-full flex flex-col">
                 <h3 className="text-lg font-semibold mb-4">Visual Materials</h3>
-                <div className="grid grid-cols-6 gap-3">
+                <div className="grid grid-cols-8 gap-2">
                   {CRDVisualStyles.map((style) => (
                     <button
                       key={style.id}
@@ -289,7 +289,7 @@ export const StudioBar: React.FC<StudioBarProps> = ({
 
             {/* Rotation Controls */}
             {activeTab === 'rotation' && (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-white mb-4">Motion Controls</h3>
                 
                 <div className="flex items-center justify-between">
@@ -377,7 +377,7 @@ export const StudioBar: React.FC<StudioBarProps> = ({
 
             {/* Lighting Controls */}
             {activeTab === 'lighting' && (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-white mb-4">Lighting Setup</h3>
                 
                 <div>

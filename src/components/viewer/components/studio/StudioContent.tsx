@@ -60,7 +60,7 @@ export const StudioContent: React.FC<StudioContentProps> = ({
   return (
     <div className="flex-1 min-h-0">
       <ScrollArea className="h-full">
-        <div className="p-4 space-y-6">
+        <div className="p-3 space-y-3">
           {/* Styles Section */}
           <StylesSection
             effectValues={effectValues}
