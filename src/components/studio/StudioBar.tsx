@@ -124,27 +124,27 @@ export const StudioBar: React.FC<StudioBarProps> = ({
           </button>
           
           <button
-            onClick={() => handleAnimationPreset('suspended')}
+            onClick={() => handleAnimationPreset('showcase')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              animationMode === 'suspended' 
+              animationMode === 'showcase' 
                 ? 'bg-crd-orange text-white' 
                 : 'bg-crd-gray/20 text-crd-lightGray hover:bg-crd-gray/30'
             }`}
           >
             <Sparkles className="w-3 h-3 inline mr-1" />
-            Float
+            Showcase
           </button>
 
           <button
-            onClick={() => handleAnimationPreset('wave')}
+            onClick={() => handleAnimationPreset('holo')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              animationMode === 'wave' 
+              animationMode === 'holo' 
                 ? 'bg-crd-orange text-white' 
                 : 'bg-crd-gray/20 text-crd-lightGray hover:bg-crd-gray/30'
             }`}
           >
             <Waves className="w-3 h-3 inline mr-1" />
-            Wave
+            Holo
           </button>
         </div>
 
@@ -210,7 +210,7 @@ export const StudioBar: React.FC<StudioBarProps> = ({
                     Animation Mode
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    {(['monolith', 'suspended', 'wave'] as AnimationMode[]).map((mode) => (
+                    {(['monolith', 'showcase', 'holo'] as AnimationMode[]).map((mode) => (
                       <button
                         key={mode}
                         onClick={() => onAnimationModeChange(mode)}
