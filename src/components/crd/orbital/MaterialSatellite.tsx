@@ -31,26 +31,6 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
     // Gentle floating animation
     const float = Math.sin(time * 2 + position.x) * 0.02;
     meshRef.current.position.y = position.y + float;
-    
-    // Internal glow effect through material emissive
-    if (meshRef.current.material) {
-      const material = meshRef.current.material as THREE.MeshStandardMaterial;
-      
-      if (isActive) {
-        // Strong pulsing glow for active satellite
-        const pulse = 0.8 + Math.sin(time * 4) * 0.4;
-        material.emissiveIntensity = pulse;
-        material.emissive.setHex(0x00ffff); // Cyan glow
-      } else if (isHovered) {
-        // Medium glow for hovered satellite
-        material.emissiveIntensity = 0.6;
-        material.emissive.setHex(0xffffff); // White glow
-      } else {
-        // Subtle base glow
-        material.emissiveIntensity = 0.2;
-        material.emissive.setHex(0x444444); // Dim glow
-      }
-    }
   });
 
   const handlePointerEnter = () => onHover(true);
@@ -58,7 +38,7 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
 
   return (
     <group position={position}>
-      {/* Main Satellite with Internal Glow */}
+      {/* Main Satellite with Actual Material */}
       <mesh 
         ref={meshRef}
         onClick={onClick}
@@ -72,14 +52,11 @@ export const MaterialSatellite: React.FC<MaterialSatelliteProps> = ({
           <sphereGeometry args={[0.15, 16, 16]} />
         )}
         
-        {/* Satellite uses its own material with emissive glow */}
-        <meshStandardMaterial
-          color={isActive ? "#ffffff" : "#cccccc"}
-          metalness={0.7}
-          roughness={0.2}
-          emissive="#444444"
-          emissiveIntensity={0.2}
-          envMapIntensity={2}
+        {/* Show the actual material instead of gray shell */}
+        <MaterialSystem 
+          mode={style.id as any} 
+          intensity={isActive ? 1.5 : isHovered ? 1.2 : 1}
+          type="card"
         />
       </mesh>
 
