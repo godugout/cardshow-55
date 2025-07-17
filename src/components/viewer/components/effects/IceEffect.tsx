@@ -41,11 +41,11 @@ export const IceEffect: React.FC<IceEffectProps> = ({
       />
 
       {/* Ice scratches and surface markings */}
-      {Array.from({ length: 8 }, (_, i) => {
-        const angle = (i * 45) + mousePosition.x * 30;
-        const length = 15 + (i * 8) % 30;
-        const x = 20 + (i * 15) % 60;
-        const y = 15 + (i * 12) % 70;
+      {Array.from({ length: 12 }, (_, i) => {
+        const angle = (i * 30) + mousePosition.x * 25;
+        const length = 10 + (i * 6) % 25;
+        const x = 15 + (i * 12) % 70;
+        const y = 10 + (i * 8) % 80;
         
         return (
           <div
@@ -59,24 +59,26 @@ export const IceEffect: React.FC<IceEffectProps> = ({
               background: `linear-gradient(
                 90deg,
                 transparent 0%,
-                rgba(255, 255, 255, ${scratchOpacity}) 20%,
-                rgba(224, 242, 254, ${scratchOpacity * 1.2}) 50%,
-                rgba(255, 255, 255, ${scratchOpacity}) 80%,
+                rgba(173, 216, 230, ${scratchOpacity * 0.9}) 15%,
+                rgba(135, 206, 250, ${scratchOpacity * 1.3}) 40%,
+                rgba(70, 130, 180, ${scratchOpacity * 1.1}) 60%,
+                rgba(173, 216, 230, ${scratchOpacity * 0.8}) 85%,
                 transparent 100%
               )`,
               transform: `rotate(${angle}deg)`,
-              filter: 'blur(0.3px)',
-              opacity: 0.7 + (i % 3) * 0.1
+              filter: 'blur(0.2px)',
+              opacity: 0.6 + (i % 4) * 0.15
             }}
           />
         );
       })}
 
-      {/* Deeper ice cracks */}
-      {Array.from({ length: 4 }, (_, i) => {
-        const angle = (i * 90) + mousePosition.y * 45;
-        const x = 25 + (i * 20);
-        const y = 20 + (i * 15);
+      {/* Deeper ice cracks and blue streaks */}
+      {Array.from({ length: 6 }, (_, i) => {
+        const angle = (i * 60) + mousePosition.y * 35;
+        const x = 20 + (i * 15) % 60;
+        const y = 15 + (i * 12) % 70;
+        const isLongCrack = i % 2 === 0;
         
         return (
           <div
@@ -85,19 +87,50 @@ export const IceEffect: React.FC<IceEffectProps> = ({
             style={{
               left: `${x}%`,
               top: `${y}%`,
-              width: '40px',
-              height: '2px',
+              width: isLongCrack ? '45px' : '25px',
+              height: isLongCrack ? '2.5px' : '1.5px',
               background: `linear-gradient(
                 90deg,
                 transparent 0%,
-                rgba(186, 230, 253, ${scratchOpacity * 0.6}) 30%,
-                rgba(125, 211, 252, ${scratchOpacity * 0.8}) 50%,
-                rgba(186, 230, 253, ${scratchOpacity * 0.6}) 70%,
+                rgba(65, 105, 225, ${scratchOpacity * 0.7}) 25%,
+                rgba(30, 144, 255, ${scratchOpacity * 0.9}) 50%,
+                rgba(100, 149, 237, ${scratchOpacity * 0.75}) 75%,
                 transparent 100%
               )`,
               transform: `rotate(${angle}deg)`,
-              filter: 'blur(0.5px)',
-              boxShadow: `0 0 3px rgba(125, 211, 252, ${scratchOpacity * 0.5})`
+              filter: 'blur(0.4px)',
+              boxShadow: `0 0 4px rgba(30, 144, 255, ${scratchOpacity * 0.6})`
+            }}
+          />
+        );
+      })}
+
+      {/* Ice skating marks */}
+      {Array.from({ length: 8 }, (_, i) => {
+        const curve = Math.sin(i * 0.8) * 20;
+        const x = 10 + (i * 10) % 80;
+        const y = 25 + curve + (i * 8) % 50;
+        
+        return (
+          <div
+            key={`skate-mark-${i}`}
+            className="absolute z-16"
+            style={{
+              left: `${x}%`,
+              top: `${y}%`,
+              width: '35px',
+              height: '0.8px',
+              background: `linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(70, 130, 180, ${baseOpacity * 0.8}) 20%,
+                rgba(95, 158, 160, ${baseOpacity * 1.0}) 50%,
+                rgba(70, 130, 180, ${baseOpacity * 0.8}) 80%,
+                transparent 100%
+              )`,
+              transform: `rotate(${-15 + curve * 0.5}deg)`,
+              filter: 'blur(0.3px)',
+              opacity: 0.5 + (i % 3) * 0.2
             }}
           />
         );

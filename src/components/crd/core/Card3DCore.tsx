@@ -47,7 +47,7 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
     let rotX = 0, rotY = 0, rotZ = 0;
     
     switch (mode) {
-      case 'frozen':
+      case 'monolith':
         // No animation
         break;
         

@@ -1,8 +1,8 @@
 // Core CRD Types
-export type AnimationMode = 'frozen' | 'showcase' | 'ice' | 'gold' | 'glass' | 'holo';
+export type AnimationMode = 'monolith' | 'showcase' | 'ice' | 'gold' | 'glass' | 'holo';
 
 export type MaterialMode = 
-  | 'frozen' 
+  | 'monolith' 
   | 'showcase' 
   | 'ice' 
   | 'gold' 

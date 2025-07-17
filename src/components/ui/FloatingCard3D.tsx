@@ -5,7 +5,7 @@ import { CRDViewer } from '@/components/crd/CRDViewer';
 export const FloatingCard3D: React.FC = () => {
   return (
     <CRDViewer
-      mode="frozen" // Starts in frozen mode
+      mode="monolith" // Starts in monolith mode
       intensity={1}
       lightingPreset="studio"
       pathTheme="neutral"

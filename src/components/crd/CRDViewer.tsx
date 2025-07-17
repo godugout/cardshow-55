@@ -4,7 +4,6 @@ import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
-import { CRDControlPanel } from './controls/CRDControlPanel';
 import { type AnimationMode, type LightingPreset, type PathTheme } from './types/CRDTypes';
 
 interface CRDViewerProps {
@@ -18,14 +17,14 @@ interface CRDViewerProps {
   enableControls?: boolean;
   enableGlassCase?: boolean;
   showModeText?: boolean;
-  showControlPanel?: boolean;
+  
   className?: string;
   onModeChange?: (mode: AnimationMode) => void;
   onIntensityChange?: (intensity: number) => void;
 }
 
 export const CRDViewer: React.FC<CRDViewerProps> = ({
-  mode: initialMode = 'frozen',
+  mode: initialMode = 'monolith',
   intensity: initialIntensity = 1,
   lightingPreset: initialLightingPreset = 'studio',
   pathTheme = 'neutral',
@@ -35,7 +34,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   enableControls = true,
   enableGlassCase = true,
   showModeText = true,
-  showControlPanel = true,
+  
   className = "w-full h-screen",
   onModeChange,
   onIntensityChange
@@ -62,7 +61,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     
     const interval = setInterval(() => {
       setCurrentMode(prev => {
-        const modes: AnimationMode[] = ['frozen', 'ice', 'gold', 'glass', 'holo', 'showcase'];
+        const modes: AnimationMode[] = ['monolith', 'ice', 'gold', 'glass', 'holo', 'showcase'];
         const currentIndex = modes.indexOf(prev);
         const newMode = modes[(currentIndex + 1) % modes.length];
         onModeChange?.(newMode);
@@ -194,34 +193,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
       
-      {/* Modern Control Panel */}
-      {showControlPanel && (
-        <div className="fixed bottom-4 left-4 right-4 z-20 max-w-4xl mx-auto">
-          <CRDControlPanel
-            // Animation props
-            animationMode={currentMode}
-            animationIntensity={currentIntensity}
-            onAnimationModeChange={handleModeChange}
-            onAnimationIntensityChange={handleIntensityChange}
-            
-            // Style props
-            selectedStyleId={selectedStyleId}
-            onStyleChange={handleStyleChange}
-            
-            // Rotation props
-            autoRotate={autoRotate}
-            rotationSpeed={rotationSpeed}
-            onAutoRotateChange={handleAutoRotateChange}
-            onRotationSpeedChange={handleRotationSpeedChange}
-            
-            // Lighting props
-            lightingPreset={lightingPreset}
-            lightingIntensity={lightingIntensity}
-            onLightingPresetChange={handleLightingPresetChange}
-            onLightingIntensityChange={handleLightingIntensityChange}
-          />
-        </div>
-      )}
     </div>
   );
 };

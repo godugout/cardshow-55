@@ -5,6 +5,7 @@ export { MaterialSystem } from './materials/MaterialSystem';
 export { AnimationController } from './animation/AnimationController';
 export { LightingRig } from './lighting/LightingRig';
 export { CRDControlPanel } from './controls/CRDControlPanel';
+export { CRDStickyFooter } from './controls/CRDStickyFooter';
 
 // Premium Styles System
 export { StyleSelector, StyleTile } from './styles/StyleSelector';

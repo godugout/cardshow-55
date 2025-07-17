@@ -4,6 +4,7 @@ import { type AnimationMode, type LightingPreset } from '../types/CRDTypes';
 import { StyleSelector } from '../styles/StyleSelector';
 
 interface CRDControlPanelProps {
+  className?: string;
   // Animation Settings
   animationMode: AnimationMode;
   animationIntensity: number;
@@ -25,14 +26,12 @@ interface CRDControlPanelProps {
   lightingIntensity: number;
   onLightingPresetChange: (preset: LightingPreset) => void;
   onLightingIntensityChange: (intensity: number) => void;
-  
-  // Panel State
-  className?: string;
 }
 
 type ControlSection = 'styles' | 'animation' | 'rotation' | 'lighting';
 
 export const CRDControlPanel: React.FC<CRDControlPanelProps> = ({
+  className = '',
   animationMode,
   animationIntensity,
   onAnimationModeChange,
@@ -46,8 +45,7 @@ export const CRDControlPanel: React.FC<CRDControlPanelProps> = ({
   lightingPreset,
   lightingIntensity,
   onLightingPresetChange,
-  onLightingIntensityChange,
-  className = ""
+  onLightingIntensityChange
 }) => {
   const [activeSection, setActiveSection] = useState<ControlSection>('styles');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -98,7 +96,7 @@ export const CRDControlPanel: React.FC<CRDControlPanelProps> = ({
                 Animation Mode
               </label>
               <div className="grid grid-cols-2 gap-2">
-                {(['frozen', 'ice', 'gold', 'glass', 'holo', 'showcase'] as AnimationMode[]).map(mode => (
+                {(['monolith', 'ice', 'gold', 'glass', 'holo', 'showcase'] as AnimationMode[]).map(mode => (
                   <button
                     key={mode}
                     onClick={() => onAnimationModeChange(mode)}

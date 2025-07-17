@@ -39,7 +39,7 @@ export const AnimationController: React.FC<AnimationControllerProps> = ({
     let rotX = 0, rotY = 0, rotZ = 0;
     
     switch (mode) {
-      case 'frozen':
+      case 'monolith':
         // No animation - use base transform
         break;
         

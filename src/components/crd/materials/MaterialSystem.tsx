@@ -124,7 +124,7 @@ export const MaterialSystem: React.FC<MaterialSystemProps> = ({
         );
       
       default:
-        // Default showcase/frozen material
+        // Default showcase/monolith material
         return (
           <meshStandardMaterial 
             color="#1a1a2e"
