@@ -3,7 +3,7 @@ import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
-type AnimationMode = 'frozen' | 'showcase';
+type AnimationMode = 'frozen' | 'showcase' | 'ice' | 'gold' | 'glass' | 'holo';
 
 interface FloatingCardProps {
   mode: AnimationMode;
@@ -30,13 +30,45 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
         break;
         
       case 'showcase':
-        // Calculate new positions and rotations
+        // Dramatic effects demonstration
         posY = Math.sin(time * 1.2) * 0.08 * factor;
         posX = Math.sin(time * 0.9) * 0.06 * factor;
-        posZ = 0;
         rotY = time * 0.3 * factor;
         rotX = Math.sin(time * 0.8) * 0.05 * factor;
         rotZ = Math.sin(time * 1.1) * 0.03 * factor;
+        effectsLayerRef.current.visible = true;
+        break;
+        
+      case 'ice':
+        // Gentle floating like frozen in ice
+        posY = Math.sin(time * 0.4) * 0.02 * factor;
+        rotY = Math.sin(time * 0.3) * 0.01 * factor;
+        effectsLayerRef.current.visible = false;
+        break;
+        
+      case 'gold':
+        // Slight rotation to show gold surfaces
+        rotY = Math.sin(time * 0.6) * 0.05 * factor;
+        rotX = Math.sin(time * 0.5) * 0.02 * factor;
+        posY = Math.sin(time * 0.8) * 0.01 * factor;
+        effectsLayerRef.current.visible = false;
+        break;
+        
+      case 'glass':
+        // Subtle movements to show transparency
+        posY = Math.sin(time * 0.7) * 0.03 * factor;
+        rotY = Math.sin(time * 0.4) * 0.03 * factor;
+        effectsLayerRef.current.visible = false;
+        break;
+        
+      case 'holo':
+        // Ultimate holographic effects - maximum movement
+        posY = Math.sin(time * 1.5) * 0.12 * factor;
+        posX = Math.sin(time * 1.1) * 0.08 * factor;
+        posZ = Math.sin(time * 0.9) * 0.02 * factor;
+        rotY = time * 0.5 * factor;
+        rotX = Math.sin(time * 1.3) * 0.08 * factor;
+        rotZ = Math.sin(time * 1.7) * 0.05 * factor;
         effectsLayerRef.current.visible = true;
         break;
     }
@@ -50,31 +82,102 @@ const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
     effectsLayerRef.current.rotation.set(rotX, rotY, rotZ);
   });
 
+  // Dynamic material based on mode
+  const getCardMaterial = () => {
+    switch (mode) {
+      case 'ice':
+        return (
+          <meshPhysicalMaterial
+            color="#87ceeb"
+            metalness={0}
+            roughness={0}
+            transmission={0.9}
+            transparent={true}
+            opacity={0.3}
+            thickness={0.1}
+            ior={1.33}
+            clearcoat={1}
+            clearcoatRoughness={0}
+          />
+        );
+      
+      case 'gold':
+        return (
+          <meshStandardMaterial 
+            color="#ffd700"
+            metalness={1}
+            roughness={0.1}
+            emissive="#ffaa00"
+            emissiveIntensity={0.1}
+          />
+        );
+      
+      case 'glass':
+        return (
+          <meshPhysicalMaterial
+            color="#8b7355"
+            metalness={0}
+            roughness={0.1}
+            transmission={0.7}
+            transparent={true}
+            opacity={0.6}
+            thickness={0.1}
+            ior={1.5}
+          />
+        );
+      
+      case 'holo':
+        return (
+          <meshStandardMaterial 
+            color={`hsl(${(Date.now() * 0.01) % 360}, 80%, 60%)`}
+            metalness={0.8}
+            roughness={0.2}
+            emissive={`hsl(${(Date.now() * 0.02) % 360}, 70%, 30%)`}
+            emissiveIntensity={0.5}
+          />
+        );
+      
+      default:
+        return (
+          <meshStandardMaterial 
+            color="#1a1a2e"
+            metalness={0.9}
+            roughness={0.1}
+            emissive="#0f0f2a"
+            emissiveIntensity={mode === 'showcase' ? 0.3 : 0.05}
+          />
+        );
+    }
+  };
+
+  // Dynamic geometry based on mode
+  const getCardGeometry = () => {
+    if (mode === 'gold') {
+      // Trapezoidal gold bar shape
+      return <boxGeometry args={[2.3, 3.3, 0.15]} />;
+    }
+    return <boxGeometry args={[2.3, 3.3, 0.1]} />;
+  };
+
   return (
     <group>
-      {/* Main black card */}
+      {/* Main card with dynamic material */}
       <mesh ref={cardRef}>
-        <boxGeometry args={[2.3, 3.3, 0.1]} />
-        <meshStandardMaterial 
-          color="#1a1a2e"
-          metalness={0.9}
-          roughness={0.1}
-          emissive="#0f0f2a"
-          emissiveIntensity={mode === 'showcase' ? 0.3 : 0.05}
-        />
+        {getCardGeometry()}
+        {getCardMaterial()}
       </mesh>
       
-      {/* Effects layer - film sticker just above card surface */}
-      <mesh ref={effectsLayerRef} visible={mode === 'showcase'}>
+      {/* Effects layer for showcase and holo modes */}
+      <mesh ref={effectsLayerRef} visible={mode === 'showcase' || mode === 'holo'}>
         <planeGeometry args={[2.25, 3.25]} />
         <meshStandardMaterial 
-          color="#ff6b6b"
-          metalness={0.8}
-          roughness={0.2}
+          color={mode === 'holo' ? `hsl(${(Date.now() * 0.03) % 360}, 90%, 70%)` : "#ff6b6b"}
+          metalness={mode === 'holo' ? 1 : 0.8}
+          roughness={mode === 'holo' ? 0 : 0.2}
           transparent
-          opacity={0.7}
-          emissive="#ff3333"
-          emissiveIntensity={0.4}
+          opacity={mode === 'holo' ? 0.8 : 0.7}
+          emissive={mode === 'holo' ? `hsl(${(Date.now() * 0.04) % 360}, 80%, 40%)` : "#ff3333"}
+          emissiveIntensity={mode === 'holo' ? 0.6 : 0.4}
         />
       </mesh>
     </group>
@@ -278,11 +381,11 @@ export const FloatingCard3D: React.FC = () => {
     
     const interval = setInterval(() => {
       setCurrentMode(prev => {
-        const modes: AnimationMode[] = ['frozen', 'showcase'];
+        const modes: AnimationMode[] = ['frozen', 'ice', 'gold', 'glass', 'holo', 'showcase'];
         const currentIndex = modes.indexOf(prev);
         return modes[(currentIndex + 1) % modes.length];
       });
-    }, 5000);
+    }, 4000); // Slightly faster cycling
 
     return () => clearInterval(interval);
   }, [autoMode]);
@@ -342,8 +445,8 @@ export const FloatingCard3D: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <div className="flex items-center gap-2">
               <span className="text-white text-sm font-medium">Animation Mode:</span>
-              <div className="flex gap-1">
-                {(['frozen', 'showcase'] as AnimationMode[]).map(mode => (
+              <div className="flex gap-1 flex-wrap">
+                {(['frozen', 'ice', 'gold', 'glass', 'holo', 'showcase'] as AnimationMode[]).map(mode => (
                   <button
                     key={mode}
                     onClick={() => {
