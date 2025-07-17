@@ -9,10 +9,13 @@ const CardMonolith: React.FC = () => {
   
   useFrame((state) => {
     if (cardRef.current) {
-      // Subtle floating animation
-      cardRef.current.position.y += Math.sin(state.clock.elapsedTime * 0.3) * 0.001;
-      // Position the card in the lower portion of the screen where cards section would be
+      // Position the card in the lower portion of the screen
       cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
+      
+      // Tilt the card towards the sun with flying motion
+      const tiltAngle = -0.4 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1; // Base tilt + gentle sway
+      cardRef.current.rotation.x = tiltAngle;
+      cardRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.05; // Subtle roll
     }
     
     if (sunRef.current) {
