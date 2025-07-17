@@ -116,6 +116,55 @@ const CardMonolith: React.FC<{ onInactivity: boolean }> = ({ onInactivity }) => 
           />
         </mesh>
         
+        {/* Edge glow effects - Orange-Green-Blue gradient */}
+        {/* Left edge glow */}
+        <mesh position={[-1.25, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <planeGeometry args={[3.5, 0.02]} />
+          <meshStandardMaterial 
+            color="#ff6b35"
+            emissive="#ff6b35"
+            emissiveIntensity={2}
+            transparent
+            opacity={0.8}
+          />
+        </mesh>
+        
+        {/* Right edge glow */}
+        <mesh position={[1.25, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <planeGeometry args={[3.5, 0.02]} />
+          <meshStandardMaterial 
+            color="#4ECDC4"
+            emissive="#4ECDC4"
+            emissiveIntensity={2}
+            transparent
+            opacity={0.8}
+          />
+        </mesh>
+        
+        {/* Top edge glow */}
+        <mesh position={[0, 1.75, 0]}>
+          <planeGeometry args={[2.5, 0.02]} />
+          <meshStandardMaterial 
+            color="#45B7D1"
+            emissive="#45B7D1"
+            emissiveIntensity={2}
+            transparent
+            opacity={0.8}
+          />
+        </mesh>
+        
+        {/* Bottom edge glow */}
+        <mesh position={[0, -1.75, 0]}>
+          <planeGeometry args={[2.5, 0.02]} />
+          <meshStandardMaterial 
+            color="#ff9500"
+            emissive="#ff9500"
+            emissiveIntensity={2}
+            transparent
+            opacity={0.8}
+          />
+        </mesh>
+        
         {/* Clear glass case */}
         <mesh>
           <boxGeometry args={[2.6, 3.6, 0.32]} />

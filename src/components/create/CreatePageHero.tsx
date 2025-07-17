@@ -52,7 +52,7 @@ export const CreatePageHero: React.FC = () => {
             <Link to="/create/new">
               <CRDButton 
                 size="lg" 
-                variant="primary"
+                variant="create"
                 className="min-w-[200px]"
               >
                 Start Creating
