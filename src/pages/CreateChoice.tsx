@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { CreatePageHero } from '@/components/create/CreatePageHero';
-import { CreateCardsSection } from '@/components/create/CreateCardsSection';
-import { CreationOptions } from '@/components/create/CreationOptions';
+import { CreateOptionsSection } from '@/components/create/CreateOptionsSection';
 
 const CreateChoice: React.FC = () => {
   return (
@@ -11,11 +10,8 @@ const CreateChoice: React.FC = () => {
         {/* Full Width Hero Section */}
         <CreatePageHero />
         
-        {/* Cards Section */}
-        <CreateCardsSection />
-        
-        {/* Creation Options Section */}
-        <CreationOptions />
+        {/* Combined Creation Options Section */}
+        <CreateOptionsSection />
       </div>
     </div>
   );
