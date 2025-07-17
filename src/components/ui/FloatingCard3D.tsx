@@ -1,25 +1,92 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
-const CardMonolith: React.FC = () => {
-  const cardRef = useRef<THREE.Group>(null);
+type AnimationMode = 'frozen' | 'subtle' | 'active' | 'showcase';
+
+interface FloatingCardProps {
+  mode: AnimationMode;
+  intensity: number;
+}
+
+const FloatingCard: React.FC<FloatingCardProps> = ({ mode, intensity }) => {
+  const cardRef = useRef<THREE.Mesh>(null);
+  
+  useFrame((state) => {
+    if (!cardRef.current) return;
+    
+    const time = state.clock.elapsedTime;
+    const factor = intensity * 0.1;
+    
+    switch (mode) {
+      case 'frozen':
+        // Perfectly centered and still
+        cardRef.current.position.set(0, 0, 0);
+        cardRef.current.rotation.set(0, 0, 0);
+        break;
+        
+      case 'subtle':
+        // Gentle breathing motion
+        cardRef.current.position.y = Math.sin(time * 0.5) * 0.02 * factor;
+        cardRef.current.rotation.z = Math.sin(time * 0.3) * 0.01 * factor;
+        break;
+        
+      case 'active':
+        // Dynamic floating with rotation
+        cardRef.current.position.y = Math.sin(time * 0.8) * 0.05 * factor;
+        cardRef.current.position.x = Math.sin(time * 0.6) * 0.03 * factor;
+        cardRef.current.rotation.y = Math.sin(time * 0.4) * 0.1 * factor;
+        cardRef.current.rotation.z = Math.sin(time * 0.7) * 0.02 * factor;
+        break;
+        
+      case 'showcase':
+        // Dramatic effects demonstration
+        cardRef.current.position.y = Math.sin(time * 1.2) * 0.08 * factor;
+        cardRef.current.position.x = Math.sin(time * 0.9) * 0.06 * factor;
+        cardRef.current.rotation.y = time * 0.3 * factor;
+        cardRef.current.rotation.x = Math.sin(time * 0.8) * 0.05 * factor;
+        cardRef.current.rotation.z = Math.sin(time * 1.1) * 0.03 * factor;
+        break;
+    }
+  });
+
+  return (
+    <mesh ref={cardRef}>
+      {/* Thin card - 1/3 the thickness of original monolith */}
+      <boxGeometry args={[2.3, 3.3, 0.1]} />
+      <meshStandardMaterial 
+        color="#1a1a2e"
+        metalness={0.9}
+        roughness={0.1}
+        emissive="#0f0f2a"
+        emissiveIntensity={mode === 'showcase' ? 0.3 : 0.05}
+      />
+    </mesh>
+  );
+};
+
+interface CardMonolithProps {
+  mode: AnimationMode;
+  intensity: number;
+}
+
+const CardMonolith: React.FC<CardMonolithProps> = ({ mode, intensity }) => {
+  const glassRef = useRef<THREE.Group>(null);
   const sunRef = useRef<THREE.Group>(null);
   
   useFrame((state) => {
-    if (cardRef.current) {
-      // Position the card in the lower portion of the screen
-      cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
+    if (glassRef.current) {
+      // Position the entire glass case lower on screen
+      glassRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.5 - 2;
       
-      // Tilt the card towards the sun with flying motion
-      const tiltAngle = -0.4 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1; // Base tilt + gentle sway
-      cardRef.current.rotation.x = tiltAngle;
-      cardRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.05; // Subtle roll
+      // Tilt the glass case towards the sun
+      const tiltAngle = -0.4 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
+      glassRef.current.rotation.x = tiltAngle;
+      glassRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.05;
     }
     
     if (sunRef.current) {
-      // Subtle sun rotation and pulsing
       sunRef.current.rotation.z = state.clock.elapsedTime * 0.1;
       const pulse = Math.sin(state.clock.elapsedTime * 2) * 0.1 + 1;
       sunRef.current.scale.setScalar(pulse);
@@ -28,22 +95,12 @@ const CardMonolith: React.FC = () => {
 
   return (
     <>
-      
-      {/* Obsidian Monolith in Glass Case */}
-      <group ref={cardRef} position={[0, 0, 0]}>
-        {/* Obsidian monolith - centered and clean */}
-        <mesh position={[0, 0, 0]}>
-          <boxGeometry args={[2.5, 3.5, 0.3]} />
-          <meshStandardMaterial 
-            color="#000000"
-            metalness={0.95}
-            roughness={0.05}
-            emissive="#0a0a0a"
-            emissiveIntensity={0.1}
-          />
-        </mesh>
+      {/* Glass Case with Floating Card */}
+      <group ref={glassRef} position={[0, 0, 0]}>
+        {/* Floating Card inside the case */}
+        <FloatingCard mode={mode} intensity={intensity} />
         
-        {/* Clear glass case */}
+        {/* Clear glass case - same dimensions as before */}
         <mesh>
           <boxGeometry args={[2.6, 3.6, 0.32]} />
           <meshStandardMaterial 
@@ -51,11 +108,24 @@ const CardMonolith: React.FC = () => {
             metalness={0}
             roughness={0}
             transparent
-            opacity={0.1}
+            opacity={0.12}
             emissive="#ffffff"
-            emissiveIntensity={0.02}
+            emissiveIntensity={0.03}
           />
         </mesh>
+        
+        {/* Demo Controls */}
+        <group position={[0, -2.2, 0]}>
+          <Text
+            position={[0, 0, 0.2]}
+            fontSize={0.15}
+            color="#ffffff"
+            anchorX="center"
+            anchorY="middle"
+          >
+            Mode: {mode.toUpperCase()} | Intensity: {intensity.toFixed(1)}
+          </Text>
+        </group>
       </group>
       
       {/* Realistic Sun */}
@@ -183,8 +253,56 @@ const CardMonolith: React.FC = () => {
 };
 
 export const FloatingCard3D: React.FC = () => {
+  const [currentMode, setCurrentMode] = useState<AnimationMode>('subtle');
+  const [currentIntensity, setCurrentIntensity] = useState(1);
+
+  // Auto-cycle through modes for demo
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentMode(prev => {
+        const modes: AnimationMode[] = ['frozen', 'subtle', 'active', 'showcase'];
+        const currentIndex = modes.indexOf(prev);
+        return modes[(currentIndex + 1) % modes.length];
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="w-full h-screen bg-gradient-to-t from-purple-900/30 via-blue-900/20 to-black overflow-hidden relative">
+      {/* Demo Controls */}
+      <div className="absolute top-4 left-4 z-10 space-y-2">
+        <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3 text-white">
+          <h3 className="text-sm font-semibold mb-2">Card Animation Demo</h3>
+          <div className="flex gap-2 mb-2">
+            {(['frozen', 'subtle', 'active', 'showcase'] as AnimationMode[]).map(mode => (
+              <button
+                key={mode}
+                onClick={() => setCurrentMode(mode)}
+                className={`px-2 py-1 text-xs rounded ${
+                  currentMode === mode ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
+                }`}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs">Intensity:</label>
+            <input
+              type="range"
+              min="0.1"
+              max="3"
+              step="0.1"
+              value={currentIntensity}
+              onChange={(e) => setCurrentIntensity(parseFloat(e.target.value))}
+              className="w-20"
+            />
+            <span className="text-xs w-8">{currentIntensity.toFixed(1)}</span>
+          </div>
+        </div>
+      </div>
       {/* Matching star field for seamless integration */}
       <div className="absolute inset-0">
         {Array.from({ length: 100 }).map((_, i) => {
@@ -217,7 +335,7 @@ export const FloatingCard3D: React.FC = () => {
         {/* Minimal ambient space lighting */}
         <ambientLight intensity={0.02} color="#000033" />
         
-        <CardMonolith />
+        <CardMonolith mode={currentMode} intensity={currentIntensity} />
         
         <OrbitControls
           enableZoom={true}
