@@ -41,22 +41,6 @@
   --crd-pink: 316 73% 69%;
   --crd-teal: 173 58% 39%;
 
-  /* 3D Scene Element Colors */
-  --sun-core: 53 100% 65%;           /* Bright yellow core */
-  --sun-core-emissive: 35 100% 51%;  /* Orange emissive */
-  --sun-chromosphere: 25 100% 51%;   /* Pure orange */ 
-  --sun-chromosphere-emissive: 27 100% 53%; /* Enhanced orange emissive */
-  --sun-corona: 45 100% 51%;         /* Golden yellow */
-  --sun-corona-emissive: 48 100% 58%; /* Bright golden emissive */
-  --sun-outer-corona: 48 100% 92%;   /* Warm white */
-  --sun-outer-emissive: 45 100% 85%; /* Cream emissive */
-
-  /* Card/Monolith Colors */
-  --monolith-base: 0 0% 0%;          /* Pure black */
-  --monolith-emissive: 0 0% 4%;      /* Dark emissive */
-  --glass-case: 199 100% 91%;        /* Light blue glass */
-  --glass-emissive: 0 0% 100%;       /* White emissive */
-
   /* Spacing System */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;

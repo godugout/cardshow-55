@@ -3,7 +3,13 @@ import { ArrowRight, CheckCircle, Clock } from 'lucide-react';
 
 export const CreationOptions: React.FC = () => {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className="max-w-7xl mx-auto px-4 py-16">
+      {/* Section Header */}
+      <div className="text-center mb-12">
+        <h2 className="text-display font-dm-sans text-crd-white mb-4">
+          What do you feel like creating today?
+        </h2>
+      </div>
 
       {/* Creation Options Grid */}
       <div className="grid md:grid-cols-2 gap-8 mb-8">
@@ -34,7 +40,7 @@ export const CreationOptions: React.FC = () => {
           </div>
 
           <p className="text-body text-crd-white mb-6 leading-relaxed">
-            Create premium digital trading cards with advanced 3D effects, holographic finishes, and interactive elements that collectors will treasure. 
+            Professional card creation optimized for collecting, trading, and printing. 
             Perfect for sports cards, gaming cards, and traditional collectibles.
           </p>
 
@@ -103,8 +109,8 @@ export const CreationOptions: React.FC = () => {
           </div>
 
           <p className="text-body text-crd-lightGray mb-6 leading-relaxed">
-            Design immersive story cards that reveal narratives through layers, animations, and interactive discoveries. 
-            Perfect for digital storytelling, gaming, and advanced interactive experiences.
+            Advanced interactive cards with animations, scripting, and dynamic behaviors. 
+            Perfect for storytelling, gaming, and digital art experiences.
           </p>
 
           <div className="space-y-3 mb-8">

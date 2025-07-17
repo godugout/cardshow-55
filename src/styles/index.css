@@ -88,6 +88,7 @@
     filter: hue-rotate(80deg) saturate(150%) brightness(125%) contrast(110%);
     transition: filter 0.3s ease;
   }
+}
   
   /* Animated tagline fonts */
   .font-comic {
@@ -105,19 +106,3 @@
   .font-fun {
     font-family: 'Chewy', cursive;
   }
-
-  /* 3D Scene Utilities */
-  .sun-core-color { color: hsl(var(--sun-core)); }
-  .sun-core-emissive { color: hsl(var(--sun-core-emissive)); }
-  .sun-chromosphere-color { color: hsl(var(--sun-chromosphere)); }
-  .sun-chromosphere-emissive { color: hsl(var(--sun-chromosphere-emissive)); }
-  .sun-corona-color { color: hsl(var(--sun-corona)); }
-  .sun-corona-emissive { color: hsl(var(--sun-corona-emissive)); }
-  .sun-outer-corona-color { color: hsl(var(--sun-outer-corona)); }
-  .sun-outer-emissive { color: hsl(var(--sun-outer-emissive)); }
-  
-  .monolith-base-color { color: hsl(var(--monolith-base)); }
-  .monolith-emissive { color: hsl(var(--monolith-emissive)); }
-  .glass-case-color { color: hsl(var(--glass-case)); }
-  .glass-emissive { color: hsl(var(--glass-emissive)); }
-}
