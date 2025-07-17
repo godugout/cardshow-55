@@ -48,13 +48,13 @@ const vertexShader = `
       float minAngleDiff = min(angleDiff1, angleDiff2);
       
       // Wave propagation (travels both ways around ring)
-      float waveRadius = waveProgress * 0.8; // Smaller wave radius for quick pulse
-      float waveFactor = smoothstep(waveRadius + 0.2, waveRadius - 0.2, minAngleDiff);
+      float waveRadius = waveProgress * 0.4; // Much smaller wave radius for tighter effect
+      float waveFactor = smoothstep(waveRadius + 0.1, waveRadius - 0.1, minAngleDiff);
       
-      // Lightning effect near wave front
-      float lightningRange = 0.15; // Smaller lightning range
+      // Lightning effect near wave front - more localized
+      float lightningRange = 0.08; // Smaller lightning range - half the previous size
       float lightningFactor = 1.0 - smoothstep(0.0, lightningRange, minAngleDiff);
-      vLightning = lightningFactor * sin(time * 8.0 + particleAngle * 3.0) * 0.3 + 0.3;
+      vLightning = lightningFactor * sin(time * 8.0 + particleAngle * 3.0) * 0.15 + 0.15; // Reduced intensity
       
       // Mix colors based on wave
       float angle = particleAngle + time * flowSpeed * 0.2;
@@ -107,11 +107,11 @@ const fragmentShader = `
     float alpha = vAlpha * pow(1.0 - dist * 2.0, 4.0);
     alpha *= 0.5; // Reduced visibility for subtler effect
     
-    // Add lightning glow
+    // Add lightning glow - more subtle
     vec3 finalColor = vColor;
     if (vLightning > 0.1) {
-      finalColor += vec3(0.8, 0.9, 1.0) * vLightning * 0.4; // Softer blue-white
-      alpha += vLightning * 0.2; // Less intense during lightning
+      finalColor += vec3(0.4, 0.5, 0.6) * vLightning * 0.2; // Much softer and less intense
+      alpha += vLightning * 0.1; // Reduced alpha boost
     }
     
     gl_FragColor = vec4(finalColor, alpha);
