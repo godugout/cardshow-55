@@ -2,6 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import '@/styles/studio.css';
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { ProductionOptimizer } from '@/components/production/ProductionOptimizer';
@@ -12,6 +13,7 @@ import CreateChoice from '@/pages/CreateChoice';
 import CreateStory from '@/pages/CreateStory';
 import CreateCRD from '@/pages/CreateCRD';
 import CreateWithStickyControls from '@/pages/CreateWithStickyControls';
+import CreateEnhanced from '@/pages/CreateEnhanced';
 import Gallery from '@/pages/Gallery';
 import Studio from '@/pages/Studio';
 import Collections from '@/pages/Collections';
@@ -42,7 +44,7 @@ const App = () => {
               <main className="flex-1 transition-all duration-300 ease-in-out">
                 <Routes>
                   <Route path="/" element={<Index />} />
-                  <Route path="/create" element={<CreateWithStickyControls />} />
+                  <Route path="/create" element={<CreateEnhanced />} />
                   <Route path="/create/story" element={<CreateStory />} />
                   <Route path="/create/crd" element={<CreateCRD />} />
                   <Route path="/collections" element={<Collections />} />
