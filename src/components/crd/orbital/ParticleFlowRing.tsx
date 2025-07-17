@@ -28,8 +28,9 @@ const vertexShader = `
   uniform float waveAngle;
   uniform bool hasWave;
   uniform bool isPaused;
-  uniform vec4 stormCenters[4];  // [angle, intensity, phase, range] for each storm
-  uniform float stormActivity;   // Overall storm activity level
+  uniform float waveRippleProgress;
+  uniform float waveRippleCenter;
+  uniform bool hasRipple;
   
   void main() {
     vAlpha = alpha * 0.4;
@@ -57,44 +58,42 @@ const vertexShader = `
       float pulseSpeed = 2.0;
       float pulsePhase = sin(time * pulseSpeed) * 0.5 + 0.5;
       
-      // Calculate lightning from multiple storm centers
+      // Thunder ripple effect that starts from hovered satellite
       float totalLightning = 0.0;
       
-      for (int i = 0; i < 4; i++) {
-        vec4 storm = stormCenters[i];
-        float stormAngle = storm.x;
-        float stormIntensity = storm.y;
-        float stormPhase = storm.z;
-        float stormRange = storm.w;
+      if (hasRipple) {
+        // Calculate angular distance from ripple center
+        float angleDiff1 = abs(particleAngle - waveRippleCenter);
+        float angleDiff2 = 6.28318530718 - angleDiff1;
+        float minAngleDiff = min(angleDiff1, angleDiff2);
         
-        if (stormIntensity > 0.1) { // Only process active storms
-          // Calculate angular distance to storm center
-          float angleDiff1 = abs(particleAngle - stormAngle);
-          float angleDiff2 = 6.28318530718 - angleDiff1;
-          float stormDistance = min(angleDiff1, angleDiff2);
+        // Create expanding ripple effect
+        float rippleRadius = waveRippleProgress * 3.14159; // Ripple expands across half the ring
+        float rippleWidth = 0.3; // Width of the thunder band
+        
+        // Calculate distance from ripple front
+        float distanceFromFront = abs(minAngleDiff - rippleRadius);
+        
+        // Thunder effect within the ripple band
+        if (distanceFromFront < rippleWidth) {
+          float rippleFactor = 1.0 - (distanceFromFront / rippleWidth);
           
-          // Lightning effect within storm range
-          if (stormDistance < stormRange) {
-            float distanceFactor = stormDistance / stormRange;
-            float rangeFalloff = 1.0 - smoothstep(0.0, 1.0, distanceFactor);
-            
-            // Random lightning strikes with storm phase
-            float lightningFreq = 12.0 + sin(stormPhase * 3.0) * 4.0; // Varying frequency
-            float lightning = pow(sin(time * lightningFreq + stormPhase + particleAngle * 8.0) * 0.5 + 0.5, 3.0);
-            
-            // Add random flicker
-            float flicker = sin(time * 25.0 + stormPhase * 7.0) * 0.3 + 0.7;
-            lightning *= flicker;
-            
-            // Apply storm intensity and range falloff
-            lightning *= stormIntensity * rangeFalloff * stormActivity;
-            
-            totalLightning += lightning;
-          }
+          // Lightning intensity based on ripple position
+          float lightningFreq = 15.0 + sin(waveRippleProgress * 5.0) * 8.0;
+          float lightning = pow(sin(time * lightningFreq + particleAngle * 12.0) * 0.5 + 0.5, 2.0);
+          
+          // Add crackling effect
+          float crackle = sin(time * 30.0 + particleAngle * 20.0) * 0.4 + 0.6;
+          lightning *= crackle;
+          
+          // Apply ripple falloff
+          lightning *= rippleFactor * rippleFactor; // Quadratic falloff for smoother edges
+          
+          totalLightning = lightning;
         }
       }
       
-      vLightning = min(totalLightning, 1.0); // Clamp to prevent over-brightness
+      vLightning = totalLightning;
       
       // Mix colors based on wave
       float angle = particleAngle + time * flowSpeed * 0.2;
@@ -188,16 +187,12 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     hoveredColor: new THREE.Color('#22c55e')
   });
 
-  // Storm system state
-  const stormStateRef = useRef({
-    storms: [
-      { angle: 0, intensity: 0, phase: 0, duration: 0, startTime: 0 },
-      { angle: 0, intensity: 0, phase: 0, duration: 0, startTime: 0 },
-      { angle: 0, intensity: 0, phase: 0, duration: 0, startTime: 0 },
-      { angle: 0, intensity: 0, phase: 0, duration: 0, startTime: 0 }
-    ],
-    lastStormUpdate: 0,
-    stormUpdateInterval: 2.0 // Update storm positions every 2 seconds
+  // Thunder ripple state
+  const rippleStateRef = useRef({
+    isActive: false,
+    startTime: 0,
+    duration: 1.2, // Thunder ripple duration
+    centerAngle: 0
   });
 
   // Create particle geometry and attributes
@@ -263,13 +258,9 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
         waveAngle: { value: 0 },
         hasWave: { value: false },
         isPaused: { value: isPaused },
-        stormCenters: { value: [
-          new THREE.Vector4(0, 0, 0, 0.4),  // Storm 1: angle, intensity, phase, range
-          new THREE.Vector4(0, 0, 0, 0.4),  // Storm 2
-          new THREE.Vector4(0, 0, 0, 0.4),  // Storm 3
-          new THREE.Vector4(0, 0, 0, 0.4)   // Storm 4
-        ]},
-        stormActivity: { value: 0.0 }
+        waveRippleProgress: { value: 0 },
+        waveRippleCenter: { value: 0 },
+        hasRipple: { value: false }
       },
       vertexShader,
       fragmentShader,
@@ -287,70 +278,49 @@ export const ParticleFlowRing: React.FC<ParticleFlowRingProps> = ({
     materialRef.current.uniforms.time.value = state.clock.elapsedTime;
     materialRef.current.uniforms.isPaused.value = isPaused;
     
-    // Update storm system during hover
-    if (hoveredSatellite) {
-      const currentTime = state.clock.elapsedTime;
-      
-      // Update storm activity level
-      materialRef.current.uniforms.stormActivity.value = THREE.MathUtils.lerp(
-        materialRef.current.uniforms.stormActivity.value,
-        1.0,
-        0.05
-      );
-      
-      // Generate new storms periodically
-      if (currentTime - stormStateRef.current.lastStormUpdate > stormStateRef.current.stormUpdateInterval) {
-        stormStateRef.current.lastStormUpdate = currentTime;
+    // Update thunder ripple system during hover
+    if (hoveredSatellite && !rippleStateRef.current.isActive) {
+      // Start new thunder ripple from hovered satellite
+      const hoveredSatellite_ = satellitePositions.find(s => s.style.id === hoveredSatellite);
+      if (hoveredSatellite_) {
+        rippleStateRef.current.isActive = true;
+        rippleStateRef.current.startTime = state.clock.elapsedTime;
+        rippleStateRef.current.centerAngle = hoveredSatellite_.angle;
         
-        // Update 2-3 storms at random positions
-        const activeStorms = Math.floor(Math.random() * 2) + 2; // 2-3 storms
-        
-        for (let i = 0; i < 4; i++) {
-          if (i < activeStorms) {
-            stormStateRef.current.storms[i] = {
-              angle: Math.random() * Math.PI * 2,
-              intensity: 0.6 + Math.random() * 0.4, // Varying intensity
-              phase: Math.random() * Math.PI * 2,
-              duration: 1.5 + Math.random() * 2.0, // 1.5-3.5 second storms
-              startTime: currentTime
-            };
-          } else {
-            // Deactivate storm
-            stormStateRef.current.storms[i].intensity = 0;
-          }
-        }
+        materialRef.current.uniforms.hasRipple.value = true;
+        materialRef.current.uniforms.waveRippleCenter.value = hoveredSatellite_.angle;
       }
+    }
+    
+    // Update active thunder ripple
+    if (rippleStateRef.current.isActive) {
+      const elapsed = state.clock.elapsedTime - rippleStateRef.current.startTime;
+      const progress = Math.min(elapsed / rippleStateRef.current.duration, 1.0);
       
-      // Update storm uniforms
-      const stormCenters = stormStateRef.current.storms.map(storm => {
-        const elapsed = currentTime - storm.startTime;
-        let currentIntensity = storm.intensity;
-        
-        // Fade out storms over their duration
-        if (elapsed > storm.duration) {
-          currentIntensity = Math.max(0, storm.intensity * (1 - (elapsed - storm.duration) * 2));
-        }
-        
-        return new THREE.Vector4(storm.angle, currentIntensity, storm.phase, 0.4);
-      });
+      materialRef.current.uniforms.waveRippleProgress.value = progress;
       
-      materialRef.current.uniforms.stormCenters.value = stormCenters;
-    } else {
-      // Fade out storm activity when not hovering
-      materialRef.current.uniforms.stormActivity.value = THREE.MathUtils.lerp(
-        materialRef.current.uniforms.stormActivity.value,
-        0.0,
-        0.02
-      );
+      // End ripple when complete
+      if (progress >= 1.0) {
+        rippleStateRef.current.isActive = false;
+        materialRef.current.uniforms.hasRipple.value = false;
+        materialRef.current.uniforms.waveRippleProgress.value = 0;
+      }
+    }
+    
+    // Stop ripple immediately when hover ends
+    if (!hoveredSatellite && rippleStateRef.current.isActive) {
+      rippleStateRef.current.isActive = false;
+      materialRef.current.uniforms.hasRipple.value = false;
+      materialRef.current.uniforms.waveRippleProgress.value = 0;
     }
     
     
-    // Stop rotation during hover wave effect
+    // Stop rotation during hover wave effect or thunder ripple
     let flowSpeed = 0.15; // Normal speed
-    if (waveStateRef.current.isActive) {
-      flowSpeed = 0; // Stop rotation during wave
+    if (waveStateRef.current.isActive || rippleStateRef.current.isActive) {
+      flowSpeed = 0; // Stop rotation during wave or ripple
     } else if (hoveredSatellite) {
-      flowSpeed = 0; // Stop rotation on hover (before wave starts)
+      flowSpeed = 0; // Stop rotation on hover (before effects start)
     }
     
     materialRef.current.uniforms.flowSpeed.value = THREE.MathUtils.lerp(
