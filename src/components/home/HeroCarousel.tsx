@@ -57,26 +57,6 @@ export const HeroCarousel: React.FC = () => {
         <CarouselTrack cards={cards} />
       </div>
 
-      {/* Enhanced Testimonials Section */}
-      <div>
-        <div className="text-center mb-8">
-          <Typography variant="h3" className="text-crd-white mb-2">
-            What Creators Are Saying
-          </Typography>
-          <Typography variant="body" className="text-crd-mediumGray">
-            Industry leaders share their CRD experience
-          </Typography>
-        </div>
-        
-        <EnhancedTestimonialCarousel 
-          testimonials={mockTestimonials}
-          autoPlay={true}
-          autoPlayInterval={4000}
-          showNavigation={true}
-          showDots={true}
-          className="mx-auto max-w-6xl"
-        />
-      </div>
     </div>
   );
 };
