@@ -254,7 +254,7 @@ export const CosmicDanceControls: React.FC<CosmicDanceControlsProps> = ({
                 : 'bg-white/20 hover:bg-white/30 text-white'
             }`}
           >
-            {hasTriggered ? 'Monolith Locked' : 'Reset Card Position'}
+            {hasTriggered ? 'Animation Running...' : 'Reset Card Position'}
           </button>
         </div>
 

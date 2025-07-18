@@ -200,10 +200,14 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     return () => clearInterval(interval);
   }, [isPlaying, playbackSpeed]);
 
-  // Auto-pause when reaching end
+  // Auto-pause and unlock when reaching end
   useEffect(() => {
     if (animationProgress >= 1 && isPlaying) {
       setIsPlaying(false);
+      // Auto-unlock controls after animation completes
+      setTimeout(() => {
+        setCosmicTriggered(false);
+      }, 2000); // 2 second delay to enjoy the final frame
     }
   }, [animationProgress, isPlaying]);
 
@@ -254,8 +258,9 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   return (
     <div className={`overflow-hidden relative ${className}`}>
 
-        {/* 3D Scene */}
+        {/* 3D Scene - Must be in front of cosmic overlay */}
       <Canvas
+        className="relative z-20"
         camera={{ position: [0, 0, 15], fov: 60 }}
         gl={{ 
           antialias: true, 
