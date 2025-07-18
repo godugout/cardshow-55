@@ -244,10 +244,11 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
         }}
       />
       
-      {/* Cosmic Moon - 2001 Style Crescent - Behind card, positioned between quote and card top */}
+      {/* Cosmic Moon - 2001 Style Crescent - Above hero title, static after animation */}
       <CosmicMoon
         progress={animationProgress}
         isVisible={animationProgress > 0.1}
+        isAnimationComplete={!isPlaying && animationProgress >= 1.0}
       />
     </>
   );

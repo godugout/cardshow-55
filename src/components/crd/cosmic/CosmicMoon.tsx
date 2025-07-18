@@ -4,6 +4,7 @@ import * as THREE from 'three';
 interface CosmicMoonProps {
   progress: number;
   isVisible: boolean;
+  isAnimationComplete?: boolean;
 }
 
 interface MoonFrame {
@@ -17,7 +18,7 @@ interface MoonFrame {
   };
 }
 
-// Moon keyframes - straight down center from nav bar to resting place
+// Moon keyframes - moves to position above hero title then stays static
 const MOON_FRAMES: MoonFrame[] = [
   {
     progress: 0,
@@ -25,21 +26,22 @@ const MOON_FRAMES: MoonFrame[] = [
   },
   {
     progress: 0.3,
-    moon: { x: 0, y: 5, scale: 0.3, opacity: 0.6, phase: 0.28 }
+    moon: { x: 0, y: 8, scale: 0.3, opacity: 0.6, phase: 0.28 }
   },
   {
     progress: 0.6,
-    moon: { x: 0, y: 12, scale: 0.4, opacity: 0.8, phase: 0.25 }
+    moon: { x: 0, y: 15, scale: 0.4, opacity: 0.8, phase: 0.25 }
   },
   {
     progress: 1.0,
-    moon: { x: 0, y: 18, scale: 0.5, opacity: 0.9, phase: 0.2 }
+    moon: { x: 0, y: 20, scale: 0.5, opacity: 0.9, phase: 0.2 }
   }
 ];
 
 export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
   progress,
-  isVisible
+  isVisible,
+  isAnimationComplete = false
 }) => {
   const moonRef = useRef<HTMLDivElement>(null);
   const crescentRef = useRef<HTMLDivElement>(null);
@@ -71,7 +73,13 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
   }, []);
 
   // Memoized current frame to prevent object recreation
-  const currentFrame = useMemo(() => getCurrentMoonFrame(progress), [getCurrentMoonFrame, progress]);
+  // If animation is complete, use the final frame position
+  const currentFrame = useMemo(() => {
+    if (isAnimationComplete) {
+      return MOON_FRAMES[MOON_FRAMES.length - 1];
+    }
+    return getCurrentMoonFrame(progress);
+  }, [getCurrentMoonFrame, progress, isAnimationComplete]);
 
   // Update moon position and appearance with stable dependencies
   useEffect(() => {
