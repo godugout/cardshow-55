@@ -76,6 +76,8 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const [hasMaxZoomBeenReached, setHasMaxZoomBeenReached] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0); // 0 to 1 range
   const [showScrollPrompt, setShowScrollPrompt] = useState(false);
+  const [isSunsetPoint, setIsSunsetPoint] = useState(false);
+  const [cardLeanRequired, setCardLeanRequired] = useState(false);
   const MAX_ZOOM_DISTANCE = 3; // Minimum distance for max zoom
 
   // Mouse position state for synced movement
@@ -184,21 +186,38 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }
   };
 
-  // Cosmic Animation Functions
+  // Enhanced Cosmic Animation Functions with scroll resistance
   const handlePostZoomScroll = useCallback((e: WheelEvent) => {
     if (!hasMaxZoomBeenReached) return;
     
     e.preventDefault();
     setScrollProgress(prev => {
-      const delta = e.deltaY * 0.002; // Adjust sensitivity
+      // Apply scroll resistance at sunset point (0.65-0.85 range)
+      let sensitivity = 0.002;
+      if (prev >= 0.65 && prev <= 0.85) {
+        sensitivity *= 0.2; // 80% reduction in scroll sensitivity
+      }
+      
+      const delta = e.deltaY * sensitivity;
       return Math.min(1, Math.max(0, prev + delta));
     });
   }, [hasMaxZoomBeenReached]);
+
+  // Cosmic scene event handlers
+  const handleSunsetPointReached = useCallback((reached: boolean) => {
+    setIsSunsetPoint(reached);
+  }, []);
+
+  const handleCardLeanRequired = useCallback((lean: boolean) => {
+    setCardLeanRequired(lean);
+  }, []);
 
   const handleResetSunScene = useCallback(() => {
     setScrollProgress(0);
     setHasMaxZoomBeenReached(false);
     setShowScrollPrompt(false);
+    setIsSunsetPoint(false);
+    setCardLeanRequired(false);
   }, []);
 
   // Monitor camera position for max zoom detection
@@ -280,12 +299,22 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         />
         
         {/* Cosmic Background Elements */}
-        <CosmicSun scrollProgress={scrollProgress} />
+        <CosmicSun 
+          scrollProgress={scrollProgress} 
+          onSunsetPointReached={handleSunsetPointReached}
+          onCardLeanRequired={handleCardLeanRequired}
+        />
         
-        {/* Main Card with Glass Case Container - Responds to mouse only when not locked */}
+        {/* Main Card with Glass Case Container - Enhanced with sunset lean animation */}
         <group 
           position={[0, -2, 0]}
-          rotation={isCardLocked ? [0, 0, 0] : [mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]}
+          rotation={
+            isCardLocked 
+              ? [0, 0, 0] 
+              : cardLeanRequired
+                ? [-0.25, 0, 0] // Forward lean during sunset point
+                : [mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]
+          }
         >
         <Card3DCore
           ref={cardRef}
@@ -362,14 +391,24 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
       
-      {/* UI Overlays */}
+      {/* Enhanced UI Overlays with Sunset Animation States */}
       {showScrollPrompt && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
           <div className="bg-black/70 backdrop-blur-sm rounded-lg px-6 py-3 text-white text-center animate-fade-in">
-            <p className="text-sm font-medium">Keep scrolling to unlock cosmic sequence...</p>
+            <p className="text-sm font-medium">Keep scrolling to witness the alignment...</p>
             <div className="flex justify-center mt-2">
               <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Sunset Point Indication */}
+      {isSunsetPoint && (
+        <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
+          <div className="bg-gradient-to-r from-orange-500/80 to-yellow-400/80 backdrop-blur-sm rounded-lg px-8 py-4 text-white text-center animate-pulse">
+            <p className="text-lg font-bold mb-2">⚡ ALIGNMENT ACHIEVED ⚡</p>
+            <p className="text-sm opacity-90">Continue scrolling to complete the sequence</p>
           </div>
         </div>
       )}
@@ -392,19 +431,38 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         />
       )}
       
-      {/* Scroll Progress Indicator */}
+      {/* Enhanced Scroll Progress Indicator with Sunset Zone */}
       {hasMaxZoomBeenReached && (
         <div className="absolute top-4 right-4 z-10">
           <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3">
-            <div className="text-white text-xs mb-2">Cosmic Progress</div>
-            <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
+            <div className="text-white text-xs mb-2 flex items-center gap-2">
+              Cosmic Progress
+              {isSunsetPoint && <span className="text-orange-400">⚡</span>}
+            </div>
+            <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden relative">
+              {/* Sunset resistance zone indicator */}
               <div 
-                className="h-full bg-gradient-to-r from-orange-500 to-yellow-300 transition-all duration-300"
+                className="absolute h-full bg-orange-400/30 rounded-full"
+                style={{ 
+                  left: '65%', 
+                  width: '20%' 
+                }}
+              />
+              {/* Progress bar */}
+              <div 
+                className={`h-full transition-all duration-300 ${
+                  isSunsetPoint 
+                    ? 'bg-gradient-to-r from-orange-600 to-yellow-400' 
+                    : 'bg-gradient-to-r from-orange-500 to-yellow-300'
+                }`}
                 style={{ width: `${scrollProgress * 100}%` }}
               />
             </div>
-            <div className="text-white/70 text-xs mt-1">
-              {Math.round(scrollProgress * 100)}%
+            <div className="text-white/70 text-xs mt-1 flex justify-between">
+              <span>{Math.round(scrollProgress * 100)}%</span>
+              {isSunsetPoint && (
+                <span className="text-orange-400 text-xs">SUNSET</span>
+              )}
             </div>
           </div>
         </div>
