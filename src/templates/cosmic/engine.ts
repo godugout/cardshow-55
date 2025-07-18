@@ -64,5 +64,16 @@ export const cosmicTemplate: TemplateEngine = {
   keyframes: COSMIC_KEYFRAMES,
   autoTrigger: true,
   transitionToStudio: true,
-  replayable: true
+  replayable: true,
+  footerHUD: {
+    statusLines: [
+      'Cosmic Dance Template',
+      'Aligning sun and moon positions...',
+      'Card positioning for optimal lighting',
+      'Preparing cinematic preview'
+    ],
+    showReplay: true,
+    showContinue: true,
+    compact: true
+  }
 };

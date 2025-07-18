@@ -7,6 +7,14 @@ export interface TemplateEngine {
   autoTrigger?: boolean;
   transitionToStudio?: boolean;
   replayable?: boolean;
+  footerHUD?: TemplateFooterHUD;
+}
+
+export interface TemplateFooterHUD {
+  statusLines: string[];        // Lines to show in footer
+  showReplay?: boolean;         // Show replay button
+  showContinue?: boolean;       // Show "Continue to Customize" button
+  compact?: boolean;            // true = 3–4 lines max
 }
 
 export interface CameraConfig {

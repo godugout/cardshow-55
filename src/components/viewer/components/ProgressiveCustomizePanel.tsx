@@ -96,6 +96,11 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
           onToggleFullscreen={onToggleFullscreen}
           onDownload={onDownload}
           onShare={onShare}
+          templateEngine={templateEngine}
+          animationProgress={animationProgress}
+          onReplay={onReplayTemplate}
+          onContinueToCustomize={onStudioEntry}
+          mode={isCosmicPlaying ? 'cinematic' : 'studio'}
         />
     </div>
   );
