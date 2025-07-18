@@ -28,7 +28,7 @@ export const UnifiedCreateHero: React.FC = () => {
       />
 
       {/* Hero Content Overlay - Transparent background to show stars */}
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+2rem)] pb-8 min-h-screen flex flex-col justify-center">
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+3rem)] pb-32 min-h-screen flex flex-col justify-start">
         <div className="max-w-4xl mx-auto">
           {/* Label */}
           <div className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-xs sm:text-sm uppercase">
