@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Play, Pause, RotateCcw, Settings, Zap } from 'lucide-react';
+import { Play, Pause, RotateCcw, Settings, Zap, Film, ArrowRight } from 'lucide-react';
 import { CollapsibleSection } from '@/components/ui/design-system';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { TemplateEngine } from '@/templates/engine';
 
 interface AnimationSectionProps {
   // Basic animation props
@@ -26,6 +27,11 @@ interface AnimationSectionProps {
   onSpeedChange: (speed: number) => void;
   onReset: () => void;
   onAngleReset: () => void;
+  
+  // Template engine integration
+  templateEngine?: TemplateEngine;
+  onReplayTemplate?: () => void;
+  onStudioEntry?: () => void;
   
   // Section state
   isOpen: boolean;
@@ -65,6 +71,9 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
   onSpeedChange,
   onReset,
   onAngleReset,
+  templateEngine,
+  onReplayTemplate,
+  onStudioEntry,
   isOpen,
   onToggle
 }) => {
@@ -77,6 +86,11 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
 
   const isCosmicMode = animationMode === 'cosmic';
   const isCosmicReady = cardAngle >= 45 && isOptimalZoom && isOptimalPosition;
+  
+  // Template engine state
+  const isTemplateReplayable = templateEngine?.replayable || false;
+  const hasTemplateCompleted = animationProgress >= 1 && !isCosmicPlaying;
+  const canTransitionToStudio = templateEngine?.transitionToStudio && hasTemplateCompleted;
 
   return (
     <CollapsibleSection
@@ -134,7 +148,7 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium text-crd-lightGray flex items-center gap-2">
                 <Zap className="w-4 h-4" />
-                Cosmic Dance
+                {templateEngine ? templateEngine.name : 'Cosmic Dance'}
               </h4>
               {!isMobile && (
                 <button
@@ -145,6 +159,57 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
                 </button>
               )}
             </div>
+
+            {/* Template Engine Controls */}
+            {templateEngine && (
+              <div className="bg-card border border-border rounded-lg p-3 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Film className="w-4 h-4 text-crd-orange" />
+                  <span className="text-sm font-medium text-crd-lightGray">Cinematic Template</span>
+                </div>
+                
+                {/* Template Status */}
+                <div className="text-xs text-muted-foreground">
+                  {isCosmicPlaying ? 'Playing cinematic sequence...' : 
+                   hasTemplateCompleted ? 'Cinematic complete' : 'Ready to play'}
+                </div>
+
+                {/* Replay and Studio Controls */}
+                <div className="flex gap-2">
+                  {isTemplateReplayable && (
+                    <button
+                      onClick={onReplayTemplate}
+                      disabled={isCosmicPlaying}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-sm rounded-lg transition-colors ${
+                        isCosmicPlaying
+                          ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                          : 'bg-crd-orange hover:bg-crd-orange/80 text-white'
+                      }`}
+                    >
+                      <Play className="w-4 h-4" />
+                      Replay Cinematic
+                    </button>
+                  )}
+                  
+                  {canTransitionToStudio && onStudioEntry && (
+                    <button
+                      onClick={onStudioEntry}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 text-sm rounded-lg bg-green-600 hover:bg-green-700 text-white transition-colors"
+                    >
+                      <ArrowRight className="w-4 h-4" />
+                      Continue to Customize
+                    </button>
+                  )}
+                </div>
+                
+                {/* Template Info */}
+                <div className="text-xs text-muted-foreground">
+                  Template: {templateEngine.id} | 
+                  Replayable: {isTemplateReplayable ? 'Yes' : 'No'} | 
+                  Studio: {templateEngine.transitionToStudio ? 'Yes' : 'No'}
+                </div>
+              </div>
+            )}
 
             {/* Cosmic Trigger Status */}
             {hasTriggered && (
