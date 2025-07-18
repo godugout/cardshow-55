@@ -20,7 +20,20 @@ export const UnifiedCreateHero: React.FC = () => {
 
   // Render tablet-specific hero text with line breaks
   const renderTabletHeroText = () => (
-    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-center max-w-4xl mx-auto">
+    <h1 
+      className="text-center mb-6 max-w-4xl mx-auto"
+      style={{
+        fontFamily: 'ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji"',
+        color: 'hsl(var(--crd-white))',
+        fontSize: '16px',
+        lineHeight: '1.6',
+        WebkitFontSmoothing: 'antialiased',
+        textAlign: 'center',
+        margin: '0',
+        padding: '0',
+        marginBottom: '1.5rem'
+      }}
+    >
       <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
         From paper scraps
       </span>
@@ -41,7 +54,20 @@ export const UnifiedCreateHero: React.FC = () => {
 
   // Render standard hero text (desktop and mobile)
   const renderStandardHeroText = () => (
-    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-center max-w-4xl mx-auto">
+    <h1 
+      className="text-center mb-6 max-w-4xl mx-auto"
+      style={{
+        fontFamily: 'ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji"',
+        color: 'hsl(var(--crd-white))',
+        fontSize: '16px',
+        lineHeight: '1.6',
+        WebkitFontSmoothing: 'antialiased',
+        textAlign: 'center',
+        margin: '0',
+        padding: '0',
+        marginBottom: '1.5rem'
+      }}
+    >
       <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
         From paper scraps and cardboard to 
       </span>
