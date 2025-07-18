@@ -2,14 +2,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { MemoryRepository } from '@/repositories/memoryRepository';
 import type { Memory } from '@/types/memory';
-import type { Visibility } from '@/types/common';
+
+type MemoryVisibility = 'public' | 'private' | 'shared' | 'all';
 
 interface UseMemoriesOptions {
   userId?: string;
   teamId?: string;
   tags?: string[];
   searchTerm?: string;
-  visibility?: Visibility | 'all';
+  visibility?: MemoryVisibility;
   limit?: number;
 }
 

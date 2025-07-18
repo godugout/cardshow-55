@@ -5,6 +5,7 @@ import { SimpleCardDetector } from './components/SimpleCardDetector';
 import { DetectedCardsGrid } from './components/DetectedCardsGrid';
 import { StreamlinedAdvancedCropper } from '@/components/editor/StreamlinedAdvancedCropper';
 import type { CardDetectionResult } from '@/services/cardDetection';
+import type { CropCompleteData } from '@/types/cards';
 
 interface UploadedImage {
   id: string;
@@ -35,8 +36,8 @@ export const CardsPage: React.FC = () => {
     setShowCropper(true);
   };
 
-  const handleCropComplete = (croppedResults: any) => {
-    console.log('Crop results:', croppedResults);
+  const handleCropComplete = (crops: { main?: string; frame?: string; elements?: string[] }): void => {
+    console.log('Crop results:', crops);
     setShowCropper(false);
     setSelectedImageForCropping(null);
     // Handle the cropped results - integrate with your card creation flow

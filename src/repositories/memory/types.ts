@@ -1,5 +1,4 @@
 
-import type { Visibility } from '@/types/common';
 import type { Memory } from '@/types/memory';
 
 export type { Memory }; // Ensure Memory is properly exported
