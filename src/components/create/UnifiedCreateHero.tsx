@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 import { ResponsiveCreate3DLayout } from './ResponsiveCreate3DLayout';
 import { CRDButton } from '@/components/ui/design-system';
+import { PixelDigital } from '@/components/ui/PixelDigital';
 
 export const UnifiedCreateHero: React.FC = () => {
   const { isShortScreen, isMobile, isTablet } = useResponsiveBreakpoints();
@@ -20,36 +21,26 @@ export const UnifiedCreateHero: React.FC = () => {
 
   // Render tablet-specific hero text with line breaks
   const renderTabletHeroText = () => (
-    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-center max-w-4xl mx-auto">
-      <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
-        From paper scraps
+    <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-8 text-center max-w-4xl mx-auto text-gray-400 font-light">
+      <span>From <span className="paper-scraps">paper scraps</span></span>
+      <br />
+      <span>and <span className="cardboard-text">cardboard</span> to</span>
+      <br />
+      <span className="font-bold">
+        <PixelDigital className="inline">digital</PixelDigital>
       </span>
       <br />
-      <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
-        and cardboard to
-      </span>
-      <br />
-      <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-        digital art that
-      </span>
-      <br />
-      <span className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 bg-clip-text text-transparent">
-        comes alive
-      </span>
+      <span className="text-white font-bold">art that comes alive!</span>
     </h1>
   );
 
   // Render standard hero text (desktop and mobile)
   const renderStandardHeroText = () => (
-    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-center max-w-4xl mx-auto">
-      <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
-        From paper scraps and cardboard to 
-      </span>
-      <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-        digital art that 
-      </span>
-      <span className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 bg-clip-text text-transparent">
-        comes alive
+    <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-8 text-center max-w-4xl mx-auto text-gray-400 font-light">
+      <span>From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to </span>
+      <span className="font-bold">
+        <PixelDigital className="inline">digital</PixelDigital>
+        <span className="text-white"> art that comes alive!</span>
       </span>
     </h1>
   );
