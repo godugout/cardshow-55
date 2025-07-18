@@ -18,7 +18,7 @@ interface MoonFrame {
   };
 }
 
-// Moon keyframes - moves to position above hero title then stays static
+// Moon keyframes - moves to position above "CUT, CRAFT & CREATE DIGITALLY" text
 const MOON_FRAMES: MoonFrame[] = [
   {
     progress: 0,
@@ -26,15 +26,15 @@ const MOON_FRAMES: MoonFrame[] = [
   },
   {
     progress: 0.3,
-    moon: { x: 0, y: 8, scale: 0.3, opacity: 0.6, phase: 0.28 }
+    moon: { x: 0, y: 5, scale: 0.3, opacity: 0.6, phase: 0.28 }
   },
   {
     progress: 0.6,
-    moon: { x: 0, y: 15, scale: 0.4, opacity: 0.8, phase: 0.25 }
+    moon: { x: 0, y: 8, scale: 0.4, opacity: 0.8, phase: 0.25 }
   },
   {
     progress: 1.0,
-    moon: { x: 0, y: 20, scale: 0.5, opacity: 0.9, phase: 0.2 }
+    moon: { x: 0, y: 12, scale: 0.5, opacity: 0.9, phase: 0.2 }
   }
 ];
 

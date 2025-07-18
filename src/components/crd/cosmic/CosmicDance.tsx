@@ -66,7 +66,7 @@ const ANIMATION_FRAMES: AnimationFrame[] = [
   // Eternal alignment - Card reaches ideal sunset viewing position
   {
     progress: 0.75,
-    sun: { x: 0, y: 50, scale: 1.6, opacity: 1.0 },
+    sun: { x: 0, y: 60, scale: 1.6, opacity: 1.0 },
     card: { lean: 65, positionY: 2.0, controlTaken: true },
     lighting: { intensity: 1.6, warmth: 0.8 },
     environment: { skyColor: '#3a0a0e', spaceDepth: 0.4 }
@@ -74,7 +74,7 @@ const ANIMATION_FRAMES: AnimationFrame[] = [
   // TRANSCENDENCE - Final cinematic position achieved
   {
     progress: 1.0,
-    sun: { x: 0, y: 50, scale: 2.2, opacity: 1.0 },
+    sun: { x: 0, y: 70, scale: 2.2, opacity: 1.0 },
     card: { lean: 80, positionY: 2.5, controlTaken: true },
     lighting: { intensity: 2.0, warmth: 1.0 },
     environment: { skyColor: '#4a0000', spaceDepth: 0.2 }
