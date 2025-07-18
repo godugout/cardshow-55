@@ -180,3 +180,29 @@
 .safe-area-right {
   padding-right: env(safe-area-inset-right, 1rem);
 }
+
+/* Stars Background for Hero Section */
+.stars-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(2px 2px at 20px 30px, hsl(0 0% 100% / 0.4), transparent),
+              radial-gradient(2px 2px at 40px 70px, hsl(0 0% 100% / 0.3), transparent),
+              radial-gradient(1px 1px at 90px 40px, hsl(0 0% 100% / 0.5), transparent),
+              radial-gradient(1px 1px at 130px 80px, hsl(0 0% 100% / 0.3), transparent),
+              radial-gradient(2px 2px at 160px 30px, hsl(0 0% 100% / 0.4), transparent),
+              radial-gradient(1px 1px at 200px 90px, hsl(0 0% 100% / 0.2), transparent),
+              radial-gradient(1px 1px at 240px 60px, hsl(0 0% 100% / 0.6), transparent),
+              radial-gradient(2px 2px at 280px 20px, hsl(0 0% 100% / 0.3), transparent),
+              radial-gradient(1px 1px at 320px 100px, hsl(0 0% 100% / 0.4), transparent);
+  background-size: 350px 120px;
+  background-repeat: repeat;
+  animation: twinkle 20s linear infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
