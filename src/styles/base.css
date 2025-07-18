@@ -4,6 +4,8 @@
 :root {
   /* Layout Variables */
   --navbar-height: 4rem; /* 64px */
+  --hero-min-height: 60vh;
+  --hero-max-height: 90vh;
   
   /* Shadcn UI Variables - All HSL format */
   --background: 217 19% 16%; /* #23262F */

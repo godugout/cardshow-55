@@ -47,7 +47,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
   const { isMobile } = useResponsiveLayout();
 
   return (
-    <div className={`relative ${fullWidth ? 'w-screen -mx-[50vw] left-1/2' : 'mb-12'} overflow-hidden ${className}`}>
+    <div className={`relative ${fullWidth ? 'w-screen -mx-[50vw] left-1/2' : ''} overflow-hidden ${className}`}>
       {/* Background */}
       <div className="absolute inset-0 z-0 bg-crd-darkest"></div>
       
@@ -70,68 +70,68 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       )}
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)]">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 min-h-[60vh] max-h-[90vh] flex flex-col justify-center text-center py-16 pt-[calc(var(--navbar-height)+2rem)]">
+        <div className="mobile-container max-w-6xl mx-auto">
           {/* Label */}
           {label && (
             <div 
               ref={labelRef}
-              className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-sm uppercase"
+              className="mb-6 gradient-text-green-blue-purple font-bold tracking-wider text-sm uppercase animate-fade-in"
             >
               {label}
             </div>
           )}
           
-          {/* Main Heading - Consistent spacing regardless of titleEffects vs title */}
-          <div className="mb-4">
+          {/* Main Heading - Responsive with proper spacing */}
+          <div className="mb-6">
             {titleEffects ? (
-              titleEffects
+              <div className="animate-fade-in">{titleEffects}</div>
             ) : (
               <Typography 
                 as="h1" 
                 variant={heroVariant}
-                className="leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl"
+                className="leading-tight text-crd-white drop-shadow-lg mobile-heading-1 animate-fade-in"
               >
                 {title}
               </Typography>
             )}
           </div>
 
-          {/* Tagline - styled consistently */}
+          {/* Tagline - responsive styling */}
           {tagline && (
-            <div className="mt-6 mb-8">
-              <p className="text-lg md:text-xl italic text-center font-fredoka text-crd-orange animate-fade-in">
+            <div className="mb-8 animate-fade-in">
+              <p className="mobile-body italic text-center font-fredoka text-crd-orange">
                 "{tagline}"
               </p>
             </div>
           )}
           
-          {/* Description */}
+          {/* Description - responsive */}
           <Typography 
             variant="large-body" 
-            className="mb-8 text-crd-lightGray max-w-2xl mx-auto leading-relaxed"
+            className="mb-10 text-crd-lightGray max-w-3xl mx-auto mobile-body animate-fade-in"
           >
             {description}
           </Typography>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to={primaryCta.link}>
+          {/* CTA Buttons - mobile-first */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
+            <Link to={primaryCta.link} className="w-full sm:w-auto">
               <CRDButton 
                 size="lg" 
                 variant={primaryCta.variant || 'primary'}
-                className={`min-w-[200px] ${primaryCta.className || ''}`}
+                className={`mobile-button w-full sm:w-auto min-w-[200px] ${primaryCta.className || ''}`}
               >
                 {primaryCta.text}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </CRDButton>
             </Link>
             {secondaryCta && (
-              <Link to={secondaryCta.link}>
+              <Link to={secondaryCta.link} className="w-full sm:w-auto">
                 <CRDButton 
                   variant={secondaryCta.variant || 'outline'} 
                   size="lg" 
-                  className={`min-w-[200px] ${secondaryCta.className || ''}`}
+                  className={`mobile-button w-full sm:w-auto min-w-[200px] ${secondaryCta.className || ''}`}
                 >
                   {secondaryCta.text}
                 </CRDButton>
@@ -141,7 +141,11 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
         </div>
         
         {/* Additional content like carousels */}
-        {children}
+        {children && (
+          <div className="mt-16">
+            {children}
+          </div>
+        )}
       </div>
     </div>
   );
