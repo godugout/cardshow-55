@@ -24,19 +24,19 @@ interface MoonFrame {
 const MOON_FRAMES: MoonFrame[] = [
   {
     progress: 0,
-    moon: { x: 0, y: 80, scale: 0.2, opacity: 0.4, phase: 0.3 }
+    moon: { x: 0, y: 80, scale: 0.2, opacity: 0.4, phase: 0.15 }
   },
   {
     progress: 0.3,
-    moon: { x: 0, y: 100, scale: 0.3, opacity: 0.6, phase: 0.28 }
+    moon: { x: 0, y: 100, scale: 0.3, opacity: 0.6, phase: 0.13 }
   },
   {
     progress: 0.6,
-    moon: { x: 0, y: 110, scale: 0.4, opacity: 0.8, phase: 0.25 }
+    moon: { x: 0, y: 110, scale: 0.4, opacity: 0.8, phase: 0.12 }
   },
   {
     progress: 1.0,
-    moon: { x: 0, y: 120, scale: 0.5, opacity: 0.9, phase: 0.2 }
+    moon: { x: 0, y: 120, scale: 0.5, opacity: 0.9, phase: 0.1 }
   }
 ];
 
@@ -93,7 +93,7 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
             y: frame.moon.y || 120,
             scale: frame.moon.scale || 0.5,
             opacity: frame.moon.opacity || 0.9,
-            phase: 0.3 // Default phase for template engine
+            phase: 0.15 // Thinner crescent for template engine
           }
         };
       }
@@ -121,9 +121,9 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
       moonElement.style.transform = `translate(-50%, -50%) scale(${currentFrame.moon.scale})`;
       moonElement.style.opacity = currentFrame.moon.opacity.toString();
       
-      // Crescent phase effect
+      // Crescent phase effect - curve pointing down
       const phasePercentage = currentFrame.moon.phase * 100;
-      crescentElement.style.clipPath = `circle(50% at ${phasePercentage}% 50%)`;
+      crescentElement.style.clipPath = `circle(50% at 50% ${phasePercentage}%)`;
     }
   }, [
     currentFrame.moon.x, 
@@ -156,7 +156,7 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
         className="absolute inset-0 rounded-full"
         style={{
           backgroundColor: '#2A2A2A',
-          clipPath: 'circle(50% at 30% 50%)',
+          clipPath: 'circle(50% at 50% 15%)', // Initial curve-down position
           transition: 'all 0.3s ease-out',
         }}
       />
