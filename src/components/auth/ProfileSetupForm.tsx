@@ -27,9 +27,9 @@ export const ProfileSetupForm: React.FC<ProfileSetupFormProps> = ({ onComplete }
       const existingProfiles = JSON.parse(localStorage.getItem('cardshow_profiles') || '{}');
       existingProfiles[user?.id || ''] = profileData;
       localStorage.setItem('cardshow_profiles', JSON.stringify(existingProfiles));
-      console.log('🔧 Profile saved to localStorage:', profileData);
+      
     } catch (error) {
-      console.error('🔧 Error saving profile:', error);
+      console.error('Error saving profile:', error);
       throw error;
     }
   };
@@ -65,7 +65,7 @@ export const ProfileSetupForm: React.FC<ProfileSetupFormProps> = ({ onComplete }
       
       onComplete();
     } catch (error) {
-      console.error('🔧 Profile setup error:', error);
+      console.error('Profile setup error:', error);
       toast({
         title: 'Setup Failed',
         description: 'Failed to set up your profile. Please try again.',

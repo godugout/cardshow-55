@@ -31,17 +31,13 @@ export const CustomSignUpForm: React.FC<CustomSignUpFormProps> = ({ onComplete }
     }
 
     setIsLoading(true);
-    console.log('🔧 Sign up form submitting with:', { username, passcodeLength: passcode.length });
     
     const { error } = await signUp(username, passcode);
     
     if (!error) {
-      console.log('🔧 Sign up successful');
       if (onComplete) {
         onComplete();
       }
-    } else {
-      console.error('🔧 Sign up failed:', error);
     }
     
     setIsLoading(false);

@@ -11,18 +11,14 @@ export const DevLoginFloatingButton: React.FC = () => {
 
   const handleDevLogin = () => {
     try {
-      console.log('🔧 Floating dev login triggered...');
       const result = devAuthService.forceCreateDevSession();
       if (result.error) {
-        console.error('🔧 Dev session creation failed:', result.error);
         toast.error('Dev login failed: ' + result.error.message);
       } else {
-        console.log('🔧 Dev session created successfully');
         toast.success('Dev user logged in successfully!');
         // No reload needed - the auth system should pick this up automatically
       }
     } catch (error) {
-      console.error('🔧 Dev login error:', error);
       toast.error('Dev login failed: ' + (error as Error).message);
     }
   };

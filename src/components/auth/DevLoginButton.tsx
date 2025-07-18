@@ -17,13 +17,10 @@ export const DevLoginButton: React.FC<DevLoginButtonProps> = ({
 }) => {
   const handleDevLogin = () => {
     try {
-      console.log('🔧 Quick dev login triggered...');
       const result = devAuthService.forceCreateDevSession();
       if (result.error) {
-        console.error('🔧 Dev session creation failed:', result.error);
         toast.error('Failed to create dev session: ' + result.error.message);
       } else {
-        console.log('🔧 Dev session created successfully');
         toast.success('Dev user logged in! Reloading page...');
         // Force reload to pick up the new auth state
         setTimeout(() => {
@@ -31,7 +28,6 @@ export const DevLoginButton: React.FC<DevLoginButtonProps> = ({
         }, 500);
       }
     } catch (error) {
-      console.error('🔧 Dev login error:', error);
       toast.error('Dev login failed: ' + (error as Error).message);
     }
   };

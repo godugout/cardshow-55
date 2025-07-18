@@ -22,15 +22,11 @@ export const CustomSignInForm: React.FC = () => {
     }
 
     setIsLoading(true);
-    console.log('🔧 Form submitting with:', { username, passcodeLength: passcode.length });
     
     const { error } = await signIn(username, passcode);
     
     if (!error) {
-      console.log('🔧 Sign in successful, navigating to home');
       navigate('/');
-    } else {
-      console.error('🔧 Sign in failed:', error);
     }
     
     setIsLoading(false);

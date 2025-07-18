@@ -19,17 +19,17 @@ export const useAuthState = () => {
     let subscription: { unsubscribe: () => void } | null = null;
 
     const initializeAuth = async () => {
-      console.log('🔐 Initializing auth system...');
+      
       
       try {
         // Check for dev mode first
         if (devAuthService.isDevMode()) {
-          console.log('🔧 Development mode detected');
+          
           
           const storedDevAuth = devAuthService.getStoredDevSession();
           
           if (storedDevAuth.user && storedDevAuth.session) {
-            console.log('🔧 Development: Using stored dev session for', storedDevAuth.user.email);
+            
             if (mounted) {
               setAuthState({
                 user: storedDevAuth.user,
@@ -41,10 +41,10 @@ export const useAuthState = () => {
             return;
           } else {
             // Auto-create dev session
-            console.log('🔧 Development: Creating new dev session');
+            
             const { user, session, error } = devAuthService.createDevUserSession();
             if (mounted && user && session) {
-              console.log('🔧 Development: Dev session created for', user.email);
+              
               setAuthState({
                 user,
                 session,
@@ -62,7 +62,7 @@ export const useAuthState = () => {
         }
 
         // Production auth flow
-        console.log('🔐 Production mode: Checking session...');
+        
         const { data: { session }, error } = await authService.getSession();
         
         if (!mounted) return;
@@ -73,7 +73,7 @@ export const useAuthState = () => {
           return;
         }
 
-        console.log('🔐 Production: Session check completed', session ? 'Session found' : 'No session');
+        
         setAuthState(prev => ({
           ...prev,
           session,
@@ -83,10 +83,10 @@ export const useAuthState = () => {
 
         // Set up auth state listener for production only
         if (!devAuthService.isDevMode()) {
-          console.log('🔐 Setting up auth state listener...');
+          
           const { data } = authService.onAuthStateChange(
             async (event, session) => {
-              console.log('🔐 Auth state changed:', event, session?.user?.id);
+              
               
               if (!mounted) return;
 
@@ -103,7 +103,7 @@ export const useAuthState = () => {
                 setTimeout(async () => {
                   try {
                     await profileService.ensureProfile(session.user);
-                    console.log('🔐 Profile ensured for user');
+                    
                   } catch (error) {
                     console.error('🔐 Error ensuring profile:', error);
                   }
@@ -129,7 +129,7 @@ export const useAuthState = () => {
     initializeAuth();
 
     return () => {
-      console.log('🔐 Cleaning up auth state...');
+      
       mounted = false;
       if (subscription && typeof subscription.unsubscribe === 'function') {
         subscription.unsubscribe();
