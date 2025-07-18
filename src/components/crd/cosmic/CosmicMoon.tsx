@@ -18,23 +18,23 @@ interface MoonFrame {
   };
 }
 
-// Moon keyframes - moves to position above "CUT, CRAFT & CREATE DIGITALLY" text
+// Moon keyframes - fixed pixel positioning relative to navbar
 const MOON_FRAMES: MoonFrame[] = [
   {
     progress: 0,
-    moon: { x: 0, y: -5, scale: 0.2, opacity: 0.4, phase: 0.3 }
+    moon: { x: 0, y: 80, scale: 0.2, opacity: 0.4, phase: 0.3 }
   },
   {
     progress: 0.3,
-    moon: { x: 0, y: 5, scale: 0.3, opacity: 0.6, phase: 0.28 }
+    moon: { x: 0, y: 100, scale: 0.3, opacity: 0.6, phase: 0.28 }
   },
   {
     progress: 0.6,
-    moon: { x: 0, y: 8, scale: 0.4, opacity: 0.8, phase: 0.25 }
+    moon: { x: 0, y: 110, scale: 0.4, opacity: 0.8, phase: 0.25 }
   },
   {
     progress: 1.0,
-    moon: { x: 0, y: 12, scale: 0.5, opacity: 0.9, phase: 0.2 }
+    moon: { x: 0, y: 120, scale: 0.5, opacity: 0.9, phase: 0.2 }
   }
 ];
 
@@ -87,9 +87,9 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
       const moonElement = moonRef.current;
       const crescentElement = crescentRef.current;
       
-      // Position: 50% + sun offset + moon offset
+      // Position: fixed relative to navbar (left 50% + offset, top fixed pixels)
       moonElement.style.left = `calc(50% + ${currentFrame.moon.x}vw)`;
-      moonElement.style.top = `${currentFrame.moon.y}%`;
+      moonElement.style.top = `${currentFrame.moon.y}px`;
       
       // Scale and opacity
       moonElement.style.transform = `translate(-50%, -50%) scale(${currentFrame.moon.scale})`;
