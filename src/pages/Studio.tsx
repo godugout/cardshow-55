@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { StudioCardManager } from '@/components/studio/StudioCardManager';
+import { ProfessionalWorkspace } from '@/components/studio/workspace';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NoCardSelected } from './Studio/components/NoCardSelected';
 import { DatabaseSeedPrompt } from './Studio/components/DatabaseSeedPrompt';
 import { MobileStudioControlsRedesigned } from '@/components/studio/components/MobileStudioControlsRedesigned';
 import { EnhancedMobileStudioInteractions } from '@/components/studio/components/EnhancedMobileStudioInteractions';
+import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 import type { CaseStyle } from '@/components/studio/components/StudioCaseSelector';
 import { useStudioState } from './Studio/hooks/useStudioState';
 import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
@@ -63,8 +65,10 @@ const convertCardForViewer = (card: CardData) => {
 const Studio = () => {
   const { cardId } = useParams();
   const { user } = useAuth();
+  const { deviceType } = useResponsiveBreakpoints();
   const [showSeedPrompt, setShowSeedPrompt] = useState(false);
   const [hasCheckedDatabase, setHasCheckedDatabase] = useState(false);
+  const [useWorkspaceMode, setUseWorkspaceMode] = useState(false);
   const [use3DMode, setUse3DMode] = useState(true); // Toggle between 3D and immersive modes
   const [selectedCase, setSelectedCase] = useState<CaseStyle>('none');
   
@@ -173,15 +177,51 @@ const Studio = () => {
     handleDownload(originalCard);
   };
 
+  // Auto-enable workspace mode on desktop
+  useEffect(() => {
+    if (deviceType === 'desktop' && !useWorkspaceMode) {
+      setUseWorkspaceMode(true);
+    } else if (deviceType === 'mobile' && useWorkspaceMode) {
+      setUseWorkspaceMode(false);
+    }
+  }, [deviceType, useWorkspaceMode]);
+
+  // Professional workspace mode for desktop
+  if (useWorkspaceMode && deviceType !== 'mobile') {
+    return (
+      <ErrorBoundary>
+        <div className="w-full h-screen bg-background">
+          <ProfessionalWorkspace
+            card={viewerCard}
+            cards={viewerCards}
+            currentCardIndex={currentCardIndex}
+            onCardChange={handleCardChange}
+            onShare={handleViewerShare}
+            onDownload={handleViewerDownload}
+          />
+        </div>
+      </ErrorBoundary>
+    );
+  }
+
+  // Mobile/tablet interface (existing layout)
   return (
     <ErrorBoundary>
       <div className="w-full h-screen bg-crd-darkest flex flex-col relative">
         
-        {/* Simplified Mobile Header - Only on mobile, only essential info */}
+        {/* Header with workspace toggle */}
         <div className="lg:hidden bg-crd-darker/50 backdrop-blur-sm border-b border-crd-mediumGray/20 px-4 py-3 relative z-10" 
              style={{ marginTop: 'var(--navbar-height)' }}>
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-between">
             <h1 className="text-lg font-semibold text-crd-white">Studio</h1>
+            {deviceType === 'tablet' && (
+              <button
+                onClick={() => setUseWorkspaceMode(!useWorkspaceMode)}
+                className="text-xs bg-primary px-2 py-1 rounded text-primary-foreground"
+              >
+                Pro Mode
+              </button>
+            )}
           </div>
         </div>
 
@@ -228,7 +268,7 @@ const Studio = () => {
           </EnhancedMobileStudioInteractions>
         </div>
 
-        {/* New Mobile Controls - FAB + Drawer Pattern */}
+        {/* Mobile Controls - FAB + Drawer Pattern */}
         <MobileStudioControlsRedesigned
           selectedCard={selectedCard}
           selectedCase={selectedCase}
