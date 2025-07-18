@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
-import { SpaceDust } from './cosmic/SpaceDust';
 import { CosmicSun } from './cosmic/CosmicSun';
 
 import { StudioPauseButton } from '../studio/StudioPauseButton';
@@ -281,7 +280,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         />
         
         {/* Cosmic Background Elements */}
-        <SpaceDust scrollProgress={scrollProgress} />
         <CosmicSun scrollProgress={scrollProgress} />
         
         {/* Main Card with Glass Case Container - Responds to mouse only when not locked */}
