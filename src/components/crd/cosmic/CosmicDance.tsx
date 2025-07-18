@@ -20,7 +20,7 @@ interface AnimationFrame {
   progress: number;
   sun: {
     x: number; // Screen percentage -50 to 50
-    y: number; // Screen percentage 0 to 100 (0 = top, 100 = bottom)
+    y: number; // Screen position (legacy: % for rest, 120px for start; template: px)
     scale: number; // 0.5 to 2.0
     opacity: number; // 0 to 1
   };
@@ -41,10 +41,10 @@ interface AnimationFrame {
 
 // Enhanced animation keyframes inspired by 2001: A Space Odyssey - Perfect Alignment
 const ANIMATION_FRAMES: AnimationFrame[] = [
-  // Dawn scene - Sun starts lower, card positioned well below
+  // Dawn scene - Sun starts at same position as moon's final resting position (120px from top)
   {
     progress: 0,
-    sun: { x: 0, y: 30, scale: 0.4, opacity: 0.8 },
+    sun: { x: 0, y: 120, scale: 0.4, opacity: 0.8 },
     card: { lean: 0, positionY: 0, controlTaken: false },
     lighting: { intensity: 0.8, warmth: 0 },
     environment: { skyColor: '#0a0a2e', spaceDepth: 1.0 }
@@ -245,9 +245,14 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
         sunElement.style.left = `calc(50% + ${sunData.x}vw)`;
         sunElement.style.top = `${sunData.y}px`;
       } else {
-        // Legacy uses vw for x and % for y
+        // Legacy uses vw for x and special handling for y (120px start, % for rest)
         sunElement.style.left = `calc(50% + ${sunData.x}vw)`;
-        sunElement.style.top = `${sunData.y}%`;
+        // Special case: if y is 120 (starting position), use px; otherwise use %
+        if (sunData.y === 120) {
+          sunElement.style.top = `${sunData.y}px`;
+        } else {
+          sunElement.style.top = `${sunData.y}%`;
+        }
       }
       
       // Enhanced scale and opacity with cinematic glow
