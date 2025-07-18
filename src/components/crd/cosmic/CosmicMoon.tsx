@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
 
 interface CosmicMoonProps {
@@ -37,15 +37,15 @@ const MOON_FRAMES: MoonFrame[] = [
   }
 ];
 
-export const CosmicMoon: React.FC<CosmicMoonProps> = ({
+export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
   progress,
   isVisible
 }) => {
   const moonRef = useRef<HTMLDivElement>(null);
   const crescentRef = useRef<HTMLDivElement>(null);
 
-  // Interpolate between moon keyframes
-  const getCurrentMoonFrame = (progress: number): MoonFrame => {
+  // Memoized interpolation function to prevent re-computation
+  const getCurrentMoonFrame = useCallback((progress: number): MoonFrame => {
     if (progress <= 0) return MOON_FRAMES[0];
     if (progress >= 1) return MOON_FRAMES[MOON_FRAMES.length - 1];
 
@@ -68,11 +68,12 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = ({
         phase: THREE.MathUtils.lerp(prevFrame.moon.phase, nextFrame.moon.phase, t),
       }
     };
-  };
+  }, []);
 
-  const currentFrame = getCurrentMoonFrame(progress);
+  // Memoized current frame to prevent object recreation
+  const currentFrame = useMemo(() => getCurrentMoonFrame(progress), [getCurrentMoonFrame, progress]);
 
-  // Update moon position and appearance
+  // Update moon position and appearance with stable dependencies
   useEffect(() => {
     if (moonRef.current && crescentRef.current && isVisible) {
       const moonElement = moonRef.current;
@@ -90,7 +91,14 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = ({
       const phasePercentage = currentFrame.moon.phase * 100;
       crescentElement.style.clipPath = `circle(50% at ${phasePercentage}% 50%)`;
     }
-  }, [currentFrame, isVisible]);
+  }, [
+    currentFrame.moon.x, 
+    currentFrame.moon.y, 
+    currentFrame.moon.scale, 
+    currentFrame.moon.opacity, 
+    currentFrame.moon.phase, 
+    isVisible
+  ]);
 
   if (!isVisible) return null;
 
@@ -119,4 +127,4 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = ({
       />
     </div>
   );
-};
+});

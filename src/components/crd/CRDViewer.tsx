@@ -7,6 +7,7 @@ import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
 import { CosmicDance } from './cosmic/CosmicDance';
 import { CosmicDanceControls } from './cosmic/CosmicDanceControls';
+import { PerformanceMonitor } from './performance/PerformanceMonitor';
 import { useCardAngle } from './hooks/useCardAngle';
 
 import { StudioPauseButton } from '../studio/StudioPauseButton';
@@ -108,6 +109,10 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   
   // Card cinematic control state
   const [cardCinematicPosition, setCardCinematicPosition] = useState({ y: 0, lean: 0, controlTaken: false });
+
+  // Performance monitoring
+  const [performanceEnabled, setPerformanceEnabled] = useState(false);
+  const [showPerformanceOverlay, setShowPerformanceOverlay] = useState(false);
 
   // Refs
   const cardRef = useRef<THREE.Group & { getCurrentRotation?: () => THREE.Euler }>(null);
@@ -464,9 +469,24 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           />
         )}
         
-        {/* Atmospheric Fog */}
+      {/* Atmospheric Fog */}
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
+
+      {/* Performance Monitor */}
+      <PerformanceMonitor
+        enabled={performanceEnabled}
+        showOverlay={showPerformanceOverlay}
+        onMetricsUpdate={(metrics) => {
+          // Log performance issues
+          if (metrics.fps < 30) {
+            console.warn('⚠️ Low FPS detected:', metrics.fps);
+          }
+          if (metrics.memoryUsage > 500) {
+            console.warn('⚠️ High memory usage:', metrics.memoryUsage, 'MB');
+          }
+        }}
+      />
       
       {/* Cosmic Dance Overlay System */}
       <CosmicDance

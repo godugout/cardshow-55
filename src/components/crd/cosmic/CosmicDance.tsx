@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { CosmicMoon } from './CosmicMoon';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -81,7 +81,7 @@ const ANIMATION_FRAMES: AnimationFrame[] = [
   }
 ];
 
-export const CosmicDance: React.FC<CosmicDanceProps> = ({
+export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
   animationProgress,
   isPlaying,
   cardAngle,
@@ -94,20 +94,25 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
   const [hasTriggered, setHasTriggered] = useState(false);
   const sunRef = useRef<HTMLDivElement>(null);
   
+  // Memoized trigger callback to prevent re-renders
+  const handleTrigger = useCallback(() => {
+    onTriggerReached?.();
+  }, [onTriggerReached]);
+
   // Check for trigger point - ALL conditions must be met
   useEffect(() => {
     const isReadyForAlignment = cardAngle >= 45 && isOptimalZoom && isOptimalPosition;
     
     if (isReadyForAlignment && !hasTriggered) {
       setHasTriggered(true);
-      onTriggerReached?.();
+      handleTrigger();
     } else if (cardAngle < 40 || !isOptimalZoom || !isOptimalPosition) {
       setHasTriggered(false);
     }
-  }, [cardAngle, isOptimalZoom, isOptimalPosition, hasTriggered, onTriggerReached]);
+  }, [cardAngle, isOptimalZoom, isOptimalPosition, hasTriggered, handleTrigger]);
 
-  // Interpolate between keyframes
-  const getCurrentFrame = (progress: number): AnimationFrame => {
+  // Memoized interpolation function to prevent re-computation
+  const getCurrentFrame = useCallback((progress: number): AnimationFrame => {
     if (progress <= 0) return ANIMATION_FRAMES[0];
     if (progress >= 1) return ANIMATION_FRAMES[ANIMATION_FRAMES.length - 1];
 
@@ -145,12 +150,13 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
         spaceDepth: THREE.MathUtils.lerp(prevFrame.environment.spaceDepth, nextFrame.environment.spaceDepth, t),
       }
     };
-  };
+  }, []);
 
-  const currentFrame = getCurrentFrame(animationProgress);
+  // Memoized current frame to prevent object recreation
+  const currentFrame = useMemo(() => getCurrentFrame(animationProgress), [getCurrentFrame, animationProgress]);
 
-  // Send card control updates during animation
-  useEffect(() => {
+  // Memoized card control update callback
+  const handleCardControlUpdate = useCallback(() => {
     if (isPlaying && onCardControlUpdate) {
       onCardControlUpdate({
         positionY: currentFrame.card.positionY,
@@ -158,9 +164,14 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
         controlTaken: currentFrame.card.controlTaken
       });
     }
-  }, [animationProgress, isPlaying, onCardControlUpdate, currentFrame.card]);
+  }, [isPlaying, onCardControlUpdate, currentFrame.card.positionY, currentFrame.card.lean, currentFrame.card.controlTaken]);
 
-  // Enhanced cosmic environment effects
+  // Send card control updates during animation with stable dependencies
+  useEffect(() => {
+    handleCardControlUpdate();
+  }, [handleCardControlUpdate]);
+
+  // Enhanced cosmic environment effects with stable dependencies
   useEffect(() => {
     // Apply environment effects to document body for full immersion
     const body = document.body;
@@ -174,9 +185,9 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
       // Cleanup on unmount
       body.style.background = '';
     };
-  }, [currentFrame]);
+  }, [currentFrame.environment.skyColor, currentFrame.environment.spaceDepth]);
 
-  // Update sun position with enhanced cinematic effects
+  // Update sun position with enhanced cinematic effects using stable dependencies
   useEffect(() => {
     if (sunRef.current) {
       const sunElement = sunRef.current;
@@ -207,7 +218,14 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
         0 0 ${glowSize * 2}px rgba(255, ${orangeIntensity}, 0, ${glowOpacity * 0.5})
       `;
     }
-  }, [currentFrame]);
+  }, [
+    currentFrame.sun.x, 
+    currentFrame.sun.y, 
+    currentFrame.sun.scale, 
+    currentFrame.sun.opacity, 
+    currentFrame.lighting.intensity, 
+    currentFrame.lighting.warmth
+  ]);
 
   return (
     <>
@@ -233,4 +251,4 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
       />
     </>
   );
-};
+});

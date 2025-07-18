@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Play, Square, SkipForward, Trash2, Download, Eye, MousePointer } from 'lucide-react';
 import { useUserTracker } from '@/hooks/useUserTracker';
+import { useSupabaseUserTracker } from '@/hooks/useSupabaseUserTracker';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -24,25 +25,59 @@ export const UserTracker: React.FC<UserTrackerProps> = ({
   const [showDetails, setShowDetails] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   
+  // Legacy localStorage tracker (disabled in favor of Supabase)
   const {
-    isRecording,
+    isRecording: localRecording,
     session,
     isPlaying,
     playbackProgress,
-    startRecording,
-    stopRecording,
+    startRecording: startLocalRecording,
+    stopRecording: stopLocalRecording,
     startPlayback,
     stopPlayback,
     getSavedSessions,
     clearSavedSessions,
     addEvent,
-    eventCount,
-    recordingTime
+    eventCount: localEventCount,
+    recordingTime: localRecordingTime
   } = useUserTracker({ 
-    enabled,
+    enabled: false, // Disabled in favor of Supabase
     sampleRate: 30,
     saveToStorage: true 
   });
+
+  // Enhanced Supabase tracker
+  const {
+    isRecording,
+    currentSession,
+    sessionStats,
+    startRecording,
+    stopRecording,
+    logCosmicTrigger,
+    logAlignmentAchieved,
+    getUserAnalytics,
+    eventCount,
+    recordingTime
+  } = useSupabaseUserTracker({ 
+    enabled,
+    sampleRate: 30
+  });
+
+  // Auto-trigger cosmic events based on card state
+  useEffect(() => {
+    if (!enabled || !isRecording) return;
+
+    // Log cosmic trigger when conditions are met
+    if (cardAngle >= 45 && cameraDistance > 0) {
+      const alignmentScore = Math.min(100, (cardAngle / 90) * 50 + (1 - Math.min(cameraDistance / 20, 1)) * 50);
+      logCosmicTrigger(cardAngle, alignmentScore);
+      
+      // Log achievement if alignment is perfect
+      if (alignmentScore > 80) {
+        logAlignmentAchieved(cardAngle, cameraDistance, alignmentScore);
+      }
+    }
+  }, [cardAngle, cameraDistance, enabled, isRecording, logCosmicTrigger, logAlignmentAchieved]);
 
   // Format time display
   const formatTime = (ms: number) => {

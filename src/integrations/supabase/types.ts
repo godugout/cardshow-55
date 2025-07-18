@@ -6559,6 +6559,48 @@ export type Database = {
           },
         ]
       }
+      user_cosmic_sessions: {
+        Row: {
+          alignment_achieved: boolean | null
+          best_alignment_score: number | null
+          camera_distance_avg: number | null
+          card_angle_peak: number | null
+          created_at: string | null
+          id: string
+          optimal_time_spent: number | null
+          session_end: string | null
+          session_start: string | null
+          total_attempts: number | null
+          user_id: string | null
+        }
+        Insert: {
+          alignment_achieved?: boolean | null
+          best_alignment_score?: number | null
+          camera_distance_avg?: number | null
+          card_angle_peak?: number | null
+          created_at?: string | null
+          id?: string
+          optimal_time_spent?: number | null
+          session_end?: string | null
+          session_start?: string | null
+          total_attempts?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          alignment_achieved?: boolean | null
+          best_alignment_score?: number | null
+          camera_distance_avg?: number | null
+          card_angle_peak?: number | null
+          created_at?: string | null
+          id?: string
+          optimal_time_spent?: number | null
+          session_end?: string | null
+          session_start?: string | null
+          total_attempts?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_experience_points: {
         Row: {
           created_at: string | null
@@ -6588,6 +6630,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_interaction_events: {
+        Row: {
+          coordinates: Json | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          session_id: string | null
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          coordinates?: Json | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          coordinates?: Json | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_interaction_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "user_cosmic_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_preferences: {
         Row: {
@@ -7161,6 +7241,16 @@ export type Database = {
           username: string
           activity_count: number
           follower_count: number
+        }[]
+      }
+      get_user_cosmic_analytics: {
+        Args: { user_uuid?: string }
+        Returns: {
+          total_sessions: number
+          successful_alignments: number
+          avg_alignment_score: number
+          total_time_spent: number
+          best_session: Json
         }[]
       }
       get_user_stats: {
