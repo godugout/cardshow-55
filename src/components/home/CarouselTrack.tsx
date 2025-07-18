@@ -126,18 +126,7 @@ const EnhancedCardItem = memo(({ card, scrollVelocity, position, isVisible }: En
   );
 });
 
-const CardItem = memo(({ card }: CardItemProps) => {
-  return (
-    <EnhancedCardItem 
-      card={card} 
-      scrollVelocity={0} 
-      position={0} 
-      isVisible={true} 
-    />
-  );
-});
-
-CardItem.displayName = 'CardItem';
+EnhancedCardItem.displayName = 'EnhancedCardItem';
 
 interface CarouselTrackProps {
   cards: Card[];
@@ -271,12 +260,13 @@ export const CarouselTrack = memo(({ cards }: CarouselTrackProps) => {
     >
       <div 
         ref={trackRef}
-        className="carousel-track flex gap-4 overflow-x-auto scrollbar-hide pb-4"
+        className="enhanced-carousel-track flex gap-4 overflow-x-auto scrollbar-hide pb-4"
         style={{
           scrollBehavior: isDragging ? 'auto' : 'smooth',
           cursor: isDragging ? 'grabbing' : 'grab',
           transform: `rotateX(${Math.abs(scrollVelocity) * 2}deg)`,
           transition: isDragging ? 'none' : 'transform 0.3s ease-out',
+          animation: 'none', // Override any CSS animations
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -290,7 +280,7 @@ export const CarouselTrack = memo(({ cards }: CarouselTrackProps) => {
       >
         {duplicatedCards.map((card, i) => {
           const position = i - cards.length / 2;
-          const isVisible = Math.abs(position) < 10; // Optimize rendering
+          const isVisible = Math.abs(position) < 10;
           
           return (
             <EnhancedCardItem 
@@ -309,6 +299,11 @@ export const CarouselTrack = memo(({ cards }: CarouselTrackProps) => {
       <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-crd-darker to-transparent pointer-events-none" />
       
       <style>{`
+        .enhanced-carousel-track {
+          animation: none !important;
+          will-change: transform;
+        }
+        
         .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
