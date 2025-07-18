@@ -5,6 +5,7 @@ import { StudioContent } from './studio/StudioContent';
 import { StudioFooter } from './studio/StudioFooter';
 import type { EffectValues } from '../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../types';
+import { TemplateEngine } from '@/templates/engine';
 
 interface ProgressiveCustomizePanelProps {
   selectedScene: EnvironmentScene;
@@ -30,6 +31,13 @@ interface ProgressiveCustomizePanelProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
+  
+  // Template engine integration
+  templateEngine?: TemplateEngine;
+  onReplayTemplate?: () => void;
+  onStudioEntry?: () => void;
+  animationProgress?: number;
+  isCosmicPlaying?: boolean;
 }
 
 export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps> = ({
@@ -53,7 +61,12 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
   selectedPresetId,
   onPresetSelect,
   onApplyCombo,
-  isApplyingPreset = false
+  isApplyingPreset = false,
+  templateEngine,
+  onReplayTemplate,
+  onStudioEntry,
+  animationProgress,
+  isCosmicPlaying
 }) => {
   return (
     <div className="h-full bg-black bg-opacity-95 backdrop-blur-lg border-l border-white/10 flex flex-col w-80 min-w-80 max-w-96">
@@ -83,6 +96,11 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
         onToggleFullscreen={onToggleFullscreen}
         onDownload={onDownload}
         onShare={onShare}
+        templateEngine={templateEngine}
+        onReplayTemplate={onReplayTemplate}
+        onStudioEntry={onStudioEntry}
+        animationProgress={animationProgress}
+        isCosmicPlaying={isCosmicPlaying}
       />
     </div>
   );
