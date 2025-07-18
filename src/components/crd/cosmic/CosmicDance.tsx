@@ -36,42 +36,42 @@ interface AnimationFrame {
 
 // Enhanced animation keyframes inspired by 2001: A Space Odyssey
 const ANIMATION_FRAMES: AnimationFrame[] = [
-  // Dawn scene - Monolith emerging
+  // Dawn scene - Monolith emerging, sun high above
   {
     progress: 0,
-    sun: { x: 0, y: 15, scale: 0.4, opacity: 0.7 },
+    sun: { x: 0, y: 20, scale: 0.6, opacity: 0.8 },
     card: { lean: 0 },
     lighting: { intensity: 0.8, warmth: 0 },
     environment: { skyColor: '#0a0a2e', spaceDepth: 1.0 }
   },
-  // Early alignment - Cosmic awakening
+  // Early alignment - Sun begins descent
   {
     progress: 0.25,
-    sun: { x: 0, y: 30, scale: 0.6, opacity: 0.85 },
+    sun: { x: 0, y: 35, scale: 0.8, opacity: 0.9 },
     card: { lean: 20 },
     lighting: { intensity: 1.0, warmth: 0.3 },
     environment: { skyColor: '#1a1a3e', spaceDepth: 0.8 }
   },
-  // CRITICAL TRIGGER - 45° monolith lean (symbolic enlightenment moment)
+  // CRITICAL TRIGGER - Sun reaches 50% screen, perfect alignment
   {
     progress: 0.5,
-    sun: { x: 0, y: 50, scale: 0.9, opacity: 1.0 },
+    sun: { x: 0, y: 50, scale: 1.0, opacity: 1.0 },
     card: { lean: 45 },
     lighting: { intensity: 1.4, warmth: 0.6 },
     environment: { skyColor: '#2a1a1e', spaceDepth: 0.6 }
   },
-  // Deep alignment - Cosmic convergence
+  // Deep alignment - Sun continues growth at sunset position
   {
     progress: 0.75,
-    sun: { x: 0, y: 70, scale: 1.3, opacity: 0.95 },
+    sun: { x: 0, y: 50, scale: 1.4, opacity: 1.0 },
     card: { lean: 65 },
     lighting: { intensity: 1.7, warmth: 0.85 },
     environment: { skyColor: '#3a0a0e', spaceDepth: 0.4 }
   },
-  // FINAL ALIGNMENT - Sun behind monolith (transcendence)
+  // FINAL ALIGNMENT - Sun massive at sunset position (transcendence)
   {
     progress: 1.0,
-    sun: { x: 0, y: 85, scale: 1.8, opacity: 0.8 },
+    sun: { x: 0, y: 50, scale: 2.0, opacity: 1.0 },
     card: { lean: 80 },
     lighting: { intensity: 2.0, warmth: 1.0 },
     environment: { skyColor: '#4a0000', spaceDepth: 0.2 }
