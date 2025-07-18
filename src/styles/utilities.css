@@ -68,6 +68,22 @@
     4px 4px 0px rgba(139, 69, 19, 0.2),
     6px 6px 0px rgba(101, 67, 33, 0.1);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  display: inline-block;
+}
+
+.cardboard-text::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  background: 
+    radial-gradient(circle at 90% 10%, rgba(222, 184, 135, 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 20% 90%, rgba(205, 133, 63, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 60% 60%, rgba(160, 82, 45, 0.08) 0%, transparent 15%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* Gradient text effect for hero labels */
