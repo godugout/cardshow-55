@@ -52,8 +52,8 @@ export const Hero3: React.FC<Hero3Props> = ({
   const FRICTION = isNative ? 0.95 : 0.965;
   const VELOCITY_SCALE = isNative ? 1.5 : 1.2;
   const MIN_VELOCITY = isNative ? 0.08 : 0.05;
-  const CARD_WIDTH = orientation === 'landscape' ? 320 : window.innerWidth < 640 ? 280 : 400;
-  const CARD_GAP = window.innerWidth < 640 ? 12 : 16;
+  const CARD_WIDTH = orientation === 'landscape' ? 450 : window.innerWidth < 640 ? 280 : window.innerWidth < 1024 ? 400 : 480;
+  const CARD_GAP = window.innerWidth < 640 ? 12 : window.innerWidth < 1024 ? 16 : 24;
   const MAX_VELOCITY_HISTORY = isNative ? 3 : 5;
 
   // Calculate single set width for infinite scroll
@@ -261,7 +261,7 @@ export const Hero3: React.FC<Hero3Props> = ({
         {[...featuredCards, ...featuredCards].map((card, index) => (
           <div 
             key={`${card.id}-${index}`}
-            className="flex-shrink-0 w-80 md:w-96 lg:w-[400px]"
+            className="flex-shrink-0 w-80 md:w-96 lg:w-[480px] xl:w-[520px]"
             onPointerEnter={() => !isDragging && setHoveredCard(`${card.id}-${index}`)}
             onPointerLeave={() => setHoveredCard(null)}
             onFocus={() => setFocusedCard(`${card.id}-${index}`)}
