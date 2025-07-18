@@ -13,47 +13,15 @@ export const SpaceOdysseyReset: React.FC<SpaceOdysseyResetProps> = ({
   onComplete
 }) => {
   const groupRef = useRef<THREE.Group>(null);
-  const sunRef = useRef<THREE.Mesh>(null);
-  const skyRef = useRef<THREE.Mesh>(null);
   const animationStartTime = useRef<number>(0);
   const hasStarted = useRef(false);
   
-  // Create materials
-  const starburstMaterial = useMemo(() => new StarburstMaterial(), []);
-  const skyMaterial = useMemo(() => new THREE.ShaderMaterial({
-    uniforms: {
-      time: { value: 0 },
-      bottomColor: { value: new THREE.Color(0x1a1a2e) },
-      topColor: { value: new THREE.Color(0x0a0a1e) },
-      sunPosition: { value: new THREE.Vector3(0, 8, -3) }
-    },
-    vertexShader: `
-      varying vec3 vWorldPosition;
-      void main() {
-        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-        vWorldPosition = worldPosition.xyz;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `,
-    fragmentShader: `
-      uniform vec3 bottomColor;
-      uniform vec3 topColor;
-      uniform vec3 sunPosition;
-      varying vec3 vWorldPosition;
-      void main() {
-        float h = normalize(vWorldPosition).y;
-        vec3 color = mix(bottomColor, topColor, h * 0.5 + 0.5);
-        gl_FragColor = vec4(color, 1.0);
-      }
-    `
-  }), []);
-
   // Animation duration constants
   const TOTAL_DURATION = 6.0;
   const PHASES = {
     INITIAL_MOVEMENT: { start: 0, duration: 1.0 },
     CAMERA_POSITION: { start: 1.0, duration: 1.0 },
-    SUN_DESCENT: { start: 2.0, duration: 2.5 },
+    CARD_HIGHLIGHT: { start: 2.0, duration: 2.5 },
     STARBURST: { start: 3.0, duration: 1.0 },
     FINAL_SETTLE: { start: 4.5, duration: 1.5 }
   };
@@ -68,14 +36,10 @@ export const SpaceOdysseyReset: React.FC<SpaceOdysseyResetProps> = ({
   }, [isAnimating]);
 
   useFrame((state) => {
-    if (!isAnimating || !groupRef.current || !sunRef.current) return;
+    if (!isAnimating || !groupRef.current) return;
 
     const elapsed = (Date.now() - animationStartTime.current) / 1000;
     const progress = Math.min(elapsed / TOTAL_DURATION, 1);
-
-    // Update shader materials
-    starburstMaterial.update(elapsed);
-    skyMaterial.uniforms.time.value = elapsed;
 
     // Phase calculations
     const getPhaseProgress = (phase: { start: number; duration: number }) => {
@@ -83,46 +47,29 @@ export const SpaceOdysseyReset: React.FC<SpaceOdysseyResetProps> = ({
       return Math.max(0, Math.min(1, phaseElapsed / phase.duration));
     };
 
-    // Initial card movement
-    if (elapsed < PHASES.CAMERA_POSITION.start) {
-      const p = getPhaseProgress(PHASES.INITIAL_MOVEMENT);
+    // Smooth camera movement focused on the card
+    if (elapsed < PHASES.FINAL_SETTLE.start) {
+      const p = Math.min(elapsed / 4.5, 1);
       const eased = 1 - Math.pow(1 - p, 3); // Ease out cubic
-      groupRef.current.position.y = Math.sin(p * Math.PI * 2) * 0.2 * (1 - eased);
-      groupRef.current.rotation.x = (0.2 - eased * 0.2);
-    }
-
-    // Camera positioning
-    if (elapsed >= PHASES.CAMERA_POSITION.start && elapsed < PHASES.SUN_DESCENT.start) {
-      const p = getPhaseProgress(PHASES.CAMERA_POSITION);
-      const eased = 1 - Math.pow(1 - p, 3);
-      groupRef.current.position.y = 0;
-      groupRef.current.rotation.x = 0.2 * (1 - eased);
       
-      // Position sun
-      if (sunRef.current) {
-        sunRef.current.visible = true;
-        sunRef.current.position.set(0, 8, -3);
-        starburstMaterial.setIntensity(p);
-      }
+      // Gentle camera orbit around the card
+      const angle = eased * Math.PI * 2;
+      state.camera.position.x = Math.sin(angle) * 2;
+      state.camera.position.y = Math.cos(angle * 0.5) * 1;
+      state.camera.position.z = 15 + Math.sin(angle * 0.3) * 3;
+      state.camera.lookAt(0, -2, 0); // Look at card position
     }
 
-    // Sun descent
-    if (elapsed >= PHASES.SUN_DESCENT.start && elapsed < PHASES.FINAL_SETTLE.start) {
-      const p = getPhaseProgress(PHASES.SUN_DESCENT);
-      const sunY = 8 - p * 6;
-      
-      if (sunRef.current) {
-        sunRef.current.position.y = sunY;
-        
-        // Starburst effect when sun aligns with monolith
-        const starburstIntensity = Math.pow(Math.sin(Math.PI * p), 2);
-        starburstMaterial.setIntensity(1.5 + starburstIntensity * 2);
-      }
-    }
-
-    // Final settling
+    // Final settling - return camera to default
     if (elapsed >= PHASES.FINAL_SETTLE.start) {
       const p = getPhaseProgress(PHASES.FINAL_SETTLE);
+      const eased = 1 - Math.pow(1 - p, 3);
+      
+      // Smoothly return to default camera position
+      state.camera.position.x = state.camera.position.x * (1 - eased);
+      state.camera.position.y = state.camera.position.y * (1 - eased);
+      state.camera.position.z = 15 + (state.camera.position.z - 15) * (1 - eased);
+      state.camera.lookAt(0, -2, 0);
       
       if (p >= 1 && hasStarted.current) {
         hasStarted.current = false;
@@ -135,34 +82,20 @@ export const SpaceOdysseyReset: React.FC<SpaceOdysseyResetProps> = ({
 
   return (
     <group ref={groupRef}>
-      {/* Sky background */}
-      <mesh ref={skyRef} position={[0, 0, -10]} scale={[20, 20, 1]}>
-        <planeGeometry args={[1, 1]} />
-        <primitive object={skyMaterial} attach="material" />
-      </mesh>
-
-      {/* Sun with starburst effect */}
-      <mesh ref={sunRef} position={[0, 8, -3]}>
-        <sphereGeometry args={[0.3, 32, 32]} />
-        <primitive object={starburstMaterial} attach="material" />
-        
-        {/* Outer glow */}
-        <mesh scale={[3, 3, 3]}>
-          <sphereGeometry args={[0.3, 32, 32]} />
-          <meshBasicMaterial 
-            color="#FFD700" 
-            transparent
-            opacity={0.1}
-            blending={THREE.AdditiveBlending}
-          />
-        </mesh>
-      </mesh>
-
-      {/* Volumetric light rays */}
-      <mesh position={[0, 0, -1]} scale={[10, 10, 1]}>
+      {/* Subtle environment lighting during reset */}
+      <ambientLight intensity={0.3} color="#ffffff" />
+      <directionalLight 
+        position={[5, 10, 5]} 
+        intensity={0.8} 
+        color="#ffd700"
+        castShadow
+      />
+      
+      {/* Gentle particle effect around the card area */}
+      <mesh position={[0, -2, 0]} scale={[8, 8, 1]}>
         <planeGeometry args={[1, 1]} />
         <meshBasicMaterial 
-          color="#FFD700"
+          color="#ffffff"
           transparent
           opacity={0.05}
           blending={THREE.AdditiveBlending}
