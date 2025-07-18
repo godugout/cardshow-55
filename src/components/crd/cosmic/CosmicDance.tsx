@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { CosmicMoon } from './CosmicMoon';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { TemplateEngine, interpolateFrame } from '@/templates/engine';
 
 interface CosmicDanceProps {
   animationProgress: number; // 0 to 1 from the timeline slider
@@ -12,6 +13,7 @@ interface CosmicDanceProps {
   isOptimalPosition: boolean; // Whether card is centered
   onTriggerReached?: () => void; // Called when all conditions are met
   onCardControlUpdate?: (params: { positionY: number; lean: number; controlTaken: boolean }) => void;
+  templateEngine?: TemplateEngine; // New prop for template configuration
 }
 
 interface AnimationFrame {
@@ -89,7 +91,8 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
   isOptimalZoom,
   isOptimalPosition,
   onTriggerReached,
-  onCardControlUpdate
+  onCardControlUpdate,
+  templateEngine
 }) => {
   const [hasTriggered, setHasTriggered] = useState(false);
   const sunRef = useRef<HTMLDivElement>(null);
@@ -112,45 +115,51 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
   }, [cardAngle, isOptimalZoom, isOptimalPosition, hasTriggered, handleTrigger]);
 
   // Memoized interpolation function to prevent re-computation
-  const getCurrentFrame = useCallback((progress: number): AnimationFrame => {
-    if (progress <= 0) return ANIMATION_FRAMES[0];
-    if (progress >= 1) return ANIMATION_FRAMES[ANIMATION_FRAMES.length - 1];
+  const getCurrentFrame = useCallback((progress: number) => {
+    if (templateEngine) {
+      // Use template engine keyframes if available
+      return interpolateFrame(templateEngine.keyframes, progress);
+    } else {
+      // Fallback to legacy ANIMATION_FRAMES
+      if (progress <= 0) return ANIMATION_FRAMES[0];
+      if (progress >= 1) return ANIMATION_FRAMES[ANIMATION_FRAMES.length - 1];
 
-    // Find the two frames to interpolate between
-    let nextFrameIndex = ANIMATION_FRAMES.findIndex(frame => frame.progress > progress);
-    if (nextFrameIndex === -1) nextFrameIndex = ANIMATION_FRAMES.length - 1;
-    
-    const prevFrame = ANIMATION_FRAMES[nextFrameIndex - 1] || ANIMATION_FRAMES[0];
-    const nextFrame = ANIMATION_FRAMES[nextFrameIndex];
-    
-    // Calculate interpolation factor
-    const frameProgress = (progress - prevFrame.progress) / (nextFrame.progress - prevFrame.progress);
-    const t = Math.max(0, Math.min(1, frameProgress));
-    
-    // Interpolate all values
-    return {
-      progress,
-      sun: {
-        x: THREE.MathUtils.lerp(prevFrame.sun.x, nextFrame.sun.x, t),
-        y: THREE.MathUtils.lerp(prevFrame.sun.y, nextFrame.sun.y, t),
-        scale: THREE.MathUtils.lerp(prevFrame.sun.scale, nextFrame.sun.scale, t),
-        opacity: THREE.MathUtils.lerp(prevFrame.sun.opacity, nextFrame.sun.opacity, t),
-      },
-      card: {
-        lean: THREE.MathUtils.lerp(prevFrame.card.lean, nextFrame.card.lean, t),
-        positionY: THREE.MathUtils.lerp(prevFrame.card.positionY, nextFrame.card.positionY, t),
-        controlTaken: nextFrame.card.controlTaken || prevFrame.card.controlTaken,
-      },
-      lighting: {
-        intensity: THREE.MathUtils.lerp(prevFrame.lighting.intensity, nextFrame.lighting.intensity, t),
-        warmth: THREE.MathUtils.lerp(prevFrame.lighting.warmth, nextFrame.lighting.warmth, t),
-      },
-      environment: {
-        skyColor: prevFrame.environment.skyColor, // Use discrete color changes for now
-        spaceDepth: THREE.MathUtils.lerp(prevFrame.environment.spaceDepth, nextFrame.environment.spaceDepth, t),
-      }
-    };
-  }, []);
+      // Find the two frames to interpolate between
+      let nextFrameIndex = ANIMATION_FRAMES.findIndex(frame => frame.progress > progress);
+      if (nextFrameIndex === -1) nextFrameIndex = ANIMATION_FRAMES.length - 1;
+      
+      const prevFrame = ANIMATION_FRAMES[nextFrameIndex - 1] || ANIMATION_FRAMES[0];
+      const nextFrame = ANIMATION_FRAMES[nextFrameIndex];
+      
+      // Calculate interpolation factor
+      const frameProgress = (progress - prevFrame.progress) / (nextFrame.progress - prevFrame.progress);
+      const t = Math.max(0, Math.min(1, frameProgress));
+      
+      // Interpolate all values
+      return {
+        progress,
+        sun: {
+          x: THREE.MathUtils.lerp(prevFrame.sun.x, nextFrame.sun.x, t),
+          y: THREE.MathUtils.lerp(prevFrame.sun.y, nextFrame.sun.y, t),
+          scale: THREE.MathUtils.lerp(prevFrame.sun.scale, nextFrame.sun.scale, t),
+          opacity: THREE.MathUtils.lerp(prevFrame.sun.opacity, nextFrame.sun.opacity, t),
+        },
+        card: {
+          lean: THREE.MathUtils.lerp(prevFrame.card.lean, nextFrame.card.lean, t),
+          positionY: THREE.MathUtils.lerp(prevFrame.card.positionY, nextFrame.card.positionY, t),
+          controlTaken: nextFrame.card.controlTaken || prevFrame.card.controlTaken,
+        },
+        lighting: {
+          intensity: THREE.MathUtils.lerp(prevFrame.lighting.intensity, nextFrame.lighting.intensity, t),
+          warmth: THREE.MathUtils.lerp(prevFrame.lighting.warmth, nextFrame.lighting.warmth, t),
+        },
+        environment: {
+          skyColor: prevFrame.environment.skyColor, // Use discrete color changes for now
+          spaceDepth: THREE.MathUtils.lerp(prevFrame.environment.spaceDepth, nextFrame.environment.spaceDepth, t),
+        }
+      };
+    }
+  }, [templateEngine]);
 
   // Memoized current frame to prevent object recreation
   const currentFrame = useMemo(() => getCurrentFrame(animationProgress), [getCurrentFrame, animationProgress]);
@@ -158,13 +167,20 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
   // Memoized card control update callback
   const handleCardControlUpdate = useCallback(() => {
     if (isPlaying && onCardControlUpdate) {
-      onCardControlUpdate({
-        positionY: currentFrame.card.positionY,
-        lean: currentFrame.card.lean,
-        controlTaken: currentFrame.card.controlTaken
-      });
+      // Handle both template engine format and legacy format
+      const cardData = templateEngine ? {
+        positionY: (currentFrame.card as any)?.y || 0,
+        lean: (currentFrame.card as any)?.lean || 0,
+        controlTaken: (currentFrame.card as any)?.lock || false
+      } : {
+        positionY: (currentFrame.card as any).positionY,
+        lean: (currentFrame.card as any).lean,
+        controlTaken: (currentFrame.card as any).controlTaken
+      };
+      
+      onCardControlUpdate(cardData);
     }
-  }, [isPlaying, onCardControlUpdate, currentFrame.card.positionY, currentFrame.card.lean, currentFrame.card.controlTaken]);
+  }, [isPlaying, onCardControlUpdate, currentFrame.card, templateEngine]);
 
   // Send card control updates during animation with stable dependencies
   useEffect(() => {
@@ -175,8 +191,14 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
   useEffect(() => {
     // Apply environment effects to document body for full immersion
     const body = document.body;
-    const skyColor = currentFrame.environment.skyColor;
-    const spaceDepth = currentFrame.environment.spaceDepth;
+    
+    // Handle both template engine format and legacy format
+    const skyColor = templateEngine 
+      ? (currentFrame.environment as any)?.backgroundColor || '#0a0a2e'
+      : (currentFrame.environment as any)?.skyColor || '#0a0a2e';
+    const spaceDepth = templateEngine
+      ? (currentFrame.environment as any)?.intensity || 1.0
+      : (currentFrame.environment as any)?.spaceDepth || 1.0;
     
     // Subtle background color shift for cosmic atmosphere
     body.style.background = `radial-gradient(circle at center, ${skyColor} 0%, #000000 100%)`;
@@ -185,47 +207,65 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
       // Cleanup on unmount
       body.style.background = '';
     };
-  }, [currentFrame.environment.skyColor, currentFrame.environment.spaceDepth]);
+  }, [templateEngine, currentFrame.environment]);
 
   // Update sun position with enhanced cinematic effects using stable dependencies
   useEffect(() => {
     if (sunRef.current) {
       const sunElement = sunRef.current;
       
+      // Handle both template engine format and legacy format
+      const sunData = templateEngine ? {
+        x: (currentFrame.sun as any)?.x || 0,
+        y: (currentFrame.sun as any)?.y || 50,
+        scale: (currentFrame.sun as any)?.scale || 1,
+        opacity: (currentFrame.sun as any)?.opacity || 1,
+        color: (currentFrame.sun as any)?.color || '#FFA500',
+        glow: (currentFrame.sun as any)?.glow || 0.5
+      } : {
+        x: (currentFrame.sun as any).x,
+        y: (currentFrame.sun as any).y,
+        scale: (currentFrame.sun as any).scale,
+        opacity: (currentFrame.sun as any).opacity,
+        color: '#FFA500',
+        glow: 0.5
+      };
+      
+      const lightingData = templateEngine ? {
+        intensity: (currentFrame.lighting as any)?.intensity || 1,
+        warmth: 0.5 // Default warmth for template engine
+      } : {
+        intensity: (currentFrame.lighting as any).intensity,
+        warmth: (currentFrame.lighting as any).warmth
+      };
+      
       // Enhanced positioning for perfect vertical alignment (2001 style)
-      sunElement.style.left = `calc(50% + ${currentFrame.sun.x}vw)`;
-      sunElement.style.top = `${currentFrame.sun.y}%`;
+      if (templateEngine) {
+        // Template engine uses vw for x and px for y
+        sunElement.style.left = `calc(50% + ${sunData.x}vw)`;
+        sunElement.style.top = `${sunData.y}px`;
+      } else {
+        // Legacy uses vw for x and % for y
+        sunElement.style.left = `calc(50% + ${sunData.x}vw)`;
+        sunElement.style.top = `${sunData.y}%`;
+      }
       
       // Enhanced scale and opacity with cinematic glow
-      const baseScale = currentFrame.sun.scale;
-      const glowIntensity = currentFrame.lighting.intensity;
-      sunElement.style.transform = `translate(-50%, -50%) scale(${baseScale})`;
-      sunElement.style.opacity = currentFrame.sun.opacity.toString();
+      sunElement.style.transform = `translate(-50%, -50%) scale(${sunData.scale})`;
+      sunElement.style.opacity = sunData.opacity.toString();
       
-      // Enhanced color warmth with cosmic evolution
-      const warmth = currentFrame.lighting.warmth;
-      const orangeIntensity = Math.round(255 - (warmth * 40)); // More dramatic shift
-      const redIntensity = Math.round(255 - (warmth * 10));
-      const blueComponent = Math.round(warmth * 20); // Add subtle blue for space effect
+      // Set color and glow
+      sunElement.style.backgroundColor = sunData.color;
       
-      sunElement.style.backgroundColor = `rgb(${redIntensity}, ${orangeIntensity}, ${blueComponent})`;
-      
-      // Cinematic glow effect - larger and more dramatic
-      const glowSize = 30 + (warmth * 60) + (glowIntensity * 20);
-      const glowOpacity = 0.2 + (warmth * 0.6);
+      // Cinematic glow effect
+      const glowSize = 30 + (sunData.glow * 40) + (lightingData.intensity * 20);
+      const glowOpacity = 0.2 + (sunData.glow * 0.6);
       sunElement.style.boxShadow = `
-        0 0 ${glowSize}px rgba(255, ${orangeIntensity}, ${blueComponent}, ${glowOpacity}),
-        0 0 ${glowSize * 2}px rgba(255, ${orangeIntensity}, 0, ${glowOpacity * 0.5})
+        0 0 ${glowSize}px ${sunData.color.replace('rgb', 'rgba').replace(')', `, ${glowOpacity})`)},
+        0 0 ${glowSize * 2}px ${sunData.color.replace('rgb', 'rgba').replace(')', `, ${glowOpacity * 0.5})`)}
       `;
     }
-  }, [
-    currentFrame.sun.x, 
-    currentFrame.sun.y, 
-    currentFrame.sun.scale, 
-    currentFrame.sun.opacity, 
-    currentFrame.lighting.intensity, 
-    currentFrame.lighting.warmth
-  ]);
+  }, [templateEngine, currentFrame.sun, currentFrame.lighting]);
 
   return (
     <>
@@ -240,7 +280,7 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
           backgroundColor: '#FFA500',
           boxShadow: '0 0 30px rgba(255, 165, 0, 0.4)',
           transition: isPlaying ? 'all 0.1s ease-out' : 'all 0.5s ease-out',
-          filter: `brightness(${1 + currentFrame.lighting.intensity * 0.3})`,
+          filter: `brightness(${1 + ((currentFrame.lighting as any)?.intensity || 1) * 0.3})`,
         }}
       />
       

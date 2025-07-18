@@ -7,6 +7,7 @@ import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
 import { CosmicDance } from './cosmic/CosmicDance';
 import { CosmicDanceControls } from './cosmic/CosmicDanceControls';
+import { loadTemplate, TemplateConfig, TemplateEngine } from '@/templates/engine';
 import { PerformanceMonitor } from './performance/PerformanceMonitor';
 import { useCardAngle } from './hooks/useCardAngle';
 
@@ -59,6 +60,9 @@ interface CRDViewerProps {
   onCosmicReset?: () => void;
   onCosmicAngleReset?: () => void;
   
+  // Template engine integration
+  templateConfig?: TemplateConfig;
+  
   className?: string;
   onModeChange?: (mode: AnimationMode) => void;
   onIntensityChange?: (intensity: number) => void;
@@ -96,10 +100,16 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   onCosmicReset,
   onCosmicAngleReset,
   
+  // Template engine integration
+  templateConfig,
+  
   className = "w-full h-screen",
   onModeChange,
   onIntensityChange
 }) => {
+  // Template engine state
+  const [templateEngine, setTemplateEngine] = useState<TemplateEngine | null>(null);
+
   // Cosmic Dance system
   const { cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cardRef: angleCardRef, controlsRef, resetCardAngle } = useCardAngle();
   const [animationProgress, setAnimationProgress] = useState(0);
@@ -139,6 +149,21 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   
   // Use external pause state if provided, otherwise use internal state
   const isPaused = externalIsPaused !== undefined ? externalIsPaused : internalIsPaused;
+
+  // Load template engine when templateConfig changes
+  useEffect(() => {
+    if (templateConfig) {
+      const engine = loadTemplate(templateConfig);
+      setTemplateEngine(engine);
+      
+      // Auto-start animation if configured
+      if (engine?.autoTrigger && templateConfig.triggerOnLoad) {
+        setIsPlaying(true);
+      }
+    } else {
+      setTemplateEngine(null);
+    }
+  }, [templateConfig]);
 
   // Rotation State
   const [autoRotate, setAutoRotate] = useState(initialAutoRotate);
@@ -498,6 +523,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         isOptimalPosition={isOptimalPosition}
         onTriggerReached={handleCosmicTrigger}
         onCardControlUpdate={handleCardControlUpdate}
+        templateEngine={templateEngine}
       />
       
       {/* Cosmic Dance Controls - Hidden when studio integration is active */}
