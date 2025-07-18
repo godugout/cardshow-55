@@ -443,18 +443,19 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
 
   return (
     <div className={`overflow-hidden relative ${className}`}>
-
-        {/* 3D Scene - Must be in front of cosmic overlay */}
-      <Canvas
-        className="relative z-20"
-        camera={{ position: [0, 0, 15], fov: 60 }}
-        gl={{ 
-          antialias: true, 
-          alpha: true,
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.2
-        }}
-        scene={{ background: null }}
+      {/* Responsive Container for 3D Scene */}
+      <div className="relative w-full h-full max-h-[90vh] lg:max-h-screen">
+        {/* 3D Scene - Responsive sizing */}
+        <Canvas
+          className="relative z-20 w-full h-full"
+          camera={{ position: [0, 0, 15], fov: 60 }}
+          gl={{ 
+            antialias: true, 
+            alpha: true,
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 1.2
+          }}
+          scene={{ background: null }}
       >
         {/* Unified Lighting System */}
         <LightingRig 
@@ -550,9 +551,10 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           />
         )}
         
-      {/* Atmospheric Fog */}
+        {/* Atmospheric Fog */}
         <fog args={['#0a0a2e', 30, 200]} />
-      </Canvas>
+        </Canvas>
+      </div>
 
       {/* Performance Monitor */}
       <PerformanceMonitor

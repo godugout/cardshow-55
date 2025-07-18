@@ -1,9 +1,23 @@
 /* Mobile-First Navigation and Touch Optimizations */
 
-/* Touch target minimum size enforcement */
+/* Touch target minimum size enforcement - Updated for accessibility */
 .touch-target {
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 48px;
+  min-width: 48px;
+  cursor: pointer;
+}
+
+/* 3D Canvas responsive constraints */
+.responsive-canvas {
+  width: 100%;
+  height: 100%;
+  max-height: 90vh;
+}
+
+@media (min-width: 1024px) {
+  .responsive-canvas {
+    max-height: 100vh;
+  }
 }
 
 /* Mobile navigation breakpoints */
@@ -23,6 +37,19 @@
     min-height: 48px;
     min-width: 48px;
     padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    touch-action: manipulation;
+  }
+
+  /* Prevent 3D elements from covering UI */
+  .safe-zone-bottom {
+    padding-bottom: 6rem;
+  }
+
+  /* Responsive canvas sizing */
+  .canvas-container {
+    height: 70vh;
+    max-height: 70vh;
   }
   
   /* Mobile text sizing */
@@ -54,6 +81,17 @@
   .tablet-nav .nav-icon {
     display: block;
   }
+
+  /* Tablet canvas sizing */
+  .canvas-container {
+    height: 80vh;
+    max-height: 80vh;
+  }
+
+  /* Tablet safe zones */
+  .safe-zone-bottom {
+    padding-bottom: 4rem;
+  }
 }
 
 /* Desktop breakpoint optimizations */
@@ -65,6 +103,26 @@
   
   .desktop-nav .nav-text {
     display: inline;
+  }
+
+  /* Desktop canvas sizing */
+  .canvas-container {
+    height: 100vh;
+    max-height: 100vh;
+  }
+
+  /* Remove mobile safe zones on desktop */
+  .safe-zone-bottom {
+    padding-bottom: 0;
+  }
+
+  /* Desktop-specific layout adjustments */
+  .cosmic-controls-desktop {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    width: 320px;
+    max-width: none;
   }
 }
 
@@ -102,5 +160,56 @@
     transition: none !important;
     animation: none !important;
     transform: none !important;
+  }
+}
+
+/* Prevent scrollbars in main viewport */
+.main-viewport {
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Responsive positioning utilities */
+.responsive-absolute {
+  position: absolute;
+}
+
+@media (max-width: 768px) {
+  .responsive-absolute {
+    position: relative;
+  }
+}
+
+/* Layout grid for responsive design */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Enhanced touch targets for mobile */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  /* Prevent zoom on form inputs */
+  input, select, textarea {
+    font-size: 16px;
   }
 }

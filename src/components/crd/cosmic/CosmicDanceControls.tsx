@@ -1,6 +1,7 @@
-
 import React, { useState } from 'react';
-import { Play, Pause, RotateCcw, Settings, ChevronUp, ChevronDown } from 'lucide-react';
+import { Play, Pause, RotateCcw, ChevronUp, ChevronDown } from 'lucide-react';
+import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface CosmicDanceControlsProps {
   animationProgress: number;
@@ -47,98 +48,108 @@ export const CosmicDanceControls: React.FC<CosmicDanceControlsProps> = ({
   const shouldShowControls = !isPlaying || isExpanded;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50">
-      <div className="bg-crd-darker/90 backdrop-blur-sm border border-crd-mediumGray/20 rounded-lg p-4">
-        {/* Collapse/Expand Button */}
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-crd-white/70 hover:text-crd-white mb-2"
-        >
-          {isExpanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-          <span className="text-sm">Animation Controls</span>
-        </button>
+    <div className="w-full">
+      {/* Mobile-first responsive controls */}
+      <div className="bg-black/80 backdrop-blur-sm border border-white/20 rounded-lg">
+        {/* Header with toggle - always visible */}
+        <div className="flex items-center justify-between p-3 lg:p-4">
+          <span className="text-white text-sm font-medium">Cosmic Controls</span>
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="touch-target w-8 h-8 flex items-center justify-center text-white/70 hover:text-white transition-colors lg:hidden"
+          >
+            {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+          </button>
+        </div>
 
-        {shouldShowControls && (
-          <div className="space-y-4">
+        {/* Collapsible content */}
+        <div className={`overflow-hidden transition-all duration-300 ${shouldShowControls ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0 lg:max-h-[500px] lg:opacity-100'}`}>
+          <div className="p-3 lg:p-4 pt-0 space-y-4">
             {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm text-crd-white/70">
-                <span>Progress</span>
-                <span>{Math.round(animationProgress * 100)}%</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={animationProgress}
-                onChange={(e) => onProgressChange(parseFloat(e.target.value))}
-                className="w-full h-2 bg-crd-mediumGray rounded-lg appearance-none cursor-pointer"
+            <div>
+              <label className="block text-white text-sm mb-2">Animation Progress</label>
+              <Slider
+                value={[animationProgress * 100]}
+                onValueChange={(value) => onProgressChange(value[0] / 100)}
+                max={100}
+                step={1}
+                className="w-full"
               />
+              <div className="text-white text-xs mt-1 opacity-70">
+                {Math.round(animationProgress * 100)}%
+              </div>
             </div>
 
-            {/* Playback Controls */}
-            <div className="flex items-center gap-3">
+            {/* Play/Pause & Speed Controls */}
+            <div className="grid grid-cols-2 gap-3 lg:flex lg:gap-3">
               <button
                 onClick={onPlayToggle}
-                className="flex items-center justify-center w-10 h-10 bg-crd-accent hover:bg-crd-accent/80 text-white rounded-lg transition-colors"
+                className="mobile-btn flex items-center justify-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm transition-colors"
               >
-                {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                <span className="hidden sm:inline">{isPlaying ? 'Pause' : 'Play'}</span>
               </button>
+              
+              <Select onValueChange={(value) => onSpeedChange(Number(value))}>
+                <SelectTrigger className="mobile-btn bg-black/50 border-white/20 text-white">
+                  <SelectValue placeholder={`${playbackSpeed}x`} />
+                </SelectTrigger>
+                <SelectContent className="bg-black border-white/20">
+                  {SPEED_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value.toString()}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-              <select
-                value={playbackSpeed}
-                onChange={(e) => onSpeedChange(parseFloat(e.target.value))}
-                className="bg-crd-mediumGray text-crd-white rounded px-3 py-2 text-sm border border-crd-mediumGray/40"
-              >
-                {SPEED_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-
+            {/* Reset & Status */}
+            <div className="flex items-center justify-between">
               <button
                 onClick={onReset}
-                className="flex items-center justify-center w-10 h-10 bg-crd-mediumGray hover:bg-crd-mediumGray/80 text-crd-white rounded-lg transition-colors"
+                className="touch-target flex items-center gap-2 px-3 py-2 text-white/70 hover:text-white text-sm transition-colors"
               >
-                <RotateCcw size={16} />
+                <RotateCcw className="w-4 h-4" />
+                <span className="hidden sm:inline">Reset</span>
+              </button>
+              
+              <div className="text-white/70 text-xs">
+                {hasTriggered ? 'Cosmic Triggered' : 'Ready'}
+              </div>
+            </div>
+
+            {/* Status Information - Stack on mobile */}
+            <div className="pt-3 border-t border-white/10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div className="text-white/60">
+                  Card Angle: <span className="text-white">{Math.round(cardAngle)}°</span>
+                </div>
+                <div className="text-white/60">
+                  Distance: <span className="text-white">{cameraDistance.toFixed(1)}</span>
+                </div>
+                <div className="text-white/60">
+                  Zoom: <span className={isOptimalZoom ? "text-green-400" : "text-yellow-400"}>
+                    {isOptimalZoom ? "Optimal" : "Adjust"}
+                  </span>
+                </div>
+                <div className="text-white/60">
+                  Position: <span className={isOptimalPosition ? "text-green-400" : "text-yellow-400"}>
+                    {isOptimalPosition ? "Optimal" : "Adjust"}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Card Angle Reset Button */}
+              <button
+                onClick={onAngleReset}
+                className="mobile-btn mt-3 w-full px-3 py-2 text-white/70 hover:text-white text-sm transition-colors border border-white/20 rounded"
+              >
+                Reset Card Angle
               </button>
             </div>
-
-            {/* Status Information */}
-            <div className="grid grid-cols-2 gap-4 text-xs text-crd-white/60">
-              <div>
-                <span className="block">Card Angle</span>
-                <span className="text-crd-white">{Math.round(cardAngle)}°</span>
-              </div>
-              <div>
-                <span className="block">Camera Distance</span>
-                <span className="text-crd-white">{cameraDistance.toFixed(1)}</span>
-              </div>
-              <div>
-                <span className="block">Optimal Zoom</span>
-                <span className={isOptimalZoom ? "text-green-400" : "text-yellow-400"}>
-                  {isOptimalZoom ? "Yes" : "No"}
-                </span>
-              </div>
-              <div>
-                <span className="block">Optimal Position</span>
-                <span className={isOptimalPosition ? "text-green-400" : "text-yellow-400"}>
-                  {isOptimalPosition ? "Yes" : "No"}
-                </span>
-              </div>
-            </div>
-
-            {/* Reset Angle Button */}
-            <button
-              onClick={onAngleReset}
-              className="w-full bg-crd-mediumGray hover:bg-crd-mediumGray/80 text-crd-white rounded-lg py-2 text-sm transition-colors"
-            >
-              Reset Card Angle
-            </button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

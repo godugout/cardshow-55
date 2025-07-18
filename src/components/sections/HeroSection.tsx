@@ -21,34 +21,37 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   className
 }) => {
   return (
-    <CRDSection spacing="large" className={cn("text-center", className)}>
-      <CRDContainer size="narrow">
-        <div className="flex flex-col items-center">
+    <CRDSection 
+      spacing="large" 
+      className={cn("text-center max-h-[90vh] min-h-[60vh] flex items-center", className)}
+    >
+      <CRDContainer size="narrow" className="w-full">
+        <div className="flex flex-col items-center space-y-4 lg:space-y-6">
           {/* Small Label */}
           {subtitle && (
             <Typography 
               variant="label" 
-              className="mb-2"
+              className="mobile-text animate-fade-in"
             >
               {subtitle}
             </Typography>
           )}
           
-          {/* Main Heading - matches spec exactly */}
+          {/* Main Heading - Responsive typography */}
           <Typography 
             as="h1" 
             variant="display"
-            className="text-[40px] font-black leading-[48px] tracking-[-0.4px] mt-2 text-center max-w-full"
+            className="text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-black leading-tight tracking-[-0.4px] text-center max-w-full animate-fade-in"
           >
             {title}
           </Typography>
           
-          {/* CTA Button */}
-          <Link to={ctaLink} className="mt-6">
+          {/* CTA Button - Responsive sizing */}
+          <Link to={ctaLink} className="animate-fade-in">
             <CRDButton 
               variant="primary"
               size="lg"
-              className="self-stretch gap-3"
+              className="mobile-btn gap-3 touch-target"
             >
               {ctaText}
             </CRDButton>
