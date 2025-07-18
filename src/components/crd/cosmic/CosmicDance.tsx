@@ -7,7 +7,10 @@ interface CosmicDanceProps {
   animationProgress: number; // 0 to 1 from the timeline slider
   isPlaying: boolean;
   cardAngle: number; // Current card forward lean angle
-  onTriggerReached?: () => void; // Called when card reaches 45°
+  cameraDistance: number; // Camera distance for zoom tracking
+  isOptimalZoom: boolean; // Whether camera is at optimal zoom
+  isOptimalPosition: boolean; // Whether card is centered
+  onTriggerReached?: () => void; // Called when all conditions are met
 }
 
 interface AnimationFrame {
@@ -79,20 +82,25 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
   animationProgress,
   isPlaying,
   cardAngle,
+  cameraDistance,
+  isOptimalZoom,
+  isOptimalPosition,
   onTriggerReached
 }) => {
   const [hasTriggered, setHasTriggered] = useState(false);
   const sunRef = useRef<HTMLDivElement>(null);
   
-  // Check for trigger point
+  // Check for trigger point - ALL conditions must be met
   useEffect(() => {
-    if (cardAngle >= 45 && !hasTriggered) {
+    const isReadyForAlignment = cardAngle >= 45 && isOptimalZoom && isOptimalPosition;
+    
+    if (isReadyForAlignment && !hasTriggered) {
       setHasTriggered(true);
       onTriggerReached?.();
-    } else if (cardAngle < 40) {
+    } else if (cardAngle < 40 || !isOptimalZoom || !isOptimalPosition) {
       setHasTriggered(false);
     }
-  }, [cardAngle, hasTriggered, onTriggerReached]);
+  }, [cardAngle, isOptimalZoom, isOptimalPosition, hasTriggered, onTriggerReached]);
 
   // Interpolate between keyframes
   const getCurrentFrame = (progress: number): AnimationFrame => {

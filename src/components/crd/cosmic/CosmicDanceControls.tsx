@@ -6,6 +6,9 @@ interface CosmicDanceControlsProps {
   isPlaying: boolean;
   playbackSpeed: number;
   cardAngle: number;
+  cameraDistance: number;
+  isOptimalZoom: boolean;
+  isOptimalPosition: boolean;
   hasTriggered: boolean;
   onProgressChange: (progress: number) => void;
   onPlayToggle: () => void;
@@ -27,6 +30,9 @@ export const CosmicDanceControls: React.FC<CosmicDanceControlsProps> = ({
   isPlaying,
   playbackSpeed,
   cardAngle,
+  cameraDistance,
+  isOptimalZoom,
+  isOptimalPosition,
   hasTriggered,
   onProgressChange,
   onPlayToggle,
@@ -62,6 +68,13 @@ export const CosmicDanceControls: React.FC<CosmicDanceControlsProps> = ({
           <div className="text-orange-300 font-semibold">COSMIC DANCE - Frame Data</div>
           <div>Progress: {Math.round(animationProgress * 100)}%</div>
           <div>Monolith Lean: {Math.round(cardAngle)}°</div>
+          <div>Camera Distance: {cameraDistance.toFixed(1)} units</div>
+          <div className={`${isOptimalZoom ? 'text-green-400' : 'text-yellow-400'}`}>
+            Zoom: {isOptimalZoom ? 'OPTIMAL' : 'Too Far'} (need ≤4.0)
+          </div>
+          <div className={`${isOptimalPosition ? 'text-green-400' : 'text-yellow-400'}`}>
+            Position: {isOptimalPosition ? 'CENTERED' : 'Off-Center'}
+          </div>
           <div>Light Intensity: {(1 + animationProgress * 0.5).toFixed(1)}x</div>
           <div>Cosmic Warmth: {Math.round(animationProgress * 100)}%</div>
           <div className={`${hasTriggered ? 'text-green-400' : 'text-gray-400'}`}>
@@ -202,6 +215,36 @@ export const CosmicDanceControls: React.FC<CosmicDanceControlsProps> = ({
             <span className="text-orange-400">45° Trigger</span>
             <span>90°</span>
           </div>
+          
+          {/* Alignment Readiness Checklist */}
+          <div className="space-y-2 mt-3">
+            <div className="text-xs text-gray-400">Cosmic Alignment Readiness</div>
+            <div className="grid grid-cols-1 gap-1 text-xs">
+              <div className={`flex items-center gap-2 ${cardAngle >= 45 ? 'text-green-400' : 'text-gray-500'}`}>
+                <div className={`w-2 h-2 rounded-full ${cardAngle >= 45 ? 'bg-green-500' : 'bg-gray-500'}`} />
+                <span>45° Monolith Lean {cardAngle >= 45 ? '✓' : `(${Math.round(cardAngle)}°)`}</span>
+              </div>
+              <div className={`flex items-center gap-2 ${isOptimalZoom ? 'text-green-400' : 'text-yellow-400'}`}>
+                <div className={`w-2 h-2 rounded-full ${isOptimalZoom ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                <span>Optimal Zoom {isOptimalZoom ? '✓' : `(${cameraDistance.toFixed(1)} > 4.0)`}</span>
+              </div>
+              <div className={`flex items-center gap-2 ${isOptimalPosition ? 'text-green-400' : 'text-yellow-400'}`}>
+                <div className={`w-2 h-2 rounded-full ${isOptimalPosition ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                <span>Centered Position {isOptimalPosition ? '✓' : '(off-center)'}</span>
+              </div>
+            </div>
+            <div className={`text-xs p-2 rounded border ${
+              cardAngle >= 45 && isOptimalZoom && isOptimalPosition
+                ? 'bg-green-900/50 border-green-500 text-green-200'
+                : 'bg-yellow-900/50 border-yellow-500 text-yellow-200'
+            }`}>
+              {cardAngle >= 45 && isOptimalZoom && isOptimalPosition
+                ? '🌌 READY FOR COSMIC ALIGNMENT'
+                : '⚙️ Adjust card position, zoom, and angle'
+              }
+            </div>
+          </div>
+          
           <button
             onClick={onAngleReset}
             disabled={hasTriggered}

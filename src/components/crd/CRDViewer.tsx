@@ -71,7 +71,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   onIntensityChange
 }) => {
   // Cosmic Dance system
-  const { cardAngle, cardRef: angleCardRef, controlsRef, resetCardAngle } = useCardAngle();
+  const { cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cardRef: angleCardRef, controlsRef, resetCardAngle } = useCardAngle();
   const [animationProgress, setAnimationProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
@@ -364,6 +364,9 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         animationProgress={animationProgress}
         isPlaying={isPlaying}
         cardAngle={cardAngle}
+        cameraDistance={cameraDistance}
+        isOptimalZoom={isOptimalZoom}
+        isOptimalPosition={isOptimalPosition}
         onTriggerReached={handleCosmicTrigger}
       />
       
@@ -373,6 +376,9 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         isPlaying={isPlaying}
         playbackSpeed={playbackSpeed}
         cardAngle={cardAngle}
+        cameraDistance={cameraDistance}
+        isOptimalZoom={isOptimalZoom}
+        isOptimalPosition={isOptimalPosition}
         hasTriggered={cosmicTriggered}
         onProgressChange={setAnimationProgress}
         onPlayToggle={() => setIsPlaying(!isPlaying)}

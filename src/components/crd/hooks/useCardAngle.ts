@@ -3,6 +3,9 @@ import * as THREE from 'three';
 
 export const useCardAngle = () => {
   const [cardAngle, setCardAngle] = useState(0);
+  const [cameraDistance, setCameraDistance] = useState(10);
+  const [isOptimalZoom, setIsOptimalZoom] = useState(false);
+  const [isOptimalPosition, setIsOptimalPosition] = useState(false);
   const cardRef = useRef<THREE.Group>(null);
   const controlsRef = useRef<any>(null);
 
@@ -16,6 +19,19 @@ export const useCardAngle = () => {
       const forwardLean = Math.abs((Math.PI / 2) - polarAngle) * (180 / Math.PI);
       
       setCardAngle(Math.max(0, Math.min(90, forwardLean)));
+
+      // Get camera distance for zoom tracking
+      const distance = controlsRef.current.getDistance();
+      setCameraDistance(distance);
+      
+      // Check if zoom is optimal (close enough for cinematic effect)
+      const optimalZoom = distance <= 4; // Close zoom threshold
+      setIsOptimalZoom(optimalZoom);
+      
+      // Check if position is centered (target close to origin)
+      const target = controlsRef.current.target;
+      const isPositionCentered = Math.abs(target.x) < 0.5 && Math.abs(target.y) < 0.5;
+      setIsOptimalPosition(isPositionCentered);
     }
   };
 
@@ -34,6 +50,9 @@ export const useCardAngle = () => {
 
   return {
     cardAngle,
+    cameraDistance,
+    isOptimalZoom,
+    isOptimalPosition,
     cardRef,
     controlsRef,
     resetCardAngle,
