@@ -8,13 +8,17 @@ const CreateEnhanced: React.FC = () => {
   const { isMobile, isShortScreen } = useResponsiveBreakpoints();
 
   return (
-    <div className="min-h-screen bg-space-odyssey overflow-hidden">
-      <div className={`h-full w-full ${isMobile || isShortScreen ? '' : 'overflow-y-auto'}`}>
-        {/* Responsive Hero Section */}
+    <div className="min-h-screen bg-space-odyssey overflow-x-hidden">
+      <div className="h-full w-full">
+        {/* Unified Responsive Hero Section */}
         <CreatePageHero />
         
-        {/* Combined Creation Options Section - Only show on desktop with sufficient height */}
-        {!isMobile && !isShortScreen && <CreateOptionsSection />}
+        {/* Creation Options Section - Only show on desktop with sufficient height */}
+        {!isMobile && !isShortScreen && (
+          <div className="hidden lg:block">
+            <CreateOptionsSection />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -5,13 +5,15 @@ import { CreateOptionsSection } from '@/components/create/CreateOptionsSection';
 
 const CreateChoice: React.FC = () => {
   return (
-    <div className="min-h-screen bg-crd-darkest">
+    <div className="min-h-screen bg-crd-darkest overflow-x-hidden">
       <div className="w-full">
-        {/* Full Width Hero Section */}
+        {/* Unified Hero Section with Responsive 3D Positioning */}
         <CreatePageHero />
         
-        {/* Combined Creation Options Section */}
-        <CreateOptionsSection />
+        {/* Creation Options Section - Hidden on small screens to prevent overlap */}
+        <div className="hidden lg:block">
+          <CreateOptionsSection />
+        </div>
       </div>
     </div>
   );
