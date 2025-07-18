@@ -15,7 +15,7 @@ interface CTAConfig {
 
 interface StandardHeroProps {
   label?: string;
-  labelRef?: React.RefObject<HTMLElement>;
+  labelRef?: React.RefObject<HTMLDivElement>;
   title: React.ReactNode;
   tagline?: string;
   titleEffects?: React.ReactNode;
@@ -74,13 +74,12 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
         <div className="w-full px-4 sm:px-6 lg:px-8">
           {/* Label */}
           {label && (
-            <Typography 
+            <div 
               ref={labelRef}
-              variant="label" 
-              className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider"
+              className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-sm uppercase"
             >
               {label}
-            </Typography>
+            </div>
           )}
           
           {/* Main Heading - Consistent spacing regardless of titleEffects vs title */}

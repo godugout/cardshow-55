@@ -10,7 +10,7 @@ export const useScrollTrigger = ({
   rootMargin = '0px'
 }: UseScrollTriggerProps = {}) => {
   const [isVisible, setIsVisible] = useState(true);
-  const targetRef = useRef<HTMLElement>(null);
+  const targetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
