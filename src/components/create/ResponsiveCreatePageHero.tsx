@@ -10,10 +10,10 @@ export const ResponsiveCreatePageHero: React.FC = () => {
 
   if (isMobile) {
     return (
-      <>
+      <div className="snap-y snap-mandatory h-screen overflow-y-scroll">
         <MobileCreateHero />
         <MobileStudioSection />
-      </>
+      </div>
     );
   }
 

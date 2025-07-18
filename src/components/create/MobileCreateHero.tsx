@@ -8,8 +8,8 @@ import { useMobileFeatures } from '@/hooks/useMobileFeatures';
 
 const MobileAnimatedTagline: React.FC = () => {
   return (
-    <div className="mt-6 mb-6">
-      <p className="font-caveat text-2xl italic text-center text-crd-orange animate-fade-in">
+    <div className="mt-4 mb-6">
+      <p className="font-caveat text-lg italic text-center text-crd-orange animate-fade-in leading-tight">
         "No glue needed."
       </p>
     </div>
@@ -26,36 +26,39 @@ export const MobileCreateHero: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-screen bg-crd-darkest flex flex-col">
-      {/* Mobile Hero Content */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 pt-[calc(var(--navbar-height)+20px)] pb-20">
+    <div className="relative w-full h-screen bg-crd-darkest flex flex-col snap-start">
+      {/* Mobile Hero Content - Optimized Typography */}
+      <div className="flex-1 flex flex-col justify-center items-center px-6 pt-[calc(var(--navbar-height)+20px)] pb-20">
         {/* Label */}
-        <div className="mb-3 gradient-text-green-blue-purple font-bold tracking-wider text-xs uppercase">
+        <div className="mb-2 gradient-text-green-blue-purple font-bold tracking-wider text-xs uppercase">
           CUT, CRAFT & CREATE DIGITALLY
         </div>
         
-        {/* Main Heading - Mobile Optimized */}
-        <div className="mb-4 text-center">
+        {/* Main Heading - Mobile Optimized with Better Line Breaks */}
+        <div className="mb-4 text-center max-w-sm">
           <h1 className="leading-tight text-crd-white drop-shadow-lg">
-            <div className="flex justify-center items-center mb-2 text-2xl">
-              <span className="text-gray-400 font-light">From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to</span>
+            <div className="flex justify-center items-center mb-1 text-base">
+              <span className="text-gray-400 font-light text-center">
+                From <span className="paper-scraps">paper scraps</span><br />
+                and <span className="cardboard-text">cardboard</span> to
+              </span>
             </div>
-            <div className="flex justify-center items-center text-3xl">
-              <span className="font-bold">
-                <PixelDigital className="inline">digital</PixelDigital>
-                <span className="text-white"> art that comes alive!</span>
+            <div className="flex justify-center items-center text-xl mt-2">
+              <span className="font-bold text-center">
+                <PixelDigital className="inline">digital</PixelDigital><br />
+                <span className="text-white">art that comes alive!</span>
               </span>
             </div>
           </h1>
         </div>
         
-        {/* CTA Buttons */}
-        <div className="flex flex-col gap-3 justify-center my-6">
+        {/* CTA Buttons - Reduced Spacing */}
+        <div className="flex flex-col gap-2 justify-center my-4">
           <Link to="/create/crd">
             <CRDButton 
-              size="lg" 
+              size="md" 
               variant="create"
-              className="min-w-[200px]"
+              className="min-w-[180px] text-base"
             >
               Start Creating
             </CRDButton>
@@ -63,8 +66,8 @@ export const MobileCreateHero: React.FC = () => {
           <Link to="/templates">
             <CRDButton 
               variant="outline" 
-              size="lg" 
-              className="min-w-[200px]"
+              size="md" 
+              className="min-w-[180px] text-base"
             >
               Browse Templates
             </CRDButton>
@@ -75,9 +78,9 @@ export const MobileCreateHero: React.FC = () => {
         <MobileAnimatedTagline />
       </div>
 
-      {/* 3D Card Teaser at Bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-crd-darkest/80 to-transparent flex items-end justify-center pb-4">
-        <div className="w-20 h-28 bg-crd-mediumGray/20 rounded-lg shadow-2xl transform rotate-12 animate-pulse">
+      {/* 3D Card Teaser at Bottom - Smaller */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-crd-darkest/80 to-transparent flex items-end justify-center pb-4">
+        <div className="w-16 h-22 bg-crd-mediumGray/20 rounded-lg shadow-2xl transform rotate-12 animate-pulse">
           <div className="w-full h-full bg-gradient-to-br from-crd-blue/30 to-crd-green/30 rounded-lg flex items-center justify-center">
             <span className="text-crd-white text-xs font-bold">3D</span>
           </div>
@@ -87,9 +90,9 @@ export const MobileCreateHero: React.FC = () => {
       {/* Scroll Indicator */}
       <button
         onClick={scrollToStudio}
-        className="absolute bottom-6 left-1/2 transform -translate-x-1/2 p-2 text-crd-lightGray hover:text-crd-white transition-colors animate-bounce"
+        className="absolute bottom-4 left-1/2 transform -translate-x-1/2 p-2 text-crd-lightGray hover:text-crd-white transition-colors animate-bounce"
       >
-        <ChevronDown className="w-6 h-6" />
+        <ChevronDown className="w-5 h-5" />
       </button>
     </div>
   );

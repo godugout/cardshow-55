@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CRDViewer } from '@/components/crd/CRDViewer';
 
@@ -23,6 +24,7 @@ export const FloatingCard3D: React.FC<FloatingCard3DProps> = ({
       enableControls={true}
       enableGlassCase={true}
       showModeText={false}
+      showCosmicControls={false} // Disable cosmic controls completely
       className="w-full h-screen"
       isPaused={isPaused}
       onTogglePause={onTogglePause}

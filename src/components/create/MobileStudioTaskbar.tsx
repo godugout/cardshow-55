@@ -24,8 +24,14 @@ export const MobileStudioTaskbar: React.FC<MobileStudioTaskbarProps> = ({
       const currentScrollY = window.scrollY;
       const isScrollingDown = currentScrollY > lastScrollY;
       
-      // Hide on scroll down, show on scroll up
-      setIsVisible(!isScrollingDown || currentScrollY < 100);
+      // Show taskbar when in studio section
+      const studioSection = document.getElementById('mobile-studio-section');
+      if (studioSection) {
+        const rect = studioSection.getBoundingClientRect();
+        const inStudioSection = rect.top <= 100 && rect.bottom >= 100;
+        setIsVisible(inStudioSection && (!isScrollingDown || currentScrollY < 100));
+      }
+      
       setLastScrollY(currentScrollY);
     };
 
@@ -53,14 +59,14 @@ export const MobileStudioTaskbar: React.FC<MobileStudioTaskbarProps> = ({
       isVisible ? 'translate-y-0' : 'translate-y-full'
     }`}>
       {/* Main Controls Row */}
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between p-3">
         {/* Primary Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <CRDButton
             variant="outline"
             size="sm"
             onClick={handlePauseToggle}
-            className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[44px] min-w-[44px] p-0"
+            className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[40px] min-w-[40px] p-0"
           >
             {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
           </CRDButton>
@@ -69,19 +75,19 @@ export const MobileStudioTaskbar: React.FC<MobileStudioTaskbarProps> = ({
             variant="outline"
             size="sm"
             onClick={handleReset}
-            className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[44px] min-w-[44px] p-0"
+            className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[40px] min-w-[40px] p-0"
           >
             <RotateCcw className="w-4 h-4" />
           </CRDButton>
         </div>
 
         {/* Secondary Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <CRDButton
             variant="outline"
             size="sm"
             onClick={() => handleAction('settings')}
-            className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[44px] min-w-[44px] p-0"
+            className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[40px] min-w-[40px] p-0"
           >
             <Settings className="w-4 h-4" />
           </CRDButton>
@@ -90,7 +96,7 @@ export const MobileStudioTaskbar: React.FC<MobileStudioTaskbarProps> = ({
             variant="outline"
             size="sm"
             onClick={() => handleAction('share')}
-            className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[44px] min-w-[44px] p-0"
+            className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[40px] min-w-[40px] p-0"
           >
             <Share2 className="w-4 h-4" />
           </CRDButton>
@@ -99,7 +105,7 @@ export const MobileStudioTaskbar: React.FC<MobileStudioTaskbarProps> = ({
             variant="outline"
             size="sm"
             onClick={() => handleAction('download')}
-            className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[44px] min-w-[44px] p-0"
+            className="border-crd-mediumGray/20 text-crd-lightGray hover:text-crd-white min-h-[40px] min-w-[40px] p-0"
           >
             <Download className="w-4 h-4" />
           </CRDButton>
@@ -107,9 +113,9 @@ export const MobileStudioTaskbar: React.FC<MobileStudioTaskbarProps> = ({
       </div>
 
       {/* Status Indicator */}
-      <div className="px-4 pb-2">
+      <div className="px-3 pb-2">
         <div className="text-center text-xs text-crd-lightGray">
-          {isPaused ? 'Animation Paused' : 'Animation Playing'} • Swipe for more controls
+          {isPaused ? 'Animation Paused' : 'Animation Playing'}
         </div>
       </div>
     </div>

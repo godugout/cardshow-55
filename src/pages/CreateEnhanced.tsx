@@ -9,7 +9,7 @@ const CreateEnhanced: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-space-odyssey overflow-hidden">
-      <div className="h-full w-full overflow-y-auto">
+      <div className={`h-full w-full ${isMobile ? '' : 'overflow-y-auto'}`}>
         {/* Responsive Hero Section */}
         <CreatePageHero />
         

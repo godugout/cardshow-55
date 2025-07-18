@@ -21,8 +21,27 @@
   }
 }
 
-/* Mobile navigation breakpoints */
+/* Enhanced Mobile Snap Scrolling */
 @media (max-width: 768px) {
+  /* Snap scrolling container */
+  .snap-container {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  .snap-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  
+  /* Improved scrolling momentum */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
   /* Hide desktop navigation */
   .desktop-only {
     display: none !important;
@@ -53,10 +72,22 @@
     max-height: 70vh;
   }
   
-  /* Mobile text sizing */
+  /* Mobile text sizing - Improved Typography */
   .mobile-text {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  
+  .mobile-heading {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    font-weight: 700;
+  }
+  
+  .mobile-subheading {
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.4;
+    font-weight: 600;
   }
   
   /* Mobile overlay for sidebars */
@@ -153,11 +184,7 @@
 
   /* Desktop-specific layout adjustments */
   .cosmic-controls-desktop {
-    position: absolute;
-    bottom: 24px;
-    left: 24px;
-    width: 320px;
-    max-width: none;
+    display: none; /* Remove cosmic controls from desktop too */
   }
 
   /* Desktop 3D Card Dynamic Positioning */
@@ -209,6 +236,11 @@
   .taskbar-hidden,
   .taskbar-visible {
     transition: none !important;
+  }
+  
+  /* Disable snap scrolling for reduced motion */
+  .snap-container {
+    scroll-snap-type: none;
   }
 }
 
@@ -287,4 +319,14 @@ html {
 
 .scroll-indicator {
   animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+/* Progress indicator animations */
+@keyframes progress-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.progress-indicator {
+  animation: progress-pulse 2s ease-in-out infinite;
 }
