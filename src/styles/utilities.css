@@ -71,7 +71,7 @@
   z-index: -1;
 }
 
-/* Gradient text effect for hero labels */
+/* Gradient text effect for hero labels - Dynamic theme colors */
 .gradient-text-green-blue-purple {
   background: linear-gradient(135deg, hsl(var(--crd-green)), hsl(var(--crd-blue)), hsl(var(--crd-purple)));
   background-clip: text;
@@ -79,6 +79,37 @@
   -webkit-text-fill-color: transparent;
   background-size: 200% 200%;
   animation: gradient-flow 3s ease infinite;
+}
+
+/* Dynamic theme gradients matching animation tiles */
+.gradient-text-craft {
+  background: linear-gradient(135deg, #ff1744, #00e676, #2196f3);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-flow 3s ease infinite;
+  transition: background 0.5s ease;
+}
+
+.gradient-text-collect {
+  background: linear-gradient(135deg, #daa520, #8b4513, #cd853f);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-flow 3s ease infinite;
+  transition: background 0.5s ease;
+}
+
+.gradient-text-connect {
+  background: linear-gradient(135deg, #ff1493, #00ffff, #39ff14);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-flow 3s ease infinite;
+  transition: background 0.5s ease;
 }
 
 /* Button text color utilities to ensure proper contrast */

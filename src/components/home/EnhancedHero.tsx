@@ -193,13 +193,27 @@ export const EnhancedHero: React.FC = () => {
 
   const currentConfig = heroConfigs[currentHero];
 
+  // Dynamic gradient class based on current theme
+  const getGradientClass = (theme: 'craft' | 'collect' | 'connect') => {
+    switch (theme) {
+      case 'craft':
+        return 'gradient-text-craft';
+      case 'collect':
+        return 'gradient-text-collect';
+      case 'connect':
+        return 'gradient-text-connect';
+      default:
+        return 'gradient-text-green-blue-purple';
+    }
+  };
+
   // Create enhanced heading with responsive text wrapping control and consistent typography
   const enhancedHeading = (
     <div className="mb-4 leading-tight text-crd-white drop-shadow-lg text-5xl md:text-6xl lg:text-7xl">
       <ThemedRansomNote theme={currentConfig.theme} isPaused={isAnimationPaused || !isLabelVisible}>{currentConfig.word}</ThemedRansomNote><br />
       <span className="xl:whitespace-nowrap text-6xl md:text-7xl lg:text-8xl">
         {currentConfig.tagline.split(' ').slice(0, -1).join(' ')}{' '}
-        <span className="gradient-text-green-blue-purple">{currentConfig.tagline.split(' ').slice(-1)[0]}</span>
+        <span className={getGradientClass(currentConfig.theme)}>{currentConfig.tagline.split(' ').slice(-1)[0]}</span>
       </span>
     </div>
   );
