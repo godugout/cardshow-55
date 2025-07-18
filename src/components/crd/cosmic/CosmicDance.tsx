@@ -267,6 +267,14 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
     }
   }, [templateEngine, currentFrame.sun, currentFrame.lighting]);
 
+  // Handle animation completion for studio transition
+  useEffect(() => {
+    if (templateEngine?.transitionToStudio && animationProgress >= 1 && !isPlaying) {
+      // Animation completed, trigger studio transition
+      onTriggerReached?.();
+    }
+  }, [templateEngine, animationProgress, isPlaying, onTriggerReached]);
+
   return (
     <>
       {/* Enhanced 2D Sun with Cinematic Glow - Behind card */}
