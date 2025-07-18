@@ -82,21 +82,24 @@ export const SimplifiedDiscover = () => {
 
   if (loading) {
     return (
-      <section className="py-6 px-4 sm:py-8 sm:px-6 lg:py-12">
+      <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 bg-gradient-to-b from-crd-darkest to-crd-darker">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-6 sm:mb-8">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-themed-primary mb-3 sm:mb-4">
-              Cards Rendered Digitally<span className="text-gray-400 text-lg sm:text-xl lg:text-2xl align-super">™</span>
-            </h2>
-            <p className="text-themed-secondary text-base sm:text-lg max-w-2xl mx-auto">
-              Explore the latest cards from creators around the world
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4">
-            {Array.from({ length: 14 }).map((_, i) => (
-              <div key={i} className="bg-themed-secondary/10 rounded-lg h-48 animate-pulse" />
-            ))}
+          {/* Extra spacing for mobile */}
+          <div className="pt-8 sm:pt-12 lg:pt-16">
+            <div className="text-center mb-6 sm:mb-8">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-themed-primary mb-3 sm:mb-4">
+                Cards Rendered Digitally<span className="text-gray-400 text-lg sm:text-xl lg:text-2xl align-super">™</span>
+              </h2>
+              <p className="text-themed-secondary text-base sm:text-lg max-w-2xl mx-auto">
+                Explore the latest cards from creators around the world
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4">
+              {Array.from({ length: 14 }).map((_, i) => (
+                <div key={i} className="bg-themed-secondary/10 rounded-lg h-48 animate-pulse" />
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -104,15 +107,18 @@ export const SimplifiedDiscover = () => {
   }
 
   return (
-    <section className="py-6 px-4 sm:py-8 sm:px-6 lg:py-12">
+    <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 bg-gradient-to-b from-crd-darkest to-crd-darker">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-4 sm:mb-6">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-themed-primary mb-3 sm:mb-4">
-            Cards Rendered Digitally<span className="text-gray-400 text-lg sm:text-xl lg:text-2xl align-super">™</span>
-          </h2>
-          <p className="text-themed-secondary text-base sm:text-lg max-w-2xl mx-auto px-2">
-            Explore the latest cards from creators around the world
-          </p>
+        {/* Extra spacing for mobile */}
+        <div className="pt-8 sm:pt-12 lg:pt-16">
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-themed-primary mb-3 sm:mb-4">
+              Cards Rendered Digitally<span className="text-gray-400 text-lg sm:text-xl lg:text-2xl align-super">™</span>
+            </h2>
+            <p className="text-themed-secondary text-base sm:text-lg max-w-2xl mx-auto px-2">
+              Explore the latest cards from creators around the world
+            </p>
+          </div>
         </div>
 
         <div className="flex justify-center mb-4 sm:mb-6">

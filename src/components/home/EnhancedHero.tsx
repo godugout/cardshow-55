@@ -242,11 +242,22 @@ export const EnhancedHero: React.FC = () => {
                    currentConfig.theme === 'connect' ? 'collective' : 
                    'collect'
         }}
-        heroVariant="hero"
       >
-        {/* Featured Cards Section */}
-        {showcaseCards.length > 0 && (
-          <div className="mt-16">
+      </StandardHero>
+
+      {/* Dedicated Featured Cards Section with proper spacing */}
+      {showcaseCards.length > 0 && (
+        <section className="py-8 sm:py-12 lg:py-16 bg-crd-darkest">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-crd-white mb-4">
+                Featured Cards
+              </h2>
+              <p className="text-crd-lightGray text-base sm:text-lg max-w-2xl mx-auto">
+                Discover amazing cards from our community
+              </p>
+            </div>
+            
             <Hero3
               caption=""
               heading=""
@@ -259,8 +270,8 @@ export const EnhancedHero: React.FC = () => {
               shouldStartAnimation={!isLabelVisible}
             />
           </div>
-        )}
-      </StandardHero>
+        </section>
+      )}
 
       {/* Secret Menu */}
       <SecretMenu3D
