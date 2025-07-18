@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { PixelDigital } from '@/components/ui/PixelDigital';
 import { FloatingCard3D } from '@/components/ui/FloatingCard3D';
-import { StudioResetButton } from '@/components/studio/StudioResetButton';
+
 import { StudioPauseButton } from '@/components/studio/StudioPauseButton';
 import { StarsBackground } from '@/components/ui/stars';
 
@@ -22,10 +22,6 @@ const AnimatedTagline: React.FC = () => {
 export const CreatePageHero: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   
-  const handleResetCamera = () => {
-    // Trigger an animated camera reset - this will be handled by the CRDViewer component
-    window.dispatchEvent(new CustomEvent('crd-animated-reset'));
-  };
 
   const handleTogglePause = () => {
     setIsPaused(prev => !prev);
@@ -43,10 +39,6 @@ export const CreatePageHero: React.FC = () => {
           />
         </StarsBackground>
       </div>
-      
-      {/* Reset Button */}
-      <StudioResetButton onReset={handleResetCamera} />
-      
       {/* Pause Button */}
       <StudioPauseButton 
         isPaused={isPaused} 

@@ -5,9 +5,9 @@ import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
-import { StudioResetButton } from '../studio/StudioResetButton';
+
 import { StudioPauseButton } from '../studio/StudioPauseButton';
-import { SpaceOdysseyReset } from './animations/SpaceOdysseyReset';
+
 
 import { type AnimationMode, type LightingPreset, type PathTheme } from './types/CRDTypes';
 
@@ -87,7 +87,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const [selectedStyleId, setSelectedStyleId] = useState('matte');
   const [cardRotation, setCardRotation] = useState(new THREE.Euler(0, 0, 0));
   const [internalIsPaused, setInternalIsPaused] = useState(false);
-  const [isResetAnimating, setIsResetAnimating] = useState(false);
+  
   const [isCardPaused, setIsCardPaused] = useState(false);
   const [isCardLocked, setIsCardLocked] = useState(false);
   
@@ -177,18 +177,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }
   };
 
-  const handleReset = () => {
-    // Start the space odyssey reset animation
-    setIsResetAnimating(true);
-    
-    // Reset controls after animation completes
-    setTimeout(() => {
-      if (controlsRef.current) {
-        controlsRef.current.reset();
-      }
-      setIsResetAnimating(false);
-    }, 6000); // Total animation duration
-  };
 
   // Handle orbit controls interaction
   const handleControlsStart = () => {
@@ -217,26 +205,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     };
   }, []);
 
-  // Camera reset event listeners
-  useEffect(() => {
-    const handleCameraReset = () => {
-      if (controlsRef.current) {
-        controlsRef.current.reset();
-      }
-    };
-
-    const handleAnimatedReset = () => {
-      handleReset();
-    };
-
-    window.addEventListener('crd-reset-camera', handleCameraReset);
-    window.addEventListener('crd-animated-reset', handleAnimatedReset);
-    
-    return () => {
-      window.removeEventListener('crd-reset-camera', handleCameraReset);
-      window.removeEventListener('crd-animated-reset', handleAnimatedReset);
-    };
-  }, []);
 
 
 
@@ -262,12 +230,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           enableShadows={true}
         />
         
-        {/* Space Odyssey Reset Animation */}
-        <SpaceOdysseyReset 
-          isAnimating={isResetAnimating}
-          onComplete={() => setIsResetAnimating(false)}
-        />
-        
         {/* Main Card with Glass Case Container - Responds to mouse only when not locked */}
         <group 
           position={[0, -2, 0]}
@@ -278,7 +240,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           mode={currentMode}
           intensity={currentIntensity}
           materialMode={selectedStyleId as any}
-          enableAnimation={!isResetAnimating}
+          enableAnimation={true}
           enableGlassCase={enableGlassCase}
           isLocked={isCardLocked}
           isPaused={isCardPaused}
@@ -298,11 +260,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             cardRotation={cardRotation}
             onStyleChange={handleStyleChange}
             selectedStyleId={selectedStyleId}
-            autoRotate={orbitalAutoRotate && !isCardInteracting && !isResetAnimating && !isCardLocked}
+            autoRotate={orbitalAutoRotate && !isCardInteracting && !isCardLocked}
             rotationSpeed={orbitalRotationSpeed}
-            showRing={showOrbitalRing && !isResetAnimating}
+            showRing={showOrbitalRing}
             showLockIndicators={showLockIndicators}
-            isPaused={isPaused || isResetAnimating}
+            isPaused={isPaused}
             cardPaused={isCardPaused}
           />
         </group>
@@ -348,8 +310,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
       
-      {/* Studio Controls */}
-      <StudioResetButton onReset={handleReset} />
       {showPauseButton && (
         <StudioPauseButton 
           isPaused={isPaused} 
