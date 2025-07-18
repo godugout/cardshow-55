@@ -127,6 +127,15 @@ const Studio = () => {
     return () => clearTimeout(timeoutId);
   }, [user, hasCheckedDatabase]);
 
+  // Auto-enable workspace mode on desktop - MOVED BEFORE EARLY RETURNS
+  useEffect(() => {
+    if (deviceType === 'desktop' && !useWorkspaceMode) {
+      setUseWorkspaceMode(true);
+    } else if (deviceType === 'mobile' && useWorkspaceMode) {
+      setUseWorkspaceMode(false);
+    }
+  }, [deviceType, useWorkspaceMode]);
+
   const handleSeedComplete = () => {
     setShowSeedPrompt(false);
     console.log('🌱 Database seeded, reloading studio...');
@@ -176,15 +185,6 @@ const Studio = () => {
     };
     handleDownload(originalCard);
   };
-
-  // Auto-enable workspace mode on desktop
-  useEffect(() => {
-    if (deviceType === 'desktop' && !useWorkspaceMode) {
-      setUseWorkspaceMode(true);
-    } else if (deviceType === 'mobile' && useWorkspaceMode) {
-      setUseWorkspaceMode(false);
-    }
-  }, [deviceType, useWorkspaceMode]);
 
   // Professional workspace mode for desktop
   if (useWorkspaceMode && deviceType !== 'mobile') {
