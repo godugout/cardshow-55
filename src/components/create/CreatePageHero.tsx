@@ -7,6 +7,7 @@ import { PixelDigital } from '@/components/ui/PixelDigital';
 import { FloatingCard3D } from '@/components/ui/FloatingCard3D';
 
 import { StudioPauseButton } from '@/components/studio/StudioPauseButton';
+import { StudioResetButton } from '@/components/studio/StudioResetButton';
 import { StarsBackground } from '@/components/ui/stars';
 
 const AnimatedTagline: React.FC = () => {
@@ -27,6 +28,12 @@ export const CreatePageHero: React.FC = () => {
     setIsPaused(prev => !prev);
   };
 
+  const handleReset = () => {
+    // Reset the 3D card to its initial position
+    // This will be handled by the FloatingCard3D component
+    window.location.reload(); // Simple reset for now
+  };
+
   return (
     <div className="relative w-full overflow-hidden h-screen bg-crd-darkest">
       {/* 3D Background covering entire hero section */}
@@ -39,11 +46,14 @@ export const CreatePageHero: React.FC = () => {
           />
         </StarsBackground>
       </div>
-      {/* Pause Button */}
-      <StudioPauseButton 
-        isPaused={isPaused} 
-        onTogglePause={handleTogglePause} 
-      />
+      {/* Control Buttons - Lower Right */}
+      <div className="fixed bottom-6 right-6 z-50 flex gap-3">
+        <StudioResetButton onReset={handleReset} />
+        <StudioPauseButton 
+          isPaused={isPaused} 
+          onTogglePause={handleTogglePause} 
+        />
+      </div>
       
       {/* Hero Content Overlay */}
       <div className="relative z-10 text-center pb-4 pt-[calc(var(--navbar-height)+100px)] pointer-events-none">

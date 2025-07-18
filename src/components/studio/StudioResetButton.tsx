@@ -9,7 +9,7 @@ export const StudioResetButton: React.FC<StudioResetButtonProps> = ({ onReset })
   return (
     <button
       onClick={onReset}
-      className="fixed bottom-6 left-24 z-50 w-12 h-12 rounded-full bg-crd-darkGray/80 backdrop-blur-sm border border-crd-mediumGray/30 hover:bg-crd-mediumGray/50 transition-all duration-200 flex items-center justify-center group"
+      className="w-12 h-12 rounded-full bg-crd-darkGray/80 backdrop-blur-sm border border-crd-mediumGray/30 hover:bg-crd-mediumGray/50 transition-all duration-200 flex items-center justify-center group"
       title="Reset Camera View"
     >
       <RotateCcw 
