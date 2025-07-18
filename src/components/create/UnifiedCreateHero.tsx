@@ -62,7 +62,7 @@ export const UnifiedCreateHero: React.FC = () => {
           />
 
           {/* Overlay Content Layer - Positioned for short screens */}
-          <div className="relative z-10 h-full flex flex-col">
+          <div className="relative z-10 h-full flex flex-col pointer-events-none">
             {/* Top Section - Hero Content */}
             <div className="flex-1 flex items-center justify-center px-6">
               <div className="text-center space-y-4 max-w-4xl mx-auto">
@@ -77,7 +77,7 @@ export const UnifiedCreateHero: React.FC = () => {
             </div>
 
             {/* Bottom Section - Action Buttons */}
-            <div className="flex-shrink-0 pb-8">
+            <div className="flex-shrink-0 pb-8 pointer-events-auto">
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-6">
                 {/* Primary CTA */}
                 <Link to="/create/editor" className="w-full sm:w-auto">
@@ -125,7 +125,7 @@ export const UnifiedCreateHero: React.FC = () => {
           />
 
           {/* Overlay Content Layer - Centered for normal screens */}
-          <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
+          <div className="relative z-10 min-h-screen flex items-center justify-center px-6 pointer-events-none">
             <div className="text-center space-y-8 max-w-6xl mx-auto">
               {/* Hero Text */}
               {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
@@ -136,7 +136,7 @@ export const UnifiedCreateHero: React.FC = () => {
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pointer-events-auto">
                 {/* Primary CTA */}
                 <Link to="/create/editor">
                   <CRDButton 

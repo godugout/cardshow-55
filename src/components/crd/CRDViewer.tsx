@@ -444,7 +444,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   return (
     <div className={`overflow-hidden relative ${className}`}>
       {/* Responsive Container for 3D Scene */}
-      <div className="relative w-full h-full max-h-[90vh] lg:max-h-screen">
+      <div className="relative w-full h-full">
         {/* 3D Scene - Responsive sizing */}
         <Canvas
           className="relative z-20 w-full h-full"

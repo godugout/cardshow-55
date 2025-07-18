@@ -21,6 +21,16 @@ export const ResponsiveCreate3DLayout: React.FC<ResponsiveCreate3DLayoutProps> =
   return (
     <div 
       className={`fixed inset-0 z-0 ${className}`}
+      style={{ cursor: 'grab' }}
+      onMouseDown={(e) => {
+        e.currentTarget.style.cursor = 'grabbing';
+      }}
+      onMouseUp={(e) => {
+        e.currentTarget.style.cursor = 'grab';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.cursor = 'grab';
+      }}
     >
       {/* Full Screen Starry Background with 3D Animation */}
       <div className="absolute inset-0">
