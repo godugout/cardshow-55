@@ -21,28 +21,38 @@ export const UnifiedCreateHero: React.FC = () => {
 
   // Render tablet-specific hero text with line breaks
   const renderTabletHeroText = () => (
-    <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-8 text-center max-w-4xl mx-auto text-gray-400 font-light">
-      <span>From <span className="paper-scraps">paper scraps</span></span>
-      <br />
-      <span>and <span className="cardboard-text">cardboard</span> to</span>
-      <br />
-      <span className="font-bold">
-        <PixelDigital className="inline">digital</PixelDigital>
-      </span>
-      <br />
-      <span className="text-white font-bold">art that comes alive!</span>
-    </h1>
+    <>
+      <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-4 text-center max-w-4xl mx-auto text-gray-400 font-light">
+        <span>From <span className="paper-scraps">paper scraps</span></span>
+        <br />
+        <span>and <span className="cardboard-text">cardboard</span> to</span>
+        <br />
+        <span className="font-bold">
+          <PixelDigital className="inline">digital</PixelDigital>
+        </span>
+        <br />
+        <span className="text-white font-bold">art that comes alive!</span>
+      </h1>
+      <p className="text-lg md:text-2xl lg:text-3xl font-caveat italic text-crd-orange text-center mb-8 animate-fade-in">
+        No glue needed.
+      </p>
+    </>
   );
 
   // Render standard hero text (desktop and mobile)
   const renderStandardHeroText = () => (
-    <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-8 text-center max-w-4xl mx-auto text-gray-400 font-light">
-      <span>From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to </span>
-      <span className="font-bold">
-        <PixelDigital className="inline">digital</PixelDigital>
-        <span className="text-white"> art that comes alive!</span>
-      </span>
-    </h1>
+    <>
+      <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-4 text-center max-w-4xl mx-auto text-gray-400 font-light">
+        <span>From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to </span>
+        <span className="font-bold">
+          <PixelDigital className="inline">digital</PixelDigital>
+          <span className="text-white"> art that comes alive!</span>
+        </span>
+      </h1>
+      <p className="text-lg md:text-2xl lg:text-3xl font-caveat italic text-crd-orange text-center mb-8 animate-fade-in">
+        No glue needed.
+      </p>
+    </>
   );
 
   return (
@@ -63,13 +73,8 @@ export const UnifiedCreateHero: React.FC = () => {
             {/* Top Section - Hero Content */}
             <div className="flex-1 flex items-center justify-center px-6">
               <div className="text-center space-y-4 max-w-4xl mx-auto">
-                {/* Hero Text */}
+                {/* Hero Text with Subtitle */}
                 {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
-                
-                {/* Subtitle */}
-                <p className="text-lg md:text-xl text-gray-300 mb-6 max-w-2xl mx-auto leading-relaxed">
-                  Transform your creative vision into stunning digital trading cards with our advanced AI-powered design tools.
-                </p>
               </div>
             </div>
 
@@ -122,13 +127,8 @@ export const UnifiedCreateHero: React.FC = () => {
           {/* Overlay Content Layer - Centered for normal screens */}
           <div className="relative z-10 min-h-screen flex items-center justify-center px-6 pointer-events-none">
             <div className="text-center space-y-8 max-w-6xl mx-auto">
-              {/* Hero Text */}
+              {/* Hero Text with Subtitle */}
               {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
-              
-              {/* Subtitle */}
-              <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Transform your creative vision into stunning digital trading cards with our advanced AI-powered design tools.
-              </p>
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pointer-events-auto">
