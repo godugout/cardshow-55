@@ -245,15 +245,15 @@ export const EnhancedHero: React.FC = () => {
       >
       </StandardHero>
 
-      {/* Dedicated Featured Cards Section with proper spacing */}
+      {/* Dedicated Featured Cards Section - Full Desktop Experience */}
       {showcaseCards.length > 0 && (
-        <section className="py-8 sm:py-12 lg:py-16 bg-crd-darkest">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-crd-white mb-4">
+        <section className="py-8 sm:py-12 lg:py-20 xl:py-24 bg-crd-darkest min-h-screen lg:min-h-[90vh] flex flex-col justify-center">
+          <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12">
+            <div className="text-center mb-8 lg:mb-16">
+              <h2 className="text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-bold text-crd-white mb-4 lg:mb-8">
                 Featured Cards
               </h2>
-              <p className="text-crd-lightGray text-base sm:text-lg max-w-2xl mx-auto">
+              <p className="text-crd-lightGray text-base sm:text-lg lg:text-xl xl:text-2xl max-w-4xl mx-auto">
                 Discover amazing cards from our community
               </p>
             </div>
