@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Typography, CRDButton } from '@/components/ui/design-system';
 import { ThemedPage } from '@/components/ui/design-system/ThemedLayout';
-import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
+import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 
 interface CTAConfig {
   text: string;
@@ -44,7 +44,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
   heroVariant = 'display',
   fullWidth = false
 }) => {
-  const { isMobile } = useResponsiveLayout();
+  const { isMobile } = useResponsiveBreakpoints();
 
   return (
     <div className={`relative ${fullWidth ? 'w-screen -mx-[50vw] left-1/2' : ''} overflow-hidden ${className}`}>
