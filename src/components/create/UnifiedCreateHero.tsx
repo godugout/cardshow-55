@@ -23,7 +23,7 @@ export const UnifiedCreateHero: React.FC = () => {
   const renderTabletHeroText = () => (
     <div className="text-center space-y-4">
       {/* Intro Line */}
-      <p className="text-sm md:text-base lg:text-lg text-gray-400 font-medium tracking-wider uppercase">
+      <p className="text-sm md:text-base lg:text-lg gradient-text-green-blue-purple font-medium tracking-wider uppercase">
         CUT, CRAFT & CREATE DIGITALLY
       </p>
       
@@ -44,7 +44,7 @@ export const UnifiedCreateHero: React.FC = () => {
   const renderStandardHeroText = () => (
     <div className="text-center space-y-4">
       {/* Intro Line */}
-      <p className="text-sm md:text-base lg:text-lg text-gray-400 font-medium tracking-wider uppercase">
+      <p className="text-sm md:text-base lg:text-lg gradient-text-green-blue-purple font-medium tracking-wider uppercase">
         CUT, CRAFT & CREATE DIGITALLY
       </p>
       
