@@ -44,4 +44,5 @@ export { CSOrigWSLogo } from '../../home/navbar/CSOrigWSLogo';
 
 // Hero Components
 export { Hero3 } from './Hero3';
+export { MobileOptimizedHero3 } from './MobileOptimizedHero3';
 

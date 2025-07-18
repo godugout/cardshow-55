@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { useAnimationController } from '@/hooks/useAnimationController';
+import { useMobileFeatures } from '@/hooks/useMobileFeatures';
 
 export interface Hero3Props {
   caption?: string;
@@ -29,7 +30,9 @@ export const Hero3: React.FC<Hero3Props> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [focusedCard, setFocusedCard] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const { addAnimation, removeAnimation } = useAnimationController();
+  const { hapticLight, hapticMedium, hapticSelection, isNative, orientation } = useMobileFeatures();
 
   // Physics state using refs for smooth animation
   const physicsRef = useRef({
@@ -45,15 +48,16 @@ export const Hero3: React.FC<Hero3Props> = ({
 
   const [isDragging, setIsDragging] = useState(false);
 
-  // Physics constants tuned for silky smooth motion
-  const FRICTION = 0.965; // Higher for longer glide
-  const VELOCITY_SCALE = 1.2; // Amplify gesture velocity
-  const MIN_VELOCITY = 0.05; // Lower threshold for longer motion
-  const CARD_WIDTH = 400;
-  const MAX_VELOCITY_HISTORY = 5;
+  // Mobile-responsive physics constants
+  const FRICTION = isNative ? 0.95 : 0.965;
+  const VELOCITY_SCALE = isNative ? 1.5 : 1.2;
+  const MIN_VELOCITY = isNative ? 0.08 : 0.05;
+  const CARD_WIDTH = orientation === 'landscape' ? 320 : window.innerWidth < 640 ? 280 : 400;
+  const CARD_GAP = window.innerWidth < 640 ? 12 : 16;
+  const MAX_VELOCITY_HISTORY = isNative ? 3 : 5;
 
   // Calculate single set width for infinite scroll
-  const singleSetWidth = featuredCards.length * CARD_WIDTH;
+  const singleSetWidth = featuredCards.length * (CARD_WIDTH + CARD_GAP);
 
   // Smooth animation loop using RAF and refs
   const animatePhysics = useCallback((timestamp: number) => {
@@ -72,10 +76,17 @@ export const Hero3: React.FC<Hero3Props> = ({
         physics.position -= singleSetWidth;
       }
       
-      // Update DOM directly for smoothness
-      if (carouselRef.current) {
-        carouselRef.current.style.transform = `translateX(${physics.position}px)`;
-      }
+        // Update current index for mobile pagination
+        const newIndex = Math.round(-physics.position / (CARD_WIDTH + CARD_GAP)) % featuredCards.length;
+        if (newIndex !== currentIndex) {
+          setCurrentIndex(newIndex >= 0 ? newIndex : newIndex + featuredCards.length);
+          if (isNative) hapticLight(); // Mobile haptic feedback
+        }
+        
+        // Update DOM directly for smoothness
+        if (carouselRef.current) {
+          carouselRef.current.style.transform = `translateX(${physics.position}px)`;
+        }
       
       // Continue animation
       addAnimation('hero3-physics', animatePhysics, 1);
@@ -84,7 +95,7 @@ export const Hero3: React.FC<Hero3Props> = ({
       physics.velocity = 0;
       removeAnimation('hero3-physics');
     }
-  }, [singleSetWidth, addAnimation, removeAnimation]);
+  }, [singleSetWidth, addAnimation, removeAnimation, currentIndex, hapticLight, featuredCards.length, isNative]);
 
   // Enhanced gesture recognition for smooth velocity calculation
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -101,7 +112,8 @@ export const Hero3: React.FC<Hero3Props> = ({
     
     setIsDragging(true);
     removeAnimation('hero3-physics');
-  }, [removeAnimation]);
+    if (isNative) hapticSelection(); // Mobile haptic feedback on touch
+  }, [removeAnimation, hapticSelection, isNative]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const physics = physicsRef.current;

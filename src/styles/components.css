@@ -75,7 +75,7 @@
     @apply relative overflow-hidden text-white font-bold shadow-lg transition-all duration-300;
     background: linear-gradient(135deg, hsl(15, 100%, 60%), hsl(100, 35%, 55%), hsl(200, 65%, 55%));
     background-size: 200% 200%;
-    animation: liquid-gradient 4s ease-in-out infinite;
+    animation: liquid-gradient var(--duration-slow) ease-in-out infinite;
     will-change: background-position;
   }
 
@@ -83,7 +83,7 @@
     @apply shadow-xl transform scale-[1.02];
     background: linear-gradient(135deg, hsl(15, 100%, 65%), hsl(100, 40%, 60%), hsl(200, 70%, 60%));
     background-size: 250% 250%;
-    animation: liquid-gradient 2s ease-in-out infinite;
+    animation: liquid-gradient var(--duration-slow) ease-in-out infinite;
   }
 
   .crd-create-button:active {
