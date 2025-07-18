@@ -13,6 +13,8 @@ import { PerformanceMonitor } from './performance/PerformanceMonitor';
 import { useCardAngle } from './hooks/useCardAngle';
 
 import { StudioPauseButton } from '../studio/StudioPauseButton';
+import { TemplateControlsCard } from '../viewer/components/TemplateControlsCard';
+import { TemplateControlsButton } from '../viewer/components/TemplateControlsButton';
 
 
 import { type AnimationMode, type LightingPreset, type PathTheme } from './types/CRDTypes';
@@ -138,6 +140,9 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Card interaction state for orbital ring pausing
   const [isCardInteracting, setIsCardInteracting] = useState(false);
   const interactionTimeoutRef = useRef<NodeJS.Timeout>();
+
+  // Template controls visibility
+  const [showTemplateControls, setShowTemplateControls] = useState(false);
 
   // Animation State
   const [currentMode, setCurrentMode] = useState<AnimationMode>(initialMode);
@@ -600,6 +605,34 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <StudioPauseButton 
           isPaused={isPaused} 
           onTogglePause={handleTogglePause} 
+        />
+      )}
+
+      {/* Template Controls Button */}
+      <TemplateControlsButton
+        onClick={() => setShowTemplateControls(!showTemplateControls)}
+        hasTemplate={!!templateEngine}
+      />
+
+      {/* Template Controls Card */}
+      {showTemplateControls && (
+        <TemplateControlsCard
+          templateEngine={templateEngine}
+          animationProgress={animationProgress}
+          isCosmicPlaying={isPlaying}
+          playbackSpeed={playbackSpeed}
+          cardAngle={cardAngle}
+          cameraDistance={cameraDistance}
+          isOptimalZoom={isOptimalZoom}
+          isOptimalPosition={isOptimalPosition}
+          hasTriggered={cosmicTriggered}
+          onReplayTemplate={handleReplayTemplate}
+          onStudioEntry={() => onTemplateComplete?.(templateEngine)}
+          onProgressChange={handleCosmicProgressChange}
+          onPlayToggle={handleCosmicPlayToggle}
+          onSpeedChange={handleCosmicSpeedChange}
+          onReset={handleResetAnimation}
+          onAngleReset={handleCosmicAngleReset}
         />
       )}
     </div>

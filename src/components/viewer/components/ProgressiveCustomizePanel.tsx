@@ -91,17 +91,12 @@ export const ProgressiveCustomizePanel: React.FC<ProgressiveCustomizePanelProps>
         isApplyingPreset={isApplyingPreset}
       />
       
-      <StudioFooter
-        isFullscreen={isFullscreen}
-        onToggleFullscreen={onToggleFullscreen}
-        onDownload={onDownload}
-        onShare={onShare}
-        templateEngine={templateEngine}
-        onReplayTemplate={onReplayTemplate}
-        onStudioEntry={onStudioEntry}
-        animationProgress={animationProgress}
-        isCosmicPlaying={isCosmicPlaying}
-      />
+        <StudioFooter
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={onToggleFullscreen}
+          onDownload={onDownload}
+          onShare={onShare}
+        />
     </div>
   );
 };
