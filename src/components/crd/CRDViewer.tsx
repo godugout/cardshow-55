@@ -5,8 +5,9 @@ import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
-import { CosmicSun } from './cosmic/CosmicSun';
-import { CosmicMoon } from './cosmic/CosmicMoon';
+import { CosmicDance } from './cosmic/CosmicDance';
+import { CosmicDanceControls } from './cosmic/CosmicDanceControls';
+import { useCardAngle } from './hooks/useCardAngle';
 
 import { StudioPauseButton } from '../studio/StudioPauseButton';
 
@@ -69,15 +70,15 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   onModeChange,
   onIntensityChange
 }) => {
+  // Cosmic Dance system
+  const { cardAngle, cardRef: angleCardRef, controlsRef, resetCardAngle } = useCardAngle();
+  const [animationProgress, setAnimationProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [cosmicTriggered, setCosmicTriggered] = useState(false);
+
   // Refs
   const cardRef = useRef<THREE.Group & { getCurrentRotation?: () => THREE.Euler }>(null);
-  const controlsRef = useRef<any>(null);
-
-  // Cosmic animation state
-  const [hasMaxZoomBeenReached, setHasMaxZoomBeenReached] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0); // 0 to 1 range
-  const [showScrollPrompt, setShowScrollPrompt] = useState(false);
-  const MAX_ZOOM_DISTANCE = 3; // Minimum distance for max zoom
 
   // Mouse position state for synced movement
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
@@ -185,55 +186,40 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }
   };
 
-  // Enhanced Cosmic Animation Functions with scroll resistance
-  const handlePostZoomScroll = useCallback((e: WheelEvent) => {
-    if (!hasMaxZoomBeenReached) return;
-    
-    e.preventDefault();
-    setScrollProgress(prev => {
-      // Apply scroll resistance at sunset point (0.65-0.85 range)
-      let sensitivity = 0.002;
-      if (prev >= 0.65 && prev <= 0.85) {
-        sensitivity *= 0.2; // 80% reduction in scroll sensitivity
-      }
-      
-      const delta = e.deltaY * sensitivity;
-      return Math.min(1, Math.max(0, prev + delta));
-    });
-  }, [hasMaxZoomBeenReached]);
-
-
-  const handleResetSunScene = useCallback(() => {
-    setScrollProgress(0);
-    setHasMaxZoomBeenReached(false);
-    setShowScrollPrompt(false);
-  }, []);
-
-  // Monitor camera position for max zoom detection
+  // Cosmic Dance Animation Logic
   useEffect(() => {
-    const checkZoomLevel = () => {
-      if (controlsRef.current) {
-        const distance = controlsRef.current.getDistance();
-        if (distance <= MAX_ZOOM_DISTANCE && !hasMaxZoomBeenReached) {
-          setHasMaxZoomBeenReached(true);
-          setShowScrollPrompt(true);
-          // Hide prompt after 3 seconds
-          setTimeout(() => setShowScrollPrompt(false), 3000);
-        }
-      }
-    };
+    if (!isPlaying) return;
 
-    const interval = setInterval(checkZoomLevel, 100);
+    const interval = setInterval(() => {
+      setAnimationProgress(prev => {
+        const newProgress = prev + (playbackSpeed * 0.01);
+        return newProgress >= 1 ? 1 : newProgress;
+      });
+    }, 16); // ~60fps
+
     return () => clearInterval(interval);
-  }, [hasMaxZoomBeenReached]);
+  }, [isPlaying, playbackSpeed]);
 
-  // Handle post-zoom scroll events
+  // Auto-pause when reaching end
   useEffect(() => {
-    if (hasMaxZoomBeenReached) {
-      window.addEventListener('wheel', handlePostZoomScroll, { passive: false });
-      return () => window.removeEventListener('wheel', handlePostZoomScroll);
+    if (animationProgress >= 1 && isPlaying) {
+      setIsPlaying(false);
     }
-  }, [hasMaxZoomBeenReached, handlePostZoomScroll]);
+  }, [animationProgress, isPlaying]);
+
+  const handleCosmicTrigger = () => {
+    setCosmicTriggered(true);
+    if (!isPlaying && animationProgress < 1) {
+      setIsPlaying(true);
+    }
+  };
+
+  const handleResetAnimation = () => {
+    setAnimationProgress(0);
+    setIsPlaying(false);
+    setCosmicTriggered(false);
+    resetCardAngle();
+  };
 
   // Handle orbit controls interaction
   const handleControlsStart = () => {
@@ -287,15 +273,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           enableShadows={true}
         />
         
-        {/* Cosmic Background Elements */}
-        <CosmicSun 
-          scrollProgress={scrollProgress}
-        />
-        
-        <CosmicMoon 
-          scrollProgress={scrollProgress}
-          isSunsetPoint={false}
-        />
+        {/* Cosmic Background Elements - Removed, now using 2D overlay */}
         
         {/* Main Card with Glass Case Container - Enhanced with sunset lean animation */}
         <group 
@@ -354,16 +332,16 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           </Text>
         )}
         
-        {/* Orbit Controls - Modified for synced movement */}
+        {/* Enhanced Orbit Controls for Cosmic Dance */}
         {enableControls && (
           <OrbitControls
             ref={controlsRef}
-            enableZoom={!hasMaxZoomBeenReached}
+            enableZoom={true}
             enablePan={true}
             enableRotate={true}
             maxDistance={25}
-            minDistance={MAX_ZOOM_DISTANCE}
-            autoRotate={autoRotate}
+            minDistance={2}
+            autoRotate={autoRotate && !cosmicTriggered}
             autoRotateSpeed={rotationSpeed}
             target={[mouseOffset.x * 0.01, mouseOffset.y * 0.01, 0]}
             minPolarAngle={0}
@@ -381,55 +359,32 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
       
-      {/* Enhanced UI Overlays with Sunset Animation States */}
-      {showScrollPrompt && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
-          <div className="bg-black/70 backdrop-blur-sm rounded-lg px-6 py-3 text-white text-center animate-fade-in">
-            <p className="text-sm font-medium">Keep scrolling to witness the alignment...</p>
-            <div className="flex justify-center mt-2">
-              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Cosmic Dance Overlay System */}
+      <CosmicDance
+        animationProgress={animationProgress}
+        isPlaying={isPlaying}
+        cardAngle={cardAngle}
+        onTriggerReached={handleCosmicTrigger}
+      />
       
-      
-      {scrollProgress > 0.95 && (
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
-          <button
-            onClick={handleResetSunScene}
-            className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200"
-          >
-            Reset Scene
-          </button>
-        </div>
-      )}
+      {/* Cosmic Dance Controls */}
+      <CosmicDanceControls
+        animationProgress={animationProgress}
+        isPlaying={isPlaying}
+        playbackSpeed={playbackSpeed}
+        cardAngle={cardAngle}
+        onProgressChange={setAnimationProgress}
+        onPlayToggle={() => setIsPlaying(!isPlaying)}
+        onSpeedChange={setPlaybackSpeed}
+        onReset={handleResetAnimation}
+        onAngleReset={resetCardAngle}
+      />
       
       {showPauseButton && (
         <StudioPauseButton 
           isPaused={isPaused} 
           onTogglePause={handleTogglePause} 
         />
-      )}
-      
-      {/* Enhanced Scroll Progress Indicator with Sunset Zone - Moved to lower right */}
-      {hasMaxZoomBeenReached && (
-        <div className="absolute bottom-20 right-4 z-10">
-          <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3">
-            <div className="text-white text-xs mb-2">
-              Cosmic Progress
-            </div>
-            <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden relative">
-              <div 
-                className="h-full transition-all duration-300 bg-gradient-to-r from-orange-500 to-yellow-300"
-                style={{ width: `${scrollProgress * 100}%` }}
-              />
-            </div>
-            <div className="text-white/70 text-xs mt-1">
-              <span>{Math.round(scrollProgress * 100)}%</span>
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );
