@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface UserEvent {
   id: string;
-  type: 'move' | 'click' | 'drag_start' | 'drag_end' | 'scroll';
+  type: 'move' | 'click' | 'drag_start' | 'drag_end' | 'scroll' | 'cosmic_alignment' | 'card_angle_change' | 'cosmic_trigger';
   timestamp: number;
   coordinates: { x: number; y: number };
   metadata?: {
@@ -12,6 +13,9 @@ export interface UserEvent {
     cardAngle?: number;
     cameraDistance?: number;
     animationProgress?: number;
+    alignmentScore?: number;
+    isOptimalZoom?: boolean;
+    isOptimalPosition?: boolean;
   };
 }
 
@@ -85,9 +89,7 @@ export const useUserTracker = (options: UseUserTrackerOptions = {}) => {
     setIsRecording(false);
     
     if (saveToStorage) {
-      const sessions = JSON.parse(localStorage.getItem('userTrackingSessions') || '[]');
-      sessions.push(updatedSession);
-      localStorage.setItem('userTrackingSessions', JSON.stringify(sessions));
+      saveToStorageAsync(updatedSession);
     }
     
     console.log('🛑 Recording stopped. Total events:', eventCounter.current);
@@ -237,6 +239,70 @@ export const useUserTracker = (options: UseUserTrackerOptions = {}) => {
         clearInterval(playbackIntervalRef.current);
       }
     };
+  }, []);
+
+  // Enhanced storage with Supabase integration
+  const saveToStorageAsync = useCallback(async (session: UserSession) => {
+    try {
+      // Save to localStorage for backward compatibility
+      const sessions = JSON.parse(localStorage.getItem('userTrackingSessions') || '[]');
+      sessions.push(session);
+      localStorage.setItem('userTrackingSessions', JSON.stringify(sessions));
+
+      // Save to Supabase for persistence and analytics
+      const { data: user } = await supabase.auth.getUser();
+      if (user.user) {
+        // Create session record
+        const { data: sessionData, error: sessionError } = await supabase
+          .from('user_cosmic_sessions')
+          .insert({
+            user_id: user.user.id,
+            session_start: new Date(session.startTime).toISOString(),
+            session_end: session.endTime ? new Date(session.endTime).toISOString() : null,
+            total_attempts: session.events.filter(e => e.type === 'cosmic_alignment').length,
+            alignment_achieved: session.events.some(e => e.type === 'cosmic_trigger'),
+            best_alignment_score: Math.max(...session.events
+              .filter(e => e.metadata?.alignmentScore)
+              .map(e => e.metadata!.alignmentScore!), 0),
+            card_angle_peak: Math.max(...session.events
+              .filter(e => e.metadata?.cardAngle)
+              .map(e => e.metadata!.cardAngle!), 0),
+          })
+          .select()
+          .single();
+
+        if (sessionError) {
+          console.warn('Failed to save session to Supabase:', sessionError);
+          return;
+        }
+
+        // Save cosmic events only for efficiency
+        const cosmicEvents = session.events.filter(e => 
+          e.type.includes('cosmic') || e.type === 'card_angle_change'
+        );
+        
+        if (cosmicEvents.length > 0) {
+          const eventInserts = cosmicEvents.map(event => ({
+            session_id: sessionData.id,
+            user_id: user.user.id,
+            event_type: event.type,
+            coordinates: event.coordinates,
+            metadata: event.metadata || {},
+            timestamp: new Date(event.timestamp).toISOString(),
+          }));
+
+          const { error: eventsError } = await supabase
+            .from('user_interaction_events')
+            .insert(eventInserts);
+
+          if (eventsError) {
+            console.warn('Failed to save events to Supabase:', eventsError);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to save session:', error);
+    }
   }, []);
 
   // Get all saved sessions
