@@ -3,8 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CarouselTrack } from './CarouselTrack';
 import { Typography } from '@/components/ui/design-system/Typography';
-import { EnhancedTestimonialCarousel } from '@/components/ui/EnhancedTestimonialCarousel';
-import { mockTestimonials } from '@/data/testimonials';
 
 const fetchFeaturedCards = async () => {
   const { data, error } = await supabase
