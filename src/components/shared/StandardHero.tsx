@@ -120,7 +120,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
               <CRDButton 
                 size="lg" 
                 variant={primaryCta.variant || 'primary'}
-                className={`mobile-button w-full sm:w-auto min-w-[200px] ${primaryCta.className || ''}`}
+                className={`w-full sm:w-auto min-w-[200px] ${primaryCta.className || ''}`}
               >
                 {primaryCta.text}
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -131,7 +131,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
                 <CRDButton 
                   variant={secondaryCta.variant || 'outline'} 
                   size="lg" 
-                  className={`mobile-button w-full sm:w-auto min-w-[200px] ${secondaryCta.className || ''}`}
+                  className={`w-full sm:w-auto min-w-[200px] ${secondaryCta.className || ''}`}
                 >
                   {secondaryCta.text}
                 </CRDButton>
