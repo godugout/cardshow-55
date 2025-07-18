@@ -186,13 +186,14 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }
   };
 
-  // Cosmic Dance Animation Logic
+  // Cosmic Dance Animation Logic - 10 second sunset
   useEffect(() => {
     if (!isPlaying) return;
 
     const interval = setInterval(() => {
       setAnimationProgress(prev => {
-        const newProgress = prev + (playbackSpeed * 0.01);
+        // 10 seconds total: 100% progress over 10 seconds = 1% per 100ms
+        const newProgress = prev + (playbackSpeed * 0.006); // Adjusted for 10 second timing
         return newProgress >= 1 ? 1 : newProgress;
       });
     }, 16); // ~60fps

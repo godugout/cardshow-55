@@ -34,46 +34,46 @@ interface AnimationFrame {
   };
 }
 
-// Enhanced animation keyframes inspired by 2001: A Space Odyssey
+// Enhanced animation keyframes inspired by 2001: A Space Odyssey - 10 Second Sunset
 const ANIMATION_FRAMES: AnimationFrame[] = [
-  // Dawn scene - Monolith emerging, sun high above
+  // Dawn scene - Sun starts just below nav bar
   {
     progress: 0,
-    sun: { x: 0, y: 20, scale: 0.6, opacity: 0.8 },
+    sun: { x: 0, y: 12, scale: 0.5, opacity: 0.9 },
     card: { lean: 0 },
     lighting: { intensity: 0.8, warmth: 0 },
     environment: { skyColor: '#0a0a2e', spaceDepth: 1.0 }
   },
-  // Early alignment - Sun begins descent
+  // Early descent - Sun moves toward center
   {
     progress: 0.25,
-    sun: { x: 0, y: 35, scale: 0.8, opacity: 0.9 },
+    sun: { x: 0, y: 30, scale: 0.7, opacity: 0.95 },
     card: { lean: 20 },
-    lighting: { intensity: 1.0, warmth: 0.3 },
-    environment: { skyColor: '#1a1a3e', spaceDepth: 0.8 }
+    lighting: { intensity: 1.0, warmth: 0.2 },
+    environment: { skyColor: '#1a1a3e', spaceDepth: 0.9 }
   },
-  // CRITICAL TRIGGER - Sun reaches 50% screen, perfect alignment
+  // CRITICAL TRIGGER - Sun reaches center, perfect alignment
   {
     progress: 0.5,
     sun: { x: 0, y: 50, scale: 1.0, opacity: 1.0 },
     card: { lean: 45 },
-    lighting: { intensity: 1.4, warmth: 0.6 },
-    environment: { skyColor: '#2a1a1e', spaceDepth: 0.6 }
+    lighting: { intensity: 1.3, warmth: 0.5 },
+    environment: { skyColor: '#2a1a1e', spaceDepth: 0.7 }
   },
-  // Deep alignment - Sun continues growth at sunset position
+  // Sunset begins - Sun starts descending, growing warmer
   {
     progress: 0.75,
-    sun: { x: 0, y: 50, scale: 1.4, opacity: 1.0 },
+    sun: { x: 0, y: 70, scale: 1.4, opacity: 1.0 },
     card: { lean: 65 },
-    lighting: { intensity: 1.7, warmth: 0.85 },
+    lighting: { intensity: 1.6, warmth: 0.8 },
     environment: { skyColor: '#3a0a0e', spaceDepth: 0.4 }
   },
-  // FINAL ALIGNMENT - Sun massive at sunset position (transcendence)
+  // FINAL SUNSET - Sun sets low on horizon, massive and golden
   {
     progress: 1.0,
-    sun: { x: 0, y: 50, scale: 2.0, opacity: 1.0 },
+    sun: { x: 0, y: 85, scale: 2.2, opacity: 0.9 },
     card: { lean: 80 },
-    lighting: { intensity: 2.0, warmth: 1.0 },
+    lighting: { intensity: 1.8, warmth: 1.0 },
     environment: { skyColor: '#4a0000', spaceDepth: 0.2 }
   }
 ];
