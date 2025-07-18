@@ -217,7 +217,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     };
   }, []);
 
-  // Camera reset event listener
+  // Camera reset event listeners
   useEffect(() => {
     const handleCameraReset = () => {
       if (controlsRef.current) {
@@ -225,10 +225,16 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
       }
     };
 
+    const handleAnimatedReset = () => {
+      handleReset();
+    };
+
     window.addEventListener('crd-reset-camera', handleCameraReset);
+    window.addEventListener('crd-animated-reset', handleAnimatedReset);
     
     return () => {
       window.removeEventListener('crd-reset-camera', handleCameraReset);
+      window.removeEventListener('crd-animated-reset', handleAnimatedReset);
     };
   }, []);
 

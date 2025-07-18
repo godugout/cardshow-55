@@ -23,8 +23,8 @@ export const CreatePageHero: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   
   const handleResetCamera = () => {
-    // Trigger a camera reset - this will be handled by the CRDViewer component
-    window.dispatchEvent(new CustomEvent('crd-reset-camera'));
+    // Trigger an animated camera reset - this will be handled by the CRDViewer component
+    window.dispatchEvent(new CustomEvent('crd-animated-reset'));
   };
 
   const handleTogglePause = () => {
