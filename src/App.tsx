@@ -13,11 +13,15 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { GlobalSecretEffectsProvider } from '@/contexts/GlobalSecretEffectsContext';
 import { GlobalSecretMenu } from '@/components/global/GlobalSecretMenu';
 
-// Core pages loaded immediately
+// Critical pages loaded immediately for better UX
 import Index from '@/pages/Index';
 import NotFound from '@/pages/NotFound';
 
-// Lazy load non-critical pages for better performance
+// Authentication pages - keep immediately loaded for better auth flow UX
+import SignIn from '@/pages/auth/SignIn';
+import SignUp from '@/pages/auth/SignUp';
+
+// Lazy load all other pages to reduce initial bundle size
 const CreateEnhanced = lazy(() => import('@/pages/CreateEnhanced'));
 const CreateStory = lazy(() => import('@/pages/CreateStory'));
 const CreateCRD = lazy(() => import('@/pages/CreateCRD'));
@@ -25,22 +29,42 @@ const Gallery = lazy(() => import('@/pages/Gallery'));
 const Studio = lazy(() => import('@/pages/Studio'));
 const Collections = lazy(() => import('@/pages/Collections'));
 const CollectionsCatalog = lazy(() => import('@/pages/CollectionsCatalog'));
+
+// Development/testing pages - low priority for lazy loading
 const UploadTestPage = lazy(() => import('@/pages/UploadTestPage'));
 const DNATestPage = lazy(() => import('@/pages/DNATestPage'));
 const DesignGuide = lazy(() => import('@/pages/DesignGuide'));
+
+// DNA/Admin pages - perfect candidates for lazy loading
 const DNAManager = lazy(() => import('@/pages/DNAManager'));
 const DNALabLanding = lazy(() => import('@/pages/DNALabLanding'));
 const DNALabDashboard = lazy(() => import('@/pages/DNALabDashboard'));
 const DNALabUsers = lazy(() => import('@/pages/DNALabUsers'));
 const DNALabModeration = lazy(() => import('@/pages/DNALabModeration'));
-const SignIn = lazy(() => import('@/pages/auth/SignIn'));
-const SignUp = lazy(() => import('@/pages/auth/SignUp'));
 
-// Route loading fallback component
+// Specific loading states for different page types
 const RouteLoading = () => (
   <LoadingState 
     fullPage 
     message="Loading page..." 
+    size="lg"
+    className="bg-crd-darkest"
+  />
+);
+
+const AdminLoading = () => (
+  <LoadingState 
+    fullPage 
+    message="Loading admin panel..." 
+    size="lg"
+    className="bg-crd-darkest"
+  />
+);
+
+const StudioLoading = () => (
+  <LoadingState 
+    fullPage 
+    message="Loading studio..." 
     size="lg"
     className="bg-crd-darkest"
   />
@@ -133,7 +157,7 @@ const App = () => {
                     path="/studio" 
                     element={
                       <RouteErrorBoundary>
-                        <Suspense fallback={<RouteLoading />}>
+                        <Suspense fallback={<StudioLoading />}>
                           <Studio />
                         </Suspense>
                       </RouteErrorBoundary>
@@ -143,7 +167,7 @@ const App = () => {
                     path="/studio/:cardId" 
                     element={
                       <RouteErrorBoundary>
-                        <Suspense fallback={<RouteLoading />}>
+                        <Suspense fallback={<StudioLoading />}>
                           <Studio />
                         </Suspense>
                       </RouteErrorBoundary>
@@ -193,7 +217,7 @@ const App = () => {
                     path="/dna/lab" 
                     element={
                       <RouteErrorBoundary>
-                        <Suspense fallback={<RouteLoading />}>
+                        <Suspense fallback={<AdminLoading />}>
                           <DNALabLanding />
                         </Suspense>
                       </RouteErrorBoundary>
@@ -203,7 +227,7 @@ const App = () => {
                     path="/dna/lab/dashboard" 
                     element={
                       <RouteErrorBoundary>
-                        <Suspense fallback={<RouteLoading />}>
+                        <Suspense fallback={<AdminLoading />}>
                           <DNALabDashboard />
                         </Suspense>
                       </RouteErrorBoundary>
@@ -213,7 +237,7 @@ const App = () => {
                     path="/dna/lab/users" 
                     element={
                       <RouteErrorBoundary>
-                        <Suspense fallback={<RouteLoading />}>
+                        <Suspense fallback={<AdminLoading />}>
                           <DNALabUsers />
                         </Suspense>
                       </RouteErrorBoundary>
@@ -223,19 +247,18 @@ const App = () => {
                     path="/dna/lab/moderation" 
                     element={
                       <RouteErrorBoundary>
-                        <Suspense fallback={<RouteLoading />}>
+                        <Suspense fallback={<AdminLoading />}>
                           <DNALabModeration />
                         </Suspense>
                       </RouteErrorBoundary>
                     } 
                   />
+                  {/* Auth pages - immediately loaded for better UX */}
                   <Route 
                     path="/auth/signin" 
                     element={
                       <RouteErrorBoundary>
-                        <Suspense fallback={<RouteLoading />}>
-                          <SignIn />
-                        </Suspense>
+                        <SignIn />
                       </RouteErrorBoundary>
                     } 
                   />
@@ -243,9 +266,7 @@ const App = () => {
                     path="/auth/signup" 
                     element={
                       <RouteErrorBoundary>
-                        <Suspense fallback={<RouteLoading />}>
-                          <SignUp />
-                        </Suspense>
+                        <SignUp />
                       </RouteErrorBoundary>
                     } 
                   />
