@@ -56,7 +56,7 @@ export const MobileCreateHero: React.FC = () => {
         <div className="flex flex-col gap-2 justify-center my-4">
           <Link to="/create/crd">
             <CRDButton 
-              size="md" 
+              size="default" 
               variant="create"
               className="min-w-[180px] text-base"
             >
@@ -66,7 +66,7 @@ export const MobileCreateHero: React.FC = () => {
           <Link to="/templates">
             <CRDButton 
               variant="outline" 
-              size="md" 
+              size="default" 
               className="min-w-[180px] text-base"
             >
               Browse Templates
