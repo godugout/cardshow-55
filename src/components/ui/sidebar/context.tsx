@@ -1,6 +1,6 @@
 
 import * as React from "react"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useResponsiveBreakpoints } from "@/hooks/useResponsiveBreakpoints"
 
 type SidebarContext = {
   state: "expanded" | "collapsed"
@@ -41,7 +41,7 @@ export function SidebarProvider({
   children,
   ...props
 }: SidebarProviderProps) {
-  const isMobile = useIsMobile()
+  const { isMobile } = useResponsiveBreakpoints()
   const [openMobile, setOpenMobile] = React.useState(false)
   const [_open, _setOpen] = React.useState(defaultOpen)
   const open = openProp ?? _open

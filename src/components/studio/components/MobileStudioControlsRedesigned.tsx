@@ -4,7 +4,7 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { StudioCaseSelector, type CaseStyle } from './StudioCaseSelector';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { MobileOnboardingTour } from './MobileOnboardingTour';
 import { ProgressiveDisclosurePanel } from './ProgressiveDisclosurePanel';
@@ -44,7 +44,7 @@ export const MobileStudioControlsRedesigned: React.FC<MobileStudioControlsRedesi
   const [experienceLevel, setExperienceLevel] = useState<'beginner' | 'intermediate' | 'expert'>('beginner');
   const [activeTab, setActiveTab] = useState<'controls' | 'performance' | 'haptics'>('controls');
   const [showHapticTesting, setShowHapticTesting] = useState(false);
-  const isMobile = useIsMobile();
+  const { isMobile } = useResponsiveBreakpoints();
   const { medium, light, cardFlip, studioEnter } = useHapticFeedback();
 
   

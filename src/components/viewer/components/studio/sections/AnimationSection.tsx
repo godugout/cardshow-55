@@ -3,7 +3,7 @@ import { Play, Pause, RotateCcw, Settings, Zap } from 'lucide-react';
 import { CollapsibleSection } from '@/components/ui/design-system';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 
 interface AnimationSectionProps {
   // Basic animation props
@@ -68,7 +68,7 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
   isOpen,
   onToggle
 }) => {
-  const isMobile = useIsMobile();
+  const { isMobile } = useResponsiveBreakpoints();
   const [showCosmicDetails, setShowCosmicDetails] = useState(false);
   
   const statusText = hasTriggered ? "Cosmic Aligned" : 

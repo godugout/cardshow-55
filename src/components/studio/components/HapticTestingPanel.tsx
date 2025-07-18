@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Vibrate, Battery, Cpu, TestTube, Settings, Zap, Volume2 } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { useHapticFeedback, type HapticPattern } from '@/hooks/useHapticFeedback';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 import { Slider } from '@/components/ui/slider';
 
 interface HapticTestingPanelProps {
@@ -62,7 +62,7 @@ export const HapticTestingPanel: React.FC<HapticTestingPanelProps> = ({
     heavy
   } = useHapticFeedback();
   
-  const isMobile = useIsMobile();
+  const { isMobile } = useResponsiveBreakpoints();
 
   useEffect(() => {
     if (isVisible) {

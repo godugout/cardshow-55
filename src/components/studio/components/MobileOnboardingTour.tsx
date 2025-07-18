@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft, Smartphone, Zap, Palette, Camera } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 
 interface OnboardingStep {
   id: string;
@@ -58,7 +58,7 @@ export const MobileOnboardingTour: React.FC<MobileOnboardingTourProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
-  const isMobile = useIsMobile();
+  const { isMobile } = useResponsiveBreakpoints();
   const { light, medium } = useHapticFeedback();
 
   useEffect(() => {
