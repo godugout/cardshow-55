@@ -6,6 +6,7 @@ import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
 import { CosmicSun } from './cosmic/CosmicSun';
+import { CosmicMoon } from './cosmic/CosmicMoon';
 
 import { StudioPauseButton } from '../studio/StudioPauseButton';
 
@@ -305,6 +306,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           onCardLeanRequired={handleCardLeanRequired}
         />
         
+        <CosmicMoon 
+          scrollProgress={scrollProgress}
+          isSunsetPoint={isSunsetPoint}
+        />
+        
         {/* Main Card with Glass Case Container - Enhanced with sunset lean animation */}
         <group 
           position={[0, -2, 0]}
@@ -312,7 +318,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             isCardLocked 
               ? [0, 0, 0] 
               : cardLeanRequired
-                ? [-0.25, 0, 0] // Forward lean during sunset point
+                ? [-0.3, 0, 0] // Lean towards sun and stay leaned
                 : [mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]
           }
         >
@@ -403,8 +409,8 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         </div>
       )}
       
-      {/* Sunset Point Indication */}
-      {isSunsetPoint && (
+      {/* Sunset Point Indication - No orange button during pause */}
+      {isSunsetPoint && scrollProgress < 0.8 && (
         <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
           <div className="bg-gradient-to-r from-orange-500/80 to-yellow-400/80 backdrop-blur-sm rounded-lg px-8 py-4 text-white text-center animate-pulse">
             <p className="text-lg font-bold mb-2">⚡ ALIGNMENT ACHIEVED ⚡</p>
@@ -431,9 +437,9 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         />
       )}
       
-      {/* Enhanced Scroll Progress Indicator with Sunset Zone */}
+      {/* Enhanced Scroll Progress Indicator with Sunset Zone - Moved to lower right */}
       {hasMaxZoomBeenReached && (
-        <div className="absolute top-4 right-4 z-10">
+        <div className="absolute bottom-20 right-4 z-10">
           <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3">
             <div className="text-white text-xs mb-2 flex items-center gap-2">
               Cosmic Progress

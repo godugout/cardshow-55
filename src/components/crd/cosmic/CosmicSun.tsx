@@ -61,9 +61,9 @@ export const CosmicSun: React.FC<CosmicSunProps> = ({
         easedProgress = sunsetPointStart + (1 - sunsetPointStart) * easeInOutQuart(localProgress);
       }
       
-      // Enhanced sun positioning - lower final position for dramatic effect
-      const sunY = THREE.MathUtils.lerp(8, -0.5, easedProgress * 0.9); // More dramatic descent
-      const sunZ = THREE.MathUtils.lerp(-5, -6, easedProgress * 0.8); // Closer to card
+      // Enhanced sun positioning - lower final position so only small part visible
+      const sunY = THREE.MathUtils.lerp(8, -2.5, easedProgress * 0.9); // Much lower descent
+      const sunZ = THREE.MathUtils.lerp(-5, -4, easedProgress * 0.8); // Position in front of card
       
       sunRef.current.position.set(0, sunY, sunZ);
       fireRingRef.current.position.copy(sunRef.current.position);
