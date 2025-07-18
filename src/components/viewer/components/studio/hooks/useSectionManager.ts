@@ -7,6 +7,7 @@ export interface SectionStates {
   spaces: boolean;
   materials: boolean;
   lighting: boolean;
+  animation: boolean;
 }
 
 export const useSectionManager = () => {
@@ -16,6 +17,7 @@ export const useSectionManager = () => {
     spaces: true, // Default open to match screenshot
     materials: false,
     lighting: false,
+    animation: false,
   });
 
   const setSectionState = (section: keyof SectionStates, isOpen: boolean) => {

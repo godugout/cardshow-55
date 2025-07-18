@@ -38,6 +38,26 @@ interface CRDViewerProps {
   onTogglePause?: () => void;
   showPauseButton?: boolean;
   
+  // Studio integration
+  hideCosmicControls?: boolean;
+  onCosmicStateChange?: (state: {
+    animationProgress: number;
+    isPlaying: boolean;
+    playbackSpeed: number;
+    cardAngle: number;
+    cameraDistance: number;
+    isOptimalZoom: boolean;
+    isOptimalPosition: boolean;
+    hasTriggered: boolean;
+  }) => void;
+  
+  // Cosmic control callbacks
+  onCosmicProgressChange?: (progress: number) => void;
+  onCosmicPlayToggle?: () => void;
+  onCosmicSpeedChange?: (speed: number) => void;
+  onCosmicReset?: () => void;
+  onCosmicAngleReset?: () => void;
+  
   className?: string;
   onModeChange?: (mode: AnimationMode) => void;
   onIntensityChange?: (intensity: number) => void;
@@ -65,6 +85,15 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   isPaused: externalIsPaused,
   onTogglePause: externalOnTogglePause,
   showPauseButton = true,
+  
+  // Studio integration
+  hideCosmicControls = false,
+  onCosmicStateChange,
+  onCosmicProgressChange,
+  onCosmicPlayToggle,
+  onCosmicSpeedChange,
+  onCosmicReset,
+  onCosmicAngleReset,
   
   className = "w-full h-screen",
   onModeChange,
@@ -228,6 +257,22 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }
   }, [animationProgress, isPlaying, controlsRef]);
 
+  // Notify studio about cosmic state changes
+  useEffect(() => {
+    if (onCosmicStateChange) {
+      onCosmicStateChange({
+        animationProgress,
+        isPlaying,
+        playbackSpeed,
+        cardAngle,
+        cameraDistance,
+        isOptimalZoom,
+        isOptimalPosition,
+        hasTriggered: cosmicTriggered,
+      });
+    }
+  }, [animationProgress, isPlaying, playbackSpeed, cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cosmicTriggered, onCosmicStateChange]);
+
   const handleCosmicTrigger = () => {
     setCosmicTriggered(true);
     if (!isPlaying && animationProgress < 1) {
@@ -249,6 +294,30 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
       controlsRef.current.enableZoom = true;
       controlsRef.current.enablePan = true;
     }
+    
+    // Notify studio of reset
+    onCosmicReset?.();
+  };
+
+  // Cosmic control handlers for studio integration
+  const handleCosmicProgressChange = (progress: number) => {
+    setAnimationProgress(progress);
+    onCosmicProgressChange?.(progress);
+  };
+
+  const handleCosmicPlayToggle = () => {
+    setIsPlaying(!isPlaying);
+    onCosmicPlayToggle?.();
+  };
+
+  const handleCosmicSpeedChange = (speed: number) => {
+    setPlaybackSpeed(speed);
+    onCosmicSpeedChange?.(speed);
+  };
+
+  const handleCosmicAngleReset = () => {
+    resetCardAngle();
+    onCosmicAngleReset?.();
   };
 
   // Handle card control updates from CosmicDance
@@ -411,22 +480,24 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         onCardControlUpdate={handleCardControlUpdate}
       />
       
-      {/* Cosmic Dance Controls */}
-      <CosmicDanceControls
-        animationProgress={animationProgress}
-        isPlaying={isPlaying}
-        playbackSpeed={playbackSpeed}
-        cardAngle={cardAngle}
-        cameraDistance={cameraDistance}
-        isOptimalZoom={isOptimalZoom}
-        isOptimalPosition={isOptimalPosition}
-        hasTriggered={cosmicTriggered}
-        onProgressChange={setAnimationProgress}
-        onPlayToggle={() => setIsPlaying(!isPlaying)}
-        onSpeedChange={setPlaybackSpeed}
-        onReset={handleResetAnimation}
-        onAngleReset={resetCardAngle}
-      />
+      {/* Cosmic Dance Controls - Hidden when studio integration is active */}
+      {!hideCosmicControls && (
+        <CosmicDanceControls
+          animationProgress={animationProgress}
+          isPlaying={isPlaying}
+          playbackSpeed={playbackSpeed}
+          cardAngle={cardAngle}
+          cameraDistance={cameraDistance}
+          isOptimalZoom={isOptimalZoom}
+          isOptimalPosition={isOptimalPosition}
+          hasTriggered={cosmicTriggered}
+          onProgressChange={handleCosmicProgressChange}
+          onPlayToggle={handleCosmicPlayToggle}
+          onSpeedChange={handleCosmicSpeedChange}
+          onReset={handleResetAnimation}
+          onAngleReset={handleCosmicAngleReset}
+        />
+      )}
       
       {showPauseButton && (
         <StudioPauseButton 

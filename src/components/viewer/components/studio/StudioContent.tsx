@@ -6,7 +6,8 @@ import {
   EffectsSection, 
   SpacesSection,
   SurfaceSection,
-  LightingSection
+  LightingSection,
+  AnimationSection
 } from './sections';
 import type { EffectValues } from '../../hooks/useEnhancedCardEffects';
 import type { EnvironmentScene, LightingPreset, MaterialSettings } from '../../types';
@@ -28,6 +29,27 @@ interface StudioContentProps {
   onPresetSelect: (presetId: string) => void;
   onApplyCombo: (combo: any) => void;
   isApplyingPreset?: boolean;
+  
+  // Animation props
+  animationMode?: string;
+  animationIntensity?: number;
+  onAnimationModeChange?: (mode: string) => void;
+  onAnimationIntensityChange?: (intensity: number) => void;
+  
+  // Cosmic dance props
+  animationProgress?: number;
+  isCosmicPlaying?: boolean;
+  playbackSpeed?: number;
+  cardAngle?: number;
+  cameraDistance?: number;
+  isOptimalZoom?: boolean;
+  isOptimalPosition?: boolean;
+  hasTriggered?: boolean;
+  onProgressChange?: (progress: number) => void;
+  onPlayToggle?: () => void;
+  onSpeedChange?: (speed: number) => void;
+  onReset?: () => void;
+  onAngleReset?: () => void;
 }
 
 export const StudioContent: React.FC<StudioContentProps> = ({
@@ -46,7 +68,28 @@ export const StudioContent: React.FC<StudioContentProps> = ({
   selectedPresetId,
   onPresetSelect,
   onApplyCombo,
-  isApplyingPreset = false
+  isApplyingPreset = false,
+  
+  // Animation props
+  animationMode = 'none',
+  animationIntensity = 0.5,
+  onAnimationModeChange,
+  onAnimationIntensityChange,
+  
+  // Cosmic dance props
+  animationProgress = 0,
+  isCosmicPlaying = false,
+  playbackSpeed = 1,
+  cardAngle = 0,
+  cameraDistance = 15,
+  isOptimalZoom = false,
+  isOptimalPosition = false,
+  hasTriggered = false,
+  onProgressChange,
+  onPlayToggle,
+  onSpeedChange,
+  onReset,
+  onAngleReset
 }) => {
   const { sectionStates, setSectionState } = useSectionManager();
 
@@ -99,6 +142,29 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             onLightingChange={onLightingChange}
             onBrightnessChange={handleBrightnessChange}
             onInteractiveLightingToggle={onInteractiveLightingToggle}
+          />
+
+          {/* Animation Section */}
+          <AnimationSection
+            animationMode={animationMode}
+            animationIntensity={animationIntensity}
+            onAnimationModeChange={onAnimationModeChange || (() => {})}
+            onAnimationIntensityChange={onAnimationIntensityChange || (() => {})}
+            animationProgress={animationProgress}
+            isCosmicPlaying={isCosmicPlaying}
+            playbackSpeed={playbackSpeed}
+            cardAngle={cardAngle}
+            cameraDistance={cameraDistance}
+            isOptimalZoom={isOptimalZoom}
+            isOptimalPosition={isOptimalPosition}
+            hasTriggered={hasTriggered}
+            onProgressChange={onProgressChange || (() => {})}
+            onPlayToggle={onPlayToggle || (() => {})}
+            onSpeedChange={onSpeedChange || (() => {})}
+            onReset={onReset || (() => {})}
+            onAngleReset={onAngleReset || (() => {})}
+            isOpen={sectionStates.animation}
+            onToggle={(isOpen) => setSectionState('animation', isOpen)}
           />
 
           {/* Surface Section */}
