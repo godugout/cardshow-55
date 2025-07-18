@@ -45,7 +45,7 @@ export const TemplateControlsCard: React.FC<TemplateControlsCardProps> = ({
   onReset,
   onAngleReset
 }) => {
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true);
 
   if (!templateEngine) return null;
 

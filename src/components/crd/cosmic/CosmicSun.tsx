@@ -24,8 +24,9 @@ export const CosmicSun: React.FC<CosmicSunProps> = ({ scrollProgress }) => {
     if (sunRef.current) {
       const time = state.clock.elapsedTime;
       
-      // Start sun higher - between navbar and "CUT, CRAFT..." text
-      const sunY = THREE.MathUtils.lerp(10, -6, scrollProgress); // Starts higher than moon
+      // Start sun at same screen position as moon's final resting position (120px from top)
+      // Convert screen pixels to 3D coordinates: moon at y:120px ≈ 3D y:4 
+      const sunY = THREE.MathUtils.lerp(4, -6, scrollProgress); // Starts at moon's final position
       const sunZ = THREE.MathUtils.lerp(-5, -3, scrollProgress); // Stays in front of card
       
       sunRef.current.position.set(0, sunY, sunZ);
