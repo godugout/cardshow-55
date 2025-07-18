@@ -39,7 +39,7 @@ interface AnimationFrame {
 
 // Enhanced animation keyframes inspired by 2001: A Space Odyssey - Perfect Alignment
 const ANIMATION_FRAMES: AnimationFrame[] = [
-  // Dawn scene - Sun starts lower, card normal position
+  // Dawn scene - Sun starts lower, card positioned well below
   {
     progress: 0,
     sun: { x: 0, y: 30, scale: 0.4, opacity: 0.8 },
@@ -47,35 +47,35 @@ const ANIMATION_FRAMES: AnimationFrame[] = [
     lighting: { intensity: 0.8, warmth: 0 },
     environment: { skyColor: '#0a0a2e', spaceDepth: 1.0 }
   },
-  // Early descent - Card begins to lift for cinematic positioning
+  // Early descent - Card begins to lift but stays below sun
   {
     progress: 0.25,
     sun: { x: 0, y: 40, scale: 0.7, opacity: 0.95 },
-    card: { lean: 20, positionY: 0.5, controlTaken: false },
+    card: { lean: 20, positionY: 1.0, controlTaken: false },
     lighting: { intensity: 1.0, warmth: 0.2 },
     environment: { skyColor: '#1a1a3e', spaceDepth: 0.9 }
   },
-  // CONTROL TAKEOVER - System takes card control for perfect positioning
+  // CONTROL TAKEOVER - System takes card control, moves further down for clearance
   {
     progress: 0.5,
     sun: { x: 0, y: 50, scale: 1.0, opacity: 1.0 },
-    card: { lean: 45, positionY: 1.5, controlTaken: true },
+    card: { lean: 45, positionY: 2.5, controlTaken: true },
     lighting: { intensity: 1.3, warmth: 0.5 },
     environment: { skyColor: '#2a1a1e', spaceDepth: 0.7 }
   },
-  // Eternal alignment - Card reaches ideal sunset viewing position
+  // Eternal alignment - Card positioned perfectly below sun's edge
   {
     progress: 0.75,
     sun: { x: 0, y: 60, scale: 1.6, opacity: 1.0 },
-    card: { lean: 65, positionY: 2.0, controlTaken: true },
+    card: { lean: 65, positionY: 3.5, controlTaken: true },
     lighting: { intensity: 1.6, warmth: 0.8 },
     environment: { skyColor: '#3a0a0e', spaceDepth: 0.4 }
   },
-  // TRANSCENDENCE - Final cinematic position achieved
+  // TRANSCENDENCE - Final cinematic position with maximum clearance
   {
     progress: 1.0,
     sun: { x: 0, y: 70, scale: 2.2, opacity: 1.0 },
-    card: { lean: 80, positionY: 2.5, controlTaken: true },
+    card: { lean: 80, positionY: 4.5, controlTaken: true },
     lighting: { intensity: 2.0, warmth: 1.0 },
     environment: { skyColor: '#4a0000', spaceDepth: 0.2 }
   }
