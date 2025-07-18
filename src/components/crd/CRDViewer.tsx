@@ -76,6 +76,9 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [cosmicTriggered, setCosmicTriggered] = useState(false);
+  
+  // Card cinematic control state
+  const [cardCinematicPosition, setCardCinematicPosition] = useState({ y: 0, lean: 0, controlTaken: false });
 
   // Refs
   const cardRef = useRef<THREE.Group & { getCurrentRotation?: () => THREE.Euler }>(null);
@@ -201,16 +204,29 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     return () => clearInterval(interval);
   }, [isPlaying, playbackSpeed]);
 
-  // Auto-pause and unlock when reaching end
+  // Enhanced cleanup when reaching end - Fix control liberation
   useEffect(() => {
     if (animationProgress >= 1 && isPlaying) {
       setIsPlaying(false);
-      // Auto-unlock controls after animation completes
+      // Enhanced control cleanup sequence
       setTimeout(() => {
+        // Reset all cosmic states
         setCosmicTriggered(false);
+        setCardCinematicPosition({ y: 0, lean: 0, controlTaken: false });
+        
+        // Force reset OrbitControls to ensure proper liberation
+        if (controlsRef.current) {
+          controlsRef.current.enabled = true;
+          controlsRef.current.enableRotate = true;
+          controlsRef.current.enableZoom = true;
+          controlsRef.current.enablePan = true;
+        }
+        
+        // Close any open tracking windows/UI panels
+        // Note: This will be handled by the parent component via state reset
       }, 2000); // 2 second delay to enjoy the final frame
     }
-  }, [animationProgress, isPlaying]);
+  }, [animationProgress, isPlaying, controlsRef]);
 
   const handleCosmicTrigger = () => {
     setCosmicTriggered(true);
@@ -223,7 +239,21 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     setAnimationProgress(0);
     setIsPlaying(false);
     setCosmicTriggered(false);
+    setCardCinematicPosition({ y: 0, lean: 0, controlTaken: false });
     resetCardAngle();
+    
+    // Force control re-enabling on reset
+    if (controlsRef.current) {
+      controlsRef.current.enabled = true;
+      controlsRef.current.enableRotate = true;
+      controlsRef.current.enableZoom = true;
+      controlsRef.current.enablePan = true;
+    }
+  };
+
+  // Handle card control updates from CosmicDance
+  const handleCardControlUpdate = (params: { positionY: number; lean: number; controlTaken: boolean }) => {
+    setCardCinematicPosition({ y: params.positionY, lean: params.lean, controlTaken: params.controlTaken });
   };
 
   // Handle orbit controls interaction
@@ -281,11 +311,15 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         
         {/* Cosmic Background Elements - Removed, now using 2D overlay */}
         
-        {/* Main Card with Glass Case Container - Enhanced with sunset lean animation */}
+        {/* Main Card with Glass Case Container - Enhanced with cinematic positioning */}
         <group 
-          position={[0, -2, 0]}
+          position={[
+            0, 
+            -2 + cardCinematicPosition.y, // Cinematic Y positioning during cosmic alignment
+            0
+          ]}
           rotation={
-            isCardLocked 
+            isCardLocked || cardCinematicPosition.controlTaken
               ? [0, 0, 0] 
               : [mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]
           }
@@ -342,12 +376,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         {enableControls && (
           <OrbitControls
             ref={controlsRef}
-            enableZoom={true}
-            enablePan={true}
-            enableRotate={!cosmicTriggered}
+            enableZoom={!cosmicTriggered && !cardCinematicPosition.controlTaken}
+            enablePan={!cosmicTriggered && !cardCinematicPosition.controlTaken}
+            enableRotate={!cosmicTriggered && !cardCinematicPosition.controlTaken}
             maxDistance={25}
             minDistance={2}
-            autoRotate={autoRotate && !cosmicTriggered}
+            autoRotate={autoRotate && !cosmicTriggered && !cardCinematicPosition.controlTaken}
             autoRotateSpeed={rotationSpeed}
             target={[mouseOffset.x * 0.01, mouseOffset.y * 0.01, 0]}
             minPolarAngle={0}
@@ -374,6 +408,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         isOptimalZoom={isOptimalZoom}
         isOptimalPosition={isOptimalPosition}
         onTriggerReached={handleCosmicTrigger}
+        onCardControlUpdate={handleCardControlUpdate}
       />
       
       {/* Cosmic Dance Controls */}

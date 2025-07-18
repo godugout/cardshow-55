@@ -35,6 +35,13 @@ const CreateWithStickyControls = () => {
   // Get card angle and camera data for tracking
   const { cardAngle, cameraDistance } = useCardAngle();
 
+  // Cosmic event handler to reset UI state
+  const handleCosmicEventComplete = () => {
+    // Close any open tracking windows/UI panels after cosmic event
+    setEnableUserTracking(false);
+    // Could add more UI cleanup here if needed
+  };
+
   return (
     <div className="fixed inset-0 bg-crd-darkest overflow-hidden flex flex-col">
       {/* 3D Card Viewer - Takes remaining space */}
