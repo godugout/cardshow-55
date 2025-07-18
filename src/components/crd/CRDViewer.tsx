@@ -77,8 +77,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const [hasMaxZoomBeenReached, setHasMaxZoomBeenReached] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0); // 0 to 1 range
   const [showScrollPrompt, setShowScrollPrompt] = useState(false);
-  const [isSunsetPoint, setIsSunsetPoint] = useState(false);
-  const [cardLeanRequired, setCardLeanRequired] = useState(false);
   const MAX_ZOOM_DISTANCE = 3; // Minimum distance for max zoom
 
   // Mouse position state for synced movement
@@ -204,21 +202,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     });
   }, [hasMaxZoomBeenReached]);
 
-  // Cosmic scene event handlers
-  const handleSunsetPointReached = useCallback((reached: boolean) => {
-    setIsSunsetPoint(reached);
-  }, []);
-
-  const handleCardLeanRequired = useCallback((lean: boolean) => {
-    setCardLeanRequired(lean);
-  }, []);
 
   const handleResetSunScene = useCallback(() => {
     setScrollProgress(0);
     setHasMaxZoomBeenReached(false);
     setShowScrollPrompt(false);
-    setIsSunsetPoint(false);
-    setCardLeanRequired(false);
   }, []);
 
   // Monitor camera position for max zoom detection
@@ -301,14 +289,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         
         {/* Cosmic Background Elements */}
         <CosmicSun 
-          scrollProgress={scrollProgress} 
-          onSunsetPointReached={handleSunsetPointReached}
-          onCardLeanRequired={handleCardLeanRequired}
+          scrollProgress={scrollProgress}
         />
         
         <CosmicMoon 
           scrollProgress={scrollProgress}
-          isSunsetPoint={isSunsetPoint}
+          isSunsetPoint={false}
         />
         
         {/* Main Card with Glass Case Container - Enhanced with sunset lean animation */}
@@ -317,9 +303,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           rotation={
             isCardLocked 
               ? [0, 0, 0] 
-              : cardLeanRequired
-                ? [-0.3, 0, 0] // Lean towards sun and stay leaned
-                : [mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]
+              : [mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]
           }
         >
         <Card3DCore
@@ -432,34 +416,17 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
       {hasMaxZoomBeenReached && (
         <div className="absolute bottom-20 right-4 z-10">
           <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3">
-            <div className="text-white text-xs mb-2 flex items-center gap-2">
+            <div className="text-white text-xs mb-2">
               Cosmic Progress
-              {isSunsetPoint && <span className="text-orange-400">⚡</span>}
             </div>
             <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden relative">
-              {/* Sunset resistance zone indicator */}
               <div 
-                className="absolute h-full bg-orange-400/30 rounded-full"
-                style={{ 
-                  left: '65%', 
-                  width: '20%' 
-                }}
-              />
-              {/* Progress bar */}
-              <div 
-                className={`h-full transition-all duration-300 ${
-                  isSunsetPoint 
-                    ? 'bg-gradient-to-r from-orange-600 to-yellow-400' 
-                    : 'bg-gradient-to-r from-orange-500 to-yellow-300'
-                }`}
+                className="h-full transition-all duration-300 bg-gradient-to-r from-orange-500 to-yellow-300"
                 style={{ width: `${scrollProgress * 100}%` }}
               />
             </div>
-            <div className="text-white/70 text-xs mt-1 flex justify-between">
+            <div className="text-white/70 text-xs mt-1">
               <span>{Math.round(scrollProgress * 100)}%</span>
-              {isSunsetPoint && (
-                <span className="text-orange-400 text-xs">SUNSET</span>
-              )}
             </div>
           </div>
         </div>
