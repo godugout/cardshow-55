@@ -229,11 +229,12 @@ export const Hero3: React.FC<Hero3Props> = ({
     <div className="w-full overflow-hidden" ref={containerRef}>
       <div 
         ref={carouselRef}
-        className="flex gap-6 cursor-grab select-none will-change-transform"
+        className="flex gap-6 select-none will-change-transform"
         style={{ 
           transform: `translateX(${physics.position}px)`,
           transition: physics.isDragging ? 'none' : 'transform 0.1s ease-out',
-          touchAction: 'pan-x' // Only allow horizontal pan gestures
+          touchAction: 'pan-x', // Only allow horizontal pan gestures
+          cursor: physics.isDragging ? 'grabbing' : 'grab'
         }}
         onMouseDown={handleMouseDown}
         onWheel={handleWheel}
@@ -247,20 +248,21 @@ export const Hero3: React.FC<Hero3Props> = ({
         {[...featuredCards, ...featuredCards].map((card, index) => (
           <div 
             key={`${card.id}-${index}`}
-            className="flex-shrink-0 w-64 md:w-80 lg:w-96 cursor-pointer"
-            onPointerEnter={() => setHoveredCard(`${card.id}-${index}`)}
+            className="flex-shrink-0 w-64 md:w-80 lg:w-96"
+            onPointerEnter={() => !physics.isDragging && setHoveredCard(`${card.id}-${index}`)}
             onPointerLeave={() => setHoveredCard(null)}
             onFocus={() => setFocusedCard(`${card.id}-${index}`)}
             onBlur={() => setFocusedCard(null)}
             onClick={(e) => e.preventDefault()}
             style={{
-              transform: hoveredCard === `${card.id}-${index}` 
-                ? `scale(1.05) translateY(-8px) rotateX(5deg)` 
-                : focusedCard === `${card.id}-${index}`
-                ? `scale(1.02) translateY(-4px)`
+              transform: !physics.isDragging && hoveredCard === `${card.id}-${index}` 
+                ? `scale(1.03) translateY(-4px)` 
+                : !physics.isDragging && focusedCard === `${card.id}-${index}`
+                ? `scale(1.01) translateY(-2px)`
                 : 'scale(1)',
-              transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              transformStyle: 'preserve-3d'
+              transition: physics.isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              transformStyle: 'preserve-3d',
+              cursor: physics.isDragging ? 'grabbing' : 'default'
             }}
           >
             <div 
@@ -287,14 +289,16 @@ export const Hero3: React.FC<Hero3Props> = ({
                     alt={card.title}
                     className="w-full h-full object-cover"
                     style={{
-                      transform: hoveredCard === `${card.id}-${index}` 
-                        ? `scale(1.1) translateZ(20px)` 
+                      transform: !physics.isDragging && hoveredCard === `${card.id}-${index}` 
+                        ? `scale(1.05)` 
                         : 'scale(1)',
-                      transition: 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                      filter: hoveredCard === `${card.id}-${index}` 
-                        ? 'brightness(1.1) contrast(1.05) saturate(1.1)' 
+                      transition: physics.isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      filter: !physics.isDragging && hoveredCard === `${card.id}-${index}` 
+                        ? 'brightness(1.05) contrast(1.02) saturate(1.05)' 
                         : 'brightness(1)',
+                      pointerEvents: physics.isDragging ? 'none' : 'auto'
                     }}
+                    draggable={false}
                     loading="lazy"
                   />
                 ) : (
