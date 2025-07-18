@@ -4,8 +4,6 @@ import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import App from './App.tsx'
-import { AuthProvider } from './features/auth/providers/AuthProvider'
-import { Toaster } from 'sonner'
 import './index.css'
 
 // Create a client
@@ -26,12 +24,9 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <App />
-          <Toaster />
-        </TooltipProvider>
-      </AuthProvider>
+      <TooltipProvider>
+        <App />
+      </TooltipProvider>
     </QueryClientProvider>
   </React.StrictMode>,
 )
