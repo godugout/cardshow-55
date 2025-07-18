@@ -257,12 +257,19 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
       // Set color and glow
       sunElement.style.backgroundColor = sunData.color;
       
-      // Cinematic glow effect
-      const glowSize = 30 + (sunData.glow * 40) + (lightingData.intensity * 20);
-      const glowOpacity = 0.2 + (sunData.glow * 0.6);
+      // Cinematic glow effect with enhanced intensity modulation
+      const baseGlowSize = 30;
+      const intensityMultiplier = lightingData.intensity * 1.5;
+      const glowSize = baseGlowSize + (sunData.glow * 40) + (intensityMultiplier * 20);
+      const baseGlowOpacity = 0.2;
+      const glowOpacity = baseGlowOpacity + (sunData.glow * 0.6) + (intensityMultiplier * 0.1);
+      
+      // Enhanced glow with emissive intensity effect
+      const emissiveGlow = Math.min(1.0, sunData.glow * lightingData.intensity);
       sunElement.style.boxShadow = `
         0 0 ${glowSize}px ${sunData.color.replace('rgb', 'rgba').replace(')', `, ${glowOpacity})`)},
-        0 0 ${glowSize * 2}px ${sunData.color.replace('rgb', 'rgba').replace(')', `, ${glowOpacity * 0.5})`)}
+        0 0 ${glowSize * 2}px ${sunData.color.replace('rgb', 'rgba').replace(')', `, ${glowOpacity * 0.5})`)},
+        inset 0 0 ${glowSize * 0.3}px ${sunData.color.replace('rgb', 'rgba').replace(')', `, ${emissiveGlow * 0.3})`)}
       `;
     }
   }, [templateEngine, currentFrame.sun, currentFrame.lighting]);
@@ -277,7 +284,7 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
 
   return (
     <>
-      {/* Enhanced 2D Sun with Cinematic Glow - Behind card */}
+      {/* Enhanced 2D Sun with Cinematic Glow and Emissive Effects - Behind card */}
       <div
         ref={sunRef}
         className="fixed pointer-events-none z-10"
@@ -297,6 +304,7 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
         progress={animationProgress}
         isVisible={animationProgress > 0.1}
         isAnimationComplete={!isPlaying && animationProgress >= 1.0}
+        templateEngine={templateEngine}
       />
     </>
   );

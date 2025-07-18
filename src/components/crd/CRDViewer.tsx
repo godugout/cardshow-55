@@ -8,6 +8,7 @@ import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
 import { CosmicDance } from './cosmic/CosmicDance';
 import { CosmicDanceControls } from './cosmic/CosmicDanceControls';
 import { loadTemplate, TemplateConfig, TemplateEngine } from '@/templates/engine';
+import { ensureMaterialPersistence, getMaterialForTemplate } from '@/utils/materialFallback';
 import { PerformanceMonitor } from './performance/PerformanceMonitor';
 import { useCardAngle } from './hooks/useCardAngle';
 
@@ -62,6 +63,8 @@ interface CRDViewerProps {
   
   // Template engine integration
   templateConfig?: TemplateConfig;
+  onTemplateComplete?: (templateEngine?: TemplateEngine) => void;
+  onReplayTemplate?: () => void;
   
   className?: string;
   onModeChange?: (mode: AnimationMode) => void;
@@ -102,6 +105,8 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   
   // Template engine integration
   templateConfig,
+  onTemplateComplete,
+  onReplayTemplate,
   
   className = "w-full h-screen",
   onModeChange,
@@ -139,7 +144,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const [currentIntensity, setCurrentIntensity] = useState(initialIntensity);
   const [autoModeEnabled, setAutoModeEnabled] = useState(false); // Disabled by default
 
-  // Visual Style State
+  // Visual Style State with material fallback support
   const [selectedStyleId, setSelectedStyleId] = useState('matte');
   const [cardRotation, setCardRotation] = useState(new THREE.Euler(0, 0, 0));
   const [internalIsPaused, setInternalIsPaused] = useState(false);
@@ -156,6 +161,24 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
       const engine = loadTemplate(templateConfig);
       setTemplateEngine(engine);
       
+      // Apply template-specific material defaults
+      if (engine) {
+        const materialDefault = getMaterialForTemplate(engine.id);
+        setSelectedStyleId(materialDefault.styleId);
+        setCurrentIntensity(materialDefault.intensity);
+        setLightingPreset(materialDefault.lightingPreset as LightingPreset);
+      }
+      
+      // Apply initial camera settings if template has them
+      if (engine?.initialCamera && templateConfig.triggerOnLoad && controlsRef.current) {
+        const cam = engine.initialCamera;
+        controlsRef.current.object.position.set(...cam.position);
+        controlsRef.current.target.set(...cam.target);
+        controlsRef.current.object.zoom = cam.zoom;
+        controlsRef.current.object.updateProjectionMatrix();
+        controlsRef.current.update();
+      }
+      
       // Auto-start animation if configured
       if (engine?.autoTrigger && templateConfig.triggerOnLoad) {
         setIsPlaying(true);
@@ -163,7 +186,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     } else {
       setTemplateEngine(null);
     }
-  }, [templateConfig]);
+  }, [templateConfig, controlsRef]);
 
   // Rotation State
   const [autoRotate, setAutoRotate] = useState(initialAutoRotate);
@@ -267,6 +290,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   useEffect(() => {
     if (animationProgress >= 1 && isPlaying) {
       setIsPlaying(false);
+      
+      // Handle template completion
+      if (templateEngine?.transitionToStudio) {
+        handleCosmicTrigger(); // Trigger studio unlock
+      }
+      
       // Enhanced control cleanup sequence
       setTimeout(() => {
         // Reset all cosmic states
@@ -285,7 +314,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         // Note: This will be handled by the parent component via state reset
       }, 2000); // 2 second delay to enjoy the final frame
     }
-  }, [animationProgress, isPlaying, controlsRef]);
+  }, [animationProgress, isPlaying, controlsRef, templateEngine]);
 
   // Notify studio about cosmic state changes
   useEffect(() => {
@@ -308,9 +337,15 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     if (!isPlaying && animationProgress < 1) {
       setIsPlaying(true);
     }
+    
+    // Notify parent of template completion for studio transition
+    if (templateEngine) {
+      onTemplateComplete?.(templateEngine);
+    }
   };
 
-  const handleResetAnimation = () => {
+  // Reset template state function
+  const resetTemplateState = () => {
     setAnimationProgress(0);
     setIsPlaying(false);
     setCosmicTriggered(false);
@@ -327,6 +362,22 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     
     // Notify studio of reset
     onCosmicReset?.();
+  };
+
+  const handleResetAnimation = () => {
+    resetTemplateState();
+  };
+
+  // Handle template replay
+  const handleReplayTemplate = () => {
+    if (templateEngine?.replayable) {
+      resetTemplateState();
+      // Auto-start after brief delay
+      setTimeout(() => {
+        setIsPlaying(true);
+      }, 500);
+      onReplayTemplate?.();
+    }
   };
 
   // Cosmic control handlers for studio integration

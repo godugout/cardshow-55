@@ -1,10 +1,12 @@
 import React, { useRef, useEffect, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
+import { TemplateEngine, interpolateFrame } from '@/templates/engine';
 
 interface CosmicMoonProps {
   progress: number;
   isVisible: boolean;
   isAnimationComplete?: boolean;
+  templateEngine?: TemplateEngine;
 }
 
 interface MoonFrame {
@@ -41,7 +43,8 @@ const MOON_FRAMES: MoonFrame[] = [
 export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
   progress,
   isVisible,
-  isAnimationComplete = false
+  isAnimationComplete = false,
+  templateEngine
 }) => {
   const moonRef = useRef<HTMLDivElement>(null);
   const crescentRef = useRef<HTMLDivElement>(null);
@@ -78,8 +81,26 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
     if (isAnimationComplete) {
       return MOON_FRAMES[MOON_FRAMES.length - 1];
     }
+    
+    // Use template engine if available
+    if (templateEngine) {
+      const frame = interpolateFrame(templateEngine.keyframes, progress);
+      if (frame.moon) {
+        return {
+          progress,
+          moon: {
+            x: frame.moon.x || 0,
+            y: frame.moon.y || 120,
+            scale: frame.moon.scale || 0.5,
+            opacity: frame.moon.opacity || 0.9,
+            phase: 0.3 // Default phase for template engine
+          }
+        };
+      }
+    }
+    
     return getCurrentMoonFrame(progress);
-  }, [getCurrentMoonFrame, progress, isAnimationComplete]);
+  }, [getCurrentMoonFrame, progress, isAnimationComplete, templateEngine]);
 
   // Update moon position and appearance with stable dependencies
   useEffect(() => {
@@ -87,9 +108,14 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
       const moonElement = moonRef.current;
       const crescentElement = crescentRef.current;
       
-      // Position: fixed relative to navbar (left 50% + offset, top fixed pixels)
-      moonElement.style.left = `calc(50% + ${currentFrame.moon.x}vw)`;
-      moonElement.style.top = `${currentFrame.moon.y}px`;
+      // Position: Use template engine format if available
+      if (templateEngine) {
+        moonElement.style.left = `calc(50% + ${currentFrame.moon.x}vw)`;
+        moonElement.style.top = `${currentFrame.moon.y}px`;
+      } else {
+        moonElement.style.left = `calc(50% + ${currentFrame.moon.x}vw)`;
+        moonElement.style.top = `${currentFrame.moon.y}px`;
+      }
       
       // Scale and opacity
       moonElement.style.transform = `translate(-50%, -50%) scale(${currentFrame.moon.scale})`;
@@ -105,7 +131,8 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = React.memo(({
     currentFrame.moon.scale, 
     currentFrame.moon.opacity, 
     currentFrame.moon.phase, 
-    isVisible
+    isVisible,
+    templateEngine
   ]);
 
   if (!isVisible) return null;
