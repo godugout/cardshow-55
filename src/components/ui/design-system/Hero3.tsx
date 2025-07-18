@@ -249,7 +249,7 @@ export const Hero3: React.FC<Hero3Props> = ({
             onPointerLeave={() => setHoveredCard(null)}
             onFocus={() => setFocusedCard(`${card.id}-${index}`)}
             onBlur={() => setFocusedCard(null)}
-            onClick={() => onCardClick(card)}
+            onClick={(e) => e.preventDefault()}
             style={{
               transform: hoveredCard === `${card.id}-${index}` 
                 ? `scale(1.05) translateY(-8px) rotateX(5deg)` 
