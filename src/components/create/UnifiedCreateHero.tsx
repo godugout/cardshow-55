@@ -146,7 +146,7 @@ export const UnifiedCreateHero: React.FC = () => {
           </div>
         </div>
       ) : (
-        /* Normal tall screen layout - No changes */}
+        // Normal tall screen layout - No changes
         <div className="relative w-full min-h-screen">
           {/* Full Screen 3D Background Layer */}
           <ResponsiveCreate3DLayout
@@ -205,7 +205,8 @@ export const UnifiedCreateHero: React.FC = () => {
                     style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
                   >
                     Browse Templates
-                  </Link>
+                  </CRDButton>
+                </Link>
                 </div>
               
               {/* Animated Tagline */}
