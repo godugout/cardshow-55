@@ -62,8 +62,8 @@ export const CosmicSun: React.FC<CosmicSunProps> = ({
       }
       
       // Enhanced sun positioning - lower final position so only small part visible
-      const sunY = THREE.MathUtils.lerp(8, -2.5, easedProgress * 0.9); // Much lower descent
-      const sunZ = THREE.MathUtils.lerp(-5, -4, easedProgress * 0.8); // Position in front of card
+      const sunY = THREE.MathUtils.lerp(8, -4, easedProgress * 0.9); // Much lower descent
+      const sunZ = THREE.MathUtils.lerp(-5, -3.5, easedProgress * 0.8); // Position in front of card
       
       sunRef.current.position.set(0, sunY, sunZ);
       fireRingRef.current.position.copy(sunRef.current.position);
@@ -73,10 +73,6 @@ export const CosmicSun: React.FC<CosmicSunProps> = ({
         previousSunsetState.current = true;
         onSunsetPointReached?.(true);
         onCardLeanRequired?.(true);
-      } else if (!isSunsetPoint && previousSunsetState.current) {
-        previousSunsetState.current = false;
-        onSunsetPointReached?.(false);
-        onCardLeanRequired?.(false);
       }
       
       // Enhanced lighting effects based on position

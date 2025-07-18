@@ -409,15 +409,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         </div>
       )}
       
-      {/* Sunset Point Indication - No orange button during pause */}
-      {isSunsetPoint && scrollProgress < 0.8 && (
-        <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
-          <div className="bg-gradient-to-r from-orange-500/80 to-yellow-400/80 backdrop-blur-sm rounded-lg px-8 py-4 text-white text-center animate-pulse">
-            <p className="text-lg font-bold mb-2">⚡ ALIGNMENT ACHIEVED ⚡</p>
-            <p className="text-sm opacity-90">Continue scrolling to complete the sequence</p>
-          </div>
-        </div>
-      )}
       
       {scrollProgress > 0.95 && (
         <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
