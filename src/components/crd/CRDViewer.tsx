@@ -338,7 +338,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             ref={controlsRef}
             enableZoom={true}
             enablePan={true}
-            enableRotate={true}
+            enableRotate={!cosmicTriggered}
             maxDistance={25}
             minDistance={2}
             autoRotate={autoRotate && !cosmicTriggered}
@@ -373,6 +373,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         isPlaying={isPlaying}
         playbackSpeed={playbackSpeed}
         cardAngle={cardAngle}
+        hasTriggered={cosmicTriggered}
         onProgressChange={setAnimationProgress}
         onPlayToggle={() => setIsPlaying(!isPlaying)}
         onSpeedChange={setPlaybackSpeed}

@@ -1,11 +1,12 @@
-import React from 'react';
-import { Play, Pause, RotateCcw, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Pause, RotateCcw, Settings, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface CosmicDanceControlsProps {
   animationProgress: number;
   isPlaying: boolean;
   playbackSpeed: number;
   cardAngle: number;
+  hasTriggered: boolean;
   onProgressChange: (progress: number) => void;
   onPlayToggle: () => void;
   onSpeedChange: (speed: number) => void;
@@ -26,15 +27,72 @@ export const CosmicDanceControls: React.FC<CosmicDanceControlsProps> = ({
   isPlaying,
   playbackSpeed,
   cardAngle,
+  hasTriggered,
   onProgressChange,
   onPlayToggle,
   onSpeedChange,
   onReset,
   onAngleReset
 }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  
+  // Auto-hide during animation unless manually expanded
+  const shouldShowControls = !isPlaying || isExpanded;
+
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      <div className="bg-black/80 backdrop-blur-sm rounded-2xl p-4 space-y-4 min-w-80">
+      {/* Enhanced Cosmic Trigger Notification - Above controls */}
+      {hasTriggered && (
+        <div className="mb-4 pointer-events-none">
+          <div className="bg-gradient-to-r from-orange-500/90 to-red-500/90 backdrop-blur-sm rounded-xl px-6 py-3 text-white font-medium animate-pulse border border-orange-300/50">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+              🌌 COSMIC ALIGNMENT INITIATED
+            </div>
+            <div className="text-xs opacity-80 mt-1">
+              "My God, it's full of stars..."
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Enhanced Frame Debug with Cinematic Info - Above controls */}
+      <div className="mb-4 pointer-events-none">
+        <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3 text-white text-xs space-y-1 border border-white/10">
+          <div className="text-orange-300 font-semibold">COSMIC DANCE - Frame Data</div>
+          <div>Progress: {Math.round(animationProgress * 100)}%</div>
+          <div>Monolith Lean: {Math.round(cardAngle)}°</div>
+          <div>Light Intensity: {(1 + animationProgress * 0.5).toFixed(1)}x</div>
+          <div>Cosmic Warmth: {Math.round(animationProgress * 100)}%</div>
+          <div className={`${hasTriggered ? 'text-green-400' : 'text-gray-400'}`}>
+            Status: {hasTriggered ? 'ALIGNED & LOCKED' : 'MANUAL'}
+          </div>
+        </div>
+      </div>
+
+      {/* Collapse/Expand button when playing */}
+      {isPlaying && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="mb-2 w-full px-4 py-2 bg-black/80 border border-white/20 hover:bg-white/20 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          {isExpanded ? (
+            <>
+              <ChevronDown className="h-4 w-4" />
+              Hide Controls
+            </>
+          ) : (
+            <>
+              <ChevronUp className="h-4 w-4" />
+              Show Controls
+            </>
+          )}
+        </button>
+      )}
+
+      <div className={`bg-black/80 backdrop-blur-sm rounded-2xl p-4 space-y-4 min-w-80 transition-all duration-300 ${
+        shouldShowControls ? 'opacity-100 transform-none' : 'opacity-0 pointer-events-none transform translate-y-4'
+      }`}>
         {/* Header */}
         <div className="flex items-center justify-between">
           <h3 className="text-white font-medium flex items-center gap-2">
@@ -146,9 +204,14 @@ export const CosmicDanceControls: React.FC<CosmicDanceControlsProps> = ({
           </div>
           <button
             onClick={onAngleReset}
-            className="w-full py-1 text-xs bg-white/20 hover:bg-white/30 text-white rounded transition-colors"
+            disabled={hasTriggered}
+            className={`w-full py-1 text-xs rounded transition-colors ${
+              hasTriggered 
+                ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                : 'bg-white/20 hover:bg-white/30 text-white'
+            }`}
           >
-            Reset Card Position
+            {hasTriggered ? 'Monolith Locked' : 'Reset Card Position'}
           </button>
         </div>
 
@@ -159,8 +222,8 @@ export const CosmicDanceControls: React.FC<CosmicDanceControlsProps> = ({
             <span className="text-white/70">{isPlaying ? 'Playing' : 'Paused'}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${cardAngle >= 45 ? 'bg-orange-500 animate-pulse' : 'bg-gray-500'}`} />
-            <span className="text-white/70">{cardAngle >= 45 ? 'Triggered' : 'Manual'}</span>
+            <div className={`w-2 h-2 rounded-full ${hasTriggered ? 'bg-green-500 animate-pulse' : cardAngle >= 45 ? 'bg-orange-500 animate-pulse' : 'bg-gray-500'}`} />
+            <span className="text-white/70">{hasTriggered ? 'Locked' : cardAngle >= 45 ? 'Triggered' : 'Manual'}</span>
           </div>
         </div>
       </div>

@@ -17,19 +17,19 @@ interface MoonFrame {
   };
 }
 
-// Moon keyframes - positioned adjacent to sun for 2001 alignment
+// Moon keyframes - positioned between quote and card top edge
 const MOON_FRAMES: MoonFrame[] = [
   {
     progress: 0,
-    moon: { x: 25, y: 25, scale: 0.3, opacity: 0.6, phase: 0.3 }
+    moon: { x: 15, y: 35, scale: 0.3, opacity: 0.6, phase: 0.3 }
   },
   {
     progress: 0.5,
-    moon: { x: 20, y: 55, scale: 0.4, opacity: 0.8, phase: 0.25 }
+    moon: { x: 12, y: 42, scale: 0.4, opacity: 0.8, phase: 0.25 }
   },
   {
     progress: 1.0,
-    moon: { x: 15, y: 85, scale: 0.5, opacity: 0.9, phase: 0.2 }
+    moon: { x: 10, y: 48, scale: 0.5, opacity: 0.9, phase: 0.2 }
   }
 ];
 
@@ -93,7 +93,7 @@ export const CosmicMoon: React.FC<CosmicMoonProps> = ({
   return (
     <div
       ref={moonRef}
-      className="fixed pointer-events-none z-20"
+      className="fixed pointer-events-none z-10"
       style={{
         width: '80px',
         height: '80px',

@@ -186,10 +186,10 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
 
   return (
     <>
-      {/* Enhanced 2D Sun with Cinematic Glow */}
+      {/* Enhanced 2D Sun with Cinematic Glow - Behind card */}
       <div
         ref={sunRef}
-        className="fixed pointer-events-none z-30"
+        className="fixed pointer-events-none z-10"
         style={{
           width: '120px',
           height: '120px',
@@ -201,42 +201,11 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
         }}
       />
       
-      {/* Cosmic Moon - 2001 Style Crescent */}
+      {/* Cosmic Moon - 2001 Style Crescent - Behind card, positioned between quote and card top */}
       <CosmicMoon
         progress={animationProgress}
         isVisible={animationProgress > 0.1}
       />
-      
-      {/* Enhanced Cosmic Trigger Notification */}
-      {hasTriggered && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-40 pointer-events-none">
-          <div className="bg-gradient-to-r from-orange-500/90 to-red-500/90 backdrop-blur-sm rounded-xl px-6 py-3 text-white font-medium animate-pulse border border-orange-300/50">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
-              🌌 COSMIC ALIGNMENT INITIATED
-            </div>
-            <div className="text-xs opacity-80 mt-1">
-              "My God, it's full of stars..."
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Enhanced Frame Debug with Cinematic Info */}
-      <div className="fixed top-4 right-4 z-40 pointer-events-none">
-        <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3 text-white text-xs space-y-1 border border-white/10">
-          <div className="text-orange-300 font-semibold">COSMIC DANCE - Frame Data</div>
-          <div>Progress: {Math.round(animationProgress * 100)}%</div>
-          <div>Monolith Lean: {Math.round(cardAngle)}°</div>
-          <div>Sun Position: {Math.round(currentFrame.sun.y)}%</div>
-          <div>Solar Scale: {currentFrame.sun.scale.toFixed(1)}x</div>
-          <div>Light Intensity: {currentFrame.lighting.intensity.toFixed(1)}x</div>
-          <div>Cosmic Warmth: {Math.round(currentFrame.lighting.warmth * 100)}%</div>
-          <div className={`${hasTriggered ? 'text-green-400' : 'text-gray-400'}`}>
-            Status: {hasTriggered ? 'ALIGNED' : 'MANUAL'}
-          </div>
-        </div>
-      </div>
     </>
   );
 };
