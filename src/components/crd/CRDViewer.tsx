@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Text } from '@react-three/drei';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, Text, Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
+import { SpaceDust } from './cosmic/SpaceDust';
+import { CosmicSun } from './cosmic/CosmicSun';
 
 import { StudioPauseButton } from '../studio/StudioPauseButton';
 
@@ -70,6 +72,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Refs
   const cardRef = useRef<THREE.Group & { getCurrentRotation?: () => THREE.Euler }>(null);
   const controlsRef = useRef<any>(null);
+
+  // Cosmic animation state
+  const [hasMaxZoomBeenReached, setHasMaxZoomBeenReached] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0); // 0 to 1 range
+  const [showScrollPrompt, setShowScrollPrompt] = useState(false);
+  const MAX_ZOOM_DISTANCE = 3; // Minimum distance for max zoom
 
   // Mouse position state for synced movement
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
@@ -177,6 +185,48 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }
   };
 
+  // Cosmic Animation Functions
+  const handlePostZoomScroll = useCallback((e: WheelEvent) => {
+    if (!hasMaxZoomBeenReached) return;
+    
+    e.preventDefault();
+    setScrollProgress(prev => {
+      const delta = e.deltaY * 0.002; // Adjust sensitivity
+      return Math.min(1, Math.max(0, prev + delta));
+    });
+  }, [hasMaxZoomBeenReached]);
+
+  const handleResetSunScene = useCallback(() => {
+    setScrollProgress(0);
+    setHasMaxZoomBeenReached(false);
+    setShowScrollPrompt(false);
+  }, []);
+
+  // Monitor camera position for max zoom detection
+  useEffect(() => {
+    const checkZoomLevel = () => {
+      if (controlsRef.current) {
+        const distance = controlsRef.current.getDistance();
+        if (distance <= MAX_ZOOM_DISTANCE && !hasMaxZoomBeenReached) {
+          setHasMaxZoomBeenReached(true);
+          setShowScrollPrompt(true);
+          // Hide prompt after 3 seconds
+          setTimeout(() => setShowScrollPrompt(false), 3000);
+        }
+      }
+    };
+
+    const interval = setInterval(checkZoomLevel, 100);
+    return () => clearInterval(interval);
+  }, [hasMaxZoomBeenReached]);
+
+  // Handle post-zoom scroll events
+  useEffect(() => {
+    if (hasMaxZoomBeenReached) {
+      window.addEventListener('wheel', handlePostZoomScroll, { passive: false });
+      return () => window.removeEventListener('wheel', handlePostZoomScroll);
+    }
+  }, [hasMaxZoomBeenReached, handlePostZoomScroll]);
 
   // Handle orbit controls interaction
   const handleControlsStart = () => {
@@ -211,7 +261,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   return (
     <div className={`overflow-hidden relative ${className}`}>
 
-      {/* 3D Scene */}
+        {/* 3D Scene */}
       <Canvas
         camera={{ position: [0, 0, 15], fov: 60 }}
         gl={{ 
@@ -229,6 +279,10 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           intensity={lightingIntensity}
           enableShadows={true}
         />
+        
+        {/* Cosmic Background Elements */}
+        <SpaceDust scrollProgress={scrollProgress} />
+        <CosmicSun scrollProgress={scrollProgress} />
         
         {/* Main Card with Glass Case Container - Responds to mouse only when not locked */}
         <group 
@@ -287,11 +341,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         {enableControls && (
           <OrbitControls
             ref={controlsRef}
-            enableZoom={true}
+            enableZoom={!hasMaxZoomBeenReached}
             enablePan={true}
             enableRotate={true}
             maxDistance={25}
-            minDistance={3}
+            minDistance={MAX_ZOOM_DISTANCE}
             autoRotate={autoRotate}
             autoRotateSpeed={rotationSpeed}
             target={[mouseOffset.x * 0.01, mouseOffset.y * 0.01, 0]}
@@ -310,11 +364,52 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <fog args={['#0a0a2e', 30, 200]} />
       </Canvas>
       
+      {/* UI Overlays */}
+      {showScrollPrompt && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
+          <div className="bg-black/70 backdrop-blur-sm rounded-lg px-6 py-3 text-white text-center animate-fade-in">
+            <p className="text-sm font-medium">Keep scrolling to unlock cosmic sequence...</p>
+            <div className="flex justify-center mt-2">
+              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {scrollProgress > 0.95 && (
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
+          <button
+            onClick={handleResetSunScene}
+            className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 text-white text-sm font-medium hover:bg-white/30 transition-all duration-200"
+          >
+            Reset Scene
+          </button>
+        </div>
+      )}
+      
       {showPauseButton && (
         <StudioPauseButton 
           isPaused={isPaused} 
           onTogglePause={handleTogglePause} 
         />
+      )}
+      
+      {/* Scroll Progress Indicator */}
+      {hasMaxZoomBeenReached && (
+        <div className="absolute top-4 right-4 z-10">
+          <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3">
+            <div className="text-white text-xs mb-2">Cosmic Progress</div>
+            <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-orange-500 to-yellow-300 transition-all duration-300"
+                style={{ width: `${scrollProgress * 100}%` }}
+              />
+            </div>
+            <div className="text-white/70 text-xs mt-1">
+              {Math.round(scrollProgress * 100)}%
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
