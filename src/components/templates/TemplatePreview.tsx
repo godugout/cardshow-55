@@ -58,16 +58,9 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
       <div className="aspect-video relative">
         <CRDViewer
           mode="cosmic"
-          templateConfig={templateConfig}
           enableControls={false}
-          showPauseButton={false}
           hideCosmicControls={true}
           className="w-full h-full"
-          onCosmicStateChange={(state) => {
-            if (state.animationProgress >= 1 && state.isPlaying) {
-              handleAnimationComplete();
-            }
-          }}
         />
         
         {/* Preview Overlay */}

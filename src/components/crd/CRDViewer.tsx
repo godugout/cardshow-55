@@ -4,20 +4,22 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 import { CosmicDance } from './cosmic/CosmicDance';
-import { StudioCard } from './studio/StudioCard';
-import { CardMonolith } from './monolith/CardMonolith';
-import { StudioFooterHUD } from '../studio/StudioFooterHUD';
 import { CosmicDanceControls } from './cosmic/CosmicDanceControls';
-import { StudioViewControls } from '../studio/components/StudioViewControls';
-import { CRDLogo } from '../ui/CRDLogo';
+import { CRDLogo } from '../crd/CRDLogoComponent';
 import { useCardAngle } from './hooks/useCardAngle';
 
 interface CRDViewerProps {
   mode?: 'cosmic' | 'studio' | 'monolith';
   intensity?: number;
-  lightingPreset?: 'studio' | 'dramatic' | 'soft' | 'sunset';
+  lightingPreset?: 'studio' | 'dramatic' | 'soft' | 'sunset' | 'showcase';
   pathTheme?: 'neutral' | 'warm' | 'cool';
   autoRotate?: boolean;
+  rotationSpeed?: number;
+  lightingIntensity?: number;
+  orbitalAutoRotate?: boolean;
+  orbitalRotationSpeed?: number;
+  showOrbitalRing?: boolean;
+  showLockIndicators?: boolean;
   enableControls?: boolean;
   enableGlassCase?: boolean;
   showModeText?: boolean;
@@ -26,6 +28,8 @@ interface CRDViewerProps {
   isPaused?: boolean;
   onTogglePause?: () => void;
   showPauseButton?: boolean;
+  onModeChange?: (mode: 'cosmic' | 'studio' | 'monolith') => void;
+  onIntensityChange?: (intensity: number) => void;
 }
 
 function CameraController({ mode }: { mode: string }) {
@@ -46,9 +50,9 @@ function CameraController({ mode }: { mode: string }) {
       }
       
       // Update controls target to match the new viewing angle
-      if (controls.target) {
-        controls.target.set(0, -1, 0);
-        controls.update();
+      if (controls && 'target' in controls) {
+        (controls as any).target.set(0, -1, 0);
+        (controls as any).update();
       }
     }
   }, [camera, controls, mode]);
@@ -62,6 +66,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   lightingPreset = 'studio',
   pathTheme = 'neutral',
   autoRotate = false,
+  rotationSpeed = 0.5,
+  lightingIntensity = 1,
+  orbitalAutoRotate = true,
+  orbitalRotationSpeed = 1,
+  showOrbitalRing = true,
+  showLockIndicators = false,
   enableControls = true,
   enableGlassCase = true,
   showModeText = true,
@@ -69,7 +79,9 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   className = '',
   isPaused = false,
   onTogglePause,
-  showPauseButton = false
+  showPauseButton = false,
+  onModeChange,
+  onIntensityChange
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [localAutoRotate, setLocalAutoRotate] = useState(autoRotate);
@@ -170,27 +182,28 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         <group position={[cardPosition.x, cardPosition.y, cardPosition.z]} rotation={[cardRotation.x, cardRotation.y, cardRotation.z]}>
           {mode === 'cosmic' && (
             <CosmicDance
-              isPlaying={isPlaying}
               animationProgress={animationProgress}
-              playbackSpeed={playbackSpeed}
-              onProgressChange={setAnimationProgress}
-              onTrigger={() => setHasTriggered(true)}
+              isPlaying={isPlaying}
+              cardAngle={cardAngle}
+              cameraDistance={cameraDistance}
+              isOptimalZoom={isOptimalZoom}
+              isOptimalPosition={isOptimalPosition}
+              onTriggerReached={() => setHasTriggered(true)}
             />
           )}
           
           {mode === 'studio' && (
-            <StudioCard 
-              autoRotate={localAutoRotate}
-              intensity={intensity}
-              enableGlassCase={enableGlassCase}
-            />
+            <mesh>
+              <boxGeometry args={[2, 3, 0.1]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
           )}
           
           {mode === 'monolith' && (
-            <CardMonolith 
-              autoRotate={localAutoRotate}
-              intensity={intensity}
-            />
+            <mesh>
+              <boxGeometry args={[2, 3, 0.1]} />
+              <meshStandardMaterial color="#000000" />
+            </mesh>
           )}
         </group>
 
@@ -213,7 +226,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
 
       {/* CRD Logo Branding */}
       <div className="absolute top-6 right-6 z-50">
-        <CRDLogo size="md" showText={false} />
+        <CRDLogo fileName="CRD_logo.png" className="w-12 h-12" />
       </div>
 
       {/* Mode Text */}
@@ -255,34 +268,25 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
 
       {/* Studio Controls */}
       {mode === 'studio' && (
-        <StudioViewControls
-          onResetView={handleResetView}
-          autoRotate={localAutoRotate}
-          onToggleAutoRotate={handleToggleAutoRotate}
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          onToggleFullscreen={handleToggleFullscreen}
-          isFullscreen={isFullscreen}
-        />
+        <div className="absolute bottom-6 right-6 z-50">
+          <div className="bg-black/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
+            <span className="text-white text-sm">Studio Mode</span>
+          </div>
+        </div>
       )}
 
       {/* Footer HUD */}
       {mode === 'cosmic' && (
-        <StudioFooterHUD
-          statusLines={[
-            'Cosmic Dance Engine Active',
-            `Card Angle: ${Math.round(cardAngle)}°`,
-            `Camera Distance: ${cameraDistance.toFixed(1)}`,
-            hasTriggered ? 'Cosmic Triggered' : 'Ready for Animation'
-          ]}
-          showReplay={hasTriggered}
-          showContinue={false}
-          onReplay={() => {
-            setAnimationProgress(0);
-            setIsPlaying(false);
-            setHasTriggered(false);
-          }}
-        />
+        <div className="absolute bottom-6 left-6 z-50">
+          <div className="bg-black/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
+            <div className="text-white text-sm space-y-1">
+              <div>Cosmic Dance Engine Active</div>
+              <div>Card Angle: {Math.round(cardAngle)}°</div>
+              <div>Camera Distance: {cameraDistance.toFixed(1)}</div>
+              <div>{hasTriggered ? 'Cosmic Triggered' : 'Ready for Animation'}</div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
