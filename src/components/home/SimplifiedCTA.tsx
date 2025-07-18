@@ -53,7 +53,12 @@ export const SimplifiedCTA: React.FC = () => {
           variant="h1" 
           className="mb-6 max-w-3xl"
         >
-          {user ? "Ready to craft your own 2.5x3.5 digital masterpiece?" : "Join the future of digital card art"}
+          {user ? (
+            <>
+              Ready to craft your own digital<br />
+              2.5x3.5 masterpiece?
+            </>
+          ) : "Join the future of digital card art"}
         </Typography>
         <Typography 
           variant="body" 

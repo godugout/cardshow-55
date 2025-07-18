@@ -608,33 +608,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         />
       )}
 
-      {/* Template Controls Button */}
-      <TemplateControlsButton
-        onClick={() => setShowTemplateControls(!showTemplateControls)}
-        hasTemplate={!!templateEngine}
-      />
-
-      {/* Template Controls Card */}
-      {showTemplateControls && (
-        <TemplateControlsCard
-          templateEngine={templateEngine}
-          animationProgress={animationProgress}
-          isCosmicPlaying={isPlaying}
-          playbackSpeed={playbackSpeed}
-          cardAngle={cardAngle}
-          cameraDistance={cameraDistance}
-          isOptimalZoom={isOptimalZoom}
-          isOptimalPosition={isOptimalPosition}
-          hasTriggered={cosmicTriggered}
-          onReplayTemplate={handleReplayTemplate}
-          onStudioEntry={() => onTemplateComplete?.(templateEngine)}
-          onProgressChange={handleCosmicProgressChange}
-          onPlayToggle={handleCosmicPlayToggle}
-          onSpeedChange={handleCosmicSpeedChange}
-          onReset={handleResetAnimation}
-          onAngleReset={handleCosmicAngleReset}
-        />
-      )}
+      {/* Template Controls Hidden - Removed per user request */}
     </div>
   );
 };
