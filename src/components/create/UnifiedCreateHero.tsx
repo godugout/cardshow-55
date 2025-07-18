@@ -5,6 +5,7 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { PixelDigital } from '@/components/ui/PixelDigital';
 import { ResponsiveCreate3DLayout } from './ResponsiveCreate3DLayout';
 import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
+import { ChevronDown } from 'lucide-react';
 
 export const UnifiedCreateHero: React.FC = () => {
   const { isMobile, deviceType, isShortScreen } = useResponsiveBreakpoints();
@@ -18,45 +19,53 @@ export const UnifiedCreateHero: React.FC = () => {
     window.location.reload();
   };
 
+  const scrollToAnimation = () => {
+    const animationSection = document.getElementById('animation-section');
+    if (animationSection) {
+      animationSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <div className="relative w-full">
-      {/* For short screens, create a scrollable layout */}
+      {/* For short screens, create a scrollable layout with snap points */}
       {isShortScreen ? (
-        <>
-          {/* Hero Section */}
-          <div className="relative w-full min-h-screen">
-            {/* Stars Background Only */}
+        <div className="scroll-snap-container">
+          {/* Hero Section - First snap point */}
+          <div id="hero-section" className="relative w-full min-h-screen snap-start">
+            {/* Pure Stars Background Only - No 3D */}
             <div className="fixed inset-0 z-0 bg-crd-darkest">
               <div className="absolute inset-0 opacity-80 stars-background"></div>
             </div>
 
             {/* Hero Content */}
-            <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+3rem)] pb-8 min-h-screen flex flex-col justify-start">
-              <div className="max-w-4xl mx-auto">
+            <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+2rem)] pb-8 min-h-screen flex flex-col justify-start">
+              <div className="max-w-6xl mx-auto">
                 {/* Label */}
                 <div className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-xs sm:text-sm uppercase">
                   CUT, CRAFT & CREATE DIGITALLY
                 </div>
                 
-                {/* Main Heading */}
+                {/* Main Heading - Improved layout for 2 lines */}
                 <div className="mb-6">
                   <h1 className="leading-tight text-crd-white" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 16px rgba(0,0,0,0.6)' }}>
                     <div className={`flex justify-center items-center mb-2 ${
-                      isMobile ? 'text-base' : 'text-3xl md:text-5xl lg:text-6xl'
+                      isMobile ? 'text-lg' : 'text-3xl md:text-5xl lg:text-6xl'
                     }`}>
-                      <span className="text-gray-400 font-light text-center">
+                      <span className="text-gray-400 font-light text-center max-w-4xl">
                         From <span className="paper-scraps">paper scraps</span>
-                        {isMobile ? <br /> : ' '}
-                        and <span className="cardboard-text">cardboard</span> to
+                        {' '}and <span className="cardboard-text">cardboard</span> to
                       </span>
                     </div>
                     <div className={`flex justify-center items-center ${
                       isMobile ? 'text-xl mt-2' : 'text-4xl md:text-6xl lg:text-7xl'
                     }`}>
-                      <span className="font-bold text-center">
+                      <span className="font-bold text-center max-w-5xl">
                         <PixelDigital className="inline">digital</PixelDigital>
-                        {isMobile ? <br /> : ' '}
-                        <span className="text-white">art that comes alive!</span>
+                        {' '}<span className="text-white">art that comes alive!</span>
                       </span>
                     </div>
                   </h1>
@@ -97,30 +106,47 @@ export const UnifiedCreateHero: React.FC = () => {
                     "No glue needed."
                   </p>
                 </div>
+              </div>
 
-                {/* Scroll indicator */}
-                <div className="mt-8 flex justify-center">
-                  <div className="animate-bounce">
-                    <div className="w-6 h-10 border-2 border-crd-white rounded-full flex justify-center">
-                      <div className="w-1 h-3 bg-crd-white rounded-full mt-2"></div>
-                    </div>
+              {/* Enhanced Scroll Indicator - Clickable and prominent */}
+              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+                <button 
+                  onClick={scrollToAnimation}
+                  className="group flex flex-col items-center text-crd-white hover:text-crd-blue transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-crd-blue focus:ring-opacity-50 rounded-lg p-4"
+                  aria-label="Scroll to 3D animation"
+                >
+                  <div className="text-sm mb-2 opacity-90 group-hover:opacity-100 transition-opacity">
+                    See the magic
                   </div>
-                </div>
+                  <div className="animate-bounce-gentle">
+                    <div className="w-6 h-10 border-2 border-current rounded-full flex justify-center relative">
+                      <div className="w-1 h-3 bg-current rounded-full mt-2 animate-scroll-dot"></div>
+                    </div>
+                    <ChevronDown className="w-6 h-6 mt-1 animate-pulse" />
+                  </div>
+                </button>
               </div>
             </div>
           </div>
 
-          {/* 3D Animation Section */}
-          <div className="relative w-full min-h-screen">
+          {/* 3D Animation Section - Second snap point with scroll resistance */}
+          <div id="animation-section" className="relative w-full min-h-screen snap-start scroll-resistance">
             <ResponsiveCreate3DLayout
               isPaused={isPaused}
               onTogglePause={handleTogglePause}
               onReset={handleReset}
             />
+            
+            {/* Overlay hint for scroll resistance */}
+            <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50 text-crd-white text-center">
+              <p className="text-sm opacity-70 bg-black bg-opacity-30 rounded-lg px-3 py-1">
+                Drag with extra force to continue scrolling
+              </p>
+            </div>
           </div>
-        </>
+        </div>
       ) : (
-        /* Normal tall screen layout */
+        /* Normal tall screen layout - No changes */}
         <div className="relative w-full min-h-screen">
           {/* Full Screen 3D Background Layer */}
           <ResponsiveCreate3DLayout
@@ -129,39 +155,37 @@ export const UnifiedCreateHero: React.FC = () => {
             onReset={handleReset}
           />
 
-          {/* Hero Content Overlay - Transparent background to show stars */}
-          <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+3rem)] pb-32 min-h-screen flex flex-col justify-start">
-            <div className="max-w-4xl mx-auto">
+          {/* Hero Content Overlay */}
+          <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+2rem)] pb-32 min-h-screen flex flex-col justify-start">
+            <div className="max-w-6xl mx-auto">
               {/* Label */}
               <div className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-xs sm:text-sm uppercase">
                 CUT, CRAFT & CREATE DIGITALLY
               </div>
               
-              {/* Main Heading - Enhanced text shadows for readability over stars */}
+              {/* Main Heading - Enhanced for better line breaks */}
               <div className="mb-6">
                 <h1 className="leading-tight text-crd-white" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 16px rgba(0,0,0,0.6)' }}>
                   <div className={`flex justify-center items-center mb-2 ${
-                    isMobile ? 'text-base' : 'text-3xl md:text-5xl lg:text-6xl'
+                    isMobile ? 'text-lg' : 'text-3xl md:text-5xl lg:text-6xl'
                   }`}>
-                    <span className="text-gray-400 font-light text-center">
+                    <span className="text-gray-400 font-light text-center max-w-4xl">
                       From <span className="paper-scraps">paper scraps</span>
-                      {isMobile ? <br /> : ' '}
-                      and <span className="cardboard-text">cardboard</span> to
+                      {' '}and <span className="cardboard-text">cardboard</span> to
                     </span>
                   </div>
                   <div className={`flex justify-center items-center ${
                     isMobile ? 'text-xl mt-2' : 'text-4xl md:text-6xl lg:text-7xl'
                   }`}>
-                    <span className="font-bold text-center">
+                    <span className="font-bold text-center max-w-5xl">
                       <PixelDigital className="inline">digital</PixelDigital>
-                      {isMobile ? <br /> : ' '}
-                      <span className="text-white">art that comes alive!</span>
+                      {' '}<span className="text-white">art that comes alive!</span>
                     </span>
                   </div>
                 </h1>
               </div>
               
-              {/* CTA Buttons - Enhanced shadows for visibility */}
+              {/* CTA Buttons */}
               <div className={`flex ${isMobile ? 'flex-col gap-2' : 'flex-col sm:flex-row gap-4'} justify-center my-6`}>
                 <Link to="/create/crd">
                   <CRDButton 
@@ -181,11 +205,10 @@ export const UnifiedCreateHero: React.FC = () => {
                     style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
                   >
                     Browse Templates
-                  </CRDButton>
-                </Link>
-              </div>
+                  </Link>
+                </div>
               
-              {/* Animated Tagline - Enhanced shadow for readability */}
+              {/* Animated Tagline */}
               <div className={`${isMobile ? 'mt-4 mb-6' : 'mt-8 mb-12'}`}>
                 <p 
                   className={`font-caveat italic text-center text-crd-orange animate-fade-in ${

@@ -25,7 +25,6 @@
   display: inline-block;
 }
 
-
 .paper-scraps::before {
   content: '';
   position: absolute;
@@ -110,6 +109,44 @@
   background-size: 200% 200%;
   animation: gradient-flow 3s ease infinite;
   transition: background 0.5s ease;
+}
+
+/* Scroll Snap Container */
+.scroll-snap-container {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.snap-start {
+  scroll-snap-align: start;
+}
+
+/* Scroll Resistance Section */
+.scroll-resistance {
+  scroll-snap-stop: always;
+}
+
+/* Enhanced Scroll Indicator Animations */
+@keyframes bounce-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes scroll-dot {
+  0% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(6px); }
+  100% { opacity: 0.3; transform: translateY(0); }
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+.animate-scroll-dot {
+  animation: scroll-dot 2s ease-in-out infinite;
 }
 
 /* Button text color utilities to ensure proper contrast */
