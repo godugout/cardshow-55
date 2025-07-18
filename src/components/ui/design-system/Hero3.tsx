@@ -148,7 +148,8 @@ export const Hero3: React.FC<Hero3Props> = ({
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!physics.isDragging) return;
-
+    
+    e.preventDefault(); // Prevent any default drag behavior
     const deltaX = e.clientX - physics.dragStartX;
     const newPosition = physics.dragStartPosition + deltaX;
 
@@ -228,10 +229,11 @@ export const Hero3: React.FC<Hero3Props> = ({
     <div className="w-full overflow-hidden" ref={containerRef}>
       <div 
         ref={carouselRef}
-        className="flex gap-6 cursor-grab select-none"
+        className="flex gap-6 cursor-grab select-none will-change-transform"
         style={{ 
-          transform: `translateX(${physics.position}px) rotate(${rotationAmount * 0.1}deg)`,
-          transition: physics.isDragging ? 'none' : 'transform 0.1s ease-out'
+          transform: `translateX(${physics.position}px)`,
+          transition: physics.isDragging ? 'none' : 'transform 0.1s ease-out',
+          touchAction: 'pan-x' // Only allow horizontal pan gestures
         }}
         onMouseDown={handleMouseDown}
         onWheel={handleWheel}
@@ -239,6 +241,7 @@ export const Hero3: React.FC<Hero3Props> = ({
         tabIndex={0}
         role="region"
         aria-label="Featured cards carousel"
+        onDragStart={(e) => e.preventDefault()} // Prevent image dragging
       >
         {/* Duplicate cards for seamless infinite scroll */}
         {[...featuredCards, ...featuredCards].map((card, index) => (
