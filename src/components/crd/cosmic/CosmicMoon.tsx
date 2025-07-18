@@ -1,86 +1,118 @@
-import React, { useRef, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
+import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 
 interface CosmicMoonProps {
-  scrollProgress: number;
-  isSunsetPoint: boolean;
+  progress: number;
+  isVisible: boolean;
 }
 
-export const CosmicMoon: React.FC<CosmicMoonProps> = ({ 
-  scrollProgress, 
-  isSunsetPoint 
+interface MoonFrame {
+  progress: number;
+  moon: {
+    x: number; // Screen percentage relative to sun
+    y: number; // Screen percentage 
+    scale: number;
+    opacity: number;
+    phase: number; // 0-1 crescent phase
+  };
+}
+
+// Moon keyframes - positioned adjacent to sun for 2001 alignment
+const MOON_FRAMES: MoonFrame[] = [
+  {
+    progress: 0,
+    moon: { x: 25, y: 25, scale: 0.3, opacity: 0.6, phase: 0.3 }
+  },
+  {
+    progress: 0.5,
+    moon: { x: 20, y: 55, scale: 0.4, opacity: 0.8, phase: 0.25 }
+  },
+  {
+    progress: 1.0,
+    moon: { x: 15, y: 85, scale: 0.5, opacity: 0.9, phase: 0.2 }
+  }
+];
+
+export const CosmicMoon: React.FC<CosmicMoonProps> = ({
+  progress,
+  isVisible
 }) => {
-  const moonRef = useRef<THREE.Group>(null);
-  const crescentRef = useRef<THREE.Mesh>(null);
+  const moonRef = useRef<HTMLDivElement>(null);
+  const crescentRef = useRef<HTMLDivElement>(null);
 
-  // Crescent moon material - silvery with glow
-  const moonMaterial = useMemo(() => {
-    return new THREE.MeshStandardMaterial({
-      color: '#E6E6FA',
-      emissive: '#4169E1',
-      emissiveIntensity: 0.3,
-      roughness: 0.8,
-      metalness: 0.1,
-    });
-  }, []);
+  // Interpolate between moon keyframes
+  const getCurrentMoonFrame = (progress: number): MoonFrame => {
+    if (progress <= 0) return MOON_FRAMES[0];
+    if (progress >= 1) return MOON_FRAMES[MOON_FRAMES.length - 1];
 
-  useFrame((state) => {
-    if (moonRef.current && crescentRef.current) {
-      const time = state.clock.elapsedTime;
-      
-      // Moon appears and descends during sunset point
-      if (isSunsetPoint) {
-        // Calculate moon descent position
-        const sunsetProgress = Math.min(1, (scrollProgress - 0.65) / 0.2); // 0.65-0.85 range
-        const moonY = THREE.MathUtils.lerp(8, 1.5, sunsetProgress); // From top to below "No glue needed"
-        const moonX = THREE.MathUtils.lerp(-2, -1.5, sunsetProgress); // Slight horizontal drift
-        
-        moonRef.current.position.set(moonX, moonY, -8);
-        moonRef.current.visible = true;
-        
-        // Subtle rotation for realism
-        crescentRef.current.rotation.z = Math.sin(time * 0.5) * 0.1;
-        
-        // Gentle glow pulsing
-        const glowPulse = Math.sin(time * 2) * 0.1 + 0.3;
-        moonMaterial.emissiveIntensity = glowPulse;
-      } else {
-        moonRef.current.visible = false;
+    let nextFrameIndex = MOON_FRAMES.findIndex(frame => frame.progress > progress);
+    if (nextFrameIndex === -1) nextFrameIndex = MOON_FRAMES.length - 1;
+    
+    const prevFrame = MOON_FRAMES[nextFrameIndex - 1] || MOON_FRAMES[0];
+    const nextFrame = MOON_FRAMES[nextFrameIndex];
+    
+    const frameProgress = (progress - prevFrame.progress) / (nextFrame.progress - prevFrame.progress);
+    const t = Math.max(0, Math.min(1, frameProgress));
+    
+    return {
+      progress,
+      moon: {
+        x: THREE.MathUtils.lerp(prevFrame.moon.x, nextFrame.moon.x, t),
+        y: THREE.MathUtils.lerp(prevFrame.moon.y, nextFrame.moon.y, t),
+        scale: THREE.MathUtils.lerp(prevFrame.moon.scale, nextFrame.moon.scale, t),
+        opacity: THREE.MathUtils.lerp(prevFrame.moon.opacity, nextFrame.moon.opacity, t),
+        phase: THREE.MathUtils.lerp(prevFrame.moon.phase, nextFrame.moon.phase, t),
       }
+    };
+  };
+
+  const currentFrame = getCurrentMoonFrame(progress);
+
+  // Update moon position and appearance
+  useEffect(() => {
+    if (moonRef.current && crescentRef.current && isVisible) {
+      const moonElement = moonRef.current;
+      const crescentElement = crescentRef.current;
+      
+      // Position: 50% + sun offset + moon offset
+      moonElement.style.left = `calc(50% + ${currentFrame.moon.x}vw)`;
+      moonElement.style.top = `${currentFrame.moon.y}%`;
+      
+      // Scale and opacity
+      moonElement.style.transform = `translate(-50%, -50%) scale(${currentFrame.moon.scale})`;
+      moonElement.style.opacity = currentFrame.moon.opacity.toString();
+      
+      // Crescent phase effect
+      const phasePercentage = currentFrame.moon.phase * 100;
+      crescentElement.style.clipPath = `circle(50% at ${phasePercentage}% 50%)`;
     }
-  });
+  }, [currentFrame, isVisible]);
+
+  if (!isVisible) return null;
 
   return (
-    <group ref={moonRef} visible={false}>
-      {/* Crescent Moon Shape */}
-      <mesh ref={crescentRef} rotation={[0, 0, Math.PI / 4]}>
-        {/* Create crescent by subtracting a smaller sphere */}
-        <group>
-          {/* Main moon sphere */}
-          <mesh>
-            <sphereGeometry args={[0.4, 32, 32]} />
-            <primitive object={moonMaterial} />
-          </mesh>
-          {/* Darker sphere to create crescent effect */}
-          <mesh position={[0.25, 0, 0]}>
-            <sphereGeometry args={[0.35, 32, 32]} />
-            <meshBasicMaterial color="#0a0a2e" transparent opacity={1} />
-          </mesh>
-        </group>
-      </mesh>
-      
-      {/* Subtle moon glow ring */}
-      <mesh>
-        <ringGeometry args={[0.45, 0.55, 32]} />
-        <meshBasicMaterial 
-          color="#4169E1" 
-          transparent 
-          opacity={0.2} 
-          side={THREE.DoubleSide}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-    </group>
+    <div
+      ref={moonRef}
+      className="fixed pointer-events-none z-20"
+      style={{
+        width: '80px',
+        height: '80px',
+        borderRadius: '50%',
+        backgroundColor: '#E8E8E8',
+        boxShadow: '0 0 15px rgba(232, 232, 232, 0.3)',
+        transition: 'all 0.3s ease-out',
+      }}
+    >
+      {/* Crescent shadow overlay */}
+      <div
+        ref={crescentRef}
+        className="absolute inset-0 rounded-full"
+        style={{
+          backgroundColor: '#2A2A2A',
+          clipPath: 'circle(50% at 30% 50%)',
+          transition: 'all 0.3s ease-out',
+        }}
+      />
+    </div>
   );
 };

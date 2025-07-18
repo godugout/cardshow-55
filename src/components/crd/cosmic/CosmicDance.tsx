@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { CosmicMoon } from './CosmicMoon';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -24,44 +25,53 @@ interface AnimationFrame {
     intensity: number; // 0.5 to 2.0
     warmth: number; // Color temperature adjustment
   };
+  environment: {
+    skyColor: string; // Gradient sky color
+    spaceDepth: number; // Deep space feeling
+  };
 }
 
-// Define the animation keyframes
+// Enhanced animation keyframes inspired by 2001: A Space Odyssey
 const ANIMATION_FRAMES: AnimationFrame[] = [
-  // Start frame
+  // Dawn scene - Monolith emerging
   {
     progress: 0,
-    sun: { x: 0, y: 20, scale: 0.6, opacity: 0.8 },
+    sun: { x: 0, y: 15, scale: 0.4, opacity: 0.7 },
     card: { lean: 0 },
-    lighting: { intensity: 1.0, warmth: 0 }
+    lighting: { intensity: 0.8, warmth: 0 },
+    environment: { skyColor: '#0a0a2e', spaceDepth: 1.0 }
   },
-  // Quarter way
+  // Early alignment - Cosmic awakening
   {
     progress: 0.25,
-    sun: { x: 0, y: 35, scale: 0.8, opacity: 0.9 },
-    card: { lean: 15 },
-    lighting: { intensity: 1.1, warmth: 0.2 }
+    sun: { x: 0, y: 30, scale: 0.6, opacity: 0.85 },
+    card: { lean: 20 },
+    lighting: { intensity: 1.0, warmth: 0.3 },
+    environment: { skyColor: '#1a1a3e', spaceDepth: 0.8 }
   },
-  // Trigger point - card at 45°
+  // CRITICAL TRIGGER - 45° monolith lean (symbolic enlightenment moment)
   {
     progress: 0.5,
-    sun: { x: 0, y: 50, scale: 1.0, opacity: 1.0 },
+    sun: { x: 0, y: 50, scale: 0.9, opacity: 1.0 },
     card: { lean: 45 },
-    lighting: { intensity: 1.3, warmth: 0.5 }
+    lighting: { intensity: 1.4, warmth: 0.6 },
+    environment: { skyColor: '#2a1a1e', spaceDepth: 0.6 }
   },
-  // Alignment beginning
+  // Deep alignment - Cosmic convergence
   {
     progress: 0.75,
-    sun: { x: 0, y: 65, scale: 1.4, opacity: 0.9 },
-    card: { lean: 60 },
-    lighting: { intensity: 1.5, warmth: 0.8 }
+    sun: { x: 0, y: 70, scale: 1.3, opacity: 0.95 },
+    card: { lean: 65 },
+    lighting: { intensity: 1.7, warmth: 0.85 },
+    environment: { skyColor: '#3a0a0e', spaceDepth: 0.4 }
   },
-  // Final alignment - sun almost hidden
+  // FINAL ALIGNMENT - Sun behind monolith (transcendence)
   {
     progress: 1.0,
-    sun: { x: 0, y: 80, scale: 1.8, opacity: 0.7 },
-    card: { lean: 75 },
-    lighting: { intensity: 1.8, warmth: 1.0 }
+    sun: { x: 0, y: 85, scale: 1.8, opacity: 0.8 },
+    card: { lean: 80 },
+    lighting: { intensity: 2.0, warmth: 1.0 },
+    environment: { skyColor: '#4a0000', spaceDepth: 0.2 }
   }
 ];
 
@@ -115,37 +125,68 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
       lighting: {
         intensity: THREE.MathUtils.lerp(prevFrame.lighting.intensity, nextFrame.lighting.intensity, t),
         warmth: THREE.MathUtils.lerp(prevFrame.lighting.warmth, nextFrame.lighting.warmth, t),
+      },
+      environment: {
+        skyColor: prevFrame.environment.skyColor, // Use discrete color changes for now
+        spaceDepth: THREE.MathUtils.lerp(prevFrame.environment.spaceDepth, nextFrame.environment.spaceDepth, t),
       }
     };
   };
 
   const currentFrame = getCurrentFrame(animationProgress);
 
-  // Update sun position and appearance
+  // Enhanced cosmic environment effects
+  useEffect(() => {
+    // Apply environment effects to document body for full immersion
+    const body = document.body;
+    const skyColor = currentFrame.environment.skyColor;
+    const spaceDepth = currentFrame.environment.spaceDepth;
+    
+    // Subtle background color shift for cosmic atmosphere
+    body.style.background = `radial-gradient(circle at center, ${skyColor} 0%, #000000 100%)`;
+    
+    return () => {
+      // Cleanup on unmount
+      body.style.background = '';
+    };
+  }, [currentFrame]);
+
+  // Update sun position with enhanced cinematic effects
   useEffect(() => {
     if (sunRef.current) {
       const sunElement = sunRef.current;
       
-      // Position: 50% from left + x offset, y% from top
+      // Enhanced positioning for perfect vertical alignment (2001 style)
       sunElement.style.left = `calc(50% + ${currentFrame.sun.x}vw)`;
       sunElement.style.top = `${currentFrame.sun.y}%`;
       
-      // Scale and opacity
-      sunElement.style.transform = `translate(-50%, -50%) scale(${currentFrame.sun.scale})`;
+      // Enhanced scale and opacity with cinematic glow
+      const baseScale = currentFrame.sun.scale;
+      const glowIntensity = currentFrame.lighting.intensity;
+      sunElement.style.transform = `translate(-50%, -50%) scale(${baseScale})`;
       sunElement.style.opacity = currentFrame.sun.opacity.toString();
       
-      // Color warmth effect
+      // Enhanced color warmth with cosmic evolution
       const warmth = currentFrame.lighting.warmth;
-      const orangeIntensity = Math.round(255 - (warmth * 55)); // 255 to 200
-      const redIntensity = Math.round(255 - (warmth * 15)); // 255 to 240
-      sunElement.style.backgroundColor = `rgb(${redIntensity}, ${orangeIntensity}, 0)`;
-      sunElement.style.boxShadow = `0 0 ${20 + warmth * 30}px rgba(255, ${orangeIntensity}, 0, ${0.3 + warmth * 0.4})`;
+      const orangeIntensity = Math.round(255 - (warmth * 40)); // More dramatic shift
+      const redIntensity = Math.round(255 - (warmth * 10));
+      const blueComponent = Math.round(warmth * 20); // Add subtle blue for space effect
+      
+      sunElement.style.backgroundColor = `rgb(${redIntensity}, ${orangeIntensity}, ${blueComponent})`;
+      
+      // Cinematic glow effect - larger and more dramatic
+      const glowSize = 30 + (warmth * 60) + (glowIntensity * 20);
+      const glowOpacity = 0.2 + (warmth * 0.6);
+      sunElement.style.boxShadow = `
+        0 0 ${glowSize}px rgba(255, ${orangeIntensity}, ${blueComponent}, ${glowOpacity}),
+        0 0 ${glowSize * 2}px rgba(255, ${orangeIntensity}, 0, ${glowOpacity * 0.5})
+      `;
     }
   }, [currentFrame]);
 
   return (
     <>
-      {/* 2D Sun Overlay */}
+      {/* Enhanced 2D Sun with Cinematic Glow */}
       <div
         ref={sunRef}
         className="fixed pointer-events-none z-30"
@@ -154,28 +195,46 @@ export const CosmicDance: React.FC<CosmicDanceProps> = ({
           height: '120px',
           borderRadius: '50%',
           backgroundColor: '#FFA500',
-          boxShadow: '0 0 20px rgba(255, 165, 0, 0.3)',
-          transition: isPlaying ? 'all 0.1s ease-out' : 'all 0.3s ease-out',
+          boxShadow: '0 0 30px rgba(255, 165, 0, 0.4)',
+          transition: isPlaying ? 'all 0.1s ease-out' : 'all 0.5s ease-out',
+          filter: `brightness(${1 + currentFrame.lighting.intensity * 0.3})`,
         }}
       />
       
-      {/* Trigger Indicator */}
+      {/* Cosmic Moon - 2001 Style Crescent */}
+      <CosmicMoon
+        progress={animationProgress}
+        isVisible={animationProgress > 0.1}
+      />
+      
+      {/* Enhanced Cosmic Trigger Notification */}
       {hasTriggered && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-40 pointer-events-none">
-          <div className="bg-orange-500/90 backdrop-blur-sm rounded-lg px-4 py-2 text-white text-sm font-medium animate-pulse">
-            🌅 Cosmic Dance Activated
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-40 pointer-events-none">
+          <div className="bg-gradient-to-r from-orange-500/90 to-red-500/90 backdrop-blur-sm rounded-xl px-6 py-3 text-white font-medium animate-pulse border border-orange-300/50">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+              🌌 COSMIC ALIGNMENT INITIATED
+            </div>
+            <div className="text-xs opacity-80 mt-1">
+              "My God, it's full of stars..."
+            </div>
           </div>
         </div>
       )}
       
-      {/* Debug Info */}
+      {/* Enhanced Frame Debug with Cinematic Info */}
       <div className="fixed top-4 right-4 z-40 pointer-events-none">
-        <div className="bg-black/70 backdrop-blur-sm rounded-lg p-3 text-white text-xs space-y-1">
+        <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3 text-white text-xs space-y-1 border border-white/10">
+          <div className="text-orange-300 font-semibold">COSMIC DANCE - Frame Data</div>
           <div>Progress: {Math.round(animationProgress * 100)}%</div>
-          <div>Card Angle: {Math.round(cardAngle)}°</div>
-          <div>Sun Y: {Math.round(currentFrame.sun.y)}%</div>
-          <div>Scale: {currentFrame.sun.scale.toFixed(1)}</div>
-          <div>Triggered: {hasTriggered ? 'Yes' : 'No'}</div>
+          <div>Monolith Lean: {Math.round(cardAngle)}°</div>
+          <div>Sun Position: {Math.round(currentFrame.sun.y)}%</div>
+          <div>Solar Scale: {currentFrame.sun.scale.toFixed(1)}x</div>
+          <div>Light Intensity: {currentFrame.lighting.intensity.toFixed(1)}x</div>
+          <div>Cosmic Warmth: {Math.round(currentFrame.lighting.warmth * 100)}%</div>
+          <div className={`${hasTriggered ? 'text-green-400' : 'text-gray-400'}`}>
+            Status: {hasTriggered ? 'ALIGNED' : 'MANUAL'}
+          </div>
         </div>
       </div>
     </>
