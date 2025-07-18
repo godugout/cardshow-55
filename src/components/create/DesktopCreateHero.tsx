@@ -20,38 +20,6 @@ const DesktopAnimatedTagline: React.FC = () => {
 
 export const DesktopCreateHero: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
-  const [cardPosition, setCardPosition] = useState({ top: '50%' });
-
-  useEffect(() => {
-    const calculateCardPosition = () => {
-      const viewportHeight = window.innerHeight;
-      const navbarHeight = 80; // Approximate navbar height
-      const taglineElement = document.querySelector('.font-caveat');
-      
-      if (taglineElement) {
-        const taglineRect = taglineElement.getBoundingClientRect();
-        const taglineBottom = taglineRect.bottom;
-        const availableSpace = viewportHeight - taglineBottom;
-        const cardTop = taglineBottom + (availableSpace / 2);
-        
-        setCardPosition({ 
-          top: `${Math.max(cardTop, taglineBottom + 100)}px` 
-        });
-      } else {
-        // Fallback positioning
-        setCardPosition({ top: `${viewportHeight * 0.65}px` });
-      }
-    };
-
-    // Calculate position on mount and resize
-    calculateCardPosition();
-    window.addEventListener('resize', calculateCardPosition);
-    
-    // Recalculate after a short delay to ensure DOM is ready
-    setTimeout(calculateCardPosition, 100);
-
-    return () => window.removeEventListener('resize', calculateCardPosition);
-  }, []);
 
   const handleTogglePause = () => {
     setIsPaused(prev => !prev);
@@ -63,24 +31,14 @@ export const DesktopCreateHero: React.FC = () => {
 
   return (
     <div className="relative w-full overflow-hidden h-screen bg-crd-darkest">
-      {/* 3D Background with Dynamic Positioning */}
-      <div 
-        className="absolute inset-0 z-0"
-        style={{
-          '--card-top': cardPosition.top,
-        } as React.CSSProperties}
-      >
+      {/* Full-Screen 3D Background */}
+      <div className="absolute inset-0 z-0 w-full h-full">
         <StarsBackground>
-          <div 
-            className="absolute left-1/2 transform -translate-x-1/2 transition-all duration-500"
-            style={{ top: cardPosition.top, transform: 'translateX(-50%) translateY(-50%)' }}
-          >
-            <FloatingCard3D 
-              isPaused={isPaused}
-              onTogglePause={handleTogglePause}
-              showPauseButton={false}
-            />
-          </div>
+          <FloatingCard3D 
+            isPaused={isPaused}
+            onTogglePause={handleTogglePause}
+            showPauseButton={false}
+          />
         </StarsBackground>
       </div>
 
