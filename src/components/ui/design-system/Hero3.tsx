@@ -261,7 +261,7 @@ export const Hero3: React.FC<Hero3Props> = ({
         {[...featuredCards, ...featuredCards].map((card, index) => (
           <div 
             key={`${card.id}-${index}`}
-            className="flex-shrink-0 w-64 md:w-80 lg:w-96"
+            className="flex-shrink-0 w-80 md:w-96 lg:w-[400px]"
             onPointerEnter={() => !isDragging && setHoveredCard(`${card.id}-${index}`)}
             onPointerLeave={() => setHoveredCard(null)}
             onFocus={() => setFocusedCard(`${card.id}-${index}`)}

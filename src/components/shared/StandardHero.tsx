@@ -70,7 +70,7 @@ export const StandardHero: React.FC<StandardHeroProps> = ({
       )}
       
       {/* Hero Content */}
-      <div className="relative z-10 min-h-[60vh] max-h-[90vh] flex flex-col justify-center text-center py-16 pt-[calc(var(--navbar-height)+2rem)]">
+      <div className="relative z-10 min-h-[60vh] max-h-[90vh] flex flex-col justify-center text-center py-16">
         <div className="mobile-container max-w-6xl mx-auto">
           {/* Label */}
           {label && (
