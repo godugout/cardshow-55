@@ -15,7 +15,9 @@ const buttonVariants = cva(
         outline: "btn-themed-ghost",
         ghost: "btn-themed-ghost",
         action: "p-3 btn-themed-secondary team-spirit-glow",
-        // Official Create CTA button with custom gradient
+        // New glass variant for secondary CTAs
+        glass: "crd-glass-button",
+        // Official Create CTA button with orange-green-blue CRD gradient
         create: "crd-create-button",
         // Official Collective CTA button with orange gradient
         collective: "crd-collective-button",

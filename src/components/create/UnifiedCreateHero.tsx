@@ -85,25 +85,23 @@ export const UnifiedCreateHero: React.FC = () => {
             {/* Bottom Section - Action Buttons */}
             <div className="flex-shrink-0 pb-8 pointer-events-auto">
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-6">
-                {/* Primary CTA */}
+                {/* Primary CTA - Updated to use create variant */}
                 <Link to="/create/editor" className="w-full sm:w-auto">
                   <CRDButton 
-                    variant="primary" 
+                    variant="create" 
                     size="lg"
-                    className="w-full sm:w-auto px-8 py-4 text-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-2xl"
-                    style={{ boxShadow: '0 8px 32px rgba(59, 130, 246, 0.5)' }}
+                    className="w-full sm:w-auto px-8 py-4 text-lg font-semibold"
                   >
                     Start Creating
                   </CRDButton>
                 </Link>
 
-                {/* Secondary CTA */}
+                {/* Secondary CTA - Updated to use glass variant */}
                 <Link to="/templates" className="w-full sm:w-auto">
                   <CRDButton 
-                    variant="secondary" 
+                    variant="glass" 
                     size="lg"
-                    className="w-full sm:w-auto px-8 py-4 text-lg font-semibold bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 transition-all duration-200 transform hover:scale-105"
-                    style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
+                    className="w-full sm:w-auto px-8 py-4 text-lg font-semibold"
                   >
                     Browse Templates
                   </CRDButton>
@@ -120,7 +118,7 @@ export const UnifiedCreateHero: React.FC = () => {
           </div>
         </div>
       ) : (
-        // Normal tall screen layout - No changes
+        // Normal tall screen layout - Updated with new button variants
         <div className="relative w-full min-h-screen">
           {/* Full Screen 3D Background Layer */}
           <ResponsiveCreate3DLayout
@@ -143,25 +141,23 @@ export const UnifiedCreateHero: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pointer-events-auto">
-                {/* Primary CTA */}
+                {/* Primary CTA - Updated to use create variant */}
                 <Link to="/create/editor">
                   <CRDButton 
-                    variant="primary" 
-                    size="lg"
-                    className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transform hover:scale-110 transition-all duration-300 shadow-2xl"
-                    style={{ boxShadow: '0 12px 48px rgba(59, 130, 246, 0.6)' }}
+                    variant="create" 
+                    size="xl"
+                    className="px-12 py-6 text-xl font-bold"
                   >
                     Start Creating
                   </CRDButton>
                 </Link>
 
-                {/* Secondary CTA */}
+                {/* Secondary CTA - Updated to use glass variant */}
                 <Link to="/templates">
                   <CRDButton 
-                    variant="secondary" 
-                    size="lg"
-                    className="px-12 py-6 text-xl font-semibold bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 transition-all duration-300 transform hover:scale-110"
-                    style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
+                    variant="glass" 
+                    size="xl"
+                    className="px-12 py-6 text-xl font-semibold"
                   >
                     Browse Templates
                   </CRDButton>
