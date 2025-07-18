@@ -12,8 +12,48 @@
 /* Hero Text Effects */
 .paper-scraps {
   position: relative;
-  color: #ffffff;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 25%, #f8f9fa 50%, #ffffff 75%, #f1f3f4 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 
+    1px 1px 0px rgba(248, 249, 250, 0.8),
+    2px 2px 0px rgba(206, 212, 218, 0.6),
+    3px 3px 0px rgba(173, 181, 189, 0.4);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  transform: rotate(-0.5deg);
+  display: inline-block;
+  animation: paper-flutter 3s ease-in-out infinite;
+}
+
+@keyframes paper-flutter {
+  0%, 100% { 
+    transform: rotate(-0.5deg) translateY(0px);
+  }
+  25% { 
+    transform: rotate(0.3deg) translateY(-1px);
+  }
+  50% { 
+    transform: rotate(-0.2deg) translateY(0px);
+  }
+  75% { 
+    transform: rotate(0.1deg) translateY(-0.5px);
+  }
+}
+
+.paper-scraps::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -4px;
+  right: -4px;
+  bottom: -2px;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 15%),
+    radial-gradient(circle at 40% 40%, rgba(248, 249, 250, 0.1) 0%, transparent 10%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .cardboard-text {
