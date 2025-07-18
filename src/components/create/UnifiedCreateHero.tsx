@@ -21,28 +21,42 @@ export const UnifiedCreateHero: React.FC = () => {
 
   // Render tablet-specific hero text with line breaks
   const renderTabletHeroText = () => (
-    <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-6 text-center max-w-4xl mx-auto text-gray-400 font-light">
-      <span>From <span className="paper-scraps">paper scraps</span></span>
-      <br />
-      <span>and <span className="cardboard-text">cardboard</span> to</span>
-      <br />
-      <span className="font-bold">
-        <PixelDigital className="inline">digital</PixelDigital>
-      </span>
-      <br />
-      <span className="text-white font-bold">art that comes alive!</span>
-    </h1>
+    <div className="text-center space-y-4">
+      {/* Intro Line */}
+      <p className="text-sm md:text-base lg:text-lg text-gray-400 font-medium tracking-wider uppercase">
+        CUT, CRAFT & CREATE DIGITALLY
+      </p>
+      
+      {/* Main Title */}
+      <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-6 text-center max-w-4xl mx-auto text-gray-400 font-light">
+        <span>From <span className="paper-scraps">paper scraps</span></span>
+        <br />
+        <span>and <span className="cardboard-text">cardboard</span> to</span>
+        <br />
+        <span className="font-bold">
+          <PixelDigital className="inline">digital</PixelDigital> <PixelDigital className="inline">art</PixelDigital> that comes alive!
+        </span>
+      </h1>
+    </div>
   );
 
   // Render standard hero text (desktop and mobile)
   const renderStandardHeroText = () => (
-    <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-6 text-center max-w-4xl mx-auto text-gray-400 font-light">
-      <span>From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to </span>
-      <span className="font-bold">
-        <PixelDigital className="inline">digital</PixelDigital>
-        <span className="text-white"> art that comes alive!</span>
-      </span>
-    </h1>
+    <div className="text-center space-y-4">
+      {/* Intro Line */}
+      <p className="text-sm md:text-base lg:text-lg text-gray-400 font-medium tracking-wider uppercase">
+        CUT, CRAFT & CREATE DIGITALLY
+      </p>
+      
+      {/* Main Title */}
+      <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-6 text-center max-w-4xl mx-auto text-gray-400 font-light">
+        <span>From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to</span>
+        <br />
+        <span className="font-bold">
+          <PixelDigital className="inline">digital</PixelDigital> <PixelDigital className="inline">art</PixelDigital> that comes alive!
+        </span>
+      </h1>
+    </div>
   );
 
   return (
@@ -61,7 +75,7 @@ export const UnifiedCreateHero: React.FC = () => {
           {/* Overlay Content Layer - Positioned below sun for short screens */}
           <div className="relative z-10 h-full flex flex-col pointer-events-none">
             {/* Top Section - Hero Content positioned below sun */}
-            <div className="pt-32 px-6 pointer-events-none">
+            <div className="pt-20 px-6 pointer-events-none">
               <div className="text-center space-y-4 max-w-4xl mx-auto">
                 {/* Hero Text */}
                 {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
@@ -118,7 +132,7 @@ export const UnifiedCreateHero: React.FC = () => {
           />
 
           {/* Overlay Content Layer - Positioned below sun */}
-          <div className="relative z-10 min-h-screen pt-48 md:pt-56 lg:pt-64 px-6 pointer-events-none">
+          <div className="relative z-10 min-h-screen pt-20 md:pt-24 lg:pt-28 px-6 pointer-events-none">
             <div className="text-center space-y-8 max-w-6xl mx-auto">
               {/* Hero Text */}
               {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
