@@ -188,9 +188,6 @@ export const SimplifiedDiscover = () => {
             <h3 className="text-lg sm:text-xl font-bold text-themed-primary mb-2 sm:mb-3">
               Ready to explore more?
             </h3>
-            <p className="text-themed-secondary mb-3 sm:mb-4 max-w-md mx-auto text-sm">
-              Browse our complete catalog of cards and collections from creators worldwide.
-            </p>
             <div className="flex justify-center">
               <Link to="/collections/catalog">
                 <Button className="btn-themed-primary px-4 sm:px-6 py-2 text-sm sm:text-base min-h-[40px] w-full sm:w-auto">
