@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import { PixelDigital } from '@/components/ui/PixelDigital';
@@ -9,7 +9,6 @@ import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 export const UnifiedCreateHero: React.FC = () => {
   const { isMobile, deviceType } = useResponsiveBreakpoints();
   const [isPaused, setIsPaused] = useState(false);
-  const taglineRef = useRef<HTMLDivElement>(null);
 
   const handleTogglePause = () => {
     setIsPaused(prev => !prev);
@@ -20,18 +19,25 @@ export const UnifiedCreateHero: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-crd-darkest">
-      {/* Hero Content */}
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+2rem)] pb-8">
+    <div className="relative w-full min-h-screen">
+      {/* Full Screen 3D Background Layer */}
+      <ResponsiveCreate3DLayout
+        isPaused={isPaused}
+        onTogglePause={handleTogglePause}
+        onReset={handleReset}
+      />
+
+      {/* Hero Content Overlay - Transparent background to show stars */}
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+2rem)] pb-8 min-h-screen flex flex-col justify-center">
         <div className="max-w-4xl mx-auto">
           {/* Label */}
           <div className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-xs sm:text-sm uppercase">
             CUT, CRAFT & CREATE DIGITALLY
           </div>
           
-          {/* Main Heading - Responsive Typography */}
+          {/* Main Heading - Enhanced text shadows for readability over stars */}
           <div className="mb-6">
-            <h1 className="leading-tight text-crd-white drop-shadow-lg">
+            <h1 className="leading-tight text-crd-white" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 16px rgba(0,0,0,0.6)' }}>
               <div className={`flex justify-center items-center mb-2 ${
                 isMobile ? 'text-base' : 'text-3xl md:text-5xl lg:text-6xl'
               }`}>
@@ -53,13 +59,14 @@ export const UnifiedCreateHero: React.FC = () => {
             </h1>
           </div>
           
-          {/* CTA Buttons */}
+          {/* CTA Buttons - Enhanced shadows for visibility */}
           <div className={`flex ${isMobile ? 'flex-col gap-2' : 'flex-col sm:flex-row gap-4'} justify-center my-6`}>
             <Link to="/create/crd">
               <CRDButton 
                 size={isMobile ? "default" : "lg"} 
                 variant="create"
                 className="min-w-[180px]"
+                style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
               >
                 Start Creating
               </CRDButton>
@@ -69,37 +76,30 @@ export const UnifiedCreateHero: React.FC = () => {
                 variant="outline" 
                 size={isMobile ? "default" : "lg"} 
                 className="min-w-[180px]"
+                style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
               >
                 Browse Templates
               </CRDButton>
             </Link>
           </div>
           
-          {/* Animated Tagline - Tracked for 3D positioning */}
-          <div 
-            ref={taglineRef}
-            className={`${isMobile ? 'mt-4 mb-6' : 'mt-8 mb-12'}`}
-          >
-            <p className={`font-caveat italic text-center text-crd-orange animate-fade-in ${
-              isMobile ? 'text-lg' : 'text-2xl md:text-4xl'
-            }`}>
+          {/* Animated Tagline - Enhanced shadow for readability */}
+          <div className={`${isMobile ? 'mt-4 mb-6' : 'mt-8 mb-12'}`}>
+            <p 
+              className={`font-caveat italic text-center text-crd-orange animate-fade-in ${
+                isMobile ? 'text-lg' : 'text-2xl md:text-4xl'
+              }`}
+              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}
+            >
               "No glue needed."
             </p>
           </div>
         </div>
       </div>
 
-      {/* Responsive 3D Layout - Positioned below tagline */}
-      <ResponsiveCreate3DLayout
-        taglineRef={taglineRef}
-        isPaused={isPaused}
-        onTogglePause={handleTogglePause}
-        onReset={handleReset}
-      />
-
       {/* Device-specific UI hints */}
       {deviceType === 'desktop' && (
-        <div className="fixed bottom-6 left-6 z-50 text-crd-lightGray text-sm">
+        <div className="fixed bottom-6 left-6 z-50 text-crd-lightGray text-sm" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
           <p>Interactive 3D Experience</p>
           <p className="text-xs">Drag to rotate • Scroll to zoom</p>
         </div>

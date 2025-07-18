@@ -33,20 +33,22 @@ export const FloatingCard3D: React.FC<FloatingCard3DProps> = ({
   const deviceConfig = getDeviceConfig();
 
   return (
-    <CRDViewer
-      mode="monolith"
-      intensity={deviceConfig.intensity}
-      lightingPreset="studio"
-      pathTheme="neutral"
-      autoRotate={deviceConfig.autoRotate}
-      enableControls={deviceConfig.enableControls}
-      enableGlassCase={true}
-      showModeText={false}
-      hideCosmicControls={true}
-      className="w-full h-screen"
-      isPaused={isPaused}
-      onTogglePause={onTogglePause}
-      showPauseButton={showPauseButton}
-    />
+    <div className="absolute inset-0 flex items-center justify-center">
+      <CRDViewer
+        mode="monolith"
+        intensity={deviceConfig.intensity}
+        lightingPreset="studio"
+        pathTheme="neutral"
+        autoRotate={deviceConfig.autoRotate}
+        enableControls={deviceConfig.enableControls}
+        enableGlassCase={true}
+        showModeText={false}
+        hideCosmicControls={true}
+        className="w-full h-full"
+        isPaused={isPaused}
+        onTogglePause={onTogglePause}
+        showPauseButton={showPauseButton}
+      />
+    </div>
   );
 };
