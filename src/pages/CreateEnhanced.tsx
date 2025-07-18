@@ -2,19 +2,19 @@
 import React from 'react';
 import { CreatePageHero } from '@/components/create/CreatePageHero';
 import { CreateOptionsSection } from '@/components/create/CreateOptionsSection';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 
 const CreateEnhanced: React.FC = () => {
-  const isMobile = useIsMobile();
+  const { isMobile, isShortScreen } = useResponsiveBreakpoints();
 
   return (
     <div className="min-h-screen bg-space-odyssey overflow-hidden">
-      <div className={`h-full w-full ${isMobile ? '' : 'overflow-y-auto'}`}>
+      <div className={`h-full w-full ${isMobile || isShortScreen ? '' : 'overflow-y-auto'}`}>
         {/* Responsive Hero Section */}
         <CreatePageHero />
         
-        {/* Combined Creation Options Section - Only show on desktop or after mobile studio */}
-        {!isMobile && <CreateOptionsSection />}
+        {/* Combined Creation Options Section - Only show on desktop with sufficient height */}
+        {!isMobile && !isShortScreen && <CreateOptionsSection />}
       </div>
     </div>
   );

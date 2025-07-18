@@ -14,6 +14,9 @@
 @import './glass-morphism.css';
 @import './mobile-first.css';
 
+/* New responsive enhancements */
+@import './responsive-enhancements.css';
+
 /* Critical utilities for proper theming */
 @layer utilities {
   /* Button text color utilities */
@@ -62,7 +65,7 @@
   .border-crd-lightGray { border-color: hsl(var(--crd-lightGray)); }
   .border-crd-white { border-color: hsl(var(--crd-white)); }
   .border-crd-blue { border-color: hsl(var(--crd-blue)); }
-  .border-crd-purple { border-color: hsl(var(--crd-purple)); }
+  .border-crd-purple { color: hsl(var(--crd-purple)); }
   .border-crd-orange { border-color: hsl(var(--crd-orange)); }
   .border-crd-green { border-color: hsl(var(--crd-green)); }
 
