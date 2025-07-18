@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 import { ResponsiveCreate3DLayout } from './ResponsiveCreate3DLayout';
-import { CRDButton } from '@/components/ui/CRDButton';
+import { CRDButton } from '@/components/ui/design-system';
 
 export const UnifiedCreateHero: React.FC = () => {
   const { isShortScreen, isMobile, isTablet } = useResponsiveBreakpoints();
