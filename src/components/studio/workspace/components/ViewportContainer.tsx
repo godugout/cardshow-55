@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
+import { Viewport3D } from '../../viewport/Viewport3D';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -167,18 +167,16 @@ export const ViewportContainer: React.FC<ViewportContainerProps> = ({
         "h-full",
         !isFullscreen && "pt-12" // Account for header height
       )}>
-        <ImmersiveCardViewer
+        <Viewport3D
           card={card}
-          cards={cards}
-          currentCardIndex={currentCardIndex}
-          onCardChange={onCardChange}
-          isOpen={true}
-          onClose={() => {}}
-          onShare={() => {}}
-          onDownload={() => {}}
-          allowRotation={true}
+          className="h-full"
+          isFullscreen={isFullscreen}
+          showGrid={workspaceMode !== 'beginner'}
+          showGizmo={modeEnhancements.showAdvancedControls}
           showStats={modeEnhancements.showStats}
-          ambient={true}
+          onPerformanceUpdate={(metrics) => {
+            // Performance metrics are handled by parent component
+          }}
         />
       </div>
 
