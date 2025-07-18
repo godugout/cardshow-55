@@ -75,7 +75,7 @@
     @apply relative overflow-hidden text-white font-bold shadow-lg transition-all duration-300;
     background: linear-gradient(135deg, hsl(15, 100%, 60%), hsl(100, 35%, 55%), hsl(200, 65%, 55%));
     background-size: 200% 200%;
-    animation: liquid-gradient 8s ease-in-out infinite;
+    animation: liquid-gradient 18s ease-in-out infinite;
     will-change: background-position;
   }
 
@@ -83,7 +83,7 @@
     @apply shadow-xl transform scale-[1.02];
     background: linear-gradient(135deg, hsl(15, 100%, 65%), hsl(100, 40%, 60%), hsl(200, 70%, 60%));
     background-size: 250% 250%;
-    animation: liquid-gradient 4s ease-in-out infinite;
+    animation: liquid-gradient 12s ease-in-out infinite;
   }
 
   .crd-create-button:active {
@@ -95,7 +95,7 @@
     @apply relative overflow-hidden text-white font-bold shadow-lg transition-all duration-300;
     background: linear-gradient(135deg, hsl(0, 85%, 65%), hsl(25, 95%, 55%), hsl(45, 90%, 60%));
     background-size: 200% 200%;
-    animation: liquid-gradient 8s ease-in-out infinite;
+    animation: liquid-gradient 18s ease-in-out infinite;
     will-change: background-position;
   }
 
@@ -103,7 +103,7 @@
     @apply shadow-xl transform scale-[1.02];
     background: linear-gradient(135deg, hsl(0, 90%, 70%), hsl(25, 100%, 60%), hsl(45, 95%, 65%));
     background-size: 250% 250%;
-    animation: liquid-gradient 4s ease-in-out infinite;
+    animation: liquid-gradient 12s ease-in-out infinite;
   }
 
   .crd-collective-button:active {
@@ -115,7 +115,7 @@
     @apply relative overflow-hidden text-white font-bold shadow-lg transition-all duration-300;
     background: linear-gradient(135deg, hsl(200, 75%, 55%), hsl(219, 70%, 60%), hsl(260, 65%, 65%));
     background-size: 200% 200%;
-    animation: liquid-gradient 8s ease-in-out infinite;
+    animation: liquid-gradient 18s ease-in-out infinite;
     will-change: background-position;
   }
 
@@ -123,7 +123,7 @@
     @apply shadow-xl transform scale-[1.02];
     background: linear-gradient(135deg, hsl(200, 80%, 60%), hsl(219, 75%, 65%), hsl(260, 70%, 70%));
     background-size: 250% 250%;
-    animation: liquid-gradient 4s ease-in-out infinite;
+    animation: liquid-gradient 12s ease-in-out infinite;
   }
 
   .crd-collect-button:active {
