@@ -16,7 +16,7 @@ export const StudioPauseButton: React.FC<StudioPauseButtonProps> = ({
       onClick={onTogglePause}
       variant="outline"
       size="icon"
-      className="fixed bottom-6 left-20 z-50 bg-crd-darkGray/80 backdrop-blur-sm border-crd-mediumGray/30 hover:bg-crd-mediumGray/50 transition-all duration-200"
+      className="fixed bottom-6 left-36 z-50 bg-crd-darkGray/80 backdrop-blur-sm border-crd-mediumGray/30 hover:bg-crd-mediumGray/50 transition-all duration-200"
       title={isPaused ? "Resume particle animation" : "Pause particle animation"}
     >
       {isPaused ? (

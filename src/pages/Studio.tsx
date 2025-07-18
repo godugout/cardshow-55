@@ -1,24 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { ImmersiveCardViewer } from '@/components/viewer/ImmersiveCardViewer';
 import { StudioCardManager } from '@/components/studio/StudioCardManager';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { NoCardSelected } from './Studio/components/NoCardSelected';
 import { DatabaseSeedPrompt } from './Studio/components/DatabaseSeedPrompt';
-import { StudioPauseButton } from '@/components/studio/StudioPauseButton';
-import { StudioResetButton } from '@/components/studio/StudioResetButton';
+import { MobileStudioControlsRedesigned } from '@/components/studio/components/MobileStudioControlsRedesigned';
+import { EnhancedMobileStudioInteractions } from '@/components/studio/components/EnhancedMobileStudioInteractions';
+import type { CaseStyle } from '@/components/studio/components/StudioCaseSelector';
 import { useStudioState } from './Studio/hooks/useStudioState';
 import { checkIfDatabaseHasCards } from '@/utils/seedDatabase';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import type { CardData } from '@/types/card';
 
+// Helper function to convert CardData to the format expected by ImmersiveCardViewer
+const convertCardForViewer = (card: CardData) => {
+  console.log('🔄 Converting card for viewer:', card.title, 'Image URL:', card.image_url);
+  
+  return {
+    id: card.id,
+    title: card.title,
+    description: card.description,
+    image_url: card.image_url, // Ensure image_url is preserved
+    thumbnail_url: card.thumbnail_url,
+    tags: card.tags,
+    design_metadata: card.design_metadata,
+    visibility: card.visibility,
+    template_id: card.template_id,
+    // Map epic to legendary for compatibility with viewer, but preserve others
+    rarity: card.rarity === 'epic' ? 'legendary' as const : 
+           card.rarity as 'common' | 'uncommon' | 'rare' | 'legendary',
+    // Ensure creator_attribution has required properties for viewer
+    creator_attribution: {
+      creator_name: card.creator_attribution?.creator_name || 'Unknown Creator',
+      creator_id: card.creator_attribution?.creator_id || '',
+      collaboration_type: (card.creator_attribution?.collaboration_type as 'solo' | 'collaboration') || 'solo'
+    },
+    // Ensure publishing_options has required properties for viewer
+    publishing_options: {
+      marketplace_listing: card.publishing_options?.marketplace_listing ?? false,
+      crd_catalog_inclusion: card.publishing_options?.crd_catalog_inclusion ?? false,
+      print_available: card.publishing_options?.print_available ?? false,
+      pricing: card.publishing_options?.pricing,
+      distribution: {
+        limited_edition: card.publishing_options?.distribution?.limited_edition ?? false,
+        edition_size: card.publishing_options?.distribution?.edition_size
+      }
+    },
+    verification_status: card.verification_status,
+    print_metadata: card.print_metadata,
+    creator_id: card.creator_id,
+    // Add properties that might be needed
+    is_public: card.visibility === 'public',
+    collection_id: card.collection_id,
+    team_id: card.team_id,
+    view_count: card.view_count,
+    created_at: card.created_at
+  };
+};
 
 const Studio = () => {
   const { cardId } = useParams();
   const { user } = useAuth();
   const [showSeedPrompt, setShowSeedPrompt] = useState(false);
   const [hasCheckedDatabase, setHasCheckedDatabase] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const [use3DMode, setUse3DMode] = useState(true); // Toggle between 3D and immersive modes
+  const [selectedCase, setSelectedCase] = useState<CaseStyle>('none');
   
   const {
     selectedCard,
@@ -101,34 +149,98 @@ const Studio = () => {
     console.log('🖼️ Card image URL:', selectedCard.image_url);
   }
 
-  const handleTogglePause = () => {
-    setIsPaused(!isPaused);
-    console.log('🎮 Animation paused:', !isPaused);
+  // Convert card and mockCards for viewer compatibility
+  const viewerCard = convertCardForViewer(selectedCard);
+  const viewerCards = mockCards.map(convertCardForViewer);
+
+  console.log('🎯 Converted viewer card:', viewerCard.title, 'Image URL:', viewerCard.image_url);
+
+  const handleViewerShare = (card: any) => {
+    // Convert back to original CardData format for the handler
+    const originalCard: CardData = {
+      ...card,
+      rarity: card.rarity === 'ultra-rare' ? 'epic' : card.rarity
+    };
+    handleShare(originalCard);
   };
 
-  const handleReset = () => {
-    console.log('🔄 Resetting camera view');
-    // Reset camera and animation state
+  const handleViewerDownload = (card: any) => {
+    // Convert back to original CardData format for the handler
+    const originalCard: CardData = {
+      ...card,
+      rarity: card.rarity === 'ultra-rare' ? 'epic' : card.rarity
+    };
+    handleDownload(originalCard);
   };
 
   return (
     <ErrorBoundary>
-      <div className="w-full h-screen bg-crd-darkest relative">
-        {/* 3D Card Viewer - Full Screen */}
-        <StudioCardManager
-          cards={mockCards}
-          selectedCardIndex={currentCardIndex}
-          onCardSelect={handleCardChange}
-          enableInteraction={true}
-          showGrid={false}
-          cameraControls={true}
-        />
+      <div className="w-full h-screen bg-crd-darkest flex flex-col relative">
+        
+        {/* Simplified Mobile Header - Only on mobile, only essential info */}
+        <div className="lg:hidden bg-crd-darker/50 backdrop-blur-sm border-b border-crd-mediumGray/20 px-4 py-3 relative z-10" 
+             style={{ marginTop: 'var(--navbar-height)' }}>
+          <div className="flex items-center justify-center">
+            <h1 className="text-lg font-semibold text-crd-white">Studio</h1>
+          </div>
+        </div>
 
-        {/* Simple Controls - Lower Left */}
-        <StudioResetButton onReset={handleReset} />
-        <StudioPauseButton 
-          isPaused={isPaused} 
-          onTogglePause={handleTogglePause} 
+        {/* Main Content - Full Height */}
+        <div className="flex-1 relative">
+          <EnhancedMobileStudioInteractions
+            cards={mockCards}
+            currentCardIndex={currentCardIndex}
+            onCardChange={handleCardChange}
+            onRefresh={async () => {
+              console.log('🔄 Refreshing studio data...');
+              // Add refresh logic here - reload cards, update data, etc.
+              await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate refresh
+            }}
+            onRotationChange={(rotation) => {
+              console.log('🔄 Card rotation changed:', rotation);
+              // Handle rotation changes for 3D card
+            }}
+          >
+            {use3DMode ? (
+              <StudioCardManager
+                cards={mockCards}
+                selectedCardIndex={currentCardIndex}
+                onCardSelect={handleCardChange}
+                enableInteraction={true}
+                showGrid={process.env.NODE_ENV === 'development'}
+                cameraControls={true}
+              />
+            ) : (
+              <ImmersiveCardViewer
+                card={viewerCard}
+                cards={viewerCards}
+                currentCardIndex={currentCardIndex}
+                onCardChange={handleCardChange}
+                isOpen={true}
+                onClose={handleClose}
+                onShare={handleViewerShare}
+                onDownload={handleViewerDownload}
+                allowRotation={true}
+                showStats={true}
+                ambient={true}
+              />
+            )}
+          </EnhancedMobileStudioInteractions>
+        </div>
+
+        {/* New Mobile Controls - FAB + Drawer Pattern */}
+        <MobileStudioControlsRedesigned
+          selectedCard={selectedCard}
+          selectedCase={selectedCase}
+          onCaseChange={setSelectedCase}
+          onShare={handleShare}
+          onDownload={handleDownload}
+          onClose={handleClose}
+          use3DMode={use3DMode}
+          onToggle3D={() => setUse3DMode(!use3DMode)}
+          cards={mockCards}
+          currentCardIndex={currentCardIndex}
+          onCardChange={handleCardChange}
         />
       </div>
     </ErrorBoundary>
