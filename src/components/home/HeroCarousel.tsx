@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CarouselTrack } from './CarouselTrack';
 import { Typography } from '@/components/ui/design-system/Typography';
+import { EnhancedTestimonialCarousel } from '@/components/ui/EnhancedTestimonialCarousel';
+import { mockTestimonials } from '@/data/testimonials';
 
 const fetchFeaturedCards = async () => {
   const { data, error } = await supabase
@@ -40,17 +42,41 @@ export const HeroCarousel: React.FC = () => {
   }
 
   return (
-    <div className="py-8">
-      <div className="text-center mb-6">
-        <Typography variant="h3" className="text-crd-white mb-2">
-          Featured Cards
-        </Typography>
-        <Typography variant="body" className="text-crd-mediumGray">
-          Discover amazing cards from our community
-        </Typography>
+    <div className="py-8 space-y-12">
+      {/* Featured Cards Section */}
+      <div>
+        <div className="text-center mb-6">
+          <Typography variant="h3" className="text-crd-white mb-2">
+            Featured Cards
+          </Typography>
+          <Typography variant="body" className="text-crd-mediumGray">
+            Discover amazing cards from our community
+          </Typography>
+        </div>
+        
+        <CarouselTrack cards={cards} />
       </div>
-      
-      <CarouselTrack cards={cards} />
+
+      {/* Enhanced Testimonials Section */}
+      <div>
+        <div className="text-center mb-8">
+          <Typography variant="h3" className="text-crd-white mb-2">
+            What Creators Are Saying
+          </Typography>
+          <Typography variant="body" className="text-crd-mediumGray">
+            Industry leaders share their CRD experience
+          </Typography>
+        </div>
+        
+        <EnhancedTestimonialCarousel 
+          testimonials={mockTestimonials}
+          autoPlay={true}
+          autoPlayInterval={4000}
+          showNavigation={true}
+          showDots={true}
+          className="mx-auto max-w-6xl"
+        />
+      </div>
     </div>
   );
 };
