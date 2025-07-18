@@ -1,147 +1,115 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CRDButton } from '@/components/ui/design-system/Button';
-import { PixelDigital } from '@/components/ui/PixelDigital';
-import { ResponsiveCreate3DLayout } from './ResponsiveCreate3DLayout';
 import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
-import { ChevronDown } from 'lucide-react';
+import { ResponsiveCreate3DLayout } from './ResponsiveCreate3DLayout';
+import { CRDButton } from '@/components/ui/CRDButton';
 
 export const UnifiedCreateHero: React.FC = () => {
-  const { isMobile, deviceType, isShortScreen } = useResponsiveBreakpoints();
+  const { isShortScreen, isMobile, isTablet } = useResponsiveBreakpoints();
   const [isPaused, setIsPaused] = useState(false);
 
   const handleTogglePause = () => {
-    setIsPaused(prev => !prev);
+    setIsPaused(!isPaused);
   };
 
   const handleReset = () => {
-    window.location.reload();
+    setIsPaused(false);
+    console.log('Reset 3D animation');
   };
 
-  const scrollToAnimation = () => {
-    const animationSection = document.getElementById('animation-section');
-    if (animationSection) {
-      animationSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  };
+  // Render tablet-specific hero text with line breaks
+  const renderTabletHeroText = () => (
+    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-center max-w-4xl mx-auto">
+      <span className="text-white">From paper scraps</span>
+      <br />
+      <span className="text-white">and cardboard to</span>
+      <br />
+      <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+        digital art that
+      </span>
+      <br />
+      <span className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 bg-clip-text text-transparent">
+        comes alive
+      </span>
+    </h1>
+  );
+
+  // Render standard hero text (desktop and mobile)
+  const renderStandardHeroText = () => (
+    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-center max-w-4xl mx-auto">
+      <span className="text-white">From paper scraps and cardboard to </span>
+      <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+        digital art that 
+      </span>
+      <span className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 bg-clip-text text-transparent">
+        comes alive
+      </span>
+    </h1>
+  );
 
   return (
-    <div className="relative w-full">
-      {/* For short screens, create a scrollable layout with snap points */}
+    <>
       {isShortScreen ? (
-        <div className="scroll-snap-container">
-          {/* Hero Section - First snap point */}
-          <div id="hero-section" className="relative w-full min-h-screen snap-start">
-            {/* Pure Stars Background Only - No 3D */}
-            <div className="fixed inset-0 z-0 bg-crd-darkest">
-              <div className="absolute inset-0 opacity-80 stars-background"></div>
+        // Short screen layout - Compact design for limited vertical space
+        <div className="relative w-full h-screen overflow-hidden">
+          {/* Full Screen 3D Background Layer */}
+          <ResponsiveCreate3DLayout
+            isPaused={isPaused}
+            onTogglePause={handleTogglePause}
+            onReset={handleReset}
+            className="fixed inset-0 z-0"
+          />
+
+          {/* Overlay Content Layer - Positioned for short screens */}
+          <div className="relative z-10 h-full flex flex-col">
+            {/* Top Section - Hero Content */}
+            <div className="flex-1 flex items-center justify-center px-6">
+              <div className="text-center space-y-4 max-w-4xl mx-auto">
+                {/* Hero Text */}
+                {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
+                
+                {/* Subtitle */}
+                <p className="text-lg md:text-xl text-gray-300 mb-6 max-w-2xl mx-auto leading-relaxed">
+                  Transform your creative vision into stunning digital trading cards with our advanced AI-powered design tools.
+                </p>
+              </div>
             </div>
 
-            {/* Hero Content */}
-            <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+2rem)] pb-8 min-h-screen flex flex-col justify-start">
-              <div className="max-w-6xl mx-auto">
-                {/* Label */}
-                <div className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-xs sm:text-sm uppercase">
-                  CUT, CRAFT & CREATE DIGITALLY
-                </div>
-                
-                {/* Main Heading - Improved layout for 2 lines */}
-                <div className="mb-6">
-                  <h1 className="leading-tight text-crd-white" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 16px rgba(0,0,0,0.6)' }}>
-                    <div className={`flex justify-center items-center mb-2 ${
-                      isMobile ? 'text-lg' : 'text-3xl md:text-5xl lg:text-6xl'
-                    }`}>
-                      <span className="text-gray-400 font-light text-center max-w-4xl">
-                        From <span className="paper-scraps">paper scraps</span>
-                        {' '}and <span className="cardboard-text">cardboard</span> to
-                      </span>
-                    </div>
-                    <div className={`flex justify-center items-center ${
-                      isMobile ? 'text-xl mt-2' : 'text-4xl md:text-6xl lg:text-7xl'
-                    }`}>
-                      <span className="font-bold text-center max-w-5xl">
-                        <PixelDigital className="inline">digital</PixelDigital>
-                        {' '}<span className="text-white">art that comes alive!</span>
-                      </span>
-                    </div>
-                  </h1>
-                </div>
-                
-                {/* CTA Buttons */}
-                <div className={`flex ${isMobile ? 'flex-col gap-2' : 'flex-col sm:flex-row gap-4'} justify-center my-6`}>
-                  <Link to="/create/crd">
-                    <CRDButton 
-                      size={isMobile ? "default" : "lg"} 
-                      variant="create"
-                      className="min-w-[180px]"
-                      style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
-                    >
-                      Start Creating
-                    </CRDButton>
-                  </Link>
-                  <Link to="/templates">
-                    <CRDButton 
-                      variant="outline" 
-                      size={isMobile ? "default" : "lg"} 
-                      className="min-w-[180px]"
-                      style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
-                    >
-                      Browse Templates
-                    </CRDButton>
-                  </Link>
-                </div>
-                
-                {/* Animated Tagline */}
-                <div className={`${isMobile ? 'mt-4 mb-6' : 'mt-8 mb-12'}`}>
-                  <p 
-                    className={`font-caveat italic text-center text-crd-orange animate-fade-in ${
-                      isMobile ? 'text-lg' : 'text-2xl md:text-4xl'
-                    }`}
-                    style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}
+            {/* Bottom Section - Action Buttons */}
+            <div className="flex-shrink-0 pb-8">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-6">
+                {/* Primary CTA */}
+                <Link to="/create/editor" className="w-full sm:w-auto">
+                  <CRDButton 
+                    variant="primary" 
+                    size="lg"
+                    className="w-full sm:w-auto px-8 py-4 text-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-2xl"
+                    style={{ boxShadow: '0 8px 32px rgba(59, 130, 246, 0.5)' }}
                   >
-                    "No glue needed."
-                  </p>
-                </div>
-              </div>
+                    Start Creating
+                  </CRDButton>
+                </Link>
 
-              {/* Enhanced Scroll Indicator - Clickable and prominent */}
-              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-                <button 
-                  onClick={scrollToAnimation}
-                  className="group flex flex-col items-center text-crd-white hover:text-crd-blue transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-crd-blue focus:ring-opacity-50 rounded-lg p-4"
-                  aria-label="Scroll to 3D animation"
-                >
-                  <div className="text-sm mb-2 opacity-90 group-hover:opacity-100 transition-opacity">
-                    See the magic
-                  </div>
-                  <div className="animate-bounce-gentle">
-                    <div className="w-6 h-10 border-2 border-current rounded-full flex justify-center relative">
-                      <div className="w-1 h-3 bg-current rounded-full mt-2 animate-scroll-dot"></div>
-                    </div>
-                    <ChevronDown className="w-6 h-6 mt-1 animate-pulse" />
-                  </div>
-                </button>
+                {/* Secondary CTA */}
+                <Link to="/templates" className="w-full sm:w-auto">
+                  <CRDButton 
+                    variant="secondary" 
+                    size="lg"
+                    className="w-full sm:w-auto px-8 py-4 text-lg font-semibold bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 transition-all duration-200 transform hover:scale-105"
+                    style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
+                  >
+                    Browse Templates
+                  </CRDButton>
+                </Link>
               </div>
-            </div>
-          </div>
-
-          {/* 3D Animation Section - Second snap point with scroll resistance */}
-          <div id="animation-section" className="relative w-full min-h-screen snap-start scroll-resistance">
-            <ResponsiveCreate3DLayout
-              isPaused={isPaused}
-              onTogglePause={handleTogglePause}
-              onReset={handleReset}
-            />
-            
-            {/* Overlay hint for scroll resistance */}
-            <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50 text-crd-white text-center">
-              <p className="text-sm opacity-70 bg-black bg-opacity-30 rounded-lg px-3 py-1">
-                Drag with extra force to continue scrolling
-              </p>
+              
+              {/* Animated Tagline */}
+              <div className="text-center mt-6 px-6">
+                <p className="text-sm text-gray-400 animate-pulse">
+                  ✨ Where imagination meets technology
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -153,85 +121,57 @@ export const UnifiedCreateHero: React.FC = () => {
             isPaused={isPaused}
             onTogglePause={handleTogglePause}
             onReset={handleReset}
+            className="fixed inset-0 z-0"
           />
 
-          {/* Hero Content Overlay */}
-          <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 pt-[calc(var(--navbar-height)+2rem)] pb-32 min-h-screen flex flex-col justify-start">
-            <div className="max-w-6xl mx-auto">
-              {/* Label */}
-              <div className="mb-4 gradient-text-green-blue-purple font-bold tracking-wider text-xs sm:text-sm uppercase">
-                CUT, CRAFT & CREATE DIGITALLY
-              </div>
+          {/* Overlay Content Layer - Centered for normal screens */}
+          <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
+            <div className="text-center space-y-8 max-w-6xl mx-auto">
+              {/* Hero Text */}
+              {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
               
-              {/* Main Heading - Enhanced for better line breaks */}
-              <div className="mb-6">
-                <h1 className="leading-tight text-crd-white" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 16px rgba(0,0,0,0.6)' }}>
-                  <div className={`flex justify-center items-center mb-2 ${
-                    isMobile ? 'text-lg' : 'text-3xl md:text-5xl lg:text-6xl'
-                  }`}>
-                    <span className="text-gray-400 font-light text-center max-w-4xl">
-                      From <span className="paper-scraps">paper scraps</span>
-                      {' '}and <span className="cardboard-text">cardboard</span> to
-                    </span>
-                  </div>
-                  <div className={`flex justify-center items-center ${
-                    isMobile ? 'text-xl mt-2' : 'text-4xl md:text-6xl lg:text-7xl'
-                  }`}>
-                    <span className="font-bold text-center max-w-5xl">
-                      <PixelDigital className="inline">digital</PixelDigital>
-                      {' '}<span className="text-white">art that comes alive!</span>
-                    </span>
-                  </div>
-                </h1>
-              </div>
-              
-              {/* CTA Buttons */}
-              <div className={`flex ${isMobile ? 'flex-col gap-2' : 'flex-col sm:flex-row gap-4'} justify-center my-6`}>
-                <Link to="/create/crd">
+              {/* Subtitle */}
+              <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+                Transform your creative vision into stunning digital trading cards with our advanced AI-powered design tools.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                {/* Primary CTA */}
+                <Link to="/create/editor">
                   <CRDButton 
-                    size={isMobile ? "default" : "lg"} 
-                    variant="create"
-                    className="min-w-[180px]"
-                    style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
+                    variant="primary" 
+                    size="lg"
+                    className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transform hover:scale-110 transition-all duration-300 shadow-2xl"
+                    style={{ boxShadow: '0 12px 48px rgba(59, 130, 246, 0.6)' }}
                   >
                     Start Creating
                   </CRDButton>
                 </Link>
+
+                {/* Secondary CTA */}
                 <Link to="/templates">
                   <CRDButton 
-                    variant="outline" 
-                    size={isMobile ? "default" : "lg"} 
-                    className="min-w-[180px]"
+                    variant="secondary" 
+                    size="lg"
+                    className="px-12 py-6 text-xl font-semibold bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 transition-all duration-300 transform hover:scale-110"
                     style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
                   >
                     Browse Templates
                   </CRDButton>
                 </Link>
-                </div>
+              </div>
               
               {/* Animated Tagline */}
-              <div className={`${isMobile ? 'mt-4 mb-6' : 'mt-8 mb-12'}`}>
-                <p 
-                  className={`font-caveat italic text-center text-crd-orange animate-fade-in ${
-                    isMobile ? 'text-lg' : 'text-2xl md:text-4xl'
-                  }`}
-                  style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}
-                >
-                  "No glue needed."
+              <div className="mt-12">
+                <p className="text-lg text-gray-400 animate-pulse">
+                  ✨ Where imagination meets technology
                 </p>
               </div>
             </div>
           </div>
-
-          {/* Device-specific UI hints */}
-          {deviceType === 'desktop' && (
-            <div className="fixed bottom-6 left-6 z-50 text-crd-lightGray text-sm" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
-              <p>Interactive 3D Experience</p>
-              <p className="text-xs">Drag to rotate • Scroll to zoom</p>
-            </div>
-          )}
         </div>
       )}
-    </div>
+    </>
   );
 };
