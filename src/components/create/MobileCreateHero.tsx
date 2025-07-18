@@ -1,0 +1,96 @@
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { CRDButton } from '@/components/ui/design-system/Button';
+import { PixelDigital } from '@/components/ui/PixelDigital';
+import { ChevronDown } from 'lucide-react';
+import { useMobileFeatures } from '@/hooks/useMobileFeatures';
+
+const MobileAnimatedTagline: React.FC = () => {
+  return (
+    <div className="mt-6 mb-6">
+      <p className="font-caveat text-2xl italic text-center text-crd-orange animate-fade-in">
+        "No glue needed."
+      </p>
+    </div>
+  );
+};
+
+export const MobileCreateHero: React.FC = () => {
+  const { hapticLight } = useMobileFeatures();
+
+  const scrollToStudio = () => {
+    hapticLight();
+    const studioSection = document.getElementById('mobile-studio-section');
+    studioSection?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <div className="relative w-full h-screen bg-crd-darkest flex flex-col">
+      {/* Mobile Hero Content */}
+      <div className="flex-1 flex flex-col justify-center items-center px-4 pt-[calc(var(--navbar-height)+20px)] pb-20">
+        {/* Label */}
+        <div className="mb-3 gradient-text-green-blue-purple font-bold tracking-wider text-xs uppercase">
+          CUT, CRAFT & CREATE DIGITALLY
+        </div>
+        
+        {/* Main Heading - Mobile Optimized */}
+        <div className="mb-4 text-center">
+          <h1 className="leading-tight text-crd-white drop-shadow-lg">
+            <div className="flex justify-center items-center mb-2 text-2xl">
+              <span className="text-gray-400 font-light">From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to</span>
+            </div>
+            <div className="flex justify-center items-center text-3xl">
+              <span className="font-bold">
+                <PixelDigital className="inline">digital</PixelDigital>
+                <span className="text-white"> art that comes alive!</span>
+              </span>
+            </div>
+          </h1>
+        </div>
+        
+        {/* CTA Buttons */}
+        <div className="flex flex-col gap-3 justify-center my-6">
+          <Link to="/create/crd">
+            <CRDButton 
+              size="lg" 
+              variant="create"
+              className="min-w-[200px]"
+            >
+              Start Creating
+            </CRDButton>
+          </Link>
+          <Link to="/templates">
+            <CRDButton 
+              variant="outline" 
+              size="lg" 
+              className="min-w-[200px]"
+            >
+              Browse Templates
+            </CRDButton>
+          </Link>
+        </div>
+        
+        {/* Animated Tagline */}
+        <MobileAnimatedTagline />
+      </div>
+
+      {/* 3D Card Teaser at Bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-crd-darkest/80 to-transparent flex items-end justify-center pb-4">
+        <div className="w-20 h-28 bg-crd-mediumGray/20 rounded-lg shadow-2xl transform rotate-12 animate-pulse">
+          <div className="w-full h-full bg-gradient-to-br from-crd-blue/30 to-crd-green/30 rounded-lg flex items-center justify-center">
+            <span className="text-crd-white text-xs font-bold">3D</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <button
+        onClick={scrollToStudio}
+        className="absolute bottom-6 left-1/2 transform -translate-x-1/2 p-2 text-crd-lightGray hover:text-crd-white transition-colors animate-bounce"
+      >
+        <ChevronDown className="w-6 h-6" />
+      </button>
+    </div>
+  );
+};

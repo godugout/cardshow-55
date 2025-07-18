@@ -1,3 +1,4 @@
+
 /* Mobile-First Navigation and Touch Optimizations */
 
 /* Touch target minimum size enforcement - Updated for accessibility */
@@ -65,6 +66,40 @@
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 40;
   }
+
+  /* Mobile Create Page Optimizations */
+  .mobile-create-hero {
+    padding-top: calc(var(--navbar-height) + 1rem);
+    padding-bottom: 2rem;
+  }
+
+  .mobile-studio-section {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Mobile Studio Taskbar */
+  .mobile-taskbar {
+    background: rgba(var(--crd-darker-rgb), 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(var(--crd-mediumGray-rgb), 0.2);
+  }
+
+  /* Auto-hide taskbar animation */
+  .taskbar-hidden {
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .taskbar-visible {
+    transform: translateY(0);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  /* Safe area handling for mobile taskbar */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 /* Tablet breakpoint optimizations */
@@ -124,6 +159,14 @@
     width: 320px;
     max-width: none;
   }
+
+  /* Desktop 3D Card Dynamic Positioning */
+  .desktop-3d-card {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    transition: top 0.5s ease-out;
+  }
 }
 
 /* Progressive enhancement for hover states */
@@ -160,6 +203,12 @@
     transition: none !important;
     animation: none !important;
     transform: none !important;
+  }
+
+  /* Respect reduced motion for taskbar animations */
+  .taskbar-hidden,
+  .taskbar-visible {
+    transition: none !important;
   }
 }
 
@@ -212,4 +261,30 @@
   input, select, textarea {
     font-size: 16px;
   }
+}
+
+/* Smooth scrolling for mobile section transitions */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mobile Create Page specific animations */
+@keyframes mobile-card-teaser {
+  0% { transform: rotate(12deg) scale(0.9); opacity: 0.7; }
+  50% { transform: rotate(15deg) scale(1); opacity: 1; }
+  100% { transform: rotate(12deg) scale(0.9); opacity: 0.7; }
+}
+
+.mobile-card-teaser {
+  animation: mobile-card-teaser 3s ease-in-out infinite;
+}
+
+/* Enhanced scroll indicator */
+@keyframes bounce-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.scroll-indicator {
+  animation: bounce-gentle 2s ease-in-out infinite;
 }
