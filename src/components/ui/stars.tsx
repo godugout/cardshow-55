@@ -45,7 +45,7 @@ export function StarsBackground({
   return (
     <div
       className={cn(
-        "relative w-full h-full overflow-hidden bg-gradient-to-b from-indigo-900/20 via-purple-900/30 to-black",
+        "relative w-full h-full overflow-hidden bg-black",
         className
       )}
     >
