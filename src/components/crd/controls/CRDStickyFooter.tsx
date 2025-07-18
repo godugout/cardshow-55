@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Play, Pause, RotateCw, Palette, ChevronUp, X, Orbit, Lightbulb, Package, Zap, Sparkles, Waves } from 'lucide-react';
+import { Play, Pause, RotateCw, Palette, ChevronUp, X, Orbit, Lightbulb, Package, Zap, Sparkles, Waves, MousePointer } from 'lucide-react';
 import { CRDVisualStyles } from '../styles/StyleRegistry';
 import { type AnimationMode, type LightingPreset } from '../types/CRDTypes';
+import { UserTracker } from '../tracking/UserTracker';
 
 interface CRDStickyFooterProps {
   // Animation controls
@@ -39,9 +40,16 @@ interface CRDStickyFooterProps {
   // Glass case controls
   enableGlassCase?: boolean;
   onEnableGlassCaseChange?: (enabled: boolean) => void;
+
+  // User tracking controls
+  enableUserTracking?: boolean;
+  onEnableUserTrackingChange?: (enabled: boolean) => void;
+  cardAngle?: number;
+  cameraDistance?: number;
+  animationProgress?: number;
 }
 
-type TabId = 'animation' | 'materials' | 'rotation' | 'lighting';
+type TabId = 'animation' | 'materials' | 'rotation' | 'lighting' | 'tracking';
 
 export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
   animationMode,
@@ -67,7 +75,12 @@ export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
   onShowOrbitalRingChange,
   onShowLockIndicatorsChange,
   enableGlassCase = true,
-  onEnableGlassCaseChange
+  onEnableGlassCaseChange,
+  enableUserTracking = false,
+  onEnableUserTrackingChange,
+  cardAngle = 0,
+  cameraDistance = 10,
+  animationProgress = 0
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('animation');
@@ -92,7 +105,8 @@ export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
     { id: 'animation' as TabId, name: 'Animation', icon: Play },
     { id: 'materials' as TabId, name: 'Materials', icon: Palette },
     { id: 'rotation' as TabId, name: 'Motion', icon: Orbit },
-    { id: 'lighting' as TabId, name: 'Lighting', icon: Lightbulb }
+    { id: 'lighting' as TabId, name: 'Lighting', icon: Lightbulb },
+    { id: 'tracking' as TabId, name: 'Tracking', icon: MousePointer }
   ];
 
   const activeStyle = CRDVisualStyles.find(s => s.id === selectedStyleId);
@@ -422,6 +436,18 @@ export const CRDStickyFooter: React.FC<CRDStickyFooterProps> = ({
                     />
                   </label>
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'tracking' && (
+              <div className="h-full">
+                <UserTracker
+                  enabled={enableUserTracking || false}
+                  onToggle={onEnableUserTrackingChange || (() => {})}
+                  cardAngle={cardAngle}
+                  cameraDistance={cameraDistance}
+                  animationProgress={animationProgress}
+                />
               </div>
             )}
           </div>

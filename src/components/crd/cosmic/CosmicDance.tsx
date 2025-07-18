@@ -36,18 +36,18 @@ interface AnimationFrame {
 
 // Enhanced animation keyframes inspired by 2001: A Space Odyssey - Perfect Alignment
 const ANIMATION_FRAMES: AnimationFrame[] = [
-  // Dawn scene - Sun starts below nav bar, above subtitle text
+  // Dawn scene - Sun starts high above subtitle text
   {
     progress: 0,
-    sun: { x: 0, y: 20, scale: 0.5, opacity: 0.9 },
+    sun: { x: 0, y: 8, scale: 0.4, opacity: 0.8 },
     card: { lean: 0 },
     lighting: { intensity: 0.8, warmth: 0 },
     environment: { skyColor: '#0a0a2e', spaceDepth: 1.0 }
   },
-  // Early descent - Sun moves toward center
+  // Early descent - Sun moves toward center but drops lower
   {
     progress: 0.25,
-    sun: { x: 0, y: 35, scale: 0.7, opacity: 0.95 },
+    sun: { x: 0, y: 30, scale: 0.7, opacity: 0.95 },
     card: { lean: 20 },
     lighting: { intensity: 1.0, warmth: 0.2 },
     environment: { skyColor: '#1a1a3e', spaceDepth: 0.9 }
@@ -60,18 +60,18 @@ const ANIMATION_FRAMES: AnimationFrame[] = [
     lighting: { intensity: 1.3, warmth: 0.5 },
     environment: { skyColor: '#2a1a1e', spaceDepth: 0.7 }
   },
-  // Eternal alignment - Sun stays at center, grows in power and warmth
+  // Eternal alignment - Sun stays lowered, grows in power and warmth
   {
     progress: 0.75,
-    sun: { x: 0, y: 50, scale: 1.6, opacity: 1.0 },
+    sun: { x: 0, y: 40, scale: 1.6, opacity: 1.0 },
     card: { lean: 65 },
     lighting: { intensity: 1.6, warmth: 0.8 },
     environment: { skyColor: '#3a0a0e', spaceDepth: 0.4 }
   },
-  // TRANSCENDENCE - Sun massive at perfect center alignment (2001 finale)
+  // TRANSCENDENCE - Sun massive at lowered center alignment (2001 finale)
   {
     progress: 1.0,
-    sun: { x: 0, y: 50, scale: 2.2, opacity: 1.0 },
+    sun: { x: 0, y: 40, scale: 2.2, opacity: 1.0 },
     card: { lean: 80 },
     lighting: { intensity: 2.0, warmth: 1.0 },
     environment: { skyColor: '#4a0000', spaceDepth: 0.2 }

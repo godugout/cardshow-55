@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CRDViewer } from '@/components/crd/CRDViewer';
 import { CRDStickyFooter } from '@/components/crd/controls/CRDStickyFooter';
 import { type AnimationMode, type LightingPreset } from '@/components/crd/types/CRDTypes';
+import { useCardAngle } from '@/components/crd/hooks/useCardAngle';
 
 const CreateWithStickyControls = () => {
   // Animation State
@@ -27,6 +28,12 @@ const CreateWithStickyControls = () => {
 
   // Case control
   const [enableGlassCase, setEnableGlassCase] = useState(true);
+
+  // User tracking control
+  const [enableUserTracking, setEnableUserTracking] = useState(false);
+
+  // Get card angle and camera data for tracking
+  const { cardAngle, cameraDistance } = useCardAngle();
 
   return (
     <div className="fixed inset-0 bg-crd-darkest overflow-hidden flex flex-col">
@@ -79,6 +86,11 @@ const CreateWithStickyControls = () => {
         onShowLockIndicatorsChange={setShowLockIndicators}
         enableGlassCase={enableGlassCase}
         onEnableGlassCaseChange={setEnableGlassCase}
+        enableUserTracking={enableUserTracking}
+        onEnableUserTrackingChange={setEnableUserTracking}
+        cardAngle={cardAngle}
+        cameraDistance={cameraDistance}
+        animationProgress={animationIntensity}
       />
     </div>
   );
