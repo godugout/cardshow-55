@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAnimationController } from '@/hooks/useAnimationController';
 
@@ -12,17 +11,6 @@ export interface Hero3Props {
   featuredCards?: any[];
   onCardClick?: (card: any) => void;
   shouldStartAnimation?: boolean;
-}
-
-interface PhysicsState {
-  position: number;
-  velocity: number;
-  targetPosition: number;
-  isDragging: boolean;
-  dragStartX: number;
-  dragStartPosition: number;
-  momentum: number;
-  snapTarget: number | null;
 }
 
 export const Hero3: React.FC<Hero3Props> = ({ 
@@ -42,164 +30,159 @@ export const Hero3: React.FC<Hero3Props> = ({
   const [focusedCard, setFocusedCard] = useState<string | null>(null);
   const { addAnimation, removeAnimation } = useAnimationController();
 
-  // Physics state
-  const [physics, setPhysics] = useState<PhysicsState>({
+  // Physics state using refs for smooth animation
+  const physicsRef = useRef({
     position: 0,
     velocity: 0,
-    targetPosition: 0,
     isDragging: false,
     dragStartX: 0,
     dragStartPosition: 0,
-    momentum: 0,
-    snapTarget: null
+    lastMoveX: 0,
+    lastMoveTime: 0,
+    velocityHistory: [] as number[]
   });
 
-  // Constants for physics
-  const FRICTION = 0.92;
-  const SPRING_STRENGTH = 0.1;
-  const SNAP_THRESHOLD = 50;
-  const CARD_WIDTH = 400; // 384px + 16px gap
-  const MIN_VELOCITY = 0.1;
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Calculate single set width for position normalization
+  // Physics constants tuned for silky smooth motion
+  const FRICTION = 0.965; // Higher for longer glide
+  const VELOCITY_SCALE = 1.2; // Amplify gesture velocity
+  const MIN_VELOCITY = 0.05; // Lower threshold for longer motion
+  const CARD_WIDTH = 400;
+  const MAX_VELOCITY_HISTORY = 5;
+
+  // Calculate single set width for infinite scroll
   const singleSetWidth = featuredCards.length * CARD_WIDTH;
 
-  // Physics animation loop
+  // Smooth animation loop using RAF and refs
   const animatePhysics = useCallback((timestamp: number) => {
-    setPhysics(prev => {
-      let newPosition = prev.position;
-      let newVelocity = prev.velocity;
-      let newSnapTarget = prev.snapTarget;
-
-      if (!prev.isDragging) {
-        // Apply momentum and friction
-        if (Math.abs(newVelocity) > MIN_VELOCITY) {
-          newPosition += newVelocity;
-          newVelocity *= FRICTION;
-        } else if (newSnapTarget !== null) {
-          // Snap to target with spring physics
-          const diff = newSnapTarget - newPosition;
-          const force = diff * SPRING_STRENGTH;
-          newVelocity += force;
-          newPosition += newVelocity;
-          newVelocity *= 0.8; // Damping
-
-          // Check if close enough to snap target
-          if (Math.abs(diff) < 1 && Math.abs(newVelocity) < 0.5) {
-            newPosition = newSnapTarget;
-            newVelocity = 0;
-            newSnapTarget = null;
-          }
-        } else {
-          // Find nearest snap point if no target set
-          const cardIndex = Math.round(-newPosition / CARD_WIDTH);
-          newSnapTarget = -cardIndex * CARD_WIDTH;
-        }
-
-        // Normalize position for infinite scroll
-        if (newPosition <= -singleSetWidth) {
-          newPosition += singleSetWidth;
-          if (newSnapTarget !== null) {
-            newSnapTarget += singleSetWidth;
-          }
-        }
-        if (newPosition > 0) {
-          newPosition -= singleSetWidth;
-          if (newSnapTarget !== null) {
-            newSnapTarget -= singleSetWidth;
-          }
-        }
+    const physics = physicsRef.current;
+    
+    if (!physics.isDragging && Math.abs(physics.velocity) > MIN_VELOCITY) {
+      // Apply momentum with smooth deceleration
+      physics.position += physics.velocity;
+      physics.velocity *= FRICTION;
+      
+      // Infinite scroll normalization
+      if (physics.position <= -singleSetWidth) {
+        physics.position += singleSetWidth;
       }
-
-      return {
-        ...prev,
-        position: newPosition,
-        velocity: newVelocity,
-        snapTarget: newSnapTarget
-      };
-    });
-  }, [singleSetWidth]);
-
-  // Setup physics animation
-  useEffect(() => {
-    if (shouldStartAnimation || physics.isDragging || Math.abs(physics.velocity) > MIN_VELOCITY || physics.snapTarget !== null) {
+      if (physics.position > 0) {
+        physics.position -= singleSetWidth;
+      }
+      
+      // Update DOM directly for smoothness
+      if (carouselRef.current) {
+        carouselRef.current.style.transform = `translateX(${physics.position}px)`;
+      }
+      
+      // Continue animation
       addAnimation('hero3-physics', animatePhysics, 1);
     } else {
+      // Stop animation when velocity is too low
+      physics.velocity = 0;
       removeAnimation('hero3-physics');
     }
+  }, [singleSetWidth, addAnimation, removeAnimation]);
 
-    return () => removeAnimation('hero3-physics');
-  }, [shouldStartAnimation, physics.isDragging, physics.velocity, physics.snapTarget, animatePhysics, addAnimation, removeAnimation]);
-
-  // Mouse/Touch handlers
+  // Enhanced gesture recognition for smooth velocity calculation
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    const startX = e.clientX;
+    const physics = physicsRef.current;
     
-    setPhysics(prev => ({
-      ...prev,
-      isDragging: true,
-      dragStartX: startX,
-      dragStartPosition: prev.position,
-      velocity: 0,
-      snapTarget: null
-    }));
-  }, []);
+    physics.isDragging = true;
+    physics.dragStartX = e.clientX;
+    physics.dragStartPosition = physics.position;
+    physics.lastMoveX = e.clientX;
+    physics.lastMoveTime = performance.now();
+    physics.velocity = 0;
+    physics.velocityHistory = [];
+    
+    setIsDragging(true);
+    removeAnimation('hero3-physics');
+  }, [removeAnimation]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
+    const physics = physicsRef.current;
     if (!physics.isDragging) return;
     
-    e.preventDefault(); // Prevent any default drag behavior
+    e.preventDefault();
+    const currentTime = performance.now();
     const deltaX = e.clientX - physics.dragStartX;
     const newPosition = physics.dragStartPosition + deltaX;
-
-    setPhysics(prev => ({
-      ...prev,
-      position: newPosition,
-      velocity: deltaX * 0.1 // Track velocity for momentum
-    }));
-  }, [physics.isDragging, physics.dragStartX, physics.dragStartPosition]);
-
-  const handleMouseUp = useCallback(() => {
-    if (!physics.isDragging) return;
-
-    setPhysics(prev => ({
-      ...prev,
-      isDragging: false,
-      momentum: prev.velocity
-    }));
-  }, [physics.isDragging]);
-
-  // Mouse wheel handler
-  const handleWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault();
-    const delta = e.deltaY * 0.5;
     
-    setPhysics(prev => ({
-      ...prev,
-      velocity: prev.velocity - delta * 0.1,
-      snapTarget: null
-    }));
+    // Calculate instantaneous velocity
+    const timeDelta = currentTime - physics.lastMoveTime;
+    if (timeDelta > 0) {
+      const moveDelta = e.clientX - physics.lastMoveX;
+      const instantVelocity = moveDelta / timeDelta * 16; // Normalize to 60fps
+      
+      // Keep velocity history for smooth release
+      physics.velocityHistory.push(instantVelocity);
+      if (physics.velocityHistory.length > MAX_VELOCITY_HISTORY) {
+        physics.velocityHistory.shift();
+      }
+    }
+    
+    physics.position = newPosition;
+    physics.lastMoveX = e.clientX;
+    physics.lastMoveTime = currentTime;
+    
+    // Update DOM immediately
+    if (carouselRef.current) {
+      carouselRef.current.style.transform = `translateX(${newPosition}px)`;
+    }
   }, []);
 
-  // Keyboard navigation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      e.preventDefault();
-      const direction = e.key === 'ArrowLeft' ? 1 : -1;
-      const targetPosition = physics.position + (direction * CARD_WIDTH);
+  const handleMouseUp = useCallback(() => {
+    const physics = physicsRef.current;
+    if (!physics.isDragging) return;
+
+    physics.isDragging = false;
+    setIsDragging(false);
+    
+    // Calculate release velocity from recent movements
+    if (physics.velocityHistory.length > 0) {
+      // Average recent velocities for smooth momentum
+      const recentVelocities = physics.velocityHistory.slice(-3);
+      const avgVelocity = recentVelocities.reduce((sum, v) => sum + v, 0) / recentVelocities.length;
+      physics.velocity = avgVelocity * VELOCITY_SCALE;
       
-      setPhysics(prev => ({
-        ...prev,
-        snapTarget: targetPosition,
-        velocity: 0
-      }));
+      // Limit extreme velocities
+      const maxVelocity = 25;
+      physics.velocity = Math.max(-maxVelocity, Math.min(maxVelocity, physics.velocity));
+      
+      // Start momentum animation if there's velocity
+      if (Math.abs(physics.velocity) > MIN_VELOCITY) {
+        addAnimation('hero3-physics', animatePhysics, 1);
+      }
     }
-  }, [physics.position]);
+  }, [addAnimation, animatePhysics]);
+
+  // Wheel handler for smooth scrolling
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    const physics = physicsRef.current;
+    
+    if (!physics.isDragging) {
+      // Add wheel velocity to existing momentum
+      const wheelVelocity = -e.deltaY * 0.02;
+      physics.velocity += wheelVelocity;
+      
+      // Limit velocity
+      const maxVelocity = 20;
+      physics.velocity = Math.max(-maxVelocity, Math.min(maxVelocity, physics.velocity));
+      
+      // Start animation if not already running
+      if (Math.abs(physics.velocity) > MIN_VELOCITY) {
+        addAnimation('hero3-physics', animatePhysics, 1);
+      }
+    }
+  }, [addAnimation, animatePhysics]);
 
   // Global mouse events
   useEffect(() => {
-    if (physics.isDragging) {
+    if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
       document.body.style.cursor = 'grabbing';
@@ -215,11 +198,14 @@ export const Hero3: React.FC<Hero3Props> = ({
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
-  }, [physics.isDragging, handleMouseMove, handleMouseUp]);
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  // Calculate dynamic shadows and effects based on velocity
-  const shadowIntensity = Math.min(Math.abs(physics.velocity) * 0.1, 1);
-  const rotationAmount = physics.velocity * 0.05;
+  // Initial position setup
+  useEffect(() => {
+    if (carouselRef.current) {
+      carouselRef.current.style.transform = `translateX(0px)`;
+    }
+  }, []);
 
   if (!showFeaturedCards || featuredCards.length === 0) {
     return null;
@@ -231,38 +217,34 @@ export const Hero3: React.FC<Hero3Props> = ({
         ref={carouselRef}
         className="flex gap-6 select-none will-change-transform"
         style={{ 
-          transform: `translateX(${physics.position}px)`,
-          transition: physics.isDragging ? 'none' : 'transform 0.1s ease-out',
-          touchAction: 'pan-x', // Only allow horizontal pan gestures
-          cursor: physics.isDragging ? 'grabbing' : 'grab'
+          touchAction: 'pan-x',
+          cursor: isDragging ? 'grabbing' : 'grab'
         }}
         onMouseDown={handleMouseDown}
         onWheel={handleWheel}
-        onKeyDown={handleKeyDown}
         tabIndex={0}
         role="region"
         aria-label="Featured cards carousel"
-        onDragStart={(e) => e.preventDefault()} // Prevent image dragging
+        onDragStart={(e) => e.preventDefault()}
       >
         {/* Duplicate cards for seamless infinite scroll */}
         {[...featuredCards, ...featuredCards].map((card, index) => (
           <div 
             key={`${card.id}-${index}`}
             className="flex-shrink-0 w-64 md:w-80 lg:w-96"
-            onPointerEnter={() => !physics.isDragging && setHoveredCard(`${card.id}-${index}`)}
+            onPointerEnter={() => !isDragging && setHoveredCard(`${card.id}-${index}`)}
             onPointerLeave={() => setHoveredCard(null)}
             onFocus={() => setFocusedCard(`${card.id}-${index}`)}
             onBlur={() => setFocusedCard(null)}
             onClick={(e) => e.preventDefault()}
             style={{
-              transform: !physics.isDragging && hoveredCard === `${card.id}-${index}` 
-                ? `scale(1.03) translateY(-4px)` 
-                : !physics.isDragging && focusedCard === `${card.id}-${index}`
-                ? `scale(1.01) translateY(-2px)`
+              transform: !isDragging && hoveredCard === `${card.id}-${index}` 
+                ? `scale(1.02) translateY(-2px)` 
+                : !isDragging && focusedCard === `${card.id}-${index}`
+                ? `scale(1.01) translateY(-1px)`
                 : 'scale(1)',
-              transition: physics.isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              transformStyle: 'preserve-3d',
-              cursor: physics.isDragging ? 'grabbing' : 'default'
+              transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              transformStyle: 'preserve-3d'
             }}
           >
             <div 
@@ -270,18 +252,18 @@ export const Hero3: React.FC<Hero3Props> = ({
               style={{
                 boxShadow: hoveredCard === `${card.id}-${index}`
                   ? `
-                    0 25px 50px -12px rgba(0, 0, 0, ${0.4 + shadowIntensity * 0.3}),
+                    0 20px 40px -12px rgba(0, 0, 0, 0.4),
                     0 0 0 1px rgba(255, 255, 255, 0.05),
                     inset 0 1px 0 rgba(255, 255, 255, 0.1)
                   `
                   : `
-                    0 10px 25px -3px rgba(0, 0, 0, ${0.2 + shadowIntensity * 0.1}),
+                    0 8px 20px -3px rgba(0, 0, 0, 0.15),
                     0 4px 6px -2px rgba(0, 0, 0, 0.1)
                   `,
-                transition: 'box-shadow 0.3s ease-out'
+                transition: 'box-shadow 0.25s ease-out'
               }}
             >
-              {/* Card Image with Parallax Effect */}
+              {/* Card Image */}
               <div className="aspect-[3/4] relative overflow-hidden">
                 {card.image_url || card.thumbnail_url ? (
                   <img 
@@ -289,14 +271,14 @@ export const Hero3: React.FC<Hero3Props> = ({
                     alt={card.title}
                     className="w-full h-full object-cover"
                     style={{
-                      transform: !physics.isDragging && hoveredCard === `${card.id}-${index}` 
-                        ? `scale(1.05)` 
+                      transform: !isDragging && hoveredCard === `${card.id}-${index}` 
+                        ? `scale(1.03)` 
                         : 'scale(1)',
-                      transition: physics.isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                      filter: !physics.isDragging && hoveredCard === `${card.id}-${index}` 
-                        ? 'brightness(1.05) contrast(1.02) saturate(1.05)' 
+                      transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      filter: !isDragging && hoveredCard === `${card.id}-${index}` 
+                        ? 'brightness(1.03) contrast(1.01) saturate(1.02)' 
                         : 'brightness(1)',
-                      pointerEvents: physics.isDragging ? 'none' : 'auto'
+                      pointerEvents: isDragging ? 'none' : 'auto'
                     }}
                     draggable={false}
                     loading="lazy"
@@ -307,13 +289,13 @@ export const Hero3: React.FC<Hero3Props> = ({
                   </div>
                 )}
                 
-                {/* Enhanced Overlay with Micro-interactions */}
+                {/* Enhanced Overlay */}
                 {hoveredCard === `${card.id}-${index}` && (
                   <div 
-                    className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                    className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"
                     style={{
                       opacity: hoveredCard === `${card.id}-${index}` ? 1 : 0,
-                      transition: 'opacity 0.3s ease-out'
+                      transition: 'opacity 0.25s ease-out'
                     }}
                   >
                     <div className="absolute bottom-4 left-4 right-4 text-white">
