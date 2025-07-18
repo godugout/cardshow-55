@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAnimationController } from '@/hooks/useAnimationController';
 
 export interface Hero3Props {
@@ -180,6 +181,23 @@ export const Hero3: React.FC<Hero3Props> = ({
     }
   }, [addAnimation, animatePhysics]);
 
+  // Navigation arrow handlers
+  const handleLeftArrow = useCallback(() => {
+    const physics = physicsRef.current;
+    if (!physics.isDragging) {
+      physics.velocity = 15; // Positive velocity moves right (reveals more left cards)
+      addAnimation('hero3-physics', animatePhysics, 1);
+    }
+  }, [addAnimation, animatePhysics]);
+
+  const handleRightArrow = useCallback(() => {
+    const physics = physicsRef.current;
+    if (!physics.isDragging) {
+      physics.velocity = -15; // Negative velocity moves left (reveals more right cards)
+      addAnimation('hero3-physics', animatePhysics, 1);
+    }
+  }, [addAnimation, animatePhysics]);
+
   // Global mouse events
   useEffect(() => {
     if (isDragging) {
@@ -212,7 +230,7 @@ export const Hero3: React.FC<Hero3Props> = ({
   }
 
   return (
-    <div className="w-full overflow-hidden" ref={containerRef}>
+    <div className="w-full overflow-hidden relative group" ref={containerRef}>
       <div 
         ref={carouselRef}
         className="flex gap-6 select-none will-change-transform"
@@ -325,6 +343,37 @@ export const Hero3: React.FC<Hero3Props> = ({
           </div>
         ))}
       </div>
+      
+      {/* Camouflaged Glass Navigation Arrows */}
+      <button
+        onClick={handleLeftArrow}
+        className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full 
+                   opacity-5 group-hover:opacity-80 hover:!opacity-100
+                   bg-black/10 backdrop-blur-md border border-white/10
+                   flex items-center justify-center text-white
+                   transition-all duration-500 ease-out
+                   hover:bg-black/20 hover:backdrop-blur-lg hover:border-white/20
+                   hover:scale-110 hover:shadow-lg hover:shadow-black/20
+                   z-10"
+        aria-label="Previous cards"
+      >
+        <ChevronLeft className="w-6 h-6" />
+      </button>
+      
+      <button
+        onClick={handleRightArrow}
+        className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full 
+                   opacity-5 group-hover:opacity-80 hover:!opacity-100
+                   bg-black/10 backdrop-blur-md border border-white/10
+                   flex items-center justify-center text-white
+                   transition-all duration-500 ease-out
+                   hover:bg-black/20 hover:backdrop-blur-lg hover:border-white/20
+                   hover:scale-110 hover:shadow-lg hover:shadow-black/20
+                   z-10"
+        aria-label="Next cards"
+      >
+        <ChevronRight className="w-6 h-6" />
+      </button>
     </div>
   );
 };
