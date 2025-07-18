@@ -348,11 +348,11 @@ export const Hero3: React.FC<Hero3Props> = ({
       <button
         onClick={handleLeftArrow}
         className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full 
-                   opacity-5 group-hover:opacity-80 hover:!opacity-100
-                   bg-black/10 backdrop-blur-md border border-white/10
+                   opacity-30 group-hover:opacity-70 hover:!opacity-100
+                   bg-black/20 backdrop-blur-md border border-white/15
                    flex items-center justify-center text-white
                    transition-all duration-500 ease-out
-                   hover:bg-black/20 hover:backdrop-blur-lg hover:border-white/20
+                   hover:bg-black/30 hover:backdrop-blur-lg hover:border-white/25
                    hover:scale-110 hover:shadow-lg hover:shadow-black/20
                    z-10"
         aria-label="Previous cards"
@@ -363,11 +363,11 @@ export const Hero3: React.FC<Hero3Props> = ({
       <button
         onClick={handleRightArrow}
         className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full 
-                   opacity-5 group-hover:opacity-80 hover:!opacity-100
-                   bg-black/10 backdrop-blur-md border border-white/10
+                   opacity-30 group-hover:opacity-70 hover:!opacity-100
+                   bg-black/20 backdrop-blur-md border border-white/15
                    flex items-center justify-center text-white
                    transition-all duration-500 ease-out
-                   hover:bg-black/20 hover:backdrop-blur-lg hover:border-white/20
+                   hover:bg-black/30 hover:backdrop-blur-lg hover:border-white/25
                    hover:scale-110 hover:shadow-lg hover:shadow-black/20
                    z-10"
         aria-label="Next cards"
