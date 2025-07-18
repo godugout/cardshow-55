@@ -21,9 +21,13 @@ export const UnifiedCreateHero: React.FC = () => {
   // Render tablet-specific hero text with line breaks
   const renderTabletHeroText = () => (
     <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-center max-w-4xl mx-auto">
-      <span className="text-white">From paper scraps</span>
+      <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
+        From paper scraps
+      </span>
       <br />
-      <span className="text-white">and cardboard to</span>
+      <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
+        and cardboard to
+      </span>
       <br />
       <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
         digital art that
@@ -38,7 +42,9 @@ export const UnifiedCreateHero: React.FC = () => {
   // Render standard hero text (desktop and mobile)
   const renderStandardHeroText = () => (
     <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-center max-w-4xl mx-auto">
-      <span className="text-white">From paper scraps and cardboard to </span>
+      <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
+        From paper scraps and cardboard to 
+      </span>
       <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
         digital art that 
       </span>
