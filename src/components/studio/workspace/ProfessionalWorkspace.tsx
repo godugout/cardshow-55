@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
+import { 
+  PanelGroup as ResizablePanelGroup, 
+  Panel as ResizablePanel, 
+  PanelResizeHandle as ResizableHandle 
+} from 'react-resizable-panels';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { cn } from '@/lib/utils';
 import { WorkspaceHeader } from './components/WorkspaceHeader';
@@ -287,11 +291,11 @@ export const ProfessionalWorkspace: React.FC<ProfessionalWorkspaceProps> = ({
 
       {/* Main Workspace */}
       <div className="flex-1 overflow-hidden">
-        <PanelGroup direction="horizontal" className="h-full">
+        <ResizablePanelGroup direction="horizontal" className="h-full">
           {/* Left Panels */}
           {panelsByPosition.left.length > 0 && (
             <>
-              <Panel
+              <ResizablePanel
                 defaultSize={20} 
                 minSize={15} 
                 maxSize={35}
@@ -300,8 +304,8 @@ export const ProfessionalWorkspace: React.FC<ProfessionalWorkspaceProps> = ({
                 <div className="h-full flex flex-col">
                   {panelsByPosition.left.map(renderPanel)}
                 </div>
-              </Panel>
-              <PanelResizeHandle />
+              </ResizablePanel>
+              <ResizableHandle />
             </>
           )}
 
@@ -351,7 +355,7 @@ export const ProfessionalWorkspace: React.FC<ProfessionalWorkspaceProps> = ({
               {/* Bottom Panels */}
               {panelsByPosition.bottom.length > 0 && (
                 <>
-                  <ResizableHandle withHandle />
+                  <ResizableHandle />
                   <ResizablePanel 
                     defaultSize={30} 
                     minSize={20} 
@@ -370,7 +374,7 @@ export const ProfessionalWorkspace: React.FC<ProfessionalWorkspaceProps> = ({
           {/* Right Panels */}
           {panelsByPosition.right.length > 0 && (
             <>
-              <ResizableHandle withHandle />
+              <ResizableHandle />
               <ResizablePanel 
                 defaultSize={20} 
                 minSize={15} 
