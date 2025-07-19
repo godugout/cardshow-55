@@ -1,5 +1,6 @@
 import React from 'react';
 import * as THREE from 'three';
+import { MonolithMaterial } from './MonolithMaterial';
 import { type MaterialMode } from '../types/CRDTypes';
 
 
@@ -8,13 +9,15 @@ interface MaterialSystemProps {
   intensity: number;
   type: 'card' | 'case';
   pathTheme?: 'sports' | 'fantasy' | 'life';
+  animationProgress?: number;
 }
 
 export const MaterialSystem: React.FC<MaterialSystemProps> = ({ 
   mode, 
   intensity, 
   type,
-  pathTheme = 'neutral'
+  pathTheme = 'neutral',
+  animationProgress = 0
 }) => {
   const time = Date.now() * 0.001;
 
@@ -438,8 +441,12 @@ export const MaterialSystem: React.FC<MaterialSystemProps> = ({
         );
       
       
+      case 'monolith':
+        // Enhanced 2001-inspired monolith material
+        return <MonolithMaterial intensity={intensity} animationProgress={animationProgress} />;
+      
       default:
-        // Default showcase/monolith material
+        // Default showcase material
         return (
           <meshStandardMaterial 
             color="#1a1a2e"

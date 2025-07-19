@@ -15,6 +15,7 @@ interface Card3DCoreProps {
   enableGlassCase?: boolean;
   isLocked?: boolean;
   isPaused?: boolean;
+  animationProgress?: number;
   onLockToggle?: (locked: boolean) => void;
   onPauseToggle?: (paused: boolean) => void;
   onHover?: (hovered: boolean) => void;
@@ -35,6 +36,7 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
   enableGlassCase = true,
   isLocked = false,
   isPaused = false,
+  animationProgress = 0,
   onLockToggle,
   onPauseToggle,
   onHover,
@@ -220,9 +222,10 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
       <mesh ref={cardRef}>
         {getCardGeometry()}
         <MaterialSystem 
-          mode={materialMode || mode} 
+          mode={materialMode || (mode === 'cosmic' ? 'monolith' : mode)} 
           intensity={intensity}
           type="card"
+          animationProgress={animationProgress}
         />
       </mesh>
       

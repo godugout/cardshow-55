@@ -7,6 +7,7 @@ import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
 import { CosmicDance } from './cosmic/CosmicDance';
 import { CosmicDanceControls } from './cosmic/CosmicDanceControls';
+import { DragUpGesture } from './gestures/DragUpGesture';
 import { loadTemplate, TemplateConfig, TemplateEngine } from '@/templates/engine';
 import { ensureMaterialPersistence, getMaterialForTemplate } from '@/utils/materialFallback';
 import { PerformanceMonitor } from './performance/PerformanceMonitor';
@@ -338,6 +339,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   }, [animationProgress, isPlaying, playbackSpeed, cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cosmicTriggered, onCosmicStateChange]);
 
   const handleCosmicTrigger = () => {
+    console.log('🎬 Monolith flight triggered via drag-up gesture!');
     setCosmicTriggered(true);
     if (!isPlaying && animationProgress < 1) {
       setIsPlaying(true);
@@ -501,7 +503,16 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
             toneMappingExposure: 1.2
           }}
           scene={{ background: null }}
-      >
+        >
+          {/* Drag-up gesture detection for cosmic mode */}
+          {currentMode === 'cosmic' && (
+            <DragUpGesture 
+              onDragUpTrigger={handleCosmicTrigger}
+              minDragDistance={120}
+            >
+              <></>
+            </DragUpGesture>
+          )}
         {/* Unified Lighting System */}
         <LightingRig 
           preset={lightingPreset} 
@@ -531,7 +542,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           intensity={currentIntensity}
           materialMode={selectedStyleId as any}
           enableAnimation={true}
-          enableGlassCase={enableGlassCase}
+          enableGlassCase={currentMode === 'cosmic' ? false : enableGlassCase} // No glass case for monolith effect
           isLocked={isCardLocked}
           isPaused={isCardPaused}
           onLockToggle={handleCardLockToggle}
@@ -596,8 +607,8 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           />
         )}
         
-        {/* Atmospheric Fog */}
-        <fog args={['#0a0a2e', 30, 200]} />
+          {/* Atmospheric Fog */}
+          <fog args={['#0a0a2e', 30, 200]} />
         </Canvas>
       </div>
 
@@ -624,7 +635,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         cameraDistance={cameraDistance}
         isOptimalZoom={isOptimalZoom}
         isOptimalPosition={isOptimalPosition}
-        onTriggerReached={handleCosmicTrigger}
+        onTriggerReached={() => {}} // No auto-trigger, only drag-up gesture
         onCardControlUpdate={handleCardControlUpdate}
         templateEngine={templateEngine}
       />

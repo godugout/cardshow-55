@@ -24,10 +24,9 @@ export const CosmicSun: React.FC<CosmicSunProps> = ({ scrollProgress }) => {
     if (sunRef.current) {
       const time = state.clock.elapsedTime;
       
-      // Start sun at same screen position as moon's final resting position (120px from top)
-      // Convert screen pixels to 3D coordinates: moon at y:120px ≈ 3D y:4 
-      const sunY = THREE.MathUtils.lerp(4, -6, scrollProgress); // Starts at moon's final position
-      const sunZ = THREE.MathUtils.lerp(-5, -3, scrollProgress); // Stays in front of card
+      // Sun stays in final position (no animation based on scroll progress)
+      const sunY = -6; // Final position from previous animation
+      const sunZ = -3; // Final Z position
       
       sunRef.current.position.set(0, sunY, sunZ);
       
@@ -35,16 +34,15 @@ export const CosmicSun: React.FC<CosmicSunProps> = ({ scrollProgress }) => {
       sunRef.current.rotation.y += 0.005;
       sunRef.current.rotation.x += 0.002;
       
-      // Linear scaling - starts smaller, grows to current size
-      const scale = THREE.MathUtils.lerp(0.5, 1.6, scrollProgress);
+      // Final scale (no animation)
+      const scale = 1.6; // Final scale from previous animation
       sunRef.current.scale.setScalar(scale);
     }
   });
 
-  const visible = scrollProgress > 0.3;
-  if (!visible) return null;
-
+  // Sun is always visible now (no scroll dependency)
   return (
+
     <mesh ref={sunRef}>
       <sphereGeometry args={[1, 32, 32]} />
       <primitive object={sunMaterial} />
