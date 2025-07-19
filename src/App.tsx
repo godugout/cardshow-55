@@ -33,7 +33,7 @@ const CollectionsCatalog = lazy(() => import('@/pages/CollectionsCatalog'));
 // Development/testing pages - low priority for lazy loading
 const UploadTestPage = lazy(() => import('@/pages/UploadTestPage'));
 const DNATestPage = lazy(() => import('@/pages/DNATestPage'));
-const DesignGuide = lazy(() => import('@/pages/DesignGuide'));
+
 
 // DNA/Admin pages - perfect candidates for lazy loading
 const DNAManager = lazy(() => import('@/pages/DNAManager'));
@@ -189,16 +189,6 @@ const App = () => {
                       <RouteErrorBoundary>
                         <Suspense fallback={<RouteLoading />}>
                           <DNATestPage />
-                        </Suspense>
-                      </RouteErrorBoundary>
-                    } 
-                  />
-                  <Route 
-                    path="/design-guide" 
-                    element={
-                      <RouteErrorBoundary>
-                        <Suspense fallback={<RouteLoading />}>
-                          <DesignGuide />
                         </Suspense>
                       </RouteErrorBoundary>
                     } 
