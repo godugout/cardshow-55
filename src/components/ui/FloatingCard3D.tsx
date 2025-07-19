@@ -45,11 +45,11 @@ export const FloatingCard3D: React.FC<FloatingCard3DProps> = ({
         enableControls={deviceConfig.enableControls}
         enableGlassCase={true}
         showModeText={false}
-        hideCosmicControls={true}
+        hideAlignmentControls={true}
         className="w-full h-full min-h-screen"
         isPaused={isPaused}
         onTogglePause={onTogglePause}
-        onCosmicReset={onReset}
+        onAlignmentReset={onReset}
         showPauseButton={showPauseButton}
       />
     </div>

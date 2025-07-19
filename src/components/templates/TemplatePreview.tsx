@@ -61,9 +61,9 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
           templateConfig={templateConfig}
           enableControls={false}
           showPauseButton={false}
-          hideCosmicControls={true}
+          hideAlignmentControls={true}
           className="w-full h-full"
-          onCosmicStateChange={(state) => {
+          onAlignmentStateChange={(state) => {
             if (state.animationProgress >= 1 && state.isPlaying) {
               handleAnimationComplete();
             }

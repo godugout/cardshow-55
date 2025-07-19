@@ -5,8 +5,8 @@ import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
-import { CosmicDance } from './cosmic/CosmicDance';
-import { CosmicDanceControls } from './cosmic/CosmicDanceControls';
+import { AlignmentSystem } from './alignment/AlignmentSystem';
+import { AlignmentControls } from './alignment/AlignmentControls';
 import { DragUpGesture } from './gestures/DragUpGesture';
 import { loadTemplate, TemplateConfig, TemplateEngine } from '@/templates/engine';
 import { ensureMaterialPersistence, getMaterialForTemplate } from '@/utils/materialFallback';
@@ -45,8 +45,8 @@ interface CRDViewerProps {
   showPauseButton?: boolean;
   
   // Studio integration
-  hideCosmicControls?: boolean;
-  onCosmicStateChange?: (state: {
+  hideAlignmentControls?: boolean;
+  onAlignmentStateChange?: (state: {
     animationProgress: number;
     isPlaying: boolean;
     playbackSpeed: number;
@@ -57,12 +57,12 @@ interface CRDViewerProps {
     hasTriggered: boolean;
   }) => void;
   
-  // Cosmic control callbacks
-  onCosmicProgressChange?: (progress: number) => void;
-  onCosmicPlayToggle?: () => void;
-  onCosmicSpeedChange?: (speed: number) => void;
-  onCosmicReset?: () => void;
-  onCosmicAngleReset?: () => void;
+  // Alignment control callbacks
+  onAlignmentProgressChange?: (progress: number) => void;
+  onAlignmentPlayToggle?: () => void;
+  onAlignmentSpeedChange?: (speed: number) => void;
+  onAlignmentReset?: () => void;
+  onAlignmentAngleReset?: () => void;
   
   // Template engine integration
   templateConfig?: TemplateConfig;
@@ -98,13 +98,13 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   showPauseButton = true,
   
   // Studio integration
-  hideCosmicControls = false,
-  onCosmicStateChange,
-  onCosmicProgressChange,
-  onCosmicPlayToggle,
-  onCosmicSpeedChange,
-  onCosmicReset,
-  onCosmicAngleReset,
+  hideAlignmentControls = false,
+  onAlignmentStateChange,
+  onAlignmentProgressChange,
+  onAlignmentPlayToggle,
+  onAlignmentSpeedChange,
+  onAlignmentReset,
+  onAlignmentAngleReset,
   
   // Template engine integration
   templateConfig,
@@ -118,12 +118,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Template engine state
   const [templateEngine, setTemplateEngine] = useState<TemplateEngine | null>(null);
 
-  // Cosmic Dance system
+  // Alignment system (replaces Cosmic Dance)
   const { cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cardRef: angleCardRef, controlsRef, resetCardAngle } = useCardAngle();
   const [animationProgress, setAnimationProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [cosmicTriggered, setCosmicTriggered] = useState(false);
+  const [alignmentTriggered, setAlignmentTriggered] = useState(false);
   
   // Card cinematic control state
   const [cardCinematicPosition, setCardCinematicPosition] = useState({ y: 0, lean: 0, controlTaken: false });
@@ -277,35 +277,54 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }
   };
 
-  // Cosmic Dance Animation Logic - 10 second sunset
+  // Alignment Animation Logic - simplified moon descent
   useEffect(() => {
-    if (!isPlaying) return;
+    let animationFrame: number;
+    
+    if (isPlaying && animationProgress < 1) {
+      const animate = () => {
+        setAnimationProgress(prev => {
+          const newProgress = Math.min(1, prev + (0.016 * playbackSpeed));
+          
+          if (newProgress >= 1) {
+            setIsPlaying(false);
+            if (templateEngine?.transitionToStudio) {
+              handleAlignmentTrigger(); // Trigger studio unlock
+            }
+          }
+          
+          return newProgress;
+        });
+        
+        if (animationProgress < 1) {
+          animationFrame = requestAnimationFrame(animate);
+        }
+      };
+      
+      animationFrame = requestAnimationFrame(animate);
+    }
+    
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
+  }, [isPlaying, animationProgress, playbackSpeed, templateEngine?.transitionToStudio]);
 
-    const interval = setInterval(() => {
-      setAnimationProgress(prev => {
-        // 10 seconds total: 100% progress over 10 seconds = 1% per 100ms
-        const newProgress = prev + (playbackSpeed * 0.006); // Adjusted for 10 second timing
-        return newProgress >= 1 ? 1 : newProgress;
-      });
-    }, 16); // ~60fps
-
-    return () => clearInterval(interval);
-  }, [isPlaying, playbackSpeed]);
-
-  // Enhanced cleanup when reaching end - Fix control liberation
+  // Enhanced cleanup when reaching end
   useEffect(() => {
     if (animationProgress >= 1 && isPlaying) {
       setIsPlaying(false);
       
       // Handle template completion
       if (templateEngine?.transitionToStudio) {
-        handleCosmicTrigger(); // Trigger studio unlock
+        handleAlignmentTrigger(); // Trigger studio unlock
       }
       
       // Enhanced control cleanup sequence
       setTimeout(() => {
-        // Reset all cosmic states
-        setCosmicTriggered(false);
+        // Reset all alignment states
+        setAlignmentTriggered(false);
         setCardCinematicPosition({ y: 0, lean: 0, controlTaken: false });
         
         // Force reset OrbitControls to ensure proper liberation
@@ -315,17 +334,14 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           controlsRef.current.enableZoom = true;
           controlsRef.current.enablePan = true;
         }
-        
-        // Close any open tracking windows/UI panels
-        // Note: This will be handled by the parent component via state reset
       }, 2000); // 2 second delay to enjoy the final frame
     }
   }, [animationProgress, isPlaying, controlsRef, templateEngine]);
 
-  // Notify studio about cosmic state changes
+  // Notify studio about alignment state changes
   useEffect(() => {
-    if (onCosmicStateChange) {
-      onCosmicStateChange({
+    if (onAlignmentStateChange) {
+      onAlignmentStateChange({
         animationProgress,
         isPlaying,
         playbackSpeed,
@@ -333,14 +349,14 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         cameraDistance,
         isOptimalZoom,
         isOptimalPosition,
-        hasTriggered: cosmicTriggered,
+        hasTriggered: alignmentTriggered,
       });
     }
-  }, [animationProgress, isPlaying, playbackSpeed, cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cosmicTriggered, onCosmicStateChange]);
+  }, [animationProgress, isPlaying, playbackSpeed, cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, alignmentTriggered, onAlignmentStateChange]);
 
-  const handleCosmicTrigger = () => {
-    console.log('🎬 Monolith flight triggered via drag-up gesture!');
-    setCosmicTriggered(true);
+  const handleAlignmentTrigger = () => {
+    console.log('🎯 Alignment triggered via drag-up gesture!');
+    setAlignmentTriggered(true);
     if (!isPlaying && animationProgress < 1) {
       setIsPlaying(true);
     }
@@ -351,14 +367,13 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }
   };
 
-  // Reset template state function with smooth animations
   const resetTemplateState = useCallback(() => {
-    console.log('🎬 Starting smooth reset animation...');
-    console.log('🎬 Current state:', { animationProgress, isPlaying, cosmicTriggered });
+    console.log('🔄 Starting smooth reset animation...');
+    console.log('🎯 Current state:', { animationProgress, isPlaying, alignmentTriggered });
     
     // Force reset all states immediately
     setIsPlaying(false);
-    setCosmicTriggered(false);
+    setAlignmentTriggered(false);
     setAnimationProgress(0);
     
     // Reset card states immediately
@@ -377,11 +392,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
       controlsRef.current.enablePan = true;
     }
     
-    console.log('🎬 Reset complete: All states restored to initial values');
+    console.log('🔄 Reset complete: All states restored to initial values');
     
     // Notify studio of reset
-    onCosmicReset?.();
-  }, [animationProgress, isPlaying, cosmicTriggered, onCosmicReset, resetCardAngle, controlsRef]);
+    onAlignmentReset?.();
+  }, [animationProgress, isPlaying, alignmentTriggered, onAlignmentReset, resetCardAngle, controlsRef]);
 
   const handleResetAnimation = () => {
     resetTemplateState();
@@ -399,31 +414,31 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }
   };
 
-  // Cosmic control handlers for studio integration
-  const handleCosmicProgressChange = (progress: number) => {
+  // Alignment control handlers for studio integration
+  const handleAlignmentProgressChange = (progress: number) => {
     setAnimationProgress(progress);
-    onCosmicProgressChange?.(progress);
+    onAlignmentProgressChange?.(progress);
   };
 
-  const handleCosmicPlayToggle = () => {
+  const handleAlignmentPlayToggle = () => {
     setIsPlaying(!isPlaying);
-    onCosmicPlayToggle?.();
+    onAlignmentPlayToggle?.();
   };
 
-  const handleCosmicSpeedChange = (speed: number) => {
+  const handleAlignmentSpeedChange = (speed: number) => {
     setPlaybackSpeed(speed);
-    onCosmicSpeedChange?.(speed);
+    onAlignmentSpeedChange?.(speed);
   };
 
-  const handleCosmicAngleReset = () => {
+  const handleAlignmentAngleReset = () => {
     resetCardAngle();
-    onCosmicAngleReset?.();
+    onAlignmentAngleReset?.();
   };
 
-  // Handle card control updates from CosmicDance
-  const handleCardControlUpdate = (params: { positionY: number; lean: number; controlTaken: boolean }) => {
+  // Handle card control updates from AlignmentSystem
+  const handleCardControlUpdate = useCallback((params: { positionY: number; lean: number; controlTaken: boolean }) => {
     setCardCinematicPosition({ y: params.positionY, lean: params.lean, controlTaken: params.controlTaken });
-  };
+  }, []);
 
   // Handle orbit controls interaction
   const handleControlsStart = () => {
@@ -471,10 +486,10 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           }}
           scene={{ background: null }}
         >
-          {/* Drag-up gesture detection for cosmic mode */}
+          {/* Drag-up gesture detection for alignment mode */}
           {currentMode === 'cosmic' && (
             <DragUpGesture 
-              onDragUpTrigger={handleCosmicTrigger}
+              onDragUpTrigger={handleAlignmentTrigger}
               minDragDistance={120}
             >
               <></>
@@ -509,7 +524,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           intensity={currentIntensity}
           materialMode={selectedStyleId as any}
           enableAnimation={true}
-          enableGlassCase={cosmicTriggered ? false : enableGlassCase} // Only remove glass case during cosmic animation
+          enableGlassCase={alignmentTriggered ? false : enableGlassCase} // Only remove glass case during alignment animation
           isLocked={isCardLocked}
           isPaused={isCardPaused}
           onLockToggle={handleCardLockToggle}
@@ -555,12 +570,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         {enableControls && (
           <OrbitControls
             ref={controlsRef}
-            enableZoom={!cosmicTriggered && !cardCinematicPosition.controlTaken}
-            enablePan={!cosmicTriggered && !cardCinematicPosition.controlTaken}
-            enableRotate={!cosmicTriggered && !cardCinematicPosition.controlTaken}
+            enableZoom={!alignmentTriggered && !cardCinematicPosition.controlTaken}
+            enablePan={!alignmentTriggered && !cardCinematicPosition.controlTaken}
+            enableRotate={!alignmentTriggered && !cardCinematicPosition.controlTaken}
             maxDistance={25}
             minDistance={2}
-            autoRotate={autoRotate && !cosmicTriggered && !cardCinematicPosition.controlTaken}
+            autoRotate={autoRotate && !alignmentTriggered && !cardCinematicPosition.controlTaken}
             autoRotateSpeed={rotationSpeed}
             target={[mouseOffset.x * 0.01, mouseOffset.y * 0.01, 0]}
             minPolarAngle={0}
@@ -594,35 +609,29 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         }}
       />
       
-      {/* Cosmic Dance Overlay System */}
-      <CosmicDance
+      {/* Alignment System Overlay */}
+      <AlignmentSystem
         animationProgress={animationProgress}
         isPlaying={isPlaying}
         cardAngle={cardAngle}
         cameraDistance={cameraDistance}
         isOptimalZoom={isOptimalZoom}
         isOptimalPosition={isOptimalPosition}
-        onTriggerReached={() => {}} // No auto-trigger, only drag-up gesture
+        onTriggerReached={handleAlignmentTrigger}
         onCardControlUpdate={handleCardControlUpdate}
-        templateEngine={templateEngine}
       />
-      
-      {/* Cosmic Dance Controls - Hidden when studio integration is active */}
-      {!hideCosmicControls && (
-        <CosmicDanceControls
+
+      {/* Alignment Controls - Hidden when studio integration is active */}
+      {!hideAlignmentControls && (
+        <AlignmentControls
           animationProgress={animationProgress}
           isPlaying={isPlaying}
           playbackSpeed={playbackSpeed}
-          cardAngle={cardAngle}
-          cameraDistance={cameraDistance}
-          isOptimalZoom={isOptimalZoom}
-          isOptimalPosition={isOptimalPosition}
-          hasTriggered={cosmicTriggered}
-          onProgressChange={handleCosmicProgressChange}
-          onPlayToggle={handleCosmicPlayToggle}
-          onSpeedChange={handleCosmicSpeedChange}
-          onReset={handleResetAnimation}
-          onAngleReset={handleCosmicAngleReset}
+          hasTriggered={alignmentTriggered}
+          onProgressChange={handleAlignmentProgressChange}
+          onPlayToggle={handleAlignmentPlayToggle}
+          onSpeedChange={handleAlignmentSpeedChange}
+          onReset={resetTemplateState}
         />
       )}
       
