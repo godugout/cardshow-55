@@ -15,9 +15,9 @@ export const ViewingConditionsIndicator: React.FC<ViewingConditionsIndicatorProp
   const { message, urgency } = getViewingFeedback(conditions);
   const { overallProgress, stabilityDuration } = conditions;
 
-  // Determine indicator style and positioning - ensure it's above everything
+  // Determine indicator color based on urgency
   const getIndicatorStyle = () => {
-    const baseStyle = "fixed top-20 left-1/2 transform -translate-x-1/2 z-[9999] transition-all duration-300";
+    const baseStyle = "fixed top-8 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300";
     
     switch (urgency) {
       case 'critical':
