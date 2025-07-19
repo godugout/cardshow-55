@@ -11,6 +11,7 @@ import { ensureMaterialPersistence, getMaterialForTemplate } from '@/utils/mater
 import { PerformanceMonitor } from './performance/PerformanceMonitor';
 import { useCardAngle } from './hooks/useCardAngle';
 import { MonolithAlignment } from './alignment/MonolithAlignment';
+import { GalacticCompass } from './alignment/GalacticCompass';
 
 import { StudioPauseButton } from '../studio/StudioPauseButton';
 import { TemplateControlsCard } from '../viewer/components/TemplateControlsCard';
@@ -121,6 +122,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const [animationProgress, setAnimationProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [isResettingCard, setIsResettingCard] = useState(false);
 
   // Performance monitoring
   const [performanceEnabled, setPerformanceEnabled] = useState(false);
@@ -343,8 +345,67 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     onAlignmentReset?.();
   }, [animationProgress, isPlaying, onAlignmentReset, resetCardAngle, controlsRef]);
 
-  const handleResetAnimation = () => {
+  // Enhanced card reset for galactic compass
+  const resetCardPosition = useCallback(() => {
+    console.log('🧭 Galactic compass reset: Returning card to origin');
+    setIsResettingCard(true);
+    
+    // Reset all animation states
     resetTemplateState();
+    
+    // Reset camera to initial position
+    if (controlsRef.current) {
+      // Smooth animation to reset position
+      const controls = controlsRef.current;
+      const targetPosition = [0, 0, 15];
+      const targetTarget = [0, 0, 0];
+      
+      // Animate camera back to initial position
+      const startPosition = controls.object.position.clone();
+      const startTarget = controls.target.clone();
+      const duration = 1500; // 1.5 seconds
+      const startTime = Date.now();
+      
+      const animateReset = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Smooth easing
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        
+        // Interpolate position
+        controls.object.position.lerpVectors(
+          startPosition,
+          new THREE.Vector3(...targetPosition),
+          easeProgress
+        );
+        
+        // Interpolate target
+        controls.target.lerpVectors(
+          startTarget,
+          new THREE.Vector3(...targetTarget),
+          easeProgress
+        );
+        
+        controls.update();
+        
+        if (progress < 1) {
+          requestAnimationFrame(animateReset);
+        } else {
+          // Reset complete
+          setIsResettingCard(false);
+          console.log('🧭 Card reset complete - galactic alignment restored');
+        }
+      };
+      
+      animateReset();
+    } else {
+      setIsResettingCard(false);
+    }
+  }, [resetTemplateState, controlsRef]);
+
+  const handleResetAnimation = () => {
+    resetCardPosition(); // Use enhanced reset for compass compatibility
   };
 
   // Handle template replay
@@ -558,6 +619,12 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         onAlignmentComplete={() => {
           console.log('🌌 Kubrick would be proud! Alignment sequence complete');
         }}
+      />
+
+      {/* Galactic Compass - Navigation and reset control */}
+      <GalacticCompass 
+        onReset={resetCardPosition}
+        isResetting={isResettingCard}
       />
     </div>
   );
