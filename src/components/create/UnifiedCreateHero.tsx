@@ -21,7 +21,12 @@ export const UnifiedCreateHero: React.FC = () => {
     console.log('🔄 Reset 3D animation: Cosmic mode, camera position, card rotation, orbital rings');
     
     // The actual reset functionality is handled by the CRDViewer's onCosmicReset
-    // which will reset the cosmic animation progress, camera, card position, and orbital rings
+    // which will smoothly animate back to initial positions:
+    // - Camera to default position/rotation
+    // - Card to upright position (0° lean)
+    // - Cosmic sun to starting position
+    // - Orbital rings to initial state
+    // - Animation progress to 0
   };
 
   // Render tablet-specific hero text with line breaks

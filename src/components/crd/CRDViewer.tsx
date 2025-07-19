@@ -349,21 +349,66 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     }
   };
 
-  // Reset template state function
+  // Reset template state function with smooth animations
   const resetTemplateState = () => {
-    setAnimationProgress(0);
+    console.log('🎬 Starting smooth reset animation...');
+    
+    // Create smooth transition back to initial state
+    const resetDuration = 1500; // 1.5 seconds for smooth reset
+    const startProgress = animationProgress;
+    const startTime = Date.now();
+    
+    // Start reset animation if not already resetting
     setIsPlaying(false);
     setCosmicTriggered(false);
-    setCardCinematicPosition({ y: 0, lean: 0, controlTaken: false });
-    resetCardAngle();
     
-    // Force control re-enabling on reset
-    if (controlsRef.current) {
-      controlsRef.current.enabled = true;
-      controlsRef.current.enableRotate = true;
-      controlsRef.current.enableZoom = true;
-      controlsRef.current.enablePan = true;
-    }
+    // Smoothly animate progress back to 0
+    const animateReset = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / resetDuration, 1);
+      
+      // Use smooth easing function for natural animation
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const currentProgress = startProgress * (1 - easeOut);
+      
+      setAnimationProgress(currentProgress);
+      
+      // Smoothly reset card position with animation
+      const cardY = cardCinematicPosition.y * (1 - easeOut);
+      const cardLean = cardCinematicPosition.lean * (1 - easeOut);
+      
+      setCardCinematicPosition({ 
+        y: cardY, 
+        lean: cardLean, 
+        controlTaken: currentProgress > 0.01 // Release control near the end
+      });
+      
+      if (progress < 1) {
+        requestAnimationFrame(animateReset);
+      } else {
+        // Final reset - ensure everything is at initial state
+        setAnimationProgress(0);
+        setCardCinematicPosition({ y: 0, lean: 0, controlTaken: false });
+        
+        // Smoothly reset camera and card angle
+        setTimeout(() => {
+          resetCardAngle();
+          
+          // Re-enable controls after reset
+          if (controlsRef.current) {
+            controlsRef.current.enabled = true;
+            controlsRef.current.enableRotate = true;
+            controlsRef.current.enableZoom = true;
+            controlsRef.current.enablePan = true;
+          }
+          
+          console.log('✨ Reset animation complete!');
+        }, 200); // Small delay for natural feel
+      }
+    };
+    
+    // Start the smooth reset animation
+    requestAnimationFrame(animateReset);
     
     // Notify studio of reset
     onCosmicReset?.();
