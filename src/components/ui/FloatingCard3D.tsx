@@ -35,7 +35,7 @@ export const FloatingCard3D: React.FC<FloatingCard3DProps> = ({
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <CRDViewer
-        mode="cosmic"
+        mode="monolith"
         intensity={deviceConfig.intensity}
         lightingPreset="studio"
         pathTheme="neutral"

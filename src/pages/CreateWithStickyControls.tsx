@@ -6,7 +6,7 @@ import { useCardAngle } from '@/components/crd/hooks/useCardAngle';
 
 const CreateWithStickyControls = () => {
   // Animation State
-  const [animationMode, setAnimationMode] = useState<AnimationMode>('cosmic');
+  const [animationMode, setAnimationMode] = useState<AnimationMode>('monolith');
   const [animationIntensity, setAnimationIntensity] = useState(1);
 
   // Visual Style State
@@ -47,9 +47,9 @@ const CreateWithStickyControls = () => {
       {/* 3D Card Viewer - Takes remaining space */}
       <div className="flex-1 relative">
         <CRDViewer
-          mode={animationMode === 'cosmic' ? 'cosmic' : animationMode === 'monolith' ? 'monolith' : 'studio'}
+          mode={animationMode}
           intensity={animationIntensity}
-          lightingPreset={lightingPreset === 'studio' || lightingPreset === 'dramatic' || lightingPreset === 'soft' || lightingPreset === 'showcase' ? lightingPreset : 'studio'}
+          lightingPreset={lightingPreset}
           pathTheme="neutral"
           autoRotate={autoRotate}
           rotationSpeed={rotationSpeed}
@@ -62,7 +62,7 @@ const CreateWithStickyControls = () => {
           enableGlassCase={enableGlassCase}
           showModeText={true}
           className="w-full h-full"
-          onModeChange={(mode) => setAnimationMode(mode as AnimationMode)}
+          onModeChange={setAnimationMode}
           onIntensityChange={setAnimationIntensity}
         />
       </div>
