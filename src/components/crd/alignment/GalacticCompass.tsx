@@ -58,36 +58,22 @@ export const GalacticCompass: React.FC<GalacticCompassProps> = ({
   return (
     <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
       <div className="flex flex-col items-center gap-2">
-        {/* Compass housing */}
+        {/* Compass housing - smaller design */}
         <div 
-          className="relative w-20 h-20 cursor-pointer group transition-all duration-300 hover:scale-110"
+          className="relative w-12 h-12 cursor-pointer group transition-all duration-300 hover:scale-110"
           onClick={handleCompassClick}
         >
-          {/* Outer ring with galactic markings */}
-          <div className="absolute inset-0 rounded-full border-2 border-blue-400/60 bg-black/80 backdrop-blur-sm">
-            {/* Cardinal direction markers */}
+          {/* Outer ring with minimal markings */}
+          <div className="absolute inset-0 rounded-full border border-blue-400/40 bg-black/60 backdrop-blur-sm">
+            {/* Cardinal direction markers - smaller */}
             {[0, 90, 180, 270].map((angle) => (
               <div
                 key={angle}
-                className="absolute w-1 h-3 bg-blue-300/80"
+                className="absolute w-0.5 h-2 bg-blue-300/60"
                 style={{
-                  top: '2px',
+                  top: '1px',
                   left: '50%',
-                  transformOrigin: '50% 38px',
-                  transform: `translateX(-50%) rotate(${angle}deg)`
-                }}
-              />
-            ))}
-            
-            {/* Minor direction markers */}
-            {[45, 135, 225, 315].map((angle) => (
-              <div
-                key={angle}
-                className="absolute w-0.5 h-2 bg-blue-400/60"
-                style={{
-                  top: '3px',
-                  left: '50%',
-                  transformOrigin: '50% 37px',
+                  transformOrigin: '50% 23px',
                   transform: `translateX(-50%) rotate(${angle}deg)`
                 }}
               />
@@ -95,57 +81,58 @@ export const GalacticCompass: React.FC<GalacticCompassProps> = ({
           </div>
 
           {/* Inner compass face */}
-          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-slate-900 to-black border border-blue-500/30">
-            {/* Galactic center indicator */}
-            <div className="absolute top-1/2 left-1/2 w-1 h-1 bg-yellow-400 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+          <div className="absolute inset-1 rounded-full bg-gradient-to-br from-slate-800 to-black border border-blue-500/20">
+            {/* Central dot */}
+            <div className="absolute top-1/2 left-1/2 w-0.5 h-0.5 bg-blue-400 rounded-full transform -translate-x-1/2 -translate-y-1/2" />
             
-            {/* Compass needle pointing to galactic center */}
+            {/* Modern straight line needle */}
             <div
               className="absolute top-1/2 left-1/2 origin-bottom transition-transform duration-1000 ease-out"
               style={{
                 transform: `translate(-50%, -100%) rotate(${compassAngle}deg)`,
-                height: '24px',
-                width: '2px'
+                height: '16px',
+                width: '1px'
               }}
             >
-              {/* North end (pointing to galactic center) */}
-              <div className="absolute top-0 left-1/2 w-0 h-0 transform -translate-x-1/2 border-l-[3px] border-r-[3px] border-b-[12px] border-l-transparent border-r-transparent border-b-red-400" />
+              {/* Simple straight line needle */}
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-blue-600 to-blue-300" />
               
-              {/* South end */}
-              <div className="absolute bottom-0 left-1/2 w-0 h-0 transform -translate-x-1/2 border-l-[2px] border-r-[2px] border-t-[8px] border-l-transparent border-r-transparent border-t-blue-400" />
+              {/* Needle tip */}
+              <div className="absolute -top-0.5 left-1/2 w-1 h-1 bg-blue-300 rounded-full transform -translate-x-1/2" />
             </div>
           </div>
 
-          {/* Hover glow effect */}
-          <div className="absolute inset-0 rounded-full bg-blue-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse" />
+          {/* Hover glow effect - slower animation */}
+          <div className="absolute inset-0 rounded-full bg-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
+               style={{ animation: isTracking ? 'pulse 3s ease-in-out infinite' : 'none' }} />
 
           {/* Reset icon overlay on hover */}
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <RotateCcw className="w-5 h-5 text-blue-300" />
+            <RotateCcw className="w-3 h-3 text-blue-300" />
           </div>
         </div>
 
-        {/* Compass label */}
-        <div className="text-xs text-blue-300/80 font-mono text-center">
-          <div>GALACTIC</div>
-          <div>COMPASS</div>
-        </div>
+        {/* Status and coordinates only */}
+        <div className="flex flex-col items-center gap-1">
+          {/* Status indicator */}
+          <div className="flex items-center gap-1 text-xs text-blue-400/70 font-mono">
+            <div 
+              className={`w-1 h-1 rounded-full ${
+                isTracking && !isResetting ? 'bg-green-400' : 'bg-red-400'
+              }`} 
+              style={{ 
+                animation: isTracking && !isResetting ? 'pulse 2s ease-in-out infinite' : 'none' 
+              }}
+            />
+            <span>
+              {isResetting ? 'RESET' : isTracking ? 'TRACK' : 'OFF'}
+            </span>
+          </div>
 
-        {/* Status indicator */}
-        <div className="flex items-center gap-1 text-xs text-blue-400/60 font-mono">
-          <div 
-            className={`w-1.5 h-1.5 rounded-full ${
-              isTracking && !isResetting ? 'bg-green-400 animate-pulse' : 'bg-red-400'
-            }`} 
-          />
-          <span>
-            {isResetting ? 'RESETTING' : isTracking ? 'TRACKING' : 'OFFLINE'}
-          </span>
-        </div>
-
-        {/* Coordinates display */}
-        <div className="text-xs text-blue-300/60 font-mono text-center">
-          <div>GC: {compassAngle.toFixed(1)}°</div>
+          {/* Coordinates display */}
+          <div className="text-xs text-blue-300/50 font-mono">
+            {compassAngle.toFixed(1)}°
+          </div>
         </div>
       </div>
     </div>
