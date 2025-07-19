@@ -83,9 +83,10 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   const baseCardWidth = 420; // Increased from 320
   const baseCardHeight = baseCardWidth / cardAspectRatio;
 
-  // Panning handlers
+  // Panning handlers - restricted to vertical movement with Cmd/Ctrl+click
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!isPanning) return;
+    // Only allow panning with Command/Ctrl key pressed
+    if (!isPanning || !(e.metaKey || e.ctrlKey)) return;
     setIsDragging(true);
     setDragStart({
       x: e.clientX - panOffset.x,
@@ -94,11 +95,12 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   }, [isPanning, panOffset]);
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || !isPanning) return;
+    // Only allow vertical movement (prevent horizontal panning)
     setPanOffset({
-      x: e.clientX - dragStart.x,
+      x: panOffset.x, // Keep x position fixed
       y: e.clientY - dragStart.y
     });
-  }, [isDragging, isPanning, dragStart]);
+  }, [isDragging, isPanning, dragStart, panOffset.x]);
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
