@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface DescendingMoonProps {
   phase: 'moon-descent' | 'alignment' | 'climax';
@@ -39,6 +39,13 @@ export const DescendingMoon: React.FC<DescendingMoonProps> = ({
   };
 
   const { opacity, positionY, scale, glow } = getMoonProperties();
+
+  // Generate stable crater positions that don't change on re-render
+  const craters = useMemo(() => [
+    { size: 3, top: 30, left: 5 },
+    { size: 3, top: 50, left: 13 },
+    { size: 3, top: 70, left: 8 }
+  ], []);
 
   if (opacity <= 0) return null;
 
@@ -118,15 +125,15 @@ export const DescendingMoon: React.FC<DescendingMoonProps> = ({
             />
 
             {/* Small craters */}
-            {[...Array(3)].map((_, i) => (
+            {craters.map((crater, i) => (
               <div 
                 key={i}
                 className="absolute rounded-full"
                 style={{
-                  width: '3px',
-                  height: '3px',
-                  top: `${30 + (i * 20)}%`,
-                  left: `${5 + (i * 8)}%`,
+                  width: `${crater.size}px`,
+                  height: `${crater.size}px`,
+                  top: `${crater.top}%`,
+                  left: `${crater.left}%`,
                   background: 'radial-gradient(circle, rgba(0,0,0,0.1) 0%, transparent 70%)',
                   boxShadow: 'inset 0.3px 0.3px 0.5px rgba(0,0,0,0.2)'
                 }}

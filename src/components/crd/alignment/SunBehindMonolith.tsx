@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface SunBehindMonolithProps {
   phase: 'sun-rise' | 'moon-descent' | 'alignment' | 'climax';
@@ -37,6 +37,39 @@ export const SunBehindMonolith: React.FC<SunBehindMonolithProps> = ({
   };
 
   const { intensity, position, coronaOpacity } = getSunProperties();
+
+  // Generate stable random values that don't change on re-render
+  const solarGranules = useMemo(() => 
+    Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      size: 8 + (i * 1.3) % 12,
+      top: 10 + (i * 17) % 80,
+      left: 10 + (i * 23) % 80,
+      hue: 48 + (i * 2) % 6,
+      lightness: 85 + (i * 3) % 10,
+      delay: (i * 0.5) % 2
+    })), []
+  );
+
+  const solarFlares = useMemo(() =>
+    Array.from({ length: 8 }, (_, i) => ({
+      id: i,
+      height: 20 + (i * 4) % 30,
+      rotation: i * 45 + (i * 5) % 20,
+      translateY: 70 + (i * 2) % 20
+    })), []
+  );
+
+  const coronaRays = useMemo(() =>
+    Array.from({ length: 16 }, (_, i) => ({
+      id: i,
+      width: 150 + (i * 10) % 100,
+      rotation: i * 22.5 + (i * 2) % 10,
+      hue: 42 + (i % 4),
+      lightness: 65 + (i * 2) % 10,
+      opacity: 0.6 + (i * 0.025) % 0.4
+    })), []
+  );
 
   if (intensity <= 0) return null;
 
@@ -89,37 +122,37 @@ export const SunBehindMonolith: React.FC<SunBehindMonolithProps> = ({
             style={{ opacity: intensity * 0.7 }}
           >
             {/* Solar granulation pattern */}
-            {[...Array(12)].map((_, i) => (
+            {solarGranules.map((granule) => (
               <div 
-                key={i}
+                key={granule.id}
                 className="absolute rounded-full"
                 style={{
-                  width: `${8 + Math.random() * 12}px`,
-                  height: `${8 + Math.random() * 12}px`,
-                  top: `${10 + Math.random() * 80}%`,
-                  left: `${10 + Math.random() * 80}%`,
+                  width: `${granule.size}px`,
+                  height: `${granule.size}px`,
+                  top: `${granule.top}%`,
+                  left: `${granule.left}%`,
                   background: `radial-gradient(circle, 
-                    hsl(${48 + Math.random() * 6}, 100%, ${85 + Math.random() * 10}%) 0%, 
+                    hsl(${granule.hue}, 100%, ${granule.lightness}%) 0%, 
                     transparent 70%)`,
                   filter: 'blur(1px)',
-                  animation: `solar-flicker ${2 + Math.random() * 3}s ease-in-out infinite ${Math.random() * 2}s`
+                  animation: `solar-flicker ${2 + granule.delay}s ease-in-out infinite ${granule.delay}s`
                 }}
               />
             ))}
           </div>
 
           {/* Solar prominences/flares */}
-          {[...Array(8)].map((_, i) => (
+          {solarFlares.map((flare) => (
             <div 
-              key={i}
+              key={flare.id}
               className="absolute"
               style={{
                 width: '3px',
-                height: `${20 + Math.random() * 30}px`,
+                height: `${flare.height}px`,
                 top: '50%',
                 left: '50%',
                 transformOrigin: 'bottom center',
-                transform: `translate(-50%, -50%) rotate(${i * 45 + Math.random() * 20}deg) translateY(-${70 + Math.random() * 20}px)`,
+                transform: `translate(-50%, -50%) rotate(${flare.rotation}deg) translateY(-${flare.translateY}px)`,
                 background: `linear-gradient(to top, 
                   hsl(40, 100%, 70%, ${intensity * 0.8}) 0%, 
                   hsl(42, 100%, 75%, ${intensity * 0.6}) 50%, 
@@ -183,21 +216,21 @@ export const SunBehindMonolith: React.FC<SunBehindMonolithProps> = ({
             />
 
             {/* Diagonal corona rays */}
-            {[...Array(16)].map((_, i) => (
+            {coronaRays.map((ray) => (
               <div 
-                key={i}
+                key={ray.id}
                 className="absolute top-1/2 left-1/2"
                 style={{
-                  width: `${150 + Math.random() * 100}px`,
+                  width: `${ray.width}px`,
                   height: '2px',
                   background: `linear-gradient(to right, 
-                    hsl(${42 + Math.random() * 4}, 100%, ${65 + Math.random() * 10}%, ${coronaOpacity * 0.4}) 0%, 
-                    hsl(${40 + Math.random() * 4}, 100%, ${55 + Math.random() * 10}%, ${coronaOpacity * 0.2}) 50%, 
+                    hsl(${ray.hue}, 100%, ${ray.lightness}%, ${coronaOpacity * 0.4}) 0%, 
+                    hsl(${ray.hue - 2}, 100%, ${ray.lightness - 10}%, ${coronaOpacity * 0.2}) 50%, 
                     transparent 100%)`,
-                  transform: `translate(-50%, -50%) rotate(${i * 22.5 + Math.random() * 10}deg)`,
+                  transform: `translate(-50%, -50%) rotate(${ray.rotation}deg)`,
                   transformOrigin: 'left center',
                   filter: 'blur(1px)',
-                  opacity: 0.6 + Math.random() * 0.4
+                  opacity: ray.opacity
                 }}
               />
             ))}
