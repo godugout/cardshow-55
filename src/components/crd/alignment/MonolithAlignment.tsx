@@ -8,62 +8,18 @@ interface MonolithAlignmentProps {
   onAlignmentComplete?: () => void;
 }
 
+type AnimationPhase = 'transformation' | 'sun-rise' | 'moon-descent' | 'alignment' | 'climax';
+
 export const MonolithAlignment: React.FC<MonolithAlignmentProps> = ({
   onAlignmentComplete
 }) => {
-  const [isTriggered, setIsTriggered] = useState(false);
-  const [animationPhase, setAnimationPhase] = useState<'idle' | 'transformation' | 'sun-rise' | 'moon-descent' | 'alignment' | 'climax'>('idle');
+  const [animationPhase, setAnimationPhase] = useState<AnimationPhase>('transformation');
   const [animationProgress, setAnimationProgress] = useState(0);
-  const [showTriggerHint, setShowTriggerHint] = useState(true);
 
-  // Hide hint after a few seconds
+  // Animation sequence timing - Starts immediately when component mounts
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowTriggerHint(false);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Simple trigger - double click anywhere on the screen
-  useEffect(() => {
-    let clickCount = 0;
-    let clickTimer: NodeJS.Timeout;
-
-    const handleDoubleClick = () => {
-      if (isTriggered) return;
-      
-      console.log('🌌 Double-click detected! Starting Kubrick alignment sequence...');
-      setIsTriggered(true);
-      setAnimationPhase('transformation');
-      setShowTriggerHint(false);
-    };
-
-    const handleClick = () => {
-      clickCount++;
-      if (clickCount === 1) {
-        clickTimer = setTimeout(() => {
-          clickCount = 0;
-        }, 300);
-      } else if (clickCount === 2) {
-        clearTimeout(clickTimer);
-        clickCount = 0;
-        handleDoubleClick();
-      }
-    };
-
-    // Add to window for global capture
-    window.addEventListener('click', handleClick);
-
-    return () => {
-      window.removeEventListener('click', handleClick);
-      if (clickTimer) clearTimeout(clickTimer);
-    };
-  }, [isTriggered]);
-
-  // Animation sequence timing
-  useEffect(() => {
-    if (!isTriggered) return;
-
+    console.log('🌌 Kubrick alignment sequence initiated by sophisticated viewing detection!');
+    
     const sequences = [
       { phase: 'transformation', duration: 1000 },
       { phase: 'sun-rise', duration: 1500 },
@@ -75,58 +31,59 @@ export const MonolithAlignment: React.FC<MonolithAlignmentProps> = ({
     let currentDelay = 0;
     sequences.forEach((seq, index) => {
       setTimeout(() => {
-        setAnimationPhase(seq.phase as any);
+        setAnimationPhase(seq.phase as AnimationPhase);
         setAnimationProgress((index + 1) / sequences.length);
       }, currentDelay);
       currentDelay += seq.duration;
     });
 
-    // Complete and reset
-    setTimeout(() => {
+    // Auto-complete after full sequence
+    const completeTimer = setTimeout(() => {
       onAlignmentComplete?.();
-      setTimeout(() => {
-        setIsTriggered(false);
-        setAnimationPhase('idle');
-        setAnimationProgress(0);
-        setShowTriggerHint(true);
-      }, 2000);
     }, currentDelay);
 
-  }, [isTriggered, onAlignmentComplete]);
-
-  if (!isTriggered && animationPhase === 'idle') {
-    return (
-      <div className="fixed inset-0 pointer-events-none z-40">
-        {/* Simple trigger hint */}
-        {showTriggerHint && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/70 text-white px-6 py-3 rounded-lg animate-fade-in">
-            <div className="text-center">
-              <div className="text-lg mb-1">✨ 2001: A Space Odyssey ✨</div>
-              <div className="text-sm opacity-80">Double-click anywhere to trigger alignment</div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
+    return () => {
+      clearTimeout(completeTimer);
+    };
+  }, [onAlignmentComplete]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-40">
-      {/* Atmospheric dimming */}
-      <div 
-        className="absolute inset-0 bg-black transition-opacity duration-1000"
-        style={{ 
-          opacity: isTriggered ? 0.4 : 0 
-        }}
-      />
+    <div className="fixed inset-0 z-50 pointer-events-none">
+      {/* Sophisticated Viewing-Based Trigger Success Message */}
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-crd-blue/90 backdrop-blur-sm border border-crd-blue/30 rounded-lg px-6 py-3 shadow-lg animate-fade-in">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
+            <span className="text-white text-sm font-medium">
+              Perfect alignment achieved. Initiating Kubrick sequence...
+            </span>
+          </div>
+        </div>
+      </div>
 
-      {/* Monolith transformation overlay */}
-      {(animationPhase === 'transformation' || animationPhase === 'sun-rise' || animationPhase === 'moon-descent' || animationPhase === 'alignment' || animationPhase === 'climax') && (
-        <MonolithTransformation 
-          phase={animationPhase}
-          progress={animationProgress}
-        />
-      )}
+      {/* Progress Indicator */}
+      <div className="absolute top-4 right-4 z-50">
+        <div className="bg-black/60 backdrop-blur-sm border border-white/20 rounded-lg px-3 py-2 shadow-lg">
+          <div className="text-white text-xs">
+            <div>Phase: {animationPhase}</div>
+            <div className="w-24 h-1 bg-white/20 rounded-full mt-1">
+              <div 
+                className="h-full bg-white rounded-full transition-all duration-300"
+                style={{ width: `${animationProgress * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Atmospheric dimming */}
+      <div className="absolute inset-0 bg-black opacity-40" />
+
+      {/* Monolith Transformation */}
+      <MonolithTransformation 
+        phase={animationPhase}
+        progress={animationProgress}
+      />
 
       {/* Sun behind monolith */}
       {(animationPhase === 'sun-rise' || animationPhase === 'moon-descent' || animationPhase === 'alignment' || animationPhase === 'climax') && (
@@ -153,19 +110,17 @@ export const MonolithAlignment: React.FC<MonolithAlignmentProps> = ({
       )}
 
       {/* Animation progress indicator */}
-      {isTriggered && (
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-lg">
-          <div className="text-center">
-            <div className="text-sm mb-1">{animationPhase.toUpperCase().replace('-', ' ')}</div>
-            <div className="w-32 bg-white/20 h-1 rounded">
-              <div 
-                className="bg-white h-1 rounded transition-all duration-300" 
-                style={{ width: `${animationProgress * 100}%` }}
-              />
-            </div>
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-lg">
+        <div className="text-center">
+          <div className="text-sm mb-1">{animationPhase.toUpperCase().replace('-', ' ')}</div>
+          <div className="w-32 bg-white/20 h-1 rounded">
+            <div 
+              className="bg-white h-1 rounded transition-all duration-300" 
+              style={{ width: `${animationProgress * 100}%` }}
+            />
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

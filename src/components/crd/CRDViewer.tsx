@@ -12,6 +12,9 @@ import { PerformanceMonitor } from './performance/PerformanceMonitor';
 import { useCardAngle } from './hooks/useCardAngle';
 import { MonolithAlignment } from './alignment/MonolithAlignment';
 import { GalacticCompass } from './alignment/GalacticCompass';
+import { ViewingConditionsIndicator } from './alignment/ViewingConditionsIndicator';
+import { useMonolithViewingDetector } from '@/hooks/useMonolithViewingDetector';
+import { type Transform3D } from '@/utils/monolithViewingCalculations';
 
 import { StudioPauseButton } from '../studio/StudioPauseButton';
 import { TemplateControlsCard } from '../viewer/components/TemplateControlsCard';
@@ -197,6 +200,36 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Lighting State
   const [lightingPreset, setLightingPreset] = useState<LightingPreset>(initialLightingPreset);
   const [lightingIntensity, setLightingIntensity] = useState(initialLightingIntensity);
+
+  // Monolith viewing detection state
+  const [currentTransform, setCurrentTransform] = useState<Transform3D>({
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: 1,
+    position: { x: 0, y: 0, z: 0 }
+  });
+  const [alignmentTriggered, setAlignmentTriggered] = useState(false);
+
+  // Card dimensions for calculation (standard trading card size)
+  const cardDimensions = useMemo(() => ({
+    width: 320, // pixels at 100% scale
+    height: 450  // pixels at 100% scale
+  }), []);
+
+  // Viewing detector hook
+  const {
+    viewingConditions,
+    isTriggered: viewingTriggered,
+    showIndicator,
+    reset: resetViewingDetector
+  } = useMonolithViewingDetector({
+    cardDimensions,
+    currentTransform,
+    onSequenceTrigger: () => {
+      console.log('🎬 Sophisticated viewing trigger activated!');
+      setAlignmentTriggered(true);
+    },
+    isEnabled: !alignmentTriggered // Disable once triggered
+  });
 
   // Auto-cycle through modes for demo (only when autoModeEnabled is true)
   useEffect(() => {
@@ -567,6 +600,35 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
               dampingFactor={0.05}
               onStart={handleControlsStart}
               onEnd={handleControlsEnd}
+              onChange={(e) => {
+                // Track transform changes for viewing detection
+                if (e?.target) {
+                  const controls = e.target;
+                  const newTransform = {
+                    rotation: {
+                      x: controls.getAzimuthalAngle() * 180 / Math.PI,
+                      y: controls.getPolarAngle() * 180 / Math.PI,
+                      z: 0
+                    },
+                    scale: 1 / (controls.object.position.distanceTo(controls.target) / 15), // Normalize to scale
+                    position: {
+                      x: controls.object.position.x,
+                      y: controls.object.position.y,
+                      z: controls.object.position.z
+                    }
+                  };
+                  setCurrentTransform(newTransform);
+                  
+                  // Debug logging for development
+                  if (process.env.NODE_ENV === 'development' && Math.random() < 0.02) { // Log ~2% of frames
+                    console.log('🎯 Transform update:', {
+                      rotation: `(${newTransform.rotation.x.toFixed(1)}°, ${newTransform.rotation.y.toFixed(1)}°)`,
+                      scale: newTransform.scale.toFixed(2),
+                      distance: controls.object.position.distanceTo(controls.target).toFixed(1)
+                    });
+                  }
+                }
+              }}
             />
           )}
         
@@ -611,12 +673,25 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         />
       )}
 
-      {/* Monolith Alignment System - Simple double-click trigger */}
-      <MonolithAlignment
-        onAlignmentComplete={() => {
-          console.log('🌌 Kubrick would be proud! Alignment sequence complete');
-        }}
+      {/* Viewing Conditions Indicator - Progressive feedback */}
+      <ViewingConditionsIndicator
+        conditions={viewingConditions}
+        isVisible={showIndicator}
       />
+
+      {/* Monolith Alignment System - Sophisticated viewing-based trigger */}
+      {alignmentTriggered && (
+        <MonolithAlignment
+          onAlignmentComplete={() => {
+            console.log('🌌 Kubrick would be proud! Alignment sequence complete');
+            // Reset viewing detection after completion
+            setTimeout(() => {
+              setAlignmentTriggered(false);
+              resetViewingDetector();
+            }, 7500); // Reset after full sequence
+          }}
+        />
+      )}
 
       {/* Galactic Compass - Navigation and reset control */}
       <GalacticCompass 
