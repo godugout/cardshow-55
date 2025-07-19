@@ -204,75 +204,7 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
     };
   }, [templateEngine, currentFrame.environment]);
 
-  // Update sun position with enhanced cinematic effects using stable dependencies
-  useEffect(() => {
-    if (sunRef.current) {
-      const sunElement = sunRef.current;
-      
-      // Handle both template engine format and legacy format
-      const sunData = templateEngine ? {
-        x: (currentFrame.sun as any)?.x || 0,
-        y: (currentFrame.sun as any)?.y || 50,
-        scale: (currentFrame.sun as any)?.scale || 1,
-        opacity: (currentFrame.sun as any)?.opacity || 1,
-        color: (currentFrame.sun as any)?.color || '#FFA500',
-        glow: (currentFrame.sun as any)?.glow || 0.5
-      } : {
-        x: (currentFrame.sun as any).x,
-        y: (currentFrame.sun as any).y,
-        scale: (currentFrame.sun as any).scale,
-        opacity: (currentFrame.sun as any).opacity,
-        color: '#FFA500',
-        glow: 0.5
-      };
-      
-      const lightingData = templateEngine ? {
-        intensity: (currentFrame.lighting as any)?.intensity || 1,
-        warmth: 0.5 // Default warmth for template engine
-      } : {
-        intensity: (currentFrame.lighting as any).intensity,
-        warmth: (currentFrame.lighting as any).warmth
-      };
-      
-      // Enhanced positioning for perfect vertical alignment (2001 style)
-      if (templateEngine) {
-        // Template engine uses vw for x and px for y
-        sunElement.style.left = `calc(50% + ${sunData.x}vw)`;
-        sunElement.style.top = `${sunData.y}px`;
-      } else {
-        // Legacy uses vw for x and special handling for y (120px start, % for rest)
-        sunElement.style.left = `calc(50% + ${sunData.x}vw)`;
-        // Special case: if y is 120 (starting position), use px; otherwise use %
-        if (sunData.y === 120) {
-          sunElement.style.top = `${sunData.y}px`;
-        } else {
-          sunElement.style.top = `${sunData.y}%`;
-        }
-      }
-      
-      // Enhanced scale and opacity with cinematic glow
-      sunElement.style.transform = `translate(-50%, -50%) scale(${sunData.scale})`;
-      sunElement.style.opacity = sunData.opacity.toString();
-      
-      // Set color and glow
-      sunElement.style.backgroundColor = sunData.color;
-      
-      // Cinematic glow effect with enhanced intensity modulation
-      const baseGlowSize = 30;
-      const intensityMultiplier = lightingData.intensity * 1.5;
-      const glowSize = baseGlowSize + (sunData.glow * 40) + (intensityMultiplier * 20);
-      const baseGlowOpacity = 0.2;
-      const glowOpacity = baseGlowOpacity + (sunData.glow * 0.6) + (intensityMultiplier * 0.1);
-      
-      // Enhanced glow with emissive intensity effect
-      const emissiveGlow = Math.min(1.0, sunData.glow * lightingData.intensity);
-      sunElement.style.boxShadow = `
-        0 0 ${glowSize}px ${sunData.color.replace('rgb', 'rgba').replace(')', `, ${glowOpacity})`)},
-        0 0 ${glowSize * 2}px ${sunData.color.replace('rgb', 'rgba').replace(')', `, ${glowOpacity * 0.5})`)},
-        inset 0 0 ${glowSize * 0.3}px ${sunData.color.replace('rgb', 'rgba').replace(')', `, ${emissiveGlow * 0.3})`)}
-      `;
-    }
-  }, [templateEngine, currentFrame.sun, currentFrame.lighting]);
+  // Sun animation removed - sun now rendered in 3D scene at fixed position
 
   // Handle animation completion for studio transition
   useEffect(() => {
@@ -284,21 +216,6 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
 
   return (
     <>
-      {/* Enhanced 2D Sun with Cinematic Glow and Emissive Effects - Behind card */}
-      <div
-        ref={sunRef}
-        className="fixed pointer-events-none z-10"
-        style={{
-          width: '120px',
-          height: '120px',
-          borderRadius: '50%',
-          backgroundColor: '#FFA500',
-          boxShadow: '0 0 30px rgba(255, 165, 0, 0.4)',
-          transition: isPlaying ? 'all 0.1s ease-out' : 'all 0.5s ease-out',
-          filter: `brightness(${1 + ((currentFrame.lighting as any)?.intensity || 1) * 0.3})`,
-        }}
-      />
-      
       {/* Cosmic Moon - 2001 Style Crescent - Above hero title, static after animation */}
       <CosmicMoon
         progress={animationProgress}

@@ -22,28 +22,19 @@ export const CosmicSun: React.FC<CosmicSunProps> = ({ scrollProgress }) => {
 
   useFrame((state) => {
     if (sunRef.current) {
-      const time = state.clock.elapsedTime;
-      
-      // Sun stays in final position (no animation based on scroll progress)
-      const sunY = -6; // Final position from previous animation
-      const sunZ = -3; // Final Z position
-      
-      sunRef.current.position.set(0, sunY, sunZ);
-      
-      // Simple rotation
+      // Only gentle rotation, position and scale are set once in the return statement
       sunRef.current.rotation.y += 0.005;
       sunRef.current.rotation.x += 0.002;
-      
-      // Final scale (no animation)
-      const scale = 1.6; // Final scale from previous animation
-      sunRef.current.scale.setScalar(scale);
     }
   });
 
-  // Sun is always visible now (no scroll dependency)
+  // Sun starts in final resting position - no animation
   return (
-
-    <mesh ref={sunRef}>
+    <mesh 
+      ref={sunRef}
+      position={[0, -6, -15]} // Positioned behind card and ring (further back on Z-axis)
+      scale={[1.6, 1.6, 1.6]} // Final scale
+    >
       <sphereGeometry args={[1, 32, 32]} />
       <primitive object={sunMaterial} />
     </mesh>
