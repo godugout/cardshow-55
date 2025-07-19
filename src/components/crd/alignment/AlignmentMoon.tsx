@@ -18,19 +18,23 @@ interface MoonFrame {
   };
 }
 
-// Simplified moon animation - comes down from above hero text
+// Moon animation - starts from top of page and descends to above hero text
 const MOON_FRAMES: MoonFrame[] = [
   {
     progress: 0,
-    moon: { x: 0, y: 80, scale: 0.2, opacity: 0.4, phase: 0.15 } // Start above hero text
+    moon: { x: 0, y: -100, scale: 0.1, opacity: 0.3, phase: 0.2 } // Start above viewport
   },
   {
-    progress: 0.5,
-    moon: { x: 0, y: 100, scale: 0.35, opacity: 0.7, phase: 0.12 }
+    progress: 0.3,
+    moon: { x: 0, y: 60, scale: 0.25, opacity: 0.6, phase: 0.15 } // Moving down
+  },
+  {
+    progress: 0.7,
+    moon: { x: 0, y: 140, scale: 0.4, opacity: 0.8, phase: 0.12 } // Near hero text
   },
   {
     progress: 1.0,
-    moon: { x: 0, y: 120, scale: 0.5, opacity: 0.9, phase: 0.1 } // End at final position
+    moon: { x: 0, y: 180, scale: 0.5, opacity: 1.0, phase: 0.1 } // Final position above hero text
   }
 ];
 
@@ -41,6 +45,13 @@ export const AlignmentMoon: React.FC<AlignmentMoonProps> = React.memo(({
 }) => {
   const moonRef = useRef<HTMLDivElement>(null);
   const crescentRef = useRef<HTMLDivElement>(null);
+
+  // Debug when moon becomes visible
+  useEffect(() => {
+    if (isVisible) {
+      console.log('🌙 AlignmentMoon is now visible with progress:', progress);
+    }
+  }, [isVisible, progress]);
 
   // Get current moon frame based on progress
   const getCurrentMoonFrame = useCallback((progress: number): MoonFrame => {
@@ -81,6 +92,11 @@ export const AlignmentMoon: React.FC<AlignmentMoonProps> = React.memo(({
 
     const frame = currentFrame.moon;
     
+    // Debug logging
+    if (isVisible && progress > 0) {
+      console.log('🌙 Moon animation:', { progress, y: frame.y, scale: frame.scale, opacity: frame.opacity, isVisible });
+    }
+    
     // Position moon
     moonRef.current.style.left = `${50 + frame.x}%`;
     moonRef.current.style.top = `${frame.y}px`;
@@ -91,25 +107,26 @@ export const AlignmentMoon: React.FC<AlignmentMoonProps> = React.memo(({
     const phaseOffset = frame.phase * 100;
     crescentRef.current.style.clipPath = `inset(0 ${phaseOffset}% 0 0)`;
     
-  }, [currentFrame, isVisible]);
+  }, [currentFrame, isVisible, progress]);
 
   return (
     <div
       ref={moonRef}
-      className="fixed pointer-events-none transition-opacity duration-1000"
+      className="fixed pointer-events-none transition-all duration-500 ease-out"
       style={{
-        width: '60px',
-        height: '60px',
-        zIndex: 45,
+        width: '80px',
+        height: '80px',
+        zIndex: 50, // Above everything else
       }}
     >
-      {/* Moon crescent */}
+      {/* Enhanced Moon crescent with glow */}
       <div
         ref={crescentRef}
-        className="w-full h-full rounded-full border-2 border-white/80"
+        className="w-full h-full rounded-full border-2 border-white/90"
         style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
-          boxShadow: '0 0 20px rgba(255, 255, 255, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.1)',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)',
+          boxShadow: '0 0 30px rgba(255, 255, 255, 0.4), inset 0 0 25px rgba(255, 255, 255, 0.15), 0 0 60px rgba(255, 255, 255, 0.2)',
+          filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.3))',
         }}
       />
     </div>

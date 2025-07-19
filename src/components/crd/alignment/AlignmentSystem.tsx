@@ -37,6 +37,7 @@ export const AlignmentSystem: React.FC<AlignmentSystemProps> = React.memo(({
   // Trigger callback
   const triggerCallback = useCallback(() => {
     if (canTrigger && onTriggerReached) {
+      console.log('🌙 Alignment triggered! Moon should appear now');
       setHasTriggered(true);
       onTriggerReached();
     }
@@ -78,11 +79,11 @@ export const AlignmentSystem: React.FC<AlignmentSystemProps> = React.memo(({
   
   return (
     <div className="fixed inset-0 pointer-events-none z-40">
-      {/* Alignment Moon - Only shows when aligned and playing */}
-      {isAligned && (
+      {/* Alignment Moon - Shows when alignment is triggered */}
+      {hasTriggered && (
         <AlignmentMoon
           progress={animationProgress}
-          isVisible={isPlaying}
+          isVisible={true} // Always visible once triggered
           isAnimationComplete={animationProgress >= 1 && !isPlaying}
         />
       )}
