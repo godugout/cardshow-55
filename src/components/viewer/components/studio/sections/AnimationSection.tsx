@@ -12,9 +12,9 @@ interface AnimationSectionProps {
   onAnimationModeChange: (mode: string) => void;
   onAnimationIntensityChange: (intensity: number) => void;
   
-  // Cosmic dance props
+  // Alignment animation props
   animationProgress: number;
-  isCosmicPlaying: boolean;
+  isAlignmentPlaying: boolean;
   playbackSpeed: number;
   cardAngle: number;
   cameraDistance: number;
@@ -44,7 +44,7 @@ const ANIMATION_MODES = [
   { value: 'none', label: 'Static' },
   { value: 'subtle', label: 'Subtle Float' },
   { value: 'dynamic', label: 'Dynamic Motion' },
-  { value: 'cosmic', label: 'Cosmic Dance' },
+  { value: 'alignment', label: 'Alignment' },
 ];
 
 export const AnimationSection: React.FC<AnimationSectionProps> = ({
@@ -53,7 +53,7 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
   onAnimationModeChange,
   onAnimationIntensityChange,
   animationProgress,
-  isCosmicPlaying,
+  isAlignmentPlaying,
   playbackSpeed,
   cardAngle,
   cameraDistance,
@@ -69,14 +69,14 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
   onToggle
 }) => {
   const { isMobile } = useResponsiveBreakpoints();
-  const [showCosmicDetails, setShowCosmicDetails] = useState(false);
+  const [showAlignmentDetails, setShowAlignmentDetails] = useState(false);
   
-  const statusText = hasTriggered ? "Cosmic Aligned" : 
-                    animationMode === 'cosmic' ? "Cosmic Ready" :
+  const statusText = hasTriggered ? "Aligned" : 
+                    animationMode === 'alignment' ? "Alignment Ready" :
                     animationMode !== 'none' ? "Animating" : "Static";
 
-  const isCosmicMode = animationMode === 'cosmic';
-  const isCosmicReady = cardAngle >= 45 && isOptimalZoom && isOptimalPosition;
+  const isAlignmentMode = animationMode === 'alignment';
+  const isAlignmentReady = cardAngle >= 45 && isOptimalZoom && isOptimalPosition;
 
   return (
     <CollapsibleSection
@@ -109,7 +109,7 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
           </div>
 
           {/* Animation Intensity */}
-          {animationMode !== 'none' && animationMode !== 'cosmic' && (
+          {animationMode !== 'none' && animationMode !== 'alignment' && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="text-sm text-crd-lightGray">Intensity</Label>
@@ -128,31 +128,31 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
           )}
         </div>
 
-        {/* Cosmic Dance Controls */}
-        {isCosmicMode && (
+        {/* Alignment Controls */}
+        {isAlignmentMode && (
           <div className="space-y-4 border-t border-border pt-4">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium text-crd-lightGray flex items-center gap-2">
                 <Zap className="w-4 h-4" />
-                Cosmic Dance
+                Alignment
               </h4>
               {!isMobile && (
                 <button
-                  onClick={() => setShowCosmicDetails(!showCosmicDetails)}
+                  onClick={() => setShowAlignmentDetails(!showAlignmentDetails)}
                   className="text-xs text-muted-foreground hover:text-crd-lightGray transition-colors"
                 >
-                  {showCosmicDetails ? 'Hide Details' : 'Show Details'}
+                  {showAlignmentDetails ? 'Hide Details' : 'Show Details'}
                 </button>
               )}
             </div>
 
 
-            {/* Cosmic Trigger Status */}
+            {/* Alignment Trigger Status */}
             {hasTriggered && (
               <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-300/30 rounded-lg p-3">
                 <div className="flex items-center gap-2 text-sm text-orange-200">
                   <div className="w-2 h-2 bg-orange-400 rounded-full animate-ping"></div>
-                  🌌 COSMIC ALIGNMENT ACTIVE
+                  🌌 ALIGNMENT ACTIVE
                 </div>
                 <div className="text-xs text-orange-300/80 mt-1">
                   "My God, it's full of stars..."
@@ -178,11 +178,11 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
                 </div>
               </div>
               <div className={`text-xs p-2 rounded border mt-2 ${
-                isCosmicReady
+                 isAlignmentReady
                   ? 'bg-green-950/50 border-green-500 text-green-200'
                   : 'bg-yellow-950/50 border-yellow-500 text-yellow-200'
               }`}>
-                {isCosmicReady ? '🌌 Ready for alignment' : '⚙️ Adjust position & zoom'}
+                {isAlignmentReady ? '🌌 Ready for alignment' : '⚙️ Adjust position & zoom'}
               </div>
             </div>
 
@@ -224,7 +224,7 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
                 onClick={onPlayToggle}
                 className="flex items-center justify-center w-8 h-8 bg-crd-orange hover:bg-crd-orange/80 rounded-lg text-white transition-colors"
               >
-                {isCosmicPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+                {isAlignmentPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
               </button>
               
               <div className="flex-1">
@@ -255,7 +255,7 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
             </div>
 
             {/* Desktop: Show detailed controls when expanded */}
-            {!isMobile && showCosmicDetails && (
+            {!isMobile && showAlignmentDetails && (
               <div className="space-y-3 border-t border-border pt-3">
                 {/* Card Angle Indicator */}
                 <div className="space-y-2">
@@ -302,8 +302,8 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
             {/* Status Indicators */}
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <div className={`w-1.5 h-1.5 rounded-full ${isCosmicPlaying ? 'bg-green-500' : 'bg-muted'}`} />
-                <span className="text-muted-foreground">{isCosmicPlaying ? 'Playing' : 'Paused'}</span>
+                <div className={`w-1.5 h-1.5 rounded-full ${isAlignmentPlaying ? 'bg-green-500' : 'bg-muted'}`} />
+                <span className="text-muted-foreground">{isAlignmentPlaying ? 'Playing' : 'Paused'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className={`w-1.5 h-1.5 rounded-full ${hasTriggered ? 'bg-green-500 animate-pulse' : cardAngle >= 45 ? 'bg-crd-orange animate-pulse' : 'bg-muted'}`} />

@@ -36,9 +36,9 @@ interface StudioContentProps {
   onAnimationModeChange?: (mode: string) => void;
   onAnimationIntensityChange?: (intensity: number) => void;
   
-  // Cosmic dance props
+  // Alignment animation props
   animationProgress?: number;
-  isCosmicPlaying?: boolean;
+  isAlignmentPlaying?: boolean;
   playbackSpeed?: number;
   cardAngle?: number;
   cameraDistance?: number;
@@ -76,9 +76,9 @@ export const StudioContent: React.FC<StudioContentProps> = ({
   onAnimationModeChange,
   onAnimationIntensityChange,
   
-  // Cosmic dance props
+  // Alignment animation props
   animationProgress = 0,
-  isCosmicPlaying = false,
+  isAlignmentPlaying = false,
   playbackSpeed = 1,
   cardAngle = 0,
   cameraDistance = 15,
@@ -151,7 +151,7 @@ export const StudioContent: React.FC<StudioContentProps> = ({
             onAnimationModeChange={onAnimationModeChange || (() => {})}
             onAnimationIntensityChange={onAnimationIntensityChange || (() => {})}
             animationProgress={animationProgress}
-            isCosmicPlaying={isCosmicPlaying}
+            isAlignmentPlaying={isAlignmentPlaying}
             playbackSpeed={playbackSpeed}
             cardAngle={cardAngle}
             cameraDistance={cameraDistance}

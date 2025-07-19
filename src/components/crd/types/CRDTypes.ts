@@ -1,5 +1,5 @@
 // Core CRD Types
-export type AnimationMode = 'monolith' | 'showcase' | 'ice' | 'gold' | 'glass' | 'holo' | 'cosmic';
+export type AnimationMode = 'monolith' | 'showcase' | 'ice' | 'gold' | 'glass' | 'holo' | 'alignment';
 
 export type MaterialMode = 
   | 'monolith' 
@@ -8,7 +8,7 @@ export type MaterialMode =
   | 'gold' 
   | 'glass' 
   | 'holo'
-  | 'cosmic'
+  | 'alignment'
   | 'glass-case'
   | 'sports'      // Future: Sports path theming
   | 'fantasy'     // Future: Fantasy/Sci-Fi path theming  

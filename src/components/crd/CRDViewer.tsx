@@ -118,7 +118,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Template engine state
   const [templateEngine, setTemplateEngine] = useState<TemplateEngine | null>(null);
 
-  // Alignment system (replaces Cosmic Dance)
+  // Alignment system
   const { cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cardRef: angleCardRef, controlsRef, resetCardAngle } = useCardAngle();
   const [animationProgress, setAnimationProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -487,7 +487,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           scene={{ background: null }}
         >
           {/* Drag-up gesture detection for alignment mode */}
-          {currentMode === 'cosmic' && (
+          {currentMode === 'alignment' && (
             <DragUpGesture 
               onDragUpTrigger={handleAlignmentTrigger}
               minDragDistance={120}
@@ -503,13 +503,13 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           enableShadows={true}
         />
         
-        {/* Cosmic Background Elements - Removed, now using 2D overlay */}
+        {/* Alignment Background Elements - Using 2D overlay */}
         
         {/* Main Card with Glass Case Container - Enhanced with cinematic positioning */}
         <group 
           position={[
             0, 
-            -2 + cardCinematicPosition.y, // Cinematic Y positioning during cosmic alignment
+            -2 + cardCinematicPosition.y, // Cinematic Y positioning during alignment animation
             0
           ]}
           rotation={
@@ -566,7 +566,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           </Text>
         )}
         
-        {/* Enhanced Orbit Controls for Cosmic Dance */}
+        {/* Enhanced Orbit Controls for Alignment */}
         {enableControls && (
           <OrbitControls
             ref={controlsRef}

@@ -70,9 +70,9 @@ export const DragUpGesture: React.FC<DragUpGestureProps> = ({
     const isMinDistance = distance >= minDragDistance;
     const isPrimarilyVertical = Math.abs(deltaY) > Math.abs(deltaX) * 0.7; // 70% vertical bias
     
-    // Trigger monolith flight if conditions are met
+    // Trigger alignment animation if conditions are met
     if (isUpwardDrag && isMinDistance && isPrimarilyVertical && !dragState.current.hasTriggered) {
-      console.log('🚀 Drag-up gesture detected! Triggering monolith flight...');
+      console.log('🚀 Drag-up gesture detected! Triggering alignment animation...');
       dragState.current.hasTriggered = true;
       onDragUpTrigger();
       

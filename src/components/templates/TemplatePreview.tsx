@@ -57,7 +57,7 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
       {/* 3D Preview */}
       <div className="aspect-video relative">
         <CRDViewer
-          mode="cosmic"
+          mode="alignment"
           templateConfig={templateConfig}
           enableControls={false}
           showPauseButton={false}

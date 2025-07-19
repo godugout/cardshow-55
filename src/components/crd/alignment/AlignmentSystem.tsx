@@ -25,11 +25,14 @@ export const AlignmentSystem: React.FC<AlignmentSystemProps> = React.memo(({
   const [hasTriggered, setHasTriggered] = useState(false);
   const [isAligned, setIsAligned] = useState(false);
   
-  // Check if card is zoomed 60% or larger (distance of 8 or less for 60%+ zoom)
-  const isZoomedEnough = cameraDistance <= 8;
+  // Check if card is zoomed 160% or larger (distance of 5 or less for 160%+ zoom)  
+  const isZoomedEnough = cameraDistance <= 5;
   
-  // Trigger alignment when conditions are met
-  const canTrigger = isZoomedEnough && isOptimalPosition && !hasTriggered;
+  // Check if card is tilted forward at least 45 degrees
+  const isTiltedForward = cardAngle >= 45;
+  
+  // Trigger alignment when ALL conditions are met: zoom + tilt + position
+  const canTrigger = isZoomedEnough && isTiltedForward && isOptimalPosition && !hasTriggered;
   
   // Trigger callback
   const triggerCallback = useCallback(() => {
@@ -87,7 +90,8 @@ export const AlignmentSystem: React.FC<AlignmentSystemProps> = React.memo(({
       {/* Alignment Status Indicator (optional debug) */}
       {process.env.NODE_ENV === 'development' && (
         <div className="absolute top-4 left-4 bg-black/50 text-white p-2 rounded text-sm">
-          <div>Zoom: {isZoomedEnough ? '✓' : '✗'} ({Math.round((1 - Math.min(cameraDistance / 20, 1)) * 100)}%)</div>
+          <div>Zoom 160%+: {isZoomedEnough ? '✓' : '✗'} ({Math.round((1 - Math.min(cameraDistance / 20, 1)) * 100)}%)</div>
+          <div>Tilt 45°+: {isTiltedForward ? '✓' : '✗'} ({Math.round(cardAngle)}°)</div>
           <div>Position: {isOptimalPosition ? '✓' : '✗'}</div>
           <div>Aligned: {isAligned ? '✓' : '✗'}</div>
           <div>Progress: {Math.round(animationProgress * 100)}%</div>

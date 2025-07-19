@@ -222,7 +222,7 @@ export const Card3DCore = forwardRef<THREE.Group, Card3DCoreProps>(({
       <mesh ref={cardRef}>
         {getCardGeometry()}
         <MaterialSystem 
-          mode={materialMode || (mode === 'cosmic' ? 'monolith' : mode)} 
+          mode={materialMode || (mode === 'alignment' ? 'monolith' : mode)} 
           intensity={intensity}
           type="card"
           animationProgress={animationProgress}
