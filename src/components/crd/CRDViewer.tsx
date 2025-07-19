@@ -13,6 +13,7 @@ import { useCardAngle } from './hooks/useCardAngle';
 import { MonolithAlignment } from './alignment/MonolithAlignment';
 import { GalacticCompass } from './alignment/GalacticCompass';
 import { ViewingConditionsIndicator } from './alignment/ViewingConditionsIndicator';
+import { SunriseEffect } from './lighting/SunriseEffect';
 import { useMonolithViewingDetector } from '@/hooks/useMonolithViewingDetector';
 import { type Transform3D } from '@/utils/monolithViewingCalculations';
 

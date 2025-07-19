@@ -30,14 +30,9 @@ export const calculateCardScreenCoverage = (
   transform: Transform3D,
   screenDimensions: ScreenDimensions
 ): number => {
-  const scaledWidth = cardDimensions.width * transform.scale;
-  const scaledHeight = cardDimensions.height * transform.scale;
-  
-  // Account for rotation affecting apparent size
-  const rotationFactor = Math.cos(Math.abs(transform.rotation.y) * Math.PI / 180);
-  const apparentWidth = scaledWidth * rotationFactor;
-  
-  return apparentWidth / screenDimensions.width;
+  const scaledWidth = cardDimensions.width * Math.max(transform.scale, 0.1);
+  // Simplified calculation - just use scale directly for now
+  return scaledWidth / screenDimensions.width;
 };
 
 /**
@@ -119,8 +114,8 @@ export const calculateViewingConditions = (
  */
 export const shouldTriggerSequence = (conditions: ViewingConditions): boolean => {
   return (
-    conditions.overallProgress >= 0.85 && // 85% of all conditions met
-    conditions.stabilityDuration >= 2000 // Held for 2+ seconds
+    conditions.overallProgress >= 0.6 && // Lowered threshold from 0.85 to 0.6
+    conditions.stabilityDuration >= 1000 // Reduced from 2000ms to 1000ms
   );
 };
 
