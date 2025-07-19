@@ -486,15 +486,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           }}
           scene={{ background: null }}
         >
-          {/* Drag-up gesture detection for alignment mode */}
-          {currentMode === 'alignment' && (
-            <DragUpGesture 
-              onDragUpTrigger={handleAlignmentTrigger}
-              minDragDistance={120}
-            >
-              <></>
-            </DragUpGesture>
-          )}
+          {/* Drag-up gesture detection removed - too sensitive */}
         {/* Unified Lighting System */}
         <LightingRig 
           preset={lightingPreset} 
@@ -609,17 +601,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         }}
       />
       
-      {/* Alignment System Overlay */}
-      <AlignmentSystem
-        animationProgress={animationProgress}
-        isPlaying={isPlaying}
-        cardAngle={cardAngle}
-        cameraDistance={cameraDistance}
-        isOptimalZoom={isOptimalZoom}
-        isOptimalPosition={isOptimalPosition}
-        onTriggerReached={handleAlignmentTrigger}
-        onCardControlUpdate={handleCardControlUpdate}
-      />
+      {/* Alignment System removed - too sensitive, was causing unwanted card locking */}
 
       {/* Alignment Controls - Hidden when studio integration is active */}
       {!hideAlignmentControls && (
