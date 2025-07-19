@@ -12,6 +12,7 @@ import { RouteErrorBoundary } from '@/components/routing/RouteErrorBoundary';
 import { LoadingState } from '@/components/common/LoadingState';
 import { GlobalSecretEffectsProvider } from '@/contexts/GlobalSecretEffectsContext';
 import { GlobalSecretMenu } from '@/components/global/GlobalSecretMenu';
+import { NotificationProvider } from '@/components/common/NotificationCenter';
 
 // Critical pages loaded immediately for better UX
 import Index from '@/pages/Index';
@@ -76,8 +77,9 @@ const App = () => {
     <ErrorBoundary>
       <ProductionOptimizer />
       <AuthProvider>
-        <GlobalSecretEffectsProvider>
-          <Router>
+        <NotificationProvider>
+          <GlobalSecretEffectsProvider>
+            <Router>
             <div className="min-h-screen bg-crd-darkest flex flex-col">
               <Navbar />
               <main className="flex-1 transition-all duration-300 ease-in-out">
@@ -288,7 +290,8 @@ const App = () => {
             </div>
           </Router>
         </GlobalSecretEffectsProvider>
-      </AuthProvider>
+      </NotificationProvider>
+    </AuthProvider>
     </ErrorBoundary>
   );
 };
