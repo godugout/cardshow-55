@@ -52,111 +52,179 @@ export const SunBehindMonolith: React.FC<SunBehindMonolithProps> = ({
           transition: 'all 0.8s ease-out'
         }}
       >
-        {/* Main sun disc */}
+        {/* Realistic sun with layers */}
         <div 
-          className="rounded-full"
+          className="relative"
           style={{
-            width: '120px',
-            height: '120px',
-            background: `radial-gradient(circle, 
-              hsl(45, 100%, 95%) 0%, 
-              hsl(40, 100%, 85%) 20%, 
-              hsl(35, 100%, 75%) 40%, 
-              hsl(30, 100%, 65%) 60%, 
-              hsl(25, 100%, 55%) 80%, 
-              hsl(20, 90%, 45%) 100%)`,
-            opacity: intensity,
-            boxShadow: `
-              0 0 60px hsl(40, 100%, 60%, ${intensity * 0.8}),
-              0 0 120px hsl(35, 100%, 50%, ${intensity * 0.6}),
-              0 0 200px hsl(30, 100%, 40%, ${intensity * 0.4})
-            `
+            width: '140px',
+            height: '140px'
           }}
-        />
-
-        {/* Corona rays extending beyond monolith edges */}
-        <div className="absolute inset-0">
-          {/* Left corona */}
+        >
+          {/* Sun core */}
           <div 
-            className="absolute top-1/2 right-full"
+            className="absolute inset-0 rounded-full"
             style={{
-              width: '300px',
-              height: '2px',
-              background: `linear-gradient(to left, 
-                hsl(40, 100%, 70%, ${coronaOpacity * 0.8}) 0%, 
-                hsl(35, 100%, 60%, ${coronaOpacity * 0.4}) 50%, 
-                transparent 100%)`,
-              transform: 'translateY(-50%)',
-              filter: 'blur(1px)'
-            }}
-          />
-          
-          {/* Right corona */}
-          <div 
-            className="absolute top-1/2 left-full"
-            style={{
-              width: '300px',
-              height: '2px',
-              background: `linear-gradient(to right, 
-                hsl(40, 100%, 70%, ${coronaOpacity * 0.8}) 0%, 
-                hsl(35, 100%, 60%, ${coronaOpacity * 0.4}) 50%, 
-                transparent 100%)`,
-              transform: 'translateY(-50%)',
-              filter: 'blur(1px)'
+              background: `radial-gradient(circle, 
+                hsl(48, 100%, 98%) 0%, 
+                hsl(46, 100%, 92%) 15%, 
+                hsl(44, 100%, 85%) 30%, 
+                hsl(42, 100%, 78%) 45%, 
+                hsl(40, 100%, 70%) 60%, 
+                hsl(38, 100%, 62%) 75%, 
+                hsl(36, 95%, 55%) 85%, 
+                hsl(34, 90%, 48%) 100%)`,
+              opacity: intensity,
+              boxShadow: `
+                0 0 40px hsl(44, 100%, 70%, ${intensity * 0.8}),
+                0 0 80px hsl(42, 100%, 65%, ${intensity * 0.6}),
+                0 0 120px hsl(40, 100%, 60%, ${intensity * 0.4}),
+                inset 0 0 20px hsl(50, 100%, 95%, ${intensity * 0.3})
+              `
             }}
           />
 
-          {/* Top corona */}
+          {/* Solar surface texture */}
           <div 
-            className="absolute left-1/2 bottom-full"
-            style={{
-              width: '4px',
-              height: '200px',
-              background: `linear-gradient(to top, 
-                hsl(40, 100%, 70%, ${coronaOpacity * 0.6}) 0%, 
-                hsl(35, 100%, 60%, ${coronaOpacity * 0.3}) 50%, 
-                transparent 100%)`,
-              transform: 'translateX(-50%)',
-              filter: 'blur(2px)'
-            }}
-          />
+            className="absolute inset-1 rounded-full overflow-hidden"
+            style={{ opacity: intensity * 0.7 }}
+          >
+            {/* Solar granulation pattern */}
+            {[...Array(12)].map((_, i) => (
+              <div 
+                key={i}
+                className="absolute rounded-full"
+                style={{
+                  width: `${8 + Math.random() * 12}px`,
+                  height: `${8 + Math.random() * 12}px`,
+                  top: `${10 + Math.random() * 80}%`,
+                  left: `${10 + Math.random() * 80}%`,
+                  background: `radial-gradient(circle, 
+                    hsl(${48 + Math.random() * 6}, 100%, ${85 + Math.random() * 10}%) 0%, 
+                    transparent 70%)`,
+                  filter: 'blur(1px)',
+                  animation: `solar-flicker ${2 + Math.random() * 3}s ease-in-out infinite ${Math.random() * 2}s`
+                }}
+              />
+            ))}
+          </div>
 
-          {/* Additional corona rays */}
+          {/* Solar prominences/flares */}
           {[...Array(8)].map((_, i) => (
             <div 
               key={i}
-              className="absolute top-1/2 left-1/2"
+              className="absolute"
               style={{
-                width: '200px',
-                height: '1px',
-                background: `linear-gradient(to right, 
-                  hsl(40, 100%, 60%, ${coronaOpacity * 0.3}) 0%, 
+                width: '3px',
+                height: `${20 + Math.random() * 30}px`,
+                top: '50%',
+                left: '50%',
+                transformOrigin: 'bottom center',
+                transform: `translate(-50%, -50%) rotate(${i * 45 + Math.random() * 20}deg) translateY(-${70 + Math.random() * 20}px)`,
+                background: `linear-gradient(to top, 
+                  hsl(40, 100%, 70%, ${intensity * 0.8}) 0%, 
+                  hsl(42, 100%, 75%, ${intensity * 0.6}) 50%, 
+                  hsl(44, 100%, 80%, ${intensity * 0.4}) 80%, 
                   transparent 100%)`,
-                transform: `translate(-50%, -50%) rotate(${i * 45}deg)`,
-                transformOrigin: 'left center',
-                filter: 'blur(0.5px)'
+                filter: 'blur(1px)',
+                opacity: coronaOpacity * 0.7
               }}
             />
           ))}
+
+          {/* Enhanced corona rays */}
+          <div className="absolute inset-0">
+            {/* Main horizontal corona */}
+            <div 
+              className="absolute top-1/2 right-full"
+              style={{
+                width: '400px',
+                height: '6px',
+                background: `linear-gradient(to left, 
+                  hsl(44, 100%, 75%, ${coronaOpacity * 0.9}) 0%, 
+                  hsl(42, 100%, 68%, ${coronaOpacity * 0.7}) 30%, 
+                  hsl(40, 100%, 60%, ${coronaOpacity * 0.5}) 60%, 
+                  hsl(38, 100%, 50%, ${coronaOpacity * 0.3}) 80%, 
+                  transparent 100%)`,
+                transform: 'translateY(-50%)',
+                filter: 'blur(2px)'
+              }}
+            />
+            
+            <div 
+              className="absolute top-1/2 left-full"
+              style={{
+                width: '400px',
+                height: '6px',
+                background: `linear-gradient(to right, 
+                  hsl(44, 100%, 75%, ${coronaOpacity * 0.9}) 0%, 
+                  hsl(42, 100%, 68%, ${coronaOpacity * 0.7}) 30%, 
+                  hsl(40, 100%, 60%, ${coronaOpacity * 0.5}) 60%, 
+                  hsl(38, 100%, 50%, ${coronaOpacity * 0.3}) 80%, 
+                  transparent 100%)`,
+                transform: 'translateY(-50%)',
+                filter: 'blur(2px)'
+              }}
+            />
+
+            {/* Vertical corona */}
+            <div 
+              className="absolute left-1/2 bottom-full"
+              style={{
+                width: '8px',
+                height: '300px',
+                background: `linear-gradient(to top, 
+                  hsl(44, 100%, 70%, ${coronaOpacity * 0.7}) 0%, 
+                  hsl(42, 100%, 65%, ${coronaOpacity * 0.5}) 40%, 
+                  hsl(40, 100%, 60%, ${coronaOpacity * 0.3}) 70%, 
+                  transparent 100%)`,
+                transform: 'translateX(-50%)',
+                filter: 'blur(3px)'
+              }}
+            />
+
+            {/* Diagonal corona rays */}
+            {[...Array(16)].map((_, i) => (
+              <div 
+                key={i}
+                className="absolute top-1/2 left-1/2"
+                style={{
+                  width: `${150 + Math.random() * 100}px`,
+                  height: '2px',
+                  background: `linear-gradient(to right, 
+                    hsl(${42 + Math.random() * 4}, 100%, ${65 + Math.random() * 10}%, ${coronaOpacity * 0.4}) 0%, 
+                    hsl(${40 + Math.random() * 4}, 100%, ${55 + Math.random() * 10}%, ${coronaOpacity * 0.2}) 50%, 
+                    transparent 100%)`,
+                  transform: `translate(-50%, -50%) rotate(${i * 22.5 + Math.random() * 10}deg)`,
+                  transformOrigin: 'left center',
+                  filter: 'blur(1px)',
+                  opacity: 0.6 + Math.random() * 0.4
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Atmospheric distortion */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              width: '200px',
+              height: '200px',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: `radial-gradient(circle, 
+                transparent 35%, 
+                hsl(44, 80%, 70%, ${intensity * 0.08}) 50%, 
+                hsl(42, 70%, 60%, ${intensity * 0.05}) 70%, 
+                hsl(40, 60%, 50%, ${intensity * 0.02}) 85%, 
+                transparent 100%)`,
+              filter: 'blur(15px)',
+              animation: phase === 'climax' ? 'solar-shimmer 3s ease-in-out infinite' : 'none'
+            }}
+          />
         </div>
 
-        {/* Atmospheric glow */}
-        <div 
-          className="absolute inset-0 rounded-full"
-          style={{
-            width: '300px',
-            height: '300px',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            background: `radial-gradient(circle, 
-              transparent 30%, 
-              hsl(40, 80%, 60%, ${intensity * 0.1}) 50%, 
-              hsl(35, 70%, 50%, ${intensity * 0.05}) 70%, 
-              transparent 100%)`,
-            filter: 'blur(10px)'
-          }}
-        />
+        {/* CSS animations are handled via Tailwind classes */}
       </div>
     </div>
   );

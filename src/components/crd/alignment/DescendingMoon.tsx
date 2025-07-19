@@ -55,7 +55,7 @@ export const DescendingMoon: React.FC<DescendingMoonProps> = ({
           opacity
         }}
       >
-        {/* Main moon body */}
+        {/* Thin crescent moon */}
         <div 
           className="relative"
           style={{
@@ -63,7 +63,7 @@ export const DescendingMoon: React.FC<DescendingMoonProps> = ({
             height: '80px'
           }}
         >
-          {/* Moon surface */}
+          {/* Main moon body - full circle first */}
           <div 
             className="absolute inset-0 rounded-full"
             style={{
@@ -80,18 +80,27 @@ export const DescendingMoon: React.FC<DescendingMoonProps> = ({
             }}
           />
 
-          {/* Moon craters */}
-          <div className="absolute inset-0">
-            {/* Large crater */}
+          {/* Crescent mask - creates the thin crescent by covering most of the moon */}
+          <div 
+            className="absolute inset-0 rounded-full bg-black"
+            style={{
+              clipPath: 'ellipse(65% 100% at 85% 50%)', // Creates thin crescent on left side
+              transform: 'rotate(180deg)' // Rotates so curve faces down
+            }}
+          />
+
+          {/* Moon surface details on visible crescent */}
+          <div className="absolute inset-0" style={{ clipPath: 'ellipse(35% 100% at 15% 50%)' }}>
+            {/* Large crater on crescent */}
             <div 
               className="absolute rounded-full"
               style={{
-                width: '12px',
-                height: '12px',
-                top: '35%',
-                left: '40%',
+                width: '8px',
+                height: '8px',
+                top: '40%',
+                left: '15%',
                 background: 'radial-gradient(circle, rgba(0,0,0,0.2) 0%, transparent 70%)',
-                boxShadow: 'inset 1px 1px 3px rgba(0,0,0,0.4)'
+                boxShadow: 'inset 1px 1px 2px rgba(0,0,0,0.4)'
               }}
             />
             
@@ -99,66 +108,65 @@ export const DescendingMoon: React.FC<DescendingMoonProps> = ({
             <div 
               className="absolute rounded-full"
               style={{
-                width: '8px',
-                height: '8px',
-                top: '60%',
-                left: '25%',
+                width: '5px',
+                height: '5px',
+                top: '65%',
+                left: '8%',
                 background: 'radial-gradient(circle, rgba(0,0,0,0.15) 0%, transparent 70%)',
-                boxShadow: 'inset 1px 1px 2px rgba(0,0,0,0.3)'
+                boxShadow: 'inset 0.5px 0.5px 1px rgba(0,0,0,0.3)'
               }}
             />
 
             {/* Small craters */}
-            {[...Array(5)].map((_, i) => (
+            {[...Array(3)].map((_, i) => (
               <div 
                 key={i}
                 className="absolute rounded-full"
                 style={{
-                  width: '4px',
-                  height: '4px',
-                  top: `${20 + (i * 15)}%`,
-                  left: `${30 + (i * 10)}%`,
+                  width: '3px',
+                  height: '3px',
+                  top: `${30 + (i * 20)}%`,
+                  left: `${5 + (i * 8)}%`,
                   background: 'radial-gradient(circle, rgba(0,0,0,0.1) 0%, transparent 70%)',
-                  boxShadow: 'inset 0.5px 0.5px 1px rgba(0,0,0,0.2)'
+                  boxShadow: 'inset 0.3px 0.3px 0.5px rgba(0,0,0,0.2)'
                 }}
               />
             ))}
           </div>
 
-          {/* Moon glow/atmosphere */}
+          {/* Crescent glow/atmosphere */}
           <div 
-            className="absolute inset-0 rounded-full"
+            className="absolute inset-0"
             style={{
-              width: '140px',
-              height: '140px',
+              width: '120px',
+              height: '120px',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              background: `radial-gradient(circle, 
-                transparent 40%, 
-                rgba(200,200,220,${glow * 0.1}) 60%, 
-                rgba(180,180,200,${glow * 0.05}) 80%, 
+              background: `radial-gradient(ellipse 40% 80% at 20% 50%, 
+                rgba(200,200,220,${glow * 0.15}) 0%, 
+                rgba(180,180,200,${glow * 0.08}) 60%, 
                 transparent 100%)`,
-              filter: 'blur(5px)'
+              filter: 'blur(3px)',
+              clipPath: 'ellipse(35% 100% at 15% 50%)' // Only glow on crescent
             }}
           />
 
-          {/* Mystical aura for climax */}
+          {/* Enhanced mystical aura for climax */}
           {phase === 'climax' && (
             <div 
               className="absolute inset-0"
               style={{
-                width: '200px',
-                height: '200px',
+                width: '160px',
+                height: '160px',
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                background: `radial-gradient(circle, 
-                  transparent 30%, 
-                  rgba(100,150,255,${glow * 0.1}) 50%, 
-                  rgba(150,100,255,${glow * 0.05}) 70%, 
+                background: `radial-gradient(ellipse 30% 60% at 25% 50%, 
+                  rgba(100,150,255,${glow * 0.15}) 0%, 
+                  rgba(150,100,255,${glow * 0.08}) 50%, 
                   transparent 100%)`,
-                filter: 'blur(10px)',
+                filter: 'blur(8px)',
                 animation: 'pulse 2s ease-in-out infinite'
               }}
             />
