@@ -13,21 +13,6 @@ export const UnifiedCreateHero: React.FC = () => {
     setIsPaused(!isPaused);
   };
 
-  const handleReset = () => {
-    // Reset animation state
-    setIsPaused(false);
-    
-    // Log reset action for debugging
-    console.log('🔄 Reset 3D animation: Cosmic mode, camera position, card rotation, orbital rings');
-    
-    // The actual reset functionality is handled by the CRDViewer's onCosmicReset
-    // which will smoothly animate back to initial positions:
-    // - Camera to default position/rotation
-    // - Card to upright position (0° lean)
-    // - Cosmic sun to starting position
-    // - Orbital rings to initial state
-    // - Animation progress to 0
-  };
 
   // Render tablet-specific hero text with line breaks
   const renderTabletHeroText = () => (
@@ -84,7 +69,6 @@ export const UnifiedCreateHero: React.FC = () => {
           <ResponsiveCreate3DLayout
             isPaused={isPaused}
             onTogglePause={handleTogglePause}
-            onReset={handleReset}
             className="fixed inset-0 z-0"
           />
 
@@ -145,7 +129,6 @@ export const UnifiedCreateHero: React.FC = () => {
           <ResponsiveCreate3DLayout
             isPaused={isPaused}
             onTogglePause={handleTogglePause}
-            onReset={handleReset}
             className="fixed inset-0 z-0"
           />
 

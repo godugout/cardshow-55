@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { FloatingCard3D } from '@/components/ui/FloatingCard3D';
 import { StarsBackground } from '@/components/ui/stars';
 import { StudioPauseButton } from '@/components/studio/StudioPauseButton';
-import { StudioResetButton } from '@/components/studio/StudioResetButton';
 import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 
 export const Create3DSection: React.FC = () => {
@@ -14,9 +13,6 @@ export const Create3DSection: React.FC = () => {
     setIsPaused(prev => !prev);
   };
 
-  const handleReset = () => {
-    window.location.reload();
-  };
 
   return (
     <div className="relative w-full h-screen bg-crd-darkest overflow-hidden">
@@ -31,9 +27,8 @@ export const Create3DSection: React.FC = () => {
         </StarsBackground>
       </div>
 
-      {/* Control Buttons */}
+      {/* Control Button */}
       <div className="absolute bottom-6 right-6 z-50 flex gap-3">
-        <StudioResetButton onReset={handleReset} />
         <StudioPauseButton 
           isPaused={isPaused} 
           onTogglePause={handleTogglePause} 

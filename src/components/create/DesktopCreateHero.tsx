@@ -5,7 +5,6 @@ import { CRDButton } from '@/components/ui/design-system/Button';
 import { PixelDigital } from '@/components/ui/PixelDigital';
 import { FloatingCard3D } from '@/components/ui/FloatingCard3D';
 import { StudioPauseButton } from '@/components/studio/StudioPauseButton';
-import { StudioResetButton } from '@/components/studio/StudioResetButton';
 import { StarsBackground } from '@/components/ui/stars';
 
 const DesktopAnimatedTagline: React.FC = () => {
@@ -25,9 +24,6 @@ export const DesktopCreateHero: React.FC = () => {
     setIsPaused(prev => !prev);
   };
 
-  const handleReset = () => {
-    window.location.reload();
-  };
 
   return (
     <div className="relative w-full overflow-hidden h-screen bg-crd-darkest">
@@ -42,9 +38,8 @@ export const DesktopCreateHero: React.FC = () => {
         </StarsBackground>
       </div>
 
-      {/* Control Buttons - Lower Right */}
+      {/* Control Button - Lower Right */}
       <div className="fixed bottom-6 right-6 z-50 flex gap-3">
-        <StudioResetButton onReset={handleReset} />
         <StudioPauseButton 
           isPaused={isPaused} 
           onTogglePause={handleTogglePause} 
