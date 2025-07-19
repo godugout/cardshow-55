@@ -164,8 +164,8 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
   // Memoized current frame to prevent object recreation
   const currentFrame = useMemo(() => getCurrentFrame(animationProgress), [getCurrentFrame, animationProgress]);
 
-  // Memoized card control update callback
-  const handleCardControlUpdate = useCallback(() => {
+  // Stable card control update with proper dependencies
+  useEffect(() => {
     if (isPlaying && onCardControlUpdate) {
       // Handle both template engine format and legacy format
       const cardData = templateEngine ? {
@@ -173,19 +173,14 @@ export const CosmicDance: React.FC<CosmicDanceProps> = React.memo(({
         lean: (currentFrame.card as any)?.lean || 0,
         controlTaken: (currentFrame.card as any)?.lock || false
       } : {
-        positionY: (currentFrame.card as any).positionY,
-        lean: (currentFrame.card as any).lean,
-        controlTaken: (currentFrame.card as any).controlTaken
+        positionY: (currentFrame.card as any).positionY || 0,
+        lean: (currentFrame.card as any).lean || 0,
+        controlTaken: (currentFrame.card as any).controlTaken || false
       };
       
       onCardControlUpdate(cardData);
     }
-  }, [isPlaying, onCardControlUpdate, currentFrame.card, templateEngine]);
-
-  // Send card control updates during animation with stable dependencies
-  useEffect(() => {
-    handleCardControlUpdate();
-  }, [handleCardControlUpdate]);
+  }, [isPlaying, animationProgress, templateEngine]); // Use animationProgress instead of currentFrame
 
   // Enhanced cosmic environment effects with stable dependencies
   useEffect(() => {

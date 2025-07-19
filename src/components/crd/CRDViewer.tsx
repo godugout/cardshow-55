@@ -352,8 +352,14 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   };
 
   // Reset template state function with smooth animations
-  const resetTemplateState = () => {
+  const resetTemplateState = useCallback(() => {
     console.log('🎬 Starting smooth reset animation...');
+    
+    // Prevent multiple resets
+    if (animationProgress === 0 && !isPlaying) {
+      console.log('Already at initial state, skipping reset');
+      return;
+    }
     
     // Create smooth transition back to initial state
     const resetDuration = 1500; // 1.5 seconds for smooth reset
@@ -414,7 +420,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     
     // Notify studio of reset
     onCosmicReset?.();
-  };
+  }, [animationProgress, isPlaying, onCosmicReset]);
 
   const handleResetAnimation = () => {
     resetTemplateState();
@@ -542,7 +548,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           intensity={currentIntensity}
           materialMode={selectedStyleId as any}
           enableAnimation={true}
-          enableGlassCase={currentMode === 'cosmic' ? false : enableGlassCase} // No glass case for monolith effect
+          enableGlassCase={cosmicTriggered ? false : enableGlassCase} // Only remove glass case during cosmic animation
           isLocked={isCardLocked}
           isPaused={isCardPaused}
           onLockToggle={handleCardLockToggle}
