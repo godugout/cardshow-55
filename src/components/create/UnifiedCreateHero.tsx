@@ -86,7 +86,7 @@ export const UnifiedCreateHero: React.FC = () => {
           {/* Overlay Content Layer - Positioned for short screens */}
           <div className="relative z-10 h-full flex flex-col pointer-events-none">
             {/* Top Section - Hero Content */}
-            <div className="flex-1 flex items-start justify-center px-6 pt-20">
+            <div className="flex-1 flex items-start justify-center px-6 pt-32">
               <div className="text-center space-y-4 max-w-4xl mx-auto">
                 {/* Hero Text */}
                 {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
@@ -145,7 +145,7 @@ export const UnifiedCreateHero: React.FC = () => {
           />
 
           {/* Overlay Content Layer - Positioned higher for normal screens */}
-          <div className="relative z-10 min-h-screen flex items-start justify-center px-6 pt-32 pointer-events-none">
+          <div className="relative z-10 min-h-screen flex items-start justify-center px-6 pt-40 pointer-events-none">
             <div className="text-center space-y-8 max-w-6xl mx-auto">
               {/* Hero Text */}
               {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
