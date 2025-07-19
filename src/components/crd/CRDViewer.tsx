@@ -5,9 +5,7 @@ import * as THREE from 'three';
 import { Card3DCore } from './core/Card3DCore';
 import { LightingRig } from './lighting/LightingRig';
 import { OrbitalMaterialSystem } from './orbital/OrbitalMaterialSystem';
-import { AlignmentSystem } from './alignment/AlignmentSystem';
 import { AlignmentControls } from './alignment/AlignmentControls';
-import { DragUpGesture } from './gestures/DragUpGesture';
 import { loadTemplate, TemplateConfig, TemplateEngine } from '@/templates/engine';
 import { ensureMaterialPersistence, getMaterialForTemplate } from '@/utils/materialFallback';
 import { PerformanceMonitor } from './performance/PerformanceMonitor';
@@ -16,7 +14,6 @@ import { useCardAngle } from './hooks/useCardAngle';
 import { StudioPauseButton } from '../studio/StudioPauseButton';
 import { TemplateControlsCard } from '../viewer/components/TemplateControlsCard';
 import { TemplateControlsButton } from '../viewer/components/TemplateControlsButton';
-
 
 import { type AnimationMode, type LightingPreset, type PathTheme } from './types/CRDTypes';
 
@@ -118,15 +115,11 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   // Template engine state
   const [templateEngine, setTemplateEngine] = useState<TemplateEngine | null>(null);
 
-  // Alignment system
-  const { cardAngle, setCardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cardRef: angleCardRef, controlsRef, resetCardAngle } = useCardAngle();
+  // Card angle tracking (no alignment system - just for info)
+  const { cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cardRef: angleCardRef, controlsRef, resetCardAngle } = useCardAngle();
   const [animationProgress, setAnimationProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [alignmentTriggered, setAlignmentTriggered] = useState(false);
-  
-  // Card cinematic control state
-  const [cardCinematicPosition, setCardCinematicPosition] = useState({ y: 0, lean: 0, controlTaken: false });
 
   // Performance monitoring
   const [performanceEnabled, setPerformanceEnabled] = useState(false);
@@ -253,22 +246,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     setCardRotation(transform.rotation.clone());
   };
 
-  const handleAutoRotateChange = (enabled: boolean) => {
-    setAutoRotate(enabled);
-  };
-
-  const handleRotationSpeedChange = (speed: number) => {
-    setRotationSpeed(speed);
-  };
-
-  const handleLightingPresetChange = (preset: LightingPreset) => {
-    setLightingPreset(preset);
-  };
-
-  const handleLightingIntensityChange = (intensity: number) => {
-    setLightingIntensity(intensity);
-  };
-
   const handleTogglePause = () => {
     if (externalOnTogglePause) {
       externalOnTogglePause();
@@ -288,9 +265,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           
           if (newProgress >= 1) {
             setIsPlaying(false);
-            if (templateEngine?.transitionToStudio) {
-              handleAlignmentTrigger(); // Trigger studio unlock
-            }
           }
           
           return newProgress;
@@ -309,7 +283,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         cancelAnimationFrame(animationFrame);
       }
     };
-  }, [isPlaying, animationProgress, playbackSpeed, templateEngine?.transitionToStudio]);
+  }, [isPlaying, animationProgress, playbackSpeed]);
 
   // Enhanced cleanup when reaching end
   useEffect(() => {
@@ -317,24 +291,9 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
       setIsPlaying(false);
       
       // Handle template completion
-      if (templateEngine?.transitionToStudio) {
-        handleAlignmentTrigger(); // Trigger studio unlock
+      if (templateEngine?.transitionToStudio && onTemplateComplete) {
+        onTemplateComplete(templateEngine);
       }
-      
-      // Enhanced control cleanup sequence
-      setTimeout(() => {
-        // Reset all alignment states
-        setAlignmentTriggered(false);
-        setCardCinematicPosition({ y: 0, lean: 0, controlTaken: false });
-        
-        // Force reset OrbitControls to ensure proper liberation
-        if (controlsRef.current) {
-          controlsRef.current.enabled = true;
-          controlsRef.current.enableRotate = true;
-          controlsRef.current.enableZoom = true;
-          controlsRef.current.enablePan = true;
-        }
-      }, 2000); // 2 second delay to enjoy the final frame
     }
   }, [animationProgress, isPlaying, controlsRef, templateEngine]);
 
@@ -349,35 +308,20 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         cameraDistance,
         isOptimalZoom,
         isOptimalPosition,
-        hasTriggered: alignmentTriggered,
+        hasTriggered: false, // No alignment triggering anymore
       });
     }
-  }, [animationProgress, isPlaying, playbackSpeed, cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, alignmentTriggered, onAlignmentStateChange]);
-
-  const handleAlignmentTrigger = () => {
-    console.log('🎯 Alignment triggered via drag-up gesture!');
-    setAlignmentTriggered(true);
-    if (!isPlaying && animationProgress < 1) {
-      setIsPlaying(true);
-    }
-    
-    // Notify parent of template completion for studio transition
-    if (templateEngine) {
-      onTemplateComplete?.(templateEngine);
-    }
-  };
+  }, [animationProgress, isPlaying, playbackSpeed, cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, onAlignmentStateChange]);
 
   const resetTemplateState = useCallback(() => {
     console.log('🔄 Starting smooth reset animation...');
-    console.log('🎯 Current state:', { animationProgress, isPlaying, alignmentTriggered });
+    console.log('🎯 Current state:', { animationProgress, isPlaying });
     
     // Force reset all states immediately
     setIsPlaying(false);
-    setAlignmentTriggered(false);
     setAnimationProgress(0);
     
     // Reset card states immediately
-    setCardCinematicPosition({ y: 0, lean: 0, controlTaken: false });
     setIsCardLocked(false);
     setIsCardPaused(false);
     
@@ -396,7 +340,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     
     // Notify studio of reset
     onAlignmentReset?.();
-  }, [animationProgress, isPlaying, alignmentTriggered, onAlignmentReset, resetCardAngle, controlsRef]);
+  }, [animationProgress, isPlaying, onAlignmentReset, resetCardAngle, controlsRef]);
 
   const handleResetAnimation = () => {
     resetTemplateState();
@@ -435,11 +379,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     onAlignmentAngleReset?.();
   };
 
-  // Handle card control updates from AlignmentSystem
-  const handleCardControlUpdate = useCallback((params: { positionY: number; lean: number; controlTaken: boolean }) => {
-    setCardCinematicPosition({ y: params.positionY, lean: params.lean, controlTaken: params.controlTaken });
-  }, []);
-
   // Handle orbit controls interaction
   const handleControlsStart = () => {
     setIsCardInteracting(true);
@@ -467,9 +406,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
     };
   }, []);
 
-
-
-
   return (
     <div className={`overflow-hidden relative ${className}`}>
       {/* Responsive Container for 3D Scene */}
@@ -486,116 +422,91 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           }}
           scene={{ background: null }}
         >
-          {/* Drag-up gesture detection for alignment mode */}
-          {currentMode === 'alignment' && (
-            <DragUpGesture 
-              onDragUpTrigger={handleAlignmentTrigger}
-              minDragDistance={150}
-              onCardAngleUpdate={(angle) => {
-                // Control card angle during drag - stop at 45 degrees
-                if (angle >= 45) {
-                  setCardAngle(45);
-                } else {
-                  setCardAngle(angle);
-                }
-              }}
-            >
-              <></>
-            </DragUpGesture>
-          )}
-        {/* Unified Lighting System */}
-        <LightingRig 
-          preset={lightingPreset} 
-          pathTheme={pathTheme}
-          intensity={lightingIntensity}
-          enableShadows={true}
-        />
-        
-        {/* Alignment Background Elements - Using 2D overlay */}
-        
-        {/* Main Card with Glass Case Container - Enhanced with cinematic positioning */}
-        <group 
-          position={[
-            0, 
-            -2 + cardCinematicPosition.y, // Cinematic Y positioning during alignment animation
-            0
-          ]}
-          rotation={
-            isCardLocked || cardCinematicPosition.controlTaken
-              ? [0, 0, 0] 
-              : [mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]
-          }
-        >
-        <Card3DCore
-          ref={cardRef}
-          mode={currentMode}
-          intensity={currentIntensity}
-          materialMode={selectedStyleId as any}
-          enableAnimation={true}
-          enableGlassCase={alignmentTriggered ? false : enableGlassCase} // Only remove glass case during alignment animation
-          isLocked={isCardLocked}
-          isPaused={isCardPaused}
-          onLockToggle={handleCardLockToggle}
-          onPauseToggle={handleCardPauseToggle}
-          onHover={handleCardHover}
-          onTransformUpdate={handleTransformUpdate}
-        />
-        </group>
-
-        {/* Orbital Material Ring System - Synced with mouse */}
-        <group 
-          position={[0, -2, 0]}
-          rotation={[mouseOffset.y * 0.001, mouseOffset.x * 0.001, 0]}
-        >
-          <OrbitalMaterialSystem
-            cardRotation={cardRotation}
-            onStyleChange={handleStyleChange}
-            selectedStyleId={selectedStyleId}
-            autoRotate={orbitalAutoRotate && !isCardInteracting && !isCardLocked}
-            rotationSpeed={orbitalRotationSpeed}
-            showRing={showOrbitalRing}
-            showLockIndicators={showLockIndicators}
-            isPaused={isPaused}
-            cardPaused={isCardPaused}
+          {/* Removed all drag gestures and alignment triggering - was causing card freezing */}
+          
+          {/* Unified Lighting System */}
+          <LightingRig 
+            preset={lightingPreset} 
+            pathTheme={pathTheme}
+            intensity={lightingIntensity}
+            enableShadows={true}
           />
-        </group>
         
-        {/* Mode Text */}
-        {showModeText && (
-          <Text
-            position={[0, -4.5, 0]}
-            fontSize={0.15}
-            color="#ffffff"
-            anchorX="center"
-            anchorY="middle"
+          {/* Main Card with Glass Case Container */}
+          <group 
+            position={[0, -2, 0]}
+            rotation={[mouseOffset.y * 0.002, mouseOffset.x * 0.002, 0]}
           >
-            {selectedStyleId.charAt(0).toUpperCase() + selectedStyleId.slice(1)} | 
-            {currentMode.toUpperCase()} | {currentIntensity.toFixed(1)}x
-          </Text>
-        )}
+            <Card3DCore
+              ref={cardRef}
+              mode={currentMode}
+              intensity={currentIntensity}
+              materialMode={selectedStyleId as any}
+              enableAnimation={true}
+              enableGlassCase={enableGlassCase}
+              isLocked={isCardLocked}
+              isPaused={isCardPaused}
+              onLockToggle={handleCardLockToggle}
+              onPauseToggle={handleCardPauseToggle}
+              onHover={handleCardHover}
+              onTransformUpdate={handleTransformUpdate}
+            />
+          </group>
+
+          {/* Orbital Material Ring System - Synced with mouse */}
+          <group 
+            position={[0, -2, 0]}
+            rotation={[mouseOffset.y * 0.001, mouseOffset.x * 0.001, 0]}
+          >
+            <OrbitalMaterialSystem
+              cardRotation={cardRotation}
+              onStyleChange={handleStyleChange}
+              selectedStyleId={selectedStyleId}
+              autoRotate={orbitalAutoRotate && !isCardInteracting && !isCardLocked}
+              rotationSpeed={orbitalRotationSpeed}
+              showRing={showOrbitalRing}
+              showLockIndicators={showLockIndicators}
+              isPaused={isPaused}
+              cardPaused={isCardPaused}
+            />
+          </group>
         
-        {/* Enhanced Orbit Controls for Alignment */}
-        {enableControls && (
-          <OrbitControls
-            ref={controlsRef}
-            enableZoom={!alignmentTriggered && !cardCinematicPosition.controlTaken}
-            enablePan={!alignmentTriggered && !cardCinematicPosition.controlTaken}
-            enableRotate={!alignmentTriggered && !cardCinematicPosition.controlTaken}
-            maxDistance={25}
-            minDistance={2}
-            autoRotate={autoRotate && !alignmentTriggered && !cardCinematicPosition.controlTaken}
-            autoRotateSpeed={rotationSpeed}
-            target={[mouseOffset.x * 0.01, mouseOffset.y * 0.01, 0]}
-            minPolarAngle={0}
-            maxPolarAngle={Math.PI}
-            minAzimuthAngle={-Infinity}
-            maxAzimuthAngle={Infinity}
-            enableDamping={true}
-            dampingFactor={0.05}
-            onStart={handleControlsStart}
-            onEnd={handleControlsEnd}
-          />
-        )}
+          {/* Mode Text */}
+          {showModeText && (
+            <Text
+              position={[0, -4.5, 0]}
+              fontSize={0.15}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="middle"
+            >
+              {selectedStyleId.charAt(0).toUpperCase() + selectedStyleId.slice(1)} | 
+              {currentMode.toUpperCase()} | {currentIntensity.toFixed(1)}x
+            </Text>
+          )}
+        
+          {/* Standard Orbit Controls - No alignment restrictions */}
+          {enableControls && (
+            <OrbitControls
+              ref={controlsRef}
+              enableZoom={true}
+              enablePan={true}
+              enableRotate={true}
+              maxDistance={25}
+              minDistance={2}
+              autoRotate={autoRotate}
+              autoRotateSpeed={rotationSpeed}
+              target={[mouseOffset.x * 0.01, mouseOffset.y * 0.01, 0]}
+              minPolarAngle={0}
+              maxPolarAngle={Math.PI}
+              minAzimuthAngle={-Infinity}
+              maxAzimuthAngle={Infinity}
+              enableDamping={true}
+              dampingFactor={0.05}
+              onStart={handleControlsStart}
+              onEnd={handleControlsEnd}
+            />
+          )}
         
           {/* Atmospheric Fog */}
           <fog args={['#0a0a2e', 30, 200]} />
@@ -617,15 +528,13 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         }}
       />
       
-      {/* Alignment System removed - too sensitive, was causing unwanted card locking */}
-
       {/* Alignment Controls - Hidden when studio integration is active */}
       {!hideAlignmentControls && (
         <AlignmentControls
           animationProgress={animationProgress}
           isPlaying={isPlaying}
           playbackSpeed={playbackSpeed}
-          hasTriggered={alignmentTriggered}
+          hasTriggered={false}
           onProgressChange={handleAlignmentProgressChange}
           onPlayToggle={handleAlignmentPlayToggle}
           onSpeedChange={handleAlignmentSpeedChange}
@@ -639,8 +548,6 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           onTogglePause={handleTogglePause} 
         />
       )}
-
-      {/* Template Controls Hidden - Removed per user request */}
     </div>
   );
 };
