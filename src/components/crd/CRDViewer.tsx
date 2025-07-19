@@ -10,6 +10,7 @@ import { loadTemplate, TemplateConfig, TemplateEngine } from '@/templates/engine
 import { ensureMaterialPersistence, getMaterialForTemplate } from '@/utils/materialFallback';
 import { PerformanceMonitor } from './performance/PerformanceMonitor';
 import { useCardAngle } from './hooks/useCardAngle';
+import { MonolithAlignment } from './alignment/MonolithAlignment';
 
 import { StudioPauseButton } from '../studio/StudioPauseButton';
 import { TemplateControlsCard } from '../viewer/components/TemplateControlsCard';
@@ -548,6 +549,16 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           onTogglePause={handleTogglePause} 
         />
       )}
+
+      {/* Monolith Alignment System - Non-invasive overlay */}
+      <MonolithAlignment
+        cardAngle={cardAngle}
+        cameraDistance={cameraDistance}
+        isOptimalPosition={isOptimalPosition}
+        onAlignmentComplete={() => {
+          console.log('🌌 Kubrick would be proud! Alignment sequence complete');
+        }}
+      />
     </div>
   );
 };
