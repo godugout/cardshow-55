@@ -21,28 +21,42 @@ export const UnifiedCreateHero: React.FC = () => {
 
   // Render tablet-specific hero text with line breaks
   const renderTabletHeroText = () => (
-    <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-8 text-center max-w-4xl mx-auto text-gray-400 font-light">
-      <span>From <span className="paper-scraps">paper scraps</span></span>
-      <br />
-      <span>and <span className="cardboard-text">cardboard</span> to</span>
-      <br />
-      <span className="font-bold">
-        <PixelDigital className="inline">digital</PixelDigital>
-      </span>
-      <br />
-      <span className="text-white font-bold">art that comes alive!</span>
-    </h1>
+    <div className="text-center max-w-4xl mx-auto">
+      {/* Intro Label */}
+      <div className="mb-6 gradient-text-green-blue-purple font-bold tracking-wider text-sm uppercase animate-fade-in">
+        CUT, CRAFT & CREATE DIGITALLY
+      </div>
+      
+      <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-8 text-gray-400 font-light">
+        <span>From <span className="paper-scraps">paper scraps</span></span>
+        <br />
+        <span>and <span className="cardboard-text">cardboard</span> to</span>
+        <br />
+        <span className="font-bold">
+          <PixelDigital className="inline">digital</PixelDigital>
+        </span>
+        <br />
+        <span className="text-white font-bold">art that comes alive!</span>
+      </h1>
+    </div>
   );
 
   // Render standard hero text (desktop and mobile)
   const renderStandardHeroText = () => (
-    <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-8 text-center max-w-4xl mx-auto text-gray-400 font-light">
-      <span>From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to </span>
-      <span className="font-bold">
-        <PixelDigital className="inline">digital</PixelDigital>
-        <span className="text-white"> art that comes alive!</span>
-      </span>
-    </h1>
+    <div className="text-center max-w-4xl mx-auto">
+      {/* Intro Label */}
+      <div className="mb-6 gradient-text-green-blue-purple font-bold tracking-wider text-sm uppercase animate-fade-in">
+        CUT, CRAFT & CREATE DIGITALLY
+      </div>
+      
+      <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-8 text-gray-400 font-light">
+        <span>From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to </span>
+        <span className="font-bold">
+          <PixelDigital className="inline">digital</PixelDigital>
+          <span className="text-white"> art that comes alive!</span>
+        </span>
+      </h1>
+    </div>
   );
 
   return (
@@ -61,7 +75,7 @@ export const UnifiedCreateHero: React.FC = () => {
           {/* Overlay Content Layer - Positioned for short screens */}
           <div className="relative z-10 h-full flex flex-col pointer-events-none">
             {/* Top Section - Hero Content */}
-            <div className="flex-1 flex items-center justify-center px-6">
+            <div className="flex-1 flex items-start justify-center px-6 pt-20">
               <div className="text-center space-y-4 max-w-4xl mx-auto">
                 {/* Hero Text */}
                 {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
@@ -119,8 +133,8 @@ export const UnifiedCreateHero: React.FC = () => {
             className="fixed inset-0 z-0"
           />
 
-          {/* Overlay Content Layer - Centered for normal screens */}
-          <div className="relative z-10 min-h-screen flex items-center justify-center px-6 pointer-events-none">
+          {/* Overlay Content Layer - Positioned higher for normal screens */}
+          <div className="relative z-10 min-h-screen flex items-start justify-center px-6 pt-32 pointer-events-none">
             <div className="text-center space-y-8 max-w-6xl mx-auto">
               {/* Hero Text */}
               {isTablet ? renderTabletHeroText() : renderStandardHeroText()}
