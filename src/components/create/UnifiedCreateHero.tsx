@@ -32,16 +32,19 @@ export const UnifiedCreateHero: React.FC = () => {
         CUT, CRAFT & CREATE DIGITALLY
       </div>
       
-      <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-8 text-gray-400 font-light">
-        <span>From <span className="paper-scraps">paper scraps</span></span>
-        <br />
-        <span>and <span className="cardboard-text">cardboard</span> to</span>
-        <br />
-        <span className="font-bold">
+      <h1 className="leading-tight mb-8 font-light">
+        <div className="text-2xl md:text-3xl lg:text-4xl text-gray-400 mb-2">
+          <span>From <span className="paper-scraps">paper scraps</span></span>
+          <br />
+          <span>and <span className="cardboard-text">cardboard</span> to</span>
+        </div>
+        <div className="text-4xl md:text-6xl lg:text-7xl font-bold">
           <PixelDigital className="inline">digital</PixelDigital>
-        </span>
-        <br />
-        <span className="text-white font-bold">art that comes alive!</span>
+          <span className="mx-2">
+            <PixelDigital className="inline">art</PixelDigital>
+          </span>
+          <span className="text-white"> that comes alive!</span>
+        </div>
       </h1>
     </div>
   );
@@ -54,12 +57,17 @@ export const UnifiedCreateHero: React.FC = () => {
         CUT, CRAFT & CREATE DIGITALLY
       </div>
       
-      <h1 className="text-3xl md:text-5xl lg:text-6xl leading-tight mb-8 text-gray-400 font-light">
-        <span>From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to </span>
-        <span className="font-bold">
+      <h1 className="leading-tight mb-8 font-light">
+        <div className="text-2xl md:text-3xl lg:text-4xl text-gray-400 mb-2">
+          From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to
+        </div>
+        <div className="text-4xl md:text-6xl lg:text-7xl font-bold">
           <PixelDigital className="inline">digital</PixelDigital>
-          <span className="text-white"> art that comes alive!</span>
-        </span>
+          <span className="mx-2">
+            <PixelDigital className="inline">art</PixelDigital>
+          </span>
+          <span className="text-white"> that comes alive!</span>
+        </div>
       </h1>
     </div>
   );
