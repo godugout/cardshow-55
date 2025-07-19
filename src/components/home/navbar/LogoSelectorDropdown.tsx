@@ -143,6 +143,13 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     setLogoTheme(logo.dnaCode);
     saveSettings({ theme: `logo-${logo.dnaCode.toLowerCase()}` });
     onThemeChange?.(`logo-${logo.dnaCode.toLowerCase()}`);
+    
+    // Auto-apply navbar background color to match the card hover color
+    const theme = getThemeByDNA(logo.dnaCode);
+    if (theme) {
+      // Use the primary color with low opacity to match the card hover effect
+      setCustomHeaderBgColor(theme.colors.primary, 'primary');
+    }
   };
 
   const handleCloseClick = () => {
