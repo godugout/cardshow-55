@@ -55,10 +55,10 @@ export const SimplifiedCTA: React.FC = () => {
         >
           {user ? (
             <>
-              Ready to craft your own digital<br />
+              Ready to craft your own<br />
               2.5x3.5 masterpiece?
             </>
-          ) : "Join the future of digital card art"}
+          ) : "Join the future of card art"}
         </Typography>
         <Typography 
           variant="body" 

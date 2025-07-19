@@ -60,9 +60,9 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col gap-5">
           <div className="text-[#FCFCFD] text-base font-semibold mb-2">Create</div>
           <div className="text-[#777E90] flex flex-col gap-3">
-            <Link to="/create" className="hover:text-[#FCFCFD] transition-colors">Create Cards</Link>
-            <Link to="/gallery" className="hover:text-[#FCFCFD] transition-colors">Gallery</Link>
-            <Link to="/design-guide" className="hover:text-[#FCFCFD] transition-colors">Design Guide</Link>
+            <Link to="/create" className="hover:text-[#FCFCFD] transition-colors">Studio</Link>
+            <Link to="/generator" className="hover:text-[#FCFCFD] transition-colors">Generator</Link>
+            <Link to="/gallery" className="hover:text-[#FCFCFD] transition-colors">Templates</Link>
           </div>
         </div>
 
@@ -70,15 +70,17 @@ export const Footer: React.FC = () => {
           <div className="text-[#FCFCFD] text-base font-semibold mb-2">Explore</div>
           <div className="text-[#777E90] flex flex-col gap-3">
             <Link to="/gallery" className="hover:text-[#FCFCFD] transition-colors">Gallery</Link>
-            <Link to="/dna-manager" className="hover:text-[#FCFCFD] transition-colors">DNA Manager</Link>
+            <Link to="/marketplace" className="hover:text-[#FCFCFD] transition-colors">Marketplace</Link>
+            <Link to="/discover" className="hover:text-[#FCFCFD] transition-colors">Discover</Link>
           </div>
         </div>
 
         <div className="flex flex-col gap-5">
-          <div className="text-[#FCFCFD] text-base font-semibold mb-2">Resources</div>
+          <div className="text-[#FCFCFD] text-base font-semibold mb-2">Platform</div>
           <div className="text-[#777E90] flex flex-col gap-3">
-            <Link to="/design-guide" className="hover:text-[#FCFCFD] transition-colors">Documentation</Link>
-            <span className="text-[#555] cursor-not-allowed">Help Center (Coming Soon)</span>
+            <Link to="/about" className="hover:text-[#FCFCFD] transition-colors">About</Link>
+            <Link to="/pricing" className="hover:text-[#FCFCFD] transition-colors">Pricing</Link>
+            <Link to="/support" className="hover:text-[#FCFCFD] transition-colors">Support</Link>
           </div>
         </div>
 
