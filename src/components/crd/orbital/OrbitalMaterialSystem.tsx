@@ -39,9 +39,12 @@ export const OrbitalMaterialSystem: React.FC<OrbitalMaterialSystemProps> = ({
     }
   }, [selectedStyleId, onStyleChange]);
 
+  // Combine both pause states - pause if either is true
+  const effectivelyPaused = isPaused || cardPaused;
+
   return (
     <group>
-      {/* Main Orbital Ring */}
+      {/* Single Orbital Ring - no duplicate rings */}
       <OrbitalRing
         radius={4.5}
         cardRotation={cardRotation}
@@ -51,25 +54,9 @@ export const OrbitalMaterialSystem: React.FC<OrbitalMaterialSystemProps> = ({
         rotationSpeed={rotationSpeed}
         showRing={showRing}
         showLockIndicators={showLockIndicators}
-        isPaused={isPaused}
-        cardPaused={cardPaused}
+        isPaused={effectivelyPaused}
+        cardPaused={effectivelyPaused}
       />
-
-      {/* Optional: Secondary ring for premium styles */}
-      {CRDVisualStyles.filter(s => s.category === 'premium' && !s.locked).length > 0 && (
-        <OrbitalRing
-          radius={5.5}
-          cardRotation={cardRotation}
-          onStyleChange={handleStyleChange}
-          selectedStyleId={selectedStyleId}
-          autoRotate={autoRotate}
-          rotationSpeed={rotationSpeed * 0.8} // Slightly slower
-          showRing={showRing}
-          showLockIndicators={showLockIndicators}
-          isPaused={isPaused}
-          cardPaused={cardPaused}
-        />
-      )}
     </group>
   );
 };
