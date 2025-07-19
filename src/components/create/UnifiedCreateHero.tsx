@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
@@ -15,8 +14,14 @@ export const UnifiedCreateHero: React.FC = () => {
   };
 
   const handleReset = () => {
+    // Reset animation state
     setIsPaused(false);
-    console.log('Reset 3D animation');
+    
+    // Log reset action for debugging
+    console.log('🔄 Reset 3D animation: Cosmic mode, camera position, card rotation, orbital rings');
+    
+    // The actual reset functionality is handled by the CRDViewer's onCosmicReset
+    // which will reset the cosmic animation progress, camera, card position, and orbital rings
   };
 
   // Render tablet-specific hero text with line breaks

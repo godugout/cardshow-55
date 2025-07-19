@@ -6,12 +6,14 @@ import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
 interface FloatingCard3DProps {
   isPaused?: boolean;
   onTogglePause?: () => void;
+  onReset?: () => void;
   showPauseButton?: boolean;
 }
 
 export const FloatingCard3D: React.FC<FloatingCard3DProps> = ({ 
   isPaused, 
   onTogglePause,
+  onReset,
   showPauseButton = false 
 }) => {
   const { deviceType, isShortScreen } = useResponsiveBreakpoints();
@@ -35,7 +37,7 @@ export const FloatingCard3D: React.FC<FloatingCard3DProps> = ({
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <CRDViewer
-        mode="monolith"
+        mode="cosmic"
         intensity={deviceConfig.intensity}
         lightingPreset="studio"
         pathTheme="neutral"
@@ -47,6 +49,7 @@ export const FloatingCard3D: React.FC<FloatingCard3DProps> = ({
         className="w-full h-full min-h-screen"
         isPaused={isPaused}
         onTogglePause={onTogglePause}
+        onCosmicReset={onReset}
         showPauseButton={showPauseButton}
       />
     </div>

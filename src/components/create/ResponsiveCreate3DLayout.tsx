@@ -38,6 +38,7 @@ export const ResponsiveCreate3DLayout: React.FC<ResponsiveCreate3DLayoutProps> =
           <FloatingCard3D 
             isPaused={isPaused}
             onTogglePause={onTogglePause}
+            onReset={onReset}
             showPauseButton={false}
           />
         </StarsBackground>
