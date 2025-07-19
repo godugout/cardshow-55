@@ -40,113 +40,25 @@ export const useCRDAssetPreloader = (options: UseCRDAssetPreloaderOptions = {}) 
   const manager = AssetPreloaderManager.getInstance();
 
   useEffect(() => {
+    console.log('🔄 CRD Asset preloader starting:', { enabled, isCompleteCheck: manager.isPreloadingComplete() });
+    
     // If disabled or already complete, skip entirely
     if (!enabled || manager.isPreloadingComplete()) {
+      console.log('✅ CRD Asset preloader: skipping (disabled or complete)');
       setIsComplete(true);
       setLoadedAssets(totalAssets);
       return;
     }
 
-    // Prevent multiple simultaneous preloading processes
-    if (manager.isCurrentlyPreloading()) {
-      console.log('🔄 CRD Asset preloader already running, skipping duplicate');
-      return;
-    }
+    // For simplicity, just complete immediately since we're only using placeholders
+    const timer = setTimeout(() => {
+      console.log('✅ CRD Asset preloader: completing immediately');
+      setIsComplete(true);
+      setLoadedAssets(totalAssets);
+      manager.completePreloading();
+    }, 500); // Small delay to show the loader briefly
 
-    manager.startPreloading();
-    const abortController = new AbortController();
-    manager.setAbortController(abortController);
-    
-    let loadedCount = 0;
-
-    const preloadAsset = (url: string): Promise<void> => {
-      return new Promise((resolve) => {
-        // Check if operation was aborted
-        if (abortController.signal.aborted) {
-          resolve();
-          return;
-        }
-
-        // Check if already loaded
-        if (manager.hasAsset(url)) {
-          loadedCount++;
-          setLoadedAssets(loadedCount);
-          resolve();
-          return;
-        }
-
-        // Only try to load placeholder.svg, skip others silently
-        if (url === '/placeholder.svg') {
-          const img = new Image();
-          img.onload = () => {
-            if (!abortController.signal.aborted) {
-              loadedCount++;
-              setLoadedAssets(loadedCount);
-              addPreloadedAsset(url);
-              manager.addPreloadedAsset(url);
-            }
-            resolve();
-          };
-          img.onerror = () => {
-            // Fail silently for placeholder
-            if (!abortController.signal.aborted) {
-              loadedCount++;
-              setLoadedAssets(loadedCount);
-              addPreloadedAsset(url);
-              manager.addPreloadedAsset(url);
-            }
-            resolve();
-          };
-          img.src = url;
-        } else {
-          // For other assets, just mark as loaded immediately
-          if (!abortController.signal.aborted) {
-            loadedCount++;
-            setLoadedAssets(loadedCount);
-            addPreloadedAsset(url);
-            manager.addPreloadedAsset(url);
-          }
-          resolve();
-        }
-      });
-    };
-
-    // Preload all critical assets
-    Promise.all(CRITICAL_ASSETS.map(preloadAsset))
-      .then(() => {
-        if (!abortController.signal.aborted) {
-          // Cache mock materials in memory (no network requests)
-          (window as any).__CRD_MATERIALS__ = MOCK_MATERIALS;
-          
-          setIsComplete(true);
-          manager.completePreloading();
-          console.log('✅ All CRD assets preloaded successfully');
-        }
-      })
-      .catch(() => {
-        if (!abortController.signal.aborted) {
-          setIsComplete(true);
-          manager.completePreloading();
-          console.log('⚠️ CRD asset preloading completed with some errors');
-        }
-      });
-
-    // Preload fabric.js only once globally
-    if (typeof window !== 'undefined' && !(window as any).fabric && !(window as any).__FABRIC_LOADING__) {
-      (window as any).__FABRIC_LOADING__ = true;
-      import('fabric').then(() => {
-        console.log('✅ Fabric.js preloaded');
-        (window as any).__FABRIC_LOADING__ = false;
-      }).catch(err => {
-        console.warn('Failed to preload Fabric.js:', err);
-        (window as any).__FABRIC_LOADING__ = false;
-      });
-    }
-
-    // Cleanup function
-    return () => {
-      abortController.abort();
-    };
+    return () => clearTimeout(timer);
   }, [enabled, addPreloadedAsset, totalAssets, manager]);
 
   return {

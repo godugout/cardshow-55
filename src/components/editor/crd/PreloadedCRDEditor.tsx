@@ -48,6 +48,16 @@ export const PreloadedCRDEditor: React.FC<PreloadedCRDEditorProps> = ({
     }
   }, [progress, isVisible]);
 
+  // Debug logging
+  useEffect(() => {
+    console.log('🔍 PreloadedCRDEditor state:', {
+      isVisible,
+      assetsLoaded,
+      hasSetPreloaded,
+      progress
+    });
+  }, [isVisible, assetsLoaded, hasSetPreloaded, progress]);
+
   return (
     <div 
       ref={editorRef}
