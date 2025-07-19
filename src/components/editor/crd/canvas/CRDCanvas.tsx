@@ -48,7 +48,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   
   // Grid preferences with persistence
   const { gridType, showGrid, setGridType, setShowGrid, isLoaded } = useGridPreferences();
-  const [isPanning, setIsPanning] = useState(false);
   
   // Auto-hide toolbar
   const { 
@@ -57,15 +56,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
     onMouseEnter: onToolbarMouseEnter, 
     onMouseLeave: onToolbarMouseLeave 
   } = useAutoHideToolbar();
-  const [panOffset, setPanOffset] = useState({
-    x: 0,
-    y: 0
-  });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({
-    x: 0,
-    y: 0
-  });
 
   // Canvas controls
   const handleZoomIn = useCallback(() => {
@@ -83,27 +73,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
   const baseCardWidth = 420; // Increased from 320
   const baseCardHeight = baseCardWidth / cardAspectRatio;
 
-  // Panning handlers - restricted to vertical movement with Cmd/Ctrl+click
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    // Only allow panning with Command/Ctrl key pressed
-    if (!isPanning || !(e.metaKey || e.ctrlKey)) return;
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX - panOffset.x,
-      y: e.clientY - panOffset.y
-    });
-  }, [isPanning, panOffset]);
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging || !isPanning) return;
-    // Only allow vertical movement (prevent horizontal panning)
-    setPanOffset({
-      x: panOffset.x, // Keep x position fixed
-      y: e.clientY - dragStart.y
-    });
-  }, [isDragging, isPanning, dragStart, panOffset.x]);
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
   const cardWidth = baseCardWidth * zoom / 100;
   const cardHeight = baseCardHeight * zoom / 100;
   const getBackgroundStyle = () => {
@@ -237,8 +206,6 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
         onGridTypeChange={setGridType} 
         showRulers={showRulers} 
         onRulersToggle={() => setShowRulers(!showRulers)} 
-        isPanning={isPanning} 
-        onPanToggle={() => setIsPanning(!isPanning)}
         className={getToolbarClasses()}
         onMouseEnter={onToolbarMouseEnter}
         onMouseLeave={onToolbarMouseLeave}
@@ -248,15 +215,14 @@ export const CRDCanvas: React.FC<CRDCanvasProps> = ({
       <CRDCanvasGrid showGrid={showGrid} gridType={gridType} gridSize={20} />
 
       {/* Canvas Area */}
-      <div className={`flex-1 w-full flex items-center justify-center relative z-10 pt-16 pb-20 overflow-hidden ${isPanning ? 'cursor-grab' : 'cursor-default'} ${isDragging ? 'cursor-grabbing' : ''}`} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+      <div className="flex-1 w-full flex items-center justify-center relative z-10 pt-16 pb-20 overflow-hidden">
         
         {/* Card Dropzone */}
         <div 
           className="relative z-20 transition-transform duration-300 ease-out"
           style={{
             width: `${cardWidth}px`,
-            height: `${cardHeight}px`,
-            transform: `translate(${panOffset.x}px, ${panOffset.y}px)`
+            height: `${cardHeight}px`
           }}
         >
           {selectedFrame ? (

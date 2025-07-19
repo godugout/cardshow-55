@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, LayoutGrid, Grid, Diamond, Construction, Camera, X, Ruler, Move, Edit3, ChevronDown } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Grid3x3, LayoutGrid, Grid, Diamond, Construction, Camera, X, Ruler, Edit3, ChevronDown } from 'lucide-react';
 import { CRDButton } from '@/components/ui/design-system/Button';
 import {
   DropdownMenu,
@@ -18,8 +18,6 @@ interface CRDToolbarProps {
   onGridTypeChange: (type: 'standard' | 'print' | 'golden' | 'isometric' | 'blueprint' | 'photography') => void;
   showRulers: boolean;
   onRulersToggle: () => void;
-  isPanning: boolean;
-  onPanToggle: () => void;
   // Auto-hide props
   className?: string;
   onMouseEnter?: () => void;
@@ -53,24 +51,11 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
   onGridTypeChange,
   showRulers,
   onRulersToggle,
-  isPanning,
-  onPanToggle,
   className,
   onMouseEnter,
   onMouseLeave
 }) => {
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !e.repeat) {
-        e.preventDefault();
-        onPanToggle();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onPanToggle]);
-  return <div 
+  return <div
     className={className || "absolute top-16 left-1/2 transform -translate-x-1/2 z-30 bg-crd-darker/80 backdrop-blur-sm border border-crd-mediumGray/30 rounded-lg shadow-lg"}
     onMouseEnter={onMouseEnter}
     onMouseLeave={onMouseLeave}
@@ -147,23 +132,6 @@ export const CRDToolbar: React.FC<CRDToolbarProps> = ({
                 Reset
               </CRDButton>
             </div>
-          </div>
-
-          <div className="w-px h-6 bg-crd-mediumGray/30" />
-
-          {/* Interaction Controls */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-crd-lightGray font-medium">Mode:</span>
-             <div className="flex bg-white/5 rounded-lg p-0.5 backdrop-blur-sm border border-white/20">
-               <CRDButton variant="outline" size="sm" onClick={() => isPanning && onPanToggle()} className={`h-7 w-8 p-0 bg-white/5 backdrop-blur-sm border-white/20 ${!isPanning ? 'border-green-400/50' : ''}`} title="Edit Mode - Modify card elements with 3D perspective (Space to toggle)">
-                 <Edit3 className={`w-4 h-4 ${!isPanning ? 'text-green-400' : 'text-green-400'}`} />
-               </CRDButton>
-               <CRDButton variant="outline" size="sm" onClick={() => !isPanning && onPanToggle()} className={`h-7 w-8 p-0 bg-white/5 backdrop-blur-sm border-white/20 ${isPanning ? 'border-green-400/50' : ''}`} title="Pan Mode - Drag to move canvas view (Space to toggle)">
-                 <Move className={`w-4 h-4 ${isPanning ? 'text-green-400' : 'text-green-400'}`} />
-               </CRDButton>
-             </div>
-            
-            
           </div>
         </div>
       </div>
