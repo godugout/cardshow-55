@@ -121,7 +121,7 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
   const handleMouseLeave = () => {
     mouseLeaveTimerRef.current = setTimeout(() => {
       setIsOpen(false);
-    }, 300);
+    }, 2000); // 2 seconds delay to give users time to re-engage
   };
 
   const handleMouseEnter = () => {
