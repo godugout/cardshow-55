@@ -1,6 +1,5 @@
 import React from 'react';
-import { CRDCardCreatorWrapper } from '@/components/editor/crd/CRDCardCreatorWrapper';
-import { CRDOverlayHeader } from '@/components/editor/crd/CRDOverlayHeader';
+import { PreloadedCRDEditor } from '@/components/editor/crd/PreloadedCRDEditor';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import type { CardData } from '@/hooks/useCardEditor';
@@ -25,9 +24,10 @@ const CreateCRD = () => {
       {/* Main Content - Full height */}
       <div className="h-full">
         <ErrorBoundary>
-          <CRDCardCreatorWrapper 
+          <PreloadedCRDEditor 
             onComplete={handleComplete}
             onCancel={handleCancel}
+            isVisible={true}
           />
         </ErrorBoundary>
       </div>
