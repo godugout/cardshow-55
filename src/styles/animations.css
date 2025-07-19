@@ -586,3 +586,68 @@
   .cascade-stagger-4 { animation-delay: calc(var(--delay-stagger) * 4); }
   .cascade-stagger-5 { animation-delay: calc(var(--delay-stagger) * 5); }
 }
+
+/* Alignment Tutorial Animations */
+@keyframes zoom-in {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.6); }
+}
+
+@keyframes tilt-forward {
+  0% { transform: rotateX(0deg); }
+  100% { transform: rotateX(45deg); }
+}
+
+@keyframes drag-up-prep {
+  0%, 100% { transform: rotateX(45deg) translateY(0); }
+  50% { transform: rotateX(45deg) translateY(-10px); }
+}
+
+@keyframes scroll-zoom {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.1); }
+}
+
+@keyframes drag-tilt {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-15px) rotate(-10deg); }
+}
+
+@keyframes drag-up-gesture {
+  0% { transform: translateX(-50%) translateY(0); }
+  100% { transform: translateX(-50%) translateY(-60px); }
+}
+
+@keyframes drag-up-arrow {
+  0%, 100% { opacity: 0.5; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-20px); }
+}
+
+.animate-zoom-in {
+  animation: zoom-in 2s ease-in-out infinite;
+}
+
+.animate-tilt-forward {
+  animation: tilt-forward 1.5s ease-out forwards;
+  perspective: 1000px;
+}
+
+.animate-drag-up-prep {
+  animation: drag-up-prep 1s ease-in-out infinite;
+}
+
+.animate-scroll-zoom {
+  animation: scroll-zoom 1.5s ease-in-out infinite;
+}
+
+.animate-drag-tilt {
+  animation: drag-tilt 1.5s ease-in-out infinite;
+}
+
+.animate-drag-up-gesture {
+  animation: drag-up-gesture 1.5s ease-out infinite;
+}
+
+.animate-drag-up-arrow {
+  animation: drag-up-arrow 1s ease-in-out infinite;
+}

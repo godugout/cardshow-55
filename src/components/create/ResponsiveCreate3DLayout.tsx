@@ -1,8 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FloatingCard3D } from '@/components/ui/FloatingCard3D';
 import { StarsBackground } from '@/components/ui/stars';
 import { StudioPauseButton } from '@/components/studio/StudioPauseButton';
+import { AlignmentTutorial } from './AlignmentTutorial';
+import { AlignmentTutorialButton } from './AlignmentTutorialButton';
 
 interface ResponsiveCreate3DLayoutProps {
   isPaused: boolean;
@@ -15,6 +17,19 @@ export const ResponsiveCreate3DLayout: React.FC<ResponsiveCreate3DLayoutProps> =
   onTogglePause,
   className = ''
 }) => {
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  // Show tutorial automatically on first visit (optional)
+  React.useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('crd-alignment-tutorial-seen');
+    if (!hasSeenTutorial) {
+      const timer = setTimeout(() => {
+        setShowTutorial(true);
+        localStorage.setItem('crd-alignment-tutorial-seen', 'true');
+      }, 2000); // Show after 2 seconds
+      return () => clearTimeout(timer);
+    }
+  }, []);
   return (
     <div 
       className={`fixed inset-0 z-0 ${className}`}
@@ -40,13 +55,20 @@ export const ResponsiveCreate3DLayout: React.FC<ResponsiveCreate3DLayoutProps> =
         </StarsBackground>
       </div>
 
-      {/* Control Button */}
+      {/* Control Buttons */}
       <div className="absolute bottom-6 right-6 z-[100] flex gap-3">
+        <AlignmentTutorialButton onShowTutorial={() => setShowTutorial(true)} />
         <StudioPauseButton 
           isPaused={isPaused} 
           onTogglePause={onTogglePause} 
         />
       </div>
+
+      {/* Alignment Tutorial Overlay */}
+      <AlignmentTutorial 
+        isVisible={showTutorial}
+        onClose={() => setShowTutorial(false)}
+      />
     </div>
   );
 };
