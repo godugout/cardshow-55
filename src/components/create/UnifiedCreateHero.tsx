@@ -38,12 +38,12 @@ export const UnifiedCreateHero: React.FC = () => {
           <br />
           <span>and <span className="cardboard-text">cardboard</span> to</span>
         </div>
-        <div className="text-4xl md:text-6xl lg:text-7xl font-bold">
+        <div className="text-3xl md:text-5xl lg:text-6xl font-bold">
           <PixelDigital className="inline">digital</PixelDigital>
-          <span className="mx-2">
+          <span className="mx-1">
             <PixelDigital className="inline">art</PixelDigital>
           </span>
-          <span className="text-white"> that comes alive!</span>
+          <span className="text-white">that comes alive!</span>
         </div>
       </h1>
     </div>
@@ -61,12 +61,12 @@ export const UnifiedCreateHero: React.FC = () => {
         <div className="text-2xl md:text-3xl lg:text-4xl text-gray-400 mb-2">
           From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to
         </div>
-        <div className="text-4xl md:text-6xl lg:text-7xl font-bold">
+        <div className="text-3xl md:text-5xl lg:text-6xl font-bold">
           <PixelDigital className="inline">digital</PixelDigital>
-          <span className="mx-2">
+          <span className="mx-1">
             <PixelDigital className="inline">art</PixelDigital>
           </span>
-          <span className="text-white"> that comes alive!</span>
+          <span className="text-white">that comes alive!</span>
         </div>
       </h1>
     </div>
