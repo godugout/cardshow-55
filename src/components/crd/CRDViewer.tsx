@@ -611,11 +611,8 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
         />
       )}
 
-      {/* Monolith Alignment System - Non-invasive overlay */}
+      {/* Monolith Alignment System - Simple double-click trigger */}
       <MonolithAlignment
-        cardAngle={cardAngle}
-        cameraDistance={cameraDistance}
-        isOptimalPosition={isOptimalPosition}
         onAlignmentComplete={() => {
           console.log('🌌 Kubrick would be proud! Alignment sequence complete');
         }}

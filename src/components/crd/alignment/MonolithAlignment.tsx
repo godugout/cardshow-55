@@ -1,52 +1,64 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MonolithTransformation } from './MonolithTransformation';
 import { SunBehindMonolith } from './SunBehindMonolith';
 import { DescendingMoon } from './DescendingMoon';
 import { AlignmentBeam } from './AlignmentBeam';
 
 interface MonolithAlignmentProps {
-  cardAngle: number;
-  cameraDistance: number;
-  isOptimalPosition: boolean;
   onAlignmentComplete?: () => void;
 }
 
 export const MonolithAlignment: React.FC<MonolithAlignmentProps> = ({
-  cardAngle,
-  cameraDistance,
-  isOptimalPosition,
   onAlignmentComplete
 }) => {
   const [isTriggered, setIsTriggered] = useState(false);
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'transformation' | 'sun-rise' | 'moon-descent' | 'alignment' | 'climax'>('idle');
-  const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
   const [animationProgress, setAnimationProgress] = useState(0);
+  const [showTriggerHint, setShowTriggerHint] = useState(true);
 
-  // Check alignment conditions - 400% zoom + 45° tilt + centered position
-  const isZoomedEnough = cameraDistance <= 2;
-  const isTiltedForward = cardAngle >= 45;
-  const canTrigger = isZoomedEnough && isTiltedForward && isOptimalPosition && !isTriggered;
-
-  // Hold timer for deliberate trigger (2 seconds)
+  // Hide hint after a few seconds
   useEffect(() => {
-    if (canTrigger) {
-      const timer = setTimeout(() => {
-        console.log('🌌 Monolith alignment triggered! Beginning transformation...');
-        setIsTriggered(true);
-        setAnimationPhase('transformation');
-      }, 2000);
-      setHoldTimer(timer);
-    } else {
-      if (holdTimer) {
-        clearTimeout(holdTimer);
-        setHoldTimer(null);
+    const timer = setTimeout(() => {
+      setShowTriggerHint(false);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Simple trigger - double click anywhere on the screen
+  useEffect(() => {
+    let clickCount = 0;
+    let clickTimer: NodeJS.Timeout;
+
+    const handleDoubleClick = () => {
+      if (isTriggered) return;
+      
+      console.log('🌌 Double-click detected! Starting Kubrick alignment sequence...');
+      setIsTriggered(true);
+      setAnimationPhase('transformation');
+      setShowTriggerHint(false);
+    };
+
+    const handleClick = () => {
+      clickCount++;
+      if (clickCount === 1) {
+        clickTimer = setTimeout(() => {
+          clickCount = 0;
+        }, 300);
+      } else if (clickCount === 2) {
+        clearTimeout(clickTimer);
+        clickCount = 0;
+        handleDoubleClick();
       }
-    }
+    };
+
+    // Add to window for global capture
+    window.addEventListener('click', handleClick);
 
     return () => {
-      if (holdTimer) clearTimeout(holdTimer);
+      window.removeEventListener('click', handleClick);
+      if (clickTimer) clearTimeout(clickTimer);
     };
-  }, [canTrigger, holdTimer, isTriggered]);
+  }, [isTriggered]);
 
   // Animation sequence timing
   useEffect(() => {
@@ -57,7 +69,7 @@ export const MonolithAlignment: React.FC<MonolithAlignmentProps> = ({
       { phase: 'sun-rise', duration: 1500 },
       { phase: 'moon-descent', duration: 2000 },
       { phase: 'alignment', duration: 1000 },
-      { phase: 'climax', duration: 1000 }
+      { phase: 'climax', duration: 2000 }
     ];
 
     let currentDelay = 0;
@@ -72,31 +84,25 @@ export const MonolithAlignment: React.FC<MonolithAlignmentProps> = ({
     // Complete and reset
     setTimeout(() => {
       onAlignmentComplete?.();
-      setIsTriggered(false);
-      setAnimationPhase('idle');
-      setAnimationProgress(0);
-    }, currentDelay + 2000);
+      setTimeout(() => {
+        setIsTriggered(false);
+        setAnimationPhase('idle');
+        setAnimationProgress(0);
+        setShowTriggerHint(true);
+      }, 2000);
+    }, currentDelay);
 
   }, [isTriggered, onAlignmentComplete]);
-
-  // Reset on position change
-  useEffect(() => {
-    if (!canTrigger && isTriggered) {
-      setIsTriggered(false);
-      setAnimationPhase('idle');
-      setAnimationProgress(0);
-    }
-  }, [canTrigger, isTriggered]);
 
   if (!isTriggered && animationPhase === 'idle') {
     return (
       <div className="fixed inset-0 pointer-events-none z-40">
-        {/* Alignment hint when approaching trigger */}
-        {canTrigger && (
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-lg">
-            <div className="text-sm">Hold position for alignment...</div>
-            <div className="w-full bg-white/20 h-1 rounded mt-1">
-              <div className="bg-white h-1 rounded animate-pulse" style={{ width: '100%' }} />
+        {/* Simple trigger hint */}
+        {showTriggerHint && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/70 text-white px-6 py-3 rounded-lg animate-fade-in">
+            <div className="text-center">
+              <div className="text-lg mb-1">✨ 2001: A Space Odyssey ✨</div>
+              <div className="text-sm opacity-80">Double-click anywhere to trigger alignment</div>
             </div>
           </div>
         )}
@@ -110,7 +116,7 @@ export const MonolithAlignment: React.FC<MonolithAlignmentProps> = ({
       <div 
         className="absolute inset-0 bg-black transition-opacity duration-1000"
         style={{ 
-          opacity: isTriggered ? 0.3 : 0 
+          opacity: isTriggered ? 0.4 : 0 
         }}
       />
 
@@ -146,14 +152,18 @@ export const MonolithAlignment: React.FC<MonolithAlignmentProps> = ({
         />
       )}
 
-      {/* Debug info */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="absolute top-4 left-4 bg-black/70 text-white p-3 rounded text-xs font-mono">
-          <div>Phase: {animationPhase}</div>
-          <div>Progress: {Math.round(animationProgress * 100)}%</div>
-          <div>Zoom 400%+: {isZoomedEnough ? '✓' : '✗'}</div>
-          <div>Tilt 45°+: {isTiltedForward ? '✓' : '✗'}</div>
-          <div>Position: {isOptimalPosition ? '✓' : '✗'}</div>
+      {/* Animation progress indicator */}
+      {isTriggered && (
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-lg">
+          <div className="text-center">
+            <div className="text-sm mb-1">{animationPhase.toUpperCase().replace('-', ' ')}</div>
+            <div className="w-32 bg-white/20 h-1 rounded">
+              <div 
+                className="bg-white h-1 rounded transition-all duration-300" 
+                style={{ width: `${animationProgress * 100}%` }}
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>
