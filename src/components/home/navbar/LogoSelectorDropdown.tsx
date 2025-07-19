@@ -48,11 +48,7 @@ const LogoWithFallback = ({ imageUrl, logoName, className, dnaCode }: {
   );
 };
 
-interface LogoSelectorDropdownProps {
-  onThemeChange?: (themeId: string) => void;
-}
-
-export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProps) => {
+export const LogoSelectorDropdown = () => {
   const { settings, saveSettings } = useAppSettings();
   const { setLogoTheme, currentLogoCode, getThemeByDNA, setCustomHeaderBgColor, customHeaderColor, customHeaderColorType, isHomeTeamMode, toggleHomeTeamMode } = useTeamTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -142,7 +138,6 @@ export const LogoSelectorDropdown = ({ onThemeChange }: LogoSelectorDropdownProp
     setSelectedLogo(logo);
     setLogoTheme(logo.dnaCode);
     saveSettings({ theme: `logo-${logo.dnaCode.toLowerCase()}` });
-    onThemeChange?.(`logo-${logo.dnaCode.toLowerCase()}`);
     
     // Auto-apply navbar background color to match the card hover color
     const theme = getThemeByDNA(logo.dnaCode);

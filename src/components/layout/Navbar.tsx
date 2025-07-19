@@ -8,9 +8,9 @@ import { DevLoginButton } from '@/components/auth/DevLoginButton';
 import { AdminTrigger } from '@/components/admin/AdminTrigger';
 import { MobileNav } from '@/components/home/navbar/MobileNav';
 
-// Dynamic navbar background based on current theme
-const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string | null, isHomeTeamMode?: boolean) => {
-  // Home team mode overrides everything with light background
+// Simplified navbar background - prioritize custom header color over theme defaults
+const getNavbarDynamicStyles = (customHeaderColor?: string | null, isHomeTeamMode?: boolean) => {
+  // Home team mode always gets light background for logo visibility
   if (isHomeTeamMode) {
     return {
       background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.92) 50%, rgba(255, 255, 255, 0.97) 100%)',
@@ -19,23 +19,15 @@ const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string 
     };
   }
 
-  if (!currentPalette) {
-    return {
-      background: 'linear-gradient(135deg, rgba(20, 20, 22, 0.08) 0%, rgba(20, 20, 22, 0.05) 50%, rgba(20, 20, 22, 0.12) 100%)',
-      borderColor: 'rgba(255, 255, 255, 0.15)'
-    };
-  }
-  
-  // Convert hex to rgba for transparency
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
-  
-  // Use custom header color if set, otherwise use theme colors
+  // If user picked a custom header color from logo selection, prioritize it
   if (customHeaderColor) {
+    const hexToRgba = (hex: string, alpha: number) => {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+    
     return {
       background: `linear-gradient(135deg, ${hexToRgba(customHeaderColor, 0.08)} 0%, ${hexToRgba(customHeaderColor, 0.05)} 50%, ${hexToRgba(customHeaderColor, 0.12)} 100%)`,
       borderColor: hexToRgba(customHeaderColor, 0.15),
@@ -43,20 +35,17 @@ const getNavbarDynamicStyles = (currentPalette: any, customHeaderColor?: string 
     };
   }
   
-  // Create subtle background gradient using theme colors
-  const primary = currentPalette.colors.primary;
-  const secondary = currentPalette.colors.secondary;
-  
+  // Fallback to CSS variables controlled by theme system
   return {
-    background: `linear-gradient(135deg, ${hexToRgba(primary, 0.08)} 0%, ${hexToRgba(secondary, 0.05)} 50%, ${hexToRgba(primary, 0.12)} 100%)`,
-    borderColor: hexToRgba(primary, 0.15),
+    background: 'linear-gradient(135deg, hsl(var(--theme-navbar-bg) / 0.08) 0%, hsl(var(--theme-navbar-bg) / 0.05) 50%, hsl(var(--theme-navbar-bg) / 0.12) 100%)',
+    borderColor: 'hsl(var(--theme-navbar-border) / 0.15)',
     backdropFilter: 'blur(12px) saturate(180%)'
   };
 };
 
 export const Navbar = () => {
   const location = useLocation();
-  const { currentPalette, setTheme, customHeaderColor, isHomeTeamMode } = useTeamTheme();
+  const { customHeaderColor, isHomeTeamMode } = useTeamTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const prefersReducedMotion = typeof window !== 'undefined' && 
@@ -88,7 +77,7 @@ export const Navbar = () => {
       : 'transition-all duration-500 ease-out';
   };
 
-  const dynamicStyles = getNavbarDynamicStyles(currentPalette, customHeaderColor, isHomeTeamMode);
+  const dynamicStyles = getNavbarDynamicStyles(customHeaderColor, isHomeTeamMode);
 
   return (
     <>
@@ -116,7 +105,7 @@ export const Navbar = () => {
             `}>
               <AdminTrigger />
               <div className={`transition-transform duration-200 ${!prefersReducedMotion ? 'hover:scale-105' : ''}`}>
-                <LogoSelector onThemeChange={(themeId) => setTheme(themeId)} />
+                <LogoSelector />
               </div>
             </div>
 

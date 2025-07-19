@@ -55,9 +55,9 @@
   --editor-border: 0 0% 20%;
   --editor-canvas: 0 0% 17%;
 
-  /* Theme System Variables */
-  --theme-navbar-bg: var(--crd-darkGray);
-  --theme-navbar-border: var(--crd-mediumGray);
+  /* Theme System Variables - Updated by logo/theme selection */
+  --theme-navbar-bg: var(--crd-blue);
+  --theme-navbar-border: var(--crd-purple);
   --theme-accent: var(--crd-blue);
 }
 

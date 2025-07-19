@@ -5,18 +5,6 @@
 
 /* CRD Theme System */
 @layer components {
-  /* Navigation theming - Subtle tinted glass effect */
-  .navbar-themed {
-    background: linear-gradient(135deg, 
-      hsl(var(--theme-navbar-bg) / 0.08) 0%, 
-      hsl(var(--theme-navbar-bg) / 0.05) 50%, 
-      hsl(var(--theme-navbar-bg) / 0.12) 100%
-    );
-    border-color: hsl(var(--theme-navbar-border) / 0.15);
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-  }
-  
   /* Home team light mode - Light background for better logo visibility */
   .navbar-home-team {
     background: linear-gradient(135deg, 
