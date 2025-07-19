@@ -47,20 +47,29 @@ export const AlignmentSystem: React.FC<AlignmentSystemProps> = React.memo(({
     triggerCallback();
   }, [triggerCallback]);
   
-  // Handle alignment animation
+  // Handle alignment animation - only take control during animation
   useEffect(() => {
-    if (hasTriggered && !isAligned) {
-      // Tilt card to 45 degrees and lock it
+    if (hasTriggered && isPlaying && !isAligned) {
+      // Only lock card during active animation
       if (onCardControlUpdate) {
         onCardControlUpdate({
           positionY: 0,
           lean: 45, // 45 degree tilt
-          controlTaken: true // Lock the card in position
+          controlTaken: true // Lock the card in position only during animation
         });
       }
       setIsAligned(true);
+    } else if (hasTriggered && !isPlaying) {
+      // Release control when animation stops
+      if (onCardControlUpdate) {
+        onCardControlUpdate({
+          positionY: 0,
+          lean: 0,
+          controlTaken: false // Release control when not animating
+        });
+      }
     }
-  }, [hasTriggered, isAligned, onCardControlUpdate]);
+  }, [hasTriggered, isPlaying, isAligned, onCardControlUpdate]);
   
   // Reset when animation resets
   useEffect(() => {
