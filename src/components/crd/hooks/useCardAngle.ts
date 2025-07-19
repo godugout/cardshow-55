@@ -50,6 +50,7 @@ export const useCardAngle = () => {
 
   return {
     cardAngle,
+    setCardAngle,
     cameraDistance,
     isOptimalZoom,
     isOptimalPosition,

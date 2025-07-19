@@ -119,7 +119,7 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
   const [templateEngine, setTemplateEngine] = useState<TemplateEngine | null>(null);
 
   // Alignment system
-  const { cardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cardRef: angleCardRef, controlsRef, resetCardAngle } = useCardAngle();
+  const { cardAngle, setCardAngle, cameraDistance, isOptimalZoom, isOptimalPosition, cardRef: angleCardRef, controlsRef, resetCardAngle } = useCardAngle();
   const [animationProgress, setAnimationProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
@@ -486,7 +486,23 @@ export const CRDViewer: React.FC<CRDViewerProps> = ({
           }}
           scene={{ background: null }}
         >
-          {/* Drag-up gesture detection removed - too sensitive */}
+          {/* Drag-up gesture detection for alignment mode */}
+          {currentMode === 'alignment' && (
+            <DragUpGesture 
+              onDragUpTrigger={handleAlignmentTrigger}
+              minDragDistance={150}
+              onCardAngleUpdate={(angle) => {
+                // Control card angle during drag - stop at 45 degrees
+                if (angle >= 45) {
+                  setCardAngle(45);
+                } else {
+                  setCardAngle(angle);
+                }
+              }}
+            >
+              <></>
+            </DragUpGesture>
+          )}
         {/* Unified Lighting System */}
         <LightingRig 
           preset={lightingPreset} 

@@ -5,6 +5,7 @@ interface DragUpGestureProps {
   onDragUpTrigger: () => void;
   minDragDistance?: number;
   children: React.ReactNode;
+  onCardAngleUpdate?: (angle: number) => void;
 }
 
 interface DragState {
@@ -18,7 +19,8 @@ interface DragState {
 
 export const DragUpGesture: React.FC<DragUpGestureProps> = ({
   onDragUpTrigger,
-  minDragDistance = 100, // pixels
+  minDragDistance = 120, // pixels - increased for less sensitivity
+  onCardAngleUpdate,
   children
 }) => {
   const { gl } = useThree();
@@ -32,6 +34,7 @@ export const DragUpGesture: React.FC<DragUpGestureProps> = ({
   });
 
   const [isGestureActive, setIsGestureActive] = useState(false);
+  const [currentAngle, setCurrentAngle] = useState(0);
 
   const handlePointerDown = useCallback((event: any) => {
     const clientX = event.clientX || (event.touches && event.touches[0]?.clientX) || 0;
@@ -65,23 +68,31 @@ export const DragUpGesture: React.FC<DragUpGestureProps> = ({
     const deltaY = clientY - dragState.current.startY;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     
-    // Check if drag is primarily upward and meets minimum distance
-    const isUpwardDrag = deltaY < -minDragDistance * 0.5; // Negative Y is up
-    const isMinDistance = distance >= minDragDistance;
-    const isPrimarilyVertical = Math.abs(deltaY) > Math.abs(deltaX) * 0.7; // 70% vertical bias
+    // Check if drag is primarily upward
+    const isUpwardDrag = deltaY < -30; // More lenient threshold
+    const isPrimarilyVertical = Math.abs(deltaY) > Math.abs(deltaX) * 0.5; // 50% vertical bias
     
-    // Trigger alignment animation if conditions are met
-    if (isUpwardDrag && isMinDistance && isPrimarilyVertical && !dragState.current.hasTriggered) {
-      console.log('🚀 Drag-up gesture detected! Triggering alignment animation...');
-      dragState.current.hasTriggered = true;
-      onDragUpTrigger();
+    if (isUpwardDrag && isPrimarilyVertical) {
+      // Calculate angle based on drag distance, max 45 degrees
+      const dragProgress = Math.min(Math.abs(deltaY) / minDragDistance, 1);
+      const targetAngle = Math.min(dragProgress * 45, 45); // Cap at 45 degrees
       
-      // Give visual feedback
-      gl.domElement.style.cursor = 'grab';
+      setCurrentAngle(targetAngle);
+      if (onCardAngleUpdate) {
+        onCardAngleUpdate(targetAngle);
+      }
+      
+      // Trigger animation when we reach 45 degrees
+      if (targetAngle >= 45 && !dragState.current.hasTriggered) {
+        console.log('🚀 Card reached 45° - triggering alignment animation!');
+        dragState.current.hasTriggered = true;
+        onDragUpTrigger();
+        gl.domElement.style.cursor = 'grab';
+      }
     }
     
     event.preventDefault();
-  }, [minDragDistance, onDragUpTrigger, gl.domElement]);
+  }, [minDragDistance, onDragUpTrigger, onCardAngleUpdate, gl.domElement]);
 
   const handlePointerUp = useCallback((event: any) => {
     dragState.current.isDragging = false;
