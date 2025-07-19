@@ -33,7 +33,7 @@ export const UnifiedCreateHero: React.FC = () => {
       </div>
       
       <h1 className="leading-tight mb-8 font-light">
-        <div className="text-2xl md:text-3xl lg:text-4xl text-gray-400 mb-2">
+        <div className="text-xl md:text-2xl lg:text-3xl text-gray-400 mb-2 whitespace-nowrap">
           <span>From <span className="paper-scraps">paper scraps</span></span>
           <br />
           <span>and <span className="cardboard-text">cardboard</span> to</span>
@@ -58,7 +58,7 @@ export const UnifiedCreateHero: React.FC = () => {
       </div>
       
       <h1 className="leading-tight mb-8 font-light">
-        <div className="text-2xl md:text-3xl lg:text-4xl text-gray-400 mb-2">
+        <div className="text-xl md:text-2xl lg:text-3xl text-gray-400 mb-2 whitespace-nowrap">
           From <span className="paper-scraps">paper scraps</span> and <span className="cardboard-text">cardboard</span> to
         </div>
         <div className="text-3xl md:text-5xl lg:text-6xl font-bold">
