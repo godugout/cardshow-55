@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CRDCardCreatorWrapper } from './CRDCardCreatorWrapper';
 import { useCRDEditor } from '@/contexts/CRDEditorContext';
 import { useCRDAssetPreloader } from '@/hooks/useCRDAssetPreloader';
+import { CRDMKRLoader } from './CRDMKRLoader';
 import type { CardData } from '@/hooks/useCardEditor';
 
 interface PreloadedCRDEditorProps {
@@ -70,10 +71,16 @@ export const PreloadedCRDEditor: React.FC<PreloadedCRDEditorProps> = ({
       }}
     >
       {isVisible && (
-        <CRDCardCreatorWrapper 
-          onComplete={onComplete}
-          onCancel={onCancel}
-        />
+        <>
+          {!assetsLoaded ? (
+            <CRDMKRLoader message="Loading CRDMKR" />
+          ) : (
+            <CRDCardCreatorWrapper 
+              onComplete={onComplete}
+              onCancel={onCancel}
+            />
+          )}
+        </>
       )}
     </div>
   );
