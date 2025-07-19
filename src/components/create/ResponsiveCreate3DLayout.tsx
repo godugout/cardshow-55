@@ -44,9 +44,14 @@ export const ResponsiveCreate3DLayout: React.FC<ResponsiveCreate3DLayoutProps> =
         </StarsBackground>
       </div>
 
-      {/* Control Buttons */}
-      <div className="absolute bottom-6 right-6 z-50 flex gap-3">
-        <StudioResetButton onReset={onReset} />
+      {/* Control Buttons - Ensure single button instance with proper z-index */}
+      <div className="absolute bottom-6 right-6 z-[100] flex gap-3">
+        <StudioResetButton 
+          onReset={() => {
+            console.log('🔄 Reset button clicked in ResponsiveCreate3DLayout');
+            onReset();
+          }} 
+        />
         <StudioPauseButton 
           isPaused={isPaused} 
           onTogglePause={onTogglePause} 
